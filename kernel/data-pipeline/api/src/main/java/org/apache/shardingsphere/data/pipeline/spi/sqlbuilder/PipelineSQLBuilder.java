@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
@@ -29,7 +28,7 @@ import java.util.Optional;
 /**
  * Pipeline SQL builder.
  */
-public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
+public interface PipelineSQLBuilder extends TypedSPI {
     
     /**
      * Build create schema SQL.
@@ -64,6 +63,15 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
      * @return indivisible inventory dump SQL
      */
     String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
+    
+    /**
+     * Build inventory dump all SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName tableName
+     * @return inventory dump all SQL
+     */
+    String buildInventoryDumpAllSQL(String schemaName, String tableName);
     
     /**
      * Build insert SQL.

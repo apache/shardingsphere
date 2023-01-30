@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.EmbeddedStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
@@ -41,7 +41,7 @@ public final class H2Container extends EmbeddedStorageContainer {
     private final ScenarioDataPath scenarioDataPath;
     
     public H2Container(final String scenario) {
-        super(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2"), scenario);
+        super(TypedSPILoader.getService(DatabaseType.class, "H2"), scenario);
         scenarioDataPath = new ScenarioDataPath(scenario);
     }
     

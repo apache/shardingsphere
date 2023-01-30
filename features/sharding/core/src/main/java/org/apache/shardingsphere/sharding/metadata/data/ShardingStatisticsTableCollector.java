@@ -87,13 +87,15 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
                 row.add(each.getLogicTable());
                 row.add(dataNode.getDataSourceName());
                 row.add(dataNode.getTableName());
-                addTableRowsAndDataLength(shardingSphereDatabase.getResourceMetaData().getDataSources(), dataNode, row, shardingSphereDatabase.getProtocolType());
+                addTableRowsAndDataLength(shardingSphereDatabase.getResourceMetaData().getStorageTypes(), shardingSphereDatabase.getResourceMetaData().getDataSources(), dataNode, row);
                 tableData.getRows().add(new ShardingSphereRowData(row));
             }
         }
     }
     
-    private void addTableRowsAndDataLength(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row, final DatabaseType databaseType) throws SQLException {
+    private void addTableRowsAndDataLength(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources,
+                                           final DataNode dataNode, final List<Object> row) throws SQLException {
+        DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
         if (databaseType instanceof MySQLDatabaseType) {
             addForMySQL(dataSources, dataNode, row);
         } else if (databaseType instanceof PostgreSQLDatabaseType) {

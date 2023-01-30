@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.cache.route;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -63,7 +64,7 @@ public final class CachedShardingSQLRouterTest {
     public void assertCreateRouteContextWithSQLExceedMaxAllowedLength() {
         when(shardingCacheRule.getConfiguration()).thenReturn(new ShardingCacheRuleConfiguration(1, null));
         QueryContext queryContext = new QueryContext(null, "select 1", Collections.emptyList());
-        RouteContext actual = new CachedShardingSQLRouter().createRouteContext(queryContext, null, shardingCacheRule, null, null);
+        RouteContext actual = new CachedShardingSQLRouter().createRouteContext(queryContext, mock(ShardingSphereRuleMetaData.class), null, shardingCacheRule, null, null);
         assertRouteContextIsEmpty(actual);
     }
     
@@ -73,7 +74,7 @@ public final class CachedShardingSQLRouterTest {
         when(shardingCacheRule.getConfiguration()).thenReturn(new ShardingCacheRuleConfiguration(100, null));
         when(shardingCacheRule.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCacheRule.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(false, Collections.emptyList()));
-        RouteContext actual = new CachedShardingSQLRouter().createRouteContext(queryContext, null, shardingCacheRule, null, null);
+        RouteContext actual = new CachedShardingSQLRouter().createRouteContext(queryContext, mock(ShardingSphereRuleMetaData.class), null, shardingCacheRule, null, null);
         assertRouteContextIsEmpty(actual);
     }
     
@@ -83,7 +84,7 @@ public final class CachedShardingSQLRouterTest {
         when(shardingCacheRule.getConfiguration()).thenReturn(new ShardingCacheRuleConfiguration(100, null));
         when(shardingCacheRule.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
         when(shardingCacheRule.getRouteCacheableChecker().check(null, queryContext)).thenReturn(new ShardingRouteCacheableCheckResult(true, Collections.singletonList(1)));
-        RouteContext actual = new CachedShardingSQLRouter().createRouteContext(queryContext, null, shardingCacheRule, null, null);
+        RouteContext actual = new CachedShardingSQLRouter().createRouteContext(queryContext, mock(ShardingSphereRuleMetaData.class), null, shardingCacheRule, null, null);
         assertRouteContextIsEmpty(actual);
     }
     
@@ -105,10 +106,12 @@ public final class CachedShardingSQLRouterTest {
         expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", "t")));
         when(shardingCacheRule.getRouteCache().get(any(ShardingRouteCacheKey.class))).thenReturn(Optional.empty());
         RouteContext actual;
+        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         try (
                 MockedConstruction<ShardingSQLRouter> ignored = mockConstruction(ShardingSQLRouter.class,
-                        (mock, context) -> when(mock.createRouteContext(queryContext, null, shardingCacheRule.getShardingRule(), null, null)).thenReturn(expected))) {
-            actual = new CachedShardingSQLRouter().createRouteContext(queryContext, null, shardingCacheRule, null, null);
+                        (mock, context) -> when(mock.createRouteContext(
+                                queryContext, globalRuleMetaData, null, shardingCacheRule.getShardingRule(), null, null)).thenReturn(expected))) {
+            actual = new CachedShardingSQLRouter().createRouteContext(queryContext, globalRuleMetaData, null, shardingCacheRule, null, null);
         }
         assertThat(actual, is(expected));
         verify(shardingCacheRule.getRouteCache()).put(any(ShardingRouteCacheKey.class), any(ShardingRouteCacheValue.class));
@@ -125,7 +128,7 @@ public final class CachedShardingSQLRouterTest {
         expected.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t", "t"))));
         expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", "t")));
         when(shardingCacheRule.getRouteCache().get(any(ShardingRouteCacheKey.class))).thenReturn(Optional.of(new ShardingRouteCacheValue(expected)));
-        RouteContext actual = new CachedShardingSQLRouter().createRouteContext(queryContext, null, shardingCacheRule, null, null);
+        RouteContext actual = new CachedShardingSQLRouter().createRouteContext(queryContext, mock(ShardingSphereRuleMetaData.class), null, shardingCacheRule, null, null);
         assertThat(actual, not(expected));
         assertThat(actual.getOriginalDataNodes(), is(expected.getOriginalDataNodes()));
         assertThat(actual.getRouteUnits(), is(expected.getRouteUnits()));
@@ -141,11 +144,12 @@ public final class CachedShardingSQLRouterTest {
         RouteContext expected = new RouteContext();
         expected.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Arrays.asList(new RouteMapper("t", "t_0"), new RouteMapper("t", "t_1"))));
         expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", "t_0")));
+        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         RouteContext actual;
         try (
                 MockedConstruction<ShardingSQLRouter> ignored = mockConstruction(ShardingSQLRouter.class,
-                        (mock, context) -> when(mock.createRouteContext(queryContext, null, shardingCacheRule.getShardingRule(), null, null)).thenReturn(expected))) {
-            actual = new CachedShardingSQLRouter().createRouteContext(queryContext, null, shardingCacheRule, null, null);
+                        (mock, context) -> when(mock.createRouteContext(queryContext, globalRuleMetaData, null, shardingCacheRule.getShardingRule(), null, null)).thenReturn(expected))) {
+            actual = new CachedShardingSQLRouter().createRouteContext(queryContext, globalRuleMetaData, null, shardingCacheRule, null, null);
         }
         assertThat(actual, is(expected));
         verify(shardingCacheRule.getRouteCache(), never()).put(any(ShardingRouteCacheKey.class), any(ShardingRouteCacheValue.class));

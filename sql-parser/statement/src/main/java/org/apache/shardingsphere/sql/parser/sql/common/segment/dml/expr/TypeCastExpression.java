@@ -19,17 +19,20 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 
 /**
  * Type cast expression.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TypeCastExpression implements ExpressionSegment {
+public final class TypeCastExpression implements ComplexExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
+    
+    private final String text;
     
     private final ExpressionSegment expression;
     

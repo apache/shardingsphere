@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -50,7 +51,7 @@ public final class ShardingTableNodesResultSetTest {
     public void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingRule shardingRule = createShardingRule();
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(shardingRule)));
         assertOrder(database);
         assertOrderItem(database);
     }

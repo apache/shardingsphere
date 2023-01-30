@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mask.algorithm;
 
-import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
@@ -28,7 +27,6 @@ import java.util.Properties;
  * Mask algorithm util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@SuppressWarnings("UnstableApiUsage")
 public final class MaskAlgorithmUtil {
     
     /**
@@ -40,10 +38,10 @@ public final class MaskAlgorithmUtil {
      */
     public static void checkSingleCharConfig(final Properties props, final String singleCharConfigKey, final String maskType) {
         if (!props.containsKey(singleCharConfigKey)) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null.", singleCharConfigKey));
+            throw new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null", singleCharConfigKey));
         }
         if (1 != props.getProperty(singleCharConfigKey).length()) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s's length must be one.", singleCharConfigKey));
+            throw new MaskAlgorithmInitializationException(maskType, String.format("%s's length must be one", singleCharConfigKey));
         }
     }
     
@@ -56,10 +54,10 @@ public final class MaskAlgorithmUtil {
      */
     public static void checkAtLeastOneCharConfig(final Properties props, final String atLeastOneCharConfigKey, final String maskType) {
         if (!props.containsKey(atLeastOneCharConfigKey)) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null.", atLeastOneCharConfigKey));
+            throw new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null", atLeastOneCharConfigKey));
         }
         if (0 == props.getProperty(atLeastOneCharConfigKey).length()) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s's length must be at least one.", atLeastOneCharConfigKey));
+            throw new MaskAlgorithmInitializationException(maskType, String.format("%s's length must be at least one", atLeastOneCharConfigKey));
         }
     }
     
@@ -72,10 +70,12 @@ public final class MaskAlgorithmUtil {
      */
     public static void checkIntegerTypeConfig(final Properties props, final String integerTypeConfigKey, final String maskType) {
         if (!props.containsKey(integerTypeConfigKey)) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null.", integerTypeConfigKey));
+            throw new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null", integerTypeConfigKey));
         }
-        if (null == Ints.tryParse(props.getProperty(integerTypeConfigKey))) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s must be a valid integer number.", integerTypeConfigKey));
+        try {
+            Integer.parseInt(props.getProperty(integerTypeConfigKey));
+        } catch (final NumberFormatException ex) {
+            throw new MaskAlgorithmInitializationException(maskType, String.format("%s must be a valid integer number", integerTypeConfigKey));
         }
     }
 }

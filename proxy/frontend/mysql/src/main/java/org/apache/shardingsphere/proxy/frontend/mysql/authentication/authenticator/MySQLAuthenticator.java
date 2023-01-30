@@ -17,20 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator;
 
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 
 /**
  * MySQL authenticator.
  */
-public interface MySQLAuthenticator extends Authenticator {
-    
-    /**
-     * Authenticate.
-     *
-     * @param user ShardingSphere user
-     * @param authResponse auth response for user authentication
-     * @return authentication success or not
-     */
-    boolean authenticate(ShardingSphereUser user, byte[] authResponse);
+public interface MySQLAuthenticator extends Authenticator<byte[]> {
 }
