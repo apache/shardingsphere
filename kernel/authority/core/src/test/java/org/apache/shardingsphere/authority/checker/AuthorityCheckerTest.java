@@ -19,12 +19,12 @@ package org.apache.shardingsphere.authority.checker;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -44,12 +44,12 @@ public final class AuthorityCheckerTest {
     }
     
     @Test
-    public void assertCheck() {
+    public void assertCheckPrivileges() {
         Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
         AuthorityRule rule = new AuthorityRule(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties())), Collections.emptyMap());
         AuthorityChecker authorityChecker = new AuthorityChecker(rule, new Grantee("root", "localhost"));
-        authorityChecker.isAuthorized(mock(SelectStatementContext.class), null);
-        authorityChecker.isAuthorized(mock(InsertStatementContext.class), null);
-        authorityChecker.isAuthorized(mock(CreateTableStatementContext.class), null);
+        authorityChecker.checkPrivileges(null, mock(SelectStatement.class));
+        authorityChecker.checkPrivileges(null, mock(InsertStatement.class));
+        authorityChecker.checkPrivileges(null, mock(CreateTableStatement.class));
     }
 }

@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.authority.checker;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.exception.UnauthorizedOperationException;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.audit.exception.SQLAuditException;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -58,6 +57,17 @@ public final class AuthorityChecker {
     private final Grantee grantee;
     
     /**
+     * Check Authentication with cipher.
+     *
+     * @param validator validator
+     * @param cipher cipher
+     * @return authenticated or not
+     */
+    public boolean isAuthenticated(final BiPredicate<Object, Object> validator, final Object cipher) {
+        return rule.findUser(grantee).filter(optional -> validator.test(optional, cipher)).isPresent();
+    }
+    
+    /**
      * Check database authority.
      * 
      * @param databaseName database name
@@ -68,33 +78,21 @@ public final class AuthorityChecker {
     }
     
     /**
-     * Check authority with cipher.
-     * 
-     * @param validator validator
-     * @param cipher cipher
-     * @return authorized or not
-     */
-    public boolean isAuthorized(final BiPredicate<Object, Object> validator, final Object cipher) {
-        return rule.findUser(grantee).filter(optional -> validator.test(optional, cipher)).isPresent();
-    }
-    
-    /**
-     * Check SQL authority.
+     * Check privileges.
      *
-     * @param sqlStatementContext SQL statement context
-     * @param database current database
+     * @param databaseName database name
+     * @param sqlStatement SQL statement
      */
-    public void isAuthorized(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
+    public void checkPrivileges(final String databaseName, final SQLStatement sqlStatement) {
         if (null == grantee) {
             return;
         }
         Optional<ShardingSpherePrivileges> privileges = rule.findPrivileges(grantee);
-        ShardingSpherePreconditions.checkState(privileges.isPresent(), () -> new SQLAuditException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname())));
-        ShardingSpherePreconditions.checkState(null == database || privileges.filter(optional -> optional.hasPrivileges(database.getName())).isPresent(),
-                () -> new SQLAuditException(String.format("Unknown database '%s'", null == database ? null : database.getName())));
-        PrivilegeType privilegeType = getPrivilege(sqlStatementContext.getSqlStatement());
-        boolean hasPrivileges = privileges.get().hasPrivileges(Collections.singleton(privilegeType));
-        ShardingSpherePreconditions.checkState(hasPrivileges, () -> new SQLAuditException(String.format("Access denied for operation %s", null == privilegeType ? "" : privilegeType.name())));
+        ShardingSpherePreconditions.checkState(null == databaseName || privileges.filter(optional -> optional.hasPrivileges(databaseName)).isPresent(),
+                () -> new UnknownDatabaseException(databaseName));
+        PrivilegeType privilegeType = getPrivilege(sqlStatement);
+        ShardingSpherePreconditions.checkState(privileges.isPresent() && privileges.get().hasPrivileges(Collections.singleton(privilegeType)),
+                () -> new UnauthorizedOperationException(null == privilegeType ? "" : privilegeType.name()));
     }
     
     private PrivilegeType getPrivilege(final SQLStatement sqlStatement) {

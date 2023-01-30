@@ -52,7 +52,7 @@ public final class MySQLAuthenticationHandler {
         Grantee grantee = new Grantee(username, hostname);
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, grantee);
         MySQLAuthenticator authenticator = getAuthenticator(username, hostname);
-        if (!authorityChecker.isAuthorized((a, b) -> authenticator.authenticate((ShardingSphereUser) a, (byte[]) b), authenticationResponse)) {
+        if (!authorityChecker.isAuthenticated((a, b) -> authenticator.authenticate((ShardingSphereUser) a, (byte[]) b), authenticationResponse)) {
             return Optional.of(MySQLVendorError.ER_ACCESS_DENIED_ERROR);
         }
         return null == databaseName || authorityChecker.isAuthorized(databaseName) ? Optional.empty() : Optional.of(MySQLVendorError.ER_DBACCESS_DENIED_ERROR);

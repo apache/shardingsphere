@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.hint;
+package org.apache.shardingsphere.authority.exception;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 
 /**
- * SQL Hint data source not exists exception.
+ * Unauthorized operation exception.
  */
-public final class SQLHintDataSourceNotExistsException extends KernelSQLException {
+public final class UnauthorizedOperationException extends KernelSQLException {
     
-    private static final long serialVersionUID = -8222967059220727514L;
+    private static final long serialVersionUID = -182093939317068572L;
     
     private static final int KERNEL_CODE = 6;
     
-    public SQLHintDataSourceNotExistsException(final String errorMessage) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, KERNEL_CODE, 1, "Hint data source: %s is not exist.", errorMessage);
+    public UnauthorizedOperationException(final String operation) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, KERNEL_CODE, 500, "Access denied for operation `%s`.", operation);
     }
 }
