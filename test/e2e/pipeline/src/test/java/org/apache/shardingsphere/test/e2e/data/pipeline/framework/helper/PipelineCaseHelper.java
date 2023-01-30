@@ -123,8 +123,8 @@ public final class PipelineCaseHelper {
      * @param recordCount record count
      * @throws SQLException sql exception
      */
-    public static void batchInsertOrderRecordsWithGeneralColumns(final Connection connection, final KeyGenerateAlgorithm keyGenerateAlgorithm, final String tableName, final int recordCount)
-            throws SQLException {
+    public static void batchInsertOrderRecordsWithGeneralColumns(final Connection connection, final KeyGenerateAlgorithm keyGenerateAlgorithm, final String tableName,
+                                                                 final int recordCount) throws SQLException {
         log.info("init data begin: {}", LocalDateTime.now());
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?,?,?)", tableName))) {
             for (int i = 0; i < recordCount; i++) {
