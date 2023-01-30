@@ -67,6 +67,4 @@ public final class AuthorityChecker {
         ShardingSpherePreconditions.checkState(privileges.isPresent() && privileges.get().hasPrivileges(Collections.singleton(privilegeType)),
                 () -> new UnauthorizedOperationException(null == privilegeType ? "" : privilegeType.name()));
     }
-    
-    
 }

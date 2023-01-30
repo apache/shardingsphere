@@ -54,16 +54,16 @@ public final class PrivilegeTypeMapper {
             return PrivilegeType.SHOW_DB;
         }
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLPrivilege(sqlStatement);
+            return getDMLPrivilegeType(sqlStatement);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLPrivilege(sqlStatement);
+            return getDDLPrivilegeType(sqlStatement);
         }
         // TODO add more Privilege and SQL statement mapping
         return null;
     }
     
-    private static PrivilegeType getDMLPrivilege(final SQLStatement sqlStatement) {
+    private static PrivilegeType getDMLPrivilegeType(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return PrivilegeType.SELECT;
         }
@@ -79,7 +79,7 @@ public final class PrivilegeTypeMapper {
         return null;
     }
     
-    private static PrivilegeType getDDLPrivilege(final SQLStatement sqlStatement) {
+    private static PrivilegeType getDDLPrivilegeType(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof AlterDatabaseStatement) {
             return PrivilegeType.ALTER_ANY_DATABASE;
         }
