@@ -110,7 +110,7 @@ public final class ShowRulesUsedStorageUnitExecutorTest {
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
         ShardingRuleConfiguration config = mock(ShardingRuleConfiguration.class);
-        when(config.getTables()).thenReturn(Collections.singleton(new ShardingTableRuleConfiguration("sharding_table")));
+        when(config.getTables()).thenReturn(Collections.singleton(new ShardingTableRuleConfiguration("sharding_table", null)));
         when(config.getAutoTables()).thenReturn(Collections.singleton(new ShardingAutoTableRuleConfiguration("sharding_auto_table", null)));
         when(result.getConfiguration()).thenReturn(config);
         return result;
