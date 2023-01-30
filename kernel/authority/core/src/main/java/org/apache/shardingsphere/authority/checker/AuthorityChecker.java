@@ -44,7 +44,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.function.BiPredicate;
 
 /**
  * Authority checker.
@@ -55,17 +54,6 @@ public final class AuthorityChecker {
     private final AuthorityRule rule;
     
     private final Grantee grantee;
-    
-    /**
-     * Check Authentication with cipher.
-     *
-     * @param validator validator
-     * @param cipher cipher
-     * @return authenticated or not
-     */
-    public boolean isAuthenticated(final BiPredicate<Object, Object> validator, final Object cipher) {
-        return rule.findUser(grantee).filter(optional -> validator.test(optional, cipher)).isPresent();
-    }
     
     /**
      * Check database authority.
