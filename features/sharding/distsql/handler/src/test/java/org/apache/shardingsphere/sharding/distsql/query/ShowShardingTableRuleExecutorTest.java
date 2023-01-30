@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -28,16 +29,16 @@ import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAudi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRuleResultSet;
+import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableRuleExecutor;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -46,30 +47,55 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingTableRuleResultSetTest {
+public final class ShowShardingTableRuleExecutorTest {
     
     @Test
     public void assertGetRowData() {
-        DatabaseDistSQLResultSet resultSet = new ShardingTableRuleResultSet();
-        resultSet.init(mockDatabase(), mock(ShowShardingTableRulesStatement.class));
-        List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(16));
-        assertThat(actual.get(0), is("t_order"));
-        assertThat(actual.get(1), is("ds_${0..1}.t_order_${0..1}"));
-        assertThat(actual.get(2), is(""));
-        assertThat(actual.get(3), is("STANDARD"));
-        assertThat(actual.get(4), is("user_id"));
-        assertThat(actual.get(5), is("INLINE"));
-        assertThat(actual.get(6), is("algorithm-expression=ds_${user_id % 2}"));
-        assertThat(actual.get(7), is("STANDARD"));
-        assertThat(actual.get(8), is("order_id"));
-        assertThat(actual.get(9), is("INLINE"));
-        assertThat(actual.get(10), is("algorithm-expression=t_order_${order_id % 2}"));
-        assertThat(actual.get(11), is("order_id"));
-        assertThat(actual.get(12), is("SNOWFLAKE"));
-        assertThat(actual.get(13), is(""));
-        assertThat(actual.get(14), is("DML_SHARDING_CONDITIONS"));
-        assertThat(actual.get(15), is("true"));
+        RQLExecutor<ShowShardingTableRulesStatement> executor = new ShowShardingTableRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShardingTableRulesStatement.class));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("t_order"));
+        assertThat(row.getCell(2), is("ds_${0..1}.t_order_${0..1}"));
+        assertThat(row.getCell(3), is(""));
+        assertThat(row.getCell(4), is("STANDARD"));
+        assertThat(row.getCell(5), is("user_id"));
+        assertThat(row.getCell(6), is("INLINE"));
+        assertThat(row.getCell(7), is("algorithm-expression=ds_${user_id % 2}"));
+        assertThat(row.getCell(8), is("STANDARD"));
+        assertThat(row.getCell(9), is("order_id"));
+        assertThat(row.getCell(10), is("INLINE"));
+        assertThat(row.getCell(11), is("algorithm-expression=t_order_${order_id % 2}"));
+        assertThat(row.getCell(12), is("order_id"));
+        assertThat(row.getCell(13), is("SNOWFLAKE"));
+        assertThat(row.getCell(14), is(""));
+        assertThat(row.getCell(15), is("DML_SHARDING_CONDITIONS"));
+        assertThat(row.getCell(16), is("true"));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        RQLExecutor<ShowShardingTableRulesStatement> executor = new ShowShardingTableRuleExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(16));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("table"));
+        assertThat(iterator.next(), is("actual_data_nodes"));
+        assertThat(iterator.next(), is("actual_data_sources"));
+        assertThat(iterator.next(), is("database_strategy_type"));
+        assertThat(iterator.next(), is("database_sharding_column"));
+        assertThat(iterator.next(), is("database_sharding_algorithm_type"));
+        assertThat(iterator.next(), is("database_sharding_algorithm_props"));
+        assertThat(iterator.next(), is("table_strategy_type"));
+        assertThat(iterator.next(), is("table_sharding_column"));
+        assertThat(iterator.next(), is("table_sharding_algorithm_type"));
+        assertThat(iterator.next(), is("table_sharding_algorithm_props"));
+        assertThat(iterator.next(), is("key_generate_column"));
+        assertThat(iterator.next(), is("key_generator_type"));
+        assertThat(iterator.next(), is("key_generator_props"));
+        assertThat(iterator.next(), is("auditor_types"));
+        assertThat(iterator.next(), is("allow_hint_disable"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
