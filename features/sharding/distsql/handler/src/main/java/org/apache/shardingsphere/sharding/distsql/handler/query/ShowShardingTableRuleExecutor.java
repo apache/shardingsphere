@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,24 +44,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show sharding table rules.
+ * Show sharding table rules executor.
  */
-public final class ShardingTableRuleResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<ShardingTableRuleConfiguration> tables = Collections.emptyIterator();
-    
-    private Iterator<ShardingAutoTableRuleConfiguration> autoTables = Collections.emptyIterator();
+public final class ShowShardingTableRuleExecutor implements RQLExecutor<ShowShardingTableRulesStatement> {
     
     private ShardingRuleConfiguration shardingRuleConfig;
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         if (!rule.isPresent()) {
-            return;
+            return Collections.emptyList();
         }
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.get().getConfiguration();
-        String tableName = ((ShowShardingTableRulesStatement) sqlStatement).getTableName();
+        String tableName = sqlStatement.getTableName();
+        Iterator<ShardingTableRuleConfiguration> tables;
+        Iterator<ShardingAutoTableRuleConfiguration> autoTables;
         if (Objects.isNull(tableName)) {
             tables = config.getTables().iterator();
             autoTables = config.getAutoTables().iterator();
@@ -70,6 +68,14 @@ public final class ShardingTableRuleResultSet implements DatabaseDistSQLResultSe
             autoTables = config.getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator();
         }
         shardingRuleConfig = config;
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        while (tables.hasNext()) {
+            result.add(buildTableRowData(tables.next()));
+        }
+        while (autoTables.hasNext()) {
+            result.add(buildAutoTableRowData(autoTables.next()));
+        }
+        return result;
     }
     
     @Override
@@ -79,59 +85,27 @@ public final class ShardingTableRuleResultSet implements DatabaseDistSQLResultSe
                 "key_generate_column", "key_generator_type", "key_generator_props", "auditor_types", "allow_hint_disable");
     }
     
-    @Override
-    public boolean next() {
-        return tables.hasNext() || autoTables.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return tables.hasNext() ? buildTableRowData(tables.next()) : buildAutoTableRowData(autoTables.next());
-    }
-    
-    private Collection<Object> buildTableRowData(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
-        Collection<Object> result = new LinkedList<>();
-        result.add(shardingTableRuleConfig.getLogicTable());
-        result.add(shardingTableRuleConfig.getActualDataNodes());
-        result.add("");
+    private LocalDataQueryResultRow buildTableRowData(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
         Optional<ShardingStrategyConfiguration> databaseShardingStrategyConfig = getDatabaseShardingStrategy(shardingTableRuleConfig);
-        result.add(databaseShardingStrategyConfig.map(this::getStrategyType).orElse(""));
-        result.add(databaseShardingStrategyConfig.map(this::getShardingColumn).orElse(""));
-        result.add(databaseShardingStrategyConfig.map(this::getAlgorithmType).orElse(""));
-        result.add(databaseShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""));
         Optional<ShardingStrategyConfiguration> tableShardingStrategyConfig = getTableShardingStrategy(shardingTableRuleConfig.getTableShardingStrategy());
-        result.add(tableShardingStrategyConfig.map(this::getStrategyType).orElse(""));
-        result.add(tableShardingStrategyConfig.map(this::getShardingColumn).orElse(""));
-        result.add(tableShardingStrategyConfig.map(this::getAlgorithmType).orElse(""));
-        result.add(tableShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""));
-        result.add(getKeyGenerateColumn(shardingTableRuleConfig.getKeyGenerateStrategy()));
-        result.add(getKeyGeneratorType(shardingTableRuleConfig.getKeyGenerateStrategy()));
-        result.add(getKeyGeneratorProps(shardingTableRuleConfig.getKeyGenerateStrategy()));
-        result.add(getAuditorTypes(shardingTableRuleConfig.getAuditStrategy()));
-        result.add(getAllowHintDisable(shardingTableRuleConfig.getAuditStrategy()));
-        return result;
+        return new LocalDataQueryResultRow(shardingTableRuleConfig.getLogicTable(), shardingTableRuleConfig.getActualDataNodes(), "",
+                databaseShardingStrategyConfig.map(this::getStrategyType).orElse(""), databaseShardingStrategyConfig.map(this::getShardingColumn).orElse(""),
+                databaseShardingStrategyConfig.map(this::getAlgorithmType).orElse(""), databaseShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""),
+                tableShardingStrategyConfig.map(this::getStrategyType).orElse(""), tableShardingStrategyConfig.map(this::getShardingColumn).orElse(""),
+                tableShardingStrategyConfig.map(this::getAlgorithmType).orElse(""), tableShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""),
+                getKeyGenerateColumn(shardingTableRuleConfig.getKeyGenerateStrategy()), getKeyGeneratorType(shardingTableRuleConfig.getKeyGenerateStrategy()),
+                getKeyGeneratorProps(shardingTableRuleConfig.getKeyGenerateStrategy()), getAuditorTypes(shardingTableRuleConfig.getAuditStrategy()),
+                getAllowHintDisable(shardingTableRuleConfig.getAuditStrategy()));
     }
     
-    private Collection<Object> buildAutoTableRowData(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        Collection<Object> result = new LinkedList<>();
-        result.add(shardingAutoTableRuleConfig.getLogicTable());
-        result.add("");
-        result.add(shardingAutoTableRuleConfig.getActualDataSources());
-        result.add("");
-        result.add("");
-        result.add("");
-        result.add("");
+    private LocalDataQueryResultRow buildAutoTableRowData(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
         Optional<ShardingStrategyConfiguration> tableShardingStrategyConfig = getTableShardingStrategy(shardingAutoTableRuleConfig.getShardingStrategy());
-        result.add(tableShardingStrategyConfig.map(this::getStrategyType).orElse(""));
-        result.add(tableShardingStrategyConfig.map(this::getShardingColumn).orElse(""));
-        result.add(tableShardingStrategyConfig.map(this::getAlgorithmType).orElse(""));
-        result.add(tableShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""));
-        result.add(getKeyGenerateColumn(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
-        result.add(getKeyGeneratorType(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
-        result.add(getKeyGeneratorProps(shardingAutoTableRuleConfig.getKeyGenerateStrategy()));
-        result.add(getAuditorTypes(shardingAutoTableRuleConfig.getAuditStrategy()));
-        result.add(getAllowHintDisable(shardingAutoTableRuleConfig.getAuditStrategy()));
-        return result;
+        return new LocalDataQueryResultRow(shardingAutoTableRuleConfig.getLogicTable(), "", shardingAutoTableRuleConfig.getActualDataSources(), "", "", "", "",
+                tableShardingStrategyConfig.map(this::getStrategyType).orElse(""), tableShardingStrategyConfig.map(this::getShardingColumn).orElse(""),
+                tableShardingStrategyConfig.map(this::getAlgorithmType).orElse(""), tableShardingStrategyConfig.map(this::getAlgorithmProperties).orElse(""),
+                getKeyGenerateColumn(shardingAutoTableRuleConfig.getKeyGenerateStrategy()), getKeyGeneratorType(shardingAutoTableRuleConfig.getKeyGenerateStrategy()),
+                getKeyGeneratorProps(shardingAutoTableRuleConfig.getKeyGenerateStrategy()), getAuditorTypes(shardingAutoTableRuleConfig.getAuditStrategy()),
+                getAllowHintDisable(shardingAutoTableRuleConfig.getAuditStrategy()));
     }
     
     private String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig) {

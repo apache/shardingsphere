@@ -14,12 +14,12 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<dataset>
-    <metadata>
-        <column name="sql_comment_parse_enable" />
-        <column name="parse_tree_cache" />
-        <column name="sql_statement_cache" />
-    </metadata>
-    <row values="true| initialCapacity: 128, maximumSize: 1024| initialCapacity: 2000, maximumSize: 65535" />
-</dataset>
+<command>
+    <create-table-order>
+        CREATE TABLE `%s` (
+        `order_id` INT NOT NULL,
+        `user_id` INT NOT NULL,
+        `status` varchar(255) NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    </create-table-order>
+</command>

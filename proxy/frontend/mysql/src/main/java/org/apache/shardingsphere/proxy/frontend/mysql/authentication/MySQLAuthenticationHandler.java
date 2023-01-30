@@ -50,23 +50,21 @@ public final class MySQLAuthenticationHandler {
     public Optional<MySQLVendorError> login(final String username, final String hostname, final byte[] authenticationResponse, final String databaseName) {
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, hostname);
-        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, grantee);
-        MySQLAuthenticator authenticator = getAuthenticator(username, hostname);
-        if (!authorityChecker.isAuthenticated((a, b) -> authenticator.authenticate((ShardingSphereUser) a, (byte[]) b), authenticationResponse)) {
+        Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
+        if (!user.isPresent() || !getAuthenticator(grantee).authenticate(user.get(), authenticationResponse)) {
             return Optional.of(MySQLVendorError.ER_ACCESS_DENIED_ERROR);
         }
-        return null == databaseName || authorityChecker.isAuthorized(databaseName) ? Optional.empty() : Optional.of(MySQLVendorError.ER_DBACCESS_DENIED_ERROR);
+        return null == databaseName || new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName) ? Optional.empty() : Optional.of(MySQLVendorError.ER_DBACCESS_DENIED_ERROR);
     }
     
     /**
      * Get authenticator.
      *
-     * @param username username
-     * @param hostname hostname
+     * @param grantee grantee
      * @return authenticator
      */
-    public MySQLAuthenticator getAuthenticator(final String username, final String hostname) {
-        // TODO get authenticator by username and hostname
+    public MySQLAuthenticator getAuthenticator(final Grantee grantee) {
+        // TODO get authenticator by grantee
         return new MySQLNativePasswordAuthenticator(authPluginData);
     }
 }

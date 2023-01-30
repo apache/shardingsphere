@@ -65,6 +65,15 @@ public interface PipelineSQLBuilder extends TypedSPI {
     String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
     
     /**
+     * Build inventory dump all SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName tableName
+     * @return inventory dump all SQL
+     */
+    String buildInventoryDumpAllSQL(String schemaName, String tableName);
+    
+    /**
      * Build insert SQL.
      *
      * @param schemaName schema name

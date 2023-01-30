@@ -190,4 +190,10 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         return String.format("SELECT MAX(%s),COUNT(*) FROM (SELECT %s FROM %s WHERE %s>=? ORDER BY %s LIMIT ?) t",
                 quotedUniqueKey, quotedUniqueKey, getQualifiedTableName(schemaName, tableName), quotedUniqueKey, quotedUniqueKey);
     }
+    
+    @Override
+    public String buildInventoryDumpAllSQL(final String schemaName, final String tableName) {
+        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
+        return String.format("SELECT * FROM %s", qualifiedTableName);
+    }
 }

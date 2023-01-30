@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
 
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 
 /**
@@ -25,14 +24,5 @@ import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
  * 
  * @see <a href="https://www.postgresql.org/docs/14/auth-password.html">Password Authentication</a>
  */
-public interface PostgreSQLAuthenticator extends Authenticator {
-    
-    /**
-     * Authenticate.
-     *
-     * @param user ShardingSphere user
-     * @param args arguments for user authentication
-     * @return authentication success or not
-     */
-    boolean authenticate(ShardingSphereUser user, Object[] args);
+public interface PostgreSQLAuthenticator extends Authenticator<Object[]> {
 }

@@ -62,8 +62,8 @@ public final class ShardingRuleConfigurationImportCheckerTest {
     
     private ShardingRuleConfiguration createDuplicatedTablesRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order"));
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", null));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", null));
         return result;
     }
     

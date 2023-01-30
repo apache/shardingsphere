@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
@@ -148,9 +147,10 @@ public final class MigrationJobPreparer {
     
     private void initInventoryTasks(final MigrationJobItemContext jobItemContext) {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
-        PipelineColumnMetaData uniqueKeyColumn = jobItemContext.getJobConfig().getUniqueKeyColumn();
-        inventoryDumperConfig.setUniqueKey(uniqueKeyColumn.getName());
-        inventoryDumperConfig.setUniqueKeyDataType(uniqueKeyColumn.getDataType());
+        Optional.ofNullable(jobItemContext.getJobConfig().getUniqueKeyColumn()).ifPresent(uniqueKeyColumn -> {
+            inventoryDumperConfig.setUniqueKey(uniqueKeyColumn.getName());
+            inventoryDumperConfig.setUniqueKeyDataType(uniqueKeyColumn.getDataType());
+        });
         InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), inventoryDumperConfig, jobItemContext.getTaskConfig().getImporterConfig());
         jobItemContext.getInventoryTasks().addAll(inventoryTaskSplitter.splitInventoryData(jobItemContext));
     }

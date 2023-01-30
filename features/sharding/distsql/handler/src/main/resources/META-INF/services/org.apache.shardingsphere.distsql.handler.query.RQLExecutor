@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.shadow.distsql.handler.query.ShadowAlgorithmResultSet
-org.apache.shardingsphere.shadow.distsql.handler.query.DefaultShadowAlgorithmResultSet
-org.apache.shardingsphere.shadow.distsql.handler.query.CountShadowRuleResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableRuleExecutor
+org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAlgorithmExecutor
+org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingKeyGeneratorExecutor
+org.apache.shardingsphere.sharding.distsql.handler.query.ShowDefaultShardingStrategyExecutor

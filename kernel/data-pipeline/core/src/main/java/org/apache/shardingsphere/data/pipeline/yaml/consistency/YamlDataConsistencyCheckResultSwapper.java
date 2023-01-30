@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.yaml.consistency;
 
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckIgnoredType;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
@@ -32,11 +34,15 @@ public final class YamlDataConsistencyCheckResultSwapper implements YamlConfigur
     
     @Override
     public YamlDataConsistencyCheckResult swapToYamlConfiguration(final DataConsistencyCheckResult data) {
+        YamlDataConsistencyCheckResult result = new YamlDataConsistencyCheckResult();
+        if (data.isIgnored()) {
+            result.setIgnoredType(data.getIgnoredType().name());
+            return result;
+        }
         YamlDataConsistencyCountCheckResult countCheckResult = new YamlDataConsistencyCountCheckResult();
         countCheckResult.setSourceRecordsCount(data.getCountCheckResult().getSourceRecordsCount());
         countCheckResult.setTargetRecordsCount(data.getCountCheckResult().getTargetRecordsCount());
         countCheckResult.setMatched(data.getContentCheckResult().isMatched());
-        YamlDataConsistencyCheckResult result = new YamlDataConsistencyCheckResult();
         result.setCountCheckResult(countCheckResult);
         YamlDataConsistencyContentCheckResult contentCheckResult = new YamlDataConsistencyContentCheckResult();
         contentCheckResult.setMatched(data.getContentCheckResult().isMatched());
@@ -48,6 +54,9 @@ public final class YamlDataConsistencyCheckResultSwapper implements YamlConfigur
     public DataConsistencyCheckResult swapToObject(final YamlDataConsistencyCheckResult yamlConfig) {
         if (null == yamlConfig) {
             return null;
+        }
+        if (!Strings.isNullOrEmpty(yamlConfig.getIgnoredType())) {
+            return new DataConsistencyCheckResult(DataConsistencyCheckIgnoredType.valueOf(yamlConfig.getIgnoredType()));
         }
         YamlDataConsistencyCountCheckResult yamlCountCheck = yamlConfig.getCountCheckResult();
         DataConsistencyCountCheckResult countCheckResult = new DataConsistencyCountCheckResult(yamlCountCheck.getSourceRecordsCount(), yamlCountCheck.getTargetRecordsCount());
