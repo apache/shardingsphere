@@ -20,6 +20,7 @@
         <column name="variable_name" />
         <column name="variable_value" />
     </metadata>
+    <row values="system_log_level| INFO" />
     <row values="sql_show| false" />
     <row values="sql_simple| false" />
     <row values="kernel_executor_size| 16" />
