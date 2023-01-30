@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,16 +38,24 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Result set for show default sharding strategy.
+ * Show default sharding strategy executor.
  */
-public final class DefaultShardingStrategyResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
+public final class ShowDefaultShardingStrategyExecutor implements RQLExecutor<ShowDefaultShardingStrategyStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowDefaultShardingStrategyStatement sqlStatement) {
         Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        shardingRule.ifPresent(optional -> data = buildData(optional).entrySet().iterator());
+        if (!shardingRule.isPresent()) {
+            return Collections.emptyList();
+        }
+        Iterator<Entry<String, LinkedList<Object>>> data = buildData(shardingRule.get()).entrySet().iterator();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        while (data.hasNext()) {
+            Entry<String, LinkedList<Object>> entry = data.next();
+            entry.getValue().addFirst(entry.getKey());
+            result.add(new LocalDataQueryResultRow(entry.getValue()));
+        }
+        return result;
     }
     
     private Map<String, LinkedList<Object>> buildData(final ShardingRule rule) {
@@ -70,25 +78,13 @@ public final class DefaultShardingStrategyResultSet implements DatabaseDistSQLRe
         result.addAll(strategyType.getConfigurationContents(strategyConfig));
         AlgorithmConfiguration algorithmConfig = ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName());
         result.add(algorithmConfig.getType());
-        result.add(algorithmConfig.getProps());
+        result.add(algorithmConfig.getProps().toString());
         return result;
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("name", "type", "sharding_column", "sharding_algorithm_name", "sharding_algorithm_type", "sharding_algorithm_props");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        Entry<String, LinkedList<Object>> entry = data.next();
-        entry.getValue().addFirst(entry.getKey());
-        return entry.getValue();
     }
     
     @Override
