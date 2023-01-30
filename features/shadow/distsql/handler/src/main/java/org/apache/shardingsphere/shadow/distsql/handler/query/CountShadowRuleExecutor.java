@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CountShadowRuleStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -35,13 +34,11 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Result set for count shadow rule.
+ * Count shadow rule executor.
  */
-public final class CountShadowRuleResultSet implements DatabaseDistSQLResultSet {
+public final class CountShadowRuleExecutor implements RQLExecutor<CountShadowRuleStatement> {
     
     private static final String SHADOW = "shadow";
-    
-    private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
     
     @Override
     public Collection<String> getColumnNames() {
@@ -49,11 +46,18 @@ public final class CountShadowRuleResultSet implements DatabaseDistSQLResultSet 
     }
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountShadowRuleStatement sqlStatement) {
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
-        Map<String, LinkedList<Object>> result = new LinkedHashMap<>();
-        rule.ifPresent(optional -> addShadowData(result, database.getName(), rule.get()));
-        data = result.entrySet().iterator();
+        Map<String, LinkedList<Object>> rowMap = new LinkedHashMap<>();
+        rule.ifPresent(optional -> addShadowData(rowMap, database.getName(), rule.get()));
+        Iterator<Entry<String, LinkedList<Object>>> data = rowMap.entrySet().iterator();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        while (data.hasNext()) {
+            Entry<String, LinkedList<Object>> entry = data.next();
+            entry.getValue().addFirst(entry.getKey());
+            result.add(new LocalDataQueryResultRow(entry.getValue()));
+        }
+        return result;
     }
     
     private void addShadowData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final ShadowRule rule) {
@@ -70,18 +74,6 @@ public final class CountShadowRuleResultSet implements DatabaseDistSQLResultSet 
         }
         value.set(1, (Integer) value.get(1) + count);
         return value;
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        Entry<String, LinkedList<Object>> entry = data.next();
-        entry.getValue().addFirst(entry.getKey());
-        return entry.getValue();
     }
     
     @Override
