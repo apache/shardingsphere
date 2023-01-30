@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,39 +34,26 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Result set for show sharding auditors.
+ * Show sharding auditors executor.
  */
-public final class ShardingAuditorsResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<Entry<String, AlgorithmConfiguration>> data;
+public final class ShowShardingAuditorsExecutor implements RQLExecutor<ShowShardingAuditorsStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingAuditorsStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        data = rule.map(optional -> ((ShardingRuleConfiguration) optional.getConfiguration()).getAuditors().entrySet().iterator()).orElse(Collections.emptyIterator());
+        Iterator<Entry<String, AlgorithmConfiguration>> data =
+                rule.map(optional -> ((ShardingRuleConfiguration) optional.getConfiguration()).getAuditors().entrySet().iterator()).orElse(Collections.emptyIterator());
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        while (data.hasNext()) {
+            Entry<String, AlgorithmConfiguration> entry = data.next();
+            result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps()));
+        }
+        return result;
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("name", "type", "props");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return buildTableRowData(data.next());
-    }
-    
-    private Collection<Object> buildTableRowData(final Entry<String, AlgorithmConfiguration> data) {
-        Collection<Object> result = new LinkedList<>();
-        result.add(data.getKey());
-        result.add(data.getValue().getType());
-        result.add(data.getValue().getProps());
-        return result;
     }
     
     @Override
