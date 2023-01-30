@@ -17,25 +17,24 @@
 
 package org.apache.shardingsphere.shadow.distsql.query;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.shadow.distsql.handler.query.CountShadowRuleResultSet;
+import org.apache.shardingsphere.shadow.distsql.handler.query.CountShadowRuleExecutor;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CountShadowRuleStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,15 +43,25 @@ public final class CountShadowRuleResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        CountShadowRuleResultSet resultSet = new CountShadowRuleResultSet();
-        resultSet.init(mockDatabase(), mock(CountShadowRuleStatement.class));
-        assertTrue(resultSet.next());
-        List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("shadow"));
-        assertThat(actual.get(1), is("db_1"));
-        assertThat(actual.get(2), is(2));
-        assertFalse(resultSet.next());
+        RQLExecutor<CountShadowRuleStatement> executor = new CountShadowRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountShadowRuleStatement.class));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("shadow"));
+        assertThat(row.getCell(2), is("db_1"));
+        assertThat(row.getCell(3), is(2));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        RQLExecutor<CountShadowRuleStatement> executor = new CountShadowRuleExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(3));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("rule_name"));
+        assertThat(iterator.next(), is("database"));
+        assertThat(iterator.next(), is("count"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
