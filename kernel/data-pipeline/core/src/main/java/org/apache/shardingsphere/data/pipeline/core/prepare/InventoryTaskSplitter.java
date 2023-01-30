@@ -166,15 +166,16 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition<?>> getPositionByNonePrimaryKey(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
                                                                       final InventoryDumperConfiguration dumperConfig) {
-        long tableCount = getTableCount(jobItemContext, dataSource, dumperConfig);
-        jobItemContext.updateInventoryRecordsCount(tableCount);
+        long tableRecordsCount = getTableRecordsCount(jobItemContext, dataSource, dumperConfig);
+        jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         return Collections.singletonList(new NonePrimaryKeyPosition(0));
     }
     
-    private long getTableCount(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
+    private long getTableRecordsCount(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
         PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
+        // TODO with a large amount of data, count the full table will have performance problem
         String sql = TypedSPILoader.getService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType()).buildCountSQL(schemaName, actualTableName);
         try (
                 Connection connection = dataSource.getConnection();
@@ -230,8 +231,8 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition<?>> getPositionByStringPrimaryKeyRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
                                                                              final InventoryDumperConfiguration dumperConfig) {
-        long tableCount = getTableCount(jobItemContext, dataSource, dumperConfig);
-        jobItemContext.updateInventoryRecordsCount(tableCount);
+        long tableRecordsCount = getTableRecordsCount(jobItemContext, dataSource, dumperConfig);
+        jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         Collection<IngestPosition<?>> result = new LinkedList<>();
         result.add(new StringPrimaryKeyPosition("!", "~"));
         return result;

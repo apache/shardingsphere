@@ -39,7 +39,7 @@ public final class NonePrimaryKeyPosition extends PrimaryKeyPosition<Integer> im
     
     @Override
     protected Integer convert(final String value) {
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     @Override

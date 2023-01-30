@@ -21,15 +21,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Data consistency ignore type.
+ * Data consistency check ignored type.
  */
 @RequiredArgsConstructor
 @Getter
 public enum DataConsistencyCheckIgnoredType {
     
-    UNKNOWN("Unknown ignored type"),
+    UNKNOWN("Unknown data consistency check ignored type"),
     
-    NONE_PRIMARY_KEY("Data consistency checks are not supported for tables without primary keys");
+    NONE_PRIMARY_KEY("Data consistency check are not supported for tables without primary keys");
     
     private final String message;
 }
