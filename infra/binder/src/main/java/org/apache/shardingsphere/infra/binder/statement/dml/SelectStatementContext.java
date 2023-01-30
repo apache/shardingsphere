@@ -17,9 +17,16 @@
 
 package org.apache.shardingsphere.infra.binder.statement.dml;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
@@ -62,6 +69,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
@@ -72,17 +80,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUti
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import com.google.common.base.Preconditions;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Select SQL statement context.
@@ -168,22 +172,48 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
             subqueryStatementAndContextMap.put(subSelectContext.getSqlStatement(), subSelectContext);
         }
         Map<String, SelectStatementContext> result = new HashMap<>();
+        TableSegment from = getSqlStatement().getFrom();
         for (ProjectionSegment each : getSqlStatement().getProjections().getProjections()) {
             boolean isRownumColumn = each instanceof ColumnProjectionSegment && ((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue().equalsIgnoreCase("ROWNUM");
             Optional<SelectStatement> subquery = Optional.empty();
-            if (getSqlStatement().getFrom() instanceof SubqueryTableSegment) {
-                subquery = Optional.of(((SubqueryTableSegment) getSqlStatement().getFrom()).getSubquery().getSelect());
+            if (from instanceof SubqueryTableSegment) {
+                subquery = Optional.of(((SubqueryTableSegment) from).getSubquery().getSelect());
             }
             if (isRownumColumn && subquery.isPresent()) {
                 ColumnProjectionSegment rowNumSegment = (ColumnProjectionSegment) each;
                 String rownumAlias = rowNumSegment.getAlias().isPresent() ? rowNumSegment.getAlias().get() : "ROWNUM";
-                result.put(rownumAlias, subqueryStatementAndContextMap.get(subquery.get()));
+                SelectStatementContext selectStatementContext = subqueryStatementAndContextMap.get(subquery.get());
+                Optional<OwnerSegment> newOwner = from.getAlias().isPresent() ? Optional.of(new OwnerSegment(0, 0, new IdentifierValue(from.getAlias().get()))) : Optional.empty();
+                updateGroupbyOrderbyOwner(selectStatementContext, newOwner);
+                result.put(rownumAlias, selectStatementContext);
                 break;
             } else if (each instanceof ShorthandProjectionSegment && subquery.isPresent() && subqueryStatementAndContextMap.containsKey(subquery.get())) {
-                result.putAll(subqueryStatementAndContextMap.get(subquery.get()).rownumAndSelectStatementContextMap);
+                SelectStatementContext selectStatementContext = subqueryStatementAndContextMap.get(subquery.get());
+                Map<String, SelectStatementContext> subQueryRownumAndSelectStatementContextMap = selectStatementContext.rownumAndSelectStatementContextMap;
+                Optional<OwnerSegment> newOwner = from.getAlias().isPresent() ? Optional.of(new OwnerSegment(0, 0, new IdentifierValue(from.getAlias().get()))) : Optional.empty();
+                for (SelectStatementContext eachContext : subQueryRownumAndSelectStatementContextMap.values()) {
+                    updateGroupbyOrderbyOwner(eachContext, newOwner);
+                }
+                result.putAll(subQueryRownumAndSelectStatementContextMap);
             }
         }
         return result;
+    }
+    
+    private void updateGroupbyOrderbyOwner(final SelectStatementContext sqlStatementContext, final Optional<OwnerSegment> newOwner) {
+        OwnerSegment owner = newOwner.isPresent() ? newOwner.get() : null;
+        sqlStatementContext.groupByContext.getItems().forEach(item -> {
+            if (item.getSegment() instanceof ColumnOrderByItemSegment) {
+                ColumnOrderByItemSegment columnOrderBySegment = (ColumnOrderByItemSegment) item.getSegment();
+                columnOrderBySegment.getColumn().setOwner(owner);
+            }
+        });
+        sqlStatementContext.orderByContext.getItems().forEach(item -> {
+            if (item.getSegment() instanceof ColumnOrderByItemSegment) {
+                ColumnOrderByItemSegment columnOrderBySegment = (ColumnOrderByItemSegment) item.getSegment();
+                columnOrderBySegment.getColumn().setOwner(owner);
+            }
+        });
     }
     
     private Optional<SelectStatementContext> findRownumSelectStatementContext(final BinaryOperationExpression expr) {
