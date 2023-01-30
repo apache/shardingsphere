@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.authority.checker.AuthenticationChecker;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
@@ -50,12 +51,13 @@ public final class PostgreSQLAuthenticationHandler {
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, "%");
         ShardingSpherePreconditions.checkState(authorityRule.findUser(grantee).isPresent(), () -> new UnknownUsernameException(username));
-        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, grantee);
         PostgreSQLAuthenticator authenticator = getAuthenticator(username, grantee.getHostname());
-        if (!authorityChecker.isAuthenticated((a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[]{passwordMessagePacket.getDigest(), md5Salt})) {
+        if (!new AuthenticationChecker(authorityRule, grantee)
+                .isAuthenticated((a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[]{passwordMessagePacket.getDigest(), md5Salt})) {
             throw new InvalidPasswordException(username);
         }
-        ShardingSpherePreconditions.checkState(null == databaseName || authorityChecker.isAuthorized(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
+        ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName),
+                () -> new PrivilegeNotGrantedException(username, databaseName));
     }
     
     /**
