@@ -17,37 +17,32 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAlgorithmStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Result set for show sharding table rules used algorithm.
+ * Show sharding table rules used algorithm executor.
  */
-public final class ShardingTableRulesUsedAlgorithmResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<Collection<Object>> data = Collections.emptyIterator();
+public final class ShowShardingTableRulesUsedAlgorithmExecutor implements RQLExecutor<ShowShardingTableRulesUsedAlgorithmStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        ShowShardingTableRulesUsedAlgorithmStatement statement = (ShowShardingTableRulesUsedAlgorithmStatement) sqlStatement;
-        Collection<Collection<Object>> data = new LinkedList<>();
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesUsedAlgorithmStatement sqlStatement) {
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        rule.ifPresent(optional -> requireResult(statement, data, optional));
-        this.data = data.iterator();
+        rule.ifPresent(optional -> requireResult(sqlStatement, result, optional));
+        return result;
     }
     
-    private void requireResult(final ShowShardingTableRulesUsedAlgorithmStatement statement, final Collection<Collection<Object>> data, final ShardingRule rule) {
+    private void requireResult(final ShowShardingTableRulesUsedAlgorithmStatement statement, final Collection<LocalDataQueryResultRow> result, final ShardingRule rule) {
         if (!statement.getShardingAlgorithmName().isPresent()) {
             return;
         }
@@ -62,12 +57,12 @@ public final class ShardingTableRulesUsedAlgorithmResultSet implements DatabaseD
                     || (null != each.getDatabaseShardingStrategy() && algorithmName.equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())))
                     || ((null == each.getTableShardingStrategy() && matchDefaultTableShardingStrategy)
                             || (null != each.getTableShardingStrategy() && algorithmName.equals(each.getTableShardingStrategy().getShardingAlgorithmName())))) {
-                data.add(Arrays.asList("table", each.getLogicTable()));
+                result.add(new LocalDataQueryResultRow("table", each.getLogicTable()));
             }
         });
         config.getAutoTables().forEach(each -> {
             if (null != each.getShardingStrategy() && algorithmName.equals(each.getShardingStrategy().getShardingAlgorithmName())) {
-                data.add(Arrays.asList("auto_table", each.getLogicTable()));
+                result.add(new LocalDataQueryResultRow("auto_table", each.getLogicTable()));
             }
         });
     }
@@ -75,16 +70,6 @@ public final class ShardingTableRulesUsedAlgorithmResultSet implements DatabaseD
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("type", "name");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
     }
     
     @Override
