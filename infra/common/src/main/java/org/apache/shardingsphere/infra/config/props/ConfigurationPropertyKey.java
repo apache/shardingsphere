@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public enum ConfigurationPropertyKey implements TypedPropertyKey {
     
     /**
-     * The root logger level.
+     * The system log level.
      */
     SYSTEM_LOG_LEVEL("system-log-level", LoggerLevel.INFO.name(), LoggerLevel.class, false),
     
