@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableRuleExecutor
+org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAlgorithmExecutor
