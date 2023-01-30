@@ -124,11 +124,18 @@ public abstract class PipelineBaseE2EIT {
         }
         createProxyDatabase(testParam.getDatabaseType());
         if (PipelineEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
+            try {
+                cleanUpPipelineJobs();
+            } catch (final SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             cleanUpDataSource();
         }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineBaseE2EIT.class.getClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
         pipelineWatcher = new PipelineWatcher(containerComposer);
     }
+    
+    protected abstract void cleanUpPipelineJobs() throws SQLException;
     
     private void cleanUpDataSource() {
         for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {

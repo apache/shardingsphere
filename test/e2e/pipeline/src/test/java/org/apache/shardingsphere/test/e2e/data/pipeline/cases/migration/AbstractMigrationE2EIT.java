@@ -50,16 +50,10 @@ public abstract class AbstractMigrationE2EIT extends PipelineBaseE2EIT {
     public AbstractMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
         migrationDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineBaseE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
-        if (PipelineEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
-            try {
-                cleanUpPipelineJobs();
-            } catch (final SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
     }
     
-    private void cleanUpPipelineJobs() throws SQLException {
+    @Override
+    protected void cleanUpPipelineJobs() throws SQLException {
         List<String> jobIds = listJobId();
         for (String each : jobIds) {
             proxyExecuteWithLog(String.format("ROLLBACK MIGRATION '%s'", each), 0);
