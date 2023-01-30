@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,40 +38,31 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Result set for default shadow algorithm.
+ * Show default shadow algorithm executor.
  */
-public final class DefaultShadowAlgorithmResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<Entry<String, AlgorithmConfiguration>> data = Collections.emptyIterator();
+public final class ShowDefaultShadowAlgorithmExecutor implements RQLExecutor<ShowDefaultShadowAlgorithmStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowDefaultShadowAlgorithmStatement sqlStatement) {
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
-        if (rule.isPresent()) {
-            ShadowRuleConfiguration config = (ShadowRuleConfiguration) rule.get().getConfiguration();
-            String defaultAlgorithm = config.getDefaultShadowAlgorithmName();
-            data = config.getShadowAlgorithms().entrySet().stream().filter(each -> each.getKey().equals(defaultAlgorithm))
-                    .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> currentValue)).entrySet().iterator();
+        if (!rule.isPresent()) {
+            return Collections.emptyList();
         }
+        ShadowRuleConfiguration config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+        String defaultAlgorithm = config.getDefaultShadowAlgorithmName();
+        Iterator<Entry<String, AlgorithmConfiguration>> data = config.getShadowAlgorithms().entrySet().stream().filter(each -> each.getKey().equals(defaultAlgorithm))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> currentValue)).entrySet().iterator();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        while (data.hasNext()) {
+            Entry<String, AlgorithmConfiguration> entry = data.next();
+            result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), convertToString(entry.getValue().getProps())));
+        }
+        return result;
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("shadow_algorithm_name", "type", "props");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return buildTableRowData(data.next());
-    }
-    
-    private Collection<Object> buildTableRowData(final Entry<String, AlgorithmConfiguration> data) {
-        return Arrays.asList(data.getKey(), data.getValue().getType(), convertToString(data.getValue().getProps()));
     }
     
     private String convertToString(final Properties props) {
