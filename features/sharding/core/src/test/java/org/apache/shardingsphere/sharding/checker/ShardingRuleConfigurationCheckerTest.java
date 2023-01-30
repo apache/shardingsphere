@@ -78,7 +78,7 @@ public final class ShardingRuleConfigurationCheckerTest {
     private ShardingTableRuleConfiguration createShardingTableRuleConfiguration(final ShardingStrategyConfiguration shardingStrategyConfig,
                                                                                 final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig,
                                                                                 final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
-        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("foo_tbl");
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("foo_tbl", null);
         result.setDatabaseShardingStrategy(null == shardingStrategyConfig ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfig);
         result.setTableShardingStrategy(null == shardingStrategyConfig ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfig);
         result.setAuditStrategy(null == shardingAuditStrategyConfig ? mock(ShardingAuditStrategyConfiguration.class) : shardingAuditStrategyConfig);

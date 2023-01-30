@@ -61,10 +61,10 @@ public final class ShardingTableReferenceRuleResultSetTest {
     
     private RuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order"));
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        result.getTables().add(new ShardingTableRuleConfiguration("t_1"));
-        result.getTables().add(new ShardingTableRuleConfiguration("t_2"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", null));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item", null));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_1", null));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_2", null));
         result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
         return result;
     }
