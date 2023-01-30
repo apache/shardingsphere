@@ -24,8 +24,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JaegerConstants {
     
-    public static final String ROOT_SPAN = "jaeger_root_span";
-    
     /**
      * Component name of ShardingSphere's open tracing tag.
      */

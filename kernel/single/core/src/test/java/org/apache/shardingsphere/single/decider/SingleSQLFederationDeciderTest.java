@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -53,7 +54,7 @@ public final class SingleSQLFederationDeciderTest {
         SelectStatementContext select = createStatementContext();
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
-        federationDecider.decide(actual, queryContext, createDatabase(), mock(SingleRule.class), new ConfigurationProperties(new Properties()));
+        federationDecider.decide(actual, queryContext, mock(ShardingSphereRuleMetaData.class), createDatabase(), mock(SingleRule.class), new ConfigurationProperties(new Properties()));
         assertTrue(actual.getDataNodes().isEmpty());
         assertFalse(actual.isUseSQLFederation());
     }
@@ -67,7 +68,7 @@ public final class SingleSQLFederationDeciderTest {
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
-        federationDecider.decide(actual, queryContext, createDatabase(), rule, new ConfigurationProperties(new Properties()));
+        federationDecider.decide(actual, queryContext, mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getDataNodes().size(), is(2));
         assertFalse(actual.isUseSQLFederation());
     }
@@ -81,7 +82,7 @@ public final class SingleSQLFederationDeciderTest {
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
-        federationDecider.decide(actual, queryContext, createDatabase(), rule, new ConfigurationProperties(new Properties()));
+        federationDecider.decide(actual, queryContext, mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getDataNodes().size(), is(2));
         assertTrue(actual.isUseSQLFederation());
     }
@@ -96,7 +97,7 @@ public final class SingleSQLFederationDeciderTest {
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         actual.getDataNodes().add(new DataNode("ds_0", "t_user"));
         SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
-        federationDecider.decide(actual, queryContext, createDatabase(), rule, new ConfigurationProperties(new Properties()));
+        federationDecider.decide(actual, queryContext, mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getDataNodes().size(), is(3));
         assertFalse(actual.isUseSQLFederation());
     }
@@ -111,7 +112,7 @@ public final class SingleSQLFederationDeciderTest {
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         actual.getDataNodes().add(new DataNode("ds_1", "t_user"));
         SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
-        federationDecider.decide(actual, queryContext, createDatabase(), rule, new ConfigurationProperties(new Properties()));
+        federationDecider.decide(actual, queryContext, mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, new ConfigurationProperties(new Properties()));
         assertThat(actual.getDataNodes().size(), is(3));
         assertTrue(actual.isUseSQLFederation());
     }

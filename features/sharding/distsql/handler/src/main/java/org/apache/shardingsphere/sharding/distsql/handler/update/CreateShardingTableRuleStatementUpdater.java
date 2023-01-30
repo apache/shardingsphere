@@ -20,48 +20,57 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Create sharding table rule statement updater.
  */
 public final class CreateShardingTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateShardingTableRuleStatement, ShardingRuleConfiguration> {
     
-    private boolean ifNotExists;
-    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        ifNotExists = sqlStatement.isIfNotExists();
-        ShardingTableRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), ifNotExists, currentRuleConfig);
+        ShardingTableRuleStatementChecker.checkCreation(database, sqlStatement.getRules(), sqlStatement.isIfNotExists(), currentRuleConfig);
     }
     
     @Override
     public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final CreateShardingTableRuleStatement sqlStatement) {
-        return ShardingTableRuleStatementConverter.convert(sqlStatement.getRules());
+        Collection<AbstractTableRuleSegment> segments = sqlStatement.getRules();
+        if (sqlStatement.isIfNotExists()) {
+            Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
+            segments.removeIf(each -> duplicatedRuleNames.contains(each.getLogicTable()));
+        }
+        return ShardingTableRuleStatementConverter.convert(segments);
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig, final ShardingRuleConfiguration toBeCreatedRuleConfig) {
-        if (ifNotExists) {
-            Collection<String> currentTables = new LinkedList<>();
-            currentRuleConfig.getTables().forEach(each -> currentTables.add(each.getLogicTable()));
-            currentRuleConfig.getAutoTables().forEach(each -> currentTables.add(each.getLogicTable()));
-            toBeCreatedRuleConfig.getTables().removeIf(each -> currentTables.contains(each.getLogicTable()));
-            toBeCreatedRuleConfig.getAutoTables().removeIf(each -> currentTables.contains(each.getLogicTable()));
-            if (toBeCreatedRuleConfig.getTables().isEmpty() && toBeCreatedRuleConfig.getAutoTables().isEmpty()) {
-                return;
-            }
-        }
         currentRuleConfig.getTables().addAll(toBeCreatedRuleConfig.getTables());
         currentRuleConfig.getAutoTables().addAll(toBeCreatedRuleConfig.getAutoTables());
         currentRuleConfig.getShardingAlgorithms().putAll(toBeCreatedRuleConfig.getShardingAlgorithms());
         currentRuleConfig.getKeyGenerators().putAll(toBeCreatedRuleConfig.getKeyGenerators());
         currentRuleConfig.getAuditors().putAll(toBeCreatedRuleConfig.getAuditors());
+    }
+    
+    private Collection<String> getDuplicatedRuleNames(final CreateShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> currentShardingTables = null == currentRuleConfig ? Collections.emptyList() : getCurrentShardingTables(currentRuleConfig);
+        return sqlStatement.getRules().stream().map(AbstractTableRuleSegment::getLogicTable).filter(currentShardingTables::contains).collect(Collectors.toSet());
+    }
+    
+    private Collection<String> getCurrentShardingTables(final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> result = new LinkedList<>();
+        result.addAll(currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        result.addAll(currentRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        return result;
     }
     
     @Override

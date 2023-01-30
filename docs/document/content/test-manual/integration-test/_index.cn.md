@@ -144,13 +144,13 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 #### 运行调试模式
 
   - 标准测试引擎
-    运行 `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.General${SQL-TYPE}IT` 以启动不同 SQL 类型的测试引擎。
+    运行 `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.General${SQL-TYPE}E2EIT` 以启动不同 SQL 类型的测试引擎。
 
   - 批量测试引擎
-    运行 `org.apache.shardingsphere.test.integration.engine.dml.BatchDMLIT`，以启动为 DML 语句提供的测试 `addBatch()` 的批量测试引擎。
+    运行 `org.apache.shardingsphere.test.integration.engine.dml.BatchDMLE2EIT`，以启动为 DML 语句提供的测试 `addBatch()` 的批量测试引擎。
 
   - 附加测试引擎
-    运行 `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.Additional${SQL-TYPE}IT` 以启动使用更多 JDBC 方法调用的测试引擎。
+    运行 `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.Additional${SQL-TYPE}E2EIT` 以启动使用更多 JDBC 方法调用的测试引擎。
     附加测试引擎需要通过设置 `it.run.additional.cases=true` 开启。
 
 #### 运行 Docker 模式
@@ -168,18 +168,29 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 
 #### 远程 debug Docker 容器中的 Proxy 代码
 
-IT 测试的 Proxy 镜像默认开启了 3308 端口用于远程调试容器中的实例。  
+##### 远程调试通过镜像启动的 Proxy
+E2E 测试的 Proxy 镜像默认开启了 3308 端口用于远程调试容器中的实例。  
 使用 IDEA 等 IDE 工具可以通过如下方式连接并 debug 容器中的 Proxy 代码：
 
 IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
 
 编辑对应的信息：
-  - Name：一个描述性的名字，例如 docker-debug。
+  - Name：一个描述性的名字，例如 e2e-debug。
   - Host：可以访问 docker 的 IP，例如 127.0.0.1。
   - Port：调试端口 3308。
   - use module classpath：项目根目录 shardingsphere。
 
-编辑好上面的信息后，在 IDEA 中 Run -> Run -> docker-debug 即可启动 IDEA 的远程 debug。
+编辑好上面的信息后，在 IDEA 中 Run -> Run -> e2e-debug 即可启动 IDEA 的远程 debug。
+
+##### 远程调试通过 Testcontainer 启动的 Proxy
+> 注意：如果通过 Testcontainer 启动 Proxy 容器，由于 Testcontainer 启动前 3308 端口还没有暴露出来，无法通过 `远程调试通过镜像启动的 Proxy` 方式进行 debug。
+可以通过如下方式 debug Testcontainer 启动的 Proxy 容器：
+  - 在 Testcontainer 的相关启动类后打一个断点，例如 suite 测试中 BaseE2EIT#setUp() -> `containerComposer.start();` 后面的一行打断点，此时相关容器一定已经启动。
+  - 通过快捷键 Alt + F8，进入断点调试模式，查看 containerComposer 下的 Proxy 对象 3308 映射的端口（Testcontainer 对外映射端口是随机的）。例如本次通过该表达式：`((ShardingSphereProxyClusterContainer)((java.util.LinkedList)((ITContainers)((ClusterContainerComposer)containerComposer).containers).dockerContainers).getLast()).getMappedPort(3308)` 获取到映射的对外随机端口为 51837。（或者通过命令 `docker ps` 查看）
+  - 参考 `远程调试通过镜像启动的 Proxy` 中的方式，Port 设置为上一步中获取到的端口。
+
+编辑好上面的信息后，在 IDEA 中 Run -> Run -> e2e-debug 即可启动 IDEA 的远程 debug。
+
 
 #### 注意事项
 

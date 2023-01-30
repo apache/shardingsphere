@@ -21,8 +21,7 @@ import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.props.JDBCRepositoryProperties;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.props.JDBCRepositoryPropertyKey;
@@ -67,8 +66,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
         try (
                 Connection connection = hikariDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            String type = jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER);
-            provider = null == type ? RequiredSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class) : TypedSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class, type);
+            provider = TypedSPILoader.getService(JDBCRepositoryProvider.class, jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
             if (!jdbcUrl.contains(H2_FILE_MODE_KEY)) {
                 statement.execute(provider.dropTableSQL());
             }
@@ -196,5 +194,10 @@ public final class JDBCRepository implements StandalonePersistRepository {
     @Override
     public String getType() {
         return "JDBC";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

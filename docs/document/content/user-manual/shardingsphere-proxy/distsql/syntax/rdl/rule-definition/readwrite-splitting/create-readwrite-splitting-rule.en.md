@@ -64,7 +64,7 @@ value ::=
 
 - Support the creation of static readwrite-splitting rules and dynamic readwrite-splitting rules;
 - Dynamic readwrite-splitting rules rely on database discovery rules;
-- `loadBalancerType` specifies the load balancing algorithm type, please refer to Load Balance Algorithm;
+- `loadBalancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm](/en/user-manual/common-config/builtin-algorithm/load-balance/);
 - Duplicate `ruleName` will not be created;
 - `ifNotExists` clause used for avoid `Duplicate readwrite_splitting rule` error.
 
@@ -120,3 +120,4 @@ CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_1 (
 ### Related links
 
 - [Reserved word](/en/user-manual/shardingsphere-proxy/distsql/syntax/reserved-word/)
+- [Load Balance Algorithm](/en/user-manual/common-config/builtin-algorithm/load-balance/)

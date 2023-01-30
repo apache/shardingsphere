@@ -66,7 +66,7 @@ weight = 5
 
 #### 单表
 
-`SINGLE`、`STORAGE`、`UNIT`、`SINGLE_TABLE`
+`SINGLE`、`STORAGE`、`UNIT`
 
 #### 读写分离
 

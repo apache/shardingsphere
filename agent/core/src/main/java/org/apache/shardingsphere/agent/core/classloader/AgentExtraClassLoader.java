@@ -44,24 +44,24 @@ public abstract class AgentExtraClassLoader extends ClassLoader {
         registerAsParallelCapable();
     }
     
-    private final Collection<JarFile> pluginJars;
+    private final Collection<JarFile> extraJars;
     
-    private final Collection<File> resourcePaths;
+    private final Collection<File> extraResourcePaths;
     
-    public AgentExtraClassLoader(final ClassLoader appClassLoader, final Collection<JarFile> pluginJars) {
-        this(appClassLoader, pluginJars, Collections.emptyList());
+    public AgentExtraClassLoader(final ClassLoader appClassLoader, final Collection<JarFile> extraJars) {
+        this(appClassLoader, extraJars, Collections.emptyList());
     }
     
-    public AgentExtraClassLoader(final ClassLoader appClassLoader, final Collection<JarFile> pluginJars, final Collection<File> resourcePaths) {
+    public AgentExtraClassLoader(final ClassLoader appClassLoader, final Collection<JarFile> extraJars, final Collection<File> extraResourcePaths) {
         super(appClassLoader);
-        this.pluginJars = pluginJars;
-        this.resourcePaths = resourcePaths;
+        this.extraJars = extraJars;
+        this.extraResourcePaths = extraResourcePaths;
     }
     
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         String path = convertClassNameToPath(name);
-        for (JarFile each : pluginJars) {
+        for (JarFile each : extraJars) {
             ZipEntry entry = each.getEntry(path);
             if (null == entry) {
                 continue;
@@ -80,18 +80,18 @@ public abstract class AgentExtraClassLoader extends ClassLoader {
         return String.join("", className.replace(".", "/"), ".class");
     }
     
-    private void definePackage(final String className, final JarFile pluginJar) throws IOException {
+    private void definePackage(final String className, final JarFile extraJar) throws IOException {
         int index = className.lastIndexOf('.');
         if (-1 == index) {
             return;
         }
         String packageName = className.substring(0, index);
         if (null == getPackage(packageName)) {
-            definePackage(packageName, pluginJar.getManifest());
+            definePackage(packageName, extraJar.getManifest());
         }
     }
     
-    private void definePackage(final String packageName, final Manifest manifest) {
+    private void definePackage(final String name, final Manifest manifest) {
         Attributes attributes = manifest.getMainAttributes();
         String specTitle = attributes.getValue(Attributes.Name.SPECIFICATION_TITLE);
         String specVersion = attributes.getValue(Attributes.Name.SPECIFICATION_VERSION);
@@ -99,18 +99,18 @@ public abstract class AgentExtraClassLoader extends ClassLoader {
         String implTitle = attributes.getValue(Attributes.Name.IMPLEMENTATION_TITLE);
         String implVersion = attributes.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
         String implVendor = attributes.getValue(Attributes.Name.IMPLEMENTATION_VENDOR);
-        definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
+        definePackage(name, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
     }
     
-    private Class<?> defineClass(final String name, final JarFile pluginJar, final ZipEntry entry) throws IOException {
-        byte[] data = ByteStreams.toByteArray(pluginJar.getInputStream(entry));
+    private Class<?> defineClass(final String name, final JarFile extraJar, final ZipEntry entry) throws IOException {
+        byte[] data = ByteStreams.toByteArray(extraJar.getInputStream(entry));
         return defineClass(name, data, 0, data.length);
     }
     
     @Override
     protected Enumeration<URL> findResources(final String name) {
         Collection<URL> result = new LinkedList<>();
-        for (JarFile each : pluginJars) {
+        for (JarFile each : extraJars) {
             findResource(name, each).ifPresent(result::add);
         }
         if (result.isEmpty()) {
@@ -121,17 +121,17 @@ public abstract class AgentExtraClassLoader extends ClassLoader {
     
     @Override
     protected URL findResource(final String name) {
-        return pluginJars.stream().map(each -> findResource(name, each)).filter(Optional::isPresent).findFirst().filter(Optional::isPresent).map(Optional::get)
+        return extraJars.stream().map(each -> findResource(name, each)).filter(Optional::isPresent).findFirst().filter(Optional::isPresent).map(Optional::get)
                 .orElseGet(() -> findResourcesFromResourcePaths(name).stream().findFirst().orElse(null));
     }
     
-    private Optional<URL> findResource(final String name, final JarFile pluginJar) {
-        JarEntry entry = pluginJar.getJarEntry(name);
+    private Optional<URL> findResource(final String name, final JarFile extraJar) {
+        JarEntry entry = extraJar.getJarEntry(name);
         if (null == entry) {
             return Optional.empty();
         }
         try {
-            return Optional.of(new URL(String.format("jar:file:%s!/%s", pluginJar.getName(), name)));
+            return Optional.of(new URL(String.format("jar:file:%s!/%s", extraJar.getName(), name)));
         } catch (final MalformedURLException ignored) {
             return Optional.empty();
         }
@@ -139,7 +139,7 @@ public abstract class AgentExtraClassLoader extends ClassLoader {
     
     private Collection<URL> findResourcesFromResourcePaths(final String name) {
         Collection<URL> result = new LinkedList<>();
-        Collection<File> resourceFiles = resourcePaths.stream().map(each -> new File(String.join(File.separator, each.getPath(), name))).filter(File::exists).collect(Collectors.toList());
+        Collection<File> resourceFiles = extraResourcePaths.stream().map(each -> new File(String.join(File.separator, each.getPath(), name))).filter(File::exists).collect(Collectors.toList());
         for (File each : resourceFiles) {
             try {
                 result.add(each.toURI().toURL());

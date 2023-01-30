@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
 
@@ -36,9 +37,11 @@ public interface SQLFederationDecider<T extends ShardingSphereRule> extends Orde
      *
      * @param deciderContext decider context
      * @param queryContext query context
+     * @param globalRuleMetaData global rule meta data
      * @param database database
      * @param rule rule
      * @param props props
      */
-    void decide(SQLFederationDeciderContext deciderContext, QueryContext queryContext, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
+    void decide(SQLFederationDeciderContext deciderContext,
+                QueryContext queryContext, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
 }

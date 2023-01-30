@@ -31,17 +31,6 @@ public final class ExecutorThreadFactoryBuilder {
     
     private static final String NAME_FORMAT_PREFIX = "ShardingSphere-";
     
-    private static final String DEFAULT_EXECUTOR_NAME_FORMAT = NAME_FORMAT_PREFIX + "%d";
-    
-    /**
-     * Build default thread factory.
-     *
-     * @return default thread factory
-     */
-    public static ThreadFactory build() {
-        return new ThreadFactoryBuilder().setDaemon(true).setNameFormat(DEFAULT_EXECUTOR_NAME_FORMAT).build();
-    }
-    
     /**
      * Build thread factory with thread name format.
      * 

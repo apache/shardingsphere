@@ -37,6 +37,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
@@ -110,7 +111,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     }
     
     private PostgreSQLIdentifierPacket getIdentifierPacket(final String username) {
-        PostgreSQLAuthenticator authenticator = authenticationHandler.getAuthenticator(username, "");
+        PostgreSQLAuthenticator authenticator = authenticationHandler.getAuthenticator(new Grantee(username, ""));
         if (PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.getAuthenticationMethodName())) {
             return new PostgreSQLPasswordAuthenticationPacket();
         }

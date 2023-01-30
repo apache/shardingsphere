@@ -39,6 +39,8 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -223,6 +225,10 @@ public abstract class AbstractRoutingEngineTest {
         SingleRule result = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, rules);
         result.put(dataSourceMap.keySet().iterator().next(), DefaultDatabase.LOGIC_NAME, "t_category");
         return result;
+    }
+    
+    protected final TimeServiceRule createTimeServiceRule() {
+        return new TimeServiceRule(new TimeServiceRuleConfiguration("System", new Properties()));
     }
     
     @SneakyThrows(SQLException.class)

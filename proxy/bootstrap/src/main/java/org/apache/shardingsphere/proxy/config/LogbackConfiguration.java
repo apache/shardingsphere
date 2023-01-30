@@ -44,37 +44,37 @@ public class LogbackConfiguration extends BasicConfigurator {
         Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
         rootLogger.addAppender(consoleAppender);
-        Logger shardingsphereLogger = loggerContext.getLogger(SHARDINGSPHERE_LOGGER_NAME);
-        shardingsphereLogger.setLevel(Level.INFO);
-        shardingsphereLogger.setAdditive(false);
-        shardingsphereLogger.addAppender(consoleAppender);
+        Logger logger = loggerContext.getLogger(SHARDINGSPHERE_LOGGER_NAME);
+        logger.setLevel(Level.INFO);
+        logger.setAdditive(false);
+        logger.addAppender(consoleAppender);
         initBasicLogger(loggerContext);
     }
     
     private ConsoleAppender<ILoggingEvent> createConsoleAppender(final LoggerContext loggerContext) {
-        ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<>();
-        consoleAppender.setContext(loggerContext);
-        consoleAppender.setName("console");
+        ConsoleAppender<ILoggingEvent> result = new ConsoleAppender<>();
+        result.setContext(loggerContext);
+        result.setName("console");
         LayoutWrappingEncoder<ILoggingEvent> encoder = createEncoder(loggerContext);
-        consoleAppender.setEncoder(encoder);
-        consoleAppender.start();
-        return consoleAppender;
+        result.setEncoder(encoder);
+        result.start();
+        return result;
     }
     
     private LayoutWrappingEncoder<ILoggingEvent> createEncoder(final LoggerContext loggerContext) {
-        LayoutWrappingEncoder<ILoggingEvent> encoder = new LayoutWrappingEncoder<>();
-        encoder.setContext(loggerContext);
+        LayoutWrappingEncoder<ILoggingEvent> result = new LayoutWrappingEncoder<>();
+        result.setContext(loggerContext);
         PatternLayout layout = createConsolePatternLayout(loggerContext);
-        encoder.setLayout(layout);
-        return encoder;
+        result.setLayout(layout);
+        return result;
     }
     
     private PatternLayout createConsolePatternLayout(final LoggerContext loggerContext) {
-        PatternLayout layout = new PatternLayout();
-        layout.setPattern(DEFAULT_PATTERN);
-        layout.setContext(loggerContext);
-        layout.start();
-        return layout;
+        PatternLayout result = new PatternLayout();
+        result.setPattern(DEFAULT_PATTERN);
+        result.setContext(loggerContext);
+        result.start();
+        return result;
     }
     
     private void initBasicLogger(final LoggerContext loggerContext) {

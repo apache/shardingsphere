@@ -63,6 +63,7 @@
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-codec.version>1.15</commons-codec.version>
+        <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         
         <antlr4.version>4.9.2</antlr4.version>
         <snakeyaml.version>1.33</snakeyaml.version>
@@ -93,14 +94,14 @@
         <lombok.version>1.18.20</lombok.version>
         
         <postgresql.version>42.4.1</postgresql.version>
-        <opengauss.version>3.0.0</opengauss.version>
+        <opengauss.version>3.1.0-og</opengauss.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <h2.version>2.1.214</h2.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
-        <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
+        <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
         
         <junit5.version>5.9.1</junit5.version>
         <junit4.version>4.13.2</junit4.version>
@@ -181,6 +182,11 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable-thread-local.version}</version>
             </dependency>
             
             <dependency>
@@ -1187,6 +1193,9 @@
             <activation>
                 <jdk>[11,)</jdk>
             </activation>
+            <properties>
+                <maven.compiler.release>8</maven.compiler.release>
+            </properties>
             <build>
                 <pluginManagement>
                     <plugins>

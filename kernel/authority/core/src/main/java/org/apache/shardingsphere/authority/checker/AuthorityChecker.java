@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.authority.checker;
 
-import org.apache.shardingsphere.authority.constant.AuthorityOrder;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.exception.UnauthorizedOperationException;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
-import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterDatabaseStatement;
@@ -46,45 +43,44 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiPredicate;
 
 /**
  * Authority checker.
  */
-public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
+@RequiredArgsConstructor
+public final class AuthorityChecker {
     
-    @Override
-    public boolean check(final String databaseName, final Grantee grantee, final AuthorityRule rule) {
+    private final AuthorityRule rule;
+    
+    private final Grantee grantee;
+    
+    /**
+     * Check database authority.
+     * 
+     * @param databaseName database name
+     * @return authorized or not
+     */
+    public boolean isAuthorized(final String databaseName) {
         return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
     }
     
-    @Override
-    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee,
-                      final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final AuthorityRule rule) {
+    /**
+     * Check privileges.
+     *
+     * @param databaseName database name
+     * @param sqlStatement SQL statement
+     */
+    public void checkPrivileges(final String databaseName, final SQLStatement sqlStatement) {
         if (null == grantee) {
             return;
         }
         Optional<ShardingSpherePrivileges> privileges = rule.findPrivileges(grantee);
-        ShardingSpherePreconditions.checkState(privileges.isPresent(), () -> new SQLCheckException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname())));
-        ShardingSpherePreconditions.checkState(null == currentDatabase || privileges.filter(optional -> optional.hasPrivileges(currentDatabase)).isPresent(),
-                () -> new SQLCheckException(String.format("Unknown database '%s'", currentDatabase)));
-        PrivilegeType privilegeType = getPrivilege(sqlStatementContext.getSqlStatement());
-        boolean hasPrivileges = privileges.get().hasPrivileges(Collections.singletonList(privilegeType));
-        ShardingSpherePreconditions.checkState(hasPrivileges, () -> new SQLCheckException(String.format("Access denied for operation %s.", null == privilegeType ? "" : privilegeType.name())));
-    }
-    
-    @Override
-    public boolean check(final Grantee grantee, final AuthorityRule rule) {
-        return rule.findUser(grantee).isPresent();
-    }
-    
-    @Override
-    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final AuthorityRule rule) {
-        Optional<ShardingSphereUser> user = rule.findUser(grantee);
-        return user.filter(each -> validator.test(each, cipher)).isPresent();
+        ShardingSpherePreconditions.checkState(null == databaseName || privileges.filter(optional -> optional.hasPrivileges(databaseName)).isPresent(),
+                () -> new UnknownDatabaseException(databaseName));
+        PrivilegeType privilegeType = getPrivilege(sqlStatement);
+        ShardingSpherePreconditions.checkState(privileges.isPresent() && privileges.get().hasPrivileges(Collections.singleton(privilegeType)),
+                () -> new UnauthorizedOperationException(null == privilegeType ? "" : privilegeType.name()));
     }
     
     private PrivilegeType getPrivilege(final SQLStatement sqlStatement) {
@@ -140,15 +136,5 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
             return PrivilegeType.TRUNCATE;
         }
         return null;
-    }
-    
-    @Override
-    public int getOrder() {
-        return AuthorityOrder.ORDER;
-    }
-    
-    @Override
-    public Class<AuthorityRule> getTypeClass() {
-        return AuthorityRule.class;
     }
 }

@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 
 /**
  * RAL backend handler.
  */
 @Getter
-public abstract class RALBackendHandler<E extends RALStatement> implements ProxyBackendHandler {
+public abstract class RALBackendHandler<E extends RALStatement> implements DistSQLBackendHandler {
     
     private E sqlStatement;
     

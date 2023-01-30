@@ -28,3 +28,4 @@ CREATE TABLE t_data_type_integer_unsigned (id INT PRIMARY KEY, col_bigint_unsign
 CREATE TABLE t_data_type_floating_point (id INT PRIMARY KEY, col_float REAL NOT NULL, col_double DOUBLE PRECISION NOT NULL);
 CREATE TABLE t_with_generated_id (id SERIAL PRIMARY KEY, val VARCHAR NOT NULL);
 CREATE TABLE t_data_type_money (id INT PRIMARY KEY, val money);
+CREATE TABLE t_data_type_bytea (id INT PRIMARY KEY, val bytea NOT NULL);

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
@@ -38,17 +39,20 @@ public interface SQLRouter<T extends ShardingSphereRule> extends OrderedSPI<T> {
      * Create route context.
      *
      * @param queryContext query context
+     * @param globalRuleMetaData global rule meta data
      * @param database database
      * @param rule rule
      * @param props configuration properties
      * @param connectionContext connection context
      * @return route context
      */
-    RouteContext createRouteContext(QueryContext queryContext, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
+    RouteContext createRouteContext(QueryContext queryContext,
+                                    ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props, ConnectionContext connectionContext);
     
     /**
      * Decorate route context.
-     *  @param routeContext route context
+     * 
+     * @param routeContext route context
      * @param queryContext query context
      * @param database database
      * @param rule rule

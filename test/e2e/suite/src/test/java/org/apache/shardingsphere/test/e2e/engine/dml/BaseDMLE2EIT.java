@@ -33,6 +33,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import javax.sql.DataSource;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -129,6 +130,8 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
             assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
         } else if (isPostgreSQLOrOpenGaussMoney(actual.getMetaData().getColumnTypeName(columnIndex))) {
             assertThat(actual.getString(columnIndex), is(expected));
+        } else if (Types.BINARY == actual.getMetaData().getColumnType(columnIndex)) {
+            assertThat(actual.getObject(columnIndex), is(expected.getBytes(StandardCharsets.UTF_8)));
         } else {
             assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         }

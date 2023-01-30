@@ -30,6 +30,6 @@ public final class SQLHintDataSourceNotExistsException extends KernelSQLExceptio
     private static final int KERNEL_CODE = 6;
     
     public SQLHintDataSourceNotExistsException(final String errorMessage) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, KERNEL_CODE, 1, "Hint datasource: %s is not exist.", errorMessage);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, KERNEL_CODE, 1, "Hint data source: %s is not exist.", errorMessage);
     }
 }

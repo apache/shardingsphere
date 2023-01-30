@@ -39,8 +39,8 @@ showSingleTable
     : SHOW SINGLE (TABLES showLike? | TABLE tableName) (FROM databaseName)?
     ;
 
-countSingleTableRule
-    : COUNT SINGLE_TABLE RULE (FROM databaseName)?
+countSingleTable
+    : COUNT SINGLE TABLE (FROM databaseName)?
     ;
 
 usageCount
