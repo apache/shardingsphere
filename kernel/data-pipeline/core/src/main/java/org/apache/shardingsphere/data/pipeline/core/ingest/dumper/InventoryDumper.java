@@ -120,7 +120,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     private String buildInventoryDumpSQL(final boolean firstQuery) {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         if (null == dumperConfig.getUniqueKey()) {
-            return sqlBuilder.buildSelectOffsetSQL(schemaName, dumperConfig.getActualTableName());
+            return sqlBuilder.buildInventoryDumpAllSQL(schemaName, dumperConfig.getActualTableName());
         }
         if (PipelineJdbcUtils.isIntegerColumn(dumperConfig.getUniqueKeyDataType())) {
             return sqlBuilder.buildDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), dumperConfig.getUniqueKeyDataType(), firstQuery);
@@ -146,9 +146,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 while (resultSet.next()) {
                     channel.pushRecord(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
                     rowCount++;
-                    if (null == dumperConfig.getUniqueKey()) {
-                        maxUniqueKeyValue = rowCount + (int) beginUniqueKeyValue;
-                    } else {
+                    if (null != dumperConfig.getUniqueKey()) {
                         maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, tableMetaData.getColumnMetaData(dumperConfig.getUniqueKey()).getOrdinalPosition());
                     }
                     if (!isRunning()) {
@@ -168,8 +166,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     private void setParameters(final PreparedStatement preparedStatement, final int batchSize, final Object beginUniqueKeyValue) throws SQLException {
         preparedStatement.setFetchSize(batchSize);
         if (null == dumperConfig.getUniqueKey()) {
-            preparedStatement.setInt(1, batchSize);
-            preparedStatement.setObject(2, beginUniqueKeyValue);
             return;
         }
         if (PipelineJdbcUtils.isIntegerColumn(dumperConfig.getUniqueKeyDataType())) {

@@ -192,8 +192,8 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildSelectOffsetSQL(final String schemaName, final String tableName) {
+    public String buildInventoryDumpAllSQL(final String schemaName, final String tableName) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
-        return String.format("SELECT * FROM %s LIMIT ? OFFSET ?", qualifiedTableName);
+        return String.format("SELECT * FROM %s", qualifiedTableName);
     }
 }

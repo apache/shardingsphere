@@ -97,11 +97,9 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
         sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableOrderName(), "1000000000", 1, "afterStop"));
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
-            commitMigrationByJobId(jobId);
-            List<String> lastJobIds = listJobId();
-            assertThat(lastJobIds.size(), is(0));
-        }
+        commitMigrationByJobId(jobId);
+        List<String> lastJobIds = listJobId();
+        assertThat(lastJobIds.size(), is(0));
         log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
 }

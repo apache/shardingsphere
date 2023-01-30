@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.im
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckIgnoredType;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.PipelineTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
@@ -242,43 +241,55 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         if (Objects.equals(jobItemProgress.getIgnoredTableNames(), jobItemProgress.getTableNames())) {
             return result;
         }
-        ConsistencyCheckJobItemInfo checkJobItemInfo = new ConsistencyCheckJobItemInfo();
-        result.add(checkJobItemInfo);
+        result.add(getJobItemInfo(parentJobId));
+        return result;
+    }
+    
+    private ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId) {
+        Optional<String> latestCheckJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(parentJobId);
+        ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
+        String checkJobId = latestCheckJobId.get();
+        Optional<ConsistencyCheckJobItemProgress> progressOptional = getJobItemProgress(checkJobId, 0);
+        ConsistencyCheckJobItemInfo result = new ConsistencyCheckJobItemInfo();
+        if (!progressOptional.isPresent()) {
+            return result;
+        }
+        ConsistencyCheckJobItemProgress jobItemProgress = progressOptional.get();
         LocalDateTime checkBeginTime = new Timestamp(jobItemProgress.getCheckBeginTimeMillis()).toLocalDateTime();
         if (null == jobItemProgress.getRecordsCount() || null == jobItemProgress.getCheckedRecordsCount()) {
-            checkJobItemInfo.setFinishedPercentage(0);
-            checkJobItemInfo.setCheckSuccess(false);
+            result.setFinishedPercentage(0);
+            result.setCheckSuccess(false);
             return result;
         }
         long recordsCount = jobItemProgress.getRecordsCount();
         long checkedRecordsCount = Math.min(jobItemProgress.getCheckedRecordsCount(), recordsCount);
         if (JobStatus.FINISHED == jobItemProgress.getStatus()) {
-            checkJobItemInfo.setFinishedPercentage(100);
+            result.setFinishedPercentage(100);
             LocalDateTime checkEndTime = new Timestamp(jobItemProgress.getCheckEndTimeMillis()).toLocalDateTime();
             Duration duration = Duration.between(checkBeginTime, checkEndTime);
-            checkJobItemInfo.setDurationSeconds(duration.getSeconds());
-            checkJobItemInfo.setCheckEndTime(DATE_TIME_FORMATTER.format(checkEndTime));
-            checkJobItemInfo.setRemainingSeconds(0L);
+            result.setDurationSeconds(duration.getSeconds());
+            result.setCheckEndTime(DATE_TIME_FORMATTER.format(checkEndTime));
+            result.setRemainingSeconds(0L);
         } else if (0 != recordsCount && 0 != checkedRecordsCount) {
-            checkJobItemInfo.setFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
+            result.setFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
             JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(checkJobId);
             Long stopTimeMillis = jobConfigPOJO.isDisabled() ? Long.parseLong(jobConfigPOJO.getProps().getProperty("stop_time_millis")) : null;
             long durationMillis = (null != stopTimeMillis ? stopTimeMillis : System.currentTimeMillis()) - jobItemProgress.getCheckBeginTimeMillis();
-            checkJobItemInfo.setDurationSeconds(TimeUnit.MILLISECONDS.toSeconds(durationMillis));
+            result.setDurationSeconds(TimeUnit.MILLISECONDS.toSeconds(durationMillis));
             if (null != stopTimeMillis) {
-                checkJobItemInfo.setCheckEndTime(DATE_TIME_FORMATTER.format(new Timestamp(stopTimeMillis).toLocalDateTime()));
+                result.setCheckEndTime(DATE_TIME_FORMATTER.format(new Timestamp(stopTimeMillis).toLocalDateTime()));
             }
             long remainingMills = (long) ((recordsCount - checkedRecordsCount) * 1.0D / checkedRecordsCount * durationMillis);
-            checkJobItemInfo.setRemainingSeconds(remainingMills / 1000);
+            result.setRemainingSeconds(remainingMills / 1000);
         }
         String tableNames = jobItemProgress.getTableNames();
-        checkJobItemInfo.setTableNames(Optional.ofNullable(tableNames).orElse(""));
-        checkJobItemInfo.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
-        checkJobItemInfo.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
+        result.setTableNames(Optional.ofNullable(tableNames).orElse(""));
+        result.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
+        result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
         Map<String, DataConsistencyCheckResult> checkJobResult = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(parentJobId, checkJobId);
         InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(
                 PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(parentJobId).getTypeName());
-        checkJobItemInfo.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
+        result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
         return result;
     }
     
@@ -294,8 +305,6 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
             DataConsistencyCheckResult checkResult = checkJobResult.get(each);
             if (null != checkResult && checkResult.isIgnored()) {
                 info.setErrorMessage(checkResult.getCheckIgnoredType().getMessage());
-            } else {
-                info.setErrorMessage(DataConsistencyCheckIgnoredType.UNKNOWN.getMessage());
             }
             result.add(info);
         }

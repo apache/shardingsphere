@@ -82,7 +82,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         Map<String, DataConsistencyCheckResult> result = new LinkedHashMap<>();
         if (null == jobConfig.getUniqueKeyColumn()) {
             progressContext.getIgnoredTableNames().add(sourceTable.getTableName().getOriginal());
-            result.put(sourceTable.getTableName().getOriginal(), new DataConsistencyCheckResult(DataConsistencyCheckIgnoredType.NONE_PRIMARY_KEY));
+            result.put(sourceTable.getTableName().getOriginal(), new DataConsistencyCheckResult(DataConsistencyCheckIgnoredType.NO_UNIQUE_KEY));
             return result;
         }
         try (

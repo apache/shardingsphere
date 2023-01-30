@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineReadCo
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.NonePrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.NoUniqueKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.StringPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -168,7 +168,7 @@ public final class InventoryTaskSplitter {
                                                                       final InventoryDumperConfiguration dumperConfig) {
         long tableRecordsCount = getTableRecordsCount(jobItemContext, dataSource, dumperConfig);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
-        return Collections.singletonList(new NonePrimaryKeyPosition(0));
+        return Collections.singletonList(new NoUniqueKeyPosition());
     }
     
     private long getTableRecordsCount(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {

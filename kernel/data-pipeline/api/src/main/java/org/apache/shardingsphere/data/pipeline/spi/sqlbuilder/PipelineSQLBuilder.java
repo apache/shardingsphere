@@ -65,6 +65,15 @@ public interface PipelineSQLBuilder extends TypedSPI {
     String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
     
     /**
+     * Build inventory dump all SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName tableName
+     * @return inventory dump all SQL
+     */
+    String buildInventoryDumpAllSQL(String schemaName, String tableName);
+    
+    /**
      * Build insert SQL.
      *
      * @param schemaName schema name
@@ -149,14 +158,6 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @return split SQL
      */
     String buildSplitByPrimaryKeyRangeSQL(String schemaName, String tableName, String primaryKey);
-    
-    /**
-     * Build select offset SQL.
-     * @param schemaName schema name
-     * @param tableName tableName
-     * @return select offset SQL
-     */
-    String buildSelectOffsetSQL(String schemaName, String tableName);
     
     /**
      * Build CRC32 SQL.

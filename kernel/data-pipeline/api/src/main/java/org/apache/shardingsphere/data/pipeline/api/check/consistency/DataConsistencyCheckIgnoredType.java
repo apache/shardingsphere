@@ -27,9 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum DataConsistencyCheckIgnoredType {
     
-    UNKNOWN("Unknown data consistency check ignored type"),
-    
-    NONE_PRIMARY_KEY("Data consistency check are not supported for tables without primary keys");
+    NO_UNIQUE_KEY("Data consistency check are not supported for tables without unique key");
     
     private final String message;
 }

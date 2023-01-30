@@ -46,14 +46,17 @@ public final class ShowMigrationCheckStatusResultSet implements DatabaseDistSQLR
         List<ConsistencyCheckJobItemInfo> infos = jobAPI.getJobItemInfos(checkMigrationStatement.getJobId());
         Collection<Collection<Object>> result = new LinkedList<>();
         for (ConsistencyCheckJobItemInfo each : infos) {
-            String checkResult = null == each.getCheckSuccess() ? "" : each.getCheckSuccess().toString();
-            Collection<Object> item = Arrays.asList(Optional.ofNullable(each.getTableNames()).orElse(""), checkResult,
-                    String.valueOf(each.getFinishedPercentage()), each.getRemainingSeconds(),
-                    Optional.ofNullable(each.getCheckBeginTime()).orElse(""), Optional.ofNullable(each.getCheckEndTime()).orElse(""),
-                    each.getDurationSeconds(), Optional.ofNullable(each.getErrorMessage()).orElse(""));
-            result.add(item);
+            result.add(convert(each));
         }
         data = result.iterator();
+    }
+    
+    private Collection<Object> convert(final ConsistencyCheckJobItemInfo info) {
+        String checkResult = null == info.getCheckSuccess() ? "" : info.getCheckSuccess().toString();
+        return Arrays.asList(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult,
+                String.valueOf(info.getFinishedPercentage()), info.getRemainingSeconds(),
+                Optional.ofNullable(info.getCheckBeginTime()).orElse(""), Optional.ofNullable(info.getCheckEndTime()).orElse(""),
+                info.getDurationSeconds(), Optional.ofNullable(info.getErrorMessage()).orElse(""));
     }
     
     @Override

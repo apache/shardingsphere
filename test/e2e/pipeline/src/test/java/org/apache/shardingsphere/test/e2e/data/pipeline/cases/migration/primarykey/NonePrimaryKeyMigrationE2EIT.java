@@ -86,11 +86,9 @@ public final class NonePrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
         assertTargetAndSourceCountAreSame();
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
-            commitMigrationByJobId(jobId);
-            List<String> lastJobIds = listJobId();
-            assertThat(lastJobIds.size(), is(0));
-        }
+        commitMigrationByJobId(jobId);
+        List<String> lastJobIds = listJobId();
+        assertThat(lastJobIds.size(), is(0));
         log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
     

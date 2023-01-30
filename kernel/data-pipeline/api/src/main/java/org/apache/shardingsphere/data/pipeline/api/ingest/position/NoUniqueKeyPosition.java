@@ -20,25 +20,23 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 import lombok.RequiredArgsConstructor;
 
 /**
- * None primary key position.
+ * No unique key position.
  */
 @RequiredArgsConstructor
-public final class NonePrimaryKeyPosition extends PrimaryKeyPosition<Integer> implements IngestPosition<NonePrimaryKeyPosition> {
-    
-    private final int offset;
+public final class NoUniqueKeyPosition extends PrimaryKeyPosition<Void> implements IngestPosition<NoUniqueKeyPosition> {
     
     @Override
-    public Integer getBeginValue() {
-        return offset;
+    public Void getBeginValue() {
+        return null;
     }
     
     @Override
-    public Integer getEndValue() {
-        return Integer.MAX_VALUE;
+    public Void getEndValue() {
+        return null;
     }
     
     @Override
-    protected Integer convert(final String value) {
+    protected Void convert(final String value) {
         throw new UnsupportedOperationException();
     }
     
@@ -48,7 +46,7 @@ public final class NonePrimaryKeyPosition extends PrimaryKeyPosition<Integer> im
     }
     
     @Override
-    public int compareTo(final NonePrimaryKeyPosition position) {
+    public int compareTo(final NoUniqueKeyPosition position) {
         return 0;
     }
 }

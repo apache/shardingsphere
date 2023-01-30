@@ -46,10 +46,10 @@ public final class PipelineTableMetaDataUtil {
      */
     public static Optional<PipelineColumnMetaData> getUniqueKeyColumn(final String schemaName, final String tableName, final PipelineTableMetaDataLoader metaDataLoader) {
         PipelineTableMetaData pipelineTableMetaData = metaDataLoader.getTableMetaData(schemaName, tableName);
-        return Optional.ofNullable(mustGetAnAppropriateUniqueKeyColumn(pipelineTableMetaData, tableName));
+        return Optional.ofNullable(getAnAppropriateUniqueKeyColumn(pipelineTableMetaData, tableName));
     }
     
-    private static PipelineColumnMetaData mustGetAnAppropriateUniqueKeyColumn(final PipelineTableMetaData tableMetaData, final String tableName) {
+    private static PipelineColumnMetaData getAnAppropriateUniqueKeyColumn(final PipelineTableMetaData tableMetaData, final String tableName) {
         ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new SplitPipelineJobByRangeException(tableName, "Can not get table meta data"));
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
         if (1 == primaryKeys.size()) {
