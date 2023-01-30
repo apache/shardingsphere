@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.mask.algorithm.replace;
 
-import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -47,8 +51,12 @@ public final class GenericTableRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask("Ab1!").charAt(3), anyOf(is('~'), is('!'), is('@'), is('#')));
     }
     
-    @Test(expected = MaskAlgorithmInitializationException.class)
-    public void assertInitWhenConfigNullProps() {
-        maskAlgorithm.init(PropertiesBuilder.build(new Property("uppercase-letter-codes", "abcd")));
+    @Test
+    public void assertInitWithEmptyProps() {
+        maskAlgorithm.init(new Properties());
+        assertThat(maskAlgorithm.mask("Ab1!").substring(0, 1), anyOf(Arrays.stream("ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")).map(CoreMatchers::is).collect(Collectors.toList())));
+        assertThat(maskAlgorithm.mask("Ab1!").substring(1, 2), anyOf(Arrays.stream("abcdefghijklmnopqrstuvwxyz".split("")).map(CoreMatchers::is).collect(Collectors.toList())));
+        assertThat(maskAlgorithm.mask("Ab1!").substring(2, 3), anyOf(Arrays.stream("0123456789".split("")).map(CoreMatchers::is).collect(Collectors.toList())));
+        assertThat(maskAlgorithm.mask("Ab1!").substring(3, 4), anyOf(Arrays.stream("~!@#$%^&*:<>|".split("")).map(CoreMatchers::is).collect(Collectors.toList())));
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmUtil;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Properties;
@@ -38,13 +37,13 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
     
     private static final String SPECIAL_CODES = "special-codes";
     
-    private String uppercaseLetterCodes;
+    private String uppercaseLetterCodes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     
-    private String lowercaseLetterCodes;
+    private String lowercaseLetterCodes = "abcdefghijklmnopqrstuvwxyz";
     
-    private String digitalRandomCodes;
+    private String digitalRandomCodes = "0123456789";
     
-    private String specialCodes;
+    private String specialCodes = "~!@#$%^&*:<>|";
     
     @Getter
     private Properties props;
@@ -52,14 +51,29 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
     @Override
     public void init(final Properties props) {
         this.props = props;
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, UPPERCASE_LETTER_CODES, getType());
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, LOWERCASE_LETTER_CODES, getType());
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, DIGITAL_RANDOM_CODES, getType());
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, SPECIAL_CODES, getType());
-        this.uppercaseLetterCodes = props.getProperty(UPPERCASE_LETTER_CODES);
-        this.lowercaseLetterCodes = props.getProperty(LOWERCASE_LETTER_CODES);
-        this.digitalRandomCodes = props.getProperty(DIGITAL_RANDOM_CODES);
-        this.specialCodes = props.getProperty(SPECIAL_CODES);
+        
+        if (isLeastOneCharConfig(props, UPPERCASE_LETTER_CODES)) {
+            this.uppercaseLetterCodes = props.getProperty(UPPERCASE_LETTER_CODES);
+        }
+        if (isLeastOneCharConfig(props, LOWERCASE_LETTER_CODES)) {
+            this.lowercaseLetterCodes = props.getProperty(LOWERCASE_LETTER_CODES);
+        }
+        if (isLeastOneCharConfig(props, DIGITAL_RANDOM_CODES)) {
+            this.digitalRandomCodes = props.getProperty(DIGITAL_RANDOM_CODES);
+        }
+        if (isLeastOneCharConfig(props, SPECIAL_CODES)) {
+            this.specialCodes = props.getProperty(SPECIAL_CODES);
+        }
+    }
+    
+    private boolean isLeastOneCharConfig(final Properties props, final String atLeastOneCharConfigKey) {
+        if (!props.containsKey(atLeastOneCharConfigKey)) {
+            return false;
+        }
+        if (0 == props.getProperty(atLeastOneCharConfigKey).length()) {
+            return false;
+        }
+        return true;
     }
     
     @Override
