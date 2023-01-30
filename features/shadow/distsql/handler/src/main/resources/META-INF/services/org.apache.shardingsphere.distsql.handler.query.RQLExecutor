@@ -18,3 +18,4 @@
 org.apache.shardingsphere.shadow.distsql.handler.query.ShowShadowRuleExecutor
 org.apache.shardingsphere.shadow.distsql.handler.query.ShowShadowTableRuleExecutor
 org.apache.shardingsphere.shadow.distsql.handler.query.ShowShadowAlgorithmExecutor
+org.apache.shardingsphere.shadow.distsql.handler.query.ShowDefaultShadowAlgorithmExecutor

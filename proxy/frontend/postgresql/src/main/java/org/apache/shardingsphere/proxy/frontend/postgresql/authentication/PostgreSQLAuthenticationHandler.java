@@ -53,7 +53,7 @@ public final class PostgreSQLAuthenticationHandler {
         Grantee grantee = new Grantee(username, "%");
         Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
-        ShardingSpherePreconditions.checkState(getAuthenticator(username, grantee.getHostname()).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
+        ShardingSpherePreconditions.checkState(getAuthenticator(grantee).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
                 () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));
@@ -62,12 +62,11 @@ public final class PostgreSQLAuthenticationHandler {
     /**
      * Get authenticator.
      *
-     * @param username username
-     * @param hostname hostname
+     * @param grantee username
      * @return authenticator
      */
-    public PostgreSQLAuthenticator getAuthenticator(final String username, final String hostname) {
-        // TODO get authenticator by username and hostname
+    public PostgreSQLAuthenticator getAuthenticator(final Grantee grantee) {
+        // TODO get authenticator by grantee
         return new PostgreSQLMD5PasswordAuthenticator();
     }
 }

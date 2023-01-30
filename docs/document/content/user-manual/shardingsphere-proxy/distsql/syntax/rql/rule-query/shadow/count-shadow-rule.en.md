@@ -1,6 +1,6 @@
 +++
 title = "COUNT SHADOW RULE"
-weight = 5
+weight = 6
 +++
 
 ### Description
