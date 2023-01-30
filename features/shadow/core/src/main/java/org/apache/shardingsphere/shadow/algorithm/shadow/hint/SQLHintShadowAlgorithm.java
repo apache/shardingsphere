@@ -27,9 +27,9 @@ import java.util.Collection;
 import java.util.Properties;
 
 /**
- * Simple hint shadow algorithm.
+ * SQL hint shadow algorithm.
  */
-public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<String> {
+public final class SQLHintShadowAlgorithm implements HintShadowAlgorithm<String> {
     
     @Getter
     private final Properties props = new Properties();

@@ -32,9 +32,9 @@ import java.util.Arrays;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public final class SimpleHintShadowAlgorithmTest {
+public final class SQLHintShadowAlgorithmTest {
     
-    private SimpleHintShadowAlgorithm shadowAlgorithm;
+    private SQLHintShadowAlgorithm shadowAlgorithm;
     
     @Before
     public void init() {
