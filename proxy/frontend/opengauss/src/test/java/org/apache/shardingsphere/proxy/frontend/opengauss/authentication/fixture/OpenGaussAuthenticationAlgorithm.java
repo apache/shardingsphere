@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationHandler;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussSCRAMSha256PasswordAuthenticator;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.nio.charset.StandardCharsets;
@@ -63,7 +64,8 @@ public final class OpenGaussAuthenticationAlgorithm {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] sha256(final byte[] str) {
-        return (byte[]) Plugins.getMemberAccessor().invoke(OpenGaussAuthenticationHandler.class.getDeclaredMethod("sha256", byte[].class), OpenGaussAuthenticationHandler.class, new Object[]{str});
+        return (byte[]) Plugins.getMemberAccessor().invoke(
+                OpenGaussSCRAMSha256PasswordAuthenticator.class.getDeclaredMethod("sha256", byte[].class), OpenGaussAuthenticationHandler.class, new Object[]{str});
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -75,7 +77,7 @@ public final class OpenGaussAuthenticationAlgorithm {
     @SneakyThrows(ReflectiveOperationException.class)
     private static byte[] xor(final byte[] value1, final byte[] value2) {
         return (byte[]) Plugins.getMemberAccessor().invoke(
-                OpenGaussAuthenticationHandler.class.getDeclaredMethod("xor", byte[].class, byte[].class), OpenGaussAuthenticationHandler.class, value1, value2);
+                OpenGaussSCRAMSha256PasswordAuthenticator.class.getDeclaredMethod("xor", byte[].class, byte[].class), OpenGaussAuthenticationHandler.class, value1, value2);
     }
     
     private static void bytesToHex(final byte[] bytes, final byte[] hex, final int offset, final int length) {
