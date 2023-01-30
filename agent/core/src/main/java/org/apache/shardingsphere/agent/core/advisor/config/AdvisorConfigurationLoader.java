@@ -24,7 +24,7 @@ import org.apache.shardingsphere.agent.core.advisor.config.yaml.swapper.YamlAdvi
 import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJarLoader;
-import org.apache.shardingsphere.agent.log.AgentLogger;
+import org.apache.shardingsphere.agent.log.api.AgentLogger;
 
 import java.io.InputStream;
 import java.util.Collection;

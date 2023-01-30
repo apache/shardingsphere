@@ -15,26 +15,55 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.log;
+package org.apache.shardingsphere.agent.log.api;
 
 /**
- * Agent logger factory.
+ * Agent logger.
  */
-public interface IAgentLoggerFactory {
+public interface AgentLogger {
     
     /**
-     * Get agent logger.
+     * Info.
      *
-     * @param clazz clazz
-     * @return agent logger
+     * @param msg message
      */
-    AgentLogger getAgentLogger(Class<?> clazz);
+    void info(String msg);
     
     /**
-     * Get agent logger.
+     * Info.
      *
-     * @param name name
-     * @return agent logger
+     * @param format format
+     * @param arguments arguments
      */
-    AgentLogger getAgentLogger(String name);
+    void info(String format, Object... arguments);
+    
+    /**
+     * Error.
+     *
+     * @param format format
+     * @param arguments arguments
+     */
+    void error(String format, Object... arguments);
+    
+    /**
+     * Error.
+     *
+     * @param msg message
+     */
+    void error(String msg);
+    
+    /**
+     * Debug.
+     *
+     * @param format format
+     * @param arguments arguments
+     */
+    void debug(String format, Object... arguments);
+    
+    /**
+     * Debug.
+     *
+     * @param msg message
+     */
+    void debug(String msg);
 }

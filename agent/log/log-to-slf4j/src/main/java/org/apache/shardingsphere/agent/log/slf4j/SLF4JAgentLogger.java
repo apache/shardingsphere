@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.log.slf4j;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.log.AgentLogger;
+import org.apache.shardingsphere.agent.log.api.AgentLogger;
 import org.slf4j.Logger;
 
 /**

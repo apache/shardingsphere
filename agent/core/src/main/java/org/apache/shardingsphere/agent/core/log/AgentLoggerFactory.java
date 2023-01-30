@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.core.log;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.log.AgentLogger;
-import org.apache.shardingsphere.agent.log.IAgentLoggerFactory;
+import org.apache.shardingsphere.agent.log.api.AgentLogger;
+import org.apache.shardingsphere.agent.log.spi.IAgentLoggerFactory;
 
 import java.util.ServiceLoader;
 
