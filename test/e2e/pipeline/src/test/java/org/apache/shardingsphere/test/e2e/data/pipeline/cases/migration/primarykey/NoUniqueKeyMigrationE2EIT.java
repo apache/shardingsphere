@@ -43,11 +43,11 @@ import static org.junit.Assert.assertFalse;
 
 @RunWith(Parameterized.class)
 @Slf4j
-public final class NonePrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
+public final class NoUniqueKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private final PipelineTestParameter testParam;
     
-    public NonePrimaryKeyMigrationE2EIT(final PipelineTestParameter testParam) {
+    public NoUniqueKeyMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
         this.testParam = testParam;
     }

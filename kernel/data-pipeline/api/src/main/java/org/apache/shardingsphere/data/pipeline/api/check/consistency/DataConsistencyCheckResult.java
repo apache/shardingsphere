@@ -27,20 +27,20 @@ import lombok.ToString;
 @ToString
 public final class DataConsistencyCheckResult {
     
-    private final DataConsistencyCheckIgnoredType checkIgnoredType;
+    private final DataConsistencyCheckIgnoredType ignoredType;
     
     private final DataConsistencyCountCheckResult countCheckResult;
     
     private final DataConsistencyContentCheckResult contentCheckResult;
     
     public DataConsistencyCheckResult(final DataConsistencyCountCheckResult countCheckResult, final DataConsistencyContentCheckResult contentCheckResult) {
-        checkIgnoredType = null;
+        ignoredType = null;
         this.countCheckResult = countCheckResult;
         this.contentCheckResult = contentCheckResult;
     }
     
-    public DataConsistencyCheckResult(final DataConsistencyCheckIgnoredType checkIgnoredType) {
-        this.checkIgnoredType = checkIgnoredType;
+    public DataConsistencyCheckResult(final DataConsistencyCheckIgnoredType ignoredType) {
+        this.ignoredType = ignoredType;
         countCheckResult = null;
         contentCheckResult = null;
     }
@@ -51,7 +51,7 @@ public final class DataConsistencyCheckResult {
      * @return ignored or not
      */
     public boolean isIgnored() {
-        return checkIgnoredType != null;
+        return null != ignoredType;
     }
     
     /**
@@ -60,7 +60,7 @@ public final class DataConsistencyCheckResult {
      * @return matched or not
      */
     public boolean isMatched() {
-        if (null != checkIgnoredType) {
+        if (null != ignoredType) {
             return false;
         }
         return countCheckResult.isMatched() && contentCheckResult.isMatched();

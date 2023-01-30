@@ -152,7 +152,7 @@ public final class InventoryTaskSplitter {
             return initProgress.getInventory().getInventoryPosition(dumperConfig.getActualTableName()).values();
         }
         if (Strings.isNullOrEmpty(dumperConfig.getUniqueKey())) {
-            return getPositionByNonePrimaryKey(jobItemContext, dataSource, dumperConfig);
+            return getPositionWithoutUniqueKey(jobItemContext, dataSource, dumperConfig);
         }
         int uniqueKeyDataType = dumperConfig.getUniqueKeyDataType();
         if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
@@ -164,7 +164,7 @@ public final class InventoryTaskSplitter {
         throw new SplitPipelineJobByRangeException(dumperConfig.getActualTableName(), "primary key is not integer or string type");
     }
     
-    private Collection<IngestPosition<?>> getPositionByNonePrimaryKey(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
+    private Collection<IngestPosition<?>> getPositionWithoutUniqueKey(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
                                                                       final InventoryDumperConfiguration dumperConfig) {
         long tableRecordsCount = getTableRecordsCount(jobItemContext, dataSource, dumperConfig);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);

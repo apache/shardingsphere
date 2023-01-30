@@ -256,7 +256,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
             info.setCheckSuccess(false);
             DataConsistencyCheckResult checkResult = checkJobResult.get(each);
             if (null != checkResult && checkResult.isIgnored()) {
-                info.setErrorMessage(checkResult.getCheckIgnoredType().getMessage());
+                info.setErrorMessage(checkResult.getIgnoredType().getMessage());
             }
             result.add(info);
         }
