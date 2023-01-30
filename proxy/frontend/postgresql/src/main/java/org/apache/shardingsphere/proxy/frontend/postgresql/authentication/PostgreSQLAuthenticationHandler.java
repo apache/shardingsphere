@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.authority.checker.AuthenticationChecker;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
@@ -32,6 +31,8 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLMD5PasswordAuthenticator;
+
+import java.util.Optional;
 
 /**
  * Authentication handler for PostgreSQL.
@@ -50,12 +51,10 @@ public final class PostgreSQLAuthenticationHandler {
         ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, "%");
-        ShardingSpherePreconditions.checkState(authorityRule.findUser(grantee).isPresent(), () -> new UnknownUsernameException(username));
-        PostgreSQLAuthenticator authenticator = getAuthenticator(username, grantee.getHostname());
-        if (!new AuthenticationChecker(authorityRule, grantee)
-                .isAuthenticated((a, b) -> authenticator.authenticate((ShardingSphereUser) a, (Object[]) b), new Object[]{passwordMessagePacket.getDigest(), md5Salt})) {
-            throw new InvalidPasswordException(username);
-        }
+        Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
+        ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
+        ShardingSpherePreconditions.checkState(getAuthenticator(username, grantee.getHostname()).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
+                () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));
     }

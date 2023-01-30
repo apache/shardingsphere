@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.authority.checker.AuthenticationChecker;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
@@ -46,6 +45,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Authentication handler for openGauss.
@@ -108,11 +108,10 @@ public final class OpenGaussAuthenticationHandler {
         ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, "%");
-        ShardingSpherePreconditions.checkState(authorityRule.findUser(grantee).isPresent(), () -> new UnknownUsernameException(username));
-        if (!new AuthenticationChecker(authorityRule, grantee)
-                .isAuthenticated((a, b) -> isPasswordRight((ShardingSphereUser) a, (Object[]) b), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration})) {
-            throw new InvalidPasswordException(username);
-        }
+        Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
+        ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
+        ShardingSpherePreconditions.checkState(isPasswordRight(user.get(), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration}),
+                () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));
     }
