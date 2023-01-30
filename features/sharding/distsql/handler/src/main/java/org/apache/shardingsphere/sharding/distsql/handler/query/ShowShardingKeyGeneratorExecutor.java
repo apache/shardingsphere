@@ -17,47 +17,45 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
- * Result set for show sharding key generator.
+ * Show sharding key generator executor.
  */
-public final class ShardingKeyGeneratorResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<Entry<String, AlgorithmConfiguration>> data = Collections.emptyIterator();
+public final class ShowShardingKeyGeneratorExecutor implements RQLExecutor<ShowShardingKeyGeneratorsStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        database.getRuleMetaData().findSingleRule(ShardingRule.class).map(optional -> data = ((ShardingRuleConfiguration) optional.getConfiguration()).getKeyGenerators().entrySet().iterator());
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingKeyGeneratorsStatement sqlStatement) {
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        if (!rule.isPresent()) {
+            return Collections.emptyList();
+        }
+        Iterator<Entry<String, AlgorithmConfiguration>> data = ((ShardingRuleConfiguration) rule.get().getConfiguration()).getKeyGenerators().entrySet().iterator();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        while (data.hasNext()) {
+            Entry<String, AlgorithmConfiguration> entry = data.next();
+            result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps().toString()));
+        }
+        return result;
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("name", "type", "props");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        Map.Entry<String, AlgorithmConfiguration> entry = data.next();
-        return Arrays.asList(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps());
     }
     
     @Override
