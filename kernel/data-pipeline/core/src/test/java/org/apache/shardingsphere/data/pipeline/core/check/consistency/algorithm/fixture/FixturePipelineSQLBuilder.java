@@ -89,6 +89,11 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
+    public String buildInventoryDumpAllSQL(final String schemaName, final String tableName) {
+        return "";
+    }
+    
+    @Override
     public String getType() {
         return "FIXTURE";
     }

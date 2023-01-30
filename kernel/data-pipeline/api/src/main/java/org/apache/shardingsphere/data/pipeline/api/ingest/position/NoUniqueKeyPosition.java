@@ -15,39 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job.progress;
+package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-
-import java.util.Map;
 
 /**
- * Data consistency check job item progress.
+ * No unique key position.
  */
-// TODO move package
-@Getter
 @RequiredArgsConstructor
-@ToString
-public final class ConsistencyCheckJobItemProgress implements PipelineJobItemProgress {
+public final class NoUniqueKeyPosition extends PrimaryKeyPosition<Void> implements IngestPosition<NoUniqueKeyPosition> {
     
-    @Setter
-    private JobStatus status = JobStatus.RUNNING;
+    @Override
+    public Void getBeginValue() {
+        return null;
+    }
     
-    private final String tableNames;
+    @Override
+    public Void getEndValue() {
+        return null;
+    }
     
-    private final String ignoredTableNames;
+    @Override
+    protected Void convert(final String value) {
+        throw new UnsupportedOperationException();
+    }
     
-    private final Long checkedRecordsCount;
+    @Override
+    protected char getType() {
+        return 'n';
+    }
     
-    private final Long recordsCount;
-    
-    private final Long checkBeginTimeMillis;
-    
-    private final Long checkEndTimeMillis;
-    
-    private final Map<String, Object> tableCheckPositions;
+    @Override
+    public int compareTo(final NoUniqueKeyPosition position) {
+        return 0;
+    }
 }

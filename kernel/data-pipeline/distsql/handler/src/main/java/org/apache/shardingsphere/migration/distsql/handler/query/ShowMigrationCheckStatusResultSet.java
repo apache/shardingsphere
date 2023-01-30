@@ -26,8 +26,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -42,13 +43,20 @@ public final class ShowMigrationCheckStatusResultSet implements DatabaseDistSQLR
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowMigrationCheckStatusStatement checkMigrationStatement = (ShowMigrationCheckStatusStatement) sqlStatement;
-        ConsistencyCheckJobItemInfo info = jobAPI.getJobItemInfo(checkMigrationStatement.getJobId());
+        List<ConsistencyCheckJobItemInfo> infos = jobAPI.getJobItemInfos(checkMigrationStatement.getJobId());
+        Collection<Collection<Object>> result = new LinkedList<>();
+        for (ConsistencyCheckJobItemInfo each : infos) {
+            result.add(convert(each));
+        }
+        data = result.iterator();
+    }
+    
+    private Collection<Object> convert(final ConsistencyCheckJobItemInfo info) {
         String checkResult = null == info.getCheckSuccess() ? "" : info.getCheckSuccess().toString();
-        Collection<Object> result = Arrays.asList(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult,
+        return Arrays.asList(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult,
                 String.valueOf(info.getFinishedPercentage()), info.getRemainingSeconds(),
                 Optional.ofNullable(info.getCheckBeginTime()).orElse(""), Optional.ofNullable(info.getCheckEndTime()).orElse(""),
                 info.getDurationSeconds(), Optional.ofNullable(info.getErrorMessage()).orElse(""));
-        data = Collections.singletonList(result).iterator();
     }
     
     @Override

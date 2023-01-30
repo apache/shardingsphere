@@ -19,15 +19,12 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.primary
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -38,27 +35,21 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(Parameterized.class)
 @Slf4j
-public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
+public final class NoUniqueKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private final PipelineTestParameter testParam;
     
-    public TextPrimaryKeyMigrationE2EIT(final PipelineTestParameter testParam) {
+    public NoUniqueKeyMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
         this.testParam = testParam;
-    }
-    
-    @Override
-    protected String getSourceTableOrderName() {
-        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
-            return "T_ORDER";
-        }
-        return "t_order";
     }
     
     @Parameters(name = "{0}")
@@ -68,16 +59,14 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
             return result;
         }
         for (String version : PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType())) {
-            result.add(new PipelineTestParameter(new MySQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/mysql.xml"));
-            result.add(new PipelineTestParameter(new MySQLDatabaseType(), version, "env/scenario/primary_key/unique_key/mysql.xml"));
-        }
-        for (String version : PipelineBaseE2EIT.ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
-            result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), version, "env/scenario/primary_key/text_primary_key/postgresql.xml"));
-        }
-        for (String version : PipelineBaseE2EIT.ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
-            result.add(new PipelineTestParameter(new OpenGaussDatabaseType(), version, "env/scenario/primary_key/text_primary_key/postgresql.xml"));
+            result.add(new PipelineTestParameter(new MySQLDatabaseType(), version, "env/scenario/primary_key/none_primary_key/mysql.xml"));
         }
         return result;
+    }
+    
+    @Override
+    protected String getSourceTableOrderName() {
+        return "t_order";
     }
     
     @Test
@@ -85,8 +74,8 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
         log.info("assertTextPrimaryMigrationSuccess testParam:{}", testParam);
         createSourceOrderTable();
         try (Connection connection = getSourceDataSource().getConnection()) {
-            UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, getSourceTableOrderName(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
+            AutoIncrementKeyGenerateAlgorithm generateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
+            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, generateAlgorithm, getSourceTableOrderName(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
         }
         addMigrationProcessConfig();
         addMigrationSourceResource();
@@ -94,12 +83,18 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
         createTargetOrderTableRule();
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         String jobId = listJobId().get(0);
-        sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableOrderName(), "1000000000", 1, "afterStop"));
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        assertCheckMigrationSuccess(jobId, "DATA_MATCH");
+        proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
+        assertTargetAndSourceCountAreSame();
         commitMigrationByJobId(jobId);
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
         log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
+    }
+    
+    private void assertTargetAndSourceCountAreSame() {
+        List<Map<String, Object>> targetList = queryForListWithLog("SELECT COUNT(*) AS count FROM t_order");
+        assertFalse(targetList.isEmpty());
+        assertThat(Integer.parseInt(targetList.get(0).get("count").toString()), is(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT));
     }
 }

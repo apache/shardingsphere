@@ -119,6 +119,9 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private String buildInventoryDumpSQL(final boolean firstQuery) {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
+        if (null == dumperConfig.getUniqueKey()) {
+            return sqlBuilder.buildInventoryDumpAllSQL(schemaName, dumperConfig.getActualTableName());
+        }
         if (PipelineJdbcUtils.isIntegerColumn(dumperConfig.getUniqueKeyDataType())) {
             return sqlBuilder.buildDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), dumperConfig.getUniqueKeyDataType(), firstQuery);
         }
@@ -142,8 +145,10 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 Object maxUniqueKeyValue = null;
                 while (resultSet.next()) {
                     channel.pushRecord(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
-                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, tableMetaData.getColumnMetaData(dumperConfig.getUniqueKey()).getOrdinalPosition());
                     rowCount++;
+                    if (null != dumperConfig.getUniqueKey()) {
+                        maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, tableMetaData.getColumnMetaData(dumperConfig.getUniqueKey()).getOrdinalPosition());
+                    }
                     if (!isRunning()) {
                         log.info("Broke because of inventory dump is not running.");
                         break;
@@ -160,6 +165,9 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private void setParameters(final PreparedStatement preparedStatement, final int batchSize, final Object beginUniqueKeyValue) throws SQLException {
         preparedStatement.setFetchSize(batchSize);
+        if (null == dumperConfig.getUniqueKey()) {
+            return;
+        }
         if (PipelineJdbcUtils.isIntegerColumn(dumperConfig.getUniqueKeyDataType())) {
             preparedStatement.setObject(1, beginUniqueKeyValue);
             preparedStatement.setObject(2, ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());
