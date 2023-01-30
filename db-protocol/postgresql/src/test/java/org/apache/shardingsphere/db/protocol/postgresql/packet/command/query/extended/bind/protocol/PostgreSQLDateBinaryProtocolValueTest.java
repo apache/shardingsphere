@@ -41,8 +41,8 @@ public final class PostgreSQLDateBinaryProtocolValueTest {
     
     @Test
     public void assertRead() throws PSQLException {
-        Date expected = Date.valueOf("2023-01-30");
         byte[] payloadBytes = new byte[4];
+        Date expected = Date.valueOf("2023-01-30");
         new TimestampUtils(false, null).toBinDate(null, payloadBytes, expected);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(payloadBytes), StandardCharsets.UTF_8);
         assertThat(new PostgreSQLDateBinaryProtocolValue().read(payload, 4), is(expected));
