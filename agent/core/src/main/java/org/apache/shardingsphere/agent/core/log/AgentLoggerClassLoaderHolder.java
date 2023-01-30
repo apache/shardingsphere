@@ -19,35 +19,29 @@ package org.apache.shardingsphere.agent.core.log;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.log.AgentLogger;
-import org.apache.shardingsphere.agent.log.IAgentLoggerFactory;
-
-import java.util.ServiceLoader;
 
 /**
- * Agent logger factory.
+ * Agent logger class loader holder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AgentLoggerFactory {
+public final class AgentLoggerClassLoaderHolder {
+    
+    private static AgentLoggerClassLoader agentLoggerClassLoader;
     
     /**
-     * Get agent logger.
+     * Get agent logger class loader.
      *
-     * @param clazz clazz
-     * @return agent logger
+     * @return agent logger class loader
      */
-    public static AgentLogger getAgentLogger(final Class<?> clazz) {
-        return AgentLoggerFactory.getAgentLogger(clazz.getName());
-    }
-    
-    /**
-     * Get agent logger.
-     *
-     * @param name name
-     * @return agent logger
-     */
-    public static AgentLogger getAgentLogger(final String name) {
-        IAgentLoggerFactory loggerFactory = ServiceLoader.load(IAgentLoggerFactory.class, AgentLoggerClassLoaderHolder.getAgentLoggerClassLoader()).iterator().next();
-        return loggerFactory.getAgentLogger(name);
+    public static AgentLoggerClassLoader getAgentLoggerClassLoader() {
+        if (null != agentLoggerClassLoader) {
+            return agentLoggerClassLoader;
+        }
+        synchronized (AgentLoggerClassLoaderHolder.class) {
+            if (null == agentLoggerClassLoader) {
+                agentLoggerClassLoader = AgentLoggerClassLoaderBuilder.create();
+            }
+        }
+        return agentLoggerClassLoader;
     }
 }

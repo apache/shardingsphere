@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.spi.AgentServiceLoader;
+import org.apache.shardingsphere.agent.log.AgentLogger;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ public final class PluginLifecycleServiceManager {
     
     private static final AtomicBoolean STARTED_FLAG = new AtomicBoolean(false);
     
-    private static final Logger LOGGER = AgentLoggerFactory.getLogger(PluginLifecycleServiceManager.class);
+    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(PluginLifecycleServiceManager.class);
     
     /**
      * Initialize all plugins.

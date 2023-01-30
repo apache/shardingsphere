@@ -15,39 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.log;
+package org.apache.shardingsphere.agent.log.slf4j;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.log.AgentLogger;
 import org.apache.shardingsphere.agent.log.IAgentLoggerFactory;
+import org.slf4j.LoggerFactory;
 
-import java.util.ServiceLoader;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Agent logger factory.
+ * SLF4J agent logger factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AgentLoggerFactory {
+public final class SLF4JAgentLoggerFactory implements IAgentLoggerFactory {
     
-    /**
-     * Get agent logger.
-     *
-     * @param clazz clazz
-     * @return agent logger
-     */
-    public static AgentLogger getAgentLogger(final Class<?> clazz) {
-        return AgentLoggerFactory.getAgentLogger(clazz.getName());
+    private static final Map<String, AgentLogger> LOGGER_MAP = new ConcurrentHashMap<>();
+    
+    @Override
+    public AgentLogger getAgentLogger(final Class<?> clazz) {
+        return getAgentLogger(clazz.getName());
     }
     
-    /**
-     * Get agent logger.
-     *
-     * @param name name
-     * @return agent logger
-     */
-    public static AgentLogger getAgentLogger(final String name) {
-        IAgentLoggerFactory loggerFactory = ServiceLoader.load(IAgentLoggerFactory.class, AgentLoggerClassLoaderHolder.getAgentLoggerClassLoader()).iterator().next();
-        return loggerFactory.getAgentLogger(name);
+    @Override
+    public AgentLogger getAgentLogger(final String name) {
+        return LOGGER_MAP.computeIfAbsent(name, key -> createAgentLogger(name));
+    }
+    
+    private AgentLogger createAgentLogger(final String name) {
+        return new SLF4JAgentLogger(LoggerFactory.getLogger(name));
     }
 }

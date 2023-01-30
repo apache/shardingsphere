@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.log;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.log.AgentLogger;
-import org.apache.shardingsphere.agent.log.IAgentLoggerFactory;
-
-import java.util.ServiceLoader;
+package org.apache.shardingsphere.agent.log;
 
 /**
  * Agent logger factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AgentLoggerFactory {
+public interface IAgentLoggerFactory {
     
     /**
      * Get agent logger.
@@ -36,9 +28,7 @@ public final class AgentLoggerFactory {
      * @param clazz clazz
      * @return agent logger
      */
-    public static AgentLogger getAgentLogger(final Class<?> clazz) {
-        return AgentLoggerFactory.getAgentLogger(clazz.getName());
-    }
+    AgentLogger getAgentLogger(Class<?> clazz);
     
     /**
      * Get agent logger.
@@ -46,8 +36,5 @@ public final class AgentLoggerFactory {
      * @param name name
      * @return agent logger
      */
-    public static AgentLogger getAgentLogger(final String name) {
-        IAgentLoggerFactory loggerFactory = ServiceLoader.load(IAgentLoggerFactory.class, AgentLoggerClassLoaderHolder.getAgentLoggerClassLoader()).iterator().next();
-        return loggerFactory.getAgentLogger(name);
-    }
+    AgentLogger getAgentLogger(String name);
 }

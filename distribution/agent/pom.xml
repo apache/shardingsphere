@@ -64,6 +64,11 @@
             <artifactId>shardingsphere-agent-tracing-opentelemetry</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-log-to-slf4j</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>ch.qos.logback</groupId>

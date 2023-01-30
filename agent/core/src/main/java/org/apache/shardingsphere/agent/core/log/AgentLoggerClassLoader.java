@@ -30,7 +30,7 @@ import java.util.jar.JarFile;
 public final class AgentLoggerClassLoader extends AgentExtraClassLoader {
     
     public AgentLoggerClassLoader(final Collection<JarFile> loggingJars, final File resourcePath) {
-        super(AgentLoggerFactory.class.getClassLoader().getParent(), loggingJars, Collections.singleton(resourcePath));
+        super(AgentLoggerFactory.class.getClassLoader(), loggingJars, Collections.singleton(resourcePath));
     }
     
     public AgentLoggerClassLoader() {
