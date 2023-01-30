@@ -88,7 +88,7 @@ public final class ShardingSphereMetaData {
      * @return meta data database
      */
     public ShardingSphereDatabase getDatabase(final String databaseName) {
-        return databases.get(databaseName.toLowerCase());
+        return null != databaseName ? databases.get(databaseName.toLowerCase()) : null;
     }
     
     /**
