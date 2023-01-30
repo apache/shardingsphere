@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.opengauss.authentication;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,6 +32,8 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussSCRAMSha256PasswordAuthenticator;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
@@ -40,10 +41,8 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -59,11 +58,7 @@ public final class OpenGaussAuthenticationHandler {
     
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
     
-    private static final String SHA256_ALGORITHM = "SHA-256";
-    
     private static final String SERVER_KEY = "Server Key";
-    
-    private static final String CLIENT_KEY = "Client Key";
     
     /**
      * Calculate server signature.
@@ -79,6 +74,42 @@ public final class OpenGaussAuthenticationHandler {
         byte[] serverKey = getKeyFromHmac(k, SERVER_KEY.getBytes(StandardCharsets.UTF_8));
         byte[] result = getKeyFromHmac(serverKey, hexStringToBytes(nonce));
         return bytesToHexString(result);
+    }
+    
+    @SneakyThrows({NoSuchAlgorithmException.class, InvalidKeySpecException.class})
+    private static byte[] generateKFromPBKDF2(final String password, final String saltString, final int serverIteration) {
+        char[] chars = password.toCharArray();
+        byte[] salt = hexStringToBytes(saltString);
+        PBEKeySpec spec = new PBEKeySpec(chars, salt, serverIteration, 32 * 8);
+        SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_WITH_HMAC_SHA1_ALGORITHM);
+        return skf.generateSecret(spec).getEncoded();
+    }
+    
+    private static byte[] hexStringToBytes(final String rawHexString) {
+        if (null == rawHexString || rawHexString.isEmpty()) {
+            return new byte[0];
+        }
+        String hexString = rawHexString.toUpperCase(Locale.ENGLISH);
+        int length = hexString.length() / 2;
+        char[] hexChars = hexString.toCharArray();
+        byte[] result = new byte[length];
+        for (int i = 0; i < length; i++) {
+            int pos = i * 2;
+            result[i] = (byte) (charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
+        }
+        return result;
+    }
+    
+    private static byte charToByte(final char c) {
+        return (byte) "0123456789ABCDEF".indexOf(c);
+    }
+    
+    @SneakyThrows({NoSuchAlgorithmException.class, InvalidKeyException.class})
+    private static byte[] getKeyFromHmac(final byte[] key, final byte[] data) {
+        SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA256_ALGORITHM);
+        Mac mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
+        mac.init(signingKey);
+        return mac.doFinal(data);
     }
     
     private static String bytesToHexString(final byte[] src) {
@@ -110,87 +141,14 @@ public final class OpenGaussAuthenticationHandler {
         Grantee grantee = new Grantee(username, "%");
         Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
-        ShardingSpherePreconditions.checkState(isPasswordRight(user.get(), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration}),
+        ShardingSpherePreconditions.checkState(getAuthenticator(grantee).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration}),
                 () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));
     }
     
-    private static boolean isPasswordRight(final ShardingSphereUser user, final Object[] args) {
-        String h3HexString = (String) args[0];
-        String salt = (String) args[1];
-        String nonce = (String) args[2];
-        int serverIteration = (int) args[3];
-        byte[] serverStoredKey = calculatedStoredKey(user.getPassword(), salt, serverIteration);
-        byte[] h3 = hexStringToBytes(h3HexString);
-        byte[] h2 = calculateH2(user.getPassword(), salt, nonce, serverIteration);
-        byte[] clientCalculatedStoredKey = sha256(xor(h3, h2));
-        return Arrays.equals(clientCalculatedStoredKey, serverStoredKey);
-    }
-    
-    private static byte[] calculatedStoredKey(final String password, final String salt, final int serverIteration) {
-        byte[] k = generateKFromPBKDF2(password, salt, serverIteration);
-        byte[] clientKey = getKeyFromHmac(k, CLIENT_KEY.getBytes());
-        return sha256(clientKey);
-    }
-    
-    private static byte[] calculateH2(final String password, final String salt, final String nonce, final int serverIteration) {
-        byte[] k = generateKFromPBKDF2(password, salt, serverIteration);
-        byte[] clientKey = getKeyFromHmac(k, CLIENT_KEY.getBytes());
-        byte[] storedKey = sha256(clientKey);
-        return getKeyFromHmac(storedKey, hexStringToBytes(nonce));
-    }
-    
-    @SneakyThrows({NoSuchAlgorithmException.class, InvalidKeySpecException.class})
-    private static byte[] generateKFromPBKDF2(final String password, final String saltString, final int serverIteration) {
-        char[] chars = password.toCharArray();
-        byte[] salt = hexStringToBytes(saltString);
-        PBEKeySpec spec = new PBEKeySpec(chars, salt, serverIteration, 32 * 8);
-        SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_WITH_HMAC_SHA1_ALGORITHM);
-        return skf.generateSecret(spec).getEncoded();
-    }
-    
-    private static byte[] hexStringToBytes(final String rawHexString) {
-        if (null == rawHexString || rawHexString.isEmpty()) {
-            return new byte[0];
-        }
-        String hexString = rawHexString.toUpperCase(Locale.ENGLISH);
-        int length = hexString.length() / 2;
-        char[] hexChars = hexString.toCharArray();
-        byte[] result = new byte[length];
-        for (int i = 0; i < length; i++) {
-            int pos = i * 2;
-            result[i] = (byte) (charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
-        }
-        return result;
-    }
-    
-    private static byte charToByte(final char c) {
-        return (byte) "0123456789ABCDEF".indexOf(c);
-    }
-    
-    @SneakyThrows(NoSuchAlgorithmException.class)
-    private static byte[] sha256(final byte[] str) {
-        MessageDigest md = MessageDigest.getInstance(SHA256_ALGORITHM);
-        md.update(str);
-        return md.digest();
-    }
-    
-    @SneakyThrows({NoSuchAlgorithmException.class, InvalidKeyException.class})
-    private static byte[] getKeyFromHmac(final byte[] key, final byte[] data) {
-        SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA256_ALGORITHM);
-        Mac mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
-        mac.init(signingKey);
-        return mac.doFinal(data);
-    }
-    
-    private static byte[] xor(final byte[] password1, final byte[] password2) {
-        Preconditions.checkArgument(password1.length == password2.length, "Xor values with different length");
-        int length = password1.length;
-        byte[] result = new byte[length];
-        for (int i = 0; i < length; i++) {
-            result[i] = (byte) (password1[i] ^ password2[i]);
-        }
-        return result;
+    private static OpenGaussAuthenticator getAuthenticator(final Grantee grantee) {
+        // TODO get authenticator by username and hostname
+        return new OpenGaussSCRAMSha256PasswordAuthenticator();
     }
 }
