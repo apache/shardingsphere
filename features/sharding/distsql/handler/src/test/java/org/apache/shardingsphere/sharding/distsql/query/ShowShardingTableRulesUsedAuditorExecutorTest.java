@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -27,16 +28,16 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAuditorResultSet;
+import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableRulesUsedAuditorExecutor;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAuditorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowShardingTableRulesUsedAuditorResultSetTest {
+public final class ShowShardingTableRulesUsedAuditorExecutorTest {
     
     @Test
     public void assertGetRowData() {
@@ -54,18 +55,28 @@ public final class ShowShardingTableRulesUsedAuditorResultSetTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
-        DatabaseDistSQLResultSet resultSet = new ShardingTableRulesUsedAuditorResultSet();
+        RQLExecutor<ShowShardingTableRulesUsedAuditorStatement> executor = new ShowShardingTableRulesUsedAuditorExecutor();
         ShowShardingTableRulesUsedAuditorStatement statement = mock(ShowShardingTableRulesUsedAuditorStatement.class);
         when(statement.getAuditorName()).thenReturn(Optional.of("shardingKeyAudit"));
-        resultSet.init(database, statement);
-        List<Object> actual = new ArrayList<>(resultSet.getRowData());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, statement);
         assertThat(actual.size(), is(2));
-        assertThat(actual.get(0), is("table"));
-        assertThat(actual.get(1), is("t_order"));
-        actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(2));
-        assertThat(actual.get(0), is("auto_table"));
-        assertThat(actual.get(1), is("t_order_auto"));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("table"));
+        assertThat(row.getCell(2), is("t_order"));
+        row = iterator.next();
+        assertThat(row.getCell(1), is("auto_table"));
+        assertThat(row.getCell(2), is("t_order_auto"));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        RQLExecutor<ShowShardingTableRulesUsedAuditorStatement> executor = new ShowShardingTableRulesUsedAuditorExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(2));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("type"));
+        assertThat(iterator.next(), is("name"));
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {

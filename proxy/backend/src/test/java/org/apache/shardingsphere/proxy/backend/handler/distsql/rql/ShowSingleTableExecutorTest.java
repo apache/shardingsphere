@@ -65,7 +65,6 @@ public final class ShowSingleTableExecutorTest {
     @Test
     public void assertGetRowData() {
         RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
-        executor.getRows(database, mock(ShowSingleTableStatement.class));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowSingleTableStatement.class));
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();

@@ -21,5 +21,4 @@ org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesResul
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAlgorithmsResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingKeyGeneratorResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAuditorsResultSet
-org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAuditorResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.CountShardingRuleResultSet

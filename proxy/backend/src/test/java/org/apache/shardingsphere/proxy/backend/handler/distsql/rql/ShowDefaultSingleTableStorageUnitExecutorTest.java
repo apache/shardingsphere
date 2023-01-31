@@ -41,7 +41,6 @@ public final class ShowDefaultSingleTableStorageUnitExecutorTest {
     @Test
     public void assertGetRowData() {
         RQLExecutor<ShowDefaultSingleTableStorageUnitStatement> executor = new ShowDefaultSingleTableStorageUnitExecutor();
-        executor.getRows(mockDatabase(), mock(ShowDefaultSingleTableStorageUnitStatement.class));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowDefaultSingleTableStorageUnitStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
