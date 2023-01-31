@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComp
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -42,9 +41,6 @@ public final class ShowComputeNodeModeExecutorTest extends ProxyContextRestorer 
     
     @Test
     public void assertExecute() throws SQLException {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        InstanceContext instanceContext = createInstanceContext();
-        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
         ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(createInstanceContext(), new ShowComputeNodeModeStatement());
         assertThat(actual.size(), is(1));

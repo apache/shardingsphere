@@ -46,4 +46,9 @@ public final class ShowComputeNodeModeExecutor implements InstanceContextRequire
         String props = null == repositoryConfig || null == repositoryConfig.getProps() ? "" : new Gson().toJson(repositoryConfig.getProps());
         return Collections.singleton(new LocalDataQueryResultRow(modeType, repositoryType, props));
     }
+    
+    @Override
+    public String getType() {
+        return ShowComputeNodeModeStatement.class.getName();
+    }
 }
