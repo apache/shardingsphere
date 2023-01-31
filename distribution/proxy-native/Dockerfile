@@ -23,10 +23,14 @@ FROM oraclelinux:9-slim
 
 MAINTAINER ShardingSphere "dev@shardingsphere.apache.org"
 
-COPY --from=prepare /conf/ /conf
+ENV LOCAL_PATH /opt/shardingsphere-proxy-native
+
+bash <(curl -sL https://get.graalvm.org/jdk) -c espresso graalvm-ce-java17-22.3.1
+
+COPY --from=prepare /conf/ ${LOCAL_PATH}/conf
 
 ARG APP_NAME
 
-ADD target/${APP_NAME} ./
+ADD target/${APP_NAME} ${LOCAL_PATH}/
 
-ENTRYPOINT ./${APP_NAME} 3307 /conf
+ENTRYPOINT ${LOCAL_PATH}/${APP_NAME} 3307 ${LOCAL_PATH}/conf

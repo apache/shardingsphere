@@ -76,7 +76,8 @@
         <jaxb.version>2.3.0</jaxb.version>
         <annotation-api.version>1.3.2</annotation-api.version>
         <activation-api.version>1.2.0</activation-api.version>
-        
+        <truffle-api.version>21.2.0</truffle-api.version>
+
         <calcite.version>1.32.0</calcite.version>
         <netty.version>4.1.86.Final</netty.version>
         
@@ -128,7 +129,8 @@
         <maven-project-info-reports-plugin.version>2.8</maven-project-info-reports-plugin.version>
         <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
-        
+        <maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
+
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
@@ -580,6 +582,12 @@
                 <version>${awaitility.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.graalvm.truffle</groupId>
+                <artifactId>truffle-api</artifactId>
+                <version>${truffle-api.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -850,6 +858,11 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven-dependency-plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -1071,6 +1084,9 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco-maven-plugin.version}</version>
+                <configuration>
+                    <excludes>**/*.jar</excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
