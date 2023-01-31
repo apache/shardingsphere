@@ -59,6 +59,29 @@
 #  enabled: false
 #  port: 33071
 #
+#logging:
+#  loggers:
+#  - loggerName: ShardingSphere-SQL
+#    additivity: false
+#    level: INFO
+#  - loggerName: com.atomikos
+#    additivity: true
+#    level: ERROR
+#  - loggerName: com.zaxxer.hikari
+#    additivity: true
+#    level: ERROR
+#  - loggerName: io.netty
+#    additivity: true
+#    level: ERROR
+#  - loggerName: org.apache.shardingsphere
+#    additivity: false
+#    appenderName: console
+#    level: INFO
+#  appenders:
+#  - appenderClass: ch.qos.logback.core.ConsoleAppender
+#    appenderName: console
+#    pattern: '[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n'
+#
 #props:
 #  system-log-level: INFO
 #  max-connections-size-per-query: 1
