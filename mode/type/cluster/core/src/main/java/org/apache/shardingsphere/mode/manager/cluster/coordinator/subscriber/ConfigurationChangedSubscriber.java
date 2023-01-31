@@ -129,7 +129,7 @@ public final class ConfigurationChangedSubscriber {
     private void disableDataSources(final StaticDataSourceContainedRule rule) {
         Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
         Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet()
-                .stream().filter(entry -> StorageNodeStatus.isDisable(entry.getValue().getStatus())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .stream().filter(entry -> StorageNodeStatus.DISABLED == entry.getValue().getStatus()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         disableDataSources.forEach((key, value) -> rule.updateStatus(new StorageNodeDataSourceChangedEvent(new QualifiedDatabase(key), value)));
     }
 }

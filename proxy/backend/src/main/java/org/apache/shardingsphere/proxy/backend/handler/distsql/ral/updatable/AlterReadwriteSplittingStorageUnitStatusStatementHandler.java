@@ -186,7 +186,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
     
     private Collection<QualifiedDatabase> getDisabledStorageNodes(final String databaseName, final MetaDataPersistService persistService) {
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
-        return storageNodes.entrySet().stream().filter(each -> StorageNodeStatus.DISABLED.name().equalsIgnoreCase(each.getValue().getStatus()))
+        return storageNodes.entrySet().stream().filter(each -> StorageNodeStatus.DISABLED == each.getValue().getStatus())
                 .map(each -> new QualifiedDatabase(each.getKey())).filter(each -> databaseName.equalsIgnoreCase(each.getDatabaseName())).collect(Collectors.toList());
     }
     

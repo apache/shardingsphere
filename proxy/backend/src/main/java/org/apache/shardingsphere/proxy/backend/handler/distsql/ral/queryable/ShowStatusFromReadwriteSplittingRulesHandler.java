@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -106,7 +107,7 @@ public final class ShowStatusFromReadwriteSplittingRulesHandler extends Abstract
         }
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
         Map<String, StorageNodeDataSource> result = new HashMap<>();
-        storageNodes.entrySet().stream().filter(entry -> "member".equalsIgnoreCase(entry.getValue().getRole())).forEach(entry -> {
+        storageNodes.entrySet().stream().filter(entry -> StorageNodeRole.MEMBER == entry.getValue().getRole()).forEach(entry -> {
             QualifiedDatabase qualifiedDatabase = new QualifiedDatabase(entry.getKey());
             if (databaseName.equalsIgnoreCase(qualifiedDatabase.getDatabaseName())) {
                 result.put(qualifiedDatabase.getDataSourceName(), entry.getValue());
@@ -117,7 +118,7 @@ public final class ShowStatusFromReadwriteSplittingRulesHandler extends Abstract
     
     private Collection<LocalDataQueryResultRow> buildRows(final Collection<String> readResources, final Map<String, StorageNodeDataSource> persistentReadResources) {
         Map<String, Map<String, StorageNodeDataSource>> persistentReadResourceGroup = persistentReadResources.entrySet().stream()
-                .collect(Collectors.groupingBy(each -> each.getValue().getStatus().toUpperCase(), Collectors.toMap(Entry::getKey, Entry::getValue)));
+                .collect(Collectors.groupingBy(each -> each.getValue().getStatus().name(), Collectors.toMap(Entry::getKey, Entry::getValue)));
         Map<String, StorageNodeDataSource> disabledReadResources = persistentReadResourceGroup.getOrDefault(StorageNodeStatus.DISABLED.name(), Collections.emptyMap());
         Map<String, StorageNodeDataSource> enabledReadResources = persistentReadResourceGroup.getOrDefault(StorageNodeStatus.ENABLED.name(), Collections.emptyMap());
         readResources.removeIf(disabledReadResources::containsKey);
@@ -132,10 +133,10 @@ public final class ShowStatusFromReadwriteSplittingRulesHandler extends Abstract
     
     private LocalDataQueryResultRow buildRow(final String resource, final StorageNodeDataSource storageNodeDataSource) {
         if (null == storageNodeDataSource) {
-            return new LocalDataQueryResultRow(resource, StorageNodeStatus.ENABLED.name().toLowerCase(), "0");
+            return new LocalDataQueryResultRow(resource, StorageNodeStatus.ENABLED.name(), "0");
         }
         long replicationDelayMilliseconds = storageNodeDataSource.getReplicationDelayMilliseconds();
-        String status = StorageNodeStatus.valueOf(storageNodeDataSource.getStatus().toUpperCase()).name().toLowerCase();
+        String status = storageNodeDataSource.getStatus().name();
         return new LocalDataQueryResultRow(resource, status, Long.toString(replicationDelayMilliseconds));
     }
 }
