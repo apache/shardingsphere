@@ -38,10 +38,6 @@ public final class SLF4JAgentLoggerFactory implements AgentLoggerFactorySPI {
     
     @Override
     public AgentLogger getAgentLogger(final String name) {
-        return LOGGER_MAP.computeIfAbsent(name, key -> createAgentLogger(name));
-    }
-    
-    private AgentLogger createAgentLogger(final String name) {
-        return new SLF4JAgentLogger(LoggerFactory.getLogger(name));
+        return LOGGER_MAP.computeIfAbsent(name, key -> new SLF4JAgentLogger(LoggerFactory.getLogger(name)));
     }
 }
