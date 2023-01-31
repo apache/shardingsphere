@@ -17,43 +17,36 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Result set for show broadcast table rule.
+ * Show broadcast table rule executor.
  */
-public final class BroadcastTableRuleResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<String> data;
+public final class ShowBroadcastTableRuleExecutor implements RQLExecutor<ShowBroadcastTableRulesStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowBroadcastTableRulesStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        data = rule.map(optional -> optional.getBroadcastTables().iterator()).orElseGet(Collections::emptyIterator);
+        if (!rule.isPresent()) {
+            return Collections.emptyList();
+        }
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        rule.get().getBroadcastTables().forEach(each -> result.add(new LocalDataQueryResultRow(each)));
+        return result;
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Collections.singleton("broadcast_table");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return Collections.singleton(data.next());
     }
     
     @Override
