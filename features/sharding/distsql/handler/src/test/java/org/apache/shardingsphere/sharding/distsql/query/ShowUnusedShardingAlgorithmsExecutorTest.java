@@ -49,16 +49,12 @@ public final class ShowUnusedShardingAlgorithmsExecutorTest {
     public void assertGetRowData() {
         RQLExecutor<ShowUnusedShardingAlgorithmsStatement> executor = new ShowUnusedShardingAlgorithmsExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowUnusedShardingAlgorithmsStatement.class));
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("database_inline"));
         assertThat(row.getCell(2), is("INLINE"));
         assertThat(row.getCell(3), is("algorithm-expression=ds_${user_id % 2}"));
-        row = iterator.next();
-        assertThat(row.getCell(1), is("t_order_hash_mod"));
-        assertThat(row.getCell(2), is("hash_mod"));
-        assertThat(row.getCell(3), is("sharding-count=4"));
     }
     
     @Test
@@ -98,7 +94,7 @@ public final class ShowUnusedShardingAlgorithmsExecutorTest {
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table", null);
-        result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "hash_mod"));
+        result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_hash_mod"));
         return result;
     }
 }
