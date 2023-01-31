@@ -17,28 +17,23 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CountShardingRuleStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Result set for count sharding rule.
+ * Count sharding rule executor.
  */
-public final class CountShardingRuleResultSet implements DatabaseDistSQLResultSet {
+public final class CountShardingRuleExecutor implements RQLExecutor<CountShardingRuleStatement> {
     
     private static final String SHARDING_TABLE = "sharding_table";
     
@@ -46,49 +41,27 @@ public final class CountShardingRuleResultSet implements DatabaseDistSQLResultSe
     
     private static final String SHARDING_BROADCAST_TABLE = "broadcast_table";
     
-    private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
-    
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("rule_name", "database", "count");
     }
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountShardingRuleStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        Map<String, LinkedList<Object>> result = new LinkedHashMap<>();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         rule.ifPresent(optional -> addShardingData(result, rule.get(), database.getName()));
-        data = result.entrySet().iterator();
+        return result;
     }
     
-    private void addShardingData(final Map<String, LinkedList<Object>> rowMap, final ShardingRule rule, final String databaseName) {
-        addData(rowMap, SHARDING_TABLE, databaseName, () -> rule.getTableRules().size());
-        addData(rowMap, SHARDING_BINDING_TABLE, databaseName, () -> ((ShardingRuleConfiguration) rule.getConfiguration()).getBindingTableGroups().size());
-        addData(rowMap, SHARDING_BROADCAST_TABLE, databaseName, () -> rule.getBroadcastTables().size());
+    private void addShardingData(final Collection<LocalDataQueryResultRow> result, final ShardingRule rule, final String databaseName) {
+        addData(result, SHARDING_TABLE, databaseName, () -> rule.getTableRules().size());
+        addData(result, SHARDING_BINDING_TABLE, databaseName, () -> ((ShardingRuleConfiguration) rule.getConfiguration()).getBindingTableGroups().size());
+        addData(result, SHARDING_BROADCAST_TABLE, databaseName, () -> rule.getBroadcastTables().size());
     }
     
-    private void addData(final Map<String, LinkedList<Object>> rowMap, final String dataKey, final String databaseName, final Supplier<Integer> apply) {
-        rowMap.compute(dataKey, (key, value) -> buildRow(value, databaseName, apply.get()));
-    }
-    
-    private LinkedList<Object> buildRow(final LinkedList<Object> value, final String databaseName, final int count) {
-        if (null == value) {
-            return new LinkedList<>(Arrays.asList(databaseName, count));
-        }
-        value.set(1, (Integer) value.get(1) + count);
-        return value;
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        Entry<String, LinkedList<Object>> entry = data.next();
-        entry.getValue().addFirst(entry.getKey());
-        return entry.getValue();
+    private void addData(final Collection<LocalDataQueryResultRow> result, final String dataKey, final String databaseName, final Supplier<Integer> apply) {
+        result.add(new LocalDataQueryResultRow(dataKey, databaseName, apply.get()));
     }
     
     @Override
