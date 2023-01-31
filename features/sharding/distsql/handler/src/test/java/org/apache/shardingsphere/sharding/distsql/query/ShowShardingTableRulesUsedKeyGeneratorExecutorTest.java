@@ -47,7 +47,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowShardingTableRulesUsedKeyGeneratorResultSetTest {
+public final class ShowShardingTableRulesUsedKeyGeneratorExecutorTest {
     
     @Test
     public void assertGetRowData() {
