@@ -19,10 +19,12 @@ package org.apache.shardingsphere.agent.core.log;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.core.spi.AgentServiceLoader;
 import org.apache.shardingsphere.agent.log.api.AgentLogger;
+import org.apache.shardingsphere.agent.log.api.impl.NOPAgentLogger;
 import org.apache.shardingsphere.agent.log.spi.IAgentLoggerFactory;
 
-import java.util.ServiceLoader;
+import java.util.Optional;
 
 /**
  * Agent logger factory.
@@ -49,8 +51,8 @@ public final class AgentLoggerFactory {
      * @return agent logger
      */
     public static AgentLogger getAgentLogger(final String name) {
-        IAgentLoggerFactory loggerFactory = ServiceLoader.load(IAgentLoggerFactory.class, getAgentLoggerClassLoader()).iterator().next();
-        return loggerFactory.getAgentLogger(name);
+        Optional<IAgentLoggerFactory> loggerFactory = AgentServiceLoader.getServiceLoader(getAgentLoggerClassLoader(), IAgentLoggerFactory.class).getServices().stream().findFirst();
+        return loggerFactory.isPresent() ? loggerFactory.get().getAgentLogger(name) : new NOPAgentLogger();
     }
     
     private static AgentLoggerClassLoader getAgentLoggerClassLoader() {
