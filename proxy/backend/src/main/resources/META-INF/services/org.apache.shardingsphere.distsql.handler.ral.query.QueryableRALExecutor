@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodesExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodeInfoExecutor

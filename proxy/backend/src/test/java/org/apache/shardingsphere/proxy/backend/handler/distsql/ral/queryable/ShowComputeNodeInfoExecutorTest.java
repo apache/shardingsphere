@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeInfoStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodesStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.state.StateContext;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,28 +38,38 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowComputeNodeInfoHandlerTest extends ProxyContextRestorer {
+public final class ShowComputeNodeInfoExecutorTest extends ProxyContextRestorer {
+    
+    @Test
+    public void assertGetColumns() {
+        ShowComputeNodeInfoExecutor executor = new ShowComputeNodeInfoExecutor();
+        Collection<String> actual = executor.getColumnNames();
+        assertThat(actual.size(), is(8));
+        Iterator<String> iterator = actual.iterator();
+        assertThat(iterator.next(), is("instance_id"));
+        assertThat(iterator.next(), is("host"));
+        assertThat(iterator.next(), is("port"));
+        assertThat(iterator.next(), is("status"));
+        assertThat(iterator.next(), is("mode_type"));
+        assertThat(iterator.next(), is("worker_id"));
+        assertThat(iterator.next(), is("labels"));
+        assertThat(iterator.next(), is("version"));
+    }
     
     @Test
     public void assertExecute() throws SQLException {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        InstanceContext instanceContext = createInstanceContext();
-        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
-        ShowComputeNodeInfoHandler handler = new ShowComputeNodeInfoHandler();
-        handler.init(new ShowComputeNodeInfoStatement(), null);
-        ProxyContext.init(contextManager);
-        handler.execute();
-        handler.next();
-        List<Object> data = handler.getRowData().getData();
-        assertThat(data.size(), is(8));
-        assertThat(data.get(0), is("127.0.0.1@3309"));
-        assertThat(data.get(1), is("127.0.0.1"));
-        assertThat(data.get(2), is(3309));
-        assertThat(data.get(3), is("OK"));
-        assertThat(data.get(4), is("Standalone"));
-        assertThat(data.get(5), is(0));
-        assertThat(data.get(6), is(""));
-        assertThat(data.get(7), is("foo_version"));
+        ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(createInstanceContext(), mock(ShowComputeNodesStatement.class));
+        assertThat(actual.size(), is(1));
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("127.0.0.1@3309"));
+        assertThat(row.getCell(2), is("127.0.0.1"));
+        assertThat(row.getCell(3), is(3309));
+        assertThat(row.getCell(4), is("OK"));
+        assertThat(row.getCell(5), is("Standalone"));
+        assertThat(row.getCell(6), is(0));
+        assertThat(row.getCell(7), is(""));
+        assertThat(row.getCell(8), is("foo_version"));
     }
     
     private InstanceContext createInstanceContext() {
