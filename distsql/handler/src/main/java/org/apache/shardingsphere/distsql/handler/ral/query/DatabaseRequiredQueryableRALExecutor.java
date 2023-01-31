@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
+package org.apache.shardingsphere.distsql.handler.ral.query;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+
+import java.util.Collection;
 
 /**
- * RAL backend handler.
+ * Database required queryable RAL executor.
  */
-@Getter
-public abstract class RALBackendHandler<T extends RALStatement> implements DistSQLBackendHandler {
-    
-    private T sqlStatement;
-    
-    private ConnectionSession connectionSession;
+public interface DatabaseRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor {
     
     /**
-     * Initialize.
+     * Get query result rows.
      *
+     * @param database ShardingSphere database
      * @param sqlStatement SQL statement
-     * @param connectionSession connection session
+     * @return query result rows
      */
-    public final void init(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
-        this.sqlStatement = (T) sqlStatement;
-        this.connectionSession = connectionSession;
-    }
+    Collection<LocalDataQueryResultRow> getRows(ShardingSphereDatabase database, T sqlStatement);
 }

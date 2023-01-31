@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +33,7 @@ import java.util.Collections;
 /**
  * Show compute node mode handler.
  */
-public final class ShowComputeNodeModeHandler extends QueryableRALBackendHandler<ShowComputeNodeModeStatement> {
+public final class ShowComputeNodeModeHandler extends AbstractQueryableRALBackendHandler<ShowComputeNodeModeStatement> {
     
     private static final String TYPE = "type";
     
