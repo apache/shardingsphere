@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.exception.algorithm.sharding.Mismatche
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -94,6 +95,11 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         } catch (final MissingMethodException | NullPointerException ex) {
             throw new MismatchedInlineShardingAlgorithmExpressionAndColumnException(algorithmExpression, columnName);
         }
+    }
+    
+    @Override
+    public Optional<String> getAlgorithmStructure(final String dataNodePrefix, final String shardingColumn) {
+        return Optional.of(algorithmExpression.replaceFirst(dataNodePrefix, "").replaceFirst(shardingColumn, "").replaceAll(" ", ""));
     }
     
     @Override
