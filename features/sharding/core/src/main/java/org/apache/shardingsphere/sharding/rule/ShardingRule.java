@@ -234,7 +234,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
                 if (!isValidActualDataSourceName(sampleTableRule, tableRule) || !isValidActualTableName(sampleTableRule, tableRule)) {
                     return false;
                 }
-                if (!isValidShardingAlgorithm(sampleTableRule, tableRule, true, checkedConfig) || !isValidShardingAlgorithm(sampleTableRule, tableRule, false, checkedConfig)) {
+                if (!isBindingShardingAlgorithm(sampleTableRule, tableRule, true, checkedConfig) || !isBindingShardingAlgorithm(sampleTableRule, tableRule, false, checkedConfig)) {
                     return false;
                 }
             }
@@ -259,10 +259,8 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         return true;
     }
     
-    private boolean isValidShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {
-        Optional<String> sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, databaseAlgorithm, checkedConfig);
-        Optional<String> toBeComparedAlgorithmExpression = getAlgorithmExpression(tableRule, databaseAlgorithm, checkedConfig);
-        return sampleAlgorithmExpression.isPresent() && toBeComparedAlgorithmExpression.isPresent() && sampleAlgorithmExpression.get().equalsIgnoreCase(toBeComparedAlgorithmExpression.get());
+    private boolean isBindingShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {
+        return getAlgorithmExpression(sampleTableRule, databaseAlgorithm, checkedConfig).equals(getAlgorithmExpression(tableRule, databaseAlgorithm, checkedConfig));
     }
     
     private Optional<String> getAlgorithmExpression(final TableRule tableRule, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {
