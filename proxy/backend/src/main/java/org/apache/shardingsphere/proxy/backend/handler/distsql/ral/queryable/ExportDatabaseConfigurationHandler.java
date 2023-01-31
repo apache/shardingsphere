@@ -35,7 +35,7 @@ import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -52,7 +52,7 @@ import java.util.Map.Entry;
 /**
  * Export database configuration handler.
  */
-public final class ExportDatabaseConfigurationHandler extends QueryableRALBackendHandler<ExportDatabaseConfigurationStatement> {
+public final class ExportDatabaseConfigurationHandler extends AbstractQueryableRALBackendHandler<ExportDatabaseConfigurationStatement> {
     
     @Override
     protected Collection<String> getColumnNames() {

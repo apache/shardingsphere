@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.distsql.handler.resultset.DistSQLResultSet;
 import org.apache.shardingsphere.distsql.handler.resultset.GlobalRuleDistSQLResultSet;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertY
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeModeStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
@@ -58,7 +58,6 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.Con
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ExportDatabaseConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodeInfoHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodeModeHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodesHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowDistVariableHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowDistVariablesHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowStatusFromReadwriteSplittingRulesHandler;
@@ -101,7 +100,6 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ApplyDistSQLStatement.class, ApplyDistSQLHandler.class);
         HANDLERS.put(DiscardDistSQLStatement.class, DiscardDistSQLHandler.class);
         HANDLERS.put(ImportDatabaseConfigurationStatement.class, ImportDatabaseConfigurationHandler.class);
-        HANDLERS.put(ShowComputeNodesStatement.class, ShowComputeNodesHandler.class);
         HANDLERS.put(ShowDistVariableStatement.class, ShowDistVariableHandler.class);
         HANDLERS.put(ShowDistVariablesStatement.class, ShowDistVariablesHandler.class);
         HANDLERS.put(ShowStatusFromReadwriteSplittingRulesStatement.class, ShowStatusFromReadwriteSplittingRulesHandler.class);
@@ -136,6 +134,10 @@ public final class RALBackendHandlerFactory {
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
             return new UpdatableGlobalRuleRALBackendHandler(sqlStatement, TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getCanonicalName()));
+        }
+        // TODO delete other if branches after replacing all query handlers with QueryableRALBackendHandler
+        if (TypedSPILoader.contains(QueryableRALExecutor.class, sqlStatement.getClass().getName())) {
+            return new QueryableRALBackendHandler<>(sqlStatement, connectionSession);
         }
         return createRALBackendHandler(sqlStatement, connectionSession);
     }

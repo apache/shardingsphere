@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
+package org.apache.shardingsphere.distsql.handler.ral.query;
 
-import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import java.util.Collection;
 
 /**
- * Binary protocol value for int8 for PostgreSQL.
+ * Queryable RAL executor.
  */
-public final class PostgreSQLInt8BinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
+@SingletonSPI
+public interface QueryableRALExecutor extends TypedSPI {
     
-    @Override
-    public int getColumnLength(final Object value) {
-        return 8;
-    }
-    
-    @Override
-    public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
-        return payload.readInt8();
-    }
-    
-    @Override
-    public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeInt8(((Number) value).longValue());
-    }
+    /**
+     * Get column names.
+     * 
+     * @return column names
+     */
+    Collection<String> getColumnNames();
 }

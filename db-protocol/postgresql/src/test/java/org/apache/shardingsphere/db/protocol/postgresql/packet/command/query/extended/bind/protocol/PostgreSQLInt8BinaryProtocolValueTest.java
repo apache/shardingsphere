@@ -17,30 +17,51 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLInt8BinaryProtocolValueTest {
     
-    @Mock
-    private PostgreSQLPacketPayload payload;
+    @Test
+    public void assertGetColumnLength() {
+        assertThat(new PostgreSQLInt8BinaryProtocolValue().getColumnLength(1L), is(8));
+    }
     
     @Test
-    public void assertNewInstance() {
-        PostgreSQLInt8BinaryProtocolValue actual = new PostgreSQLInt8BinaryProtocolValue();
-        assertThat(actual.getColumnLength(null), is(8));
-        when(payload.readInt8()).thenReturn(1L);
-        assertThat(actual.read(payload, 8), is(1L));
-        actual.write(payload, 1L);
-        verify(payload).writeInt8(1L);
+    public void assertRead() {
+        byte[] input = new byte[]{
+                (byte) 0x80, 0, 0, 0, 0, 0, 0, 0,
+                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                (byte) 0x7F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(input), StandardCharsets.UTF_8);
+        assertThat(new PostgreSQLInt8BinaryProtocolValue().read(payload, 8), is(Long.MIN_VALUE));
+        assertThat(new PostgreSQLInt8BinaryProtocolValue().read(payload, 8), is(-1L));
+        assertThat(new PostgreSQLInt8BinaryProtocolValue().read(payload, 8), is(0L));
+        assertThat(new PostgreSQLInt8BinaryProtocolValue().read(payload, 8), is(Long.MAX_VALUE));
+    }
+    
+    @Test
+    public void assertWrite() {
+        byte[] actual = new byte[24];
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(actual).writerIndex(0), StandardCharsets.UTF_8);
+        new PostgreSQLInt8BinaryProtocolValue().write(payload, -1);
+        new PostgreSQLInt8BinaryProtocolValue().write(payload, Long.MAX_VALUE);
+        new PostgreSQLInt8BinaryProtocolValue().write(payload, BigDecimal.valueOf(Long.MIN_VALUE));
+        byte[] expected = new byte[]{
+                (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+                (byte) 0x7F, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
+                (byte) 0x80, 0, 0, 0, 0, 0, 0, 0};
+        assertThat(actual, is(expected));
     }
 }

@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
+package org.apache.shardingsphere.distsql.handler.ral.query;
 
-import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+
+import java.util.Collection;
 
 /**
- * Binary protocol value for int8 for PostgreSQL.
+ * Instance context required queryable RAL executor.
  */
-public final class PostgreSQLInt8BinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
+public interface InstanceContextRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor {
     
-    @Override
-    public int getColumnLength(final Object value) {
-        return 8;
-    }
-    
-    @Override
-    public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
-        return payload.readInt8();
-    }
-    
-    @Override
-    public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeInt8(((Number) value).longValue());
-    }
+    /**
+     * Get query result rows.
+     *
+     * @param instanceContext Instance context
+     * @param sqlStatement SQL statement
+     * @return query result rows
+     */
+    Collection<LocalDataQueryResultRow> getRows(InstanceContext instanceContext, T sqlStatement);
 }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +32,7 @@ import java.util.Collections;
 /**
  * Show compute node info handler.
  */
-public final class ShowComputeNodeInfoHandler extends QueryableRALBackendHandler<ShowComputeNodeInfoStatement> {
+public final class ShowComputeNodeInfoHandler extends AbstractQueryableRALBackendHandler<ShowComputeNodeInfoStatement> {
     
     private static final String ID = "instance_id";
     

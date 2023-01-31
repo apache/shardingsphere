@@ -26,9 +26,9 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
  * RAL backend handler.
  */
 @Getter
-public abstract class RALBackendHandler<E extends RALStatement> implements DistSQLBackendHandler {
+public abstract class RALBackendHandler<T extends RALStatement> implements DistSQLBackendHandler {
     
-    private E sqlStatement;
+    private T sqlStatement;
     
     private ConnectionSession connectionSession;
     
@@ -39,7 +39,7 @@ public abstract class RALBackendHandler<E extends RALStatement> implements DistS
      * @param connectionSession connection session
      */
     public final void init(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
-        this.sqlStatement = (E) sqlStatement;
+        this.sqlStatement = (T) sqlStatement;
         this.connectionSession = connectionSession;
     }
 }
