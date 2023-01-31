@@ -17,47 +17,42 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAuditorStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * Result set for show sharding table rules used auditor.
+ * Show sharding table rules used auditor executor.
  */
-public final class ShardingTableRulesUsedAuditorResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<Collection<Object>> data = Collections.emptyIterator();
+public final class ShowShardingTableRulesUsedAuditorExecutor implements RQLExecutor<ShowShardingTableRulesUsedAuditorStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        ShowShardingTableRulesUsedAuditorStatement statement = (ShowShardingTableRulesUsedAuditorStatement) sqlStatement;
-        Collection<Collection<Object>> result = new LinkedList<>();
-        database.getRuleMetaData().findSingleRule(ShardingRule.class).ifPresent(optional -> requireResult(statement, result, optional));
-        data = result.iterator();
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableRulesUsedAuditorStatement sqlStatement) {
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        database.getRuleMetaData().findSingleRule(ShardingRule.class).ifPresent(optional -> requireResult(sqlStatement, result, optional));
+        return result;
     }
     
-    private void requireResult(final ShowShardingTableRulesUsedAuditorStatement statement, final Collection<Collection<Object>> result, final ShardingRule rule) {
+    private void requireResult(final ShowShardingTableRulesUsedAuditorStatement statement, final Collection<LocalDataQueryResultRow> result, final ShardingRule rule) {
         if (!statement.getAuditorName().isPresent()) {
             return;
         }
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.getConfiguration();
         config.getTables().forEach(each -> {
             if (null != each.getAuditStrategy() && each.getAuditStrategy().getAuditorNames().contains(statement.getAuditorName().get())) {
-                result.add(Arrays.asList("table", each.getLogicTable()));
+                result.add(new LocalDataQueryResultRow("table", each.getLogicTable()));
             }
         });
         config.getAutoTables().forEach(each -> {
             if (null != each.getAuditStrategy() && each.getAuditStrategy().getAuditorNames().contains(statement.getAuditorName().get())) {
-                result.add(Arrays.asList("auto_table", each.getLogicTable()));
+                result.add(new LocalDataQueryResultRow("auto_table", each.getLogicTable()));
             }
         });
     }
@@ -65,16 +60,6 @@ public final class ShardingTableRulesUsedAuditorResultSet implements DatabaseDis
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("type", "name");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
     }
     
     @Override

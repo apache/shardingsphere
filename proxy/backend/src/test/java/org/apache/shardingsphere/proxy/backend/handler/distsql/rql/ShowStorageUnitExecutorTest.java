@@ -136,7 +136,6 @@ public final class ShowStorageUnitExecutorTest {
     public void assertUnusedStorageUnit() {
         RQLExecutor<ShowStorageUnitsStatement> executor = new ShowStorageUnitExecutor();
         ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), 0);
-        executor.getRows(database, showStorageUnitsStatement);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, showStorageUnitsStatement);
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> rowData = actual.iterator();
