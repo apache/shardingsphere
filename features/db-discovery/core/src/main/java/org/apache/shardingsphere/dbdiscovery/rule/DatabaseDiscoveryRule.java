@@ -198,7 +198,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         StorageNodeDataSourceChangedEvent dataSourceChangedEvent = (StorageNodeDataSourceChangedEvent) event;
         DatabaseDiscoveryDataSourceRule dataSourceRule = dataSourceRules.get(dataSourceChangedEvent.getQualifiedDatabase().getGroupName());
         Preconditions.checkNotNull(dataSourceRule, "Can not find database discovery data source rule in database `%s`", databaseName);
-        if (StorageNodeStatus.isDisable(dataSourceChangedEvent.getDataSource().getStatus())) {
+        if (StorageNodeStatus.DISABLED == dataSourceChangedEvent.getDataSource().getStatus()) {
             dataSourceRule.disableDataSource(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName());
         } else {
             dataSourceRule.enableDataSource(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName());

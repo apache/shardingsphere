@@ -122,7 +122,7 @@ public final class MetaDataContextsFactory {
             Preconditions.checkArgument(3 == values.size(), "Illegal data source of storage node.");
             String databaseName = values.get(0);
             String dataSourceName = values.get(2);
-            result.put(databaseName + "." + dataSourceName, DataSourceState.valueOf(value.getStatus().toUpperCase()));
+            result.put(databaseName + "." + dataSourceName, DataSourceState.valueOf(value.getStatus().name()));
         });
         return result;
     }

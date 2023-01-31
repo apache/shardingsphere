@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.state;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.yaml;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Data source state.
+ * YAML storage node data source.
  */
-public enum DataSourceState {
+@Getter
+@Setter
+public final class YamlStorageNodeDataSource implements YamlConfiguration {
     
-    ENABLED, DISABLED
+    private String role;
+    
+    private String status;
+    
+    private long replicationDelayMilliseconds;
 }

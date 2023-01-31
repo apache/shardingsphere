@@ -97,22 +97,23 @@ public final class DatabaseDiscoveryEngine {
                                                     final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         int enabledReplicasCount = dataSourceMap.size() - disabledDataSourceNames.size() - 1;
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (!entry.getKey().equals(primaryDataSourceName)) {
-                StorageNodeDataSource storageNodeDataSource = createStorageNodeDataSource(loadReplicaStatus(entry.getValue()));
-                if (StorageNodeStatus.isEnable(storageNodeDataSource.getStatus())) {
-                    enabledReplicasCount += disabledDataSourceNames.contains(entry.getKey()) ? 1 : 0;
-                    eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
-                    continue;
-                }
-                if (Strings.isNullOrEmpty(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas"))) {
-                    eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
-                    continue;
-                }
-                if (!(databaseDiscoveryProviderAlgorithm instanceof MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm)
-                        || enabledReplicasCount > Integer.parseInt(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas", "0"))) {
-                    enabledReplicasCount -= disabledDataSourceNames.contains(entry.getKey()) ? 0 : 1;
-                    eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
-                }
+            if (entry.getKey().equals(primaryDataSourceName)) {
+                continue;
+            }
+            StorageNodeDataSource storageNodeDataSource = createStorageNodeDataSource(loadReplicaStatus(entry.getValue()));
+            if (StorageNodeStatus.ENABLED == storageNodeDataSource.getStatus()) {
+                enabledReplicasCount += disabledDataSourceNames.contains(entry.getKey()) ? 1 : 0;
+                eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                continue;
+            }
+            if (Strings.isNullOrEmpty(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas"))) {
+                eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                continue;
+            }
+            if (!(databaseDiscoveryProviderAlgorithm instanceof MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm)
+                    || enabledReplicasCount > Integer.parseInt(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas", "0"))) {
+                enabledReplicasCount -= disabledDataSourceNames.contains(entry.getKey()) ? 0 : 1;
+                eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
             }
         }
     }
