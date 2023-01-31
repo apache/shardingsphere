@@ -17,6 +17,5 @@
 
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableReferenceRuleResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.BroadcastTableRuleResultSet
-org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingKeyGeneratorResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAuditorsResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.CountShardingRuleResultSet
