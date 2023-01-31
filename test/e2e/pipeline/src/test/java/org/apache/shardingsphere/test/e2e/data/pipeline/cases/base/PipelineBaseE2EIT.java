@@ -131,7 +131,7 @@ public abstract class PipelineBaseE2EIT {
         pipelineWatcher = new PipelineWatcher(containerComposer);
     }
     
-    protected void cleanUpPipelineJobs(final JobType jobType) {
+    protected void cleanUpPipelineJobs(final JobType jobType) throws SQLException {
         if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
             return;
         }
@@ -142,14 +142,12 @@ public abstract class PipelineBaseE2EIT {
         }
         for (Map<String, Object> each : jobList) {
             String jobId = each.get("id").toString();
-            try {
+            Map<String, Object> jobInfo = queryForListWithLog(String.format("SHOW %s STATUS '%s'", jobTypeName, jobId)).get(0);
+            String status = jobInfo.get("status").toString();
+            if (JobStatus.FINISHED.name().equals(status)) {
+                proxyExecuteWithLog(String.format("COMMIT %s '%s'", jobTypeName, jobId), 0);
+            } else {
                 proxyExecuteWithLog(String.format("ROLLBACK %s '%s'", jobTypeName, jobId), 0);
-            } catch (final SQLException ignored) {
-                try {
-                    proxyExecuteWithLog(String.format("COMMIT %s '%s'", jobTypeName, jobId), 0);
-                } catch (final SQLException ex) {
-                    log.error("clean job failed", ex);
-                }
             }
         }
     }
