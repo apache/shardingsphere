@@ -23,11 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.mysql.type.MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
 
@@ -100,26 +100,26 @@ public final class DatabaseDiscoveryEngine {
             if (entry.getKey().equals(primaryDataSourceName)) {
                 continue;
             }
-            StorageNodeDataSource storageNodeDataSource = createStorageNodeDataSource(loadReplicaStatus(entry.getValue()));
-            if (StorageNodeStatus.ENABLED == storageNodeDataSource.getStatus()) {
+            StorageNodeDataSource replicaStorageNode = createReplicaStorageNode(loadReplicaStatus(entry.getValue()));
+            if (DataSourceState.ENABLED == replicaStorageNode.getStatus()) {
                 enabledReplicasCount += disabledDataSourceNames.contains(entry.getKey()) ? 1 : 0;
-                eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), replicaStorageNode));
                 continue;
             }
             if (Strings.isNullOrEmpty(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas"))) {
-                eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), replicaStorageNode));
                 continue;
             }
             if (!(databaseDiscoveryProviderAlgorithm instanceof MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm)
                     || enabledReplicasCount > Integer.parseInt(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas", "0"))) {
                 enabledReplicasCount -= disabledDataSourceNames.contains(entry.getKey()) ? 0 : 1;
-                eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), replicaStorageNode));
             }
         }
     }
     
-    private StorageNodeDataSource createStorageNodeDataSource(final ReplicaDataSourceStatus replicaStatus) {
-        return new StorageNodeDataSource(StorageNodeRole.MEMBER, replicaStatus.isOnline() ? StorageNodeStatus.ENABLED : StorageNodeStatus.DISABLED, replicaStatus.getReplicationDelayMilliseconds());
+    private StorageNodeDataSource createReplicaStorageNode(final ReplicaDataSourceStatus replicaStatus) {
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, replicaStatus.isOnline() ? DataSourceState.ENABLED : DataSourceState.DISABLED, replicaStatus.getReplicationDelayMilliseconds());
     }
     
     private ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
