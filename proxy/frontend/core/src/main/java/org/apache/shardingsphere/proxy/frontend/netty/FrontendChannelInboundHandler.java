@@ -27,7 +27,7 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
@@ -53,7 +53,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final Channel channel) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
-        connectionSession = new ConnectionSession(TypedSPIRegistry.getRegisteredService(DatabaseType.class, databaseProtocolFrontendEngine.getType()),
+        connectionSession = new ConnectionSession(TypedSPILoader.getService(DatabaseType.class, databaseProtocolFrontendEngine.getType()),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType(), channel);
     }
     
@@ -79,8 +79,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             if (authResult.isFinished()) {
                 connectionSession.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
                 connectionSession.setCurrentDatabase(authResult.getDatabase());
-                connectionSession.setExecutionId(ExecuteProcessEngine.initializeConnection(connectionSession.getGrantee(), connectionSession.getDatabaseName(),
-                        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext()));
+                connectionSession.setExecutionId(new ExecuteProcessEngine().initializeConnection(connectionSession.getGrantee(), connectionSession.getDatabaseName()));
             }
             return authResult.isFinished();
             // CHECKSTYLE:OFF
@@ -102,7 +101,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     private void closeAllResources() {
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionSession.getConnectionId());
         connectionSession.getBackendConnection().closeAllResources();
-        Optional.ofNullable(connectionSession.getExecutionId()).ifPresent(ExecuteProcessEngine::finishConnection);
+        Optional.ofNullable(connectionSession.getExecutionId()).ifPresent(new ExecuteProcessEngine()::finishConnection);
         databaseProtocolFrontendEngine.release(connectionSession);
     }
     

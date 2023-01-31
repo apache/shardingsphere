@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
@@ -26,11 +30,13 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Meta data contexts.
@@ -56,12 +62,13 @@ public final class MetaDataContexts implements AutoCloseable {
         }
         ShardingSphereData result = Optional.ofNullable(metaData.getDatabases().values().iterator().next().getProtocolType())
                 // TODO can `protocolType instanceof OpenGaussDatabaseType ? "PostgreSQL" : protocolType.getType()` replace to trunk database type?
-                .flatMap(protocolType -> TypedSPIRegistry.findRegisteredService(ShardingSphereDataBuilder.class, protocolType instanceof OpenGaussDatabaseType ? "PostgreSQL" : protocolType.getType())
+                .flatMap(protocolType -> TypedSPILoader.findService(ShardingSphereDataBuilder.class, protocolType instanceof OpenGaussDatabaseType ? "PostgreSQL" : protocolType.getType())
                         .map(builder -> builder.build(metaData)))
                 .orElseGet(ShardingSphereData::new);
         Optional<ShardingSphereData> loadedShardingSphereData = Optional.ofNullable(persistService.getShardingSphereDataPersistService())
                 .flatMap(shardingSphereDataPersistService -> shardingSphereDataPersistService.load(metaData));
-        loadedShardingSphereData.ifPresent(sphereData -> useLoadedToReplaceInit(result, sphereData));
+        loadedShardingSphereData.ifPresent(optional -> useLoadedToReplaceInit(result, optional));
+        refreshRootLogger(metaData.getProps().getProps());
         return result;
     }
     
@@ -87,6 +94,16 @@ public final class MetaDataContexts implements AutoCloseable {
                 entry.setValue(loadedSchemaData.getTableData().get(entry.getKey()));
             }
         }
+    }
+    
+    private void refreshRootLogger(final Properties props) {
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
+        renewRootLoggerLevel(rootLogger, props);
+    }
+    
+    private void renewRootLoggerLevel(final Logger rootLogger, final Properties props) {
+        rootLogger.setLevel(Level.valueOf(props.getOrDefault(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getKey(), ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getDefaultValue()).toString()));
     }
     
     @Override

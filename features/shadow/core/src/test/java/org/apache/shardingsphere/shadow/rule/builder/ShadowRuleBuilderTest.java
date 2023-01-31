@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.rule.builder;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.junit.Test;
@@ -36,7 +36,7 @@ public final class ShadowRuleBuilderTest {
     @Test
     public void assertBuild() {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        DatabaseRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(ShadowRule.class));
     }
 }

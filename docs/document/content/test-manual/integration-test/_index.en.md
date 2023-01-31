@@ -145,13 +145,13 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 #### Run debugging mode
 
   - Standard test engine
-    Run `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.General${SQL-TYPE}IT` to start the test engines of different SQL types.
+    Run `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.General${SQL-TYPE}E2EIT` to start the test engines of different SQL types.
 
   - Batch test engine
-    Run `org.apache.shardingsphere.test.integration.engine.dml.BatchDMLIT` to start the batch test engine for the test `addBatch()` provided for DML statements.
+    Run `org.apache.shardingsphere.test.integration.engine.dml.BatchDMLE2EIT` to start the batch test engine for the test `addBatch()` provided for DML statements.
 
   - Additional test engine
-    Run `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.Additional${SQL-TYPE}IT` to start the test engine with more JDBC method calls.
+    Run `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.Additional${SQL-TYPE}E2EIT` to start the test engine with more JDBC method calls.
     Additional test engines need to be enabled by setting `it.run.additional.cases=true`.
 
 #### Run Docker mode
@@ -165,6 +165,31 @@ If you only modify the test code, you can reuse the existing test mirror without
 ```bash
 ./mvnw -B clean install -f shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-test-suite/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
+
+#### Remote debug Proxy code in Docker container
+
+##### Remote debug Proxy started by docker image
+E2E Test Proxy image opens the 3308 port by default for remote debugging of the instance in the container.
+Use the following method to connect and debug the Proxy code in the container with IDE tools such as IDEA:
+
+IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
+
+Edit the corresponding information:
+  - Name: A descriptive name, such as e2e-debug.
+  - Host: A IP that can access docker, such as 127.0.0.1
+  - Port: debugging port 3308.
+  - use module classpath: The root directory of the project shardingsphere.
+
+After editing the above information, run Run -> Run -> e2e-debug in IDEA to start the remote debug of IDEA.
+
+##### Remote debug Proxy started by Testcontainer
+> Note: If the Proxy container is started by Testcontainer, because the 3308 port is not exposed before Testcontainer starts, it cannot be debugged by the `Remote debug Proxy started by docker image` method.
+Debug Testcontainer started Proxy container by the following method:
+  - Set a breakpoint in the relevant startup class of Testcontainer, for example, after the line `containerComposer.start();` in BaseE2EIT#setUp() in the suite test, at this time, the relevant containers must have been started.
+  - Access breakpoint debugging mode through shortcut key Alt + F8, and view the port mapped by the 3308 mapping of the Proxy object under the containerComposer (the external mapping port of Testcontainer is random). For example, the expression `((ShardingSphereProxyClusterContainer)((java.util.LinkedList)((ITContainers)((ClusterContainerComposer)containerComposer).containers).dockerContainers).getLast()).getMappedPort(3308)` get the mapped random port 51837.(or get mapped port by `docker ps`)
+  - See the `Remote debug Proxy started by docker image` method, set the Name, Host, Port, and use the port got in previous step.
+
+After editing the above information, run Run -> Run -> e2e-debug in IDEA to start the remote debug of IDEA.
 
 #### Notice
 

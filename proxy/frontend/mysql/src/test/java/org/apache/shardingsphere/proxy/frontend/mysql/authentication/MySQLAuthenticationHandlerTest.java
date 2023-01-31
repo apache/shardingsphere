@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -120,7 +121,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertGetAuthenticator() {
-        MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator("root", "");
+        MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator(new Grantee("root", ""));
         assertThat(authenticator, instanceOf(MySQLNativePasswordAuthenticator.class));
         assertThat(authenticator.getAuthenticationMethodName(), is(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName()));
     }

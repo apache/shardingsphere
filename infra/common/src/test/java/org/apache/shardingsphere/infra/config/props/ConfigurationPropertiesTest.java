@@ -33,6 +33,7 @@ public final class ConfigurationPropertiesTest {
     @Test
     public void assertGetValue() {
         ConfigurationProperties actual = new ConfigurationProperties(createProperties());
+        assertThat(actual.getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.DEBUG));
         assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(20));
@@ -53,6 +54,7 @@ public final class ConfigurationPropertiesTest {
     
     private Properties createProperties() {
         return PropertiesBuilder.build(
+                new Property(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getKey(), LoggerLevel.DEBUG.toString()),
                 new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString()),
                 new Property(ConfigurationPropertyKey.SQL_SIMPLE.getKey(), Boolean.TRUE.toString()),
                 new Property(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "20"),
@@ -74,6 +76,7 @@ public final class ConfigurationPropertiesTest {
     @Test
     public void assertGetDefaultValue() {
         ConfigurationProperties actual = new ConfigurationProperties(new Properties());
+        assertThat(actual.getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.INFO));
         assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(0));

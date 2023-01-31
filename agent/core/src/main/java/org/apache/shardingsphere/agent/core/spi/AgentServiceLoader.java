@@ -36,9 +36,9 @@ public final class AgentServiceLoader<T> {
     
     private final Collection<T> services;
     
-    private AgentServiceLoader(final Class<T> service) {
+    private AgentServiceLoader(final ClassLoader classLoader, final Class<T> service) {
         validate(service);
-        this.services = load(service);
+        this.services = load(classLoader, service);
     }
     
     private void validate(final Class<T> service) {
@@ -46,9 +46,9 @@ public final class AgentServiceLoader<T> {
         Preconditions.checkArgument(service.isInterface(), "SPI class `%s` is not interface.", service);
     }
     
-    private Collection<T> load(final Class<T> service) {
+    private Collection<T> load(final ClassLoader classLoader, final Class<T> service) {
         Collection<T> result = new LinkedList<>();
-        for (T each : ServiceLoader.load(service)) {
+        for (T each : ServiceLoader.load(service, classLoader)) {
             result.add(each);
         }
         return result;
@@ -63,6 +63,19 @@ public final class AgentServiceLoader<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> AgentServiceLoader<T> getServiceLoader(final Class<T> service) {
-        return (AgentServiceLoader<T>) LOADERS.computeIfAbsent(service, AgentServiceLoader::new);
+        return AgentServiceLoader.getServiceLoader(Thread.currentThread().getContextClassLoader(), service);
+    }
+    
+    /**
+     * Get singleton agent service loader.
+     *
+     * @param classLoader class loader
+     * @param service service type
+     * @param <T> type of class
+     * @return agent service loader
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> AgentServiceLoader<T> getServiceLoader(final ClassLoader classLoader, final Class<T> service) {
+        return (AgentServiceLoader<T>) LOADERS.computeIfAbsent(service, key -> new AgentServiceLoader<>(classLoader, service));
     }
 }

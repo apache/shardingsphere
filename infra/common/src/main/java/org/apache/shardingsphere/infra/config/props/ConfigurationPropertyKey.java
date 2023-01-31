@@ -33,6 +33,11 @@ import java.util.stream.Collectors;
 public enum ConfigurationPropertyKey implements TypedPropertyKey {
     
     /**
+     * The system log level.
+     */
+    SYSTEM_LOG_LEVEL("system-log-level", LoggerLevel.INFO.name(), LoggerLevel.class, false),
+    
+    /**
      * Whether show SQL in log.
      */
     SQL_SHOW("sql-show", String.valueOf(Boolean.FALSE), boolean.class, false),

@@ -25,11 +25,6 @@ import java.util.Collection;
 public interface ShardingSpherePrivileges {
     
     /**
-     * Set super privilege.
-     */
-    void setSuperPrivilege();
-    
-    /**
      * Has privileges.
      *
      * @param database schema

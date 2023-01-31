@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -28,9 +28,9 @@ import java.sql.SQLException;
 /**
  * Updatable RAL backend handler.
  * 
- * @param <E> type of RAL Statement
+ * @param <T> type of RAL Statement
  */
-public abstract class UpdatableRALBackendHandler<E extends RALStatement> extends RALBackendHandler<E> {
+public abstract class UpdatableRALBackendHandler<T extends UpdatableRALStatement> extends RALBackendHandler<T> {
     
     @Override
     public final ResponseHeader execute() throws SQLException {

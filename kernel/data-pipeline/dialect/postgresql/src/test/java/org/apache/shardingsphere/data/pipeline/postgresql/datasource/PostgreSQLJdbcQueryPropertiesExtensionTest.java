@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.datasource;
 
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -32,7 +32,7 @@ public final class PostgreSQLJdbcQueryPropertiesExtensionTest {
     
     @Test
     public void assertExtendQueryProperties() {
-        Optional<JdbcQueryPropertiesExtension> extension = TypedSPIRegistry.findRegisteredService(JdbcQueryPropertiesExtension.class, "PostgreSQL");
+        Optional<JdbcQueryPropertiesExtension> extension = TypedSPILoader.findService(JdbcQueryPropertiesExtension.class, "PostgreSQL");
         assertTrue(extension.isPresent());
         assertExtension(extension.get());
     }

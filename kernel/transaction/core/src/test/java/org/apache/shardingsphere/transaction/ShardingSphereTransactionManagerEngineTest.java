@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.fixture.ShardingSphereTransactionManagerFixture;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public final class ShardingSphereTransactionManagerEngineTest {
         Runnable caller = mock(Runnable.class);
         ShardingSphereTransactionManagerFixture transactionManager = (ShardingSphereTransactionManagerFixture) transactionManagerEngine.getTransactionManager(TransactionType.XA);
         transactionManager.setCaller(caller);
-        transactionManagerEngine.init(Collections.singletonMap("sharding_db.ds_0", TypedSPIRegistry.getRegisteredService(DatabaseType.class, "H2")), Collections.emptyMap(), "Atomikos");
+        transactionManagerEngine.init(Collections.singletonMap("sharding_db.ds_0", TypedSPILoader.getService(DatabaseType.class, "H2")), Collections.emptyMap(), "Atomikos");
         verify(caller).run();
     }
 }

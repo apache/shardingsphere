@@ -18,21 +18,18 @@
 package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Complex sharding strategy configuration.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ComplexShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
     private final String shardingColumns;
     
     private final String shardingAlgorithmName;
-    
-    public ComplexShardingStrategyConfiguration(final String shardingColumns, final String shardingAlgorithmName) {
-        this.shardingColumns = shardingColumns;
-        this.shardingAlgorithmName = shardingAlgorithmName;
-    }
     
     @Override
     public String getType() {

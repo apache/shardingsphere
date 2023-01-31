@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 
 /**
  * RUL backend handler.
  */
 @Getter
-public abstract class RULBackendHandler<E extends RULStatement> implements ProxyBackendHandler {
+public abstract class RULBackendHandler<E extends RULStatement> implements DistSQLBackendHandler {
     
     private E sqlStatement;
     

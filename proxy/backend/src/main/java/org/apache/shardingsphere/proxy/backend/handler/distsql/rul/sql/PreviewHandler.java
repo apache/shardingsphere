@@ -108,15 +108,11 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(getConnectionSession().getDatabaseName());
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(getConnectionSession().getDatabaseName()));
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        SQLFederationDeciderContext deciderContext = decide(queryContext, props, metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
+        SQLFederationDeciderContext deciderContext = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props)
+                .decide(queryContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
         Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(queryContext, databaseName, metaDataContexts)
                 : kernelProcessor.generateExecutionContext(queryContext, database, globalRuleMetaData, props, getConnectionSession().getConnectionContext()).getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
-    }
-    
-    private static SQLFederationDeciderContext decide(final QueryContext queryContext, final ConfigurationProperties props, final ShardingSphereDatabase database) {
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
-        return deciderEngine.decide(queryContext, database);
     }
     
     private void setUpCursorDefinition(final SQLStatementContext<?> sqlStatementContext) {

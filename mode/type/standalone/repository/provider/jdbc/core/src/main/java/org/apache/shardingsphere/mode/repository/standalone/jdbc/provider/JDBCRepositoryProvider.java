@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.mode.repository.standalone.jdbc.provider;
 
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * JDBC repository provider.
  */
 @SingletonSPI
-public interface JDBCRepositoryProvider extends TypedSPI, RequiredSPI {
+public interface JDBCRepositoryProvider extends TypedSPI {
     
     /**
      * Drop table SQL.

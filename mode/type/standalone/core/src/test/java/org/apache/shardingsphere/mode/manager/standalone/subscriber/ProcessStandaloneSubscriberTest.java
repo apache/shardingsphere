@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
+import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.junit.After;
 import org.junit.Before;
