@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.ExtraSQLCommand;
@@ -124,18 +125,34 @@ public abstract class PipelineBaseE2EIT {
         }
         createProxyDatabase(testParam.getDatabaseType());
         if (PipelineEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
-            try {
-                cleanUpPipelineJobs();
-            } catch (final SQLException ex) {
-                throw new RuntimeException(ex);
-            }
             cleanUpDataSource();
         }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineBaseE2EIT.class.getClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
         pipelineWatcher = new PipelineWatcher(containerComposer);
     }
     
-    protected abstract void cleanUpPipelineJobs() throws SQLException;
+    protected void cleanUpPipelineJobs(final JobType jobType) {
+        if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
+            return;
+        }
+        String jobTypeName = jobType.getTypeName();
+        List<Map<String, Object>> jobList = queryForListWithLog(String.format("SHOW %s LIST", jobTypeName));
+        if (jobList.isEmpty()) {
+            return;
+        }
+        for (Map<String, Object> each : jobList) {
+            String jobId = each.get("id").toString();
+            try {
+                proxyExecuteWithLog(String.format("ROLLBACK %s '%s'", jobTypeName, jobId), 0);
+            } catch (final SQLException ignored) {
+                try {
+                    proxyExecuteWithLog(String.format("COMMIT %s '%s'", jobTypeName, jobId), 0);
+                } catch (final SQLException ex) {
+                    log.error("clean job failed", ex);
+                }
+            }
+        }
+    }
     
     private void cleanUpDataSource() {
         for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
