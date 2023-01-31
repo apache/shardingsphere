@@ -38,6 +38,7 @@ public final class BuildInfoExporter implements MetricsExporter {
     @Override
     public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
+        result.cleanMetrics();
         addJDKBuildInfo(result, getClass().getPackage());
         return Optional.of(result);
     }

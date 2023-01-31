@@ -46,6 +46,7 @@ public final class ProxyStateExporter implements MetricsExporter {
             return Optional.empty();
         }
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
+        result.cleanMetrics();
         result.addMetric(Collections.emptyList(), stateContext.get().getCurrentState().ordinal());
         return Optional.of(result);
     }
