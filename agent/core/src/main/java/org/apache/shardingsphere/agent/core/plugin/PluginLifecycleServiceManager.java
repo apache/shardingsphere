@@ -58,9 +58,15 @@ public final class PluginLifecycleServiceManager {
     }
     
     private static void start(final Map<String, PluginConfiguration> pluginConfigs, final ClassLoader pluginClassLoader, final boolean isEnhancedForProxy) {
-        for (Entry<String, PluginConfiguration> entry : pluginConfigs.entrySet()) {
-            AgentServiceLoader.getServiceLoader(pluginClassLoader, PluginLifecycleService.class).getServices()
-                    .stream().filter(each -> each.getType().equalsIgnoreCase(entry.getKey())).findFirst().ifPresent(optional -> start(entry.getValue(), optional, isEnhancedForProxy));
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(pluginClassLoader);
+            for (Entry<String, PluginConfiguration> entry : pluginConfigs.entrySet()) {
+                AgentServiceLoader.getServiceLoader(PluginLifecycleService.class).getServices()
+                        .stream().filter(each -> each.getType().equalsIgnoreCase(entry.getKey())).findFirst().ifPresent(optional -> start(entry.getValue(), optional, isEnhancedForProxy));
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
         }
     }
     
