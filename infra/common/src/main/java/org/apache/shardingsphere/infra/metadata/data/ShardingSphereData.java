@@ -29,4 +29,43 @@ import java.util.Map;
 public final class ShardingSphereData {
     
     private final Map<String, ShardingSphereDatabaseData> databaseData = new LinkedHashMap<>();
+    
+    /**
+     * Get ShardingSphere database.
+     *
+     * @param databaseName database name
+     * @return ShardingSphere database data
+     */
+    public ShardingSphereDatabaseData getDatabase(final String databaseName) {
+        return databaseData.get(databaseName.toLowerCase());
+    }
+    
+    /**
+     * Put ShardingSphere database.
+     *
+     * @param databaseName database name
+     * @param database ShardingSphere database
+     */
+    public void putDatabase(final String databaseName, final ShardingSphereDatabaseData database) {
+        databaseData.put(databaseName.toLowerCase(), database);
+    }
+    
+    /**
+     * Drop ShardingSphere database.
+     *
+     * @param databaseName database name
+     */
+    public void dropDatabase(final String databaseName) {
+        databaseData.remove(databaseName.toLowerCase());
+    }
+    
+    /**
+     * Judge contains ShardingSphere database from meta data or not.
+     *
+     * @param databaseName database name
+     * @return contains ShardingSphere database from meta data or not
+     */
+    public boolean containsDatabase(final String databaseName) {
+        return databaseData.containsKey(databaseName.toLowerCase());
+    }
 }
