@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.primarykey;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
@@ -72,6 +73,7 @@ public final class NoUniqueKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     @Test
     public void assertTextPrimaryMigrationSuccess() throws SQLException, InterruptedException {
         log.info("assertTextPrimaryMigrationSuccess testParam:{}", testParam);
+        initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         createSourceOrderTable();
         try (Connection connection = getSourceDataSource().getConnection()) {
             AutoIncrementKeyGenerateAlgorithm generateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
