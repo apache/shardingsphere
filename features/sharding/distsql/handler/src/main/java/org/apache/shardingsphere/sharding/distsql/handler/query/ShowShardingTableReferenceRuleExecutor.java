@@ -17,31 +17,36 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableReferenceRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Result set for show sharding table reference rules.
+ * Show sharding table reference rules executor.
  */
-public final class ShardingTableReferenceRuleResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<ShardingTableReferenceRuleConfiguration> data = Collections.emptyIterator();
+public final class ShowShardingTableReferenceRuleExecutor implements RQLExecutor<ShowShardingTableReferenceRulesStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShardingTableReferenceRulesStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        rule.ifPresent(optional -> data = buildData((ShardingRuleConfiguration) optional.getConfiguration()).iterator());
+        if (!rule.isPresent()) {
+            return Collections.emptyList();
+        }
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        for (final ShardingTableReferenceRuleConfiguration referenceRule : ((ShardingRuleConfiguration) rule.get().getConfiguration()).getBindingTableGroups()) {
+            result.add(new LocalDataQueryResultRow(referenceRule.getName(), referenceRule.getReference()));
+        }
+        return result;
     }
     
     private Collection<ShardingTableReferenceRuleConfiguration> buildData(final ShardingRuleConfiguration ruleConfig) {
@@ -51,20 +56,6 @@ public final class ShardingTableReferenceRuleResultSet implements DatabaseDistSQ
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("name", "sharding_table_reference");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return buildTableRowData(data.next());
-    }
-    
-    private Collection<Object> buildTableRowData(final ShardingTableReferenceRuleConfiguration ruleConfig) {
-        return Arrays.asList(ruleConfig.getName(), ruleConfig.getReference());
     }
     
     @Override

@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableReferenceRuleResultSet;
+import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableReferenceRuleExecutor;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableReferenceRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
@@ -38,17 +40,27 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingTableReferenceRuleResultSetTest {
+public final class ShowShardingTableReferenceRuleExecutorTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingTableReferenceRuleResultSet resultSet = new ShardingTableReferenceRuleResultSet();
-        resultSet.init(mockDatabase(), mock(ShowShardingTableReferenceRulesStatement.class));
-        Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(2));
-        Iterator<Object> iterator = actual.iterator();
-        assertThat(iterator.next(), is("foo"));
-        assertThat(iterator.next(), is("t_order,t_order_item"));
+        RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShardingTableReferenceRulesStatement.class));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("foo"));
+        assertThat(row.getCell(2), is("t_order,t_order_item"));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(2));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("name"));
+        assertThat(iterator.next(), is("sharding_table_reference"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
