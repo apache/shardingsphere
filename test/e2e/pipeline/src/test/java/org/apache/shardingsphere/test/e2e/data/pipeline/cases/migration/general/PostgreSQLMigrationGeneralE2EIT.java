@@ -78,7 +78,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
         log.info("assertMigrationSuccess testParam:{}", testParam);
-        cleanUpPipelineJobs(new MigrationJobType());
+        initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         addMigrationProcessConfig();
         createSourceSchema(PipelineBaseE2EIT.SCHEMA_NAME);
         createSourceOrderTable();

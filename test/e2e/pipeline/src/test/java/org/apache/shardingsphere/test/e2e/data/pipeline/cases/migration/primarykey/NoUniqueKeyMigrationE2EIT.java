@@ -73,7 +73,7 @@ public final class NoUniqueKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     @Test
     public void assertTextPrimaryMigrationSuccess() throws SQLException, InterruptedException {
         log.info("assertTextPrimaryMigrationSuccess testParam:{}", testParam);
-        cleanUpPipelineJobs(new MigrationJobType());
+        initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         createSourceOrderTable();
         try (Connection connection = getSourceDataSource().getConnection()) {
             AutoIncrementKeyGenerateAlgorithm generateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();

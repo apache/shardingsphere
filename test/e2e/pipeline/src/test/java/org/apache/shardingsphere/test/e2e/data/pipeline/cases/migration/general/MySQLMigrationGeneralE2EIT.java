@@ -79,7 +79,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
         log.info("assertMigrationSuccess testParam:{}", testParam);
-        cleanUpPipelineJobs(new MigrationJobType());
+        initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         addMigrationProcessConfig();
         createSourceOrderTable();
         createSourceOrderItemTable();
