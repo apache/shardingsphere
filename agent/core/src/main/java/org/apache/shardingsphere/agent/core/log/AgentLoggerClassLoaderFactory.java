@@ -54,7 +54,7 @@ public final class AgentLoggerClassLoaderFactory {
     @SneakyThrows(IOException.class)
     private static Collection<JarFile> getLoggingJars() {
         Collection<JarFile> result = new LinkedList<>();
-        Files.walkFileTree(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "lib")).toPath(), new SimpleFileVisitor<Path>() {
+        Files.walkFileTree(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "log-lib")).toPath(), new SimpleFileVisitor<Path>() {
             
             @Override
             public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {

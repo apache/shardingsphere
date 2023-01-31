@@ -95,7 +95,7 @@
     
     <dependencySets>
         <dependencySet>
-            <outputDirectory>./lib</outputDirectory>
+            <outputDirectory>./log-lib</outputDirectory>
             <includes>
                 <include>org.slf4j:slf4j-api</include>
                 <include>ch.qos.logback:*</include>
