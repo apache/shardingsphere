@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceCh
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -75,9 +76,10 @@ public final class DatabaseDiscoveryEngine {
         if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(originalPrimaryDataSourceName)) {
             eventBusContext.post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
         }
-        String result = newPrimaryDataSourceName.orElse("");
-        postReplicaDataSourceDisabledEvent(databaseName, groupName, result, dataSourceMap, disabledDataSourceNames);
-        return result;
+        Map<String, DataSource> replicaDataSourceMap = new HashMap<>(dataSourceMap);
+        newPrimaryDataSourceName.ifPresent(replicaDataSourceMap::remove);
+        postReplicaDataSourceDisabledEvent(databaseName, groupName, replicaDataSourceMap, disabledDataSourceNames);
+        return newPrimaryDataSourceName.orElse("");
     }
     
     private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
@@ -93,13 +95,10 @@ public final class DatabaseDiscoveryEngine {
         return Optional.empty();
     }
     
-    private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName, final String primaryDataSourceName,
-                                                    final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        int enabledReplicasCount = dataSourceMap.size() - disabledDataSourceNames.size() - 1;
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (entry.getKey().equals(primaryDataSourceName)) {
-                continue;
-            }
+    private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName,
+                                                    final Map<String, DataSource> replicaDataSourceMap, final Collection<String> disabledDataSourceNames) {
+        int enabledReplicasCount = replicaDataSourceMap.size() - disabledDataSourceNames.size() - 1;
+        for (Entry<String, DataSource> entry : replicaDataSourceMap.entrySet()) {
             StorageNodeDataSource replicaStorageNode = createReplicaStorageNode(loadReplicaStatus(entry.getValue()));
             if (DataSourceState.ENABLED == replicaStorageNode.getStatus()) {
                 enabledReplicasCount += disabledDataSourceNames.contains(entry.getKey()) ? 1 : 0;
