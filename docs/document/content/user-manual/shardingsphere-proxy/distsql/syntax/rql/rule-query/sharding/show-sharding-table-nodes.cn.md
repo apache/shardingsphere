@@ -5,7 +5,7 @@ weight = 10
 
 ### 描述
 
-`SHOW SHARDING TABLE NODES` 语法用于查询指定逻辑库中的分片表的节点分布。
+`SHOW SHARDING TABLE NODES` 语法用于查询指定逻辑库中的指定分片表的节点分布。
 
 ### 语法
 
@@ -13,7 +13,10 @@ weight = 10
 {{% tab name="语法" %}}
 ```sql
 ShowShardingTableNode::=
-  'SHOW' 'SHARDING' 'TABLE' 'NODES' ('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'TABLE' 'NODES' tableName? ('FROM' databaseName)?
+
+tableName ::=
+  identifier
 
 databaseName ::=
   identifier
@@ -37,7 +40,39 @@ databaseName ::=
 
 ### 示例
 
-- 查询指定逻辑库中的分片表的节点分布
+- 查询指定逻辑库中指定分片表的节点分布
+
+```sql
+SHOW SHARDING TABLE NODES t_order_item FROM sharding_db;
+```
+
+```sql
+mysql> SHOW SHARDING TABLE NODES t_order_item FROM sharding_db;
++--------------+------------------------------------------------------------------------------------------------------------+
+| name         | nodes                                                                                                      |
++--------------+------------------------------------------------------------------------------------------------------------+
+| t_order_item | resource_0.t_order_item_0, resource_0.t_order_item_1, resource_1.t_order_item_0, resource_1.t_order_item_1 |
++--------------+------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+```
+
+- 查询当前逻辑库中指定分片表的节点分布
+
+```sql
+SHOW SHARDING TABLE NODES t_order_item;
+```
+
+```sql
+mysql> SHOW SHARDING TABLE NODES t_order_item;
++--------------+------------------------------------------------------------------------------------------------------------+
+| name         | nodes                                                                                                      |
++--------------+------------------------------------------------------------------------------------------------------------+
+| t_order_item | resource_0.t_order_item_0, resource_0.t_order_item_1, resource_1.t_order_item_0, resource_1.t_order_item_1 |
++--------------+------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+```
+
+- 查询指定逻辑库中所有分片表的节点分布
 
 ```sql
 SHOW SHARDING TABLE NODES FROM sharding_db;
@@ -53,7 +88,7 @@ mysql> SHOW SHARDING TABLE NODES FROM sharding_db;
 1 row in set (0.00 sec)
 ```
 
-- 查询当前逻辑库中的分片表的节点分布
+- 查询当前逻辑库中所有分片表的节点分布
 
 ```sql
 SHOW SHARDING TABLE NODES;

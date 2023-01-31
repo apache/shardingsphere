@@ -23,3 +23,4 @@ org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingAuditorsExe
 org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableRulesUsedAlgorithmExecutor
 org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableRulesUsedKeyGeneratorExecutor
 org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableRulesUsedAuditorExecutor
+org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableNodesExecutor
