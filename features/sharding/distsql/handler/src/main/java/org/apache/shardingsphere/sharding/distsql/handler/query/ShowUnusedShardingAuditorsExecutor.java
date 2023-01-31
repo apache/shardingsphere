@@ -17,49 +17,44 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
+import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Result set for show unused sharding auditors.
+ * Show unused sharding auditors executor.
  */
-public final class UnusedShardingAuditorsResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<Entry<String, AlgorithmConfiguration>> data = Collections.emptyIterator();
+public final class ShowUnusedShardingAuditorsExecutor implements RQLExecutor<ShowUnusedShardingAuditorsStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowUnusedShardingAuditorsStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        rule.ifPresent(optional -> getUnusedAuditors((ShardingRuleConfiguration) optional.getConfiguration()));
-    }
-    
-    private void getUnusedAuditors(final ShardingRuleConfiguration shardingRuleConfig) {
+        if (!rule.isPresent()) {
+            return Collections.emptyList();
+        }
+        ShardingRuleConfiguration shardingRuleConfig = (ShardingRuleConfiguration) rule.get().getConfiguration();
         Collection<String> inUsedAuditors = getUsedAuditors(shardingRuleConfig);
-        Map<String, AlgorithmConfiguration> map = new HashMap<>();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (Entry<String, AlgorithmConfiguration> entry : shardingRuleConfig.getAuditors().entrySet()) {
             if (!inUsedAuditors.contains(entry.getKey())) {
-                map.put(entry.getKey(), entry.getValue());
+                result.add(new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps().toString()));
             }
         }
-        data = map.entrySet().iterator();
+        return result;
     }
     
     private Collection<String> getUsedAuditors(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -76,24 +71,6 @@ public final class UnusedShardingAuditorsResultSet implements DatabaseDistSQLRes
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("name", "type", "props");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return buildTableRowData(data.next());
-    }
-    
-    private Collection<Object> buildTableRowData(final Entry<String, AlgorithmConfiguration> data) {
-        Collection<Object> result = new LinkedList<>();
-        result.add(data.getKey());
-        result.add(data.getValue().getType());
-        result.add(data.getValue().getProps());
-        return result;
     }
     
     @Override
