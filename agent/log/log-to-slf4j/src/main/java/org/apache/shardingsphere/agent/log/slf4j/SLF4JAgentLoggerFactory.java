@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.log.slf4j;
 
 import org.apache.shardingsphere.agent.log.api.AgentLogger;
-import org.apache.shardingsphere.agent.log.spi.IAgentLoggerFactory;
+import org.apache.shardingsphere.agent.log.spi.AgentLoggerFactorySPI;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * SLF4J agent logger factory.
  */
-public final class SLF4JAgentLoggerFactory implements IAgentLoggerFactory {
+public final class SLF4JAgentLoggerFactory implements AgentLoggerFactorySPI {
     
     private static final Map<String, AgentLogger> LOGGER_MAP = new ConcurrentHashMap<>();
     

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.agent.log.api.AgentLogger;
 /**
  * Agent logger factory.
  */
-public interface IAgentLoggerFactory {
+public interface AgentLoggerFactorySPI {
     
     /**
      * Get agent logger.

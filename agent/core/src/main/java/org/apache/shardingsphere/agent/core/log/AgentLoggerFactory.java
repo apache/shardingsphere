@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.spi.AgentServiceLoader;
 import org.apache.shardingsphere.agent.log.api.AgentLogger;
 import org.apache.shardingsphere.agent.log.api.impl.NOPAgentLogger;
-import org.apache.shardingsphere.agent.log.spi.IAgentLoggerFactory;
+import org.apache.shardingsphere.agent.log.spi.AgentLoggerFactorySPI;
 
 import java.util.Optional;
 
@@ -51,7 +51,7 @@ public final class AgentLoggerFactory {
      * @return agent logger
      */
     public static AgentLogger getAgentLogger(final String name) {
-        Optional<IAgentLoggerFactory> loggerFactory = AgentServiceLoader.getServiceLoader(getAgentLoggerClassLoader(), IAgentLoggerFactory.class).getServices().stream().findFirst();
+        Optional<AgentLoggerFactorySPI> loggerFactory = AgentServiceLoader.getServiceLoader(getAgentLoggerClassLoader(), AgentLoggerFactorySPI.class).getServices().stream().findFirst();
         return loggerFactory.isPresent() ? loggerFactory.get().getAgentLogger(name) : new NOPAgentLogger();
     }
     
