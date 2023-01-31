@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.jar;
+package org.apache.shardingsphere.agent.core.log;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
-import org.apache.shardingsphere.agent.log.api.AgentLogger;
+import org.apache.shardingsphere.agent.core.path.AgentPath;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,43 +35,44 @@ import java.util.LinkedList;
 import java.util.jar.JarFile;
 
 /**
- * Plugin jar loader.
+ * Agent logger class loader factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PluginJarLoader {
-    
-    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(PluginJarLoader.class);
+public final class AgentLoggerClassLoaderFactory {
     
     /**
-     * Load plugin jars.
-     * 
-     * @param agentRootPath agent root path
-     * @return plugin jars
-     * @throws IOException IO exception
+     * Create agent logger class loader.
+     *
+     * @return agent logger class loader
      */
-    public static Collection<JarFile> load(final File agentRootPath) throws IOException {
-        Collection<File> jarFiles = getJarFiles(new File(String.join(File.separator, agentRootPath.getPath(), "plugins")));
-        Collection<JarFile> result = new LinkedList<>();
-        for (File each : jarFiles) {
-            result.add(new JarFile(each, true));
-            LOGGER.info("Loaded jar: {}", each.getName());
-        }
-        return result;
+    @SneakyThrows(URISyntaxException.class)
+    public static AgentLoggerClassLoader create() {
+        File agentFle = new File(AgentLoggerFactory.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        return agentFle.isFile() && agentFle.getName().endsWith(".jar") ? new AgentLoggerClassLoader(getLoggingJars(), getLoggingResourcePath()) : new AgentLoggerClassLoader();
     }
     
     @SneakyThrows(IOException.class)
-    private static Collection<File> getJarFiles(final File file) {
-        Collection<File> result = new LinkedList<>();
-        Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
+    private static Collection<JarFile> getLoggingJars() {
+        Collection<JarFile> result = new LinkedList<>();
+        Files.walkFileTree(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "lib")).toPath(), new SimpleFileVisitor<Path>() {
             
             @Override
             public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
                 if (path.toFile().isFile() && path.toFile().getName().endsWith(".jar")) {
-                    result.add(path.toFile());
+                    result.add(getJarFile(path));
                 }
                 return FileVisitResult.CONTINUE;
             }
         });
         return result;
+    }
+    
+    @SneakyThrows(IOException.class)
+    private static JarFile getJarFile(final Path path) {
+        return new JarFile(path.toFile(), true);
+    }
+    
+    private static File getLoggingResourcePath() {
+        return new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "conf"));
     }
 }

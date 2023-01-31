@@ -20,13 +20,13 @@ package org.apache.shardingsphere.agent.core.builder.interceptor.impl;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
-import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInterceptor;
-import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutorFactory;
+import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInterceptor;
+import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
+import org.apache.shardingsphere.agent.log.api.AgentLogger;
 
 import java.util.Optional;
 
@@ -35,7 +35,7 @@ import java.util.Optional;
  */
 public final class MethodAdvisorBuilderInterceptor implements AgentBuilderInterceptor {
     
-    private static final Logger LOGGER = AgentLoggerFactory.getLogger(MethodAdvisorBuilderInterceptor.class);
+    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(MethodAdvisorBuilderInterceptor.class);
     
     private final TypeDescription typePointcut;
     

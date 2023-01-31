@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.log;
+package org.apache.shardingsphere.agent.log.slf4j;
 
-import org.apache.shardingsphere.agent.core.classloader.AgentExtraClassLoader;
+import org.apache.shardingsphere.agent.log.api.AgentLogger;
+import org.apache.shardingsphere.agent.log.spi.AgentLoggerFactorySPI;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.jar.JarFile;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Agent logger class loader.
+ * SLF4J agent logger factory.
  */
-public final class AgentLoggerClassLoader extends AgentExtraClassLoader {
+public final class SLF4JAgentLoggerFactory implements AgentLoggerFactorySPI {
     
-    public AgentLoggerClassLoader(final Collection<JarFile> loggingJars, final File resourcePath) {
-        super(AgentLoggerFactory.class.getClassLoader(), loggingJars, Collections.singleton(resourcePath));
+    private static final Map<String, AgentLogger> LOGGER_MAP = new ConcurrentHashMap<>();
+    
+    @Override
+    public AgentLogger getAgentLogger(final Class<?> clazz) {
+        return getAgentLogger(clazz.getName());
     }
     
-    public AgentLoggerClassLoader() {
-        super(AgentLoggerFactory.class.getClassLoader(), Collections.emptyList());
+    @Override
+    public AgentLogger getAgentLogger(final String name) {
+        return LOGGER_MAP.computeIfAbsent(name, key -> new SLF4JAgentLogger(LoggerFactory.getLogger(name)));
     }
 }

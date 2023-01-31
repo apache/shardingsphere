@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.log;
+package org.apache.shardingsphere.agent.log.spi;
 
-import org.apache.shardingsphere.agent.core.classloader.AgentExtraClassLoader;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.jar.JarFile;
+import org.apache.shardingsphere.agent.log.api.AgentLogger;
 
 /**
- * Agent logger class loader.
+ * Agent logger factory.
  */
-public final class AgentLoggerClassLoader extends AgentExtraClassLoader {
+public interface AgentLoggerFactorySPI {
     
-    public AgentLoggerClassLoader(final Collection<JarFile> loggingJars, final File resourcePath) {
-        super(AgentLoggerFactory.class.getClassLoader(), loggingJars, Collections.singleton(resourcePath));
-    }
+    /**
+     * Get agent logger.
+     *
+     * @param clazz clazz
+     * @return agent logger
+     */
+    AgentLogger getAgentLogger(Class<?> clazz);
     
-    public AgentLoggerClassLoader() {
-        super(AgentLoggerFactory.class.getClassLoader(), Collections.emptyList());
-    }
+    /**
+     * Get agent logger.
+     *
+     * @param name name
+     * @return agent logger
+     */
+    AgentLogger getAgentLogger(String name);
 }
