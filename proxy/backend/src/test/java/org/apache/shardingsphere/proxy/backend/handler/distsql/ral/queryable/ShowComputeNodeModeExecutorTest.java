@@ -20,16 +20,16 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,23 +37,29 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowComputeNodeModeHandlerTest extends ProxyContextRestorer {
+public final class ShowComputeNodeModeExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecute() throws SQLException {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        InstanceContext instanceContext = createInstanceContext();
-        when(contextManager.getInstanceContext()).thenReturn(instanceContext);
-        ShowComputeNodeModeHandler handler = new ShowComputeNodeModeHandler();
-        handler.init(new ShowComputeNodeModeStatement(), null);
-        ProxyContext.init(contextManager);
-        handler.execute();
-        handler.next();
-        List<Object> data = handler.getRowData().getData();
-        assertThat(data.size(), is(3));
-        assertThat(data.get(0), is("Cluster"));
-        assertThat(data.get(1), is("ZooKeeper"));
-        assertThat(data.get(2), is("{\"key\":\"value1,value2\"}"));
+        ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(createInstanceContext(), new ShowComputeNodeModeStatement());
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("Cluster"));
+        assertThat(row.getCell(2), is("ZooKeeper"));
+        assertThat(row.getCell(3), is("{\"key\":\"value1,value2\"}"));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(3));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("type"));
+        assertThat(iterator.next(), is("repository"));
+        assertThat(iterator.next(), is("props"));
     }
     
     private InstanceContext createInstanceContext() {

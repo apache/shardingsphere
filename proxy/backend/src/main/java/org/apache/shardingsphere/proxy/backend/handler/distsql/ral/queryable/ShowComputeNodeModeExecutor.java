@@ -18,41 +18,37 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.gson.Gson;
+import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Show compute node mode handler.
+ * Show compute node mode executor.
  */
-public final class ShowComputeNodeModeHandler extends AbstractQueryableRALBackendHandler<ShowComputeNodeModeStatement> {
-    
-    private static final String TYPE = "type";
-    
-    private static final String REPOSITORY = "repository";
-    
-    private static final String PROPS = "props";
+public final class ShowComputeNodeModeExecutor implements InstanceContextRequiredQueryableRALExecutor<ShowComputeNodeModeStatement> {
     
     @Override
-    protected Collection<String> getColumnNames() {
-        return Arrays.asList(TYPE, REPOSITORY, PROPS);
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("type", "repository", "props");
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
+    public Collection<LocalDataQueryResultRow> getRows(final InstanceContext instanceContext, final ShowComputeNodeModeStatement sqlStatement) {
         PersistRepositoryConfiguration repositoryConfig = instanceContext.getModeConfiguration().getRepository();
         String modeType = instanceContext.getModeConfiguration().getType();
         String repositoryType = null == repositoryConfig ? "" : repositoryConfig.getType();
         String props = null == repositoryConfig || null == repositoryConfig.getProps() ? "" : new Gson().toJson(repositoryConfig.getProps());
         return Collections.singleton(new LocalDataQueryResultRow(modeType, repositoryType, props));
+    }
+    
+    @Override
+    public String getType() {
+        return ShowComputeNodeModeStatement.class.getName();
     }
 }
