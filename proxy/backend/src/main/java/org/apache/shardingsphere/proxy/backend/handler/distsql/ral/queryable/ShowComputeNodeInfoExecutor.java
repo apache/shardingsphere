@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
+import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeInfoStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,37 +32,26 @@ import java.util.Collections;
 /**
  * Show compute node info handler.
  */
-public final class ShowComputeNodeInfoHandler extends AbstractQueryableRALBackendHandler<ShowComputeNodeInfoStatement> {
-    
-    private static final String ID = "instance_id";
-    
-    private static final String HOST = "host";
-    
-    private static final String PORT = "port";
-    
-    private static final String STATUS = "status";
-    
-    private static final String MODE_TYPE = "mode_type";
-    
-    private static final String WORKER_ID = "worker_id";
-    
-    private static final String LABELS = "labels";
-    
-    private static final String VERSION = "version";
+public final class ShowComputeNodeInfoExecutor implements InstanceContextRequiredQueryableRALExecutor<ShowComputeNodeInfoStatement> {
     
     @Override
-    protected Collection<String> getColumnNames() {
-        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, WORKER_ID, LABELS, VERSION);
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("instance_id", "host", "port", "status", "mode_type", "worker_id", "labels", "version");
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        ComputeNodeInstance instance = contextManager.getInstanceContext().getInstance();
+    public Collection<LocalDataQueryResultRow> getRows(final InstanceContext instanceContext, final ShowComputeNodeInfoStatement sqlStatement) {
+        ComputeNodeInstance instance = instanceContext.getInstance();
         InstanceMetaData instanceMetaData = instance.getMetaData();
-        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
+        String modeType = instanceContext.getModeConfiguration().getType();
         return Collections.singletonList(new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getIp(),
                 instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
                 instance.getState().getCurrentState().name(), modeType, instance.getWorkerId(), String.join(",", instance.getLabels()),
                 instanceMetaData.getVersion()));
+    }
+    
+    @Override
+    public String getType() {
+        return ShowComputeNodeInfoStatement.class.getName();
     }
 }
