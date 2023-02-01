@@ -59,21 +59,19 @@ public final class ShadowTableRule {
     private Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> initColumnShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames,
                                                                                                          final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> result = new EnumMap<>(ShadowOperationType.class);
-        shadowAlgorithmNames.forEach(each -> {
+        for (String each : shadowAlgorithmNames) {
             ShadowAlgorithm shadowAlgorithm = shadowAlgorithms.get(each);
             if (shadowAlgorithm instanceof ColumnShadowAlgorithm) {
-                String operation = shadowAlgorithm.getProps().getProperty("operation");
-                String shadowColumnName = shadowAlgorithm.getProps().getProperty("column");
-                ShadowOperationType.contains(operation).ifPresent(optional -> initShadowAlgorithmNames(optional, each, shadowColumnName, result));
+                initShadowAlgorithmNames(each, (ColumnShadowAlgorithm<?>) shadowAlgorithm, result);
             }
-        });
+        }
         return result;
     }
     
-    private void initShadowAlgorithmNames(final ShadowOperationType operationType, final String algorithmName, final String shadowColumnName,
+    private void initShadowAlgorithmNames(final String name, final ColumnShadowAlgorithm<?> algorithm,
                                           final Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames) {
-        Collection<ShadowAlgorithmNameRule> shadowAlgorithmNameRules = columnShadowAlgorithmNames.get(operationType);
-        ShardingSpherePreconditions.checkState(null == shadowAlgorithmNameRules, () -> new InvalidShadowAlgorithmOperationException(operationType.name(), tableName));
-        columnShadowAlgorithmNames.put(operationType, Collections.singletonList(new ShadowAlgorithmNameRule(shadowColumnName, algorithmName)));
+        ShadowOperationType operationType = algorithm.getShadowOperationType();
+        ShardingSpherePreconditions.checkState(!columnShadowAlgorithmNames.containsKey(operationType), () -> new InvalidShadowAlgorithmOperationException(operationType.name(), tableName));
+        columnShadowAlgorithmNames.put(operationType, Collections.singleton(new ShadowAlgorithmNameRule(algorithm.getShadowColumn(), name)));
     }
 }
