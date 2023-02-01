@@ -23,15 +23,11 @@ import org.apache.shardingsphere.infra.context.transaction.TransactionConnection
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -39,13 +35,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
-    
-    @Before
-    @After
-    public void reset() throws NoSuchFieldException, IllegalAccessException {
-        ((Map<?, ?>) Plugins.getMemberAccessor()
-                .get(TransactionWeightReadQueryLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP"), TransactionWeightReadQueryLoadBalanceAlgorithm.class)).clear();
-    }
     
     @Test
     public void assertGetSingleReadDataSource() {
