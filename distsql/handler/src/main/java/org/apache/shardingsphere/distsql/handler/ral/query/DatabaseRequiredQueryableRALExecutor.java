@@ -26,7 +26,7 @@ import java.util.Collection;
 /**
  * Database required queryable RAL executor.
  */
-public interface DatabaseRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor {
+public interface DatabaseRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
      * Get query result rows.

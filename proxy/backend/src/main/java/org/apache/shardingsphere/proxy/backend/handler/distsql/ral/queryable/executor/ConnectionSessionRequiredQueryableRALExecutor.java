@@ -28,7 +28,7 @@ import java.util.Collection;
 /**
  * Connection session required queryable RAL executor.
  */
-public interface ConnectionSessionRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor {
+public interface ConnectionSessionRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
      * Get query result rows.
