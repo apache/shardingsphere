@@ -158,7 +158,7 @@ weight = 9
 |-----------------|----------|-------------|
 | registration-department-codes | String   | 登记管理部门代码（以英文逗号分隔） |
 | category-codes | String   | 机构类别代码（以英文逗号分隔） |
-| administrative-division-codes | String   | 等级管理机关行政区划码（以英文逗号分隔） |
+| administrative-division-codes | String   | 行政区划随机码表（以英文逗号分隔） |
 
 ## 操作步骤
 1. 在脱敏规则中配置脱敏算法；
