@@ -135,6 +135,19 @@ Attributes:
 |-----------------|--------|---------------------------------------|
 | landline-numbers | String | Landline numbers (separate with comma) |
 
+#### Generic table random replace algorithm.
+
+Type: GENERIC_TABLE_RANDOM_REPLACE
+
+Attributes:
+
+| *Name*          | *DataType* | *Description*                         |
+|-----------------|--------|---------------------------------------|
+| uppercase-letter-codes | String   | Uppercase letter (No Split) |
+| lowercase-letter-codes | String   | Lowercase-letter (No Split) |
+| digital-random-codes   | String   | Number (No Split)   |
+| special-codes          | String   | Special code (No Split)|
+
 ## Operating Procedure
 1. Configure maskAlgorithms in a mask rule.
 2. Use relevant algorithm types in maskAlgorithms.
