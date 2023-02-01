@@ -68,21 +68,26 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> e
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() {
-        QueryableRALExecutor executor = TypedSPILoader.getService(QueryableRALExecutor.class, getSqlStatement().getClass().getName());
+        QueryableRALExecutor<T> executor = TypedSPILoader.getService(QueryableRALExecutor.class, getSqlStatement().getClass().getName());
         queryHeaders = createQueryHeader(executor.getColumnNames());
+        mergedResult = getMergedResult(executor);
+        return new QueryResponseHeader(queryHeaders);
+    }
+    
+    private MergedResult getMergedResult(final QueryableRALExecutor<T> executor) {
         if (executor instanceof InstanceContextRequiredQueryableRALExecutor) {
-            mergedResult = getMergedResultByInstanceContextRequiredExecutor((InstanceContextRequiredQueryableRALExecutor<T>) executor);
+            return getMergedResultByInstanceContextRequiredExecutor((InstanceContextRequiredQueryableRALExecutor<T>) executor);
         }
         if (executor instanceof MetaDataRequiredQueryableRALExecutor) {
-            mergedResult = getMergedResultByMetaDataRequiredExecutor((MetaDataRequiredQueryableRALExecutor<T>) executor);
+            return getMergedResultByMetaDataRequiredExecutor((MetaDataRequiredQueryableRALExecutor<T>) executor);
         }
         if (executor instanceof DatabaseRequiredQueryableRALExecutor) {
-            mergedResult = getMergedResultByDatabaseRequiredExecutor((DatabaseRequiredQueryableRALExecutor<T>) executor);
+            return getMergedResultByDatabaseRequiredExecutor((DatabaseRequiredQueryableRALExecutor<T>) executor);
         }
         if (executor instanceof ConnectionSessionRequiredQueryableRALExecutor) {
-            mergedResult = getMergedResultByConnectionSessionRequiredExecutor((ConnectionSessionRequiredQueryableRALExecutor<T>) executor);
+            return getMergedResultByConnectionSessionRequiredExecutor((ConnectionSessionRequiredQueryableRALExecutor<T>) executor);
         }
-        return new QueryResponseHeader(queryHeaders);
+        return createMergedResult(executor.getRows(getSqlStatement()));
     }
     
     private MergedResult getMergedResultByInstanceContextRequiredExecutor(final InstanceContextRequiredQueryableRALExecutor<T> executor) {

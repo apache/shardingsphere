@@ -110,11 +110,6 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         return Collections.singleton(new LocalDataQueryResultRow(generateDistSQL(yamlConfig)));
     }
     
-    @Override
-    public String getType() {
-        return ConvertYamlConfigurationStatement.class.getName();
-    }
-    
     private String generateDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
         StringBuilder result = new StringBuilder();
         appendResourceDistSQL(yamlConfig, result);
@@ -627,6 +622,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         return result.toString();
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private String getAlgorithmProperties(final Properties props) {
         StringBuilder result = new StringBuilder();
         Iterator<String> iterator = new TreeMap(props).keySet().iterator();
@@ -642,5 +638,10 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
             }
         }
         return result.toString();
+    }
+    
+    @Override
+    public String getType() {
+        return ConvertYamlConfigurationStatement.class.getName();
     }
 }
