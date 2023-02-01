@@ -44,7 +44,7 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
     @After
     public void reset() throws NoSuchFieldException, IllegalAccessException {
         ((Map<?, ?>) Plugins.getMemberAccessor()
-                .get(TransactionWeightReadQueryLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP"), TransactionWeightReadQueryLoadBalanceAlgorithm.class)).clear();
+                .get(TransactionWeightReadQueryLoadBalanceAlgorithm.class.getDeclaredField("weightMap"), TransactionWeightReadQueryLoadBalanceAlgorithm.class)).clear();
     }
     
     @Test
