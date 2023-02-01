@@ -84,7 +84,8 @@ public final class ShowTrafficRuleExecutorTest {
     private ShardingSphereMetaData mockMetaData() {
         TrafficRule trafficRule = mock(TrafficRule.class);
         when(trafficRule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        return new ShardingSphereMetaData(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.singleton(trafficRule)), new ConfigurationProperties(new Properties()));    }
+        return new ShardingSphereMetaData(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.singleton(trafficRule)), new ConfigurationProperties(new Properties()));
+    }
     
     private TrafficRuleConfiguration createTrafficRuleConfiguration() {
         TrafficRuleConfiguration result = new TrafficRuleConfiguration();
