@@ -573,7 +573,7 @@
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
             </dependency>
-            
+    
             <dependency>
                 <groupId>org.awaitility</groupId>
                 <artifactId>awaitility</artifactId>
@@ -671,7 +671,7 @@
                     <configuration>
                         <trimStackTrace>false</trimStackTrace>
                         <excludes>
-                            <exclude/>
+                            <exclude />
                         </excludes>
                     </configuration>
                 </plugin>
@@ -713,7 +713,7 @@
                             </filter>
                         </filters>
                         <transformers>
-                            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                         </transformers>
                     </configuration>
                 </plugin>
@@ -740,7 +740,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -752,7 +752,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -996,12 +996,10 @@
                         <replace>
                             <name>Leading blank line</name>
                             <search>--&gt;
-                                &lt;project
-                            </search>
+                                &lt;project</search>
                             <replacement>--&gt;
                                 
-                                &lt;project
-                            </replacement>
+                                &lt;project</replacement>
                         </replace>
                     </pom>
                 </configuration>
@@ -1214,7 +1212,7 @@
                             <configuration>
                                 <trimStackTrace>false</trimStackTrace>
                                 <excludes>
-                                    <exclude/>
+                                    <exclude />
                                 </excludes>
                                 <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>
                             </configuration>
