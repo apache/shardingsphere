@@ -23,6 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 
 @Getter
@@ -47,6 +48,11 @@ public final class DistSQLDatabaseDiscoveryProviderAlgorithmFixture implements D
     @Override
     public ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
         return new ReplicaDataSourceStatus(true, 0L);
+    }
+    
+    @Override
+    public Optional<Integer> getMinEnabledReplicas() {
+        return Optional.empty();
     }
     
     @Override

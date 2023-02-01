@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -39,9 +40,12 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
     
     private Properties props;
     
+    private int minEnabledReplicas;
+    
     @Override
     public void init(final Properties props) {
         this.props = props;
+        minEnabledReplicas = Integer.parseInt(props.getProperty("min-enabled-replicas", "0"));
     }
     
     @Override
@@ -71,6 +75,11 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
         try (ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
             return resultSet.next() && resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal");
         }
+    }
+    
+    @Override
+    public Optional<Integer> getMinEnabledReplicas() {
+        return Optional.of(minEnabledReplicas);
     }
     
     @Override

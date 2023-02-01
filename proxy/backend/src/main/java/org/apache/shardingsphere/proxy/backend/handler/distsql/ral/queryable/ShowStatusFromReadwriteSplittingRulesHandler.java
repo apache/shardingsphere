@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
@@ -117,10 +117,10 @@ public final class ShowStatusFromReadwriteSplittingRulesHandler extends Abstract
     }
     
     private Collection<LocalDataQueryResultRow> buildRows(final Collection<String> readResources, final Map<String, StorageNodeDataSource> persistentReadResources) {
-        Map<String, Map<String, StorageNodeDataSource>> persistentReadResourceGroup = persistentReadResources.entrySet().stream()
-                .collect(Collectors.groupingBy(each -> each.getValue().getStatus().name(), Collectors.toMap(Entry::getKey, Entry::getValue)));
-        Map<String, StorageNodeDataSource> disabledReadResources = persistentReadResourceGroup.getOrDefault(StorageNodeStatus.DISABLED.name(), Collections.emptyMap());
-        Map<String, StorageNodeDataSource> enabledReadResources = persistentReadResourceGroup.getOrDefault(StorageNodeStatus.ENABLED.name(), Collections.emptyMap());
+        Map<DataSourceState, Map<String, StorageNodeDataSource>> persistentReadResourceGroup = persistentReadResources.entrySet().stream()
+                .collect(Collectors.groupingBy(each -> each.getValue().getStatus(), Collectors.toMap(Entry::getKey, Entry::getValue)));
+        Map<String, StorageNodeDataSource> disabledReadResources = persistentReadResourceGroup.getOrDefault(DataSourceState.DISABLED, Collections.emptyMap());
+        Map<String, StorageNodeDataSource> enabledReadResources = persistentReadResourceGroup.getOrDefault(DataSourceState.ENABLED, Collections.emptyMap());
         readResources.removeIf(disabledReadResources::containsKey);
         readResources.addAll(enabledReadResources.keySet());
         readResources.addAll(disabledReadResources.keySet());
@@ -133,7 +133,7 @@ public final class ShowStatusFromReadwriteSplittingRulesHandler extends Abstract
     
     private LocalDataQueryResultRow buildRow(final String resource, final StorageNodeDataSource storageNodeDataSource) {
         if (null == storageNodeDataSource) {
-            return new LocalDataQueryResultRow(resource, StorageNodeStatus.ENABLED.name(), "0");
+            return new LocalDataQueryResultRow(resource, DataSourceState.ENABLED.name(), "0");
         }
         long replicationDelayMilliseconds = storageNodeDataSource.getReplicationDelayMilliseconds();
         String status = storageNodeDataSource.getStatus().name();
