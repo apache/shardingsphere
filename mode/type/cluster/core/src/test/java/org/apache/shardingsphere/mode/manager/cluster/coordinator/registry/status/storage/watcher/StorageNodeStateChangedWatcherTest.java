@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.watcher;
 
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
@@ -29,8 +29,8 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class StorageNodeStateChangedWatcherTest {
@@ -56,7 +56,7 @@ public final class StorageNodeStateChangedWatcherTest {
         assertThat(actualEvent.getQualifiedDatabase().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedDatabase().getDataSourceName(), is("replica_ds_0"));
         assertThat(actualEvent.getDataSource().getRole(), is(StorageNodeRole.MEMBER));
-        assertThat(actualEvent.getDataSource().getStatus(), is(StorageNodeStatus.ENABLED));
+        assertThat(actualEvent.getDataSource().getStatus(), is(DataSourceState.ENABLED));
     }
     
     @Test
@@ -69,7 +69,7 @@ public final class StorageNodeStateChangedWatcherTest {
         assertThat(actualEvent.getQualifiedDatabase().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedDatabase().getDataSourceName(), is("replica_ds_0"));
         assertThat(actualEvent.getDataSource().getRole(), is(StorageNodeRole.MEMBER));
-        assertThat(actualEvent.getDataSource().getStatus(), is(StorageNodeStatus.DISABLED));
+        assertThat(actualEvent.getDataSource().getStatus(), is(DataSourceState.DISABLED));
     }
     
     @Test

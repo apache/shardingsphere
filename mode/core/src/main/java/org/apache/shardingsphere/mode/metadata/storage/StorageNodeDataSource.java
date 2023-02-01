@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.metadata.storage;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 
 /**
  * Data source of storage node.
@@ -29,11 +30,11 @@ public final class StorageNodeDataSource {
     
     private final StorageNodeRole role;
     
-    private final StorageNodeStatus status;
+    private final DataSourceState status;
     
     private final long replicationDelayMilliseconds;
     
-    public StorageNodeDataSource(final StorageNodeRole role, final StorageNodeStatus status) {
+    public StorageNodeDataSource(final StorageNodeRole role, final DataSourceState status) {
         this(role, status, 0L);
     }
 }
