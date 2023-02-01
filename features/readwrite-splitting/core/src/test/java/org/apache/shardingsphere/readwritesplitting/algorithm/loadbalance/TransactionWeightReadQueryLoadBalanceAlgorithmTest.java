@@ -38,7 +38,7 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetSingleReadDataSource() {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+        TransactionWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
                 new AlgorithmConfiguration("TRANSACTION_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"))), ReadQueryLoadBalanceAlgorithm.class);
         TransactionConnectionContext context = new TransactionConnectionContext();
         context.setInTransaction(true);
@@ -47,7 +47,7 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetMultipleReadDataSources() {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
+        TransactionWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
                 "TRANSACTION_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5"))), ReadQueryLoadBalanceAlgorithm.class);
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";

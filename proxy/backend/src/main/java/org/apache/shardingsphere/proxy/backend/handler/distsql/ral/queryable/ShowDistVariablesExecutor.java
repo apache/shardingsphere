@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 
 import java.util.Arrays;
@@ -31,28 +31,28 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Show dist variables handler.
+ * Show dist variables executor.
  */
-public final class ShowDistVariablesHandler extends AbstractQueryableRALBackendHandler<ShowDistVariablesStatement> {
-    
-    private static final String VARIABLE_NAME = "variable_name";
-    
-    private static final String VARIABLE_VALUE = "variable_value";
+public final class ShowDistVariablesExecutor implements ConnectionSessionRequiredQueryableRALExecutor<ShowDistVariablesStatement> {
     
     @Override
-    protected Collection<String> getColumnNames() {
-        return Arrays.asList(VARIABLE_NAME, VARIABLE_VALUE);
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("variable_name", "variable_value");
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        ConfigurationProperties props = contextManager.getMetaDataContexts().getMetaData().getProps();
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ShowDistVariablesStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = ConfigurationPropertyKey.getKeyNames().stream()
-                .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), props.getValue(ConfigurationPropertyKey.valueOf(each)).toString())).collect(Collectors.toList());
+                .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(each)).toString())).collect(Collectors.toList());
         result.add(new LocalDataQueryResultRow(
                 VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
-        result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), getConnectionSession().getBackendConnection().getConnectionSize()));
-        result.add(new LocalDataQueryResultRow(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), getConnectionSession().getTransactionStatus().getTransactionType().name()));
+        result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), connectionSession.getBackendConnection().getConnectionSize()));
+        result.add(new LocalDataQueryResultRow(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), connectionSession.getTransactionStatus().getTransactionType().name()));
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return ShowDistVariablesStatement.class.getName();
     }
 }

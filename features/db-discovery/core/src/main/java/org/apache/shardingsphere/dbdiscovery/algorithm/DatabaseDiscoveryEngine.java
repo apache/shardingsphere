@@ -107,7 +107,7 @@ public final class DatabaseDiscoveryEngine {
                 eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), replicaStorageNode));
                 continue;
             }
-            if (!databaseDiscoveryProviderAlgorithm.getMinEnabledReplicas().isPresent()) {
+            if (databaseDiscoveryProviderAlgorithm.getMinEnabledReplicas().isPresent() && 0 == databaseDiscoveryProviderAlgorithm.getMinEnabledReplicas().get()) {
                 eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), replicaStorageNode));
                 continue;
             }
