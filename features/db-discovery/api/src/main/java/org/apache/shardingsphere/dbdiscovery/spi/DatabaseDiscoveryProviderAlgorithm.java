@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Database discovery provider algorithm.
@@ -53,4 +54,11 @@ public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgori
      * @throws SQLException SQL exception
      */
     ReplicaDataSourceStatus loadReplicaStatus(DataSource replicaDataSource) throws SQLException;
+    
+    /**
+     * Get min enabled replicas.
+     * 
+     * @return min enabled replicas
+     */
+    Optional<Integer> getMinEnabledReplicas();
 }

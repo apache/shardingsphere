@@ -33,6 +33,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -52,11 +53,14 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
     @Getter
     private Properties props;
     
+    private int minEnabledReplicas;
+    
     private long delayMillisecondsThreshold;
     
     @Override
     public void init(final Properties props) {
         this.props = props;
+        minEnabledReplicas = Integer.parseInt(props.getProperty("min-enabled-replicas", "0"));
         delayMillisecondsThreshold = Long.parseLong(props.getProperty("delay-milliseconds-threshold", "0"));
     }
     
@@ -142,6 +146,11 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
             }
             return Long.MAX_VALUE;
         }
+    }
+    
+    @Override
+    public Optional<Integer> getMinEnabledReplicas() {
+        return Optional.of(minEnabledReplicas);
     }
     
     @Override

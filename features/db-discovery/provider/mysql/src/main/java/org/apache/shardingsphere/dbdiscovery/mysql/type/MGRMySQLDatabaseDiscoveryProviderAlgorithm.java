@@ -38,6 +38,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -63,9 +64,12 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     private Properties props;
     
+    private int minEnabledReplicas;
+    
     @Override
     public void init(final Properties props) {
         this.props = props;
+        minEnabledReplicas = Integer.parseInt(props.getProperty("min-enabled-replicas", "0"));
     }
     
     @Override
@@ -162,6 +166,11 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
                 return resultSet.next() && "ONLINE".equals(resultSet.getString("MEMBER_STATE"));
             }
         }
+    }
+    
+    @Override
+    public Optional<Integer> getMinEnabledReplicas() {
+        return Optional.of(minEnabledReplicas);
     }
     
     @Override

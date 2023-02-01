@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.dbdiscovery.algorithm;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.type.MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
@@ -109,12 +107,11 @@ public final class DatabaseDiscoveryEngine {
                 eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), replicaStorageNode));
                 continue;
             }
-            if (Strings.isNullOrEmpty(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas"))) {
+            if (!databaseDiscoveryProviderAlgorithm.getMinEnabledReplicas().isPresent()) {
                 eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), replicaStorageNode));
                 continue;
             }
-            if (!(databaseDiscoveryProviderAlgorithm instanceof MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm)
-                    || enabledReplicasCount > Integer.parseInt(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas", "0"))) {
+            if (enabledReplicasCount > databaseDiscoveryProviderAlgorithm.getMinEnabledReplicas().get()) {
                 enabledReplicasCount -= disabledDataSourceNames.contains(entry.getKey()) ? 0 : 1;
                 eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), replicaStorageNode));
             }
