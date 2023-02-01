@@ -25,6 +25,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.YamlDatabaseDiscoveryRuleConfigurationSwapper;
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -44,12 +45,10 @@ import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguratio
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.swapper.YamlMaskRuleConfigurationSwapper;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.constant.DistSQLScriptConstants;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -86,20 +85,20 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 /**
- * Convert YAML configuration handler.
+ * Convert YAML configuration executor.
  */
-public final class ConvertYamlConfigurationHandler extends AbstractQueryableRALBackendHandler<ConvertYamlConfigurationStatement> {
+public final class ConvertYamlConfigurationExecutor implements QueryableRALExecutor<ConvertYamlConfigurationStatement> {
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
     @Override
-    protected Collection<String> getColumnNames() {
-        return Collections.singleton("distsql");
+    public Collection<String> getColumnNames() {
+        return Collections.singleton("dist_sql");
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        File file = new File(getSqlStatement().getFilePath());
+    public Collection<LocalDataQueryResultRow> getRows(final ConvertYamlConfigurationStatement sqlStatement) {
+        File file = new File(sqlStatement.getFilePath());
         YamlProxyDatabaseConfiguration yamlConfig;
         try {
             yamlConfig = YamlEngine.unmarshal(file, YamlProxyDatabaseConfiguration.class);
@@ -623,6 +622,7 @@ public final class ConvertYamlConfigurationHandler extends AbstractQueryableRALB
         return result.toString();
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private String getAlgorithmProperties(final Properties props) {
         StringBuilder result = new StringBuilder();
         Iterator<String> iterator = new TreeMap(props).keySet().iterator();
@@ -638,5 +638,10 @@ public final class ConvertYamlConfigurationHandler extends AbstractQueryableRALB
             }
         }
         return result.toString();
+    }
+    
+    @Override
+    public String getType() {
+        return ConvertYamlConfigurationStatement.class.getName();
     }
 }

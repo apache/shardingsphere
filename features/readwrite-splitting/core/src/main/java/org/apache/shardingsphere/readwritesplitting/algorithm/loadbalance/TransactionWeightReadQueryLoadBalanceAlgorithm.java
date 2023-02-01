@@ -27,6 +27,7 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgo
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -39,7 +40,7 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements Rea
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
-    private static final ConcurrentHashMap<String, double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
+    private final Map<String, double[]> weightMap = new ConcurrentHashMap<>();
     
     private Properties props;
     
@@ -50,8 +51,8 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements Rea
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
-        double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
-        WEIGHT_MAP.putIfAbsent(name, weight);
+        double[] weight = weightMap.containsKey(name) ? weightMap.get(name) : initWeight(readDataSourceNames);
+        weightMap.putIfAbsent(name, weight);
         return getDataSourceName(readDataSourceNames, weight);
     }
     
