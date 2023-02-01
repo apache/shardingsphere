@@ -1725,7 +1725,7 @@
         </where>
     </select>
     
-    <select sql-case-id="select_where_with_simple_expr_with_json_contains_and_limit" parameters="'1', 0, 1">
+    <select sql-case-id="select_where_with_simple_expr_with_json_contains_and_limit" parameters="1, 0, 1">
         <projections start-index="7" stop-index="28">
             <column-projection name="id" start-index="7" stop-index="8"/>
             <expression-projection text="order_info->'$.id'" start-index="11" stop-index="28"/>
@@ -1735,7 +1735,7 @@
         </from>
         <where start-index="43" stop-index="84">
             <expr>
-                <function function-name="json_contains" text="json_contains(order_info, ?, '$.id')" start-index="49" stop-index="84" />
+                <function function-name="json_contains" text="json_contains(order_info, ?, '$.id')" literal-text="json_contains(order_info, 1, '$.id')" start-index="49" stop-index="84" />
             </expr>
         </where>
         <limit start-index="86" stop-index="95">
