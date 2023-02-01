@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -78,6 +79,9 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> e
         if (executor instanceof DatabaseRequiredQueryableRALExecutor) {
             mergedResult = getMergedResultByDatabaseRequiredExecutor((DatabaseRequiredQueryableRALExecutor<T>) executor);
         }
+        if (executor instanceof ConnectionSessionRequiredQueryableRALExecutor) {
+            mergedResult = getMergedResultByConnectionSessionRequiredExecutor((ConnectionSessionRequiredQueryableRALExecutor<T>) executor);
+        }
         return new QueryResponseHeader(queryHeaders);
     }
     
@@ -93,6 +97,10 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> e
         String databaseName = getDatabaseName(getConnectionSession(), getSqlStatement());
         checkDatabaseName(databaseName);
         return createMergedResult(executor.getRows(ProxyContext.getInstance().getDatabase(databaseName), getSqlStatement()));
+    }
+    
+    private MergedResult getMergedResultByConnectionSessionRequiredExecutor(final ConnectionSessionRequiredQueryableRALExecutor<T> executor) {
+        return createMergedResult(executor.getRows(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), getConnectionSession(), getSqlStatement()));
     }
     
     private List<QueryHeader> createQueryHeader(final Collection<String> columnNames) {
