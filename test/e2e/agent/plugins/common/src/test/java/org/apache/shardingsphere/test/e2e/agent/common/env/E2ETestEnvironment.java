@@ -21,6 +21,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.Awaitility;
+import org.awaitility.Durations;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -63,14 +65,7 @@ public final class E2ETestEnvironment {
     
     private void waitForEnvironmentReady(final Properties props) {
         log.info("Proxy with agent environment initializing ...");
-        int retryCount = 0;
-        while (!isProxyReady(props) && retryCount < Integer.parseInt(props.getProperty("proxy.retry", "30"))) {
-            try {
-                Thread.sleep(Long.parseLong(props.getProperty("proxy.waitMs", "1000")));
-            } catch (final InterruptedException ignore) {
-            }
-            retryCount++;
-        }
+        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> isProxyReady(props));
     }
     
     private boolean isProxyReady(final Properties props) {

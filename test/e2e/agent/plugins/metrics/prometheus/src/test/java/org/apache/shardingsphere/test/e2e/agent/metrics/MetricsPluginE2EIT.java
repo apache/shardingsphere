@@ -42,10 +42,6 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     public void assertProxyWithAgent() throws IOException {
         super.assertProxyWithAgent();
         Properties props = E2ETestEnvironment.getInstance().getProps();
-        try {
-            Thread.sleep(Long.parseLong(props.getProperty("prometheus.waitMs", "60000")));
-        } catch (final InterruptedException ignore) {
-        }
         String metaDataURL = props.getProperty("prometheus.metadata.url");
         String queryURL = props.getProperty("prometheus.query.url");
         Collection<String> metricsNames = buildMetricsNames();
