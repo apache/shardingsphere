@@ -25,6 +25,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.YamlDatabaseDiscoveryRuleConfigurationSwapper;
+import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -44,12 +46,10 @@ import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguratio
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.swapper.YamlMaskRuleConfigurationSwapper;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.constant.DistSQLScriptConstants;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -86,20 +86,20 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 /**
- * Convert YAML configuration handler.
+ * Convert YAML configuration executor.
  */
-public final class ConvertYamlConfigurationHandler extends AbstractQueryableRALBackendHandler<ConvertYamlConfigurationStatement> {
+public final class ConvertYamlConfigurationExecutor implements InstanceContextRequiredQueryableRALExecutor<ConvertYamlConfigurationStatement> {
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
     @Override
-    protected Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames() {
         return Collections.singleton("distsql");
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        File file = new File(getSqlStatement().getFilePath());
+    public Collection<LocalDataQueryResultRow> getRows(final InstanceContext instanceContext, final ConvertYamlConfigurationStatement sqlStatement) {
+        File file = new File(sqlStatement.getFilePath());
         YamlProxyDatabaseConfiguration yamlConfig;
         try {
             yamlConfig = YamlEngine.unmarshal(file, YamlProxyDatabaseConfiguration.class);
@@ -109,6 +109,11 @@ public final class ConvertYamlConfigurationHandler extends AbstractQueryableRALB
         Preconditions.checkNotNull(yamlConfig, "Invalid yaml file `%s`", file.getName());
         Preconditions.checkNotNull(yamlConfig.getDatabaseName(), "`databaseName` in file `%s` is required.", file.getName());
         return Collections.singleton(new LocalDataQueryResultRow(generateDistSQL(yamlConfig)));
+    }
+    
+    @Override
+    public String getType() {
+        return ConvertYamlConfigurationStatement.class.getName();
     }
     
     private String generateDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
