@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -67,18 +68,26 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> e
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() {
-        QueryableRALExecutor executor = TypedSPILoader.getService(QueryableRALExecutor.class, getSqlStatement().getClass().getName());
+        QueryableRALExecutor<T> executor = TypedSPILoader.getService(QueryableRALExecutor.class, getSqlStatement().getClass().getName());
         queryHeaders = createQueryHeader(executor.getColumnNames());
+        mergedResult = getMergedResult(executor);
+        return new QueryResponseHeader(queryHeaders);
+    }
+    
+    private MergedResult getMergedResult(final QueryableRALExecutor<T> executor) {
         if (executor instanceof InstanceContextRequiredQueryableRALExecutor) {
-            mergedResult = getMergedResultByInstanceContextRequiredExecutor((InstanceContextRequiredQueryableRALExecutor<T>) executor);
+            return getMergedResultByInstanceContextRequiredExecutor((InstanceContextRequiredQueryableRALExecutor<T>) executor);
         }
         if (executor instanceof MetaDataRequiredQueryableRALExecutor) {
-            mergedResult = getMergedResultByMetaDataRequiredExecutor((MetaDataRequiredQueryableRALExecutor<T>) executor);
+            return getMergedResultByMetaDataRequiredExecutor((MetaDataRequiredQueryableRALExecutor<T>) executor);
         }
         if (executor instanceof DatabaseRequiredQueryableRALExecutor) {
-            mergedResult = getMergedResultByDatabaseRequiredExecutor((DatabaseRequiredQueryableRALExecutor<T>) executor);
+            return getMergedResultByDatabaseRequiredExecutor((DatabaseRequiredQueryableRALExecutor<T>) executor);
         }
-        return new QueryResponseHeader(queryHeaders);
+        if (executor instanceof ConnectionSessionRequiredQueryableRALExecutor) {
+            return getMergedResultByConnectionSessionRequiredExecutor((ConnectionSessionRequiredQueryableRALExecutor<T>) executor);
+        }
+        return createMergedResult(executor.getRows(getSqlStatement()));
     }
     
     private MergedResult getMergedResultByInstanceContextRequiredExecutor(final InstanceContextRequiredQueryableRALExecutor<T> executor) {
@@ -93,6 +102,10 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> e
         String databaseName = getDatabaseName(getConnectionSession(), getSqlStatement());
         checkDatabaseName(databaseName);
         return createMergedResult(executor.getRows(ProxyContext.getInstance().getDatabase(databaseName), getSqlStatement()));
+    }
+    
+    private MergedResult getMergedResultByConnectionSessionRequiredExecutor(final ConnectionSessionRequiredQueryableRALExecutor<T> executor) {
+        return createMergedResult(executor.getRows(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), getConnectionSession(), getSqlStatement()));
     }
     
     private List<QueryHeader> createQueryHeader(final Collection<String> columnNames) {

@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.ral.query;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor;
 
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.util.Collection;
 
 /**
- * Database required queryable RAL executor.
+ * Connection session required queryable RAL executor.
  */
-public interface DatabaseRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
+public interface ConnectionSessionRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
      * Get query result rows.
      *
-     * @param database ShardingSphere database
+     * @param metaData ShardingSphere meta data
+     * @param connectionSession connectionSession connection session
      * @param sqlStatement SQL statement
      * @return query result rows
      */
-    Collection<LocalDataQueryResultRow> getRows(ShardingSphereDatabase database, T sqlStatement);
+    Collection<LocalDataQueryResultRow> getRows(ShardingSphereMetaData metaData, ConnectionSession connectionSession, T sqlStatement);
 }
