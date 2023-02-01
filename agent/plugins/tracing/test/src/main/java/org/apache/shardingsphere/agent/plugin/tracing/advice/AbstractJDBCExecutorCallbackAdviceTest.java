@@ -93,7 +93,7 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
     }
     
     /**
-     * get database type.
+     * Get database type.
      *
      * @param databaseName database name
      * @return database type
