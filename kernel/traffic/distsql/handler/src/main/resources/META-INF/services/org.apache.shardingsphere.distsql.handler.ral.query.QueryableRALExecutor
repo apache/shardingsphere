@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.traffic.distsql.handler.query.TrafficRuleResultSet
+org.apache.shardingsphere.traffic.distsql.handler.query.ShowTrafficRuleExecutor
