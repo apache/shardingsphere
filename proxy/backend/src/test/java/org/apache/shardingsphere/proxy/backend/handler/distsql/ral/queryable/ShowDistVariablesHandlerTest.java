@@ -71,7 +71,7 @@ public final class ShowDistVariablesHandlerTest extends ProxyContextRestorer {
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         handler.next();
         List<Object> rowData = handler.getRowData().getData();
-        assertThat(rowData.get(0), is("sql_show"));
-        assertThat(rowData.get(1), is(Boolean.FALSE.toString()));
+        assertThat(rowData.get(0), is("system_log_level"));
+        assertThat(rowData.get(1), is("INFO"));
     }
 }

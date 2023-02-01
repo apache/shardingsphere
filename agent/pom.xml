@@ -32,6 +32,7 @@
         <module>api</module>
         <module>core</module>
         <module>plugins</module>
+        <module>log</module>
     </modules>
     
     <properties>

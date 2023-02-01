@@ -58,10 +58,10 @@ public final class ExecuteProcessContext {
     
     public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants,
                                  final boolean isProxyContext) {
-        this.executionID = executionGroupContext.getExecutionID();
+        this.executionID = executionGroupContext.getReportContext().getExecutionID();
         this.sql = sql;
-        this.databaseName = executionGroupContext.getDatabaseName();
-        Grantee grantee = executionGroupContext.getGrantee();
+        this.databaseName = executionGroupContext.getReportContext().getDatabaseName();
+        Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         this.username = null != grantee ? grantee.getUsername() : null;
         this.hostname = null != grantee ? grantee.getHostname() : null;
         executeProcessConstants = constants;

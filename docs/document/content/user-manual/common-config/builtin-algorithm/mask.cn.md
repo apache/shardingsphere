@@ -135,6 +135,19 @@ weight = 9
 |-----------------|----------|-------------|
 | landline-numbers | String   | 座机号码（以英文逗号分隔） |
 
+#### 通⽤表格随机替换
+
+类型：GENERIC_TABLE_RANDOM_REPLACE
+
+可配置属性：
+
+| *名称*            | *数据类型* | *说明*        |
+|-----------------|----------|-------------|
+| uppercase-letter-codes | String   | 大写字母 |
+| lowercase-letter-codes | String   | 小写字母 |
+| digital-random-codes   | String   | 数字    |
+| special-codes          | String   | 特殊字符 |
+
 #### 统⼀信⽤码随机替换
 
 类型：UNIFIED_CREDIT_CODE_RANDOM_REPLACE

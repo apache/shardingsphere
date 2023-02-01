@@ -44,8 +44,8 @@ public final class YamlAdvisorsConfigurationLoaderTest {
     }
     
     private void assertYamlAdvisorConfiguration(final YamlAdvisorConfiguration actual) {
-        assertThat(actual.getTarget(), is(YamlTargetObjectFixture.class.getCanonicalName()));
-        assertThat(actual.getAdvice(), is(YamlAdviceFixture.class.getCanonicalName()));
+        assertThat(actual.getTarget(), is(YamlTargetObjectFixture.class.getName()));
+        assertThat(actual.getAdvice(), is(YamlAdviceFixture.class.getName()));
         assertThat(actual.getPointcuts().size(), is(8));
         List<YamlPointcutConfiguration> actualYamlPointcutConfigs = new ArrayList<>(actual.getPointcuts());
         assertYamlPointcutConfiguration(actualYamlPointcutConfigs.get(0), null, "constructor", Collections.emptyList());

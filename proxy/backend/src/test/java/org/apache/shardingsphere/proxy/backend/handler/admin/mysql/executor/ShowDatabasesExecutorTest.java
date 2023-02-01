@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
+import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPrivilegesPermittedShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -40,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -59,10 +62,17 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
     public void setUp() {
         showDatabasesExecutor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement());
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockAuthorityRule()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(
+                mock(MetaDataPersistService.class), new ShardingSphereMetaData(getDatabases(), globalRuleMetaData, new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
+    }
+    
+    private AuthorityRule mockAuthorityRule() {
+        AuthorityRule result = mock(AuthorityRule.class);
+        when(result.findPrivileges(new Grantee("root", ""))).thenReturn(Optional.of(new AllPrivilegesPermittedShardingSpherePrivileges()));
+        return result;
     }
     
     private Map<String, ShardingSphereDatabase> getDatabases() {

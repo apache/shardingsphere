@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingSQLParserEngineAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 
@@ -30,18 +31,15 @@ import java.lang.reflect.Method;
 /**
  * SQL parser engine advice executor.
  */
-public final class JaegerSQLParserEngineAdvice implements InstanceMethodAdvice {
-    
-    private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
+public final class JaegerSQLParserEngineAdvice extends TracingSQLParserEngineAdvice<Span> {
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
+    protected Object recordSQLParseInfo(final Span rootSpan, final TargetAdviceObject target, final String sql) {
+        return GlobalTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                .withTag(Tags.DB_STATEMENT.getKey(), String.valueOf(args[0]))
+                .withTag(Tags.DB_STATEMENT.getKey(), sql)
                 .startActive(true);
-        target.setAttachment(scope);
     }
     
     @Override

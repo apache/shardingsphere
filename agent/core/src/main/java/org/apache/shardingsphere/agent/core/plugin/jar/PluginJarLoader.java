@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory.Logger;
+import org.apache.shardingsphere.agent.log.api.AgentLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,7 @@ import java.util.jar.JarFile;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PluginJarLoader {
     
-    private static final Logger LOGGER = AgentLoggerFactory.getLogger(PluginJarLoader.class);
+    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(PluginJarLoader.class);
     
     /**
      * Load plugin jars.

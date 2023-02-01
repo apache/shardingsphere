@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleExc
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
@@ -63,7 +63,7 @@ public final class CreateMaskRuleStatementUpdater implements RuleDefinitionCreat
     private void checkAlgorithms(final CreateMaskRuleStatement sqlStatement) {
         Collection<MaskColumnSegment> columns = new LinkedList<>();
         sqlStatement.getRules().forEach(each -> columns.addAll(each.getColumns()));
-        columns.forEach(each -> ShardingSpherePreconditions.checkState(TypedSPIRegistry.findRegisteredService(MaskAlgorithm.class, each.getAlgorithm().getName()).isPresent(),
+        columns.forEach(each -> ShardingSpherePreconditions.checkState(TypedSPILoader.contains(MaskAlgorithm.class, each.getAlgorithm().getName()),
                 () -> new InvalidAlgorithmConfigurationException("mask", each.getAlgorithm().getName())));
     }
     

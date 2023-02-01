@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.general
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -77,6 +78,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
         log.info("assertMigrationSuccess testParam:{}", testParam);
+        initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         addMigrationProcessConfig();
         createSourceSchema(PipelineBaseE2EIT.SCHEMA_NAME);
         createSourceOrderTable();

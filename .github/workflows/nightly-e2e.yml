@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '8'
+          java-version: '11'
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -85,7 +85,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 11
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
@@ -123,7 +123,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 11
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
@@ -161,7 +161,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 11
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3

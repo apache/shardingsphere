@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.general
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
@@ -39,6 +41,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -76,6 +79,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
         log.info("assertMigrationSuccess testParam:{}", testParam);
+        initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         addMigrationProcessConfig();
         createSourceOrderTable();
         createSourceOrderItemTable();
@@ -97,6 +101,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         assertMigrationSuccessById(orderJobId, "DATA_MATCH");
         String orderItemJobId = getJobIdByTableName("t_order_item");
         assertMigrationSuccessById(orderItemJobId, "DATA_MATCH");
+        ThreadUtil.sleep(2, TimeUnit.SECONDS);
         assertMigrationSuccessById(orderItemJobId, "CRC32_MATCH");
         for (String each : listJobId()) {
             commitMigrationByJobId(each);

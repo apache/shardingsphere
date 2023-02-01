@@ -34,7 +34,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Meta data contexts.
+ * ShardingSphere meta data.
  */
 @Getter
 public final class ShardingSphereMetaData {
@@ -78,7 +78,7 @@ public final class ShardingSphereMetaData {
      * @return contains database from meta data or not
      */
     public boolean containsDatabase(final String databaseName) {
-        return databases.containsKey(databaseName.toLowerCase());
+        return null != databaseName && databases.containsKey(databaseName.toLowerCase());
     }
     
     /**
@@ -88,7 +88,7 @@ public final class ShardingSphereMetaData {
      * @return meta data database
      */
     public ShardingSphereDatabase getDatabase(final String databaseName) {
-        return databases.get(databaseName.toLowerCase());
+        return null != databaseName ? databases.get(databaseName.toLowerCase()) : null;
     }
     
     /**

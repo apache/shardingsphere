@@ -28,8 +28,8 @@ public interface GlobalRuleDistSQLResultSet extends DistSQLResultSet {
     /**
      * Initialize data.
      *
-     * @param ruleMetaData rule meta data
+     * @param globalRuleMetaData global rule meta data
      * @param sqlStatement SQL statement
      */
-    void init(ShardingSphereRuleMetaData ruleMetaData, SQLStatement sqlStatement);
+    void init(ShardingSphereRuleMetaData globalRuleMetaData, SQLStatement sqlStatement);
 }

@@ -30,8 +30,8 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.ConstructorAdvice;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
 import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
+import org.apache.shardingsphere.agent.log.api.AgentLogger;
 
 import java.util.Collection;
 import java.util.Map;
@@ -43,7 +43,7 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class ConstructorAdviceExecutor implements AdviceExecutor {
     
-    private static final Logger LOGGER = AgentLoggerFactory.getLogger(ConstructorAdviceExecutor.class);
+    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(ConstructorAdviceExecutor.class);
     
     private final Map<String, Collection<ConstructorAdvice>> advices;
     

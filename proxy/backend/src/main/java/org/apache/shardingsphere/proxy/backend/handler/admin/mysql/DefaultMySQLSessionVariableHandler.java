@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayRequiredSessionVariables;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -31,7 +31,7 @@ import java.util.Collections;
 @Slf4j
 public final class DefaultMySQLSessionVariableHandler implements MySQLSessionVariableHandler {
     
-    private final Collection<String> replayRequiredSessionVariables = TypedSPIRegistry.findRegisteredService(ReplayRequiredSessionVariables.class, "MySQL")
+    private final Collection<String> replayRequiredSessionVariables = TypedSPILoader.findService(ReplayRequiredSessionVariables.class, "MySQL")
             .orElseGet(() -> Collections::emptySet).getReplayRequiredVariables();
     
     @Override

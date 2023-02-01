@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.algorithm;
 
-import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Properties;
@@ -25,7 +24,7 @@ import java.util.Properties;
 /**
  * ShardingSphere algorithm.
  */
-public interface ShardingSphereAlgorithm extends TypedSPI, SPIPostProcessor {
+public interface ShardingSphereAlgorithm extends TypedSPI {
     
     /**
      * Get properties.

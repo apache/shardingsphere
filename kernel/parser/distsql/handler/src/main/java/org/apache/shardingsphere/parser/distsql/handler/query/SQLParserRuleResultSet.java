@@ -40,11 +40,12 @@ public final class SQLParserRuleResultSet implements GlobalRuleDistSQLResultSet 
     
     private static final String SQL_STATEMENT_CACHE = "sql_statement_cache";
     
-    private Iterator<Collection<Object>> data = Collections.emptyIterator();
+    private Iterator<Collection<Object>> data;
     
     @Override
-    public void init(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
-        ruleMetaData.findSingleRule(SQLParserRule.class).ifPresent(optional -> data = buildData(optional.getConfiguration()).iterator());
+    public void init(final ShardingSphereRuleMetaData globalRuleMetaData, final SQLStatement sqlStatement) {
+        SQLParserRule rule = globalRuleMetaData.getSingleRule(SQLParserRule.class);
+        data = buildData(rule.getConfiguration()).iterator();
     }
     
     private Collection<Collection<Object>> buildData(final SQLParserRuleConfiguration ruleConfig) {

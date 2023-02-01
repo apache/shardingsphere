@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Show dist variables handler.
  */
-public final class ShowDistVariablesHandler extends QueryableRALBackendHandler<ShowDistVariablesStatement> {
+public final class ShowDistVariablesHandler extends AbstractQueryableRALBackendHandler<ShowDistVariablesStatement> {
     
     private static final String VARIABLE_NAME = "variable_name";
     

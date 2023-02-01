@@ -42,8 +42,7 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterCo
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -87,8 +86,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
         this.dataSourceManager = (PipelineDataSourceManager) importerConnector.getConnector();
         this.channel = channel;
-        pipelineSqlBuilder = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, importerConfig.getDataSourceConfig().getDatabaseType().getType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class));
+        pipelineSqlBuilder = TypedSPILoader.getService(PipelineSQLBuilder.class, importerConfig.getDataSourceConfig().getDatabaseType().getType());
         this.jobProgressListener = jobProgressListener;
     }
     
@@ -111,6 +109,9 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     private PipelineJobProgressUpdatedParameter flush(final DataSource dataSource, final List<Record> buffer) {
         List<DataRecord> dataRecords = buffer.stream().filter(each -> each instanceof DataRecord).map(each -> (DataRecord) each).collect(Collectors.toList());
         int insertRecordNumber = 0;
+        if (dataRecords.isEmpty()) {
+            return new PipelineJobProgressUpdatedParameter(0);
+        }
         for (DataRecord each : dataRecords) {
             if (IngestDataChangeType.INSERT.equals(each.getType())) {
                 insertRecordNumber++;

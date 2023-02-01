@@ -151,6 +151,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/10829171?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/sandynz" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/42492540?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -164,6 +169,9 @@ chapter = true
         </td>
         <td>
             <b>Zhengqiang Duan</b>
+        </td>
+        <td>
+            <b>Hongsheng Zhong</b>
         </td>
     </tr>
 </table>
@@ -293,11 +301,6 @@ chapter = true
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/sandynz" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/42492540?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
-        <td>
             <a href="https://github.com/RaigorJiang" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/5668787?v=4" style="border-radius:50%; overflow:hidden">
             </a>
@@ -327,11 +330,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/35389145?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/zjcnb" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/33742097?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>Hongsheng Zhong</b>
-        </td>
         <td>
             <b>Longtao Jiang</b>
         </td>
@@ -350,13 +355,11 @@ chapter = true
         <td>
             <b>Guoping Li</b>
         </td>
+        <td>
+            <b>Jinchao Zhao</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/zjcnb" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/33742097?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/tuichenchuxin" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/86938616?v=4" style="border-radius:50%; overflow:hidden">
@@ -387,11 +390,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/77398366?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/JiekerTime" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/76552510?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>Jinchao Zhao</b>
-        </td>
         <td>
             <b>Chuxin Chen</b>
         </td>
@@ -410,13 +415,11 @@ chapter = true
         <td>
             <b>Chen Ma</b>
         </td>
+        <td>
+            <b>Junjie Zhang</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/JiekerTime" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/76552510?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/Swastyy" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/64654203?v=4" style="border-radius:50%; overflow:hidden">
@@ -449,9 +452,6 @@ chapter = true
         </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>Junjie Zhang</b>        
-        </td>
         <td>
             <b>Swastika Gupta</b>
         </td>

@@ -45,8 +45,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueRead
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -84,10 +83,8 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         this.dumperConfig = dumperConfig;
         this.channel = channel;
         this.dataSource = dataSource;
-        sqlBuilder = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class));
-        columnValueReader = TypedSPIRegistry.findRegisteredService(ColumnValueReader.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType())
-                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(ColumnValueReader.class));
+        sqlBuilder = TypedSPILoader.getService(PipelineSQLBuilder.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType());
+        columnValueReader = TypedSPILoader.getService(ColumnValueReader.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType());
         this.metaDataLoader = metaDataLoader;
     }
     
@@ -122,6 +119,9 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private String buildInventoryDumpSQL(final boolean firstQuery) {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
+        if (null == dumperConfig.getUniqueKey()) {
+            return sqlBuilder.buildInventoryDumpAllSQL(schemaName, dumperConfig.getActualTableName());
+        }
         if (PipelineJdbcUtils.isIntegerColumn(dumperConfig.getUniqueKeyDataType())) {
             return sqlBuilder.buildDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), dumperConfig.getUniqueKeyDataType(), firstQuery);
         }
@@ -145,8 +145,10 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 Object maxUniqueKeyValue = null;
                 while (resultSet.next()) {
                     channel.pushRecord(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
-                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, tableMetaData.getColumnMetaData(dumperConfig.getUniqueKey()).getOrdinalPosition());
                     rowCount++;
+                    if (null != dumperConfig.getUniqueKey()) {
+                        maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, tableMetaData.getColumnMetaData(dumperConfig.getUniqueKey()).getOrdinalPosition());
+                    }
                     if (!isRunning()) {
                         log.info("Broke because of inventory dump is not running.");
                         break;
@@ -163,6 +165,9 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private void setParameters(final PreparedStatement preparedStatement, final int batchSize, final Object beginUniqueKeyValue) throws SQLException {
         preparedStatement.setFetchSize(batchSize);
+        if (null == dumperConfig.getUniqueKey()) {
+            return;
+        }
         if (PipelineJdbcUtils.isIntegerColumn(dumperConfig.getUniqueKeyDataType())) {
             preparedStatement.setObject(1, beginUniqueKeyValue);
             preparedStatement.setObject(2, ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());

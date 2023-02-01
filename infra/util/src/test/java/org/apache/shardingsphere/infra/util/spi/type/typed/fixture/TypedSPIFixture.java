@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.spi.type.typed.fixture;
 
-import org.apache.shardingsphere.infra.util.spi.lifecycle.SPIPostProcessor;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-public interface TypedSPIFixture extends TypedSPI, SPIPostProcessor {
+public interface TypedSPIFixture extends TypedSPI {
 }

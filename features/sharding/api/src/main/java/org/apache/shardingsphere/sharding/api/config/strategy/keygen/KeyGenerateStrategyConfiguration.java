@@ -18,19 +18,16 @@
 package org.apache.shardingsphere.sharding.api.config.strategy.keygen;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Key generate strategy configuration.
 */
+@RequiredArgsConstructor
 @Getter
 public final class KeyGenerateStrategyConfiguration {
     
     private final String column;
     
     private final String keyGeneratorName;
-    
-    public KeyGenerateStrategyConfiguration(final String column, final String keyGeneratorName) {
-        this.column = column;
-        this.keyGeneratorName = keyGeneratorName;
-    }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.junit.Test;
 import org.mockito.MockedStatic;
@@ -33,9 +33,9 @@ public final class PostgreSQLResetVariableAdminExecutorTest {
     @Test
     public void assertExecute() {
         PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement("key"));
-        try (MockedStatic<TypedSPIRegistry> mockStatic = mockStatic(TypedSPIRegistry.class)) {
+        try (MockedStatic<TypedSPILoader> mockStatic = mockStatic(TypedSPILoader.class)) {
             PostgreSQLSessionVariableHandler mockHandler = mock(PostgreSQLSessionVariableHandler.class);
-            mockStatic.when(() -> TypedSPIRegistry.findRegisteredService(PostgreSQLSessionVariableHandler.class, "key")).thenReturn(Optional.of(mockHandler));
+            mockStatic.when(() -> TypedSPILoader.findService(PostgreSQLSessionVariableHandler.class, "key")).thenReturn(Optional.of(mockHandler));
             executor.execute(null);
             verify(mockHandler).handle(null, "key", "DEFAULT");
         }

@@ -40,4 +40,11 @@ public interface GaugeMetricFamilyMetricsCollector extends MetricsCollector {
      * @return raw metric family object
      */
     Object getRawMetricFamilyObject();
+    
+    /**
+     * Clean metrics.
+     */
+    default void cleanMetrics() {
+        
+    }
 }
