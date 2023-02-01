@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -39,7 +38,6 @@ import java.util.Objects;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
 
 public final class ConvertYamlConfigurationExecutorTest {
     
@@ -86,12 +84,12 @@ public final class ConvertYamlConfigurationExecutorTest {
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(1));
         Iterator<String> iterator = columns.iterator();
-        assertThat(iterator.next(), is("distsql"));
+        assertThat(iterator.next(), is("dist_sql"));
     }
     
     public void assertExecute(final String configFilePath, final String expectedFilePath) throws SQLException {
         ConvertYamlConfigurationExecutor executor = new ConvertYamlConfigurationExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(InstanceContext.class),
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(
                 new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(configFilePath)).getPath()));
         assertRowData(actual, expectedFilePath);
     }
