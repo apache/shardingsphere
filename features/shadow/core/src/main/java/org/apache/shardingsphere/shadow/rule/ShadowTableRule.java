@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
-import org.apache.shardingsphere.shadow.exception.metadata.InvalidShadowAlgorithmOperationException;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -48,30 +46,27 @@ public final class ShadowTableRule {
     public ShadowTableRule(final String tableName, final Collection<String> shadowDataSources, final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         this.tableName = tableName;
         this.shadowDataSources = shadowDataSources;
-        this.hintShadowAlgorithmNames = initHintShadowAlgorithmNames(shadowAlgorithmNames, shadowAlgorithms);
-        this.columnShadowAlgorithmNames = initColumnShadowAlgorithmNames(shadowAlgorithmNames, shadowAlgorithms);
+        this.hintShadowAlgorithmNames = getHintShadowAlgorithmNames(shadowAlgorithmNames, shadowAlgorithms);
+        this.columnShadowAlgorithmNames = getColumnShadowAlgorithmRules(shadowAlgorithmNames, shadowAlgorithms);
     }
     
-    private Collection<String> initHintShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
+    private Collection<String> getHintShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         return shadowAlgorithmNames.stream().filter(each -> shadowAlgorithms.get(each) instanceof HintShadowAlgorithm).collect(Collectors.toList());
     }
     
-    private Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> initColumnShadowAlgorithmNames(final Collection<String> shadowAlgorithmNames,
-                                                                                                         final Map<String, ShadowAlgorithm> shadowAlgorithms) {
+    private Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> getColumnShadowAlgorithmRules(final Collection<String> shadowAlgorithmNames,
+                                                                                                        final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> result = new EnumMap<>(ShadowOperationType.class);
         for (String each : shadowAlgorithmNames) {
             ShadowAlgorithm shadowAlgorithm = shadowAlgorithms.get(each);
             if (shadowAlgorithm instanceof ColumnShadowAlgorithm) {
-                initShadowAlgorithmNames(each, (ColumnShadowAlgorithm<?>) shadowAlgorithm, result);
+                ShadowOperationType operationType = ((ColumnShadowAlgorithm<?>) shadowAlgorithm).getShadowOperationType();
+                if (!result.containsKey(operationType)) {
+                    result.put(operationType, new LinkedList<>());
+                }
+                result.get(operationType).add(new ShadowAlgorithmNameRule(((ColumnShadowAlgorithm<?>) shadowAlgorithm).getShadowColumn(), each));
             }
         }
         return result;
-    }
-    
-    private void initShadowAlgorithmNames(final String name, final ColumnShadowAlgorithm<?> algorithm,
-                                          final Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames) {
-        ShadowOperationType operationType = algorithm.getShadowOperationType();
-        ShardingSpherePreconditions.checkState(!columnShadowAlgorithmNames.containsKey(operationType), () -> new InvalidShadowAlgorithmOperationException(operationType.name(), tableName));
-        columnShadowAlgorithmNames.put(operationType, Collections.singleton(new ShadowAlgorithmNameRule(algorithm.getShadowColumn(), name)));
     }
 }
