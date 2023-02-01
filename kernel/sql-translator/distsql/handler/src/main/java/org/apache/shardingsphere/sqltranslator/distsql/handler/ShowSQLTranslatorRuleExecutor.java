@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.handler;
 
-import org.apache.shardingsphere.distsql.handler.resultset.GlobalRuleDistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.distsql.parser.statement.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -27,42 +27,25 @@ import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * Result set for SQL translator rule.
  */
-public final class SQLTranslatorRuleResultSet implements GlobalRuleDistSQLResultSet {
-    
-    private static final String TYPE = "type";
-    
-    private static final String USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED = "use_original_sql_when_translating_failed";
-    
-    private Iterator<Collection<Object>> data;
+public final class ShowSQLTranslatorRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowSQLTranslatorRuleStatement> {
     
     @Override
-    public void init(final ShardingSphereRuleMetaData globalRuleMetaData, final SQLStatement sqlStatement) {
-        SQLTranslatorRule rule = globalRuleMetaData.getSingleRule(SQLTranslatorRule.class);
-        data = buildData(rule.getConfiguration()).iterator();
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowSQLTranslatorRuleStatement sqlStatement) {
+        SQLTranslatorRule rule = metaData.getGlobalRuleMetaData().getSingleRule(SQLTranslatorRule.class);
+        return buildData(rule.getConfiguration());
     }
     
-    private Collection<Collection<Object>> buildData(final SQLTranslatorRuleConfiguration ruleConfig) {
-        return Collections.singleton(Arrays.asList(null != ruleConfig.getType() ? ruleConfig.getType() : "", String.valueOf(ruleConfig.isUseOriginalSQLWhenTranslatingFailed())));
+    private Collection<LocalDataQueryResultRow> buildData(final SQLTranslatorRuleConfiguration ruleConfig) {
+        return Collections.singleton(new LocalDataQueryResultRow(null != ruleConfig.getType() ? ruleConfig.getType() : "", String.valueOf(ruleConfig.isUseOriginalSQLWhenTranslatingFailed())));
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(TYPE, USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED);
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
+        return Arrays.asList("type", "use_original_sql_when_translating_failed");
     }
     
     @Override
