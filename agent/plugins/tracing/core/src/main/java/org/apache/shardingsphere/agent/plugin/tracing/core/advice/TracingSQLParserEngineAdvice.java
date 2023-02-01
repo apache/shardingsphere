@@ -37,5 +37,5 @@ public abstract class TracingSQLParserEngineAdvice<T> implements InstanceMethodA
         target.setAttachment(recordSQLParseInfo(RootSpanContext.get(), target, String.valueOf(args[0])));
     }
     
-    protected abstract Object recordSQLParseInfo(T rootSpan, TargetAdviceObject target, String sql);
+    protected abstract Object recordSQLParseInfo(T parentSpan, TargetAdviceObject target, String sql);
 }

@@ -58,6 +58,8 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
     @Getter
     private Map<String, Object> extraMap;
     
+    private Map<String, DatabaseType> storageTypes;
+    
     @SuppressWarnings({"rawtypes", "unchecked"})
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     @Override
@@ -84,9 +86,19 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         Map<String, DataSourceMetaData> cachedDatasourceMetaData = (Map<String, DataSourceMetaData>) Plugins.getMemberAccessor()
                 .get(JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA"), mockedJDBCExecutorCallback);
         cachedDatasourceMetaData.put("mock_url", new MockDataSourceMetaData());
-        Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(1, 1);
+        storageTypes = new LinkedHashMap<>(1, 1);
         storageTypes.put("mock.db", new MySQLDatabaseType());
         Plugins.getMemberAccessor().set(JDBCExecutorCallback.class.getDeclaredField("storageTypes"), mockedJDBCExecutorCallback, storageTypes);
         targetObject = (TargetAdviceObject) mockedJDBCExecutorCallback;
+    }
+    
+    /**
+     * get database type.
+     *
+     * @param databaseName database name
+     * @return database type
+     */
+    public String getDatabaseType(final String databaseName) {
+        return null == storageTypes ? "" : storageTypes.get(databaseName).getType();
     }
 }

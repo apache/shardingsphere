@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
+import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
@@ -37,19 +38,21 @@ import java.lang.reflect.Method;
 public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCExecutorCallbackAdvice<Span> {
     
     @Override
-    protected void recordExecuteInfo(final Span rootSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread, final DataSourceMetaData metaData) {
-        Tracer tracer = GlobalOpenTelemetry.getTracer("shardingsphere-agent");
+    protected void recordExecuteInfo(final Span parentSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread, final DataSourceMetaData metaData,
+                                     final String databaseType) {
+        Tracer tracer = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME);
         SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME);
-        if (null != rootSpan) {
-            spanBuilder.setParent(Context.current().with(rootSpan));
+        if (null != parentSpan) {
+            spanBuilder.setParent(Context.current().with(parentSpan));
         }
         spanBuilder.setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME);
-        spanBuilder.setAttribute(OpenTelemetryConstants.DB_TYPE, OpenTelemetryConstants.DB_TYPE_VALUE);
+        spanBuilder.setAttribute(OpenTelemetryConstants.DB_TYPE, databaseType);
         spanBuilder.setAttribute(OpenTelemetryConstants.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName())
                 .setAttribute(OpenTelemetryConstants.PEER_HOSTNAME, metaData.getHostname())
                 .setAttribute(OpenTelemetryConstants.PEER_PORT, String.valueOf(metaData.getPort()))
                 .setAttribute(OpenTelemetryConstants.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql())
-                .setAttribute(OpenTelemetryConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());
+                .setAttribute(OpenTelemetryConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString())
+                .setSpanKind(SpanKind.CLIENT);
         target.setAttachment(spanBuilder.startSpan());
     }
     

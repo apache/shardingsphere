@@ -48,7 +48,7 @@ public final class ZipkinJDBCExecutorCallbackAdviceTest extends AbstractJDBCExec
         assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is("shardingsphere"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_INSTANCE), is("mock.db"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_STATEMENT), is("select 1"));
-        assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is("shardingsphere-proxy"));
+        assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(getDatabaseType("mock.db")));
         assertThat(tags.get(ZipkinConstants.Tags.PEER_HOSTNAME), is("mock.host"));
         assertThat(tags.get(ZipkinConstants.Tags.PEER_PORT), is("1000"));
     }
@@ -65,7 +65,7 @@ public final class ZipkinJDBCExecutorCallbackAdviceTest extends AbstractJDBCExec
         assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is("shardingsphere"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_INSTANCE), is("mock.db"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_STATEMENT), is("select 1"));
-        assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is("shardingsphere-proxy"));
+        assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(getDatabaseType("mock.db")));
         assertThat(tags.get(ZipkinConstants.Tags.PEER_HOSTNAME), is("mock.host"));
         assertThat(tags.get(ZipkinConstants.Tags.PEER_PORT), is("1000"));
         assertThat(tags.get("error"), is("IOException"));

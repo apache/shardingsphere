@@ -49,7 +49,7 @@ public final class JaegerJDBCExecutorCallbackAdviceTest extends AbstractJDBCExec
         assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(span.operationName(), is("/ShardingSphere/executeSQL/"));
         assertThat(tags.get("db.instance"), is("mock.db"));
-        assertThat(tags.get("db.type"), is(JaegerConstants.DB_TYPE_VALUE));
+        assertThat(tags.get("db.type"), is(getDatabaseType("mock.db")));
         assertThat(tags.get("span.kind"), is("client"));
         assertThat(tags.get("db.statement"), is("select 1"));
     }
@@ -70,7 +70,7 @@ public final class JaegerJDBCExecutorCallbackAdviceTest extends AbstractJDBCExec
         Map<String, Object> tags = span.tags();
         assertThat(span.operationName(), is("/ShardingSphere/executeSQL/"));
         assertThat(tags.get("db.instance"), is("mock.db"));
-        assertThat(tags.get("db.type"), is(JaegerConstants.DB_TYPE_VALUE));
+        assertThat(tags.get("db.type"), is(getDatabaseType("mock.db")));
         assertThat(tags.get("span.kind"), is("client"));
         assertThat(tags.get("db.statement"), is("select 1"));
     }

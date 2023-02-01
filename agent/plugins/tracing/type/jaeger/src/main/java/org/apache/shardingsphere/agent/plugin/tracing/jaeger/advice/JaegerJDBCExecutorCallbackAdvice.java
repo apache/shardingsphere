@@ -37,13 +37,14 @@ import java.lang.reflect.Method;
 public final class JaegerJDBCExecutorCallbackAdvice extends TracingJDBCExecutorCallbackAdvice<Span> {
     
     @Override
-    protected void recordExecuteInfo(final Span rootSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread, final DataSourceMetaData metaData) {
+    protected void recordExecuteInfo(final Span parentSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread, final DataSourceMetaData metaData,
+                                     final String databaseType) {
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
-        if (null != rootSpan) {
-            builder = builder.asChildOf(rootSpan);
+        if (null != parentSpan) {
+            builder = builder.asChildOf(parentSpan);
         }
         builder.withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
-                .withTag(Tags.DB_TYPE.getKey(), JaegerConstants.DB_TYPE_VALUE)
+                .withTag(Tags.DB_TYPE.getKey(), databaseType)
                 .withTag(Tags.DB_INSTANCE.getKey(), executionUnit.getExecutionUnit().getDataSourceName())
                 .withTag(Tags.PEER_HOSTNAME.getKey(), metaData.getHostname())
                 .withTag(Tags.PEER_PORT.getKey(), metaData.getPort())

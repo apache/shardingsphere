@@ -67,7 +67,6 @@ public final class OpenTelemetrySQLParserEngineAdviceTest extends AbstractSQLPar
         assertNotNull(spanItems.get(0).getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
         Attributes attributes = spanItems.get(0).getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(OpenTelemetryConstants.DB_TYPE_VALUE));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is(SQL_STATEMENT));
     }
     
@@ -84,7 +83,6 @@ public final class OpenTelemetrySQLParserEngineAdviceTest extends AbstractSQLPar
         assertNotNull(spanItems.get(0).getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
         Attributes attributes = spanItems.get(0).getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(OpenTelemetryConstants.DB_TYPE_VALUE));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is(SQL_STATEMENT));
     }
 }

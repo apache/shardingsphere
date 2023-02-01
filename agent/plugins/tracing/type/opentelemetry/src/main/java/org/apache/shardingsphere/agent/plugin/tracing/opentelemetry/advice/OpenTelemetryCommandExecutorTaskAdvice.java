@@ -35,7 +35,7 @@ public final class OpenTelemetryCommandExecutorTaskAdvice extends TracingCommand
     
     @Override
     protected Span createRootSpan(final TargetAdviceObject target, final Method method, final Object[] args) {
-        SpanBuilder spanBuilder = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
+        SpanBuilder spanBuilder = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME)
                 .spanBuilder(OPERATION_NAME)
                 .setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME)
                 .setSpanKind(SpanKind.CLIENT);

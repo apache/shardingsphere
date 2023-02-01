@@ -33,10 +33,11 @@ import java.lang.reflect.Method;
 public final class ZipkinJDBCExecutorCallbackAdvice extends TracingJDBCExecutorCallbackAdvice<Span> {
     
     @Override
-    protected void recordExecuteInfo(final Span rootSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread, final DataSourceMetaData metaData) {
-        Span span = null == rootSpan ? Tracing.currentTracer().nextSpan().name(OPERATION_NAME) : Tracing.currentTracer().newChild(rootSpan.context()).name(OPERATION_NAME);
+    protected void recordExecuteInfo(final Span parentSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread, final DataSourceMetaData metaData,
+                                     final String databaseType) {
+        Span span = null == parentSpan ? Tracing.currentTracer().nextSpan().name(OPERATION_NAME) : Tracing.currentTracer().newChild(parentSpan.context()).name(OPERATION_NAME);
         span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
-        span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
+        span.tag(ZipkinConstants.Tags.DB_TYPE, databaseType);
         span.tag(ZipkinConstants.Tags.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName());
         span.tag(ZipkinConstants.Tags.PEER_HOSTNAME, metaData.getHostname());
         span.tag(ZipkinConstants.Tags.PEER_PORT, String.valueOf(metaData.getPort()));

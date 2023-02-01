@@ -33,8 +33,8 @@ public final class ZipkinSQLParserEngineAdvice extends TracingSQLParserEngineAdv
     private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
-    protected Object recordSQLParseInfo(final Span rootSpan, final TargetAdviceObject target, final String sql) {
-        Span result = Tracing.currentTracer().newChild(rootSpan.context()).name(OPERATION_NAME);
+    protected Object recordSQLParseInfo(final Span parentSpan, final TargetAdviceObject target, final String sql) {
+        Span result = Tracing.currentTracer().newChild(parentSpan.context()).name(OPERATION_NAME);
         result.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
         result.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
         result.tag(ZipkinConstants.Tags.DB_STATEMENT, sql);

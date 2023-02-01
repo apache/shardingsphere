@@ -35,14 +35,13 @@ import java.lang.reflect.Method;
 public final class OpenTelemetrySQLParserEngineAdvice extends TracingSQLParserEngineAdvice<Span> {
     
     @Override
-    protected Object recordSQLParseInfo(final Span rootSpan, final TargetAdviceObject target, final String sql) {
+    protected Object recordSQLParseInfo(final Span parentSpan, final TargetAdviceObject target, final String sql) {
         Tracer tracer = GlobalOpenTelemetry.getTracer("shardingsphere-agent");
         SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME)
                 .setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME)
-                .setAttribute(OpenTelemetryConstants.DB_TYPE, OpenTelemetryConstants.DB_TYPE_VALUE)
                 .setAttribute(OpenTelemetryConstants.DB_STATEMENT, sql);
-        if (null != rootSpan) {
-            spanBuilder.setParent(Context.current().with(rootSpan));
+        if (null != parentSpan) {
+            spanBuilder.setParent(Context.current().with(parentSpan));
         }
         return spanBuilder.startSpan();
     }

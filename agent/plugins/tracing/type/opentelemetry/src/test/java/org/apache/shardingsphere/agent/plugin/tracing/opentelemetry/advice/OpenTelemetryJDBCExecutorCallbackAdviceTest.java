@@ -49,7 +49,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdviceTest extends AbstractJ
         assertThat(spanData.getName(), is("/ShardingSphere/executeSQL/"));
         Attributes attributes = spanData.getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(OpenTelemetryConstants.DB_TYPE_VALUE));
+        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(getDatabaseType("mock.db")));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_INSTANCE)), is("mock.db"));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is("select 1"));
     }
@@ -67,7 +67,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdviceTest extends AbstractJ
         assertThat(spanData.getStatus().getStatusCode(), is(StatusCode.ERROR));
         Attributes attributes = spanData.getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(OpenTelemetryConstants.DB_TYPE_VALUE));
+        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(getDatabaseType("mock.db")));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_INSTANCE)), is("mock.db"));
         assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is("select 1"));
     }
