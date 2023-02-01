@@ -39,5 +39,5 @@ public final class ShardingSphereLogger {
     private final String appenderName;
     
     @Setter
-    private Properties props;
+    private Properties props = new Properties();
 }

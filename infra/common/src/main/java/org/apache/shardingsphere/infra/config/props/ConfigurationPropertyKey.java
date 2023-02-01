@@ -40,11 +40,13 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether show SQL in log.
      */
+    @Deprecated
     SQL_SHOW("sql-show", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * Whether show SQL details in simple style.
      */
+    @Deprecated
     SQL_SIMPLE("sql-simple", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**

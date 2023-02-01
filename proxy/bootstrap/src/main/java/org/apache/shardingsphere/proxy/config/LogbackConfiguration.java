@@ -32,6 +32,8 @@ public class LogbackConfiguration extends BasicConfigurator {
     
     public static final String SHARDINGSPHERE_LOGGER_NAME = "org.apache.shardingsphere";
     
+    public static final String SHARDINGSPHERE_SQL_LOGGER_NAME = "ShardingSphere-SQL";
+    
     public static final String HIKARI_LOGGER_NAME = "com.zaxxer.hikari";
     
     public static final String ATOMIKOS_LOGGER_NAME = "com.atomikos";
@@ -78,6 +80,7 @@ public class LogbackConfiguration extends BasicConfigurator {
     }
     
     private void initBasicLogger(final LoggerContext loggerContext) {
+        loggerContext.getLogger(SHARDINGSPHERE_SQL_LOGGER_NAME).setLevel(Level.INFO);
         loggerContext.getLogger(HIKARI_LOGGER_NAME).setLevel(Level.ERROR);
         loggerContext.getLogger(ATOMIKOS_LOGGER_NAME).setLevel(Level.ERROR);
         loggerContext.getLogger(NETTY_LOGGER_NAME).setLevel(Level.ERROR);

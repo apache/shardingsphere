@@ -22,6 +22,8 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistV
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
+import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
+import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -32,12 +34,19 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
+import java.util.Optional;
 import java.util.Properties;
 
 /**
  * Set dist variable statement handler.
  */
 public final class SetDistVariableHandler extends UpdatableRALBackendHandler<SetDistVariableStatement> {
+    
+    public static final String SQL_SHOW = "sql-show";
+    
+    public static final String SQL_SIMPLE = "sql-simple";
+    
+    public static final String SQL_SHOW_TOPIC = "ShardingSphere-SQL";
     
     @Override
     protected void update(final ContextManager contextManager) {
@@ -66,6 +75,9 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         props.putAll(metaDataContexts.getMetaData().getProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.getInstanceContext().getModeContextManager().alterProperties(props);
+        // TODO remove sync after remove `spl-show`
+        syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value, contextManager);
+        syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value, contextManager);
     }
     
     private Object getValue(final ConfigurationPropertyKey propertyKey, final String value) {
@@ -75,6 +87,30 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         } catch (final TypedPropertyValueException ex) {
             throw new InvalidValueException(value);
         }
+    }
+    
+    private void syncSQLShowToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value, final ContextManager contextManager) {
+        if (SQL_SHOW.equalsIgnoreCase(propertyKey.getKey())) {
+            getSQLLogger(metaDataContexts).ifPresent(option -> {
+                option.getProps().setProperty("enable", value);
+                metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
+            });
+        }
+    }
+    
+    private void syncSQLSimpleToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value ,final ContextManager contextManager) {
+        if (SQL_SIMPLE.equalsIgnoreCase(propertyKey.getKey())) {
+            getSQLLogger(metaDataContexts).ifPresent(option -> {
+                option.getProps().setProperty("simple", value);
+                metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
+            });
+        }
+    }
+    
+    private Optional<ShardingSphereLogger> getSQLLogger(final MetaDataContexts metaDataContexts) {
+        LoggingRule loggingRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(LoggingRule.class);
+        return loggingRule.getConfiguration().getLoggers().stream()
+                .filter(each -> SQL_SHOW_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
     }
     
     private void handleVariables() {

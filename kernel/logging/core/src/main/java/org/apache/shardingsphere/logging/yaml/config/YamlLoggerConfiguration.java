@@ -42,5 +42,5 @@ public final class YamlLoggerConfiguration implements YamlConfiguration {
     
     private String appenderName;
     
-    private Properties props;
+    private Properties props = new Properties();
 }
