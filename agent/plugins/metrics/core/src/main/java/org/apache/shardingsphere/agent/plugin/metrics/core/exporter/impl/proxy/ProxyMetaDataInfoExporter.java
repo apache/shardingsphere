@@ -52,6 +52,7 @@ public final class ProxyMetaDataInfoExporter implements MetricsExporter {
             return Optional.empty();
         }
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
+        result.cleanMetrics();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         result.addMetric(Collections.singletonList("schema_count"), metaDataContexts.getMetaData().getDatabases().size());
         result.addMetric(Collections.singletonList("database_count"), getDatabaseNames(metaDataContexts).size());

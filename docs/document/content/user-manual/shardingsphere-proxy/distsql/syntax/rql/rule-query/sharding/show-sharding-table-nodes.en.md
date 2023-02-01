@@ -14,7 +14,10 @@ weight = 10
 {{% tab name="Grammar" %}}
 ```sql
 ShowShardingTableNode::=
-  'SHOW' 'SHARDING' 'TABLE' 'NODES' ('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'TABLE' 'NODES' tableName? ('FROM' databaseName)?
+
+tableName ::=
+  identifier
 
 databaseName ::=
   identifier
@@ -38,7 +41,39 @@ databaseName ::=
 
 ### Example
 
-- Query sharding table nodes for the specified logical database
+- Query sharding table nodes for specified table in the specified logical database
+
+```sql
+SHOW SHARDING TABLE NODES t_order_item FROM sharding_db;
+```
+
+```sql
+mysql> SHOW SHARDING TABLE NODES t_order_item FROM sharding_db;
++--------------+------------------------------------------------------------------------------------------------------------+
+| name         | nodes                                                                                                      |
++--------------+------------------------------------------------------------------------------------------------------------+
+| t_order_item | resource_0.t_order_item_0, resource_0.t_order_item_1, resource_1.t_order_item_0, resource_1.t_order_item_1 |
++--------------+------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec)
+```
+
+- Query sharding table nodes for specified table in the current logical database
+
+```sql
+SHOW SHARDING TABLE NODES t_order_item;
+```
+
+```sql
+mysql> SHOW SHARDING TABLE NODES t_order_item;
++--------------+------------------------------------------------------------------------------------------------------------+
+| name         | nodes                                                                                                      |
++--------------+------------------------------------------------------------------------------------------------------------+
+| t_order_item | resource_0.t_order_item_0, resource_0.t_order_item_1, resource_1.t_order_item_0, resource_1.t_order_item_1 |
++--------------+------------------------------------------------------------------------------------------------------------+
+1 row in set (0.00 sec
+```
+
+- Query sharding table nodes for all tables in the specified logical database
 
 ```sql
 SHOW SHARDING TABLE NODES FROM sharding_db;
@@ -54,7 +89,7 @@ mysql> SHOW SHARDING TABLE NODES FROM sharding_db;
 1 row in set (0.00 sec)
 ```
 
-- Query sharding table nodes for the current logical database
+- Query sharding table nodes for all tables in the current logical database
 
 ```sql
 SHOW SHARDING TABLE NODES;

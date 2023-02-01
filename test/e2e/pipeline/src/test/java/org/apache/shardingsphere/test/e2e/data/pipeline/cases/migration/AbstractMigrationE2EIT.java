@@ -50,20 +50,6 @@ public abstract class AbstractMigrationE2EIT extends PipelineBaseE2EIT {
     public AbstractMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
         migrationDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineBaseE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
-        if (PipelineEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
-            try {
-                cleanUpPipelineJobs();
-            } catch (final SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-    }
-    
-    private void cleanUpPipelineJobs() throws SQLException {
-        List<String> jobIds = listJobId();
-        for (String each : jobIds) {
-            proxyExecuteWithLog(String.format("ROLLBACK MIGRATION '%s'", each), 0);
-        }
     }
     
     protected void addMigrationSourceResource() throws SQLException {
@@ -169,11 +155,15 @@ public abstract class AbstractMigrationE2EIT extends PipelineBaseE2EIT {
         List<Map<String, Object>> resultList = Collections.emptyList();
         for (int i = 0; i < 10; i++) {
             resultList = queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
+            if (resultList.isEmpty()) {
+                ThreadUtil.sleep(3, TimeUnit.SECONDS);
+            }
             List<String> checkEndTimeList = resultList.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
             if (checkEndTimeList.size() == resultList.size()) {
                 break;
+            } else {
+                ThreadUtil.sleep(3, TimeUnit.SECONDS);
             }
-            ThreadUtil.sleep(3, TimeUnit.SECONDS);
         }
         log.info("check job results: {}", resultList);
         for (Map<String, Object> each : resultList) {

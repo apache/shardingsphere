@@ -29,4 +29,43 @@ import java.util.Map;
 public final class ShardingSphereSchemaData {
     
     private final Map<String, ShardingSphereTableData> tableData = new LinkedHashMap<>();
+    
+    /**
+     * Get ShardingSphere table meta data via table name.
+     *
+     * @param tableName tableName table name
+     * @return ShardingSphere table data
+     */
+    public ShardingSphereTableData getTable(final String tableName) {
+        return tableData.get(tableName.toLowerCase());
+    }
+    
+    /**
+     * Add ShardingSphere table data.
+     *
+     * @param tableName table name
+     * @param table ShardingSphere table data
+     */
+    public void putTable(final String tableName, final ShardingSphereTableData table) {
+        tableData.put(tableName.toLowerCase(), table);
+    }
+    
+    /**
+     * Remove ShardingSphere table meta data.
+     *
+     * @param tableName table name
+     */
+    public void removeTable(final String tableName) {
+        tableData.remove(tableName.toLowerCase());
+    }
+    
+    /**
+     * Judge contains ShardingSphere table from table metadata or not.
+     *
+     * @param tableName table name
+     * @return contains ShardingSphere table from table metadata or not
+     */
+    public boolean containsTable(final String tableName) {
+        return tableData.containsKey(tableName.toLowerCase());
+    }
 }

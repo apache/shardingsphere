@@ -79,7 +79,7 @@ public final class CreateMaskRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         MaskRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        sqlStatement = createSQLStatement(true, "MASK_FROM_X_TO_Y");
+        sqlStatement = createSQLStatement(true, "MD5");
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.rewrite.engine.RouteSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
 import java.util.List;
@@ -55,7 +55,7 @@ public final class SQLRewriteEntry {
         this.database = database;
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
-        decorators = OrderedSPIRegistry.getRegisteredServices(SQLRewriteContextDecorator.class, database.getRuleMetaData().getRules());
+        decorators = OrderedSPILoader.getServices(SQLRewriteContextDecorator.class, database.getRuleMetaData().getRules());
     }
     
     /**

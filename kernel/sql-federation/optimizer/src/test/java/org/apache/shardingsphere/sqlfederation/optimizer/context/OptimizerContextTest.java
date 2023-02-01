@@ -62,9 +62,7 @@ public final class OptimizerContextTest {
     }
     
     private ShardingSphereRuleMetaData createShardingSphereRuleMetaData() {
-        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
         CacheOption cacheOption = new CacheOption(10, 1000);
-        when(result.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption)));
-        return result;
+        return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption))));
     }
 }

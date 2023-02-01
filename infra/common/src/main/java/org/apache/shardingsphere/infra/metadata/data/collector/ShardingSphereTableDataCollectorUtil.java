@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.data.collector;
 
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
@@ -28,6 +29,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,17 +41,20 @@ public final class ShardingSphereTableDataCollectorUtil {
     /**
      * Collect row data.
      *
-     * @param dataSources data sources
+     * @param shardingSphereDatabase ShardingSphere database
      * @param sql sql
      * @param table table
      * @param selectedColumnNames selected column names
      * @return ShardingSphere row data
      * @throws SQLException sql exception
      */
-    public static Collection<ShardingSphereRowData> collectRowData(final Collection<DataSource> dataSources, final String sql, final ShardingSphereTable table,
+    public static Collection<ShardingSphereRowData> collectRowData(final ShardingSphereDatabase shardingSphereDatabase, final String sql, final ShardingSphereTable table,
                                                                    final Collection<String> selectedColumnNames) throws SQLException {
+        if (isProtocolTypeAndStorageTypeDifferent(shardingSphereDatabase)) {
+            return Collections.emptyList();
+        }
         Collection<ShardingSphereRowData> result = new LinkedList<>();
-        for (DataSource each : dataSources) {
+        for (DataSource each : shardingSphereDatabase.getResourceMetaData().getDataSources().values()) {
             try (
                     Connection connection = each.getConnection();
                     Statement statement = connection.createStatement();
@@ -58,6 +63,10 @@ public final class ShardingSphereTableDataCollectorUtil {
             }
         }
         return result;
+    }
+    
+    private static boolean isProtocolTypeAndStorageTypeDifferent(final ShardingSphereDatabase shardingSphereDatabase) {
+        return !shardingSphereDatabase.getResourceMetaData().getStorageTypes().values().stream().allMatch(each -> each.getType().equals(shardingSphereDatabase.getProtocolType().getType()));
     }
     
     private static Collection<ShardingSphereRowData> getRows(final ResultSet resultSet, final ShardingSphereTable table, final Collection<String> selectedColumnNames) throws SQLException {

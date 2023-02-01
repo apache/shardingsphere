@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Pipeline table meta data util.
@@ -43,18 +44,20 @@ public final class PipelineTableMetaDataUtil {
      * @param metaDataLoader meta data loader
      * @return pipeline column meta data
      */
-    public static PipelineColumnMetaData getUniqueKeyColumn(final String schemaName, final String tableName, final PipelineTableMetaDataLoader metaDataLoader) {
+    public static Optional<PipelineColumnMetaData> getUniqueKeyColumn(final String schemaName, final String tableName, final PipelineTableMetaDataLoader metaDataLoader) {
         PipelineTableMetaData pipelineTableMetaData = metaDataLoader.getTableMetaData(schemaName, tableName);
-        return mustGetAnAppropriateUniqueKeyColumn(pipelineTableMetaData, tableName);
+        return Optional.ofNullable(getAnAppropriateUniqueKeyColumn(pipelineTableMetaData, tableName));
     }
     
-    private static PipelineColumnMetaData mustGetAnAppropriateUniqueKeyColumn(final PipelineTableMetaData tableMetaData, final String tableName) {
+    private static PipelineColumnMetaData getAnAppropriateUniqueKeyColumn(final PipelineTableMetaData tableMetaData, final String tableName) {
         ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new SplitPipelineJobByRangeException(tableName, "Can not get table meta data"));
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
         if (1 == primaryKeys.size()) {
             return tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
         }
-        ShardingSpherePreconditions.checkState(primaryKeys.isEmpty(), () -> new SplitPipelineJobByRangeException(tableName, "primary key is union primary"));
+        if (primaryKeys.isEmpty()) {
+            return null;
+        }
         Collection<PipelineIndexMetaData> uniqueIndexes = tableMetaData.getUniqueIndexes();
         ShardingSpherePreconditions.checkState(!uniqueIndexes.isEmpty(), () -> new SplitPipelineJobByRangeException(tableName, "no primary key or unique index"));
         if (1 == uniqueIndexes.size() && 1 == uniqueIndexes.iterator().next().getColumns().size()) {

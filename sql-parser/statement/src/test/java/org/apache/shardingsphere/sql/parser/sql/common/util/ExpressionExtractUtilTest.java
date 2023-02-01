@@ -124,7 +124,7 @@ public final class ExpressionExtractUtilTest {
     @Test
     public void assertGetParameterMarkerExpressionsFromTypeCastExpression() {
         ParameterMarkerExpressionSegment expected = new ParameterMarkerExpressionSegment(0, 0, 1, ParameterMarkerType.DOLLAR);
-        List<ExpressionSegment> input = Collections.singletonList(new TypeCastExpression(0, 0, expected, "varchar"));
+        List<ExpressionSegment> input = Collections.singletonList(new TypeCastExpression(0, 0, "$2::varchar", expected, "varchar"));
         List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtil.getParameterMarkerExpressions(input);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));

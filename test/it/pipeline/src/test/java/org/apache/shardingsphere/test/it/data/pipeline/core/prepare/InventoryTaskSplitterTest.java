@@ -45,9 +45,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 public final class InventoryTaskSplitterTest {
@@ -131,14 +133,16 @@ public final class InventoryTaskSplitterTest {
         inventoryTaskSplitter.splitInventoryData(jobItemContext);
     }
     
-    @Test(expected = SplitPipelineJobByRangeException.class)
+    @Test
     public void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException, ReflectiveOperationException {
         initNoPrimaryEnvironment(taskConfig.getDumperConfig());
         try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig())) {
-            PipelineColumnMetaData uniqueKeyColumn = PipelineTableMetaDataUtil.getUniqueKeyColumn(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
-            Plugins.getMemberAccessor().set(MigrationJobConfiguration.class.getDeclaredField("uniqueKeyColumn"), jobItemContext.getJobConfig(), uniqueKeyColumn);
+            Optional<PipelineColumnMetaData> uniqueKeyColumn = PipelineTableMetaDataUtil.getUniqueKeyColumn(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
+            assertFalse(uniqueKeyColumn.isPresent());
+            Plugins.getMemberAccessor().set(MigrationJobConfiguration.class.getDeclaredField("uniqueKeyColumn"), jobItemContext.getJobConfig(), null);
+            List<InventoryTask> inventoryTasks = inventoryTaskSplitter.splitInventoryData(jobItemContext);
+            assertThat(inventoryTasks.size(), is(1));
         }
-        inventoryTaskSplitter.splitInventoryData(jobItemContext);
     }
     
     private void initEmptyTablePrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {

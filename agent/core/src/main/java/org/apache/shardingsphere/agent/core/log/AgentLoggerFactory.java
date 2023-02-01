@@ -17,163 +17,53 @@
 
 package org.apache.shardingsphere.agent.core.log;
 
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.core.path.AgentPath;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.core.spi.AgentServiceLoader;
+import org.apache.shardingsphere.agent.log.api.AgentLogger;
+import org.apache.shardingsphere.agent.log.api.impl.NOPAgentLogger;
+import org.apache.shardingsphere.agent.log.spi.AgentLoggerFactorySPI;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.URISyntaxException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.jar.JarFile;
+import java.util.Optional;
 
 /**
  * Agent logger factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AgentLoggerFactory {
     
-    private static AgentLoggerClassLoader classLoader;
+    private static AgentLoggerClassLoader agentLoggerClassLoader;
     
     /**
-     * Get logger.
-     * 
-     * @param clazz class
-     * @return logger
+     * Get agent logger.
+     *
+     * @param clazz clazz
+     * @return agent logger
      */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static Logger getLogger(final Class<?> clazz) {
-        Class<?> factoryClazz = getClassLoader().loadClass("org.slf4j.LoggerFactory");
-        Method method = factoryClazz.getMethod("getLogger", Class.class);
-        return new Logger(method.invoke(null, clazz));
+    public static AgentLogger getAgentLogger(final Class<?> clazz) {
+        return AgentLoggerFactory.getAgentLogger(clazz.getName());
     }
     
-    private static AgentLoggerClassLoader getClassLoader() {
-        if (null != classLoader) {
-            return classLoader;
+    /**
+     * Get agent logger.
+     *
+     * @param name name
+     * @return agent logger
+     */
+    public static AgentLogger getAgentLogger(final String name) {
+        Optional<AgentLoggerFactorySPI> loggerFactory = AgentServiceLoader.getServiceLoader(getAgentLoggerClassLoader(), AgentLoggerFactorySPI.class).getServices().stream().findFirst();
+        return loggerFactory.isPresent() ? loggerFactory.get().getAgentLogger(name) : new NOPAgentLogger();
+    }
+    
+    private static AgentLoggerClassLoader getAgentLoggerClassLoader() {
+        if (null != agentLoggerClassLoader) {
+            return agentLoggerClassLoader;
         }
         synchronized (AgentLoggerFactory.class) {
-            if (null == classLoader) {
-                classLoader = getAgentLoggerClassLoader();
+            if (null == agentLoggerClassLoader) {
+                agentLoggerClassLoader = AgentLoggerClassLoaderFactory.create();
             }
         }
-        return classLoader;
-    }
-    
-    @SneakyThrows(URISyntaxException.class)
-    private static AgentLoggerClassLoader getAgentLoggerClassLoader() {
-        File agentFle = new File(AgentLoggerFactory.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        return agentFle.isFile() && agentFle.getName().endsWith(".jar") ? new AgentLoggerClassLoader(getLoggingJars(), getLoggingResourcePath()) : new AgentLoggerClassLoader();
-    }
-    
-    @SneakyThrows(IOException.class)
-    private static Collection<JarFile> getLoggingJars() {
-        Collection<JarFile> result = new LinkedList<>();
-        Files.walkFileTree(new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "lib")).toPath(), new SimpleFileVisitor<Path>() {
-            
-            @Override
-            public FileVisitResult visitFile(final Path path, final BasicFileAttributes attributes) {
-                if (path.toFile().isFile() && path.toFile().getName().endsWith(".jar")) {
-                    result.add(getJarFile(path));
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
-        return result;
-    }
-    
-    @SneakyThrows(IOException.class)
-    private static JarFile getJarFile(final Path path) {
-        return new JarFile(path.toFile(), true);
-    }
-    
-    private static File getLoggingResourcePath() {
-        return new File(String.join(File.separator, AgentPath.getRootPath().getPath(), "conf"));
-    }
-    
-    /**
-     * Logger.
-     */
-    @RequiredArgsConstructor
-    public static final class Logger {
-        
-        private final Object logger;
-        
-        /**
-         * Info.
-         * 
-         * @param msg message
-         */
-        public void info(final String msg) {
-            invokeMethod("info", msg);
-        }
-        
-        /**
-         * Info.
-         * 
-         * @param format format
-         * @param arguments arguments
-         */
-        public void info(final String format, final Object... arguments) {
-            invokeMethod("info", format, arguments);
-        }
-        
-        /**
-         * Debug.
-         * 
-         * @param format format
-         * @param arguments arguments
-         */
-        public void debug(final String format, final Object... arguments) {
-            invokeMethod("debug", format, arguments);
-        }
-        
-        /**
-         * Debug.
-         * 
-         * @param msg message
-         */
-        public void debug(final String msg) {
-            invokeMethod("debug", msg);
-        }
-        
-        /**
-         * Error.
-         * 
-         * @param format format
-         * @param arguments arguments
-         */
-        public void error(final String format, final Object... arguments) {
-            invokeMethod("error", format, arguments);
-        }
-        
-        /**
-         * Error.
-         * 
-         * @param msg message
-         */
-        public void error(final String msg) {
-            invokeMethod("error", msg);
-        }
-        
-        @SneakyThrows(ReflectiveOperationException.class)
-        private void invokeMethod(final String methodName, final String msg) {
-            Class<?> actualLogger = AgentLoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
-            Method method = actualLogger.getMethod(methodName, String.class);
-            method.invoke(logger, msg);
-        }
-        
-        @SneakyThrows(ReflectiveOperationException.class)
-        private void invokeMethod(final String methodName, final String msg, final Object... arguments) {
-            Class<?> actualLogger = AgentLoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
-            Method method = actualLogger.getMethod(methodName, String.class, Object[].class);
-            method.invoke(logger, msg, arguments);
-        }
+        return agentLoggerClassLoader;
     }
 }
