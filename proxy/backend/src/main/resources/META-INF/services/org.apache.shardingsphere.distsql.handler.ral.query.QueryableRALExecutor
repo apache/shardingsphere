@@ -20,3 +20,4 @@ org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComput
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodeModeExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowDistVariableExecutor
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowDistVariablesExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ConvertYamlConfigurationExecutor
