@@ -42,7 +42,7 @@ public final class GenericTableRandomReplaceAlgorithmTest {
     
     @Test
     public void assertMask() {
-        maskAlgorithm.init(PropertiesBuilder.build(new Property("uppercase-letter-codes", "ABCD"), new Property("lowercase-letter-codes", "abcd"), new Property("digital-random-codes", "1234"),
+        maskAlgorithm.init(PropertiesBuilder.build(new Property("uppercase-letter-codes", "A,B,C,D"), new Property("lowercase-letter-codes", "a,b,c,d"), new Property("digital-codes", "1,2,3,4"),
                 new Property("special-codes", "~!@#")));
         assertThat(maskAlgorithm.mask(""), is(""));
         assertThat(maskAlgorithm.mask("Ab1!").charAt(0), anyOf(is('A'), is('B'), is('C'), is('D')));
