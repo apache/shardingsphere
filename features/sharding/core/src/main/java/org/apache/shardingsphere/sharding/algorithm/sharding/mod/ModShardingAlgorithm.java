@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtil;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
@@ -45,9 +44,6 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     private static final String ZERO_PADDING_KEY = "zero-padding";
     
-    @Getter
-    private Properties props;
-    
     private int shardingCount;
     
     private int startOffset;
@@ -60,7 +56,6 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         shardingCount = getShardingCount(props);
         startOffset = getStartOffset(props);
         stopOffset = getStopOffset(props);

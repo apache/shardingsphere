@@ -22,7 +22,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
@@ -44,13 +43,9 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
     
     private List<String> networkNumbers;
     
-    @Getter
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
-        this.networkNumbers = createNetworkNumbers(props);
+        networkNumbers = createNetworkNumbers(props);
     }
     
     private List<String> createNetworkNumbers(final Properties props) {

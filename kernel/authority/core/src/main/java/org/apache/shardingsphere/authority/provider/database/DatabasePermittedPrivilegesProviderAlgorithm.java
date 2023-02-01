@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.authority.provider.database;
 
-import lombok.Getter;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.provider.database.builder.DatabasePrivilegeBuilder;
 import org.apache.shardingsphere.authority.registry.UserPrivilegeMapAuthorityRegistry;
@@ -37,7 +36,6 @@ public final class DatabasePermittedPrivilegesProviderAlgorithm implements Autho
     
     public static final String PROP_USER_DATABASE_MAPPINGS = "user-database-mappings";
     
-    @Getter
     private Properties props;
     
     @Override

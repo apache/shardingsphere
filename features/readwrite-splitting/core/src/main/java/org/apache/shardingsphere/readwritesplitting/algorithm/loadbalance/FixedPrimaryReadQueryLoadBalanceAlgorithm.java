@@ -17,25 +17,15 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Fixed primary read query load-balance algorithm.
  */
 public final class FixedPrimaryReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
-    
-    @Getter
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
