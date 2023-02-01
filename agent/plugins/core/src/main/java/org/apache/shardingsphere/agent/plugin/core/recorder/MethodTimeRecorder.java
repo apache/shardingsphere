@@ -59,7 +59,7 @@ public final class MethodTimeRecorder {
     }
     
     private String getKey(final Method method) {
-        return String.format("%s@%s", adviceClass.getCanonicalName(), method.getName());
+        return String.format("%s@%s", adviceClass.getName(), method.getName());
     }
     
     private long getElapsedTime(final String key) {

@@ -117,17 +117,17 @@ public final class RALBackendHandlerFactory {
         }
         if (sqlStatement instanceof QueryableScalingRALStatement) {
             return new QueryableScalingRALBackendHandler((QueryableScalingRALStatement) sqlStatement,
-                    (DatabaseDistSQLResultSet) TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName()));
+                    (DatabaseDistSQLResultSet) TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getName()));
         }
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
             return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof QueryableGlobalRuleRALStatement) {
             return new QueryableGlobalRuleRALBackendHandler(sqlStatement,
-                    (GlobalRuleDistSQLResultSet) TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName()));
+                    (GlobalRuleDistSQLResultSet) TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getName()));
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
-            return new UpdatableGlobalRuleRALBackendHandler(sqlStatement, TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getCanonicalName()));
+            return new UpdatableGlobalRuleRALBackendHandler(sqlStatement, TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getName()));
         }
         // TODO delete other if branches after replacing all query handlers with QueryableRALBackendHandler
         if (TypedSPILoader.contains(QueryableRALExecutor.class, sqlStatement.getClass().getName())) {
@@ -146,7 +146,7 @@ public final class RALBackendHandlerFactory {
     
     private static RALBackendHandler<?> createRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
         Class<? extends RALBackendHandler<?>> clazz = HANDLERS.get(sqlStatement.getClass());
-        ShardingSpherePreconditions.checkState(null != clazz, () -> new UnsupportedSQLOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName())));
+        ShardingSpherePreconditions.checkState(null != clazz, () -> new UnsupportedSQLOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getName())));
         RALBackendHandler<?> result = newInstance(clazz);
         result.init(sqlStatement, connectionSession);
         return result;
