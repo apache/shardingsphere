@@ -34,7 +34,7 @@ public final class PostgreSQLSetCharsetExecutor implements PostgreSQLSessionVari
     
     @Override
     public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
-        String value = formatValue(assignValue.trim());
+        String value = assignValue.trim();
         connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(value));
     }
     
