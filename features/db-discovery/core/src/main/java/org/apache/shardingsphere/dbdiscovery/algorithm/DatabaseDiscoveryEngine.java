@@ -73,12 +73,10 @@ public final class DatabaseDiscoveryEngine {
     public String changePrimaryDataSource(final String databaseName, final String groupName, final String originalPrimaryDataSourceName,
                                           final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         Optional<String> newPrimaryDataSourceName = findPrimaryDataSourceName(dataSourceMap);
-        if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(originalPrimaryDataSourceName)) {
-            eventBusContext.post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
-        }
+        newPrimaryDataSourceName.ifPresent(optional -> postPrimaryChangedEvent(databaseName, groupName, originalPrimaryDataSourceName, optional));
         Map<String, DataSource> replicaDataSourceMap = new HashMap<>(dataSourceMap);
         newPrimaryDataSourceName.ifPresent(replicaDataSourceMap::remove);
-        postReplicaDataSourceDisabledEvent(databaseName, groupName, replicaDataSourceMap, disabledDataSourceNames);
+        postReplicaDisabledEvent(databaseName, groupName, replicaDataSourceMap, disabledDataSourceNames);
         return newPrimaryDataSourceName.orElse("");
     }
     
@@ -95,8 +93,14 @@ public final class DatabaseDiscoveryEngine {
         return Optional.empty();
     }
     
-    private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName,
-                                                    final Map<String, DataSource> replicaDataSourceMap, final Collection<String> disabledDataSourceNames) {
+    private void postPrimaryChangedEvent(final String databaseName, final String groupName, final String originalPrimaryDataSourceName, final String newPrimaryDataSourceName) {
+        if (!newPrimaryDataSourceName.equals(originalPrimaryDataSourceName)) {
+            eventBusContext.post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName)));
+        }
+    }
+    
+    private void postReplicaDisabledEvent(final String databaseName, final String groupName,
+                                          final Map<String, DataSource> replicaDataSourceMap, final Collection<String> disabledDataSourceNames) {
         int enabledReplicasCount = replicaDataSourceMap.size() - disabledDataSourceNames.size() - 1;
         for (Entry<String, DataSource> entry : replicaDataSourceMap.entrySet()) {
             StorageNodeDataSource replicaStorageNode = createReplicaStorageNode(loadReplicaStatus(entry.getValue()));
