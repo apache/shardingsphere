@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmUtil;
+import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.List;
@@ -46,7 +46,7 @@ public final class LandlineNumberRandomAlgorithm implements MaskAlgorithm<Object
     }
     
     private List<String> createLandLineNumbers(final Properties props) {
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, LANDLINE_NUMBERS, getType());
+        MaskAlgorithmPropsChecker.checkAtLeastOneCharConfig(props, LANDLINE_NUMBERS, getType());
         return Splitter.on(",").trimResults().splitToList(props.getProperty(LANDLINE_NUMBERS));
     }
     

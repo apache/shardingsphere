@@ -24,10 +24,10 @@ import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializ
 import java.util.Properties;
 
 /**
- * Mask algorithm util.
+ * Mask algorithm props checker.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MaskAlgorithmUtil {
+public final class MaskAlgorithmPropsChecker {
     
     /**
      * Check single char config.

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmUtil;
+import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Properties;
@@ -53,17 +53,17 @@ public final class KeepFromXToYMaskAlgorithm implements MaskAlgorithm<Object, St
     }
     
     private Integer createFromX(final Properties props) {
-        MaskAlgorithmUtil.checkIntegerTypeConfig(props, FROM_X, getType());
+        MaskAlgorithmPropsChecker.checkIntegerTypeConfig(props, FROM_X, getType());
         return Integer.parseInt(props.getProperty(FROM_X));
     }
     
     private Integer createToY(final Properties props) {
-        MaskAlgorithmUtil.checkIntegerTypeConfig(props, TO_Y, getType());
+        MaskAlgorithmPropsChecker.checkIntegerTypeConfig(props, TO_Y, getType());
         return Integer.parseInt(props.getProperty(TO_Y));
     }
     
     private Character createReplaceChar(final Properties props) {
-        MaskAlgorithmUtil.checkSingleCharConfig(props, REPLACE_CHAR, getType());
+        MaskAlgorithmPropsChecker.checkSingleCharConfig(props, REPLACE_CHAR, getType());
         return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     

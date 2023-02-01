@@ -128,6 +128,9 @@ public abstract class PipelineBaseE2EIT {
     }
     
     protected void initEnvironment(final DatabaseType databaseType, final JobType jobType) throws SQLException {
+        sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
+        proxyDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(containerComposer.getProxyJdbcUrl(PROXY_DATABASE)),
+                ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
         String defaultDatabaseName = "";
         if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             defaultDatabaseName = "postgres";
@@ -139,8 +142,6 @@ public abstract class PipelineBaseE2EIT {
             createProxyDatabase(connection);
         }
         cleanUpDataSource();
-        sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
-        proxyDataSource = StorageContainerUtil.generateDataSource(containerComposer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
     private void cleanUpProxyDatabase(final Connection connection) {
