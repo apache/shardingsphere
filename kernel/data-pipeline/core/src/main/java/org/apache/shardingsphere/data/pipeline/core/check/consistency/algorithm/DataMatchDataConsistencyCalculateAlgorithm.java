@@ -66,9 +66,6 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     private static final int DEFAULT_CHUNK_SIZE = 1000;
     
-    @Getter
-    private Properties props;
-    
     private int chunkSize;
     
     private final Map<String, String> firstSQLCache = new ConcurrentHashMap<>();
@@ -77,7 +74,6 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         chunkSize = getChunkSize(props);
     }
     

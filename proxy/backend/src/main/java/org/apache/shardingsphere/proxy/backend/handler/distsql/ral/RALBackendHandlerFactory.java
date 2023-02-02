@@ -103,6 +103,10 @@ public final class RALBackendHandlerFactory {
      * @return created instance
      */
     public static ProxyBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
+        // TODO delete other if branches after replacing all query handlers with QueryableRALBackendHandler
+        if (TypedSPILoader.contains(QueryableRALExecutor.class, sqlStatement.getClass().getName())) {
+            return new QueryableRALBackendHandler<>(sqlStatement, connectionSession);
+        }
         if (sqlStatement instanceof HintRALStatement) {
             return new HintRALBackendHandler((HintRALStatement) sqlStatement, connectionSession);
         }
@@ -119,10 +123,6 @@ public final class RALBackendHandlerFactory {
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
             return new UpdatableGlobalRuleRALBackendHandler(sqlStatement, TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getName()));
-        }
-        // TODO delete other if branches after replacing all query handlers with QueryableRALBackendHandler
-        if (TypedSPILoader.contains(QueryableRALExecutor.class, sqlStatement.getClass().getName())) {
-            return new QueryableRALBackendHandler<>(sqlStatement, connectionSession);
         }
         return createRALBackendHandler(sqlStatement, connectionSession);
     }

@@ -17,23 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.fixture;
 
-import lombok.Getter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Getter
 public final class ITAutoIncrementKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     private final AtomicLong idGenerator = new AtomicLong(1L);
-    
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
     
     @Override
     public Long generateKey() {

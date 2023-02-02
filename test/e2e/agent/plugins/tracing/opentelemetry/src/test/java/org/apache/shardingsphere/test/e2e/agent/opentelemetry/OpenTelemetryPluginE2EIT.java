@@ -48,10 +48,6 @@ public final class OpenTelemetryPluginE2EIT extends BasePluginE2EIT {
     public void assertProxyWithAgent() throws IOException {
         super.assertProxyWithAgent();
         Properties props = E2ETestEnvironment.getInstance().getProps();
-        try {
-            Thread.sleep(Long.parseLong(props.getProperty("opentelemetry.waitMs", "60000")));
-        } catch (final InterruptedException ignore) {
-        }
         String url = props.getProperty("opentelemetry.zipkin.url") + props.getProperty("opentelemetry.servername");
         Collection<TracingResult> traces = new LinkedList<>();
         Gson gson = new Gson();

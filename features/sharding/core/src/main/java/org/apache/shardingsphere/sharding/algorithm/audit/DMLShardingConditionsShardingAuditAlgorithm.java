@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.audit;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.audit.exception.SQLAuditException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -30,20 +29,11 @@ import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 
 import java.util.List;
-import java.util.Properties;
 
 /**
  * DML sharding conditions sharding audit algorithm.
  */
 public final class DMLShardingConditionsShardingAuditAlgorithm implements ShardingAuditAlgorithm {
-    
-    @Getter
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
     
     @Override
     public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params,
