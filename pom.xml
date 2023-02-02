@@ -109,6 +109,7 @@
         <mockito.version>4.8.0</mockito.version>
         
         <protobuf-java.version>3.19.6</protobuf-java.version>
+        <awaitility.version>4.2.0</awaitility.version>
         
         <!-- Plugin versions -->
         <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
@@ -571,6 +572,13 @@
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitility.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

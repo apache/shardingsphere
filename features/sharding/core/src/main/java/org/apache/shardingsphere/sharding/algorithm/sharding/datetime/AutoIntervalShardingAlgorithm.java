@@ -51,9 +51,6 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-    @Getter
-    private Properties props;
-    
     private LocalDateTime dateTimeLower;
     
     private long shardingSeconds;
@@ -63,7 +60,6 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         dateTimeLower = getDateTime(props);
         shardingSeconds = getShardingSeconds(props);
         autoTablesAmount = (int) (Math.ceil((double) (parseDate(props.getProperty(DATE_TIME_UPPER_KEY)) / shardingSeconds)) + 2);

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -41,15 +40,11 @@ public final class KeepFromXToYMaskAlgorithm implements MaskAlgorithm<Object, St
     
     private Character replaceChar;
     
-    @Getter
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
-        this.fromX = createFromX(props);
-        this.toY = createToY(props);
-        this.replaceChar = createReplaceChar(props);
+        fromX = createFromX(props);
+        toY = createToY(props);
+        replaceChar = createReplaceChar(props);
     }
     
     private Integer createFromX(final Properties props) {

@@ -53,7 +53,6 @@ public final class AgentBuilderFactory {
                 .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."))
                 .type(new AgentJunction(advisorConfigs))
                 .transform(new AgentTransformer(pluginConfigs, pluginJars, advisorConfigs, isEnhancedForProxy))
-                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-                .with(new AgentLoggingListener());
+                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
     }
 }
