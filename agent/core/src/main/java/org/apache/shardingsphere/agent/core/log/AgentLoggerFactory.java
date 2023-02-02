@@ -19,12 +19,11 @@ package org.apache.shardingsphere.agent.core.log;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.core.spi.AgentServiceLoader;
-import org.apache.shardingsphere.agent.log.api.AgentLogger;
-import org.apache.shardingsphere.agent.log.api.impl.NOPAgentLogger;
-import org.apache.shardingsphere.agent.log.spi.AgentLoggerFactorySPI;
+import org.apache.shardingsphere.agent.core.log.slf4j.SLF4JAgentLogger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Agent logger factory.
@@ -32,7 +31,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AgentLoggerFactory {
     
-    private static AgentLoggerClassLoader agentLoggerClassLoader;
+    private static final Map<String, AgentLogger> LOGGERS = new ConcurrentHashMap<>();
     
     /**
      * Get agent logger.
@@ -51,19 +50,6 @@ public final class AgentLoggerFactory {
      * @return agent logger
      */
     public static AgentLogger getAgentLogger(final String name) {
-        Optional<AgentLoggerFactorySPI> loggerFactory = AgentServiceLoader.getServiceLoader(getAgentLoggerClassLoader(), AgentLoggerFactorySPI.class).getServices().stream().findFirst();
-        return loggerFactory.isPresent() ? loggerFactory.get().getAgentLogger(name) : new NOPAgentLogger();
-    }
-    
-    private static AgentLoggerClassLoader getAgentLoggerClassLoader() {
-        if (null != agentLoggerClassLoader) {
-            return agentLoggerClassLoader;
-        }
-        synchronized (AgentLoggerFactory.class) {
-            if (null == agentLoggerClassLoader) {
-                agentLoggerClassLoader = AgentLoggerClassLoaderFactory.create();
-            }
-        }
-        return agentLoggerClassLoader;
+        return LOGGERS.computeIfAbsent(name, key -> new SLF4JAgentLogger(LoggerFactory.getLogger(name)));
     }
 }

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingR
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -36,7 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Transaction weight read query load-balance algorithm.
  */
 @Getter
-public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, WeightAware {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
@@ -44,19 +45,22 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements Rea
     
     private Properties props;
     
+    private Collection<String> dataSourceNames;
+    
     @Override
     public void init(final Properties props) {
         this.props = props;
+        dataSourceNames = props.stringPropertyNames();
     }
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
         double[] weight = weightMap.containsKey(name) ? weightMap.get(name) : initWeight(readDataSourceNames);
         weightMap.putIfAbsent(name, weight);
-        return getDataSourceName(readDataSourceNames, weight);
+        return getDataSourceNames(readDataSourceNames, weight);
     }
     
-    private String getDataSourceName(final List<String> readDataSourceNames, final double[] weight) {
+    private String getDataSourceNames(final List<String> readDataSourceNames, final double[] weight) {
         double randomWeight = ThreadLocalRandom.current().nextDouble(0, 1);
         int index = Arrays.binarySearch(weight, randomWeight);
         if (index < 0) {

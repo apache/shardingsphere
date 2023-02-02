@@ -23,15 +23,11 @@ import org.apache.shardingsphere.infra.context.transaction.TransactionConnection
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -40,16 +36,9 @@ import static org.junit.Assert.assertTrue;
 
 public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
     
-    @Before
-    @After
-    public void reset() throws NoSuchFieldException, IllegalAccessException {
-        ((Map<?, ?>) Plugins.getMemberAccessor()
-                .get(TransactionWeightReadQueryLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP"), TransactionWeightReadQueryLoadBalanceAlgorithm.class)).clear();
-    }
-    
     @Test
     public void assertGetSingleReadDataSource() {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
+        TransactionWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
                 new AlgorithmConfiguration("TRANSACTION_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"))), ReadQueryLoadBalanceAlgorithm.class);
         TransactionConnectionContext context = new TransactionConnectionContext();
         context.setInTransaction(true);
@@ -58,7 +47,7 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetMultipleReadDataSources() {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
+        TransactionWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
                 "TRANSACTION_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5"))), ReadQueryLoadBalanceAlgorithm.class);
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";

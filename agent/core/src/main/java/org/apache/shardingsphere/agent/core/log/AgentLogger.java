@@ -15,42 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.log.api.impl;
-
-import org.apache.shardingsphere.agent.log.api.AgentLogger;
+package org.apache.shardingsphere.agent.core.log;
 
 /**
- * NOP (no operation) agent logger.
+ * Agent logger.
  */
-public final class NOPAgentLogger implements AgentLogger {
+public interface AgentLogger {
     
-    @Override
-    public void info(final String msg) {
-        
-    }
+    /**
+     * Info.
+     *
+     * @param msg message
+     */
+    void info(String msg);
     
-    @Override
-    public void info(final String format, final Object... arguments) {
-        
-    }
+    /**
+     * Info.
+     *
+     * @param format format
+     * @param arguments arguments
+     */
+    void info(String format, Object... arguments);
     
-    @Override
-    public void error(final String format, final Object... arguments) {
-        
-    }
+    /**
+     * Error.
+     *
+     * @param format format
+     * @param arguments arguments
+     */
+    void error(String format, Object... arguments);
     
-    @Override
-    public void error(final String msg) {
-        
-    }
-    
-    @Override
-    public void debug(final String format, final Object... arguments) {
-        
-    }
-    
-    @Override
-    public void debug(final String msg) {
-        
-    }
+    /**
+     * Error.
+     *
+     * @param msg message
+     */
+    void error(String msg);
 }
