@@ -31,7 +31,6 @@
     <modules>
         <module>opentracing</module>
         <module>opentelemetry</module>
-        <module>zipkin</module>
     </modules>
     
     <properties>
