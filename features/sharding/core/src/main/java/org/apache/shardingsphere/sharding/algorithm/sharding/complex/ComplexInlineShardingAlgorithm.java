@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.complex;
 
 import groovy.lang.Closure;
 import groovy.util.Expando;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
@@ -49,9 +48,6 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     private static final String ALLOW_RANGE_QUERY_KEY = "allow-range-query-with-inline-sharding";
     
-    @Getter
-    private Properties props;
-    
     private String algorithmExpression;
     
     private Collection<String> shardingColumns;
@@ -60,7 +56,6 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         algorithmExpression = getAlgorithmExpression(props);
         shardingColumns = getShardingColumns(props);
         allowRangeQuery = getAllowRangeQuery(props);

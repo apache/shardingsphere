@@ -17,23 +17,13 @@
 
 package org.apache.shardingsphere.sharding.fixture;
 
-import lombok.Getter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
-import java.util.Properties;
 
-@Getter
 public final class ClassBasedStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
-    
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {

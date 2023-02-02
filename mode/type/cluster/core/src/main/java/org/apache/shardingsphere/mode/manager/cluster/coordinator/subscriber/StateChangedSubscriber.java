@@ -75,7 +75,7 @@ public final class StateChangedSubscriber {
                 .getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class);
         staticDataSourceRule.ifPresent(optional -> optional.updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
         DataSourceStateManager.getInstance().updateState(
-                qualifiedDatabase.getDatabaseName(), qualifiedDatabase.getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().toUpperCase()));
+                qualifiedDatabase.getDatabaseName(), qualifiedDatabase.getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().name()));
     }
     
     /**

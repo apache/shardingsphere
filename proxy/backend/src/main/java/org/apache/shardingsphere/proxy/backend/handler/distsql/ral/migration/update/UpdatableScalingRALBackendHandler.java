@@ -44,7 +44,7 @@ public final class UpdatableScalingRALBackendHandler implements DistSQLBackendHa
     @Override
     public ResponseHeader execute() throws SQLException {
         String databaseName = getDatabaseName(connectionSession);
-        TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass().getCanonicalName()).executeUpdate(databaseName, sqlStatement);
+        TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass().getName()).executeUpdate(databaseName, sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
     

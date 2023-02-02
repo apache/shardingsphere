@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.hint;
 
 import groovy.lang.Closure;
 import groovy.util.Expando;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
@@ -41,14 +40,10 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     
     private static final String HINT_INLINE_VALUE_PROPERTY_NAME = "value";
     
-    @Getter
-    private Properties props = new Properties();
-    
     private String algorithmExpression;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         algorithmExpression = getAlgorithmExpression(props);
     }
     

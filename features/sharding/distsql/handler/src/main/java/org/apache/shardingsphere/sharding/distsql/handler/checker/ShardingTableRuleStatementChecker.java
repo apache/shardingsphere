@@ -433,20 +433,17 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static boolean isValidShardingAlgorithm(final TableRule sampleTableRule, final TableRule tableRule, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {
-        String sampleAlgorithmExpression = getAlgorithmExpression(sampleTableRule, databaseAlgorithm, checkedConfig);
-        String algorithmExpression = getAlgorithmExpression(tableRule, databaseAlgorithm, checkedConfig);
-        return sampleAlgorithmExpression.equalsIgnoreCase(algorithmExpression);
+        return getAlgorithmExpression(sampleTableRule, databaseAlgorithm, checkedConfig).equals(getAlgorithmExpression(tableRule, databaseAlgorithm, checkedConfig));
     }
     
-    private static String getAlgorithmExpression(final TableRule tableRule, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {
+    private static Optional<String> getAlgorithmExpression(final TableRule tableRule, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {
         ShardingStrategyConfiguration shardingStrategyConfig = databaseAlgorithm
                 ? null == tableRule.getDatabaseShardingStrategyConfig() ? checkedConfig.getDefaultDatabaseShardingStrategyConfig() : tableRule.getDatabaseShardingStrategyConfig()
                 : null == tableRule.getTableShardingStrategyConfig() ? checkedConfig.getDefaultTableShardingStrategyConfig() : tableRule.getTableShardingStrategyConfig();
         ShardingAlgorithm shardingAlgorithm = checkedConfig.getShardingAlgorithms().get(shardingStrategyConfig.getShardingAlgorithmName());
-        String originAlgorithmExpression = null == shardingAlgorithm ? "" : shardingAlgorithm.getProps().getProperty("algorithm-expression", "");
-        String sampleDataNodePrefix = databaseAlgorithm ? tableRule.getDataSourceDataNode().getPrefix() : tableRule.getTableDataNode().getPrefix();
+        String dataNodePrefix = databaseAlgorithm ? tableRule.getDataSourceDataNode().getPrefix() : tableRule.getTableDataNode().getPrefix();
         String shardingColumn = getShardingColumn(shardingStrategyConfig, checkedConfig.getDefaultShardingColumn());
-        return originAlgorithmExpression.replaceFirst(sampleDataNodePrefix, "").replaceFirst(shardingColumn, "").replaceAll(" ", "");
+        return null == shardingAlgorithm ? Optional.empty() : shardingAlgorithm.getAlgorithmStructure(dataNodePrefix, shardingColumn);
     }
     
     private static String getShardingColumn(final ShardingStrategyConfiguration shardingStrategyConfig, final String defaultShardingColumn) {

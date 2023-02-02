@@ -21,11 +21,12 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -178,7 +178,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
     
     private void updateStatus(final String databaseName, final Collection<String> groupNames, final String toBeDisableStorageUnit, final boolean isDisable) {
         groupNames.forEach(each -> {
-            StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
+            StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? DataSourceState.DISABLED : DataSourceState.ENABLED);
             ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext()
                     .post(new DataSourceDisabledEvent(databaseName, each, toBeDisableStorageUnit, storageNodeDataSource));
         });
@@ -186,7 +186,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
     
     private Collection<QualifiedDatabase> getDisabledStorageNodes(final String databaseName, final MetaDataPersistService persistService) {
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
-        return storageNodes.entrySet().stream().filter(each -> StorageNodeStatus.DISABLED.name().equalsIgnoreCase(each.getValue().getStatus()))
+        return storageNodes.entrySet().stream().filter(each -> DataSourceState.DISABLED == each.getValue().getStatus())
                 .map(each -> new QualifiedDatabase(each.getKey())).filter(each -> databaseName.equalsIgnoreCase(each.getDatabaseName())).collect(Collectors.toList());
     }
     
