@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -86,18 +85,6 @@ public final class ExecuteProcessEngine {
      */
     public void finishExecution(final String executionID, final SQLExecutionUnit executionUnit) {
         reporter.report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
-    }
-    
-    /**
-     * Finish execution.
-     *
-     * @param executionID execution ID
-     * @param eventBusContext event bus context
-     */
-    public void finishExecution(final String executionID, final EventBusContext eventBusContext) {
-        if (ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            reporter.report(executionID, ExecuteProcessConstants.EXECUTE_STATUS_DONE, eventBusContext);
-        }
     }
     
     /**
