@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.replica.DuplicatePrimaryDataSourceException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -30,13 +30,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
+import java.util.TreeSet;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
+import java.util.concurrent.Future;
 
 /**
  * Normal replication database discovery provider algorithm for MySQL.
@@ -59,32 +60,22 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
         delayMillisecondsThreshold = Long.parseLong(props.getProperty("delay-milliseconds-threshold", "0"));
     }
     
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
         ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
-        checkPrimaryDataSource(databaseName, dataSources.stream().map(each -> asyncCheckEnvironment(executorService, each)).collect(Collectors.toList()));
-    }
-    
-    private void checkPrimaryDataSource(final String databaseName, final Collection<CompletableFuture<Boolean>> completableFutures) {
-        CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0]));
-        Iterator<CompletableFuture<Boolean>> primaryInstancesFuture = completableFutures.stream().iterator();
-        int primaryInstanceCount = 0;
-        while (primaryInstancesFuture.hasNext()) {
-            if (primaryInstancesFuture.next().join()) {
-                primaryInstanceCount++;
-            }
+        Collection<Future<Boolean>> futures = new LinkedList<>();
+        Set<Boolean> primaryInstances = new TreeSet<>();
+        for (DataSource each : dataSources) {
+            futures.add(executorService.submit(() -> queryPrimaryInstance(each, primaryInstances)));
         }
-        ShardingSpherePreconditions.checkState(1 == primaryInstanceCount, () -> new DuplicatePrimaryDataSourceException(databaseName));
+        for (Future<Boolean> each : futures) {
+            ShardingSpherePreconditions.checkState(each.get(), () -> new DuplicatePrimaryDataSourceException(databaseName));
+        }
     }
     
-    private CompletableFuture<Boolean> asyncCheckEnvironment(final ExecutorService executorService, final DataSource dataSource) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return isPrimaryInstance(dataSource);
-            } catch (final SQLException ex) {
-                throw new SQLWrapperException(ex);
-            }
-        }, executorService);
+    private synchronized boolean queryPrimaryInstance(final DataSource dataSource, final Collection<Boolean> primaryInstances) throws SQLException {
+        return isPrimaryInstance(dataSource) && primaryInstances.add(Boolean.TRUE);
     }
     
     @Override

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRGroupNameConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRModeException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRPluginException;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,12 +35,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 /**
  * MGR database discovery provider algorithm for MySQL.
@@ -70,31 +70,20 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
         groupName = props.getProperty("group-name", "");
     }
     
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
         ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
-        Collection<CompletableFuture<Void>> completableFutures = new LinkedList<>();
-        for (DataSource dataSource : dataSources) {
-            completableFutures.add(runAsyncCheckEnvironment(databaseName, dataSource, executorService));
+        Collection<Future<Boolean>> futures = new LinkedList<>();
+        for (DataSource each : dataSources) {
+            futures.add(executorService.submit(() -> checkDataSourceEnvironment(databaseName, each)));
         }
-        CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0]));
-        Iterator<CompletableFuture<Void>> mgrInstancesFuture = completableFutures.stream().iterator();
-        while (mgrInstancesFuture.hasNext()) {
-            mgrInstancesFuture.next().join();
+        for (Future<Boolean> each : futures) {
+            each.get();
         }
     }
     
-    private CompletableFuture<Void> runAsyncCheckEnvironment(final String databaseName, final DataSource dataSource, final ExecutorService executorService) {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                checkSingleDataSourceEnvironment(databaseName, dataSource);
-            } catch (final SQLException ex) {
-                throw new SQLWrapperException(ex);
-            }
-        }, executorService);
-    }
-    
-    private void checkSingleDataSourceEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
+    private Boolean checkDataSourceEnvironment(final String databaseName, final DataSource dataSource) {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -102,6 +91,9 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
             checkSinglePrimaryMode(databaseName, statement);
             checkGroupName(databaseName, statement);
             checkMemberInstanceURL(databaseName, connection.getMetaData().getURL(), statement);
+            return Boolean.TRUE;
+        } catch (final SQLException ignored) {
+            return Boolean.FALSE;
         }
     }
     
