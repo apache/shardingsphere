@@ -26,6 +26,7 @@ import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingR
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -35,8 +36,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Weight read query load-balance algorithm.
  */
-@Getter
-public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, WeightAware {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
@@ -44,9 +44,13 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     private Properties props;
     
+    @Getter
+    private Collection<String> dataSourceNames;
+    
     @Override
     public void init(final Properties props) {
         this.props = props;
+        dataSourceNames = props.stringPropertyNames();
     }
     
     @Override

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.YamlDatabaseDiscoveryRuleConfigurationSwapper;
-import org.apache.shardingsphere.distsql.handler.ral.query.InstanceContextRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -88,17 +87,17 @@ import java.util.TreeMap;
 /**
  * Convert YAML configuration executor.
  */
-public final class ConvertYamlConfigurationExecutor implements InstanceContextRequiredQueryableRALExecutor<ConvertYamlConfigurationStatement> {
+public final class ConvertYamlConfigurationExecutor implements QueryableRALExecutor<ConvertYamlConfigurationStatement> {
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
     @Override
     public Collection<String> getColumnNames() {
-        return Collections.singleton("distsql");
+        return Collections.singleton("dist_sql");
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final InstanceContext instanceContext, final ConvertYamlConfigurationStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ConvertYamlConfigurationStatement sqlStatement) {
         File file = new File(sqlStatement.getFilePath());
         YamlProxyDatabaseConfiguration yamlConfig;
         try {
@@ -109,11 +108,6 @@ public final class ConvertYamlConfigurationExecutor implements InstanceContextRe
         Preconditions.checkNotNull(yamlConfig, "Invalid yaml file `%s`", file.getName());
         Preconditions.checkNotNull(yamlConfig.getDatabaseName(), "`databaseName` in file `%s` is required.", file.getName());
         return Collections.singleton(new LocalDataQueryResultRow(generateDistSQL(yamlConfig)));
-    }
-    
-    @Override
-    public String getType() {
-        return ConvertYamlConfigurationStatement.class.getName();
     }
     
     private String generateDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
@@ -628,6 +622,7 @@ public final class ConvertYamlConfigurationExecutor implements InstanceContextRe
         return result.toString();
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private String getAlgorithmProperties(final Properties props) {
         StringBuilder result = new StringBuilder();
         Iterator<String> iterator = new TreeMap(props).keySet().iterator();
@@ -643,5 +638,10 @@ public final class ConvertYamlConfigurationExecutor implements InstanceContextRe
             }
         }
         return result.toString();
+    }
+    
+    @Override
+    public String getType() {
+        return ConvertYamlConfigurationStatement.class.getName();
     }
 }

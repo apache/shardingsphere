@@ -31,14 +31,12 @@ import java.util.Properties;
 /**
  * Abstract column matched shadow algorithm.
  */
+@Getter
 public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShadowAlgorithm<Comparable<?>> {
     
     private static final String COLUMN_PROPS_KEY = "column";
     
     private static final String OPERATION_PROPS_KEY = "operation";
-    
-    @Getter
-    private Properties props;
     
     private String shadowColumn;
     
@@ -46,23 +44,22 @@ public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShad
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         shadowColumn = getShadowColumn(props);
         shadowOperationType = getShadowOperationType(props);
     }
     
     private String getShadowColumn(final Properties props) {
         String result = props.getProperty(COLUMN_PROPS_KEY);
-        ShardingSpherePreconditions.checkNotNull(result, () -> new ShadowAlgorithmInitializationException(getType(), "Column shadow algorithm column cannot be null."));
+        ShardingSpherePreconditions.checkNotNull(result, () -> new ShadowAlgorithmInitializationException(getType(), "Column shadow algorithm column cannot be null"));
         return result;
     }
     
     private ShadowOperationType getShadowOperationType(final Properties props) {
         String operationType = props.getProperty(OPERATION_PROPS_KEY);
-        ShardingSpherePreconditions.checkNotNull(operationType, () -> new ShadowAlgorithmInitializationException(getType(), "Column shadow algorithm operation cannot be null."));
+        ShardingSpherePreconditions.checkNotNull(operationType, () -> new ShadowAlgorithmInitializationException(getType(), "Column shadow algorithm operation cannot be null"));
         Optional<ShadowOperationType> result = ShadowOperationType.contains(operationType);
         ShardingSpherePreconditions.checkState(result.isPresent(),
-                () -> new ShadowAlgorithmInitializationException(getType(), "Column shadow algorithm operation must be one of [select, insert, update, delete]."));
+                () -> new ShadowAlgorithmInitializationException(getType(), "Column shadow algorithm operation must be one of [select, insert, update, delete]"));
         return result.get();
     }
     

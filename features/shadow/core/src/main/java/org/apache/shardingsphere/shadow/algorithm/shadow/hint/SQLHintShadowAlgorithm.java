@@ -17,22 +17,17 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 
 import java.util.Collection;
-import java.util.Properties;
 
 /**
  * SQL hint shadow algorithm.
  */
 public final class SQLHintShadowAlgorithm implements HintShadowAlgorithm<String> {
-    
-    @Getter
-    private final Properties props = new Properties();
     
     @Override
     public boolean isShadow(final Collection<String> shadowTableNames, final PreciseHintShadowValue<String> noteShadowValue) {

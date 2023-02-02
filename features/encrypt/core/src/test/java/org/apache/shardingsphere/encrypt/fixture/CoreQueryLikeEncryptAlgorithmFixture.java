@@ -17,21 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.fixture;
 
-import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-import java.util.Properties;
-
-@Getter
 public final class CoreQueryLikeEncryptAlgorithmFixture implements LikeEncryptAlgorithm<Object, String> {
-    
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {

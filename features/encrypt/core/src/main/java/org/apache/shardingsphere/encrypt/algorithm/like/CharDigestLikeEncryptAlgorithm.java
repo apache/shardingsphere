@@ -21,7 +21,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -55,9 +54,6 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     private static final int MAX_NUMERIC_LETTER_CHAR = 255;
     
-    @Getter
-    private Properties props;
-    
     private int delta;
     
     private int mask;
@@ -68,7 +64,6 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         delta = createDelta(props);
         mask = createMask(props);
         start = createStart(props);

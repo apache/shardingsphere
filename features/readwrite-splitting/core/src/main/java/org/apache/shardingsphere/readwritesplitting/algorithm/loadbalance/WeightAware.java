@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.log;
+package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
-import org.apache.shardingsphere.agent.core.classloader.AgentExtraClassLoader;
-
-import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.jar.JarFile;
 
 /**
- * Agent logger class loader.
+ * Weight aware.
  */
-public final class AgentLoggerClassLoader extends AgentExtraClassLoader {
+// TODO should remove after merge TransactionWeightReadQueryLoadBalanceAlgorithm and WeightReadQueryLoadBalanceAlgorithm
+public interface WeightAware {
     
-    public AgentLoggerClassLoader(final Collection<JarFile> loggingJars, final File resourcePath) {
-        super(AgentLoggerFactory.class.getClassLoader(), loggingJars, Collections.singleton(resourcePath));
-    }
-    
-    public AgentLoggerClassLoader() {
-        super(AgentLoggerFactory.class.getClassLoader(), Collections.emptyList());
-    }
+    /**
+     * Get data source names.
+     * 
+     * @return data source names
+     */
+    Collection<String> getDataSourceNames();
 }

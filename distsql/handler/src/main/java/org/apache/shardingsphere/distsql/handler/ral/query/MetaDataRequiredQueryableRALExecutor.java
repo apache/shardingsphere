@@ -26,7 +26,7 @@ import java.util.Collection;
 /**
  * Meta data required queryable RAL executor.
  */
-public interface MetaDataRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor {
+public interface MetaDataRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
      * Get query result rows.
