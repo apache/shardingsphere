@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client.importer;
 
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.ImportDataSourceParameter;
+
 /**
  * Importer factory.
  */
@@ -26,15 +28,20 @@ public final class ImporterFactory {
      * Get importer.
      *
      * @param databaseType database type
+     * @param dataSourceParameter data source parameter
      * @return importer
      */
     // TODO use SPI
-    public static Importer getImporter(final String databaseType) {
+    public static Importer getImporter(final String databaseType, final ImportDataSourceParameter dataSourceParameter) {
         switch (databaseType) {
             case "openGauss":
-                return new OpenGaussImporter();
+                return new OpenGaussImporter(dataSourceParameter);
+            case "MySQL":
+                return new MySQLImporter(dataSourceParameter);
+            case "PostgreSQL":
+                return new PostgreSQLImporter(dataSourceParameter);
             default:
-                return null;
+                throw new UnsupportedOperationException(String.format("Not support %s now", databaseType));
         }
     }
 }

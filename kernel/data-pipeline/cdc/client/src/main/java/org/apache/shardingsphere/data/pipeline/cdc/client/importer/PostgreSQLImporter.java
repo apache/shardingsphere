@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.client.importer;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.ImportDataSourceParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder.SQLBuilder;
@@ -29,24 +30,25 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * OpenGauss importer.
+ * PostgreSQL importer.
  */
+@RequiredArgsConstructor
 @Slf4j
-public final class OpenGaussImporter extends AbstractDataSourceImporter {
+public final class PostgreSQLImporter extends AbstractDataSourceImporter {
     
-    private final SQLBuilder sqlBuilder = SQLBuilderFactory.getSQLBuilder("openGauss");
+    private final SQLBuilder sqlBuilder = SQLBuilderFactory.getSQLBuilder("MySQL");
     
     @Getter
     private final Connection connection;
     
-    public OpenGaussImporter(final ImportDataSourceParameter dataSourceParameter) {
+    public PostgreSQLImporter(final ImportDataSourceParameter dataSourceParameter) {
         String url = Optional.ofNullable(dataSourceParameter.getUrl()).orElse("localhost");
-        String port = Optional.ofNullable(dataSourceParameter.getPort()).orElse(5432).toString();
+        String port = Optional.ofNullable(dataSourceParameter.getPort()).orElse(3306).toString();
         String database = Optional.ofNullable(dataSourceParameter.getDatabase()).orElse("cdc_db");
         String username = Optional.ofNullable(dataSourceParameter.getUsername()).orElse("test_user");
         String password = Optional.ofNullable(dataSourceParameter.getPassword()).orElse("Root@123");
         try {
-            connection = DriverManager.getConnection(String.format("jdbc:opengauss://%s:%s/%s?stringtype=unspecified", url, port, database), username, password);
+            connection = DriverManager.getConnection(String.format("jdbc:postgresql://%s:%s/%s?stringtype=unspecified", url, port, database), username, password);
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
@@ -58,7 +60,7 @@ public final class OpenGaussImporter extends AbstractDataSourceImporter {
     }
     
     @Override
-    public void close() throws SQLException {
+    public void close() throws Exception {
         connection.close();
     }
 }

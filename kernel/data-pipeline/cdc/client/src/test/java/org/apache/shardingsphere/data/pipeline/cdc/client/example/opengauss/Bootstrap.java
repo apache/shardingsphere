@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.client.example.opengauss;
 
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.ImportDataSourceParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.TableName;
@@ -43,6 +44,10 @@ public final class Bootstrap {
         parameter.setIncrementalGlobalOrderly(true);
         parameter.setSubscribeTables(Collections.singletonList(TableName.newBuilder().setName("t_order").build()));
         parameter.setDatabaseType("openGauss");
+        ImportDataSourceParameter importDataSourceParameter = new ImportDataSourceParameter();
+        importDataSourceParameter.setUsername("gaussdb");
+        importDataSourceParameter.setPassword("Root@123");
+        parameter.setImportDataSourceParameter(importDataSourceParameter);
         CDCClient cdcClient = new CDCClient(parameter);
         cdcClient.start();
     }

@@ -99,7 +99,7 @@ public final class AnyValueConvert {
         if (any.is(BlobValue.class)) {
             return any.unpack(BlobValue.class).getValue().toByteArray();
         }
-        // can't use JsonFormat, might change the original value without error prompt. there need to cover more types,
+        // TODO can't use JsonFormat, might change the original value without error prompt. there need to cover more types,
         log.error("not support unpack value={}", any);
         throw new UnsupportedOperationException(String.format("not support unpack the type %s", any.getTypeUrl()));
     }

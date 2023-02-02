@@ -50,4 +50,6 @@ public final class StartCDCClientParameter {
     private SubscriptionMode subscriptionMode = SubscriptionMode.INCREMENTAL;
     
     private boolean incrementalGlobalOrderly;
+    
+    private ImportDataSourceParameter importDataSourceParameter;
 }
