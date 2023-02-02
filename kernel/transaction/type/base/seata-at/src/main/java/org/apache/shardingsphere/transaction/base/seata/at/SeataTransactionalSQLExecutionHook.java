@@ -18,31 +18,26 @@
 package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
-import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
+import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Seata transactional SQL execution hook.
  */
-public final class TransactionalSQLExecutionHook implements SQLExecutionHook {
-    
-    private static final String SEATA_TX_XID = "SEATA_TX_XID";
+public final class SeataTransactionalSQLExecutionHook implements SQLExecutionHook {
     
     private boolean seataBranch;
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> params,
-                      final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
+    public void start(final String dataSourceName, final String sql, final List<Object> params, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
         if (isTrunkThread) {
             if (RootContext.inGlobalTransaction()) {
-                ExecutorDataMap.getValue().put(SEATA_TX_XID, RootContext.getXID());
+                SeataXIDContext.set(RootContext.getXID());
             }
-        } else if (!RootContext.inGlobalTransaction() && shardingExecuteDataMap.containsKey(SEATA_TX_XID)) {
-            RootContext.bind((String) shardingExecuteDataMap.get(SEATA_TX_XID));
+        } else if (!RootContext.inGlobalTransaction() && !SeataXIDContext.isEmpty()) {
+            RootContext.bind(SeataXIDContext.get());
             seataBranch = true;
         }
     }

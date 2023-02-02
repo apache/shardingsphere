@@ -15,37 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.hook;
+package org.apache.shardingsphere.transaction.base.seata.at;
 
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-
-import java.util.List;
+import com.alibaba.ttl.TransmittableThreadLocal;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL Execution hook.
+ * Seata xid context.
  */
-public interface SQLExecutionHook {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SeataXIDContext {
+    
+    private static final TransmittableThreadLocal<String> XID = new TransmittableThreadLocal<>();
     
     /**
-     * Handle when SQL execution started.
-     * 
-     * @param dataSourceName data source name
-     * @param sql SQL
-     * @param params SQL parameters
-     * @param dataSourceMetaData data source meta data
-     * @param isTrunkThread is execution in trunk thread
-     */
-    void start(String dataSourceName, String sql, List<Object> params, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread);
-    
-    /**
-     * Handle when SQL execution finished success.
-     */
-    void finishSuccess();
-    
-    /**
-     * Handle when SQL execution finished failure.
+     * Judge whether xid is empty or not.
      *
-     * @param cause failure cause
+     * @return whether xid is empty or not
      */
-    void finishFailure(Exception cause);
+    public static boolean isEmpty() {
+        return null == XID.get();
+    }
+    
+    /**
+     * Get xid.
+     * 
+     * @return xid
+     */
+    public static String get() {
+        return XID.get();
+    }
+    
+    /**
+     * Set xid.
+     * 
+     * @param xid xid
+     */
+    public static void set(final String xid) {
+        XID.set(xid);
+    }
+    
+    /**
+     * Remove xid.
+     */
+    public static void remove() {
+        XID.remove();
+    }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,19 +26,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class TransactionalSQLExecutionHookTest {
+public final class SeataTransactionalSQLExecutionHookTest {
     
-    private final Map<String, Object> shardingExecuteDataMap = Collections.singletonMap("SEATA_TX_XID", "test-XID");
-    
-    private final TransactionalSQLExecutionHook executionHook = new TransactionalSQLExecutionHook();
+    private final SeataTransactionalSQLExecutionHook executionHook = new SeataTransactionalSQLExecutionHook();
     
     @Mock
     private DataSourceMetaData dataSourceMetaData;
@@ -52,15 +48,15 @@ public final class TransactionalSQLExecutionHookTest {
     @Test
     public void assertTrunkThreadExecute() {
         RootContext.bind("xid");
-        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, true, shardingExecuteDataMap);
-        assertThat(ExecutorDataMap.getValue().get("SEATA_TX_XID"), is(RootContext.getXID()));
+        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, true);
+        assertThat(SeataXIDContext.get(), is(RootContext.getXID()));
         executionHook.finishSuccess();
         assertTrue(RootContext.inGlobalTransaction());
     }
     
     @Test
     public void assertChildThreadExecute() {
-        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false, shardingExecuteDataMap);
+        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false);
         assertTrue(RootContext.inGlobalTransaction());
         executionHook.finishSuccess();
         assertFalse(RootContext.inGlobalTransaction());
@@ -68,7 +64,7 @@ public final class TransactionalSQLExecutionHookTest {
     
     @Test
     public void assertChildThreadExecuteFailed() {
-        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false, shardingExecuteDataMap);
+        executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false);
         assertTrue(RootContext.inGlobalTransaction());
         executionHook.finishFailure(new RuntimeException(""));
         assertFalse(RootContext.inGlobalTransaction());
