@@ -46,4 +46,11 @@ public final class SeataXIDContext {
     public static void set(final String xid) {
         XID.set(xid);
     }
+    
+    /**
+     * Remove xid.
+     */
+    public static void remove() {
+        XID.remove();
+    }
 }

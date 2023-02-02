@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.executor.sql.hook;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * SQL Execution hook.
