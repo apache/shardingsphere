@@ -15,55 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.log.api;
+package org.apache.shardingsphere.agent.core.log.slf4j;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.core.log.AgentLogger;
+import org.slf4j.Logger;
 
 /**
- * Agent logger.
+ * SLF4J agent logger.
  */
-public interface AgentLogger {
+@RequiredArgsConstructor
+public final class SLF4JAgentLogger implements AgentLogger {
     
-    /**
-     * Info.
-     *
-     * @param msg message
-     */
-    void info(String msg);
+    private final Logger logger;
     
-    /**
-     * Info.
-     *
-     * @param format format
-     * @param arguments arguments
-     */
-    void info(String format, Object... arguments);
+    @Override
+    public void info(final String msg) {
+        logger.info(msg);
+    }
     
-    /**
-     * Error.
-     *
-     * @param format format
-     * @param arguments arguments
-     */
-    void error(String format, Object... arguments);
+    @Override
+    public void info(final String format, final Object... arguments) {
+        logger.info(format, arguments);
+    }
     
-    /**
-     * Error.
-     *
-     * @param msg message
-     */
-    void error(String msg);
+    @Override
+    public void error(final String format, final Object... arguments) {
+        logger.error(format, arguments);
+    }
     
-    /**
-     * Debug.
-     *
-     * @param format format
-     * @param arguments arguments
-     */
-    void debug(String format, Object... arguments);
-    
-    /**
-     * Debug.
-     *
-     * @param msg message
-     */
-    void debug(String msg);
+    @Override
+    public void error(final String msg) {
+        logger.error(msg);
+    }
 }

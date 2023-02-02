@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.agent.log.slf4j.SLF4JAgentLoggerFactory
+org.apache.shardingsphere.agent.core.log.config.LogbackConfiguration
