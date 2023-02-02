@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -32,10 +30,7 @@ import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -50,41 +45,29 @@ import java.util.Collections;
 import java.util.Map.Entry;
 
 /**
- * Export database configuration handler.
+ * Export database configuration executor.
  */
-public final class ExportDatabaseConfigurationHandler extends AbstractQueryableRALBackendHandler<ExportDatabaseConfigurationStatement> {
+public final class ExportDatabaseConfigurationExecutor implements DatabaseRequiredQueryableRALExecutor<ExportDatabaseConfigurationStatement> {
     
     @Override
-    protected Collection<String> getColumnNames() {
+    public Collection<String> getColumnNames() {
         return Collections.singleton("result");
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        String exportedData = generateExportData(getDatabaseName());
-        if (getSqlStatement().getFilePath().isPresent()) {
-            String filePath = getSqlStatement().getFilePath().get();
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ExportDatabaseConfigurationStatement sqlStatement) {
+        String exportedData = generateExportData(database);
+        if (sqlStatement.getFilePath().isPresent()) {
+            String filePath = sqlStatement.getFilePath().get();
             exportToFile(filePath, exportedData);
             return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to：'%s'", filePath)));
         }
         return Collections.singleton(new LocalDataQueryResultRow(exportedData));
     }
     
-    private String getDatabaseName() {
-        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
-        if (Strings.isNullOrEmpty(result)) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().databaseExists(result)) {
-            throw new UnknownDatabaseException(result);
-        }
-        return result;
-    }
-    
-    private String generateExportData(final String databaseName) {
+    private String generateExportData(final ShardingSphereDatabase database) {
         StringBuilder result = new StringBuilder();
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
-        appendDatabaseName(databaseName, result);
+        appendDatabaseName(database.getName(), result);
         appendDataSourceConfigurations(database, result);
         appendRuleConfigurations(database.getRuleMetaData().getConfigurations(), result);
         return result.toString();
@@ -158,5 +141,10 @@ public final class ExportDatabaseConfigurationHandler extends AbstractQueryableR
         } catch (final IOException ex) {
             throw new FileIOException(ex);
         }
+    }
+    
+    @Override
+    public String getType() {
+        return ExportDatabaseConfigurationStatement.class.getName();
     }
 }
