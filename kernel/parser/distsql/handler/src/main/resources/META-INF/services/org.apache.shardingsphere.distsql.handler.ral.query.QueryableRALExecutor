@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.parser.distsql.handler.query.SQLParserRuleResultSet
+org.apache.shardingsphere.parser.distsql.handler.query.ShowSQLParserRuleExecutor

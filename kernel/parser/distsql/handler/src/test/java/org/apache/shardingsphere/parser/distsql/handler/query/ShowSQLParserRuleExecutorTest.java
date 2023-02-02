@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.query;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowSQLParserRuleStatement;
@@ -24,45 +27,46 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQLParserRuleResultSetTest {
+public final class ShowSQLParserRuleExecutorTest {
     
     @Test
     public void assertSQLParserRule() {
-        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData();
-        SQLParserRuleResultSet resultSet = new SQLParserRuleResultSet();
-        resultSet.init(ruleMetaData, mock(ShowSQLParserRuleStatement.class));
-        assertTrue(resultSet.next());
-        Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(3));
-        Iterator<Object> rowData = actual.iterator();
-        assertThat(rowData.next(), is(Boolean.TRUE.toString()));
-        String parseTreeCache = (String) rowData.next();
-        assertFalse(resultSet.next());
-        assertThat(parseTreeCache, is("initialCapacity: 128, maximumSize: 1024"));
-        String sqlStatementCache = (String) rowData.next();
-        assertThat(sqlStatementCache, is("initialCapacity: 2000, maximumSize: 65535"));
+        ShardingSphereMetaData metaData = mockMetaData();
+        ShowSQLParserRuleExecutor executor = new ShowSQLParserRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowSQLParserRuleStatement.class));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("true"));
+        assertThat(row.getCell(2), is("initialCapacity: 128, maximumSize: 1024"));
+        assertThat(row.getCell(3), is("initialCapacity: 2000, maximumSize: 65535"));
     }
     
     @Test
     public void assertGetColumnNames() {
-        assertThat(new SQLParserRuleResultSet().getColumnNames(), is(Arrays.asList("sql_comment_parse_enable", "parse_tree_cache", "sql_statement_cache")));
+        ShowSQLParserRuleExecutor executor = new ShowSQLParserRuleExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(3));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("sql_comment_parse_enable"));
+        assertThat(iterator.next(), is("parse_tree_cache"));
+        assertThat(iterator.next(), is("sql_statement_cache"));
     }
     
-    private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
+    private ShardingSphereMetaData mockMetaData() {
         SQLParserRule sqlParserRule = mock(SQLParserRule.class);
         when(sqlParserRule.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(true, new CacheOption(128, 1024), new CacheOption(2000, 65535)));
-        return new ShardingSphereRuleMetaData(Collections.singleton(sqlParserRule));
+        return new ShardingSphereMetaData(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.singleton(sqlParserRule)), new ConfigurationProperties(new Properties()));
     }
 }
