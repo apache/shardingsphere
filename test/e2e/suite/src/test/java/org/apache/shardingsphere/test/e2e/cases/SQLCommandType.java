@@ -92,7 +92,12 @@ public enum SQLCommandType {
     /**
      * Resource & Rule Query Language.
      */
-    RQL(RQLStatement.class, "rql-integration-test-cases", true, Collections.singletonList("proxy"));
+    RQL(RQLStatement.class, "rql-integration-test-cases", true, Collections.singletonList("proxy")),
+    
+    /**
+     * Data Query Language compare expect by xml.
+     */
+    DQL_COMPARE_EXPECT_BY_XML(SelectStatement.class, "dql-compare-expect-by-xml-integration-test-cases", false, Collections.singletonList("proxy"));
     
     private final Class<? extends SQLStatement> sqlStatementClass;
     
