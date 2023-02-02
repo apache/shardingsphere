@@ -35,6 +35,7 @@ import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,19 +53,19 @@ public final class LoggingRule implements GlobalRule {
     }
     
     private void refreshLogger(final LoggingRuleConfiguration ruleConfig) {
-        LoggerContext loggerContext = resetLoggers();
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        resetLoggers(loggerContext);
         configLoggers(ruleConfig, loggerContext);
+        startRootLogger(loggerContext);
     }
     
-    private LoggerContext resetLoggers() {
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+    private void resetLoggers(final LoggerContext loggerContext) {
         loggerContext.getLoggerList().stream().filter(each -> Objects.nonNull(each.getLevel())).filter(each -> !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(each.getName()))
                 .forEach(each -> {
                     each.setLevel(null);
                     each.setAdditive(true);
                     each.detachAndStopAllAppenders();
                 });
-        return loggerContext;
     }
     
     private void configLoggers(final LoggingRuleConfiguration ruleConfig, final LoggerContext loggerContext) {
@@ -75,6 +76,14 @@ public final class LoggingRule implements GlobalRule {
             logger.setAdditive(each.getAdditivity());
             addAppender(logger, ruleConfig, each.getAppenderName());
         });
+    }
+    
+    private void startRootLogger(final LoggerContext loggerContext) {
+        Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
+        Iterator<Appender<ILoggingEvent>> appenderIterator = rootLogger.iteratorForAppenders();
+        while (appenderIterator.hasNext()) {
+            appenderIterator.next().start();
+        }
     }
     
     @SneakyThrows

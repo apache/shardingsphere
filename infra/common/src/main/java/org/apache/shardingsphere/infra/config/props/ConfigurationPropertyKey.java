@@ -39,12 +39,14 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     
     /**
      * Whether show SQL in log.
+     * @deprecated sql-show is deprecated and will be removed at next version
      */
     @Deprecated
     SQL_SHOW("sql-show", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * Whether show SQL details in simple style.
+     * @deprecated sql-simple is deprecated and will be removed at next version
      */
     @Deprecated
     SQL_SIMPLE("sql-simple", String.valueOf(Boolean.FALSE), boolean.class, false),

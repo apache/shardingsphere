@@ -63,7 +63,7 @@ public final class DefaultLoggingRuleConfigurationBuilder implements DefaultGlob
             if (appenderIterator.hasNext()) {
                 Appender<ILoggingEvent> appender = appenderIterator.next();
                 ShardingSphereAppender shardingSphereAppender = new ShardingSphereAppender(appender.getName(), appender.getClass().getName(), getAppenderPattern(appender));
-                setFileOutput(appender, shardingSphereAppender);
+                getFileOutput(appender, shardingSphereAppender);
                 return shardingSphereAppender;
             }
             return null;
@@ -80,7 +80,7 @@ public final class DefaultLoggingRuleConfigurationBuilder implements DefaultGlob
         return "";
     }
     
-    private void setFileOutput(final Appender<ILoggingEvent> appender, final ShardingSphereAppender shardingSphereAppender) {
+    private void getFileOutput(final Appender<ILoggingEvent> appender, final ShardingSphereAppender shardingSphereAppender) {
         if (appender instanceof FileAppender) {
             shardingSphereAppender.setFile(((FileAppender<ILoggingEvent>) appender).getFile());
         }

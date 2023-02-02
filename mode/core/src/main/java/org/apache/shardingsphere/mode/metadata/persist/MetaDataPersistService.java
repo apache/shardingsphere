@@ -24,6 +24,9 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
+import org.apache.shardingsphere.logging.constant.LoggingConstants;
+import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.mode.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.MetaDataVersionPersistService;
@@ -38,6 +41,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -82,6 +86,8 @@ public final class MetaDataPersistService {
      */
     public void persistConfigurations(final Map<String, ? extends DatabaseConfiguration> databaseConfigs,
                                       final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
+        // TODO remove sql-show and remove this sync
+        syncLoggingConfig(globalRuleConfigs, props);
         globalRuleService.conditionalPersist(globalRuleConfigs);
         propsService.conditionalPersist(props);
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
@@ -94,6 +100,33 @@ public final class MetaDataPersistService {
                 databaseRulePersistService.conditionalPersist(databaseName, entry.getValue().getRuleConfigurations());
             }
         }
+    }
+    
+    private void syncLoggingConfig(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
+        Optional<RuleConfiguration> ruleConfiguration = globalRuleConfigs.stream().filter(each -> each instanceof LoggingRuleConfiguration).findFirst();
+        if (!ruleConfiguration.isPresent()) {
+            return;
+        }
+        getSQLLogger((LoggingRuleConfiguration) ruleConfiguration.get()).ifPresent(option -> {
+            Properties loggerProperties = option.getProps();
+            if (loggerProperties.containsKey(LoggingConstants.SQL_LOG_ENABLE)) {
+                props.setProperty(LoggingConstants.SQL_SHOW, loggerProperties.get(LoggingConstants.SQL_LOG_ENABLE).toString());
+            }
+            if (!loggerProperties.containsKey(LoggingConstants.SQL_LOG_ENABLE) && props.containsKey(LoggingConstants.SQL_SHOW)) {
+                loggerProperties.setProperty(LoggingConstants.SQL_LOG_ENABLE, props.get(LoggingConstants.SQL_SHOW).toString());
+            }
+            if (loggerProperties.containsKey(LoggingConstants.SQL_LOG_SIMPLE)) {
+                props.setProperty(LoggingConstants.SQL_SIMPLE, loggerProperties.get(LoggingConstants.SQL_LOG_SIMPLE).toString());
+            }
+            if (!loggerProperties.containsKey(LoggingConstants.SQL_LOG_SIMPLE) && props.containsKey(LoggingConstants.SQL_SIMPLE)) {
+                loggerProperties.setProperty(LoggingConstants.SQL_LOG_SIMPLE, props.get(LoggingConstants.SQL_SIMPLE).toString());
+            }
+        });
+    }
+    
+    private Optional<ShardingSphereLogger> getSQLLogger(final LoggingRuleConfiguration loggingRuleConfiguration) {
+        return loggingRuleConfiguration.getLoggers().stream()
+                .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
     }
     
     private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {

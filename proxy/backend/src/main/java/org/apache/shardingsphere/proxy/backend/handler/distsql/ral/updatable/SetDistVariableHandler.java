@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistV
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
+import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -41,12 +42,6 @@ import java.util.Properties;
  * Set dist variable statement handler.
  */
 public final class SetDistVariableHandler extends UpdatableRALBackendHandler<SetDistVariableStatement> {
-    
-    public static final String SQL_SHOW = "sql-show";
-    
-    public static final String SQL_SIMPLE = "sql-simple";
-    
-    public static final String SQL_SHOW_TOPIC = "ShardingSphere-SQL";
     
     @Override
     protected void update(final ContextManager contextManager) {
@@ -76,8 +71,8 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.getInstanceContext().getModeContextManager().alterProperties(props);
         // TODO remove sync after remove `spl-show`
-        syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value, contextManager);
-        syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value, contextManager);
+        syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value);
+        syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value);
     }
     
     private Object getValue(final ConfigurationPropertyKey propertyKey, final String value) {
@@ -89,19 +84,19 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         }
     }
     
-    private void syncSQLShowToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value, final ContextManager contextManager) {
-        if (SQL_SHOW.equalsIgnoreCase(propertyKey.getKey())) {
+    private void syncSQLShowToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
+        if (LoggingConstants.SQL_SHOW.equalsIgnoreCase(propertyKey.getKey())) {
             getSQLLogger(metaDataContexts).ifPresent(option -> {
-                option.getProps().setProperty("enable", value);
+                option.getProps().setProperty(LoggingConstants.SQL_LOG_ENABLE, value);
                 metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
             });
         }
     }
     
-    private void syncSQLSimpleToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value ,final ContextManager contextManager) {
-        if (SQL_SIMPLE.equalsIgnoreCase(propertyKey.getKey())) {
+    private void syncSQLSimpleToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
+        if (LoggingConstants.SQL_SIMPLE.equalsIgnoreCase(propertyKey.getKey())) {
             getSQLLogger(metaDataContexts).ifPresent(option -> {
-                option.getProps().setProperty("simple", value);
+                option.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, value);
                 metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
             });
         }
@@ -110,7 +105,7 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
     private Optional<ShardingSphereLogger> getSQLLogger(final MetaDataContexts metaDataContexts) {
         LoggingRule loggingRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(LoggingRule.class);
         return loggingRule.getConfiguration().getLoggers().stream()
-                .filter(each -> SQL_SHOW_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
+                .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
     }
     
     private void handleVariables() {
