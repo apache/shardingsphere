@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRGroupNameConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRModeException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRPluginException;
@@ -69,6 +70,7 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
         groupName = props.getProperty("group-name", "");
     }
     
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
         ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
@@ -77,14 +79,11 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
             futures.add(executorService.submit(() -> checkDataSourceEnvironment(databaseName, each)));
         }
         for (Future<Boolean> each : futures) {
-            try {
-                each.get();
-            } catch (InterruptedException | ExecutionException ignored) {
-            }
+            each.get();
         }
     }
     
-    private boolean checkDataSourceEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
+    private Boolean checkDataSourceEnvironment(final String databaseName, final DataSource dataSource) {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -92,9 +91,9 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
             checkSinglePrimaryMode(databaseName, statement);
             checkGroupName(databaseName, statement);
             checkMemberInstanceURL(databaseName, connection.getMetaData().getURL(), statement);
-            return true;
+            return Boolean.TRUE;
         } catch (final SQLException ignored) {
-            return false;
+            return Boolean.FALSE;
         }
     }
     

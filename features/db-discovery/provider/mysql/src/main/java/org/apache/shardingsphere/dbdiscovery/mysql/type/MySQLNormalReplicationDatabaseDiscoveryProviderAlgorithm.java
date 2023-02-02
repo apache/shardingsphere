@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.replica.DuplicatePrimaryDataSourceException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
@@ -32,6 +33,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.TreeSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -57,24 +60,22 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
         delayMillisecondsThreshold = Long.parseLong(props.getProperty("delay-milliseconds-threshold", "0"));
     }
     
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
         ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
         Collection<Future<Boolean>> futures = new LinkedList<>();
-        Collection<Boolean> primaryInstances = new LinkedList<>();
+        Set<Boolean> primaryInstances = new TreeSet<>();
         for (DataSource each : dataSources) {
             futures.add(executorService.submit(() -> queryPrimaryInstance(each, primaryInstances)));
         }
         for (Future<Boolean> each : futures) {
-            try {
-                ShardingSpherePreconditions.checkState(each.get(), () -> new DuplicatePrimaryDataSourceException(databaseName));
-            } catch (InterruptedException | ExecutionException ignored) {
-            }
+            ShardingSpherePreconditions.checkState(each.get(), () -> new DuplicatePrimaryDataSourceException(databaseName));
         }
     }
     
-    private boolean queryPrimaryInstance(final DataSource dataSource, final Collection<Boolean> primaryInstances) throws SQLException {
-        return isPrimaryInstance(dataSource) && primaryInstances.add(true);
+    private synchronized boolean queryPrimaryInstance(final DataSource dataSource, final Collection<Boolean> primaryInstances) throws SQLException {
+        return isPrimaryInstance(dataSource) && primaryInstances.add(Boolean.TRUE);
     }
     
     @Override
