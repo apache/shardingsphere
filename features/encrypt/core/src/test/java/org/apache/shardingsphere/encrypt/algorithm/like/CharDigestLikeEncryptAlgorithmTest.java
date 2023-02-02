@@ -20,14 +20,11 @@ package org.apache.shardingsphere.encrypt.algorithm.like;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,12 +39,13 @@ public final class CharDigestLikeEncryptAlgorithmTest {
     
     private LikeEncryptAlgorithm<Object, String> koreanLikeEncryptAlgorithm;
     
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
-        englishLikeEncryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()), EncryptAlgorithm.class);
-        chineseLikeEncryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()), EncryptAlgorithm.class);
-        koreanLikeEncryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("CHAR_DIGEST_LIKE", PropertiesBuilder.build(new Property("dict", "한국어시험"), new Property("start", "44032"))), EncryptAlgorithm.class);
+        englishLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "CHAR_DIGEST_LIKE");
+        chineseLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "CHAR_DIGEST_LIKE");
+        koreanLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class,
+                "CHAR_DIGEST_LIKE", PropertiesBuilder.build(new Property("dict", "한국어시험"), new Property("start", "44032")));
     }
     
     @Test

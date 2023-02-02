@@ -21,8 +21,7 @@ import com.google.common.collect.Range;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.sharding.ExactCollection;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.cosid.algorithm.Arguments;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.CosIdIntervalShardingAlgorithm;
@@ -136,6 +135,6 @@ public final class IntervalShardingAlgorithmDataFixture {
                 new Property(CosIdIntervalShardingAlgorithm.SHARDING_SUFFIX_FORMAT_KEY, SUFFIX_FORMATTER_STRING),
                 new Property(CosIdIntervalShardingAlgorithm.INTERVAL_UNIT_KEY, "MONTHS"),
                 new Property(CosIdIntervalShardingAlgorithm.INTERVAL_AMOUNT_KEY, "1"));
-        return ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID_INTERVAL", props), ShardingAlgorithm.class);
+        return (CosIdIntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "COSID_INTERVAL", props);
     }
 }
