@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
 public final class ReadOnlyProxyState implements ProxyState {
     
     @Override
-    public void execute(ChannelHandlerContext context, Object message, DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, ConnectionSession connectionSession) {
+    public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final ConnectionSession connectionSession) {
         // TODO
     }
 }
