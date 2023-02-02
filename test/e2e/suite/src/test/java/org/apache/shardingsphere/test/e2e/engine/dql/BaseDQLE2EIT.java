@@ -55,8 +55,13 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
     
     private DataSource expectedDataSource;
     
+    private boolean useXMLAsExpectedDataset;
+    
+    private final String adapter;
+    
     public BaseDQLE2EIT(final AssertionTestParameter testParam) {
         super(testParam);
+        adapter = testParam.getAdapter();
     }
     
     @Before
@@ -65,6 +70,7 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
         expectedDataSource = null == getAssertion().getExpectedDataSourceName() || 1 == getExpectedDataSourceMap().size()
                 ? getExpectedDataSourceMap().values().iterator().next()
                 : getExpectedDataSourceMap().get(getAssertion().getExpectedDataSourceName());
+        useXMLAsExpectedDataset = null != getAssertion().getExpectedDataFile();
     }
     
     private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
