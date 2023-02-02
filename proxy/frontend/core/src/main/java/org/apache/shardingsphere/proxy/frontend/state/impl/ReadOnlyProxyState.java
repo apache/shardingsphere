@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.proxy.frontend.state.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.state.StateType;
+import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
 
 /**
- * Compute node status changed event.
+ * ReadOnly proxy state.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ComputeNodeStatusChangedEvent {
+public final class ReadOnlyProxyState implements ProxyState {
     
-    private final StateType state;
-    
-    private final String instanceId;
+    @Override
+    public void execute(ChannelHandlerContext context, Object message, DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, ConnectionSession connectionSession) {
+        // TODO
+    }
 }
