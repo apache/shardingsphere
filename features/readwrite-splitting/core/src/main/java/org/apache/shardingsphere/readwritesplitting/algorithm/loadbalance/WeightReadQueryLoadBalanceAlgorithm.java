@@ -36,7 +36,6 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Weight read query load-balance algorithm.
  */
-@Getter
 public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, WeightAware {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
@@ -45,6 +44,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     private Properties props;
     
+    @Getter
     private Collection<String> dataSourceNames;
     
     @Override

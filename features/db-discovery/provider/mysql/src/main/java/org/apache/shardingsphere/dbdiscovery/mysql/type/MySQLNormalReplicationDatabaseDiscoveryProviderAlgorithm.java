@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
-import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.replica.DuplicatePrimaryDataSourceException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
@@ -50,16 +49,12 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
     
     private static final String SHOW_VARIABLES_READ_ONLY = "SHOW VARIABLES LIKE 'read_only'";
     
-    @Getter
-    private Properties props;
-    
     private int minEnabledReplicas;
     
     private long delayMillisecondsThreshold;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         minEnabledReplicas = Integer.parseInt(props.getProperty("min-enabled-replicas", "0"));
         delayMillisecondsThreshold = Long.parseLong(props.getProperty("delay-milliseconds-threshold", "0"));
     }

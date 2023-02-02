@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Result set for SQL translator rule.
+ * Show SQL translator rule executor.
  */
 public final class ShowSQLTranslatorRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowSQLTranslatorRuleStatement> {
     
