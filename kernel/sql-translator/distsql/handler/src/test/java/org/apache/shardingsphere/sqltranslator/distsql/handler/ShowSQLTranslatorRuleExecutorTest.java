@@ -41,9 +41,9 @@ public final class ShowSQLTranslatorRuleExecutorTest {
     
     @Test
     public void assertExecute() {
-        ShardingSphereMetaData ruleMetaData = mockGlobalRuleMetaData();
+        ShardingSphereMetaData metaData = mockMetaData();
         ShowSQLTranslatorRuleExecutor executor = new ShowSQLTranslatorRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(ruleMetaData, mock(ShowSQLTranslatorRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowSQLTranslatorRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -61,7 +61,7 @@ public final class ShowSQLTranslatorRuleExecutorTest {
         assertThat(iterator.next(), is("use_original_sql_when_translating_failed"));
     }
     
-    private ShardingSphereMetaData mockGlobalRuleMetaData() {
+    private ShardingSphereMetaData mockMetaData() {
         SQLTranslatorRule sqlTranslatorRule = mock(SQLTranslatorRule.class);
         when(sqlTranslatorRule.getConfiguration()).thenReturn(createSQLTranslatorRuleConfiguration());
         return new ShardingSphereMetaData(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.singleton(sqlTranslatorRule)), new ConfigurationProperties(new Properties()));
