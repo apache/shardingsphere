@@ -36,7 +36,7 @@ public final class SeataTransactionalSQLExecutionHook implements SQLExecutionHoo
             if (RootContext.inGlobalTransaction()) {
                 SeataXIDContext.set(RootContext.getXID());
             }
-        } else if (!RootContext.inGlobalTransaction()) {
+        } else if (!RootContext.inGlobalTransaction() && !SeataXIDContext.isEmpty()) {
             RootContext.bind(SeataXIDContext.get());
             seataBranch = true;
         }

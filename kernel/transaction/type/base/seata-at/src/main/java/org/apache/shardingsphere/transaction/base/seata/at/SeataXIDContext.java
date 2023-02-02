@@ -30,6 +30,15 @@ public final class SeataXIDContext {
     private static final TransmittableThreadLocal<String> XID = new TransmittableThreadLocal<>();
     
     /**
+     * Judge whether xid is empty or not.
+     *
+     * @return whether xid is empty or not
+     */
+    public static boolean isEmpty() {
+        return null == XID.get();
+    }
+    
+    /**
      * Get xid.
      * 
      * @return xid
