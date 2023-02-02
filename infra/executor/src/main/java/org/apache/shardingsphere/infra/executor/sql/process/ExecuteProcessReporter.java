@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionU
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 import java.util.Optional;
 
@@ -69,16 +68,6 @@ public final class ExecuteProcessReporter {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
         Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(executeProcessUnit.getStatus()));
-    }
-    
-    /**
-     * Report this task on completion.
-     *
-     * @param executionID execution ID
-     * @param constants constants
-     * @param eventBusContext event bus context
-     */
-    public void report(final String executionID, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
     }
     
     /**

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.DatabaseMetaData;
@@ -58,8 +57,6 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     private final SQLStatement sqlStatement;
     
     private final boolean isExceptionThrown;
-    
-    private final EventBusContext eventBusContext;
     
     @Override
     public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
