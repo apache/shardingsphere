@@ -35,11 +35,12 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -58,19 +59,20 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     protected final RouteContext assertRoute(final String sql, final List<Object> params) {
         ShardingRule shardingRule = createAllShardingRule();
         SingleRule singleRule = createSingleRule(Collections.singletonList(shardingRule));
+        TimeServiceRule timeServiceRule = createTimeServiceRule();
         Map<String, ShardingSphereSchema> schemas = buildSchemas();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL",
                 new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, singleRule));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, singleRule, timeServiceRule));
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                DefaultDatabase.LOGIC_NAME, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"), resourceMetaData, ruleMetaData, schemas);
+                DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), resourceMetaData, ruleMetaData, schemas);
         SQLStatementContext<?> sqlStatementContext =
                 SQLStatementContextFactory.newInstance(createShardingSphereMetaData(database), params, sqlStatementParserEngine.parse(sql, false), DefaultDatabase.LOGIC_NAME);
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params);
-        return new SQLRouteEngine(Arrays.asList(shardingRule, singleRule), props).route(new ConnectionContext(), queryContext, database);
+        return new SQLRouteEngine(Arrays.asList(shardingRule, singleRule), props).route(new ConnectionContext(), queryContext, mock(ShardingSphereRuleMetaData.class), database);
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {

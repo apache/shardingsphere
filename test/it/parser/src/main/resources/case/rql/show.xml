@@ -139,9 +139,9 @@
         <database name="sharding_db" start-index="61" stop-index="71" />
     </show-sharding-table-rules-used-algorithm>
     
-    <count-single-table-rule sql-case-id="count-single-table-rule">
-        <database name="db1" start-index="29" stop-index="31" />
-    </count-single-table-rule>
+    <count-single-table sql-case-id="count-single-table">
+        <database name="db1" start-index="24" stop-index="26" />
+    </count-single-table>
     
     <count-sharding-rule sql-case-id="count-sharding-rule">
         <database name="db1" start-index="25" stop-index="27" />

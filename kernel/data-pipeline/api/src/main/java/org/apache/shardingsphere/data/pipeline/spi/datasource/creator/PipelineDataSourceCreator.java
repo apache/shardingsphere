@@ -32,9 +32,9 @@ public interface PipelineDataSourceCreator extends TypedSPI {
     /**
      * Create pipeline data source.
      *
-     * @param pipelineDataSourceConfig pipeline data source configuration
+     * @param dataSourceConfig data source configuration
      * @return pipeline data source
      * @throws SQLException if create data source failed
      */
-    DataSource createPipelineDataSource(Object pipelineDataSourceConfig) throws SQLException;
+    DataSource createPipelineDataSource(Object dataSourceConfig) throws SQLException;
 }

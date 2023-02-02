@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Data source property provider.
  */
 @SingletonSPI
-public interface DataSourcePropertyProvider extends TypedSPI, RequiredSPI {
+public interface DataSourcePropertyProvider extends TypedSPI {
     
     /**
      * Get URL property name.

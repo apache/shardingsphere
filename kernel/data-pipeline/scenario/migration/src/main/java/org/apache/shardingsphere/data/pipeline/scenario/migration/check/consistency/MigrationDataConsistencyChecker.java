@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckIgnoredType;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
@@ -77,12 +78,17 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         verifyPipelineDatabaseType(calculateAlgorithm, jobConfig.getTarget());
         SchemaTableName sourceTable = new SchemaTableName(new SchemaName(tableNameSchemaNameMapping.getSchemaName(jobConfig.getSourceTableName())), new TableName(jobConfig.getSourceTableName()));
         SchemaTableName targetTable = new SchemaTableName(new SchemaName(tableNameSchemaNameMapping.getSchemaName(jobConfig.getTargetTableName())), new TableName(jobConfig.getTargetTableName()));
+        progressContext.getTableNames().add(jobConfig.getSourceTableName());
         Map<String, DataConsistencyCheckResult> result = new LinkedHashMap<>();
+        if (null == jobConfig.getUniqueKeyColumn()) {
+            progressContext.getIgnoredTableNames().add(sourceTable.getTableName().getOriginal());
+            result.put(sourceTable.getTableName().getOriginal(), new DataConsistencyCheckResult(DataConsistencyCheckIgnoredType.NO_UNIQUE_KEY));
+            return result;
+        }
         try (
                 PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(jobConfig.getSource());
                 PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(jobConfig.getTarget())) {
             progressContext.setRecordsCount(getRecordsCount());
-            progressContext.getTableNames().add(jobConfig.getSourceTableName());
             PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
             SingleTableInventoryDataConsistencyChecker singleTableInventoryChecker = new SingleTableInventoryDataConsistencyChecker(
                     jobConfig.getJobId(), sourceDataSource, targetDataSource, sourceTable, targetTable, jobConfig.getUniqueKeyColumn(), metaDataLoader, readRateLimitAlgorithm, progressContext);

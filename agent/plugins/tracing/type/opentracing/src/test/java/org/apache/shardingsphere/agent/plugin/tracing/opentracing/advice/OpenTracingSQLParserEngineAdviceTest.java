@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
+import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.junit.Before;
@@ -36,7 +37,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class OpenTracingSQLParserEngineAdviceTest {
+public final class OpenTracingSQLParserEngineAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     private static final OpenTracingSQLParserEngineAdvice ADVICE = new OpenTracingSQLParserEngineAdvice();
     
@@ -60,9 +61,8 @@ public final class OpenTracingSQLParserEngineAdviceTest {
     
     @Test
     public void assertMethod() {
-        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, "OpenTracing");
-        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, null, "OpenTracing");
+        ADVICE.beforeMethod(getTargetObject(), parserMethod, new Object[]{"select 1"}, "OpenTracing");
+        ADVICE.afterMethod(getTargetObject(), parserMethod, new Object[]{}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         assertTrue(spans.get(0).logEntries().isEmpty());
@@ -71,10 +71,9 @@ public final class OpenTracingSQLParserEngineAdviceTest {
     
     @Test
     public void assertExceptionHandle() {
-        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, "OpenTracing");
-        ADVICE.onThrowing(targetObject, parserMethod, new Object[]{}, new IOException(), "OpenTracing");
-        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, null, "OpenTracing");
+        ADVICE.beforeMethod(getTargetObject(), parserMethod, new Object[]{"select 1"}, "OpenTracing");
+        ADVICE.onThrowing(getTargetObject(), parserMethod, new Object[]{}, new IOException(), "OpenTracing");
+        ADVICE.afterMethod(getTargetObject(), parserMethod, new Object[]{}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

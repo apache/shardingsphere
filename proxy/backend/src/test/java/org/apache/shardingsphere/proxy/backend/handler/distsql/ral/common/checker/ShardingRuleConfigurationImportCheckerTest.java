@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleExc
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.junit.Test;
@@ -37,69 +38,60 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingRuleConfigurationImportCheckerTest {
     
-    private final ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker = new ShardingRuleConfigurationImportChecker();
-    
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckLogicTables() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        ShardingRuleConfiguration currentRuleConfig = createDuplicatedTablesRuleConfig();
-        shardingRuleConfigurationImportChecker.check(database, currentRuleConfig);
+        new ShardingRuleConfigurationImportChecker().check(mock(ShardingSphereDatabase.class), createDuplicatedTablesRuleConfiguration());
     }
     
     @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertCheckDataSources() {
-        ShardingSphereDatabase database = mockDatabaseWithDataSource();
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..2}.t_order_${0..2}"));
-        shardingRuleConfigurationImportChecker.check(database, currentRuleConfig);
+        new ShardingRuleConfigurationImportChecker().check(mockDatabaseWithDataSource(), currentRuleConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckKeyGenerators() {
-        ShardingSphereDatabase database = mockDatabase();
-        ShardingRuleConfiguration currentRuleConfig = createInvalidKeyGeneratorRuleConfig();
-        shardingRuleConfigurationImportChecker.check(database, currentRuleConfig);
+        new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidKeyGeneratorRuleConfiguration());
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckShardingAlgorithms() {
-        ShardingSphereDatabase database = mockDatabase();
-        ShardingRuleConfiguration currentRuleConfig = createInvalidShardingAlgorithmRuleConfig();
-        shardingRuleConfigurationImportChecker.check(database, currentRuleConfig);
+        new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidShardingAlgorithmRuleConfiguration());
     }
     
-    private ShardingRuleConfiguration createDuplicatedTablesRuleConfig() {
-        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order"));
-        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order"));
-        return ruleConfig;
+    private ShardingRuleConfiguration createDuplicatedTablesRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", null));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", null));
+        return result;
     }
     
     private ShardingSphereDatabase mockDatabaseWithDataSource() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         Collection<String> dataSources = new LinkedList<>();
         dataSources.add("su_1");
-        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(dataSources);
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return database;
+        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(dataSources);
+        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        return result;
     }
     
     private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return database;
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        return result;
     }
     
-    private ShardingRuleConfiguration createInvalidKeyGeneratorRuleConfig() {
-        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getKeyGenerators().put("Invalid_key_generator", mock(AlgorithmConfiguration.class));
-        return ruleConfig;
+    private ShardingRuleConfiguration createInvalidKeyGeneratorRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getKeyGenerators().put("Invalid_key_generator", mock(AlgorithmConfiguration.class));
+        return result;
     }
     
-    private ShardingRuleConfiguration createInvalidShardingAlgorithmRuleConfig() {
-        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getShardingAlgorithms().put("Invalid_algorithm", mock(AlgorithmConfiguration.class));
-        return ruleConfig;
+    private ShardingRuleConfiguration createInvalidShardingAlgorithmRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getShardingAlgorithms().put("Invalid_algorithm", mock(AlgorithmConfiguration.class));
+        return result;
     }
 }

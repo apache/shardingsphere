@@ -70,7 +70,8 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
     
     private Object getValue(final ConfigurationPropertyKey propertyKey, final String value) {
         try {
-            return new TypedPropertyValue(propertyKey, value).getValue();
+            Object propertyValue = new TypedPropertyValue(propertyKey, value).getValue();
+            return Enum.class.isAssignableFrom(propertyKey.getType()) ? propertyValue.toString() : propertyValue;
         } catch (final TypedPropertyValueException ex) {
             throw new InvalidValueException(value);
         }

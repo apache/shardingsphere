@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
-import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
@@ -43,14 +42,10 @@ public final class SM3EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private static final int SALT_LENGTH = 8;
     
-    @Getter
-    private Properties props;
-    
     private byte[] sm3Salt;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         sm3Salt = createSm3Salt(props);
     }
     

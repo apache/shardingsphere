@@ -18,18 +18,16 @@
 package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Hint sharding strategy configuration.
  */
+@RequiredArgsConstructor
 @Getter
 public final class HintShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
     private final String shardingAlgorithmName;
-    
-    public HintShardingStrategyConfiguration(final String shardingAlgorithmName) {
-        this.shardingAlgorithmName = shardingAlgorithmName;
-    }
     
     @Override
     public String getType() {

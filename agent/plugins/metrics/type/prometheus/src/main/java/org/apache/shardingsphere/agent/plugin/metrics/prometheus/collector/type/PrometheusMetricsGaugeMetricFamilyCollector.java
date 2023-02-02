@@ -43,4 +43,9 @@ public final class PrometheusMetricsGaugeMetricFamilyCollector implements GaugeM
     public Object getRawMetricFamilyObject() {
         return gaugeMetricFamily;
     }
+    
+    @Override
+    public void cleanMetrics() {
+        gaugeMetricFamily.samples.clear();
+    }
 }

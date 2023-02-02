@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
@@ -48,7 +49,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -67,6 +67,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -92,8 +93,7 @@ public final class StateChangedSubscriberTest {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
-        subscriber = new StateChangedSubscriber(new RegistryCenter(mock(ClusterPersistRepository.class),
-                new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
+        subscriber = new StateChangedSubscriber(new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
@@ -111,16 +111,14 @@ public final class StateChangedSubscriberTest {
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         when(database.getRuleMetaData().findRules(ResourceHeldRule.class)).thenReturn(Collections.emptyList());
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        result.put("db", database);
-        return result;
+        return Collections.singletonMap("db", database);
     }
     
     @Test
     public void assertRenewForDisableStateChanged() {
         StaticDataSourceContainedRule staticDataSourceRule = mock(StaticDataSourceContainedRule.class);
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(staticDataSourceRule));
-        StorageNodeChangedEvent event = new StorageNodeChangedEvent(new QualifiedDatabase("db.readwrite_ds.ds_0"), new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED));
+        when(database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)).thenReturn(Optional.of(staticDataSourceRule));
+        StorageNodeChangedEvent event = new StorageNodeChangedEvent(new QualifiedDatabase("db.readwrite_ds.ds_0"), new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED));
         subscriber.renew(event);
         verify(staticDataSourceRule).updateStatus(argThat(
                 (ArgumentMatcher<StorageNodeDataSourceChangedEvent>) argumentEvent -> Objects.equals(event.getQualifiedDatabase(), argumentEvent.getQualifiedDatabase())

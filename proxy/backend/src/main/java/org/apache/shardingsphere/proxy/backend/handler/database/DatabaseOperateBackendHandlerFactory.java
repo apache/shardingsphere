@@ -50,6 +50,6 @@ public final class DatabaseOperateBackendHandlerFactory {
         if (sqlStatement instanceof DropDatabaseStatement) {
             return new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement, connectionSession);
         }
-        throw new UnsupportedSQLOperationException(sqlStatement.getClass().getCanonicalName());
+        throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }
 }

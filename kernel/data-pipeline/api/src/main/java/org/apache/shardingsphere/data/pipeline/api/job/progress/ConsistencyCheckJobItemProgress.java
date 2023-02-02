@@ -39,6 +39,8 @@ public final class ConsistencyCheckJobItemProgress implements PipelineJobItemPro
     
     private final String tableNames;
     
+    private final String ignoredTableNames;
+    
     private final Long checkedRecordsCount;
     
     private final Long recordsCount;

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
@@ -46,7 +46,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @return created instance
      */
     public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession) {
-        Optional<DatabaseAdminExecutorCreator> creator = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorCreator.class, databaseType.getType());
+        Optional<DatabaseAdminExecutorCreator> creator = TypedSPILoader.findService(DatabaseAdminExecutorCreator.class, databaseType.getType());
         if (!creator.isPresent()) {
             return Optional.empty();
         }
@@ -65,7 +65,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      */
     public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
                                                             final ConnectionSession connectionSession, final String sql) {
-        Optional<DatabaseAdminExecutorCreator> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorCreator.class, databaseType.getType());
+        Optional<DatabaseAdminExecutorCreator> executorFactory = TypedSPILoader.findService(DatabaseAdminExecutorCreator.class, databaseType.getType());
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }

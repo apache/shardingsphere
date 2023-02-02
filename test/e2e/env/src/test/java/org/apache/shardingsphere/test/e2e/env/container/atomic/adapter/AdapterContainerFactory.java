@@ -24,6 +24,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.Ad
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereJdbcContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 
 /**
@@ -35,23 +37,25 @@ public final class AdapterContainerFactory {
     /**
      * Create new instance of adapter container.
      *
-     * @param mode mode
-     * @param adapter adapter
+     * @param mode adapter mode
+     * @param adapter adapter type
      * @param databaseType database type
      * @param storageContainer storage container
      * @param scenario scenario
      * @param containerConfig adaptor container configuration
      * @return created instance
      */
-    public static AdapterContainer newInstance(final String mode, final String adapter, final DatabaseType databaseType,
+    public static AdapterContainer newInstance(final AdapterMode mode, final AdapterType adapter, final DatabaseType databaseType,
                                                final StorageContainer storageContainer, final String scenario, final AdaptorContainerConfiguration containerConfig) {
         switch (adapter) {
-            case "proxy":
-                return "Cluster".equals(mode) ? new ShardingSphereProxyClusterContainer(databaseType, containerConfig) : new ShardingSphereProxyStandaloneContainer(databaseType, containerConfig);
-            case "jdbc":
+            case PROXY:
+                return AdapterMode.CLUSTER == mode
+                        ? new ShardingSphereProxyClusterContainer(databaseType, containerConfig)
+                        : new ShardingSphereProxyStandaloneContainer(databaseType, containerConfig);
+            case JDBC:
                 return new ShardingSphereJdbcContainer(storageContainer, scenario);
             default:
-                throw new RuntimeException(String.format("Adapter [%s] is unknown.", adapter));
+                throw new RuntimeException(String.format("Unknown adapter `%s`.", adapter));
         }
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.opengauss;
 
-import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 
@@ -27,21 +26,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
  * Normal replication database discovery provider algorithm for openGauss.
  */
-@Getter
 public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private static final String QUERY_DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     
-    private Properties props;
+    private int minEnabledReplicas;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
+        minEnabledReplicas = Integer.parseInt(props.getProperty("min-enabled-replicas", "0"));
     }
     
     @Override
@@ -71,6 +70,11 @@ public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm 
         try (ResultSet resultSet = statement.executeQuery(QUERY_DB_ROLE)) {
             return resultSet.next() && resultSet.getString("local_role").equals("Standby") && resultSet.getString("db_state").equals("Normal");
         }
+    }
+    
+    @Override
+    public Optional<Integer> getMinEnabledReplicas() {
+        return Optional.of(minEnabledReplicas);
     }
     
     @Override

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSel
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
@@ -39,7 +40,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> implements ProxyBackendHandler {
+public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> implements DistSQLBackendHandler {
     
     private final T sqlStatement;
     

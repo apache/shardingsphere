@@ -27,15 +27,6 @@ public final class RootSpanContext {
     private static final TransmittableThreadLocal<Object> VALUE = new TransmittableThreadLocal<>();
     
     /**
-     * Judge whether empty root span.
-     * 
-     * @return empty span or not
-     */
-    public static boolean isEmpty() {
-        return null == VALUE.get();
-    }
-    
-    /**
      * Get root span.
      * 
      * @param <T> type of span

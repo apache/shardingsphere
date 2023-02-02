@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.rule.builder;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -44,7 +44,7 @@ public final class ShardingRuleBuilderTest {
     @Before
     public void setUp() {
         ruleConfig = new ShardingRuleConfiguration();
-        builder = OrderedSPIRegistry.getRegisteredServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
     }
     
     @SuppressWarnings("unchecked")

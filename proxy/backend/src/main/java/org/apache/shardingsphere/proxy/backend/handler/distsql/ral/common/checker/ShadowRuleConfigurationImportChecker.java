@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
@@ -76,8 +76,8 @@ public final class ShadowRuleConfigurationImportChecker {
     }
     
     private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
-                .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
+        return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream()
+                .map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
     private void checkTables(final ShadowRuleConfiguration currentRuleConfig, final String databaseName) {
@@ -89,7 +89,7 @@ public final class ShadowRuleConfigurationImportChecker {
     
     private void checkShadowAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
         Collection<String> notExistedAlgorithms = currentRuleConfig.getShadowAlgorithms().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .filter(each -> !TypedSPILoader.contains(ShadowAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Shadow algorithms", notExistedAlgorithms));
     }
 }

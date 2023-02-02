@@ -22,11 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.distsql.handler.resultset.DistSQLResultSet;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-
-import java.util.Properties;
 
 /**
  * RQL backend handler factory.
@@ -35,14 +33,22 @@ import java.util.Properties;
 public final class RQLBackendHandlerFactory {
     
     /**
-     * Create new instance of RDL backend handler.
+     * Create new instance of RQL backend handler.
      * 
      * @param sqlStatement RQL statement
      * @param connectionSession connection session
      * @return RDL backend handler
      */
     public static ProxyBackendHandler newInstance(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
-        return new RQLBackendHandler(sqlStatement, connectionSession, (DatabaseDistSQLResultSet) resultSet);
+        // TODO remove this judgment after the refactoring of DistSQLResultSet is completed
+        if (TypedSPILoader.contains(DistSQLResultSet.class, sqlStatement.getClass().getName())) {
+            return newInstanceByDistSQLResultSet(sqlStatement, connectionSession);
+        }
+        return new RQLBackendHandler<>(sqlStatement, connectionSession);
+    }
+    
+    private static ProxyBackendHandler newInstanceByDistSQLResultSet(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
+        DistSQLResultSet resultSet = TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getName());
+        return new RQLResultSetBackendHandler(sqlStatement, connectionSession, (DatabaseDistSQLResultSet) resultSet);
     }
 }

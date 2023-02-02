@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Col
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -82,6 +82,6 @@ public final class EncryptSchemaMetaDataDecoratorTest {
     }
     
     private EncryptSchemaMetaDataDecorator getEncryptMetaDataBuilder(final EncryptRule encryptRule, final Collection<ShardingSphereRule> rules) {
-        return (EncryptSchemaMetaDataDecorator) OrderedSPIRegistry.getRegisteredServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(encryptRule);
+        return (EncryptSchemaMetaDataDecorator) OrderedSPILoader.getServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(encryptRule);
     }
 }

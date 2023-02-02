@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -31,11 +33,11 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.DatabaseVersionChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -119,17 +121,15 @@ public final class ConfigurationChangedSubscriber {
     }
     
     private void disableDataSources() {
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
-            if (each instanceof StaticDataSourceContainedRule) {
-                disableDataSources((StaticDataSourceContainedRule) each);
-            }
-        }));
+        for (Entry<String, ShardingSphereDatabase> entry : contextManager.getMetaDataContexts().getMetaData().getDatabases().entrySet()) {
+            entry.getValue().getRuleMetaData().findRules(StaticDataSourceContainedRule.class).forEach(this::disableDataSources);
+        }
     }
     
     private void disableDataSources(final StaticDataSourceContainedRule rule) {
         Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
-        Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet().stream().filter(entry -> StorageNodeStatus.isDisable(entry.getValue().getStatus()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet()
+                .stream().filter(entry -> DataSourceState.DISABLED == entry.getValue().getStatus()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         disableDataSources.forEach((key, value) -> rule.updateStatus(new StorageNodeDataSourceChangedEvent(new QualifiedDatabase(key), value)));
     }
 }

@@ -20,9 +20,8 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
+import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.junit.Before;
@@ -39,10 +38,8 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public final class OpenTracingJDBCExecutorCallbackAdviceTest {
+public final class OpenTracingJDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     private static MockTracer tracer;
     
@@ -64,13 +61,9 @@ public final class OpenTracingJDBCExecutorCallbackAdviceTest {
     
     @Test
     public void assertMethod() {
-        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
-        Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
-        JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
-        when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));
         OpenTracingJDBCExecutorCallbackAdvice advice = new OpenTracingJDBCExecutorCallbackAdvice();
-        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, "OpenTracing");
-        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, null, "OpenTracing");
+        advice.beforeMethod(getTargetObject(), executeMethod, new Object[]{getExecutionUnit(), false, Collections.emptyList()}, "OpenTracing");
+        advice.afterMethod(getTargetObject(), executeMethod, new Object[]{getExecutionUnit(), false, Collections.emptyList()}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
@@ -85,14 +78,11 @@ public final class OpenTracingJDBCExecutorCallbackAdviceTest {
     
     @Test
     public void assertExceptionHandle() {
-        MockTargetAdviceObject targetObject = new MockTargetAdviceObject();
         Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
-        JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
-        when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())));
         OpenTracingJDBCExecutorCallbackAdvice advice = new OpenTracingJDBCExecutorCallbackAdvice();
-        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, "OpenTracing");
-        advice.onThrowing(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException(), "OpenTracing");
-        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, null, "OpenTracing");
+        advice.beforeMethod(getTargetObject(), executeMethod, new Object[]{getExecutionUnit(), false, extraMap}, "OpenTracing");
+        advice.onThrowing(getTargetObject(), executeMethod, new Object[]{getExecutionUnit(), false, extraMap}, new IOException(), "OpenTracing");
+        advice.afterMethod(getTargetObject(), executeMethod, new Object[]{getExecutionUnit(), false, extraMap}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

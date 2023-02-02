@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Show table metadata handler.
  */
-public final class ShowTableMetaDataHandler extends QueryableRALBackendHandler<ShowTableMetaDataStatement> {
+public final class ShowTableMetaDataHandler extends AbstractQueryableRALBackendHandler<ShowTableMetaDataStatement> {
     
     private static final String SCHEMA_NAME = "schema_name";
     

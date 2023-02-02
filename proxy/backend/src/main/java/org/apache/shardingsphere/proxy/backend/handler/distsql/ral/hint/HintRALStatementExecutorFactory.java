@@ -82,6 +82,6 @@ public final class HintRALStatementExecutorFactory {
         if (sqlStatement instanceof ClearShardingHintStatement) {
             return new ClearShardingHintExecutor((ClearShardingHintStatement) sqlStatement);
         }
-        throw new UnsupportedSQLOperationException(sqlStatement.getClass().getCanonicalName());
+        throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }
 }

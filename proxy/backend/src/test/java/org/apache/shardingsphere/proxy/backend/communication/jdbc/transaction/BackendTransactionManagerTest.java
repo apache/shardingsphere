@@ -39,6 +39,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.util.Collections;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -85,13 +86,11 @@ public final class BackendTransactionManagerTest extends ProxyContextRestorer {
     }
     
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
-        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
-        TransactionRule transactionRule = mock(TransactionRule.class);
         ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingSphereTransactionManager);
+        TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getResource()).thenReturn(transactionManagerEngine);
-        when(result.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
-        return result;
+        return new ShardingSphereRuleMetaData(Collections.singleton(transactionRule));
     }
     
     @Test

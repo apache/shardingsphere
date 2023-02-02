@@ -43,6 +43,8 @@ public final class PrimaryKeyPositionFactory {
                 return new IntegerPrimaryKeyPosition(Long.parseLong(beginValue), Long.parseLong(endValue));
             case 's':
                 return new StringPrimaryKeyPosition(beginValue, endValue);
+            case 'n':
+                return new NoUniqueKeyPosition();
             default:
                 throw new IllegalArgumentException("Unknown primary key position type: " + type);
         }

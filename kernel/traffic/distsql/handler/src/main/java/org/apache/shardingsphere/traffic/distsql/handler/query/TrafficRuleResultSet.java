@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.traffic.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.distsql.handler.resultset.GlobalRuleDistSQLResultSet;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -29,10 +29,8 @@ import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Result set for traffic rule.
@@ -51,18 +49,17 @@ public final class TrafficRuleResultSet implements GlobalRuleDistSQLResultSet {
     
     private static final String LOAD_BALANCER_PROPS = "load_balancer_props";
     
-    private Iterator<Collection<Object>> data = Collections.emptyIterator();
+    private Iterator<Collection<Object>> data;
     
     @Override
-    public void init(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
-        ShowTrafficRulesStatement statement = (ShowTrafficRulesStatement) sqlStatement;
-        Optional<String> ruleName = Optional.ofNullable(statement.getRuleName());
-        ruleMetaData.findSingleRule(TrafficRule.class).ifPresent(optional -> data = buildData(optional.getConfiguration(), ruleName).iterator());
+    public void init(final ShardingSphereRuleMetaData globalRuleMetaData, final SQLStatement sqlStatement) {
+        TrafficRule rule = globalRuleMetaData.getSingleRule(TrafficRule.class);
+        data = buildData(rule.getConfiguration(), ((ShowTrafficRulesStatement) sqlStatement).getRuleName()).iterator();
     }
     
-    private Collection<Collection<Object>> buildData(final TrafficRuleConfiguration ruleConfig, final Optional<String> ruleName) {
+    private Collection<Collection<Object>> buildData(final TrafficRuleConfiguration ruleConfig, final String ruleName) {
         Collection<Collection<Object>> result = new LinkedList<>();
-        ruleConfig.getTrafficStrategies().stream().filter(each -> !ruleName.isPresent() || each.getName().equals(ruleName.get()))
+        ruleConfig.getTrafficStrategies().stream().filter(each -> null == ruleName || each.getName().equals(ruleName))
                 .forEach(each -> result.add(buildRow(each, ruleConfig.getTrafficAlgorithms().get(each.getAlgorithmName()), ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()))));
         return result;
     }

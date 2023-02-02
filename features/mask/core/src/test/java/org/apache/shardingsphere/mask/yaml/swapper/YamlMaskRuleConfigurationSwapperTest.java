@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -71,6 +71,6 @@ public final class YamlMaskRuleConfigurationSwapperTest {
     
     private YamlMaskRuleConfigurationSwapper getSwapper() {
         MaskRuleConfiguration ruleConfig = mock(MaskRuleConfiguration.class);
-        return (YamlMaskRuleConfigurationSwapper) OrderedSPIRegistry.getRegisteredServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        return (YamlMaskRuleConfigurationSwapper) OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig)).get(ruleConfig);
     }
 }

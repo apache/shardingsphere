@@ -34,6 +34,7 @@ public final class YamlConsistencyCheckJobItemProgressSwapper implements YamlCon
         YamlConsistencyCheckJobItemProgress result = new YamlConsistencyCheckJobItemProgress();
         result.setStatus(data.getStatus().name());
         result.setTableNames(data.getTableNames());
+        result.setIgnoredTableNames(data.getIgnoredTableNames());
         result.setCheckedRecordsCount(data.getCheckedRecordsCount());
         result.setRecordsCount(data.getRecordsCount());
         result.setCheckBeginTimeMillis(data.getCheckBeginTimeMillis());
@@ -48,7 +49,7 @@ public final class YamlConsistencyCheckJobItemProgressSwapper implements YamlCon
         if (null != yamlConfig.getTableCheckPositions()) {
             tableCheckPositions.putAll(yamlConfig.getTableCheckPositions());
         }
-        ConsistencyCheckJobItemProgress result = new ConsistencyCheckJobItemProgress(yamlConfig.getTableNames(), yamlConfig.getCheckedRecordsCount(),
+        ConsistencyCheckJobItemProgress result = new ConsistencyCheckJobItemProgress(yamlConfig.getTableNames(), yamlConfig.getIgnoredTableNames(), yamlConfig.getCheckedRecordsCount(),
                 yamlConfig.getRecordsCount(), yamlConfig.getCheckBeginTimeMillis(), yamlConfig.getCheckEndTimeMillis(), tableCheckPositions);
         result.setStatus(JobStatus.valueOf(yamlConfig.getStatus()));
         return result;

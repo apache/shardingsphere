@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mask.algorithm.hash;
 
-import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -32,13 +31,9 @@ public final class MD5MaskAlgorithm implements MaskAlgorithm<Object, String> {
     
     private String salt;
     
-    @Getter
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
-        this.salt = props.getProperty(SALT, "");
+        salt = props.getProperty(SALT, "");
     }
     
     @Override

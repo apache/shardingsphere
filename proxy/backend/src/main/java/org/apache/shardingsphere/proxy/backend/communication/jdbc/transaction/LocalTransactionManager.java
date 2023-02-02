@@ -24,6 +24,7 @@ import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -106,17 +107,11 @@ public final class LocalTransactionManager {
         if (exceptions.isEmpty()) {
             return;
         }
-        SQLException ex = null;
-        int count = 0;
-        for (SQLException each : exceptions) {
-            if (0 == count) {
-                ex = each;
-            } else {
-                // TODO use recursion to setNextException with chain, not overlap
-                ex.setNextException(each);
-            }
-            count++;
+        Iterator<SQLException> iterator = exceptions.iterator();
+        SQLException firstException = iterator.next();
+        while (iterator.hasNext()) {
+            firstException.setNextException(iterator.next());
         }
-        throw ex;
+        throw firstException;
     }
 }
