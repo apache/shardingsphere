@@ -56,11 +56,6 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     @SneakyThrows(IOException.class)
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
-        try {
-            // TODO this needs to refactor, replace sleep with polling.
-            Thread.sleep(Long.parseLong(props.getProperty("zipkin.waitMs", "60000")));
-        } catch (final InterruptedException ignore) {
-        }
         assertSpans();
         assertTraces();
         assertTraceContent();

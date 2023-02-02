@@ -26,7 +26,7 @@ import java.util.Collection;
 /**
  * Instance context required queryable RAL executor.
  */
-public interface InstanceContextRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor {
+public interface InstanceContextRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     
     /**
      * Get query result rows.

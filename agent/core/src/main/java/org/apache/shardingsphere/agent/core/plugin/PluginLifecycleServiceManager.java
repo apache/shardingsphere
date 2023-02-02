@@ -20,9 +20,9 @@ package org.apache.shardingsphere.agent.core.plugin;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
+import org.apache.shardingsphere.agent.core.log.AgentLogger;
 import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
 import org.apache.shardingsphere.agent.core.spi.AgentServiceLoader;
-import org.apache.shardingsphere.agent.log.api.AgentLogger;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
 import java.io.IOException;
@@ -53,7 +53,7 @@ public final class PluginLifecycleServiceManager {
     public static void init(final Map<String, PluginConfiguration> pluginConfigs, final Collection<JarFile> pluginJars, final ClassLoader pluginClassLoader, final boolean isEnhancedForProxy) {
         if (STARTED_FLAG.compareAndSet(false, true)) {
             PluginLifecycleServiceManager.start(pluginConfigs, pluginClassLoader, isEnhancedForProxy);
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> PluginLifecycleServiceManager.close(pluginClassLoader, pluginJars)));
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> PluginLifecycleServiceManager.close(pluginJars)));
         }
     }
     
@@ -81,8 +81,8 @@ public final class PluginLifecycleServiceManager {
         }
     }
     
-    private static void close(final ClassLoader pluginClassLoader, final Collection<JarFile> pluginJars) {
-        AgentServiceLoader.getServiceLoader(pluginClassLoader, PluginLifecycleService.class).getServices().forEach(each -> {
+    private static void close(final Collection<JarFile> pluginJars) {
+        AgentServiceLoader.getServiceLoader(PluginLifecycleService.class).getServices().forEach(each -> {
             try {
                 each.close();
                 // CHECKSTYLE:OFF
