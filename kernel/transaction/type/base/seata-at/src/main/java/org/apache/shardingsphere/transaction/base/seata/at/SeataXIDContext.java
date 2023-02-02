@@ -15,38 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.core;
+package org.apache.shardingsphere.transaction.base.seata.at;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Root span context.
+ * Seata xid context.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RootSpanContext {
+public final class SeataXIDContext {
     
-    private static final TransmittableThreadLocal<Object> VALUE = new TransmittableThreadLocal<>();
+    private static final TransmittableThreadLocal<String> XID = new TransmittableThreadLocal<>();
     
     /**
-     * Get root span.
+     * Get xid.
      * 
-     * @param <T> type of span
-     * @return root span
+     * @return xid
      */
-    @SuppressWarnings("unchecked")
-    public static <T> T get() {
-        return (T) VALUE.get();
+    public static String get() {
+        return XID.get();
     }
     
     /**
-     * Set root span.
+     * Set xid.
      * 
-     * @param value root span
-     * @param <T> type of span
+     * @param xid xid
      */
-    public static <T> void set(final T value) {
-        VALUE.set(value);
+    public static void set(final String xid) {
+        XID.set(xid);
     }
 }

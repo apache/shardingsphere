@@ -35,9 +35,8 @@ public interface SQLExecutionHook {
      * @param params SQL parameters
      * @param dataSourceMetaData data source meta data
      * @param isTrunkThread is execution in trunk thread
-     * @param shardingExecuteDataMap sharding execute data map
      */
-    void start(String dataSourceName, String sql, List<Object> params, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread, Map<String, Object> shardingExecuteDataMap);
+    void start(String dataSourceName, String sql, List<Object> params, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread);
     
     /**
      * Handle when SQL execution finished success.
