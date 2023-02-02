@@ -63,7 +63,10 @@
 #  loggers:
 #  - loggerName: ShardingSphere-SQL
 #    additivity: false
+#    appenderName: console
 #    level: INFO
+#    props:
+#      enable: true
 #  - loggerName: com.atomikos
 #    additivity: true
 #    level: ERROR
@@ -88,7 +91,8 @@
 #  kernel-executor-size: 16  # Infinite by default.
 #  proxy-frontend-flush-threshold: 128  # The default value is 128.
 #  proxy-hint-enabled: false
-#  sql-show: false
+#  # sql-show is deprecated and will be removed at next version
+#  sql-show: true
 #  check-table-metadata-enabled: false
 #    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
 #    # The default value is -1, which means set the minimum value for different JDBC drivers.
