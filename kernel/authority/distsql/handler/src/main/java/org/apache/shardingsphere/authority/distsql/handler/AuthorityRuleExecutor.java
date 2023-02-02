@@ -20,53 +20,31 @@ package org.apache.shardingsphere.authority.distsql.handler;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.distsql.parser.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.distsql.handler.resultset.GlobalRuleDistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.stream.Collectors;
 
 /**
- * Result set for authority rule.
+ * Show authority rule executor.
  */
-public final class AuthorityRuleResultSet implements GlobalRuleDistSQLResultSet {
-    
-    private static final String USERS = "users";
-    
-    private static final String PROVIDER = "provider";
-    
-    private static final String PROPS = "props";
-    
-    private Iterator<Collection<Object>> data;
+public final class AuthorityRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowAuthorityRuleStatement> {
     
     @Override
-    public void init(final ShardingSphereRuleMetaData globalRuleMetaData, final SQLStatement sqlStatement) {
-        AuthorityRule rule = globalRuleMetaData.getSingleRule(AuthorityRule.class);
-        data = buildData(rule.getConfiguration()).iterator();
-    }
-    
-    private Collection<Collection<Object>> buildData(final AuthorityRuleConfiguration ruleConfig) {
-        return Collections.singleton(Arrays.asList(ruleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")),
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowAuthorityRuleStatement sqlStatement) {
+        AuthorityRule rule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityRuleConfiguration ruleConfig = rule.getConfiguration();
+        return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")),
                 ruleConfig.getProvider().getType(), ruleConfig.getProvider().getProps().isEmpty() ? "" : ruleConfig.getProvider().getProps()));
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(USERS, PROVIDER, PROPS);
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
+        return Arrays.asList("users", "provider", "props");
     }
     
     @Override
