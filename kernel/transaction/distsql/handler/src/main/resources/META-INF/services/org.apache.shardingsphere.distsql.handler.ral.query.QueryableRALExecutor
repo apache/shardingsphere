@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.transaction.distsql.handler.query.TransactionRuleResultSet
+org.apache.shardingsphere.transaction.distsql.handler.query.ShowTransactionRuleExecutor
