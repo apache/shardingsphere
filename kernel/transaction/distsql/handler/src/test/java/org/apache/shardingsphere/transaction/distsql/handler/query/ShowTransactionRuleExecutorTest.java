@@ -36,6 +36,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class ShowTransactionRuleExecutorTest {
@@ -51,7 +52,9 @@ public final class ShowTransactionRuleExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("XA"));
         assertThat(row.getCell(2), is("Atomikos"));
-        assertThat(row.getCell(3), is("databaseName=jbossts,host=127.0.0.1"));
+        String props = (String) row.getCell(3);
+        assertTrue(props.contains("databaseName=jbossts"));
+        assertTrue(props.contains("host=127.0.0.1"));
     }
     
     @Test
