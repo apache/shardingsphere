@@ -19,11 +19,12 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.span;
 
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Open tracing error span.

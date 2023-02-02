@@ -58,18 +58,28 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
     @Getter
     private Map<String, Object> extraMap;
     
+    private Map<String, DatabaseType> storageTypes;
+    
+    @Getter
+    private String dataSourceName;
+    
+    @Getter
+    private String sql;
+    
     @SuppressWarnings({"rawtypes", "unchecked"})
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     @Override
     public void prepare() {
         extraMap = new HashMap<>();
+        dataSourceName = "mock.db";
+        sql = "select 1";
         Statement statement = mock(Statement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(databaseMetaData.getURL()).thenReturn("mock_url");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(statement.getConnection()).thenReturn(connection);
-        executionUnit = new JDBCExecutionUnit(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())), null, statement);
+        executionUnit = new JDBCExecutionUnit(new ExecutionUnit(dataSourceName, new SQLUnit(sql, Collections.emptyList())), null, statement);
         JDBCExecutorCallback mockedJDBCExecutorCallback = mock(JDBCExecutorCallback.class, invocation -> {
             switch (invocation.getMethod().getName()) {
                 case "getAttachment":
@@ -84,9 +94,19 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         Map<String, DataSourceMetaData> cachedDatasourceMetaData = (Map<String, DataSourceMetaData>) Plugins.getMemberAccessor()
                 .get(JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA"), mockedJDBCExecutorCallback);
         cachedDatasourceMetaData.put("mock_url", new MockDataSourceMetaData());
-        Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(1, 1);
-        storageTypes.put("mock.db", new MySQLDatabaseType());
+        storageTypes = new LinkedHashMap<>(1, 1);
+        storageTypes.put(dataSourceName, new MySQLDatabaseType());
         Plugins.getMemberAccessor().set(JDBCExecutorCallback.class.getDeclaredField("storageTypes"), mockedJDBCExecutorCallback, storageTypes);
         targetObject = (TargetAdviceObject) mockedJDBCExecutorCallback;
+    }
+    
+    /**
+     * Get database type.
+     *
+     * @param databaseName database name
+     * @return database type
+     */
+    public String getDatabaseType(final String databaseName) {
+        return null == storageTypes ? "" : storageTypes.get(databaseName).getType();
     }
 }
