@@ -114,11 +114,11 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order_item", null);
         tableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_item_algorithm"));
-        tableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id","in_used_key_generator"));
+        tableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "in_used_key_generator"));
         tableRuleConfig.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("in_used_auditor"), false));
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(tableRuleConfig);
         ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order", null);
         autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_algorithm"));
