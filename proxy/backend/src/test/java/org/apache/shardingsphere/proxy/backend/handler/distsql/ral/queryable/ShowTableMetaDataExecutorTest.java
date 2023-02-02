@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
@@ -35,7 +37,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +46,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowTableMetaDataHandlerTest extends ProxyContextRestorer {
+public final class ShowTableMetaDataExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecute() throws SQLException {
@@ -57,23 +59,32 @@ public final class ShowTableMetaDataHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getDatabaseName()).thenReturn("db_name");
-        ShowTableMetaDataHandler handler = new ShowTableMetaDataHandler();
-        handler.init(createSqlStatement(), connectionSession);
-        handler.execute();
-        handler.next();
-        List<Object> data = handler.getRowData().getData();
-        assertThat(data.size(), is(4));
-        assertThat(data.get(0), is("db_name"));
-        assertThat(data.get(1), is("t_order"));
-        assertThat(data.get(2), is("COLUMN"));
-        assertThat(data.get(3), is("order_id"));
-        handler.next();
-        data = handler.getRowData().getData();
-        assertThat(data.size(), is(4));
-        assertThat(data.get(0), is("db_name"));
-        assertThat(data.get(1), is("t_order"));
-        assertThat(data.get(2), is("INDEX"));
-        assertThat(data.get(3), is("primary"));
+        ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShardingSphereMetaData.class), connectionSession, createSqlStatement());
+        assertThat(actual.size(), is(2));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("db_name"));
+        assertThat(row.getCell(2), is("t_order"));
+        assertThat(row.getCell(3), is("COLUMN"));
+        assertThat(row.getCell(4), is("order_id"));
+        row = iterator.next();
+        assertThat(row.getCell(1), is("db_name"));
+        assertThat(row.getCell(2), is("t_order"));
+        assertThat(row.getCell(3), is("INDEX"));
+        assertThat(row.getCell(4), is("primary"));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();
+        Collection<String> columns = executor.getColumnNames();
+        assertThat(columns.size(), is(4));
+        Iterator<String> iterator = columns.iterator();
+        assertThat(iterator.next(), is("schema_name"));
+        assertThat(iterator.next(), is("table_name"));
+        assertThat(iterator.next(), is("type"));
+        assertThat(iterator.next(), is("name"));
     }
     
     private Map<String, ShardingSphereTable> createTableMap() {

@@ -39,12 +39,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AuthorityRuleExecutorTest {
+public final class ShowAuthorityRuleExecutorTest {
     
     @Test
     public void assertExecute() {
         ShardingSphereMetaData metaData = mockMetaData();
-        AuthorityRuleExecutor executor = new AuthorityRuleExecutor();
+        ShowAuthorityRuleExecutor executor = new ShowAuthorityRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowAuthorityRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
@@ -56,7 +56,7 @@ public final class AuthorityRuleExecutorTest {
     
     @Test
     public void assertGetColumnNames() {
-        AuthorityRuleExecutor executor = new AuthorityRuleExecutor();
+        ShowAuthorityRuleExecutor executor = new ShowAuthorityRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
