@@ -50,7 +50,6 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
             for (Integer each : shardingItems) {
                 PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
             }
-            return;
         }
         switch (eventType) {
             case ADDED:
