@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.RateLimiter;
-import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
@@ -36,7 +35,6 @@ public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
     private RateLimiter rateLimiter;
     
-    @Getter
     private Properties props = new Properties();
     
     @Override

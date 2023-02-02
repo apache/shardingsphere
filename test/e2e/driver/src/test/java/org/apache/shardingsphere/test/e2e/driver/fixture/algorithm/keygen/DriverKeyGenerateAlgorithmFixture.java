@@ -17,23 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.driver.fixture.algorithm.keygen;
 
-import lombok.Getter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Getter
 public final class DriverKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
     private static final AtomicInteger SEQUENCE = new AtomicInteger(100);
-    
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
     
     @Override
     public Comparable<?> generateKey() {

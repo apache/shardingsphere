@@ -32,17 +32,17 @@
         <module>plugins</module>
     </modules>
     
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <docker.distribution.name>apache-shardingsphere-${project.version}-shardingsphere-proxy-bin</docker.distribution.name>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
         </dependency>
     </dependencies>
-    
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-        <docker.distribution.name>apache-shardingsphere-${project.version}-shardingsphere-proxy-bin</docker.distribution.name>
-    </properties>
     
     <build>
         <plugins>

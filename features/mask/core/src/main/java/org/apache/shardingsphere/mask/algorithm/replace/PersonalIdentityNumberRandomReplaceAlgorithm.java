@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mask.algorithm.replace;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Properties;
@@ -33,13 +32,9 @@ public final class PersonalIdentityNumberRandomReplaceAlgorithm implements MaskA
     
     private String alphaTwoCountryAreaCode;
     
-    @Getter
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
-        this.alphaTwoCountryAreaCode = props.getProperty(ALPHA_TWO_COUNTRY_AREA_CODE, "CN");
+        alphaTwoCountryAreaCode = props.getProperty(ALPHA_TWO_COUNTRY_AREA_CODE, "CN");
     }
     
     @Override

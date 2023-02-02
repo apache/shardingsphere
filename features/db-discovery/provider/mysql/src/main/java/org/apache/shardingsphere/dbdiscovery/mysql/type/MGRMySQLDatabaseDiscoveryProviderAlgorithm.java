@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
-import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRGroupNameConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRModeException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRPluginException;
@@ -46,7 +45,6 @@ import java.util.concurrent.ExecutorService;
 /**
  * MGR database discovery provider algorithm for MySQL.
  */
-@Getter
 public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private static final String QUERY_PLUGIN_STATUS = "SELECT PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
@@ -62,14 +60,14 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     private static final String QUERY_CURRENT_MEMBER_STATE = "SELECT MEMBER_STATE FROM performance_schema.replication_group_members WHERE MEMBER_HOST=? AND MEMBER_PORT=?";
     
-    private Properties props;
-    
     private int minEnabledReplicas;
+    
+    private String groupName;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         minEnabledReplicas = Integer.parseInt(props.getProperty("min-enabled-replicas", "0"));
+        groupName = props.getProperty("group-name", "");
     }
     
     @Override
@@ -121,8 +119,8 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     
     private void checkGroupName(final String databaseName, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(QUERY_GROUP_NAME)) {
-            ShardingSpherePreconditions.checkState(resultSet.next() && props.getProperty("group-name", "").equals(resultSet.getString("VARIABLE_VALUE")),
-                    () -> new InvalidMGRGroupNameConfigurationException(props.getProperty("group-name"), databaseName));
+            ShardingSpherePreconditions.checkState(resultSet.next() && groupName.equals(resultSet.getString("VARIABLE_VALUE")),
+                    () -> new InvalidMGRGroupNameConfigurationException(groupName, databaseName));
         }
     }
     

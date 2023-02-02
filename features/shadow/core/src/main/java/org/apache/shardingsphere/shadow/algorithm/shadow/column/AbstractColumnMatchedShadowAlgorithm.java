@@ -38,15 +38,12 @@ public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShad
     
     private static final String OPERATION_PROPS_KEY = "operation";
     
-    private Properties props;
-    
     private String shadowColumn;
     
     private ShadowOperationType shadowOperationType;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         shadowColumn = getShadowColumn(props);
         shadowOperationType = getShadowOperationType(props);
     }
