@@ -46,6 +46,22 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>space.vector</groupId>
+                <artifactId>rr-maven-plugin</artifactId>
+                <version>0.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>rr</goal>
+                        </goals>
+                        <configuration>
+                            <rootRule>execute</rootRule>
+                            <libDirectory>src/main/antlr4/imports/mysql/</libDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
