@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel.model;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+package org.apache.shardingsphere.infra.executor.sql.process.model;
 
 /**
- * Executor data map for thread local even cross multiple threads.
+ * Execute process status enum.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutorDataMap {
+public enum ExecuteProcessStatusEnum {
     
-    private static final ThreadLocal<Map<String, Object>> DATA_MAP = ThreadLocal.withInitial(LinkedHashMap::new);
-    
-    /**
-     * Get value.
-     *
-     * @return data map
-     */
-    public static Map<String, Object> getValue() {
-        return DATA_MAP.get();
-    }
+    START, DONE, SLEEP
 }
