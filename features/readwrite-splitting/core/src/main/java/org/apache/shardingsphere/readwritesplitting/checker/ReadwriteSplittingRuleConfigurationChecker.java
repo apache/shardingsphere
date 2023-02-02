@@ -26,8 +26,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.TransactionWeightReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightAware;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
@@ -35,13 +34,13 @@ import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwrite
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingRequiredReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.DataSourceNameExistedException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredDataSourceNameException;
+import org.apache.shardingsphere.readwritesplitting.exception.checker.DuplicateDataSourceException;
+import org.apache.shardingsphere.readwritesplitting.exception.checker.InvalidWeightLoadBalancerConfigurationException;
+import org.apache.shardingsphere.readwritesplitting.exception.checker.LoadBalancerAlgorithmNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredAutoAwareDataSourceNameException;
+import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredDataSourceNameException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredReadDataSourceNamesException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredWriteDataSourceNameException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.DuplicateDataSourceException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.LoadBalancerAlgorithmNotFoundException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.InvalidWeightLoadBalancerConfigurationException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import javax.sql.DataSource;
@@ -132,11 +131,11 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
             }
             ReadQueryLoadBalanceAlgorithm loadBalancer = loadBalancers.get(each.getLoadBalancerName());
             ShardingSpherePreconditions.checkNotNull(loadBalancer, () -> new LoadBalancerAlgorithmNotFoundException(databaseName));
-            if (loadBalancer instanceof WeightReadQueryLoadBalanceAlgorithm || loadBalancer instanceof TransactionWeightReadQueryLoadBalanceAlgorithm) {
-                ShardingSpherePreconditions.checkState(!loadBalancer.getProps().isEmpty(), () -> new MissingRequiredReadDatabaseWeightException(loadBalancer.getType(),
+            if (loadBalancer instanceof WeightAware) {
+                ShardingSpherePreconditions.checkState(!((WeightAware) loadBalancer).getDataSourceNames().isEmpty(), () -> new MissingRequiredReadDatabaseWeightException(loadBalancer.getType(),
                         String.format("Read data source weight config are required in database `%s`", databaseName)));
                 Collection<String> dataSourceNames = getDataSourceNames(each, rules);
-                loadBalancer.getProps().stringPropertyNames().forEach(dataSourceName -> ShardingSpherePreconditions.checkState(dataSourceNames.contains(dataSourceName),
+                ((WeightAware) loadBalancer).getDataSourceNames().forEach(dataSourceName -> ShardingSpherePreconditions.checkState(dataSourceNames.contains(dataSourceName),
                         () -> new InvalidWeightLoadBalancerConfigurationException(databaseName)));
             }
         }

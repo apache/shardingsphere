@@ -1692,7 +1692,7 @@
         </projections>
         <where start-index="22" stop-index="44">
             <expr>
-                <function function-name="-&gt;" text="order_id -&gt;&quot;$[1]&quot;" start-index="28" stop-index="44"></function>
+                <function function-name="-&gt;" text="order_id -&gt;&quot;$[1]&quot;" start-index="28" stop-index="44"/>
             </expr>
         </where>
     </select>
@@ -1706,7 +1706,7 @@
         </projections>
         <where start-index="22" stop-index="46">
             <expr>
-                <function function-name="-&gt;&gt;" text="order_id -&gt;&gt; &quot;$[1]&quot;" start-index="28" stop-index="46"></function>
+                <function function-name="-&gt;&gt;" text="order_id -&gt;&gt; &quot;$[1]&quot;" start-index="28" stop-index="46" />
             </expr>
         </where>
     </select>
@@ -1720,9 +1720,28 @@
         </projections>
         <where start-index="22" stop-index="76">
             <expr>
-                <function function-name="JSON_CONTAINS" text="JSON_CONTAINS(order_msg -> '$[*].code', 'x', '$')" start-index="28" stop-index="76"></function>
+                <function function-name="JSON_CONTAINS" text="JSON_CONTAINS(order_msg -> '$[*].code', 'x', '$')" start-index="28" stop-index="76" />
             </expr>
         </where>
+    </select>
+    
+    <select sql-case-id="select_where_with_simple_expr_with_json_contains_and_limit" parameters="1, 0, 1">
+        <projections start-index="7" stop-index="28">
+            <column-projection name="id" start-index="7" stop-index="8"/>
+            <expression-projection text="order_info->'$.id'" start-index="11" stop-index="28"/>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="35" stop-index="41" />
+        </from>
+        <where start-index="43" stop-index="84">
+            <expr>
+                <function function-name="json_contains" text="json_contains(order_info, ?, '$.id')" literal-text="json_contains(order_info, 1, '$.id')" start-index="49" stop-index="84" />
+            </expr>
+        </where>
+        <limit start-index="86" stop-index="95">
+            <offset value="0" parameter-index="1" start-index="92" stop-index="92" />
+            <row-count value="1" parameter-index="2" start-index="95" stop-index="95"/>
+        </limit>
     </select>
 
     <select sql-case-id="select_where_with_simple_expr_with_match" parameters="'keyword'">
