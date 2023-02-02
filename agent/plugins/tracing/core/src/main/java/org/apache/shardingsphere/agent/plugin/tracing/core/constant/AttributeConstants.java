@@ -15,30 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant;
+package org.apache.shardingsphere.agent.plugin.tracing.core.constant;
 
-import io.opentracing.tag.StringTag;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * ShardingSphere tags.
+ * Attribute constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereTags {
+public final class AttributeConstants {
     
-    /**
-     * Component name of ShardingSphere's open tracing tag.
-     */
+    public static final String COMPONENT = "component";
+    
     public static final String COMPONENT_NAME = "ShardingSphere";
     
-    /**
-     * The tag to record the bind variables of SQL.
-     */
-    public static final StringTag DB_BIND_VARIABLES = new StringTag("db.bind_vars");
+    public static final String DB_TYPE = "db.type";
     
-    /**
-     * The tag to record the connection count.
-     */
-    public static final StringTag CONNECTION_COUNT = new StringTag("connection.count");
+    public static final String DB_STATEMENT = "db.statement";
+    
+    public static final String DB_INSTANCE = "db.instance";
+    
+    public static final String DB_BIND_VARIABLES = "db.bind_vars";
+    
+    public static final String PEER_HOSTNAME = "peer.hostname";
+    
+    public static final String PEER_PORT = "peer.port";
+    
+    public static final String SPAN_KIND = "span.kind";
+    
+    public static final String SPAN_KIND_CLIENT = "client";
+    
+    public static final String SPAN_KIND_INTERNAL = "internal";
 }

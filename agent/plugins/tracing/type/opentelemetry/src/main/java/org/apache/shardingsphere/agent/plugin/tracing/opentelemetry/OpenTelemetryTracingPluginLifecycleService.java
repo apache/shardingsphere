@@ -42,6 +42,7 @@ public class OpenTelemetryTracingPluginLifecycleService implements PluginLifecyc
     
     @Override
     public void close() {
+        
     }
     
     @Override

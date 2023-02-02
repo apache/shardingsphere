@@ -25,21 +25,4 @@ public class OpenTelemetryConstants {
     
     public static final String TRACER_NAME = "shardingsphere-agent";
     
-    public static final String COMPONENT = "component";
-    
-    public static final String COMPONENT_NAME = "ShardingSphere";
-    
-    public static final String DB_TYPE_VALUE = "ShardingSphere-Proxy";
-    
-    public static final String DB_TYPE = "db.type";
-    
-    public static final String DB_STATEMENT = "db.statement";
-    
-    public static final String DB_INSTANCE = "db.instance";
-    
-    public static final String DB_BIND_VARIABLES = "db.bind_vars";
-    
-    public static final String PEER_HOSTNAME = "peer.hostname";
-    
-    public static final String PEER_PORT = "peer.port";
 }
