@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
 import io.opentracing.Span;
-import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingCommandExecutorTaskAdvice;
-import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
+import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
 
 import java.lang.reflect.Method;
@@ -34,16 +33,19 @@ public final class OpenTracingCommandExecutorTaskAdvice extends TracingCommandEx
     
     @Override
     protected Span createRootSpan(final TargetAdviceObject target, final Method method, final Object[] args) {
-        return GlobalTracer.get().buildSpan(OPERATION_NAME).withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME).startActive(true).span();
+        return GlobalTracer.get().buildSpan(OPERATION_NAME)
+                .withTag(AttributeConstants.COMPONENT, AttributeConstants.COMPONENT_NAME)
+                .withTag(AttributeConstants.SPAN_KIND, AttributeConstants.SPAN_KIND_CLIENT)
+                .startActive(true).span();
     }
     
     @Override
-    protected void finishRootSpan(final Span rootSpan, final TargetAdviceObject target, final int connectionSize) {
-        GlobalTracer.get().scopeManager().active().close();
+    protected void finishRootSpan(final Span rootSpan, final TargetAdviceObject target) {
+        rootSpan.finish();
     }
     
     @Override
     protected void recordException(final Span rootSpan, final TargetAdviceObject target, final Throwable throwable) {
-        OpenTracingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
+        OpenTracingErrorSpan.setError(rootSpan, throwable);
     }
 }

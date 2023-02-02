@@ -24,8 +24,11 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
+import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
+import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.collector.OpenTelemetryCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -44,47 +47,49 @@ public final class OpenTelemetrySQLParserEngineAdviceTest extends AbstractSQLPar
     
     private static final String SQL_STATEMENT = "select 1";
     
-    private OpenTelemetrySQLParserEngineAdvice advice;
-    
     private Span parentSpan;
     
     @Before
     public void setup() {
-        parentSpan = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
+        parentSpan = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME)
                 .spanBuilder("parent")
                 .startSpan();
-        advice = new OpenTelemetrySQLParserEngineAdvice();
+        RootSpanContext.set(parentSpan);
+    }
+    
+    @After
+    public void clean() {
+        parentSpan.end();
+        COLLECTOR.cleanup();
     }
     
     @Test
     public void assertMethod() {
+        OpenTelemetrySQLParserEngineAdvice advice = new OpenTelemetrySQLParserEngineAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "OpenTelemetry");
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null, "OpenTelemetry");
-        parentSpan.end();
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
-        assertThat(spanItems.size(), is(2));
+        assertThat(spanItems.size(), is(1));
         assertThat(spanItems.get(0).getName(), is("/ShardingSphere/parseSQL/"));
         assertNotNull(spanItems.get(0).getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
         Attributes attributes = spanItems.get(0).getAttributes();
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(OpenTelemetryConstants.DB_TYPE_VALUE));
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is(SQL_STATEMENT));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL_STATEMENT));
     }
     
     @Test
     public void assertExceptionHandle() {
+        OpenTelemetrySQLParserEngineAdvice advice = new OpenTelemetrySQLParserEngineAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "OpenTelemetry");
         advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException(), "OpenTelemetry");
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null, "OpenTelemetry");
-        parentSpan.end();
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
-        assertThat(spanItems.size(), is(2));
+        assertThat(spanItems.size(), is(1));
         assertThat(spanItems.get(0).getName(), is("/ShardingSphere/parseSQL/"));
         assertThat(spanItems.get(0).getStatus().getStatusCode(), is(StatusCode.ERROR));
         assertNotNull(spanItems.get(0).getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
         Attributes attributes = spanItems.get(0).getAttributes();
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_TYPE)), is(OpenTelemetryConstants.DB_TYPE_VALUE));
-        assertThat(attributes.get(AttributeKey.stringKey(OpenTelemetryConstants.DB_STATEMENT)), is(SQL_STATEMENT));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL_STATEMENT));
     }
 }

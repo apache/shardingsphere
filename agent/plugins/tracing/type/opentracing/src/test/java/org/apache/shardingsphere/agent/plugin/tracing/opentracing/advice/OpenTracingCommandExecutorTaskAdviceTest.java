@@ -24,6 +24,7 @@ import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
+import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.junit.Before;
@@ -72,6 +73,8 @@ public final class OpenTracingCommandExecutorTaskAdviceTest extends AbstractComm
         assertThat(spans.size(), is(1));
         assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(spans.get(0).operationName(), is("/ShardingSphere/rootInvoke/"));
+        assertThat(spans.get(0).tags().get(AttributeConstants.COMPONENT), is(AttributeConstants.COMPONENT_NAME));
+        assertThat(spans.get(0).tags().get(AttributeConstants.SPAN_KIND), is(AttributeConstants.SPAN_KIND_CLIENT));
     }
     
     @Test

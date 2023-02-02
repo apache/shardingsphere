@@ -19,11 +19,10 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
 import io.opentracing.Scope;
 import io.opentracing.Span;
-import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingSQLParserEngineAdvice;
-import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
+import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
 
 import java.lang.reflect.Method;
@@ -34,12 +33,14 @@ import java.lang.reflect.Method;
 public final class OpenTracingSQLParserEngineAdvice extends TracingSQLParserEngineAdvice<Span> {
     
     @Override
-    protected Object recordSQLParseInfo(final Span rootSpan, final TargetAdviceObject target, final String sql) {
-        return GlobalTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                .withTag(Tags.DB_STATEMENT.getKey(), sql)
+    protected Object recordSQLParseInfo(final Span parentSpan, final TargetAdviceObject target, final String sql) {
+        Scope result = GlobalTracer.get().buildSpan(OPERATION_NAME).asChildOf(parentSpan)
+                .withTag(AttributeConstants.COMPONENT, AttributeConstants.COMPONENT_NAME)
+                .withTag(AttributeConstants.DB_STATEMENT, sql)
+                .withTag(AttributeConstants.SPAN_KIND, AttributeConstants.SPAN_KIND_INTERNAL)
                 .startActive(true);
+        target.setAttachment(result);
+        return result;
     }
     
     @Override
