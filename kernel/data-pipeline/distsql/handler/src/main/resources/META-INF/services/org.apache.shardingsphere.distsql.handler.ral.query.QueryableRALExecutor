@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationListExecutor
+org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationJobStatusExecutor
