@@ -36,4 +36,4 @@ chapter = true
 ## 相关参考
 
 [Java API](/cn/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting)\
-[YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting)\
+[YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting)
