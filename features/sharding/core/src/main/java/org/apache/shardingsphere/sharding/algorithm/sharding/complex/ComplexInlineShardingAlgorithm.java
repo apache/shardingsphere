@@ -87,7 +87,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
         ShardingSpherePreconditions.checkState(shardingColumns.isEmpty() || shardingColumns.size() == columnNameAndShardingValuesMap.size(),
                 () -> new MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException(shardingColumns.size(), columnNameAndShardingValuesMap.size()));
         Collection<Map<String, Comparable<?>>> combine = combine(columnNameAndShardingValuesMap);
-        return combine.stream().map(this::doSharding).collect(Collectors.toList());
+        return combine.stream().map(this::doSharding).filter(availableTargetNames::contains).collect(Collectors.toList());
     }
     
     private String doSharding(final Map<String, Comparable<?>> shardingValues) {
