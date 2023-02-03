@@ -60,7 +60,7 @@ public final class ShowDistVariablesHandler extends AbstractQueryableRALBackendH
                 VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
         result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), getConnectionSession().getBackendConnection().getConnectionSize()));
         result.add(new LocalDataQueryResultRow(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), getConnectionSession().getTransactionStatus().getTransactionType().name()));
-        Optional<ShardingSphereLogger> sqlLogger = getSQLLoggerProps(contextManager);
+        Optional<ShardingSphereLogger> sqlLogger = getSQLLogger(contextManager);
         if (sqlLogger.isPresent()) {
             Properties sqlLoggerProps = sqlLogger.get().getProps();
             result.add(new LocalDataQueryResultRow("sql_show", sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_ENABLE, Boolean.FALSE).toString()));
@@ -72,7 +72,7 @@ public final class ShowDistVariablesHandler extends AbstractQueryableRALBackendH
         return result;
     }
     
-    private Optional<ShardingSphereLogger> getSQLLoggerProps(final ContextManager contextManager) {
+    private Optional<ShardingSphereLogger> getSQLLogger(final ContextManager contextManager) {
         return contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(LoggingRule.class).getConfiguration().getLoggers().stream()
                 .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
     }
