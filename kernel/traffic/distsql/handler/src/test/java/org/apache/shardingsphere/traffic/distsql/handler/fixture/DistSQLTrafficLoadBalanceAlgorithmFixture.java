@@ -25,12 +25,12 @@ import java.util.List;
 public final class DistSQLTrafficLoadBalanceAlgorithmFixture implements TrafficLoadBalanceAlgorithm {
     
     @Override
-    public String getType() {
-        return "DISTSQL.FIXTURE";
+    public InstanceMetaData getInstanceId(final String name, final List<InstanceMetaData> instances) {
+        return null;
     }
     
     @Override
-    public InstanceMetaData getInstanceId(final String name, final List<InstanceMetaData> instances) {
-        return null;
+    public String getType() {
+        return "DISTSQL.FIXTURE";
     }
 }
