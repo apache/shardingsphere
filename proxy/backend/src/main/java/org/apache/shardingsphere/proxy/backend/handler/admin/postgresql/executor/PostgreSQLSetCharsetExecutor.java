@@ -38,10 +38,6 @@ public final class PostgreSQLSetCharsetExecutor implements PostgreSQLSessionVari
         connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(value));
     }
     
-    private String formatValue(final String value) {
-        return value.startsWith("'") && value.endsWith("'") ? value.substring(1, value.length() - 1).trim() : value;
-    }
-    
     private Charset parseCharset(final String value) {
         try {
             String result = value.toLowerCase(Locale.ROOT);
