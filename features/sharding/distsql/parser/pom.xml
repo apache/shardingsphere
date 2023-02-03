@@ -28,7 +28,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <antlr.output.directory>${basedir}/src/generated/antlr4</antlr.output.directory>
+        <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
     </properties>
     
     <dependencies>
@@ -98,7 +98,6 @@
                                 <configuration>
                                     <sourceDirectory>src/main/antlr4/sharding/</sourceDirectory>
                                     <libDirectory>src/main/antlr4/imports/sharding/</libDirectory>
-                                    <outputDirectory>${antlr.output.directory}</outputDirectory>
                                     <listener>false</listener>
                                     <visitor>true</visitor>
                                 </configuration>
