@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Show authority rule executor.
  */
-public final class AuthorityRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowAuthorityRuleStatement> {
+public final class ShowAuthorityRuleExecutor implements MetaDataRequiredQueryableRALExecutor<ShowAuthorityRuleStatement> {
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowAuthorityRuleStatement sqlStatement) {
