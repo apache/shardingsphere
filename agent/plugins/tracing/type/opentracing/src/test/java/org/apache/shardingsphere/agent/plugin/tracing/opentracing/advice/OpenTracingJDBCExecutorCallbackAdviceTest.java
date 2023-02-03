@@ -52,7 +52,7 @@ public final class OpenTracingJDBCExecutorCallbackAdviceTest extends AbstractJDB
             GlobalTracer.register(new MockTracer());
         }
         tracer = (MockTracer) Plugins.getMemberAccessor().get(GlobalTracer.class.getDeclaredField("tracer"), GlobalTracer.get());
-        executeMethod = JDBCExecutorCallback.class.getDeclaredMethod("execute", JDBCExecutionUnit.class, boolean.class, Map.class);
+        executeMethod = JDBCExecutorCallback.class.getDeclaredMethod("execute", JDBCExecutionUnit.class, boolean.class);
     }
     
     @Before
