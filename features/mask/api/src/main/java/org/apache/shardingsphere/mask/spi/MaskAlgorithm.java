@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.spi;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Mask algorithm.
@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
  * @param <I> type of plain value
  * @param <O> type of masked value
  */
-public interface MaskAlgorithm<I, O> extends ShardingSphereAlgorithm {
+public interface MaskAlgorithm<I, O> extends TypedSPI {
     
     /**
      * Mask.

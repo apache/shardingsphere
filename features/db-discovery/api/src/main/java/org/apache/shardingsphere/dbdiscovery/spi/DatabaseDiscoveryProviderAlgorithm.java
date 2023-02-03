@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.spi;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * Database discovery provider algorithm.
  */
-public interface DatabaseDiscoveryProviderAlgorithm extends ShardingSphereAlgorithm {
+public interface DatabaseDiscoveryProviderAlgorithm extends TypedSPI {
     
     /**
      * Check environment.
