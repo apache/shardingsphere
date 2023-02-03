@@ -63,7 +63,7 @@ public final class LogbackConfiguration extends BasicConfigurator {
     }
     
     private String getLogFile() {
-        return String.join(File.separator, AgentPath.getRootPath().getPath(), "log", "stdout.log");
+        return String.join(File.separator, AgentPath.getRootPath().getPath(), "logs", "stdout.log");
     }
     
     private LayoutWrappingEncoder<ILoggingEvent> createEncoder(final LoggerContext loggerContext) {

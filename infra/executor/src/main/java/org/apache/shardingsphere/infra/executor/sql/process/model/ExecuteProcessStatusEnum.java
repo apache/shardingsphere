@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.fixture;
+package org.apache.shardingsphere.infra.executor.sql.process.model;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
-
-import java.util.Properties;
-
-@Getter
-public final class ShardingSphereAlgorithmFixture implements ShardingSphereAlgorithm {
+/**
+ * Execute process status enum.
+ */
+public enum ExecuteProcessStatusEnum {
     
-    private Properties props;
-    
-    private String testValue;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-        testValue = props.getProperty("key");
-    }
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
-    }
+    START, DONE, SLEEP
 }
