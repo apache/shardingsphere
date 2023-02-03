@@ -92,9 +92,9 @@ public final class JDBCExecutorCallbackTest {
         };
         Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) Plugins.getMemberAccessor()
                 .get(JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA"), jdbcExecutorCallback);
-        jdbcExecutorCallback.execute(units, true, Collections.emptyMap());
+        jdbcExecutorCallback.execute(units, true);
         assertThat(cachedDataSourceMetaData.size(), is(1));
-        jdbcExecutorCallback.execute(units, true, Collections.emptyMap());
+        jdbcExecutorCallback.execute(units, true);
         assertThat(cachedDataSourceMetaData.size(), is(1));
     }
     
@@ -115,8 +115,8 @@ public final class JDBCExecutorCallbackTest {
                         return Optional.of(saneResult);
                     }
                 };
-        assertThat(callback.execute(units, true, Collections.emptyMap()), is(Collections.singletonList(saneResult)));
-        assertThat(callback.execute(units, false, Collections.emptyMap()), is(Collections.emptyList()));
+        assertThat(callback.execute(units, true), is(Collections.singletonList(saneResult)));
+        assertThat(callback.execute(units, false), is(Collections.emptyList()));
     }
     
     @Test(expected = SQLException.class)
@@ -135,6 +135,6 @@ public final class JDBCExecutorCallbackTest {
                         return Optional.empty();
                     }
                 };
-        callback.execute(units, true, Collections.emptyMap());
+        callback.execute(units, true);
     }
 }

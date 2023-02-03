@@ -52,11 +52,11 @@ public final class ExecuteProcessContext {
     
     private long startTimeMillis = System.currentTimeMillis();
     
-    private ExecuteProcessConstants executeProcessConstants;
+    private ExecuteProcessStatusEnum executeProcessConstants;
     
     private final boolean proxyContext;
     
-    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants,
+    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatusEnum constants,
                                  final boolean isProxyContext) {
         this.executionID = executionGroupContext.getReportContext().getExecutionID();
         this.sql = sql;
@@ -69,7 +69,7 @@ public final class ExecuteProcessContext {
         proxyContext = isProxyContext;
     }
     
-    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
+    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatusEnum constants) {
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
                 ExecuteProcessUnit processUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
@@ -87,7 +87,7 @@ public final class ExecuteProcessContext {
     public void resetExecuteProcessContextToSleep() {
         this.sql = "";
         this.startTimeMillis = System.currentTimeMillis();
-        this.executeProcessConstants = ExecuteProcessConstants.EXECUTE_STATUS_SLEEP;
+        this.executeProcessConstants = ExecuteProcessStatusEnum.SLEEP;
     }
     
 }

@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 
 /**
@@ -35,7 +35,7 @@ public final class YamlExecuteProcessUnit {
     
     private String unitID;
     
-    private volatile ExecuteProcessConstants status;
+    private volatile ExecuteProcessStatusEnum status;
     
     public YamlExecuteProcessUnit(final ExecuteProcessUnit executeProcessUnit) {
         unitID = executeProcessUnit.getUnitID();
