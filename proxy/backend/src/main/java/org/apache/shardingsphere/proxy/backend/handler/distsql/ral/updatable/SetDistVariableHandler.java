@@ -70,7 +70,6 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         props.putAll(metaDataContexts.getMetaData().getProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.getInstanceContext().getModeContextManager().alterProperties(props);
-        // TODO remove sync after remove `spl-show`
         syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value);
         syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value);
     }

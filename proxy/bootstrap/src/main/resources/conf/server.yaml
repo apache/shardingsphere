@@ -63,26 +63,13 @@
 #  loggers:
 #  - loggerName: ShardingSphere-SQL
 #    additivity: false
-#    appenderName: console
 #    level: INFO
+#    appenderName: sqlConsole
 #    props:
 #      enable: true
-#  - loggerName: com.atomikos
-#    additivity: true
-#    level: ERROR
-#  - loggerName: com.zaxxer.hikari
-#    additivity: true
-#    level: ERROR
-#  - loggerName: io.netty
-#    additivity: true
-#    level: ERROR
-#  - loggerName: org.apache.shardingsphere
-#    additivity: false
-#    appenderName: console
-#    level: INFO
 #  appenders:
 #  - appenderClass: ch.qos.logback.core.ConsoleAppender
-#    appenderName: console
+#    appenderName: sqlConsole
 #    pattern: '[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n'
 #
 #props:

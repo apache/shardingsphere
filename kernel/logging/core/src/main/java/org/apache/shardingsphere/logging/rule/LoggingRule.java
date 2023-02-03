@@ -25,19 +25,23 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.OutputStreamAppender;
+import ch.qos.logback.core.util.DynamicClassLoadingException;
+import ch.qos.logback.core.util.IncompatibleClassException;
 import ch.qos.logback.core.util.OptionHelper;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
+import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereAppender;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Logging rule.
@@ -47,25 +51,33 @@ public final class LoggingRule implements GlobalRule {
     @Getter
     private final LoggingRuleConfiguration configuration;
     
-    public LoggingRule(final LoggingRuleConfiguration ruleConfig) {
+    public LoggingRule(final LoggingRuleConfiguration ruleConfig, final ConfigurationProperties props) {
+        syncLoggingConfig(ruleConfig, props);
         configuration = ruleConfig;
         refreshLogger(ruleConfig);
     }
     
-    private void refreshLogger(final LoggingRuleConfiguration ruleConfig) {
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-        resetLoggers(loggerContext);
-        configLoggers(ruleConfig, loggerContext);
-        startRootLogger(loggerContext);
+    private void syncLoggingConfig(final LoggingRuleConfiguration ruleConfig, final ConfigurationProperties props) {
+        getSQLLogger(ruleConfig).ifPresent(option -> {
+            Properties loggerProperties = option.getProps();
+            if (!loggerProperties.containsKey(LoggingConstants.SQL_LOG_ENABLE) && props.getProps().containsKey(LoggingConstants.SQL_SHOW)) {
+                loggerProperties.setProperty(LoggingConstants.SQL_LOG_ENABLE, props.getProps().get(LoggingConstants.SQL_SHOW).toString());
+            }
+            if (!loggerProperties.containsKey(LoggingConstants.SQL_LOG_SIMPLE) && props.getProps().containsKey(LoggingConstants.SQL_SIMPLE)) {
+                loggerProperties.setProperty(LoggingConstants.SQL_LOG_SIMPLE, props.getProps().get(LoggingConstants.SQL_SIMPLE).toString());
+            }
+        });
     }
     
-    private void resetLoggers(final LoggerContext loggerContext) {
-        loggerContext.getLoggerList().stream().filter(each -> Objects.nonNull(each.getLevel())).filter(each -> !Logger.ROOT_LOGGER_NAME.equalsIgnoreCase(each.getName()))
-                .forEach(each -> {
-                    each.setLevel(null);
-                    each.setAdditive(true);
-                    each.detachAndStopAllAppenders();
-                });
+    private Optional<ShardingSphereLogger> getSQLLogger(final LoggingRuleConfiguration loggingRuleConfiguration) {
+        return loggingRuleConfiguration.getLoggers().stream()
+                .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
+    }
+    
+    private void refreshLogger(final LoggingRuleConfiguration ruleConfig) {
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        configLoggers(ruleConfig, loggerContext);
+        startRootLogger(loggerContext);
     }
     
     private void configLoggers(final LoggingRuleConfiguration ruleConfig, final LoggerContext loggerContext) {
@@ -78,15 +90,7 @@ public final class LoggingRule implements GlobalRule {
         });
     }
     
-    private void startRootLogger(final LoggerContext loggerContext) {
-        Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
-        Iterator<Appender<ILoggingEvent>> appenderIterator = rootLogger.iteratorForAppenders();
-        while (appenderIterator.hasNext()) {
-            appenderIterator.next().start();
-        }
-    }
-    
-    @SneakyThrows
+    @SneakyThrows({IncompatibleClassException.class, DynamicClassLoadingException.class})
     @SuppressWarnings("unchecked")
     private void addAppender(final Logger logger, final LoggingRuleConfiguration ruleConfig, final String appenderName) {
         if (null == appenderName) {
@@ -100,6 +104,7 @@ public final class LoggingRule implements GlobalRule {
             appender.setName(appenderName);
             addEncoder(appender, shardingSphereAppender);
             appender.start();
+            logger.detachAndStopAllAppenders();
             logger.addAppender(appender);
         }
     }
@@ -120,6 +125,14 @@ public final class LoggingRule implements GlobalRule {
         if (outputStreamAppender instanceof FileAppender) {
             FileAppender<ILoggingEvent> fileAppender = (FileAppender<ILoggingEvent>) outputStreamAppender;
             fileAppender.setFile(shardingSphereAppender.getFile());
+        }
+    }
+    
+    private void startRootLogger(final LoggerContext loggerContext) {
+        Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
+        Iterator<Appender<ILoggingEvent>> appenderIterator = rootLogger.iteratorForAppenders();
+        while (appenderIterator.hasNext()) {
+            appenderIterator.next().start();
         }
     }
     

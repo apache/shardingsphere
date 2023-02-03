@@ -21,6 +21,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDist
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.logging.constant.LoggingConstants;
+import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
+import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
@@ -28,6 +31,8 @@ import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -48,11 +53,27 @@ public final class ShowDistVariablesHandler extends AbstractQueryableRALBackendH
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         ConfigurationProperties props = contextManager.getMetaDataContexts().getMetaData().getProps();
         Collection<LocalDataQueryResultRow> result = ConfigurationPropertyKey.getKeyNames().stream()
-                .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), props.getValue(ConfigurationPropertyKey.valueOf(each)).toString())).collect(Collectors.toList());
+                .filter(each -> !"sql_show".equalsIgnoreCase(each) && !"sql_simple".equalsIgnoreCase(each))
+                .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), props.getValue(ConfigurationPropertyKey.valueOf(each)).toString()))
+                .collect(Collectors.toList());
         result.add(new LocalDataQueryResultRow(
                 VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
         result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), getConnectionSession().getBackendConnection().getConnectionSize()));
         result.add(new LocalDataQueryResultRow(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), getConnectionSession().getTransactionStatus().getTransactionType().name()));
+        Optional<ShardingSphereLogger> sqlLogger = getSQLLoggerProps(contextManager);
+        if (sqlLogger.isPresent()) {
+            Properties sqlLoggerProps = sqlLogger.get().getProps();
+            result.add(new LocalDataQueryResultRow("sql_show", sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_ENABLE, Boolean.FALSE).toString()));
+            result.add(new LocalDataQueryResultRow("sql_simple", sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE, Boolean.FALSE).toString()));
+        } else {
+            result.add(new LocalDataQueryResultRow("sql_show", Boolean.FALSE.toString()));
+            result.add(new LocalDataQueryResultRow("sql_simple", Boolean.FALSE.toString()));
+        }
         return result;
+    }
+    
+    private Optional<ShardingSphereLogger> getSQLLoggerProps(final ContextManager contextManager) {
+        return contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(LoggingRule.class).getConfiguration().getLoggers().stream()
+                .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
     }
 }

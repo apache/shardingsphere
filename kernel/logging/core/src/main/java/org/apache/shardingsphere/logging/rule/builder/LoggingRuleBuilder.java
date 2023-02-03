@@ -33,7 +33,7 @@ public final class LoggingRuleBuilder implements GlobalRuleBuilder<LoggingRuleCo
     
     @Override
     public LoggingRule build(final LoggingRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
-        return new LoggingRule(ruleConfig);
+        return new LoggingRule(ruleConfig, props);
     }
     
     @Override
