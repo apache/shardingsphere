@@ -249,11 +249,8 @@
                         <property key="regex" value="[1]" />
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
-                    <algorithm algorithm-name="SIMPLE_HINT">
-                        <property key="shadow" value="true" />
-                        <property key="foo" value="bar" />
-                    </algorithm>
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_sql_hint_1">
+                    <algorithm algorithm-name="SQL_HINT"/>
                 </shadow-algorithm>
             </table-rule>
         </rule>
@@ -261,10 +258,7 @@
     
     <alter-default-shadow-algorithm sql-case-id="alter-default-shadow-algorithm">
         <shadow-algorithm algorithm-id="default">
-            <algorithm algorithm-name="SIMPLE_HINT">
-                <property key="shadow" value="true" />
-                <property key="foo" value="bar" />
-            </algorithm>
+            <algorithm algorithm-name="SQL_HINT"/>
         </shadow-algorithm>
     </alter-default-shadow-algorithm>
     

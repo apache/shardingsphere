@@ -70,7 +70,7 @@
 #      shadowAlgorithmNames:
 #        - user_id_insert_match_algorithm
 #        - user_id_select_match_algorithm
-#        - simple_hint_algorithm
+#        - sql_hint_algorithm
 #  shadowAlgorithms:
 #    user_id_insert_match_algorithm:
 #      type: REGEX_MATCH
@@ -90,8 +90,8 @@
 #        operation: select
 #        column: user_id
 #        regex: "[1]"
-#    simple_hint_algorithm:
-#      type: SIMPLE_HINT
+#    sql_hint_algorithm:
+#      type: SQL_HINT
 #      props:
 #        foo: bar
 
@@ -149,7 +149,7 @@
 #      shadowAlgorithmNames:
 #        - user_id_insert_match_algorithm
 #        - user_id_select_match_algorithm
-#        - simple_hint_algorithm
+#        - sql_hint_algorithm
 #  shadowAlgorithms:
 #    user_id_insert_match_algorithm:
 #      type: REGEX_MATCH
@@ -169,7 +169,7 @@
 #        operation: select
 #        column: user_id
 #        regex: "[1]"
-#    simple_hint_algorithm:
-#      type: SIMPLE_HINT
+#    sql_hint_algorithm:
+#      type: SQL_HINT
 #      props:
 #        foo: bar
