@@ -133,4 +133,9 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Conn
         String status = storageNodeDataSource.getStatus().name();
         return new LocalDataQueryResultRow(resource, status, Long.toString(replicationDelayMilliseconds));
     }
+    
+    @Override
+    public String getType() {
+        return ShowStatusFromReadwriteSplittingRulesStatement.class.getName();
+    }
 }
