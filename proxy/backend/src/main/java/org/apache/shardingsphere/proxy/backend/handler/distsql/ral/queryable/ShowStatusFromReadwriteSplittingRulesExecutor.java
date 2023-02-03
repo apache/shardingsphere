@@ -22,21 +22,21 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSel
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 
 import java.util.Arrays;
@@ -53,31 +53,25 @@ import java.util.stream.Collectors;
 /**
  * Show status from readwrite-splitting rules executor.
  */
-public final class ShowStatusFromReadwriteSplittingRulesHandler extends AbstractQueryableRALBackendHandler<ShowStatusFromReadwriteSplittingRulesStatement> {
-    
-    private static final String STORAGE_UNIT = "storage_unit";
-    
-    private static final String STATUS = "status";
-    
-    private static final String DELAY_TIME = "delay_time(ms)";
+public final class ShowStatusFromReadwriteSplittingRulesExecutor implements ConnectionSessionRequiredQueryableRALExecutor<ShowStatusFromReadwriteSplittingRulesStatement> {
     
     @Override
-    protected Collection<String> getColumnNames() {
-        return Arrays.asList(STORAGE_UNIT, STATUS, DELAY_TIME);
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("storage_unit", "status", "delay_time(ms)");
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        String databaseName = getDatabaseName();
-        MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        Collection<String> allReadResources = getAllReadResources(database, getSqlStatement().getGroupName());
-        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(databaseName, metaDataContexts.getPersistService());
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession,
+                                                       final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
+        String databaseName = getDatabaseName(connectionSession, sqlStatement);
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        Collection<String> allReadResources = getAllReadResources(database, sqlStatement.getGroupName());
+        Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService());
         return buildRows(allReadResources, persistentReadResources);
     }
     
-    private String getDatabaseName() {
-        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
+    private String getDatabaseName(final ConnectionSession connectionSession, final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
+        String result = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
@@ -138,5 +132,10 @@ public final class ShowStatusFromReadwriteSplittingRulesHandler extends Abstract
         long replicationDelayMilliseconds = storageNodeDataSource.getReplicationDelayMilliseconds();
         String status = storageNodeDataSource.getStatus().name();
         return new LocalDataQueryResultRow(resource, status, Long.toString(replicationDelayMilliseconds));
+    }
+    
+    @Override
+    public String getType() {
+        return ShowStatusFromReadwriteSplittingRulesStatement.class.getName();
     }
 }
