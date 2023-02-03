@@ -31,8 +31,6 @@ import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
-import java.util.Collection;
-
 /**
  * Migration job configuration changed processor.
  */
@@ -42,12 +40,18 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
     @Override
     public void process(final Type eventType, final JobConfiguration jobConfig) {
         String jobId = jobConfig.getJobName();
-        if (jobConfig.isDisabled()) {
-            Collection<Integer> shardingItems = PipelineJobCenter.getShardingItems(jobId);
-            PipelineJobCenter.stop(jobId);
-            for (Integer each : shardingItems) {
+        boolean disabled = jobConfig.isDisabled();
+        if (disabled) {
+            for (Integer each : PipelineJobCenter.getShardingItems(jobId)) {
                 PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
             }
+        }
+        boolean deleted = Type.DELETED == eventType;
+        if (deleted) {
+            new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
+        }
+        if (disabled || deleted) {
+            PipelineJobCenter.stop(jobId);
             return;
         }
         switch (eventType) {
@@ -58,10 +62,6 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                 } else {
                     execute(jobConfig);
                 }
-                break;
-            case DELETED:
-                new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
-                PipelineJobCenter.stop(jobId);
                 break;
             default:
                 break;

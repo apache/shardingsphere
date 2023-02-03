@@ -29,8 +29,6 @@ import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
-import java.util.Collection;
-
 /**
  * Consistency check changed job configuration processor.
  */
@@ -40,12 +38,15 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
     @Override
     public void process(final Type eventType, final JobConfiguration jobConfig) {
         String jobId = jobConfig.getJobName();
-        if (jobConfig.isDisabled()) {
-            Collection<Integer> shardingItems = PipelineJobCenter.getShardingItems(jobId);
-            PipelineJobCenter.stop(jobId);
-            for (Integer each : shardingItems) {
+        boolean disabled = jobConfig.isDisabled();
+        if (disabled) {
+            for (Integer each : PipelineJobCenter.getShardingItems(jobId)) {
                 PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
             }
+        }
+        boolean deleted = Type.DELETED == eventType;
+        if (disabled || deleted) {
+            PipelineJobCenter.stop(jobId);
             return;
         }
         switch (eventType) {
@@ -56,9 +57,6 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
                 } else {
                     execute(jobConfig);
                 }
-                break;
-            case DELETED:
-                PipelineJobCenter.stop(jobId);
                 break;
             default:
                 break;
