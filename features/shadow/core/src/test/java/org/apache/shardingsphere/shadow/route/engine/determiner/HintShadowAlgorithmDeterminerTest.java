@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -42,8 +42,7 @@ public final class HintShadowAlgorithmDeterminerTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertIsShadow() {
-        HintShadowAlgorithm hintShadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("SIMPLE_HINT", PropertiesBuilder.build(new Property("foo", "foo_value"))), ShadowAlgorithm.class);
+        HintShadowAlgorithm hintShadowAlgorithm = (HintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SIMPLE_HINT", PropertiesBuilder.build(new Property("foo", "foo_value")));
         assertTrue(HintShadowAlgorithmDeterminer.isShadow(hintShadowAlgorithm, createShadowDetermineCondition(), new ShadowRule(createShadowRuleConfiguration())));
     }
     

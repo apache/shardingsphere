@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -74,7 +74,7 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
     private void initShadowAlgorithmConfigurations(final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
         shadowAlgorithmConfigs.forEach((key, value) -> {
-            ShadowAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(value, ShadowAlgorithm.class);
+            ShadowAlgorithm algorithm = TypedSPILoader.getService(ShadowAlgorithm.class, value.getType(), value.getProps());
             if (algorithm instanceof HintShadowAlgorithm<?>) {
                 hintShadowAlgorithmNames.add(key);
             }

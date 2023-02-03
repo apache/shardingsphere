@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.sharding.spi;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.List;
 
 /**
  * Sharding audit algorithm.
  */
-public interface ShardingAuditAlgorithm extends ShardingSphereAlgorithm {
+public interface ShardingAuditAlgorithm extends TypedSPI {
     
     /**
      * Sharding audit algorithm SQL check.

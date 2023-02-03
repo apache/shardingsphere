@@ -33,8 +33,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
-import org.apache.shardingsphere.sharding.exception.metadata.DataNodesMissedWithShardingTableException;
 import org.apache.shardingsphere.sharding.exception.metadata.DataNodeGenerateException;
+import org.apache.shardingsphere.sharding.exception.metadata.DataNodesMissedWithShardingTableException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 @ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualDataSourceNames", "dataSourceDataNode", "tableDataNode"})
 public final class TableRule {
     
-    private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("(\\d+[\\-_]){0,}(\\d+$)");
+    private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("\\d+$");
     
     private static final char DEFAULT_PADDING_CHAR = '0';
     

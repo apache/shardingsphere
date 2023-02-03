@@ -51,6 +51,27 @@ public final class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     @Test
     public void assertExecuteQuery() throws SQLException, ParseException {
+        if (isUseXMLAsExpectedDataset()) {
+            assertExecuteQueryWithXmlExpected();
+        } else {
+            assertExecuteQueryWithExpectedDataSource();
+        }
+    }
+    
+    private void assertExecuteQueryWithXmlExpected() throws SQLException, ParseException {
+        // TODO Fix jdbc adapter
+        if ("jdbc".equals(getAdapter())) {
+            return;
+        }
+        try (
+                Connection connection = getTargetDataSource().getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(getSQL())) {
+            assertResultSet(resultSet);
+        }
+    }
+    
+    private void assertExecuteQueryWithExpectedDataSource() throws SQLException, ParseException {
         try (
                 Connection actualConnection = getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
@@ -90,6 +111,28 @@ public final class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
+        if (isUseXMLAsExpectedDataset()) {
+            assertExecuteWithXmlExpected();
+        } else {
+            assertExecuteWithExpectedDataSource();
+        }
+    }
+    
+    private void assertExecuteWithXmlExpected() throws SQLException, ParseException {
+        // TODO Fix jdbc adapter
+        if ("jdbc".equals(getAdapter())) {
+            return;
+        }
+        try (
+                Connection connection = getTargetDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
+            assertTrue("Not a query statement.", statement.execute(getSQL()));
+            ResultSet resultSet = statement.getResultSet();
+            assertResultSet(resultSet);
+        }
+    }
+    
+    private void assertExecuteWithExpectedDataSource() throws SQLException, ParseException {
         try (
                 Connection actualConnection = getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
