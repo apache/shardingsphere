@@ -23,11 +23,11 @@ chapter = true
 | PostgreSQL | PostgreSQL 协议实现 | [`org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLFrontendEngine`](https://github.com/apache/shardingsphere/blob/master/proxy/frontend/postgresql/src/main/java/org/apache/shardingsphere/proxy/frontend/postgresql/PostgreSQLFrontendEngine.java) |
 | openGauss  | openGauss 协议实现  | [`org.apache.shardingsphere.proxy.frontend.opengauss.OpenGaussFrontendEngine`](https://github.com/apache/shardingsphere/blob/master/proxy/frontend/opengauss/src/main/java/org/apache/shardingsphere/proxy/frontend/opengauss/OpenGaussFrontendEngine.java) |
 
-## AuthorityProvideAlgorithm
+## AuthorityProvide
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/api/src/main/java/org/apache/shardingsphere/authority/spi/AuthorityProviderAlgorithm.java)
+[`org.apache.shardingsphere.authority.spi.AuthorityProvider`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/api/src/main/java/org/apache/shardingsphere/authority/spi/AuthorityProvider.java)
 
 ### 定义
 
@@ -37,5 +37,5 @@ chapter = true
 
 | *配置标识*          | *详细说明*                                | *全限定类名* |
 | ------------------ | --------------------------------------- | ---------- |
-| ALL_PERMITTED      | 默认授予所有权限（不鉴权）                   | [`org.apache.shardingsphere.authority.provider.simple.AllPermittedPrivilegesProviderAlgorithm`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/core/src/main/java/org/apache/shardingsphere/authority/provider/simple/AllPermittedPrivilegesProviderAlgorithm.java) |
-| DATABASE_PERMITTED | 通过属性 user-database-mappings 配置的权限 | [`org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProviderAlgorithm`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/core/src/main/java/org/apache/shardingsphere/authority/provider/database/DatabasePermittedPrivilegesProviderAlgorithm.java) |
+| ALL_PERMITTED      | 默认授予所有权限（不鉴权）                   | [`org.apache.shardingsphere.authority.provider.simple.AllPermittedPrivilegesProvider`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/core/src/main/java/org/apache/shardingsphere/authority/provider/simple/AllPermittedPrivilegesProvider.java) |
+| DATABASE_PERMITTED | 通过属性 user-database-mappings 配置的权限 | [`org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProvider`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/core/src/main/java/org/apache/shardingsphere/authority/provider/database/DatabasePermittedPrivilegesProvider.java) |
