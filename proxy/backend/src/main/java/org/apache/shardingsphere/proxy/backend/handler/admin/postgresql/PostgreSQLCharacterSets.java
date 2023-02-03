@@ -111,7 +111,7 @@ public enum PostgreSQLCharacterSets {
         PostgreSQLCharacterSets result = CHARACTER_SETS_MAP.get(formattedCharsetName.toUpperCase());
         return null != result && null != result.charset ? result.charset : Charset.forName(formattedCharsetName);
     }
-
+    
     private static String formatValue(final String value) {
         return value.startsWith("'") && value.endsWith("'") || value.startsWith("\"") && value.endsWith("\"") ? value.substring(1, value.length() - 1) : value.trim();
     }
