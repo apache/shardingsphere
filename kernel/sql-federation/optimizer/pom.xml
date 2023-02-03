@@ -27,6 +27,10 @@
     <artifactId>shardingsphere-sql-federation-optimizer</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <antlr.output.directory>${basedir}/src/generated/antlr4</antlr.output.directory>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -115,23 +119,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>antlr</id>
-                        <goals>
-                            <goal>antlr4</goal>
-                        </goals>
-                        <configuration>
-                            <libDirectory>src/main/antlr4/org/apache/shardingsphere/sqlfederation/optimizer/parser/rexnode</libDirectory>
-                            <listener>false</listener>
-                            <visitor>true</visitor>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <executions>
                     <execution>
@@ -145,4 +132,64 @@
             </plugin>
         </plugins>
     </build>
+    
+    <profiles>
+        <profile>
+            <id>jdk8</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>${build-helper-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>add-source</id>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <phase>generate-sources</phase>
+                                <configuration>
+                                    <sources>
+                                        <source>${antlr.output.directory}</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jdk11+</id>
+            <activation>
+                <jdk>[11,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.antlr</groupId>
+                        <artifactId>antlr4-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>antlr</id>
+                                <goals>
+                                    <goal>antlr4</goal>
+                                </goals>
+                                <configuration>
+                                    <libDirectory>src/main/antlr4/org/apache/shardingsphere/sqlfederation/optimizer/parser/rexnode</libDirectory>
+                                    <outputDirectory>${antlr.output.directory}</outputDirectory>
+                                    <listener>false</listener>
+                                    <visitor>true</visitor>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

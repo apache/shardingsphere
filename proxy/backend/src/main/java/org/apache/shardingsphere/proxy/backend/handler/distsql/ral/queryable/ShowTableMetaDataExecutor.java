@@ -23,11 +23,12 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDataba
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.AbstractQueryableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,32 +38,24 @@ import java.util.stream.Collectors;
 /**
  * Show table metadata handler.
  */
-public final class ShowTableMetaDataHandler extends AbstractQueryableRALBackendHandler<ShowTableMetaDataStatement> {
-    
-    private static final String SCHEMA_NAME = "schema_name";
-    
-    private static final String TABLE_NAME = "table_name";
-    
-    private static final String TYPE = "type";
-    
-    private static final String NAME = "name";
+public final class ShowTableMetaDataExecutor implements ConnectionSessionRequiredQueryableRALExecutor<ShowTableMetaDataStatement> {
     
     @Override
-    protected Collection<String> getColumnNames() {
-        return Arrays.asList(SCHEMA_NAME, TABLE_NAME, TYPE, NAME);
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("schema_name", "table_name", "type", "name");
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        String databaseName = getDatabaseName();
-        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getProtocolType(), getConnectionSession().getDatabaseName());
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ShowTableMetaDataStatement sqlStatement) {
+        String databaseName = getDatabaseName(connectionSession, sqlStatement);
+        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getProtocolType(), connectionSession.getDatabaseName());
         ShardingSphereSchema schema = ProxyContext.getInstance().getDatabase(databaseName).getSchema(defaultSchema);
-        return schema.getAllTableNames().stream().filter(each -> getSqlStatement().getTableNames().contains(each))
+        return schema.getAllTableNames().stream().filter(each -> sqlStatement.getTableNames().contains(each))
                 .map(each -> buildTableRows(databaseName, schema, each)).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
-    private String getDatabaseName() {
-        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
+    private String getDatabaseName(final ConnectionSession connectionSession, final ShowTableMetaDataStatement sqlStatement) {
+        String result = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
@@ -84,5 +77,10 @@ public final class ShowTableMetaDataHandler extends AbstractQueryableRALBackendH
     
     private LocalDataQueryResultRow buildRow(final String databaseName, final String tableName, final String type, final String name) {
         return new LocalDataQueryResultRow(databaseName, tableName, type, name);
+    }
+    
+    @Override
+    public String getType() {
+        return ShowTableMetaDataStatement.class.getName();
     }
 }

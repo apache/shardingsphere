@@ -8,7 +8,7 @@ weight = 3
 
 Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML. Modifying nodes can dynamically refresh configurations. 
 `nodes` persist the runtime node of database access object, to distinguish different database access instances.
-`sys_data` persist system tables and data.
+`sys_data` persist data records in system tables.
 
 ```
 namespace
