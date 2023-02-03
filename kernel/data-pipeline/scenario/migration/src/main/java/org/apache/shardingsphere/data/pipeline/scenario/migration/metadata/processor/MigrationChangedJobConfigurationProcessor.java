@@ -48,6 +48,10 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
             for (Integer each : shardingItems) {
                 PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
             }
+            if (Type.DELETED == eventType) {
+                new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
+            }
+            return;
         }
         switch (eventType) {
             case ADDED:
@@ -57,10 +61,6 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                 } else {
                     execute(jobConfig);
                 }
-                break;
-            case DELETED:
-                new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
-                PipelineJobCenter.stop(jobId);
                 break;
             default:
                 break;

@@ -46,6 +46,7 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
             for (Integer each : shardingItems) {
                 PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
             }
+            return;
         }
         switch (eventType) {
             case ADDED:
@@ -55,9 +56,6 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
                 } else {
                     execute(jobConfig);
                 }
-                break;
-            case DELETED:
-                PipelineJobCenter.stop(jobId);
                 break;
             default:
                 break;
