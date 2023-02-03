@@ -37,6 +37,11 @@ public final class PostgreSQLCharacterSetsTest {
         assertThat(PostgreSQLCharacterSets.findCharacterSet("utf8"), is(StandardCharsets.UTF_8));
     }
     
+    @Test
+    public void assertFindUTF8WithQuotes() {
+        assertThat(PostgreSQLCharacterSets.findCharacterSet("'utf-8'"), is(StandardCharsets.UTF_8));
+    }
+    
     @Test(expected = UnsupportedCharsetException.class)
     public void assertFindUnsupportedCharset() {
         PostgreSQLCharacterSets.findCharacterSet("unknown_charset");
