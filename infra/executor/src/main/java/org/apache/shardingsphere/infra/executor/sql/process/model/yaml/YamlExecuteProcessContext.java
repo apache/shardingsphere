@@ -51,7 +51,7 @@ public final class YamlExecuteProcessContext {
     
     private Long startTimeMillis;
     
-    private ExecuteProcessStatusEnum executeProcessConstants;
+    private ExecuteProcessStatusEnum processStatus;
     
     public YamlExecuteProcessContext(final ExecuteProcessContext executeProcessContext) {
         executionID = executeProcessContext.getExecutionID();
@@ -64,6 +64,6 @@ public final class YamlExecuteProcessContext {
             unitStatuses.add(new YamlExecuteProcessUnit(each));
         }
         startTimeMillis = executeProcessContext.getStartTimeMillis();
-        executeProcessConstants = executeProcessContext.getExecuteProcessConstants();
+        processStatus = executeProcessContext.getProcessStatus();
     }
 }
