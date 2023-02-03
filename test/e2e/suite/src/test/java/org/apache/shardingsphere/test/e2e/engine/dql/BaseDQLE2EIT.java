@@ -141,10 +141,39 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
             assertTrue("Size of actual result set is different with size of expected dat set rows.", rowCount < expected.size());
-            assertRow(actual, notAssertionColumns, actualMetaData, expected.get(rowCount));
+            DataSetRow expectedRow = getExpectedRowAndRemoveMayNotExistRow(actual, notAssertionColumns, actualMetaData, expected, rowCount);
+            assertRow(actual, notAssertionColumns, actualMetaData, expectedRow);
             rowCount++;
         }
         assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
+    }
+    
+    private DataSetRow getExpectedRowAndRemoveMayNotExistRow(final ResultSet actual, final Collection<String> notAssertionColumns, final ResultSetMetaData actualMetaData,
+                                                             final List<DataSetRow> expected, final int rowCount) throws SQLException {
+        if (!expected.get(rowCount).isMayNotExist()) {
+            return expected.get(rowCount);
+        }
+        if (isMoveToNextExpectedRow(actual, notAssertionColumns, actualMetaData, expected, rowCount)) {
+            expected.remove(rowCount);
+        } else {
+            return expected.get(rowCount);
+        }
+        return getExpectedRowAndRemoveMayNotExistRow(actual, notAssertionColumns, actualMetaData, expected, rowCount);
+    }
+    
+    private static boolean isMoveToNextExpectedRow(final ResultSet actual, final Collection<String> notAssertionColumns, final ResultSetMetaData actualMetaData,
+                                                   final List<DataSetRow> expected, final int rowCount) throws SQLException {
+        int columnIndex = 1;
+        for (String each : expected.get(rowCount).splitValues("|")) {
+            String columnLabel = actualMetaData.getColumnLabel(columnIndex);
+            if (!notAssertionColumns.contains(columnLabel)) {
+                if (!each.equals(String.valueOf(actual.getObject(columnIndex)).trim()) || !each.equals(String.valueOf(actual.getObject(columnLabel)).trim())) {
+                    return true;
+                }
+            }
+            columnIndex++;
+        }
+        return false;
     }
     
     private void assertRow(final ResultSet actualResultSet, final ResultSetMetaData actualMetaData,

@@ -63,7 +63,8 @@ public final class GeneralDQLE2EIT extends BaseDQLE2EIT {
         if ("jdbc".equals(getAdapter())) {
             return;
         }
-        try (Connection connection = getTargetDataSource().getConnection();
+        try (
+                Connection connection = getTargetDataSource().getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(getSQL())) {
             assertResultSet(resultSet);
