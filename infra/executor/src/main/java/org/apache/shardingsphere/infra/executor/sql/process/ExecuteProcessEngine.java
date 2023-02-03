@@ -20,9 +20,8 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
@@ -72,29 +71,32 @@ public final class ExecuteProcessEngine {
      */
     public void initializeExecution(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
-            ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getReportContext().getExecutionID());
-            reporter.report(queryContext, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START);
+            ExecuteIDContext.set(executionGroupContext.getReportContext().getExecutionID());
+            reporter.report(queryContext, executionGroupContext, ExecuteProcessStatusEnum.START);
         }
     }
     
     /**
      * Finish execution.
      *
-     * @param executionID execution ID
      * @param executionUnit execution unit
      */
-    public void finishExecution(final String executionID, final SQLExecutionUnit executionUnit) {
-        reporter.report(executionID, executionUnit, ExecuteProcessConstants.EXECUTE_STATUS_DONE);
+    public void finishExecution(final SQLExecutionUnit executionUnit) {
+        if (ExecuteIDContext.isEmpty()) {
+            return;
+        }
+        reporter.report(ExecuteIDContext.get(), executionUnit, ExecuteProcessStatusEnum.DONE);
     }
     
     /**
      * Clean execution.
      */
     public void cleanExecution() {
-        if (ExecutorDataMap.getValue().containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            reporter.reportClean(ExecutorDataMap.getValue().get(ExecuteProcessConstants.EXECUTE_ID.name()).toString());
+        if (ExecuteIDContext.isEmpty()) {
+            return;
         }
-        ExecutorDataMap.getValue().remove(ExecuteProcessConstants.EXECUTE_ID.name());
+        reporter.reportClean(ExecuteIDContext.get());
+        ExecuteIDContext.remove();
     }
     
     private boolean isMySQLDDLOrDMLStatement(final SQLStatement sqlStatement) {

@@ -44,8 +44,6 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
@@ -195,7 +193,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
                 ? DataConsistencyCalculateAlgorithmChooser.choose(
                         TypedSPILoader.getService(DatabaseType.class, jobConfig.getSourceDatabaseType()),
                         TypedSPILoader.getService(DatabaseType.class, getTargetDatabaseType(jobConfig)))
-                : ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(algorithmType, algorithmProps), DataConsistencyCalculateAlgorithm.class);
+                : TypedSPILoader.getService(DataConsistencyCalculateAlgorithm.class, algorithmType, algorithmProps);
     }
     
     @Override

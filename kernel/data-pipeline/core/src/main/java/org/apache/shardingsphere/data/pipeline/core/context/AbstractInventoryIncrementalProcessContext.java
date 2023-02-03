@@ -28,8 +28,8 @@ import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProce
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 /**
  * Abstract inventory incremental process context.
@@ -56,12 +56,12 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
         this.pipelineProcessConfig = processConfig;
         PipelineReadConfiguration readConfig = processConfig.getRead();
         AlgorithmConfiguration readRateLimiter = readConfig.getRateLimiter();
-        readRateLimitAlgorithm = null == readRateLimiter ? null : ShardingSphereAlgorithmFactory.createAlgorithm(readRateLimiter, JobRateLimitAlgorithm.class);
+        readRateLimitAlgorithm = null == readRateLimiter ? null : TypedSPILoader.getService(JobRateLimitAlgorithm.class, readRateLimiter.getType(), readRateLimiter.getProps());
         PipelineWriteConfiguration writeConfig = processConfig.getWrite();
         AlgorithmConfiguration writeRateLimiter = writeConfig.getRateLimiter();
-        writeRateLimitAlgorithm = null == writeRateLimiter ? null : ShardingSphereAlgorithmFactory.createAlgorithm(writeRateLimiter, JobRateLimitAlgorithm.class);
+        writeRateLimitAlgorithm = null == writeRateLimiter ? null : TypedSPILoader.getService(JobRateLimitAlgorithm.class, writeRateLimiter.getType(), writeRateLimiter.getProps());
         AlgorithmConfiguration streamChannel = processConfig.getStreamChannel();
-        pipelineChannelCreator = ShardingSphereAlgorithmFactory.createAlgorithm(streamChannel, PipelineChannelCreator.class);
+        pipelineChannelCreator = TypedSPILoader.getService(PipelineChannelCreator.class, streamChannel.getType(), streamChannel.getProps());
         inventoryDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
             
             @Override

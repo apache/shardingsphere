@@ -27,13 +27,13 @@ import org.apache.shardingsphere.encrypt.exception.metadata.EncryptEncryptorNotF
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLikeQueryEncryptorNotFoundException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -63,16 +63,16 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
     public EncryptRule(final EncryptRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, EncryptAlgorithm.class)));
+        ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
         ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
         queryWithCipherColumn = ruleConfig.isQueryWithCipherColumn();
     }
     
-    private void putAllEncryptors(final String encryptorName, final EncryptAlgorithm encryptAlgorithm) {
-        if (encryptAlgorithm instanceof StandardEncryptAlgorithm) {
-            standardEncryptors.put(encryptorName, (StandardEncryptAlgorithm) encryptAlgorithm);
+    private void putAllEncryptors(final String encryptorName, final EncryptAlgorithm algorithm) {
+        if (algorithm instanceof StandardEncryptAlgorithm) {
+            standardEncryptors.put(encryptorName, (StandardEncryptAlgorithm) algorithm);
         } else {
-            likeEncryptors.put(encryptorName, (LikeEncryptAlgorithm) encryptAlgorithm);
+            likeEncryptors.put(encryptorName, (LikeEncryptAlgorithm) algorithm);
         }
     }
     

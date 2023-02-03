@@ -19,8 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,8 +42,7 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertCheckEnvironment() throws SQLException {
-        DatabaseDiscoveryProviderAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("MySQL.MGR", PropertiesBuilder.build(new Property("group-name", "foo_group"))), DatabaseDiscoveryProviderAlgorithm.class);
+        DatabaseDiscoveryProviderAlgorithm actual = TypedSPILoader.getService(DatabaseDiscoveryProviderAlgorithm.class, "MySQL.MGR", PropertiesBuilder.build(new Property("group-name", "foo_group")));
         actual.checkEnvironment("foo_db", Collections.singletonList(mockEnvironmentAvailableDataSource()));
     }
     
@@ -64,8 +61,7 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertIsPrimaryInstance() throws SQLException {
-        DatabaseDiscoveryProviderAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("MySQL.MGR", new Properties()), DatabaseDiscoveryProviderAlgorithm.class);
+        DatabaseDiscoveryProviderAlgorithm actual = TypedSPILoader.getService(DatabaseDiscoveryProviderAlgorithm.class, "MySQL.MGR");
         assertTrue(actual.isPrimaryInstance(mockPrimaryDataSource()));
     }
     

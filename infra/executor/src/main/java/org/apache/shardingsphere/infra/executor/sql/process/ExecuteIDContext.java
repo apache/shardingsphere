@@ -15,28 +15,51 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.kernel.model;
+package org.apache.shardingsphere.infra.executor.sql.process;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
- * Executor data map for thread local even cross multiple threads.
+ * Execute id context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecutorDataMap {
+public final class ExecuteIDContext {
     
-    private static final ThreadLocal<Map<String, Object>> DATA_MAP = ThreadLocal.withInitial(LinkedHashMap::new);
+    private static final TransmittableThreadLocal<String> EXECUTE_ID = new TransmittableThreadLocal<>();
     
     /**
-     * Get value.
+     * Judge whether execute id is empty or not.
      *
-     * @return data map
+     * @return whether execute id is empty or not
      */
-    public static Map<String, Object> getValue() {
-        return DATA_MAP.get();
+    public static boolean isEmpty() {
+        return null == EXECUTE_ID.get();
+    }
+    
+    /**
+     * Get execute id.
+     *
+     * @return execute id
+     */
+    public static String get() {
+        return EXECUTE_ID.get();
+    }
+    
+    /**
+     * Set execute id.
+     *
+     * @param executeId execute id
+     */
+    public static void set(final String executeId) {
+        EXECUTE_ID.set(executeId);
+    }
+    
+    /**
+     * Remove execute id.
+     */
+    public static void remove() {
+        EXECUTE_ID.remove();
     }
 }
