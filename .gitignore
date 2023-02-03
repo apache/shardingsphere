@@ -49,5 +49,3 @@ Thumbs.db
 # antlr ignore
 gen/
 *.tokens
-**/generated/antlr**
-

@@ -918,8 +918,6 @@
                         <!-- Helm files -->
                         <exclude>**/.helmignore</exclude>
                         <exclude>**/_helpers.tpl</exclude>
-                        <!-- Antlr generated files -->
-                        <exclude>**/generated/antlr4/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
