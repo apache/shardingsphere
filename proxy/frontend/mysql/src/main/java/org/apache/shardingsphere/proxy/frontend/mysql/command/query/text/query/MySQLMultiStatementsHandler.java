@@ -184,8 +184,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     private static class BatchedJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
         BatchedJDBCExecutorCallback(final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-            super(TypedSPILoader.getService(DatabaseType.class, "MySQL"),
-                    storageTypes, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
+            super(TypedSPILoader.getService(DatabaseType.class, "MySQL"), storageTypes, sqlStatement, isExceptionThrown);
         }
         
         @Override

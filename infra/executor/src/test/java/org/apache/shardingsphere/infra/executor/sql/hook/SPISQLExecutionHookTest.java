@@ -37,7 +37,7 @@ public final class SPISQLExecutionHookTest {
     
     @Test
     public void assertStart() {
-        spiSQLExecutionHook.start("ds", "SELECT 1", Collections.emptyList(), null, true, null);
+        spiSQLExecutionHook.start("ds", "SELECT 1", Collections.emptyList(), null, true);
         assertTrue(SQLExecutionHookFixture.containsAction("start"));
     }
     

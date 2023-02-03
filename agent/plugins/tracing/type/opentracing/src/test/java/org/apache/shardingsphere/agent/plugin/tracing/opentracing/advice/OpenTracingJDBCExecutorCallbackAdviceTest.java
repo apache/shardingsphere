@@ -21,6 +21,7 @@ import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
+import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
@@ -70,10 +71,11 @@ public final class OpenTracingJDBCExecutorCallbackAdviceTest extends AbstractJDB
         Map<String, Object> tags = span.tags();
         assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(span.operationName(), is("/ShardingSphere/executeSQL/"));
-        assertThat(tags.get("db.instance"), is("mock.db"));
-        assertThat(tags.get("db.type"), is("sql"));
-        assertThat(tags.get("span.kind"), is("client"));
-        assertThat(tags.get("db.statement"), is("select 1"));
+        assertThat(tags.get(AttributeConstants.COMPONENT), is(AttributeConstants.COMPONENT_NAME));
+        assertThat(tags.get(AttributeConstants.DB_INSTANCE), is(getDataSourceName()));
+        assertThat(tags.get(AttributeConstants.DB_TYPE), is(getDatabaseType(getDataSourceName())));
+        assertThat(tags.get(AttributeConstants.DB_STATEMENT), is(getSql()));
+        assertThat(tags.get(AttributeConstants.SPAN_KIND), is(AttributeConstants.SPAN_KIND_CLIENT));
     }
     
     @Test
@@ -92,9 +94,10 @@ public final class OpenTracingJDBCExecutorCallbackAdviceTest extends AbstractJDB
         assertThat(fields.get(ErrorLogTagKeys.ERROR_KIND), is("java.io.IOException"));
         Map<String, Object> tags = span.tags();
         assertThat(span.operationName(), is("/ShardingSphere/executeSQL/"));
-        assertThat(tags.get("db.instance"), is("mock.db"));
-        assertThat(tags.get("db.type"), is("sql"));
-        assertThat(tags.get("span.kind"), is("client"));
-        assertThat(tags.get("db.statement"), is("select 1"));
+        assertThat(tags.get(AttributeConstants.COMPONENT), is(AttributeConstants.COMPONENT_NAME));
+        assertThat(tags.get(AttributeConstants.DB_INSTANCE), is(getDataSourceName()));
+        assertThat(tags.get(AttributeConstants.DB_TYPE), is(getDatabaseType(getDataSourceName())));
+        assertThat(tags.get(AttributeConstants.DB_STATEMENT), is(getSql()));
+        assertThat(tags.get(AttributeConstants.SPAN_KIND), is(AttributeConstants.SPAN_KIND_CLIENT));
     }
 }
