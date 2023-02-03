@@ -78,7 +78,7 @@
 #  kernel-executor-size: 16  # Infinite by default.
 #  proxy-frontend-flush-threshold: 128  # The default value is 128.
 #  proxy-hint-enabled: false
-#  # sql-show is deprecated and will be removed at next version
+#  # sql-show is the same as props in logger ShardingSphere-SQL, and its priority is lower than logging rule
 #  sql-show: true
 #  check-table-metadata-enabled: false
 #    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
