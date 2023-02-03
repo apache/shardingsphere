@@ -177,12 +177,12 @@ public final class TableRuleTest {
     
     @Test
     public void assertGetTableDataNode() {
-        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_0_0,ds_0.t_order_0_1,ds_1.t_order_1_0,ds_1.t_order_1_1");
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_0_0,ds_0.t_order_0_1");
         TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
         DataNodeInfo actual = tableRule.getTableDataNode();
-        assertThat(actual.getPrefix(), is("t_order_"));
+        assertThat(actual.getPrefix(), is("t_order_0_"));
         assertThat(actual.getPaddingChar(), is('0'));
-        assertThat(actual.getSuffixMinLength(), is(3));
+        assertThat(actual.getSuffixMinLength(), is(1));
     }
     
     @Test
