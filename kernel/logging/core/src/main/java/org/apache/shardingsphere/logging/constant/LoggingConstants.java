@@ -32,4 +32,8 @@ public final class LoggingConstants {
     public static final String SQL_LOG_ENABLE = "enable";
     
     public static final String SQL_LOG_SIMPLE = "simple";
+    
+    public static final String SQL_SHOW_VARIABLE_NAME = "sql_show";
+    
+    public static final String SQL_SIMPLE_VARIABLE_NAME = "sql_simple";
 }
