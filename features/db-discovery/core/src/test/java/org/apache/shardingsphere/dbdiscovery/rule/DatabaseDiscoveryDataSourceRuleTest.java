@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.rule;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredDataSourceNamesConfigurationException;
-import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProvider;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -34,24 +34,24 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
     
     private final DatabaseDiscoveryDataSourceRule databaseDiscoveryDataSourceRule = new DatabaseDiscoveryDataSourceRule(
             new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"), new Properties(),
-            new MGRMySQLDatabaseDiscoveryProviderAlgorithm());
+            new MGRMySQLDatabaseDiscoveryProvider());
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithoutName() {
         new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"),
-                new Properties(), new MGRMySQLDatabaseDiscoveryProviderAlgorithm());
+                new Properties(), new MGRMySQLDatabaseDiscoveryProvider());
     }
     
     @Test(expected = MissingRequiredDataSourceNamesConfigurationException.class)
     public void assertNewHADataSourceRuleWithNullDataSourceName() {
         new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", null, "ha_heartbeat", "discoveryTypeName"),
-                new Properties(), new MGRMySQLDatabaseDiscoveryProviderAlgorithm());
+                new Properties(), new MGRMySQLDatabaseDiscoveryProvider());
     }
     
     @Test(expected = MissingRequiredDataSourceNamesConfigurationException.class)
     public void assertNewHADataSourceRuleWithEmptyDataSourceName() {
         new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.emptyList(), "ha_heartbeat", "discoveryTypeName"),
-                new Properties(), new MGRMySQLDatabaseDiscoveryProviderAlgorithm());
+                new Properties(), new MGRMySQLDatabaseDiscoveryProvider());
     }
     
     @Test

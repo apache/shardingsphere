@@ -34,7 +34,7 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
 
-public final class DatabasePermittedPrivilegesProviderAlgorithmTest {
+public final class DatabasePermittedPrivilegesProviderTest {
     
     @Test
     public void assertBuildAuthorityRegistry() {

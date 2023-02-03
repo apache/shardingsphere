@@ -28,11 +28,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithmTest {
+public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderTest {
     
     @Test
     public void assertIsPrimaryInstance() throws SQLException {
-        assertTrue(new OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockDatSource()));
+        assertTrue(new OpenGaussNormalReplicationDatabaseDiscoveryProvider().isPrimaryInstance(mockDatSource()));
     }
     
     private DataSource mockDatSource() throws SQLException {
