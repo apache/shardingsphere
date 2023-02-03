@@ -17,58 +17,34 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show migration list.
+ * Show migration list executor.
  */
-public final class ShowMigrationListResultSet implements DatabaseDistSQLResultSet {
+public final class ShowMigrationListExecutor implements QueryableRALExecutor<ShowMigrationListStatement> {
     
     private final MigrationJobAPI jobAPI = new MigrationJobAPI();
     
-    private Iterator<Collection<Object>> data;
-    
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        data = jobAPI.list().stream()
-                .map(each -> {
-                    Collection<Object> result = new LinkedList<>();
-                    PipelineJobMetaData jobMetaData = each.getJobMetaData();
-                    result.add(jobMetaData.getJobId());
-                    result.add(((TableBasedPipelineJobInfo) each).getTable());
-                    result.add(jobMetaData.getJobItemCount());
-                    result.add(jobMetaData.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
-                    result.add(jobMetaData.getCreateTime());
-                    result.add(jobMetaData.getStopTime());
-                    return result;
-                }).collect(Collectors.toList()).iterator();
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationListStatement sqlStatement) {
+        return jobAPI.list().stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
+                ((TableBasedPipelineJobInfo) each).getTable(), each.getJobMetaData().getJobItemCount(),
+                each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
+                each.getJobMetaData().getCreateTime(), each.getJobMetaData().getStopTime())).collect(Collectors.toList());
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("id", "tables", "job_item_count", "active", "create_time", "stop_time");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
     }
     
     @Override
