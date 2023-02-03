@@ -23,11 +23,11 @@ Protocols for ShardingSphere-Proxy to parse and adapt for accessing databases.
 | PostgreSQL           | Protocol implementation for PostgreSQL | [`org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLFrontendEngine`](https://github.com/apache/shardingsphere/blob/master/proxy/frontend/postgresql/src/main/java/org/apache/shardingsphere/proxy/frontend/postgresql/PostgreSQLFrontendEngine.java) |
 | openGauss            | Protocol implementation for openGauss  | [`org.apache.shardingsphere.proxy.frontend.opengauss.OpenGaussFrontendEngine`](https://github.com/apache/shardingsphere/blob/master/proxy/frontend/opengauss/src/main/java/org/apache/shardingsphere/proxy/frontend/opengauss/OpenGaussFrontendEngine.java) |
 
-## AuthorityProvideAlgorithm
+## AuthorityProvide
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/api/src/main/java/org/apache/shardingsphere/authority/spi/AuthorityProviderAlgorithm.java)
+[`org.apache.shardingsphere.authority.spi.AuthorityProvider`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/api/src/main/java/org/apache/shardingsphere/authority/spi/AuthorityProvider.java)
 
 ### Definition
 
@@ -37,5 +37,5 @@ Loading logic for user permission.
 
 | *Configuration Type* | *Description*                                    | *Fully-qualified class name* |
 | -------------------- | ------------------------------------------------ | ---------------------------- |
-| ALL_PERMITTED        | Grant all permissions by default (no forensics)  | [`org.apache.shardingsphere.authority.provider.simple.AllPermittedPrivilegesProviderAlgorithm`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/core/src/main/java/org/apache/shardingsphere/authority/provider/simple/AllPermittedPrivilegesProviderAlgorithm.java) |
-| DATABASE_PERMITTED   | Permissions configured by user-database-mappings | [`org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProviderAlgorithm`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/core/src/main/java/org/apache/shardingsphere/authority/provider/database/DatabasePermittedPrivilegesProviderAlgorithm.java) |
+| ALL_PERMITTED        | Grant all permissions by default (no forensics)  | [`org.apache.shardingsphere.authority.provider.simple.AllPermittedPrivilegesProvider`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/core/src/main/java/org/apache/shardingsphere/authority/provider/simple/AllPermittedPrivilegesProvider.java) |
+| DATABASE_PERMITTED   | Permissions configured by user-database-mappings | [`org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProvider`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/core/src/main/java/org/apache/shardingsphere/authority/provider/database/DatabasePermittedPrivilegesProvider.java) |

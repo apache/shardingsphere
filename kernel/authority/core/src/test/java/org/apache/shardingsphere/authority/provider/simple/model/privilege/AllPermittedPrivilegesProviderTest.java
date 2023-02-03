@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.spi;
+package org.apache.shardingsphere.authority.provider.simple.model.privilege;
 
-import org.apache.shardingsphere.authority.model.AuthorityRegistry;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
+import org.junit.Test;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.Collections;
 
-/**
- * Authority provider algorithm.
- */
-public interface AuthorityProviderAlgorithm extends TypedSPI {
+import static org.junit.Assert.assertTrue;
+
+public final class AllPermittedPrivilegesProviderTest {
     
-    /**
-     * Build authority registry.
-     *
-     * @param databases databases
-     * @param users users
-     * @return built authority registry
-     */
-    AuthorityRegistry buildAuthorityRegistry(Map<String, ShardingSphereDatabase> databases, Collection<ShardingSphereUser> users);
+    @Test
+    public void assertFindPrivileges() {
+        ShardingSpherePrivileges actual = new AllPrivilegesPermittedShardingSpherePrivileges();
+        assertTrue(actual.hasPrivileges("testSchema"));
+        assertTrue(actual.hasPrivileges(Collections.emptyList()));
+        assertTrue(actual.hasPrivileges(new DatabaseAccessSubject("testSchema"), Collections.emptyList()));
+    }
 }

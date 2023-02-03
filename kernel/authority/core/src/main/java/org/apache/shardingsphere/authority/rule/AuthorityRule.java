@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProvider;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -42,14 +42,14 @@ public final class AuthorityRule implements GlobalRule {
     
     private final Collection<ShardingSphereUser> users;
     
-    private final AuthorityProviderAlgorithm provider;
+    private final AuthorityProvider provider;
     
     private volatile AuthorityRegistry authorityRegistry;
     
     public AuthorityRule(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
         users = ruleConfig.getUsers();
-        provider = TypedSPILoader.getService(AuthorityProviderAlgorithm.class, ruleConfig.getProvider().getType(), ruleConfig.getProvider().getProps());
+        provider = TypedSPILoader.getService(AuthorityProvider.class, ruleConfig.getProvider().getType(), ruleConfig.getProvider().getProps());
         authorityRegistry = provider.buildAuthorityRegistry(databases, ruleConfig.getUsers());
     }
     

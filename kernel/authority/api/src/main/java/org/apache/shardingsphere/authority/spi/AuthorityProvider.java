@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
+package org.apache.shardingsphere.authority.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.authority.model.AuthorityRegistry;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Database discovery provider algorithm segment.
+ * Authority provider.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DatabaseDiscoveryProviderAlgorithmSegment implements ASTNode {
+public interface AuthorityProvider extends TypedSPI {
     
-    private final String discoveryProviderName;
-    
-    private final AlgorithmSegment algorithm;
+    /**
+     * Build authority registry.
+     *
+     * @param databases databases
+     * @param users users
+     * @return built authority registry
+     */
+    AuthorityRegistry buildAuthorityRegistry(Map<String, ShardingSphereDatabase> databases, Collection<ShardingSphereUser> users);
 }

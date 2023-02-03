@@ -41,7 +41,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DropDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
+public final class DropDatabaseDiscoveryProviderStatementUpdaterTest {
     
     private final DropDatabaseDiscoveryTypeStatementUpdater updater = new DropDatabaseDiscoveryTypeStatementUpdater();
     

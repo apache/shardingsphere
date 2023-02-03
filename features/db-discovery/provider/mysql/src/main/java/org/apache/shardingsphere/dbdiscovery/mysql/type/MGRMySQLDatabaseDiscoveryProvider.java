@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRGroup
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRModeException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRPluginException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRReplicationGroupMemberException;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -43,9 +43,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
- * MGR database discovery provider algorithm for MySQL.
+ * MGR database discovery provider for MySQL.
  */
-public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
+public final class MGRMySQLDatabaseDiscoveryProvider implements DatabaseDiscoveryProvider {
     
     private static final String QUERY_PLUGIN_STATUS = "SELECT PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
     

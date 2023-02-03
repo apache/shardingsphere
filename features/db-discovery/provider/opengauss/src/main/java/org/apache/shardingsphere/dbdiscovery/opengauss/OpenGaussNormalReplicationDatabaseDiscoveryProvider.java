@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.opengauss;
 
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 
 import javax.sql.DataSource;
@@ -30,9 +30,9 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Normal replication database discovery provider algorithm for openGauss.
+ * Normal replication database discovery provider for openGauss.
  */
-public final class OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
+public final class OpenGaussNormalReplicationDatabaseDiscoveryProvider implements DatabaseDiscoveryProvider {
     
     private static final String QUERY_DB_ROLE = "SELECT local_role,db_state FROM pg_stat_get_stream_replications()";
     

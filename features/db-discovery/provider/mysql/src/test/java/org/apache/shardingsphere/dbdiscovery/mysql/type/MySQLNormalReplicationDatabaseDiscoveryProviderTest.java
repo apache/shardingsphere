@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -37,16 +37,16 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest {
+public final class MySQLNormalReplicationDatabaseDiscoveryProviderTest {
     
     @Test
     public void assertCheckEnvironment() throws SQLException {
-        new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().checkEnvironment("foo_db", Collections.singleton(mockDataSourceForReplicationInstances()));
+        new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Collections.singleton(mockDataSourceForReplicationInstances()));
     }
     
     @Test
     public void assertIsPrimaryInstance() throws SQLException {
-        assertTrue(new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm().isPrimaryInstance(mockDataSourceForReplicationInstances()));
+        assertTrue(new MySQLNormalReplicationDatabaseDiscoveryProvider().isPrimaryInstance(mockDataSourceForReplicationInstances()));
     }
     
     private DataSource mockDataSourceForReplicationInstances() throws SQLException {
@@ -66,10 +66,10 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
     
     @Test
     public void assertLoadReplicaStatus() throws SQLException {
-        DatabaseDiscoveryProviderAlgorithm algorithm = new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm();
-        algorithm.init(PropertiesBuilder.build(new Property("delay-milliseconds-threshold", "15000")));
+        DatabaseDiscoveryProvider provider = new MySQLNormalReplicationDatabaseDiscoveryProvider();
+        provider.init(PropertiesBuilder.build(new Property("delay-milliseconds-threshold", "15000")));
         DataSource dataSource = mockDataSourceForReplicaStatus();
-        ReplicaDataSourceStatus actual = algorithm.loadReplicaStatus(dataSource);
+        ReplicaDataSourceStatus actual = provider.loadReplicaStatus(dataSource);
         assertTrue(actual.isOnline());
         assertThat(actual.getReplicationDelayMilliseconds(), is(10000L));
     }

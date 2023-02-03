@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dbdiscovery.distsql.handler.fixture;
+package org.apache.shardingsphere.dbdiscovery.fixture;
 
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Optional;
 
-public final class DistSQLDatabaseDiscoveryProviderAlgorithmFixture implements DatabaseDiscoveryProviderAlgorithm {
+public final class CoreDatabaseDiscoveryProviderFixture implements DatabaseDiscoveryProvider {
     
     @Override
     public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSource) {
@@ -32,7 +32,7 @@ public final class DistSQLDatabaseDiscoveryProviderAlgorithmFixture implements D
     
     @Override
     public boolean isPrimaryInstance(final DataSource dataSource) {
-        return false;
+        return true;
     }
     
     @Override
@@ -47,6 +47,6 @@ public final class DistSQLDatabaseDiscoveryProviderAlgorithmFixture implements D
     
     @Override
     public String getType() {
-        return "DISTSQL.FIXTURE";
+        return "CORE.FIXTURE";
     }
 }

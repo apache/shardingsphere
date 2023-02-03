@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.simple.model.privilege;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.segment;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-import java.util.Collections;
-
-import static org.junit.Assert.assertTrue;
-
-public final class AllPermittedPrivilegesProviderAlgorithmTest {
+/**
+ * Database discovery provider segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseDiscoveryProviderSegment implements ASTNode {
     
-    @Test
-    public void assertFindPrivileges() {
-        ShardingSpherePrivileges actual = new AllPrivilegesPermittedShardingSpherePrivileges();
-        assertTrue(actual.hasPrivileges("testSchema"));
-        assertTrue(actual.hasPrivileges(Collections.emptyList()));
-        assertTrue(actual.hasPrivileges(new DatabaseAccessSubject("testSchema"), Collections.emptyList()));
-    }
+    private final String discoveryProviderName;
+    
+    private final AlgorithmSegment algorithm;
 }
