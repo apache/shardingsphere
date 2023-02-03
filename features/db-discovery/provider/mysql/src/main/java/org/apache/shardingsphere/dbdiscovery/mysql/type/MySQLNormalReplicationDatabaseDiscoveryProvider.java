@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.replica.DuplicatePrimaryDataSourceException;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -40,9 +40,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
- * Normal replication database discovery provider algorithm for MySQL.
+ * Normal replication database discovery provider for MySQL.
  */
-public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
+public final class MySQLNormalReplicationDatabaseDiscoveryProvider implements DatabaseDiscoveryProvider {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     

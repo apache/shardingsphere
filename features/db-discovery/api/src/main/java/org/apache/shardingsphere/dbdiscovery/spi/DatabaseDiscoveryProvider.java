@@ -25,9 +25,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Database discovery provider algorithm.
+ * Database discovery provider.
  */
-public interface DatabaseDiscoveryProviderAlgorithm extends TypedSPI {
+public interface DatabaseDiscoveryProvider extends TypedSPI {
     
     /**
      * Check environment.

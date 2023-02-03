@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -38,11 +38,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
+public final class MGRDatabaseDiscoveryProviderTest {
     
     @Test
     public void assertCheckEnvironment() throws SQLException {
-        DatabaseDiscoveryProviderAlgorithm actual = TypedSPILoader.getService(DatabaseDiscoveryProviderAlgorithm.class, "MySQL.MGR", PropertiesBuilder.build(new Property("group-name", "foo_group")));
+        DatabaseDiscoveryProvider actual = TypedSPILoader.getService(DatabaseDiscoveryProvider.class, "MySQL.MGR", PropertiesBuilder.build(new Property("group-name", "foo_group")));
         actual.checkEnvironment("foo_db", Collections.singletonList(mockEnvironmentAvailableDataSource()));
     }
     
@@ -61,7 +61,7 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     
     @Test
     public void assertIsPrimaryInstance() throws SQLException {
-        DatabaseDiscoveryProviderAlgorithm actual = TypedSPILoader.getService(DatabaseDiscoveryProviderAlgorithm.class, "MySQL.MGR");
+        DatabaseDiscoveryProvider actual = TypedSPILoader.getService(DatabaseDiscoveryProvider.class, "MySQL.MGR");
         assertTrue(actual.isPrimaryInstance(mockPrimaryDataSource()));
     }
     
@@ -82,7 +82,7 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
     public void assertLoadReplicaStatus() throws SQLException {
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(dataSource.getConnection().getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
-        ReplicaDataSourceStatus actual = new MGRMySQLDatabaseDiscoveryProviderAlgorithm().loadReplicaStatus(dataSource);
+        ReplicaDataSourceStatus actual = new MGRMySQLDatabaseDiscoveryProvider().loadReplicaStatus(dataSource);
         assertFalse(actual.isOnline());
         assertThat(actual.getReplicationDelayMilliseconds(), is(0L));
     }
