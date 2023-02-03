@@ -112,6 +112,12 @@ public enum PostgreSQLCharacterSets {
         return null != result && null != result.charset ? result.charset : Charset.forName(formattedCharsetName);
     }
     
+    /**
+     * Find corresponding {@link Charset} by charset name defined in PostgreSQL.
+     *
+     * @param value that needs to be formatted
+     * @return formatted string without any single/double quotes {@link String}
+     */
     private static String formatValue(final String value) {
         return value.startsWith("'") && value.endsWith("'") || value.startsWith("\"") && value.endsWith("\"") ? value.substring(1, value.length() - 1) : value.trim();
     }
