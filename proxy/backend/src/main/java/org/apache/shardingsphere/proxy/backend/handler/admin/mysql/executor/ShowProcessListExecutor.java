@@ -34,8 +34,8 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -95,12 +95,12 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
             rowValues.add(processContext.getUsername());
             rowValues.add(processContext.getHostname());
             rowValues.add(processContext.getDatabaseName());
-            rowValues.add(processContext.getExecuteProcessConstants() == ExecuteProcessStatusEnum.SLEEP ? "Sleep" : "Execute");
+            rowValues.add(ExecuteProcessStatusEnum.SLEEP == processContext.getProcessStatus() ? "Sleep" : "Execute");
             rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - processContext.getStartTimeMillis()));
             String sql = null;
-            if (processContext.getExecuteProcessConstants() != ExecuteProcessStatusEnum.SLEEP) {
+            if (ExecuteProcessStatusEnum.SLEEP != processContext.getProcessStatus()) {
                 int processDoneCount = processContext.getUnitStatuses().stream()
-                        .map(each -> ExecuteProcessStatusEnum.DONE == each.getStatus() ? 1 : 0)
+                        .map(each -> ExecuteProcessStatusEnum.DONE == each.getProcessStatus() ? 1 : 0)
                         .reduce(0, Integer::sum);
                 String statePrefix = "Executing ";
                 rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());

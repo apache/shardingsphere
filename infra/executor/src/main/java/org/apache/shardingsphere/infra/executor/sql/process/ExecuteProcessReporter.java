@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 
 import java.util.Optional;
@@ -46,13 +46,13 @@ public final class ExecuteProcessReporter {
      *
      * @param queryContext query context
      * @param executionGroupContext execution group context
-     * @param constants constants
+     * @param processStatus process status
      */
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
-                       final ExecuteProcessStatusEnum constants) {
+                       final ExecuteProcessStatusEnum processStatus) {
         ExecuteProcessContext originExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionGroupContext.getReportContext().getExecutionID());
         boolean isProxyContext = null != originExecuteProcessContext && originExecuteProcessContext.isProxyContext();
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants, isProxyContext);
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, processStatus, isProxyContext);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
         ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
     }
@@ -62,12 +62,12 @@ public final class ExecuteProcessReporter {
      *
      * @param executionID execution ID
      * @param executionUnit execution unit
-     * @param constants constants
+     * @param processStatus process status
      */
-    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatusEnum constants) {
-        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
+    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatusEnum processStatus) {
+        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), processStatus);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(executeProcessUnit.getStatus()));
+        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setProcessStatus(executeProcessUnit.getProcessStatus()));
     }
     
     /**

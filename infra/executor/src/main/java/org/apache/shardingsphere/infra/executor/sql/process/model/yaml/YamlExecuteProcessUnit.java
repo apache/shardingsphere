@@ -35,10 +35,10 @@ public final class YamlExecuteProcessUnit {
     
     private String unitID;
     
-    private volatile ExecuteProcessStatusEnum status;
+    private volatile ExecuteProcessStatusEnum processStatus;
     
     public YamlExecuteProcessUnit(final ExecuteProcessUnit executeProcessUnit) {
         unitID = executeProcessUnit.getUnitID();
-        status = executeProcessUnit.getStatus();
+        processStatus = executeProcessUnit.getProcessStatus();
     }
 }

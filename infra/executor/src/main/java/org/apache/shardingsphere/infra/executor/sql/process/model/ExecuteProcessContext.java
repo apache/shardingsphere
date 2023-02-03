@@ -52,11 +52,11 @@ public final class ExecuteProcessContext {
     
     private long startTimeMillis = System.currentTimeMillis();
     
-    private ExecuteProcessStatusEnum executeProcessConstants;
+    private ExecuteProcessStatusEnum processStatus;
     
     private final boolean proxyContext;
     
-    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatusEnum constants,
+    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatusEnum processStatus,
                                  final boolean isProxyContext) {
         this.executionID = executionGroupContext.getReportContext().getExecutionID();
         this.sql = sql;
@@ -64,15 +64,15 @@ public final class ExecuteProcessContext {
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         this.username = null != grantee ? grantee.getUsername() : null;
         this.hostname = null != grantee ? grantee.getHostname() : null;
-        executeProcessConstants = constants;
-        addProcessUnitsAndStatements(executionGroupContext, constants);
+        this.processStatus = processStatus;
+        addProcessUnitsAndStatements(executionGroupContext, processStatus);
         proxyContext = isProxyContext;
     }
     
-    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatusEnum constants) {
+    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatusEnum processStatus) {
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
-                ExecuteProcessUnit processUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
+                ExecuteProcessUnit processUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), processStatus);
                 processUnits.put(processUnit.getUnitID(), processUnit);
                 if (executionUnit instanceof JDBCExecutionUnit) {
                     processStatements.add(((JDBCExecutionUnit) executionUnit).getStorageResource());
@@ -87,7 +87,7 @@ public final class ExecuteProcessContext {
     public void resetExecuteProcessContextToSleep() {
         this.sql = "";
         this.startTimeMillis = System.currentTimeMillis();
-        this.executeProcessConstants = ExecuteProcessStatusEnum.SLEEP;
+        this.processStatus = ExecuteProcessStatusEnum.SLEEP;
     }
     
 }
