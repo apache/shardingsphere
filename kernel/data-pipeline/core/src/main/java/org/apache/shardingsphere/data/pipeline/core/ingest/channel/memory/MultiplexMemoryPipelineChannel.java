@@ -27,6 +27,8 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Multiplex memory pipeline channel.
@@ -35,16 +37,13 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     
     private final int channelNumber;
     
-    private final PipelineChannel[] channels;
+    private final List<PipelineChannel> channels;
     
     private final Map<String, Integer> channelAssignment = new HashMap<>();
     
     public MultiplexMemoryPipelineChannel(final int channelNumber, final int blockQueueSize, final AckCallback ackCallback) {
         this.channelNumber = channelNumber;
-        channels = new PipelineChannel[channelNumber];
-        for (int i = 0; i < channelNumber; i++) {
-            channels[i] = new SimpleMemoryPipelineChannel(blockQueueSize, ackCallback);
-        }
+        channels = IntStream.range(0, channelNumber).mapToObj(each -> new SimpleMemoryPipelineChannel(blockQueueSize, ackCallback)).collect(Collectors.toList());
     }
     
     @Override
@@ -63,7 +62,7 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     }
     
     private void pushRecord(final Record record, final int channelIndex) {
-        PipelineChannel channel = channels[channelIndex];
+        PipelineChannel channel = channels.get(channelIndex);
         channel.pushRecord(record);
     }
     
@@ -80,7 +79,7 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     private PipelineChannel findChannel() {
         String threadId = Long.toString(Thread.currentThread().getId());
         checkAssignment(threadId);
-        return channels[channelAssignment.get(threadId)];
+        return channels.get(channelAssignment.get(threadId));
     }
     
     private void checkAssignment(final String threadId) {
@@ -94,7 +93,7 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     }
     
     private void assignmentChannel(final String threadId) {
-        for (int i = 0; i < channels.length; i++) {
+        for (int i = 0; i < channels.size(); i++) {
             if (!channelAssignment.containsValue(i)) {
                 channelAssignment.put(threadId, i);
                 return;
