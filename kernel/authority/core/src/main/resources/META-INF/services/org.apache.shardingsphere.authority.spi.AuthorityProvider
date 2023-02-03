@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.authority.provider.simple.AllPermittedPrivilegesProviderAlgorithm
-org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProviderAlgorithm
+org.apache.shardingsphere.authority.provider.simple.AllPermittedPrivilegesProvider
+org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProvider
