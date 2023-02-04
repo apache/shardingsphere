@@ -84,12 +84,12 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
     private ShadowRuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setDataSources(Collections.singletonList(new ShadowDataSourceConfiguration("shadow-data-source", "ds", "ds_shadow")));
-        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Collections.singleton("simple-hint-algorithm"))));
+        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Collections.singleton("sql-hint-algorithm"))));
         result.setShadowAlgorithms(createShadowAlgorithms());
         return result;
     }
     
     private Map<String, AlgorithmConfiguration> createShadowAlgorithms() {
-        return Collections.singletonMap("simple-hint-algorithm", new AlgorithmConfiguration("SIMPLE_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()))));
+        return Collections.singletonMap("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()))));
     }
 }

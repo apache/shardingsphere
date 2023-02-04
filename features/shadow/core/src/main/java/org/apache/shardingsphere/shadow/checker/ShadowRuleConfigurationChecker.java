@@ -85,7 +85,7 @@ public final class ShadowRuleConfigurationChecker implements RuleConfigurationCh
     private void checkDefaultShadowAlgorithmConfiguration(final String defaultShadowAlgorithmName, final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
         if (null != defaultShadowAlgorithmName) {
             AlgorithmConfiguration algorithmConfig = shadowAlgorithmConfigs.get(defaultShadowAlgorithmName);
-            boolean state = null != algorithmConfig && "SIMPLE_HINT".equals(algorithmConfig.getType());
+            boolean state = null != algorithmConfig && "SQL_HINT".equals(algorithmConfig.getType());
             ShardingSpherePreconditions.checkState(state, NotImplementHintShadowAlgorithmException::new);
         }
     }

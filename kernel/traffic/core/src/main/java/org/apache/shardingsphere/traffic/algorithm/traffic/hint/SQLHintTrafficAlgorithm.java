@@ -21,7 +21,7 @@ import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficValue;
 
 /**
- * Simple hint traffic algorithm.
+ * SQL hint traffic algorithm.
  */
 public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm {
     
