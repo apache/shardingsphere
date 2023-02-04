@@ -142,8 +142,7 @@ public final class EncryptRuleTest {
         EncryptColumnRuleConfiguration pwdColumnConfig =
                 new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "pwd_plain", "test_encryptor", "test_encryptor", "like_encryptor", null);
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "", "credit_card_plain", "test_encryptor", null);
-        EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "", "name_plain", "customized_encryptor", null);
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig), null);
         return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(queryAssistedEncryptConfig, queryLikeEncryptConfig));
     }
     
@@ -166,8 +165,7 @@ public final class EncryptRuleTest {
         AlgorithmConfiguration queryLikeEncryptConfig = new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties());
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "", "pwd_plain", "test_encryptor", null);
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "", "credit_card_plain", "test_encryptor", null);
-        EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "", "name_plain", "customized_encryptor", null);
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("T_ENCRYPT", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
+        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("T_ENCRYPT", Arrays.asList(pwdColumnConfig, creditCardColumnConfig), null);
         return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(queryAssistedEncryptConfig, queryLikeEncryptConfig));
     }
     
