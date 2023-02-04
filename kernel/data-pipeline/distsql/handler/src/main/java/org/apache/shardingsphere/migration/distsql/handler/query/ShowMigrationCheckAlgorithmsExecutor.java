@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Show migration check algorithms' executor.
+ * Show migration check algorithms executor.
  */
 public final class ShowMigrationCheckAlgorithmsExecutor implements QueryableRALExecutor<ShowMigrationCheckAlgorithmsStatement> {
     
