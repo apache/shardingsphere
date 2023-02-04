@@ -149,7 +149,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @return encrypt values
      */
     public List<Object> getEncryptValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        @SuppressWarnings("rawtypes") Optional<StandardEncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
+        @SuppressWarnings("rawtypes")
+        Optional<StandardEncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
         ShardingSpherePreconditions.checkState(encryptor.isPresent(),
                 () -> new EncryptEncryptorNotFoundException(String.format("Can not find StandardEncryptAlgorithm by %s.%s.", logicTable, logicColumn)));
@@ -243,7 +244,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @return assisted query values
      */
     public List<Object> getEncryptAssistedQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        @SuppressWarnings("rawtypes") Optional<StandardEncryptAlgorithm> encryptor = findAssistedQueryEncryptor(logicTable, logicColumn);
+        @SuppressWarnings("rawtypes")
+        Optional<StandardEncryptAlgorithm> encryptor = findAssistedQueryEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
         ShardingSpherePreconditions.checkState(encryptor.isPresent(),
                 () -> new EncryptAssistedQueryEncryptorNotFoundException(String.format("Can not find assist encryptor by %s.%s.", logicTable, logicColumn)));
@@ -271,7 +273,8 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @return like query values
      */
     public List<Object> getEncryptLikeQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        @SuppressWarnings("rawtypes") Optional<LikeEncryptAlgorithm> encryptor = findLikeQueryEncryptor(logicTable, logicColumn);
+        @SuppressWarnings("rawtypes")
+        Optional<LikeEncryptAlgorithm> encryptor = findLikeQueryEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
         ShardingSpherePreconditions.checkState(encryptor.isPresent(),
                 () -> new EncryptLikeQueryEncryptorNotFoundException(String.format("Can not find like encryptor by %s.%s.", logicTable, logicColumn)));
