@@ -38,6 +38,6 @@
         <module>executor</module>
         <module>merge</module>
         <module>context</module>
-        <module>datetime</module>
+        <module>util-groovy</module>
     </modules>
 </project>

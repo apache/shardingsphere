@@ -45,7 +45,6 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sqlfederation.SQLFederationDataContext;
 import org.apache.shardingsphere.sqlfederation.advanced.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.executor.FilterableTableScanExecutor;
@@ -90,13 +89,10 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     
     private JDBCExecutor jdbcExecutor;
     
-    private EventBusContext eventBusContext;
-    
     private ResultSet resultSet;
     
     @Override
-    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData data,
-                     final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
+    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData data, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
         this.optimizerContext = OptimizerContextFactory.create(metaData.getDatabases(), metaData.getGlobalRuleMetaData());
@@ -104,7 +100,6 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         this.props = metaData.getProps();
         this.data = data;
         this.jdbcExecutor = jdbcExecutor;
-        this.eventBusContext = eventBusContext;
     }
     
     @Override
@@ -134,7 +129,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
                                                      final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
         // TODO replace FilterableTableScanExecutor with TranslatableTableScanExecutor
-        TableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, data, eventBusContext);
+        TableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, data);
         // TODO replace FilterableSchema with TranslatableSchema
         return new FilterableSchema(schemaName, schema, protocolType, JAVA_TYPE_FACTORY, executor);
     }

@@ -25,11 +25,10 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedCRC32DataConsistencyCalculateAlgorithmException;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
+import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,30 +38,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
  * CRC32 match data consistency calculate algorithm.
  */
-@AlgorithmDescription("Match CRC32 of records.")
+@SPIDescription("Match CRC32 of records.")
 @Slf4j
 public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
     
     private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getType());
     
-    @Getter
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
-    
     @Override
     public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
-        PipelineSQLBuilder sqlBuilder = TypedSPIRegistry.findRegisteredService(PipelineSQLBuilder.class, param.getDatabaseType(), null)
-                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(PipelineSQLBuilder.class));
+        PipelineSQLBuilder sqlBuilder = TypedSPILoader.getService(PipelineSQLBuilder.class, param.getDatabaseType());
         List<CalculatedItem> calculatedItems = param.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, param, each)).collect(Collectors.toList());
         return Collections.singletonList(new CalculatedResult(calculatedItems.get(0).getRecordsCount(), calculatedItems.stream().map(CalculatedItem::getCrc32).collect(Collectors.toList())));
     }

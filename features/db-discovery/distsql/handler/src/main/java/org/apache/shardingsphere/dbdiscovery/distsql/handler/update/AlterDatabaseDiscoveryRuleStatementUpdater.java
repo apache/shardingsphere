@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.distsql.handler.converter.DatabaseDiscoveryRuleStatementConverter;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -87,7 +87,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
         Map<String, List<DatabaseDiscoveryRuleSegment>> segmentMap = sqlStatement.getRules().stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
         Collection<String> invalidInput = segmentMap.getOrDefault(DatabaseDiscoveryRuleSegment.class.getSimpleName(), Collections.emptyList()).stream()
                 .map(each -> each.getDiscoveryType().getName()).distinct()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(DatabaseDiscoveryProviderAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .filter(each -> !TypedSPILoader.contains(DatabaseDiscoveryProvider.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException("database discovery", invalidInput));
     }
     

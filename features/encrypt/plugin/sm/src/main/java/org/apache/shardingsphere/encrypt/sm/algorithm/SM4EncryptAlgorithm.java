@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -63,9 +62,6 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private static final Set<String> PADDINGS = new HashSet<>(Arrays.asList("PKCS5Padding", "PKCS7Padding"));
     
-    @Getter
-    private Properties props;
-    
     private byte[] sm4Key;
     
     private byte[] sm4Iv;
@@ -74,7 +70,6 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         String sm4Mode = createSm4Mode(props);
         String sm4Padding = createSm4Padding(props);
         sm4ModePadding = "SM4/" + sm4Mode + "/" + sm4Padding;
@@ -83,17 +78,17 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     }
     
     private String createSm4Mode(final Properties props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(SM4_MODE), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null.", SM4_MODE)));
+        ShardingSpherePreconditions.checkState(props.containsKey(SM4_MODE), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null", SM4_MODE)));
         String result = String.valueOf(props.getProperty(SM4_MODE)).toUpperCase();
-        ShardingSpherePreconditions.checkState(MODES.contains(result), () -> new EncryptAlgorithmInitializationException("SM4", "Mode must be either CBC or ECB."));
+        ShardingSpherePreconditions.checkState(MODES.contains(result), () -> new EncryptAlgorithmInitializationException("SM4", "Mode must be either CBC or ECB"));
         return result;
     }
     
     private byte[] createSm4Key(final Properties props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(SM4_KEY), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null.", SM4_KEY)));
+        ShardingSpherePreconditions.checkState(props.containsKey(SM4_KEY), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null", SM4_KEY)));
         byte[] result = ByteUtils.fromHexString(String.valueOf(props.getProperty(SM4_KEY)));
         ShardingSpherePreconditions.checkState(KEY_LENGTH == result.length,
-                () -> new EncryptAlgorithmInitializationException("SM4", "Key length must be " + KEY_LENGTH + " bytes long."));
+                () -> new EncryptAlgorithmInitializationException("SM4", "Key length must be " + KEY_LENGTH + " bytes long"));
         return result;
     }
     
@@ -101,17 +96,17 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
         if (!"CBC".equalsIgnoreCase(sm4Mode)) {
             return null;
         }
-        ShardingSpherePreconditions.checkState(props.containsKey(SM4_IV), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null.", SM4_IV)));
+        ShardingSpherePreconditions.checkState(props.containsKey(SM4_IV), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null", SM4_IV)));
         String sm4IvValue = String.valueOf(props.getProperty(SM4_IV));
         byte[] result = ByteUtils.fromHexString(sm4IvValue);
-        ShardingSpherePreconditions.checkState(IV_LENGTH == result.length, () -> new EncryptAlgorithmInitializationException("SM4", "Iv length must be " + IV_LENGTH + " bytes long."));
+        ShardingSpherePreconditions.checkState(IV_LENGTH == result.length, () -> new EncryptAlgorithmInitializationException("SM4", "Iv length must be " + IV_LENGTH + " bytes long"));
         return result;
     }
     
     private String createSm4Padding(final Properties props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(SM4_PADDING), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null.", SM4_PADDING)));
+        ShardingSpherePreconditions.checkState(props.containsKey(SM4_PADDING), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null", SM4_PADDING)));
         String result = String.valueOf(props.getProperty(SM4_PADDING)).toUpperCase().replace("PADDING", "Padding");
-        ShardingSpherePreconditions.checkState(PADDINGS.contains(result), () -> new EncryptAlgorithmInitializationException("SM4", "Padding must be either PKCS5Padding or PKCS7Padding."));
+        ShardingSpherePreconditions.checkState(PADDINGS.contains(result), () -> new EncryptAlgorithmInitializationException("SM4", "Padding must be either PKCS5Padding or PKCS7Padding"));
         return result;
     }
     

@@ -58,6 +58,6 @@ public final class DistSQLBackendHandlerFactory {
         if (sqlStatement instanceof RULStatement) {
             return RULBackendHandlerFactory.newInstance((RULStatement) sqlStatement, connectionSession);
         }
-        throw new UnsupportedSQLOperationException(sqlStatement.getClass().getCanonicalName());
+        throw new UnsupportedSQLOperationException(sqlStatement.getClass().getName());
     }
 }

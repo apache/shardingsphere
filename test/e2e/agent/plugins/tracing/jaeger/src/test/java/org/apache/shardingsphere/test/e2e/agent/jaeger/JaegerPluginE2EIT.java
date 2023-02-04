@@ -49,10 +49,6 @@ public final class JaegerPluginE2EIT extends BasePluginE2EIT {
     @Test
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
-        try {
-            Thread.sleep(Long.parseLong(props.getProperty("jaeger.waitMs", "60000")));
-        } catch (final InterruptedException ignore) {
-        }
         assertTraces();
     }
     

@@ -37,10 +37,6 @@ public final class DatabasePermittedPrivileges implements ShardingSpherePrivileg
     private final Set<String> databases;
     
     @Override
-    public void setSuperPrivilege() {
-    }
-    
-    @Override
     public boolean hasPrivileges(final String database) {
         return databases.contains(KEY_SUPER) || databases.contains(database);
     }

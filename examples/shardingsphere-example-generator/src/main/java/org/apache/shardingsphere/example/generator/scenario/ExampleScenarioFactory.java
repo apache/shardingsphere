@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.generator.scenario;
 import org.apache.shardingsphere.example.generator.scenario.feature.FeatureExampleScenario;
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 import org.apache.shardingsphere.example.generator.scenario.transaction.TransactionExampleScenario;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,15 +49,15 @@ public final class ExampleScenarioFactory {
     
     private Collection<FeatureExampleScenario> getFeatureScenarios(final String feature) {
         return null == feature ? Collections.emptyList() : 
-                Arrays.stream(feature.split(",")).map(each -> TypedSPIRegistry.getRegisteredService(FeatureExampleScenario.class, each.trim())).collect(Collectors.toList());
+                Arrays.stream(feature.split(",")).map(each -> TypedSPILoader.getService(FeatureExampleScenario.class, each.trim())).collect(Collectors.toList());
     }
     
     private FrameworkExampleScenario getFrameworkScenario(final String framework) {
-        return TypedSPIRegistry.getRegisteredService(FrameworkExampleScenario.class, framework);
+        return TypedSPILoader.getService(FrameworkExampleScenario.class, framework);
     }
     
     private TransactionExampleScenario getTransactionScenario(final String transaction) {
-        return TypedSPIRegistry.getRegisteredService(TransactionExampleScenario.class, transaction);
+        return TypedSPILoader.getService(TransactionExampleScenario.class, transaction);
     }
     
     /**

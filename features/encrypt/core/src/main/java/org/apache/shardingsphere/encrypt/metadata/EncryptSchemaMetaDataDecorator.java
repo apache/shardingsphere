@@ -64,11 +64,11 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
         for (ColumnMetaData each : originalColumnMetaDataList) {
             String columnName = each.getName();
             if (plainColumns.contains(columnName)) {
-                result.add(createColumnMetaData(encryptTable.getLogicColumnByPlainColumn(columnName), each));
+                result.add(createMetaDataByPlainColumn(encryptTable, columnName, each));
                 continue;
             }
             if (encryptTable.isCipherColumn(columnName)) {
-                result.add(createColumnMetaData(encryptTable.getLogicColumnByCipherColumn(columnName), each));
+                result.add(createMetaDataByCipherColumn(encryptTable, columnName, each));
                 continue;
             }
             if (!assistedQueryColumns.contains(columnName) && !likeQueryColumns.contains(columnName)) {
@@ -78,9 +78,17 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
         return result;
     }
     
+    private ColumnMetaData createMetaDataByPlainColumn(final EncryptTable encryptTable, final String columnName, final ColumnMetaData columnMetaData) {
+        return createColumnMetaData(encryptTable.getLogicColumnByPlainColumn(columnName), columnMetaData);
+    }
+    
+    private ColumnMetaData createMetaDataByCipherColumn(final EncryptTable encryptTable, final String columnName, final ColumnMetaData columnMetaData) {
+        return createColumnMetaData(encryptTable.getLogicColumnByCipherColumn(columnName), columnMetaData);
+    }
+    
     private ColumnMetaData createColumnMetaData(final String columnName, final ColumnMetaData columnMetaData) {
-        return new ColumnMetaData(columnName, columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive(), columnMetaData.isVisible(),
-                columnMetaData.isUnsigned());
+        return new ColumnMetaData(columnName, columnMetaData.getDataType(),
+                columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive(), columnMetaData.isVisible(), columnMetaData.isUnsigned());
     }
     
     @Override

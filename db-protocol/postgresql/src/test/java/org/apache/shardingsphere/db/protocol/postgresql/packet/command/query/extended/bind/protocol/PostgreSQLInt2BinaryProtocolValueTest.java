@@ -48,7 +48,7 @@ public final class PostgreSQLInt2BinaryProtocolValueTest {
         byte[] actualData = new byte[6];
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(actualData).writerIndex(0), StandardCharsets.UTF_8);
         PostgreSQLInt2BinaryProtocolValue actual = new PostgreSQLInt2BinaryProtocolValue();
-        actual.write(payload, (int) Short.MIN_VALUE);
+        actual.write(payload, Short.MIN_VALUE);
         actual.write(payload, -1);
         actual.write(payload, (int) Short.MAX_VALUE);
         assertThat(actualData, is(new byte[]{(byte) 0x80, (byte) 0x00, (byte) 0xFF, (byte) 0xFF, (byte) 0x7F, (byte) 0xFF}));

@@ -26,6 +26,8 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableRuleStatement;
@@ -103,8 +105,8 @@ public final class DropShardingTableRuleStatementUpdaterTest {
         assertFalse(getShardingTables(currentRuleConfig).contains("t_order"));
         assertTrue(getBindingTables(currentRuleConfig).contains("t_order_item"));
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(2));
-        assertThat(currentRuleConfig.getKeyGenerators().size(), is(0));
-        assertThat(currentRuleConfig.getAuditors().size(), is(0));
+        assertThat(currentRuleConfig.getKeyGenerators().size(), is(1));
+        assertThat(currentRuleConfig.getAuditors().size(), is(1));
     }
     
     private DropShardingTableRuleStatement createSQLStatement(final String tableName) {
@@ -112,17 +114,24 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order_item");
+        ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order_item", null);
         tableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_item_algorithm"));
+        tableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "in_used_key_generator"));
+        tableRuleConfig.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("in_used_auditor"), false));
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(tableRuleConfig);
-        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order", null));
+        ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order", null);
+        autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_algorithm"));
+        result.getAutoTables().add(autoTableRuleConfig);
         result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_0", "t_order_item"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "default_table_strategy"));
         result.getShardingAlgorithms().put("unused_algorithm", null);
         result.getShardingAlgorithms().put("t_order_item_algorithm", null);
+        result.getShardingAlgorithms().put("t_order_algorithm", null);
         result.getShardingAlgorithms().put("default_table_strategy", null);
+        result.getKeyGenerators().put("in_used_key_generator", null);
         result.getKeyGenerators().put("unused_key_generator", null);
+        result.getAuditors().put("in_used_auditor", null);
         result.getAuditors().put("unused_auditor", null);
         return result;
     }

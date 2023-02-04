@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
@@ -43,19 +42,15 @@ public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private static final String AES_KEY = "aes-key-value";
     
-    @Getter
-    private Properties props;
-    
     private byte[] secretKey;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         secretKey = createSecretKey(props);
     }
     
     private byte[] createSecretKey(final Properties props) {
-        ShardingSpherePreconditions.checkState(props.containsKey(AES_KEY), () -> new EncryptAlgorithmInitializationException("AES", String.format("%s can not be null.", AES_KEY)));
+        ShardingSpherePreconditions.checkState(props.containsKey(AES_KEY), () -> new EncryptAlgorithmInitializationException("AES", String.format("%s can not be null", AES_KEY)));
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
     

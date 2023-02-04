@@ -45,6 +45,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -66,7 +67,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.SQLDialectFactory;
@@ -115,8 +115,6 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     private final ShardingSphereData data;
     
-    private final EventBusContext eventBusContext;
-    
     @Override
     public Enumerable<Object> executeScalar(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
         return new AbstractEnumerable<Object>() {
@@ -152,11 +150,11 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     private AbstractEnumerable<Object[]> execute(final DatabaseType databaseType, final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
         ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
+            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
+                    prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits(), new ExecutionGroupReportContext(database.getName()));
             setParameters(executionGroupContext.getInputGroups());
-            executeProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext);
+            executeProcessEngine.initializeExecution(executionGroupContext, context.getQueryContext());
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
-            executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             // TODO need to get session context
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
             MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());

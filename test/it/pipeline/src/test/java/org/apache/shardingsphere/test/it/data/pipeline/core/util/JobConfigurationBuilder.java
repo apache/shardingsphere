@@ -31,7 +31,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.Migra
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 /**
  * Job configuration builder.
@@ -55,7 +55,7 @@ public final class JobConfigurationBuilder {
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
         result.setUniqueKeyColumn(createYamlPipelineColumnMetaData());
-        TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(result);
+        TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(result);
         return new YamlMigrationJobConfigurationSwapper().swapToObject(result);
     }
     

@@ -110,7 +110,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
     
     @Test
     public void assertExecuteWithIfNotExists() {
-        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SIMPLE_HINT", PropertiesBuilder.build(new Property("type", "value"))));
+        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value"))));
         CreateShadowRuleStatement sqlStatement = createSQLStatement(true, new ShadowRuleSegment("initRuleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }

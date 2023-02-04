@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.sharding.spi;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Key generate algorithm.
  */
-public interface KeyGenerateAlgorithm extends ShardingSphereAlgorithm, RequiredSPI {
+public interface KeyGenerateAlgorithm extends TypedSPI {
     
     /**
      * Generate key.

@@ -24,12 +24,12 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -64,7 +64,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     public void setUp() throws SQLException {
         super.setUp();
         actual = spy(new BatchPreparedStatementExecutor(getConnection().getContextManager().getMetaDataContexts(), new JDBCExecutor(getExecutorEngine(), getConnection().getConnectionContext()),
-                DefaultDatabase.LOGIC_NAME, new EventBusContext()));
+                DefaultDatabase.LOGIC_NAME));
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
     }
     
@@ -147,7 +147,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setFields(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final Collection<BatchExecutionUnit> batchExecutionUnits) {
-        Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("executionGroupContext"), actual, new ExecutionGroupContext<>(executionGroups));
+        Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("executionGroupContext"), actual, new ExecutionGroupContext<>(executionGroups,
+                new ExecutionGroupReportContext("logic_db")));
         Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("batchExecutionUnits"), actual, batchExecutionUnits);
         Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("batchCount"), actual, 2);
     }

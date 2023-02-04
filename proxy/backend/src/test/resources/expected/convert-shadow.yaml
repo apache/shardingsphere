@@ -34,5 +34,5 @@ SOURCE=ds,
 SHADOW=shadow_ds,
 t_order(TYPE(NAME='regex_match', PROPERTIES('column'='user_id', 'operation'='insert', 'regex'='[1]')), TYPE(NAME='regex_match', PROPERTIES('column'='user_id', 'operation'='select', 'regex'='[1]'))),
 t_order_item(TYPE(NAME='regex_match', PROPERTIES('column'='user_id', 'operation'='insert', 'regex'='[1]')), TYPE(NAME='regex_match', PROPERTIES('column'='user_id', 'operation'='update', 'regex'='[1]')), TYPE(NAME='regex_match', PROPERTIES('column'='user_id', 'operation'='select', 'regex'='[1]'))),
-t_address(TYPE(NAME='regex_match', PROPERTIES('column'='user_id', 'operation'='insert', 'regex'='[1]')), TYPE(NAME='regex_match', PROPERTIES('column'='user_id', 'operation'='select', 'regex'='[1]')), TYPE(NAME='simple_hint', PROPERTIES('foo'='bar')))
+t_address(TYPE(NAME='regex_match', PROPERTIES('column'='user_id', 'operation'='insert', 'regex'='[1]')), TYPE(NAME='regex_match', PROPERTIES('column'='user_id', 'operation'='select', 'regex'='[1]')), TYPE(NAME='sql_hint'))
 );

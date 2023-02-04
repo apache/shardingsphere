@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.MyS
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -64,7 +64,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.connectionSession = connectionSession;
-        DatabaseType databaseType = TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL");
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         SQLStatement sqlStatement = parseSql(packet.getSql(), databaseType);
         proxyBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSql()) ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSql())
                 : ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSql(), sqlStatement, connectionSession, packet.getHintValueContext());

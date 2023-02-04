@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Memory enumerator.
@@ -48,12 +47,7 @@ public final class MemoryEnumerator<T> implements Enumerator<T> {
     @Override
     public boolean moveNext() {
         if (rowDataIterator.hasNext()) {
-            List<Object> rows = rowDataIterator.next().getRows();
-            if (rows.size() == 1) {
-                current = (T) rows.get(0);
-            } else {
-                current = (T) rows.toArray();
-            }
+            current = (T) rowDataIterator.next().getRows().toArray();
             return true;
         }
         current = null;

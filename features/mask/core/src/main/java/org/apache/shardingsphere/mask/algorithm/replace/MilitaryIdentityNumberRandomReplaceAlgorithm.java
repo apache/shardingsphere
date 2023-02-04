@@ -19,8 +19,7 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.Getter;
-import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmUtil;
+import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.List;
@@ -37,17 +36,13 @@ public final class MilitaryIdentityNumberRandomReplaceAlgorithm implements MaskA
     
     private List<Character> typeCodes;
     
-    @Getter
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
-        this.typeCodes = createTypeCodes(props);
+        typeCodes = createTypeCodes(props);
     }
     
     private List<Character> createTypeCodes(final Properties props) {
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, TYPE_CODE, getType());
+        MaskAlgorithmPropsChecker.checkAtLeastOneCharConfig(props, TYPE_CODE, getType());
         return Splitter.on(",").trimResults().splitToList(props.getProperty(TYPE_CODE)).stream().map(each -> each.charAt(0)).collect(Collectors.toList());
     }
     

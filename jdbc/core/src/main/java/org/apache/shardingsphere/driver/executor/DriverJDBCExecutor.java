@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
@@ -51,13 +50,10 @@ public final class DriverJDBCExecutor {
     
     private final MetaDataRefreshEngine metaDataRefreshEngine;
     
-    private final EventBusContext eventBusContext;
-    
     public DriverJDBCExecutor(final String databaseName, final ContextManager contextManager, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
         this.jdbcExecutor = jdbcExecutor;
         metaDataContexts = contextManager.getMetaDataContexts();
-        eventBusContext = contextManager.getInstanceContext().getEventBusContext();
         metaDataRefreshEngine = new MetaDataRefreshEngine(contextManager.getInstanceContext().getModeContextManager(),
                 metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getProps());
     }
@@ -75,10 +71,8 @@ public final class DriverJDBCExecutor {
                                           final QueryContext queryContext, final ExecuteQueryCallback callback) throws SQLException {
         ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(queryContext, executionGroupContext);
-            List<QueryResult> result = jdbcExecutor.execute(executionGroupContext, callback);
-            executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
-            return result;
+            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
+            return jdbcExecutor.execute(executionGroupContext, callback);
         } finally {
             executeProcessEngine.cleanExecution();
         }
@@ -98,12 +92,10 @@ public final class DriverJDBCExecutor {
                              final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
         ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(queryContext, executionGroupContext);
+            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
             SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
-            int result = isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
-            executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
-            return result;
+            return isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
         } finally {
             executeProcessEngine.cleanExecution();
         }
@@ -140,11 +132,9 @@ public final class DriverJDBCExecutor {
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
         ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(queryContext, executionGroupContext);
+            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
             List<Boolean> results = doExecute(executionGroupContext, queryContext.getSqlStatementContext(), routeUnits, callback);
-            boolean result = null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
-            executeProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
-            return result;
+            return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
         } finally {
             executeProcessEngine.cleanExecution();
         }

@@ -31,7 +31,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | --------- | ----------- | ------ |
 | HY004     | 11000       | Invalid value \`%s\`. |
 | HY004     | 11001       | Unsupported conversion data type \`%s\` for value \`%s\`. |
-| HY000     | 11002       | Can not find \`%s\` file for datetime initialize. |
 | HY004     | 11010       | Unsupported conversion stream charset \`%s\`. |
 
 ### Syntax
@@ -52,6 +51,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | --------- | ----------- | ------ |
 | 08000     | 13000       | Can not register driver, reason is: %s |
 | 01000     | 13010       | Circuit break open, the request has been ignored. |
+| 01000     | 13011       | The current instance is read-only, Not allowed write traffic. |
 | 08000     | 13020       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties. |
 | 08000     | 13030       | Connection has been closed. |
 | 08000     | 13031       | Result set has been closed. |
@@ -82,8 +82,14 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
-| 44000     | 16000       | SQL check failed, error message: %s |
+| 44000     | 16000       | SQL audit failed, error message: %s. |
 | 44000     | 16001       | Hint datasource: %s is not exist. |
+
+### Authority
+
+| SQL State | Vendor Code | Reason |
+| --------- | ----------- | ------ |
+| 44000     | 16500       | Access denied for operation `%s`. |
 
 ### Cluster
 

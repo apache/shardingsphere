@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
-import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -68,7 +67,6 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     @Setter
     private static TimeService timeService = new TimeService();
     
-    @Getter
     private Properties props;
     
     private int maxVibrationOffset;

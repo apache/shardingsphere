@@ -19,14 +19,13 @@ package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.RateLimiter;
-import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
 import java.util.Properties;
 
 /**
- * TPS job rate limit algorithm for SPI.
+ * TPS job rate limit algorithm.
  */
 public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
@@ -36,22 +35,13 @@ public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
     private RateLimiter rateLimiter;
     
-    @Getter
-    private Properties props = new Properties();
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
         String tpsValue = props.getProperty(TPS_KEY);
         if (!Strings.isNullOrEmpty(tpsValue)) {
             tps = Integer.parseInt(tpsValue);
         }
         rateLimiter = RateLimiter.create(tps);
-    }
-    
-    @Override
-    public String getType() {
-        return "TPS";
     }
     
     @Override
@@ -67,7 +57,7 @@ public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     }
     
     @Override
-    public String toString() {
-        return "TPSJobRateLimitAlgorithm{" + "props=" + props + '}';
+    public String getType() {
+        return "TPS";
     }
 }

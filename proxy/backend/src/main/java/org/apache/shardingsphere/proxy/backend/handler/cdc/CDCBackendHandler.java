@@ -82,13 +82,13 @@ public final class CDCBackendHandler {
         for (TableName each : createSubscription.getTableNamesList()) {
             tableNames.add(Strings.isNullOrEmpty(each.getSchema()) ? each.getName() : String.join(".", each.getSchema(), each.getName()));
         }
-        Optional<ShardingRule> rule = database.getRuleMetaData().getRules().stream().filter(each -> each instanceof ShardingRule).map(each -> (ShardingRule) each).findFirst();
-        if (!rule.isPresent()) {
+        Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        if (!shardingRule.isPresent()) {
             return CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, "Not find sharding rule");
         }
         Map<String, List<DataNode>> actualDataNodesMap = new HashMap<>();
         for (String each : tableNames) {
-            actualDataNodesMap.put(each, getActualDataNodes(rule.get(), each));
+            actualDataNodesMap.put(each, getActualDataNodes(shardingRule.get(), each));
         }
         CreateSubscriptionJobParameter parameter = new CreateSubscriptionJobParameter(createSubscription.getDatabase(), tableNames, createSubscription.getSubscriptionName(),
                 createSubscription.getSubscriptionMode().name(), actualDataNodesMap, createSubscription.getIncrementalGlobalOrderly());

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterDefaultShadowAlgorithmStatement;
@@ -83,8 +83,7 @@ public final class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDe
     
     private void checkAlgorithmType(final AlgorithmSegment algorithmSegment) {
         String shadowAlgorithmType = algorithmSegment.getName();
-        ShardingSpherePreconditions.checkState(
-                TypedSPIRegistry.findRegisteredService(ShadowAlgorithm.class, shadowAlgorithmType).isPresent(), () -> new InvalidAlgorithmConfigurationException("shadow", shadowAlgorithmType));
+        ShardingSpherePreconditions.checkState(TypedSPILoader.contains(ShadowAlgorithm.class, shadowAlgorithmType), () -> new InvalidAlgorithmConfigurationException("shadow", shadowAlgorithmType));
     }
     
     @Override

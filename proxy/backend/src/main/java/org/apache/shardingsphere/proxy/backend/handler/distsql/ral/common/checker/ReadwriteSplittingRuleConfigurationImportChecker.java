@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
@@ -75,13 +75,13 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     }
     
     private Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataSourceContainedRule)
-                .map(each -> ((DataSourceContainedRule) each).getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
+        return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream()
+                .map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         Collection<String> notExistedLoadBalancers = currentRuleConfig.getLoadBalancers().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ReadQueryLoadBalanceAlgorithm.class, each).isPresent()).collect(Collectors.toList());
+                .filter(each -> !TypedSPILoader.contains(ReadQueryLoadBalanceAlgorithm.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedLoadBalancers.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers));
     }
 }

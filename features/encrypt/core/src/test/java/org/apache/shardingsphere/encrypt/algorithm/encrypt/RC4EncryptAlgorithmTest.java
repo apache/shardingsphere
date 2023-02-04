@@ -21,8 +21,7 @@ import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlg
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
@@ -40,10 +39,10 @@ public final class RC4EncryptAlgorithmTest {
     
     private StandardEncryptAlgorithm<Object, String> encryptAlgorithm;
     
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
-        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("RC4", PropertiesBuilder.build(new Property("rc4-key-value", "test-sharding"))), EncryptAlgorithm.class);
+        encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "RC4", PropertiesBuilder.build(new Property("rc4-key-value", "test-sharding")));
     }
     
     @Test

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.PipelineTaskConfiguration;
@@ -54,7 +55,7 @@ import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobC
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.sql.Timestamp;
@@ -63,7 +64,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -132,7 +136,9 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
     public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
         ConsistencyCheckJobItemContext context = (ConsistencyCheckJobItemContext) jobItemContext;
         ConsistencyCheckJobItemProgressContext progressContext = context.getProgressContext();
-        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(String.join(",", progressContext.getTableNames()), progressContext.getCheckedRecordsCount().get(),
+        String tableNames = String.join(",", progressContext.getTableNames());
+        String ignoredTableNames = String.join(",", progressContext.getIgnoredTableNames());
+        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(tableNames, ignoredTableNames, progressContext.getCheckedRecordsCount().get(),
                 progressContext.getRecordsCount(), progressContext.getCheckBeginTimeMillis(), progressContext.getCheckEndTimeMillis(), progressContext.getTableCheckPositions());
         jobItemProgress.setStatus(context.getStatus());
         YamlConsistencyCheckJobItemProgress yamlJobProgress = swapper.swapToYamlConfiguration(jobItemProgress);
@@ -213,12 +219,51 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
     }
     
     /**
-     * Get consistency job item info.
+     * Get consistency job item infos.
      *
      * @param parentJobId parent job id
-     * @return consistency job item info
+     * @return consistency job item infos
      */
-    public ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId) {
+    public List<ConsistencyCheckJobItemInfo> getJobItemInfos(final String parentJobId) {
+        Optional<String> latestCheckJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(parentJobId);
+        ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
+        String checkJobId = latestCheckJobId.get();
+        Optional<ConsistencyCheckJobItemProgress> progressOptional = getJobItemProgress(checkJobId, 0);
+        if (!progressOptional.isPresent()) {
+            return Collections.emptyList();
+        }
+        List<ConsistencyCheckJobItemInfo> result = new LinkedList<>();
+        ConsistencyCheckJobItemProgress jobItemProgress = progressOptional.get();
+        if (!Strings.isNullOrEmpty(jobItemProgress.getIgnoredTableNames())) {
+            Map<String, DataConsistencyCheckResult> checkJobResult = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(parentJobId, latestCheckJobId.get());
+            result.addAll(buildIgnoredTableInfo(jobItemProgress.getIgnoredTableNames().split(","), checkJobResult));
+        }
+        if (Objects.equals(jobItemProgress.getIgnoredTableNames(), jobItemProgress.getTableNames())) {
+            return result;
+        }
+        result.add(getJobItemInfo(parentJobId));
+        return result;
+    }
+    
+    private List<ConsistencyCheckJobItemInfo> buildIgnoredTableInfo(final String[] ignoredTables, final Map<String, DataConsistencyCheckResult> checkJobResult) {
+        if (null == ignoredTables) {
+            return Collections.emptyList();
+        }
+        List<ConsistencyCheckJobItemInfo> result = new LinkedList<>();
+        for (String each : ignoredTables) {
+            ConsistencyCheckJobItemInfo info = new ConsistencyCheckJobItemInfo();
+            info.setTableNames(each);
+            info.setCheckSuccess(false);
+            DataConsistencyCheckResult checkResult = checkJobResult.get(each);
+            if (null != checkResult && checkResult.isIgnored()) {
+                info.setErrorMessage(checkResult.getIgnoredType().getMessage());
+            }
+            result.add(info);
+        }
+        return result;
+    }
+    
+    private ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId) {
         Optional<String> latestCheckJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         String checkJobId = latestCheckJobId.get();
@@ -260,7 +305,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         result.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
         result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
         Map<String, DataConsistencyCheckResult> checkJobResult = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(parentJobId, checkJobId);
-        InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPIRegistry.getRegisteredService(
+        InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(
                 PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(parentJobId).getTypeName());
         result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
         return result;

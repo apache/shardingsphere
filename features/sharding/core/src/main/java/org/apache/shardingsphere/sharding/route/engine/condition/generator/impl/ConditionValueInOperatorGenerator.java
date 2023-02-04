@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
@@ -27,6 +25,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShard
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -39,10 +38,9 @@ import java.util.Optional;
 public final class ConditionValueInOperatorGenerator implements ConditionValueGenerator<InExpression> {
     
     @Override
-    public Optional<ShardingConditionValue> generate(final InExpression predicate, final Column column, final List<Object> params) {
+    public Optional<ShardingConditionValue> generate(final InExpression predicate, final Column column, final List<Object> params, final TimeServiceRule timeServiceRule) {
         List<Comparable<?>> shardingConditionValues = new LinkedList<>();
         List<Integer> parameterMarkerIndexes = new ArrayList<>(predicate.getExpressionList().size());
-        DatetimeService datetimeService = RequiredSPIRegistry.getRegisteredService(DatetimeService.class);
         for (ExpressionSegment each : predicate.getExpressionList()) {
             ConditionValue conditionValue = new ConditionValue(each, params);
             Optional<Comparable<?>> value = conditionValue.getValue();
@@ -52,7 +50,7 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
                 continue;
             }
             if (ExpressionConditionUtils.isNowExpression(each)) {
-                shardingConditionValues.add(datetimeService.getDatetime());
+                shardingConditionValues.add(timeServiceRule.getDatetime());
             }
         }
         return shardingConditionValues.isEmpty() ? Optional.empty()
