@@ -321,16 +321,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
         return Optional.empty();
     }
     
-    @Override
-    public Collection<String> getTables() {
-        return tables.keySet();
-    }
-    
-    @Override
-    public String getType() {
-        return EncryptRule.class.getSimpleName();
-    }
-    
     /**
      * Set schema meta data.
      *
@@ -344,5 +334,15 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
                 ((SchemaMetaDataAware) each).setSchemas(schemas);
             }
         }
+    }
+    
+    @Override
+    public Collection<String> getTables() {
+        return tables.keySet();
+    }
+    
+    @Override
+    public String getType() {
+        return EncryptRule.class.getSimpleName();
     }
 }
