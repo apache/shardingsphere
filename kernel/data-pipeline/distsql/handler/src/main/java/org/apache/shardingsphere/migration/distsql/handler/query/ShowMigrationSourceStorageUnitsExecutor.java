@@ -18,43 +18,37 @@
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationSourceStorageUnitsStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Result set for show migration source storage units.
+ * Show migration source storage units executor.
  */
-public final class ShowMigrationSourceStorageUnitsResultSet implements DatabaseDistSQLResultSet {
+public final class ShowMigrationSourceStorageUnitsExecutor implements QueryableRALExecutor<ShowMigrationSourceStorageUnitsStatement> {
     
     private final MigrationJobAPI jobAPI = new MigrationJobAPI();
     
-    private Iterator<Collection<Object>> data;
-    
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        data = jobAPI.listMigrationSourceResources().iterator();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationSourceStorageUnitsStatement sqlStatement) {
+        Iterator<Collection<Object>> data = jobAPI.listMigrationSourceResources().iterator();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        while (data.hasNext()) {
+            result.add(new LocalDataQueryResultRow((List<Object>) data.next()));
+        }
+        return result;
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("name", "type", "host", "port", "db", "connection_timeout_milliseconds", "idle_timeout_milliseconds",
                 "max_lifetime_milliseconds", "max_pool_size", "min_pool_size", "read_only", "other_attributes");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
     }
     
     @Override
