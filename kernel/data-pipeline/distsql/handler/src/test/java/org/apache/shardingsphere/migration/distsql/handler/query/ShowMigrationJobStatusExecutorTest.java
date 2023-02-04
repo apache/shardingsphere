@@ -42,9 +42,4 @@ public final class ShowMigrationJobStatusExecutorTest {
         assertThat(iterator.next(), is("incremental_idle_seconds"));
         assertThat(iterator.next(), is("error_message"));
     }
-    
-    @Test
-    public void assertGetRows() {
-        
-    }
 }
