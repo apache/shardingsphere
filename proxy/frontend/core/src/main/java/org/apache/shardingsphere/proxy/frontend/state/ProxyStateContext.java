@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 import org.apache.shardingsphere.proxy.frontend.state.impl.CircuitBreakProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.impl.LockProxyState;
+import org.apache.shardingsphere.proxy.frontend.state.impl.ReadOnlyProxyState;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,6 +44,7 @@ public final class ProxyStateContext {
         STATES.put(StateType.OK, new OKProxyState());
         STATES.put(StateType.LOCK, new LockProxyState());
         STATES.put(StateType.CIRCUIT_BREAK, new CircuitBreakProxyState());
+        STATES.put(StateType.READ_ONLY, new ReadOnlyProxyState());
     }
     
     /**

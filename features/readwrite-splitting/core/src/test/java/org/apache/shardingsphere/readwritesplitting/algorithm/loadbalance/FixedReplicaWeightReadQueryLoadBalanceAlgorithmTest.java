@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -49,8 +48,8 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetSingleReadDataSourceInTransaction() {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"))), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(
+                ReadQueryLoadBalanceAlgorithm.class, "FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5")));
         TransactionConnectionContext context = new TransactionConnectionContext();
         context.setInTransaction(true);
         String routeDataSource = loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), context);
@@ -60,8 +59,8 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetMultipleReadDataSourcesWithoutTransaction() {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
-                "FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5"))), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class,
+                "FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5")));
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
@@ -76,8 +75,8 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetMultipleReadDataSourcesInTransaction() {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
-                "FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5"))), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class,
+                "FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5")));
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
@@ -92,8 +91,8 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetDataSourceWhenReadDataSourceChanged() {
-        ReadQueryLoadBalanceAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
-                "FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "1"), new Property("test_read_ds_2", "2"))), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm algorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class,
+                "FIXED_REPLICA_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "1"), new Property("test_read_ds_2", "2")));
         algorithm.getDataSource("ds", "test_write_ds", Arrays.asList("test_read_ds_1", "test_read_ds_1"), new TransactionConnectionContext());
         assertThat(algorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), new TransactionConnectionContext()), is("test_read_ds_1"));
     }

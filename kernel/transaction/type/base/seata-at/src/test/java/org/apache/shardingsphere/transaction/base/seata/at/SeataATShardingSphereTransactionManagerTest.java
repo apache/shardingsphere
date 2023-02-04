@@ -31,7 +31,6 @@ import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -92,7 +91,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     @After
     public void tearDown() {
-        ExecutorDataMap.getValue().clear();
+        SeataXIDContext.remove();
         RootContext.unbind();
         SeataTransactionHolder.clear();
         seataTransactionManager.close();

@@ -38,5 +38,6 @@
         <module>executor</module>
         <module>merge</module>
         <module>context</module>
+        <module>util-groovy</module>
     </modules>
 </project>

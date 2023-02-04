@@ -41,7 +41,6 @@ buildInAlgorithmTypeName
     | FIXED_REPLICA_RANDOM
     | FIXED_REPLICA_ROUND_ROBIN
     | FIXED_REPLICA_WEIGHT
-    | FIXED_PRIMARY
     ;
 
 propertiesDefinition

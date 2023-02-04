@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -38,8 +37,8 @@ public final class SQLRegexTrafficAlgorithmTest {
     
     @Before
     public void setUp() {
-        sqlRegexAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("SQL_REGEX", PropertiesBuilder.build(new Property("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*"))), TrafficAlgorithm.class);
+        sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TypedSPILoader.getService(
+                TrafficAlgorithm.class, "SQL_REGEX", PropertiesBuilder.build(new Property("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*")));
     }
     
     @Test

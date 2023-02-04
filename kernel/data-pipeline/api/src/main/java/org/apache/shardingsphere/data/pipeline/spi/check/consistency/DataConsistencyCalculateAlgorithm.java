@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.spi.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -27,7 +27,7 @@ import java.util.Collection;
 /**
  * Data consistency calculate algorithm.
  */
-public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorithm {
+public interface DataConsistencyCalculateAlgorithm extends TypedSPI {
     
     /**
      * Calculate data for consistency check.

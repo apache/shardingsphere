@@ -57,9 +57,9 @@ public final class ShowProcessListExecutorTest extends ProxyContextRestorer {
                 + "  username: sharding\n"
                 + "  hostname: 127.0.0.1\n"
                 + "  unitStatuses:\n"
-                + "  - status: EXECUTE_STATUS_START\n"
+                + "  - processStatus: START\n"
                 + "    unitID: unitID1\n"
-                + "  - status: EXECUTE_STATUS_DONE\n"
+                + "  - processStatus: DONE\n"
                 + "    unitID: unitID2\n";
         Plugins.getMemberAccessor().set(showProcessListExecutor.getClass().getDeclaredField("batchProcessContexts"), showProcessListExecutor, Collections.singleton(executionNodeValue));
     }

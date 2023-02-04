@@ -31,8 +31,6 @@
     <modules>
         <module>opentracing</module>
         <module>opentelemetry</module>
-        <module>jaeger</module>
-        <module>zipkin</module>
     </modules>
     
     <properties>

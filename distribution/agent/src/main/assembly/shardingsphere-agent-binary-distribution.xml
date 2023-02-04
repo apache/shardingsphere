@@ -39,6 +39,13 @@
                 <include>NOTICE</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>src/main/release-docs</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
         
         <fileSet>
             <directory>../../agent/plugins/core/target/lib</directory>
