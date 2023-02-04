@@ -56,7 +56,7 @@ public final class ShadowRuleTest {
     
     private Map<String, AlgorithmConfiguration> createShadowAlgorithms() {
         Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
-        result.put("simple-hint-algorithm", new AlgorithmConfiguration("SIMPLE_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()))));
+        result.put("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()))));
         result.put("user-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
                 PropertiesBuilder.build(new Property("column", "user_id"), new Property("operation", "insert"), new Property("regex", "[1]"))));
         result.put("user-id-update-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
@@ -75,7 +75,7 @@ public final class ShadowRuleTest {
     
     private Collection<String> createShadowAlgorithmNames(final String tableName) {
         Collection<String> result = new LinkedList<>();
-        result.add("simple-hint-algorithm");
+        result.add("sql-hint-algorithm");
         if ("t_user".equals(tableName)) {
             result.add("user-id-insert-regex-algorithm");
             result.add("user-id-update-regex-algorithm");

@@ -497,11 +497,8 @@
                         <property key="regex" value="[1]" />
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
-                    <algorithm algorithm-name="SIMPLE_HINT">
-                        <property key="shadow" value="true" />
-                        <property key="foo" value="bar" />
-                    </algorithm>
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_sql_hint_1">
+                    <algorithm algorithm-name="SQL_HINT"/>
                 </shadow-algorithm>
             </table-rule>
         </rule>
@@ -517,11 +514,8 @@
                         <property key="regex" value="[1]" />
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
-                    <algorithm algorithm-name="SIMPLE_HINT">
-                        <property key="shadow" value="true" />
-                        <property key="foo" value="bar" />
-                    </algorithm>
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_sql_hint_1">
+                    <algorithm algorithm-name="SQL_HINT"/>
                 </shadow-algorithm>
             </table-rule>
         </rule>
@@ -537,11 +531,8 @@
                         <property key="regex" value="[1]" />
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
-                    <algorithm algorithm-name="SIMPLE_HINT">
-                        <property key="shadow" value="true" />
-                        <property key="foo" value="bar" />
-                    </algorithm>
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_sql_hint_1">
+                    <algorithm algorithm-name="SQL_HINT"/>
                 </shadow-algorithm>
             </table-rule>
         </rule>
@@ -659,11 +650,8 @@
     <create-shadow-rule sql-case-id="create-shadow-rule-without-quote-on-build-in-shadow-algorithm-name">
         <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_0">
-                    <algorithm algorithm-name="SIMPLE_HINT">
-                        <property key="shadow" value="true" />
-                        <property key="foo" value="bar" />
-                    </algorithm>
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_sql_hint_0">
+                    <algorithm algorithm-name="SQL_HINT" />
                 </shadow-algorithm>
             </table-rule>
         </rule>

@@ -42,7 +42,7 @@ public final class ShowMigrationJobStatusExecutor implements QueryableRALExecuto
         InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION");
         List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
-        Collection<LocalDataQueryResultRow> result = jobItemInfos.stream().map(each -> {
+        return jobItemInfos.stream().map(each -> {
             LocalDataQueryResultRow row;
             InventoryIncrementalJobItemProgress jobItemProgress = each.getJobItemProgress();
             if (null != jobItemProgress) {
@@ -59,7 +59,6 @@ public final class ShowMigrationJobStatusExecutor implements QueryableRALExecuto
             }
             return row;
         }).collect(Collectors.toList());
-        return result;
     }
     
     @Override

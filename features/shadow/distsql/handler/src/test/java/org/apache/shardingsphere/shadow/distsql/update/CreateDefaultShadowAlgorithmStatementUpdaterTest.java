@@ -57,13 +57,13 @@ public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteSuccess() {
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
         when(statement.getShadowAlgorithmSegment()).thenReturn(
-                new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SIMPLE_HINT", PropertiesBuilder.build(new Property("type", "value")))));
+                new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
         updater.checkSQLStatement(database, statement, currentConfig);
     }
     
     @Test
     public void assertExecuteWithIfNotExists() {
-        ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SIMPLE_HINT", PropertiesBuilder.build(new Property("type", "value"))));
+        ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value"))));
         CreateDefaultShadowAlgorithmStatement statement = new CreateDefaultShadowAlgorithmStatement(true, shadowAlgorithmSegment);
         updater.checkSQLStatement(database, statement, currentConfig);
     }

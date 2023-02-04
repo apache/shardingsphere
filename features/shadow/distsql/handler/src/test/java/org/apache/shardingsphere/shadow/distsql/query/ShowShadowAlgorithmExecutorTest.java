@@ -52,7 +52,7 @@ public final class ShowShadowAlgorithmExecutorTest {
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("shadowAlgorithmName"));
-        assertThat(row.getCell(2), is("simple_hint"));
+        assertThat(row.getCell(2), is("sql_hint"));
         assertThat(row.getCell(3), is("foo=bar"));
         assertThat(row.getCell(4), is("false"));
     }
@@ -80,7 +80,7 @@ public final class ShowShadowAlgorithmExecutorTest {
     private RuleConfiguration createRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Collections.singleton("shadowAlgorithmName")));
-        result.getShadowAlgorithms().put("shadowAlgorithmName", new AlgorithmConfiguration("simple_hint", PropertiesBuilder.build(new Property("foo", "bar"))));
+        result.getShadowAlgorithms().put("shadowAlgorithmName", new AlgorithmConfiguration("sql_hint", PropertiesBuilder.build(new Property("foo", "bar"))));
         return result;
     }
 }

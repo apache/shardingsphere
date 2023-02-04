@@ -39,14 +39,13 @@ import static org.mockito.Mockito.when;
 
 public final class EncryptParameterRewriterBuilderTest {
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetParameterRewritersWhenPredicateIsNeedRewrite() {
         EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
-        when(encryptRule.isQueryWithCipherColumn()).thenReturn(true);
         when(encryptRule.findEncryptTable("t_order").isPresent()).thenReturn(true);
         SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        @SuppressWarnings("rawtypes")
         Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(
                 encryptRule, DefaultDatabase.LOGIC_NAME, Collections.singletonMap("test", mock(ShardingSphereSchema.class)), sqlStatementContext, Collections.emptyList()).getParameterRewriters();
         assertThat(actual.size(), is(1));
@@ -56,7 +55,6 @@ public final class EncryptParameterRewriterBuilderTest {
     @Test
     public void assertGetParameterRewritersWhenPredicateIsNotNeedRewrite() {
         EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
-        when(encryptRule.isQueryWithCipherColumn()).thenReturn(true);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());

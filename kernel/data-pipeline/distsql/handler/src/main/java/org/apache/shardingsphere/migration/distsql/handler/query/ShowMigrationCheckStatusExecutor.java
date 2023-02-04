@@ -19,41 +19,36 @@ package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckStatusStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Result set for show migration check status.
+ * Show migration check status executor.
  */
-public final class ShowMigrationCheckStatusResultSet implements DatabaseDistSQLResultSet {
+public final class ShowMigrationCheckStatusExecutor implements QueryableRALExecutor<ShowMigrationCheckStatusStatement> {
     
     private final ConsistencyCheckJobAPI jobAPI = new ConsistencyCheckJobAPI();
     
-    private Iterator<Collection<Object>> data;
-    
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        ShowMigrationCheckStatusStatement checkMigrationStatement = (ShowMigrationCheckStatusStatement) sqlStatement;
-        List<ConsistencyCheckJobItemInfo> infos = jobAPI.getJobItemInfos(checkMigrationStatement.getJobId());
-        Collection<Collection<Object>> result = new LinkedList<>();
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckStatusStatement sqlStatement) {
+        List<ConsistencyCheckJobItemInfo> infos = jobAPI.getJobItemInfos(sqlStatement.getJobId());
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (ConsistencyCheckJobItemInfo each : infos) {
             result.add(convert(each));
         }
-        data = result.iterator();
+        return result;
     }
     
-    private Collection<Object> convert(final ConsistencyCheckJobItemInfo info) {
+    private LocalDataQueryResultRow convert(final ConsistencyCheckJobItemInfo info) {
         String checkResult = null == info.getCheckSuccess() ? "" : info.getCheckSuccess().toString();
-        return Arrays.asList(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult,
+        return new LocalDataQueryResultRow(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult,
                 String.valueOf(info.getFinishedPercentage()), info.getRemainingSeconds(),
                 Optional.ofNullable(info.getCheckBeginTime()).orElse(""), Optional.ofNullable(info.getCheckEndTime()).orElse(""),
                 info.getDurationSeconds(), Optional.ofNullable(info.getErrorMessage()).orElse(""));
@@ -62,16 +57,6 @@ public final class ShowMigrationCheckStatusResultSet implements DatabaseDistSQLR
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("tables", "result", "finished_percentage", "remaining_seconds", "check_begin_time", "check_end_time", "duration_seconds", "error_message");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
     }
     
     @Override
