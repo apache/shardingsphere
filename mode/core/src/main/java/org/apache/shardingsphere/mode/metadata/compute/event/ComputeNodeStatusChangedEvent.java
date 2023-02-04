@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state;
+package org.apache.shardingsphere.mode.metadata.compute.event;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.state.StateType;
 
 /**
- * State type.
+ * Compute node status changed event.
  */
-public enum StateType {
+@RequiredArgsConstructor
+@Getter
+public final class ComputeNodeStatusChangedEvent {
     
-    OK, CIRCUIT_BREAK, READ_ONLY, LOCK
+    private final String instanceId;
+    
+    private final StateType state;
 }

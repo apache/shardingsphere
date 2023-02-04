@@ -112,7 +112,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
             String groupName = entry.getKey();
             DatabaseDiscoveryDataSourceRule dataSourceRule = entry.getValue();
             Map<String, DataSource> originalDataSourceMap = dataSourceRule.getDataSourceGroup(dataSourceMap);
-            DatabaseDiscoveryEngine engine = new DatabaseDiscoveryEngine(dataSourceRule.getProvider(), instanceContext.getEventBusContext());
+            DatabaseDiscoveryEngine engine = new DatabaseDiscoveryEngine(dataSourceRule.getProvider(), instanceContext);
             engine.checkEnvironment(databaseName, originalDataSourceMap);
             dataSourceRule.changePrimaryDataSourceName(engine.changePrimaryDataSource(
                     databaseName, groupName, entry.getValue().getPrimaryDataSourceName(), originalDataSourceMap, dataSourceRule.getDisabledDataSourceNames()));
@@ -177,7 +177,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
             DatabaseDiscoveryDataSourceRule rule = entry.getValue();
             String jobName = rule.getProvider().getType() + "-" + databaseName + "-" + rule.getGroupName();
             CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), rule.getDataSourceGroup(dataSourceMap),
-                    rule.getProvider(), rule.getDisabledDataSourceNames(), instanceContext.getEventBusContext()).execute(null),
+                    rule.getProvider(), rule.getDisabledDataSourceNames(), instanceContext).execute(null),
                     rule.getHeartbeatProps().getProperty("keep-alive-cron"));
             scheduleContext.startSchedule(job);
         }

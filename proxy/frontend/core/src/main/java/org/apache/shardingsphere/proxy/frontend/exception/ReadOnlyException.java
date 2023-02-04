@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.proxy.frontend.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Compute node status changed event.
+ * Read only exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ComputeNodeStatusChangedEvent {
+public final class ReadOnlyException extends ConnectionSQLException {
     
-    private final StateType state;
+    private static final long serialVersionUID = 6339672680026286798L;
     
-    private final String instanceId;
+    public ReadOnlyException() {
+        super(XOpenSQLState.GENERAL_WARNING, 11, "The current instance is read-only, Not allowed write traffic.");
+    }
 }
