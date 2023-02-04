@@ -138,7 +138,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * get encrypt values.
+     * Get encrypt values.
      *
      * @param databaseName database name
      * @param schemaName schema name
@@ -292,11 +292,11 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Judge whether column is support QueryWithCipherColumn or not.
+     * Judge whether column is query with cipher column or not.
      *
      * @param logicTable logic table name
      * @param logicColumn logic column name
-     * @return whether column is support QueryWithCipherColumn or not
+     * @return query with cipher column or not
      */
     public boolean isQueryWithCipherColumn(final String logicTable, final String logicColumn) {
         return findEncryptTable(logicTable).flatMap(encryptTable -> encryptTable.getQueryWithCipherColumn(logicColumn)).orElse(queryWithCipherColumn);
