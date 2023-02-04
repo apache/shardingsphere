@@ -59,7 +59,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
-    @Getter
     private final boolean queryWithCipherColumn;
     
     public EncryptRule(final EncryptRuleConfiguration ruleConfig) {
