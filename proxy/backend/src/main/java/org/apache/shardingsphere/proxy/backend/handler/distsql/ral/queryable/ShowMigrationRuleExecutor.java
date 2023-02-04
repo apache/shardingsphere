@@ -21,35 +21,28 @@ import com.google.gson.Gson;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowMigrationRuleStatement;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * Result set for show migration rule.
+ * Show migration rule executor.
  */
-public final class ShowMigrationRuleResultSet implements DatabaseDistSQLResultSet {
+public final class ShowMigrationRuleExecutor implements QueryableRALExecutor<ShowMigrationRuleStatement> {
     
     private static final Gson GSON = new Gson();
     
-    private Iterator<Collection<Object>> data;
-    
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationRuleStatement sqlStatement) {
         PipelineProcessConfiguration processConfig = ((InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION")).showProcessConfiguration();
-        Collection<Object> row = new LinkedList<>();
-        row.add(getString(processConfig.getRead()));
-        row.add(getString(processConfig.getWrite()));
-        row.add(getString(processConfig.getStreamChannel()));
-        data = Collections.singletonList(row).iterator();
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        result.add(new LocalDataQueryResultRow(getString(processConfig.getRead()), getString(processConfig.getWrite()), getString(processConfig.getStreamChannel())));
+        return result;
     }
     
     private String getString(final Object obj) {
@@ -59,16 +52,6 @@ public final class ShowMigrationRuleResultSet implements DatabaseDistSQLResultSe
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("read", "write", "stream_channel");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
     }
     
     @Override
