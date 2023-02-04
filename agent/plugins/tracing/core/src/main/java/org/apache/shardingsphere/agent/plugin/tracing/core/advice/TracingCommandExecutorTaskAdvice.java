@@ -19,9 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.lang.reflect.Method;
 
@@ -43,11 +41,10 @@ public abstract class TracingCommandExecutorTaskAdvice<T> implements InstanceMet
     
     @Override
     public final void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        int connectionSize = AgentReflectionUtil.<ConnectionSession>getFieldValue(target, "connectionSession").getBackendConnection().getConnectionSize();
-        finishRootSpan(RootSpanContext.get(), target, connectionSize);
+        finishRootSpan(RootSpanContext.get(), target);
     }
     
-    protected abstract void finishRootSpan(T rootSpan, TargetAdviceObject target, int connectionSize);
+    protected abstract void finishRootSpan(T rootSpan, TargetAdviceObject target);
     
     @Override
     public final void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {

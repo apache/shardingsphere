@@ -20,9 +20,8 @@ package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.mod;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.sharding.ExactCollection;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.cosid.algorithm.Arguments;
@@ -54,9 +53,10 @@ public final class CosIdModShardingAlgorithmTest {
     
     static final ExactCollection<String> ALL_NODES = new ExactCollection<>("t_mod_0", "t_mod_1", "t_mod_2", "t_mod_3");
     
+    @SuppressWarnings("unchecked")
     static CosIdModShardingAlgorithm<Long> createShardingAlgorithm() {
         Properties props = PropertiesBuilder.build(new Property(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX), new Property("mod", Integer.toString(DIVISOR)));
-        return ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("COSID_MOD", props), ShardingAlgorithm.class);
+        return (CosIdModShardingAlgorithm<Long>) TypedSPILoader.getService(ShardingAlgorithm.class, "COSID_MOD", props);
     }
     
     @RunWith(Parameterized.class)

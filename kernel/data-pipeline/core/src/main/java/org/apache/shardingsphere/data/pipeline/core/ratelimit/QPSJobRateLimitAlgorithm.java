@@ -19,14 +19,13 @@ package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.RateLimiter;
-import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
 import java.util.Properties;
 
 /**
- * QPS job rate limit algorithm for SPI.
+ * QPS job rate limit algorithm.
  */
 public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
@@ -36,22 +35,13 @@ public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
     private RateLimiter rateLimiter;
     
-    @Getter
-    private Properties props = new Properties();
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
         String qpsValue = props.getProperty(QPS_KEY);
         if (!Strings.isNullOrEmpty(qpsValue)) {
             qps = Integer.parseInt(qpsValue);
         }
         rateLimiter = RateLimiter.create(qps);
-    }
-    
-    @Override
-    public String getType() {
-        return "QPS";
     }
     
     @Override
@@ -63,7 +53,7 @@ public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     }
     
     @Override
-    public String toString() {
-        return "QPSJobRateLimitAlgorithm{" + "props=" + props + '}';
+    public String getType() {
+        return "QPS";
     }
 }

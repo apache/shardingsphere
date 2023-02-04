@@ -36,6 +36,6 @@ public final class PostgreSQLInt2BinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeInt2((Integer) value);
+        payload.writeInt2(((Number) value).intValue());
     }
 }

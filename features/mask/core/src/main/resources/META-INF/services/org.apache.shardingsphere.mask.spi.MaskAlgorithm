@@ -26,3 +26,4 @@ org.apache.shardingsphere.mask.algorithm.replace.TelephoneRandomReplaceAlgorithm
 org.apache.shardingsphere.mask.algorithm.replace.PersonalIdentityNumberRandomReplaceAlgorithm
 org.apache.shardingsphere.mask.algorithm.replace.MilitaryIdentityNumberRandomReplaceAlgorithm
 org.apache.shardingsphere.mask.algorithm.replace.LandlineNumberRandomAlgorithm
+org.apache.shardingsphere.mask.algorithm.replace.GenericTableRandomReplaceAlgorithm

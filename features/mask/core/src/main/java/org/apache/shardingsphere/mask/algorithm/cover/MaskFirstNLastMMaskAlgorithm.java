@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
-import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmUtil;
+import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Properties;
@@ -41,29 +40,25 @@ public final class MaskFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object,
     
     private Character replaceChar;
     
-    @Getter
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
-        this.firstN = createFirstN(props);
-        this.lastM = createLastM(props);
-        this.replaceChar = createReplaceChar(props);
+        firstN = createFirstN(props);
+        lastM = createLastM(props);
+        replaceChar = createReplaceChar(props);
     }
     
     private Integer createFirstN(final Properties props) {
-        MaskAlgorithmUtil.checkIntegerTypeConfig(props, FIRST_N, getType());
+        MaskAlgorithmPropsChecker.checkIntegerTypeConfig(props, FIRST_N, getType());
         return Integer.parseInt(props.getProperty(FIRST_N));
     }
     
     private Integer createLastM(final Properties props) {
-        MaskAlgorithmUtil.checkIntegerTypeConfig(props, LAST_M, getType());
+        MaskAlgorithmPropsChecker.checkIntegerTypeConfig(props, LAST_M, getType());
         return Integer.parseInt(props.getProperty(LAST_M));
     }
     
     private Character createReplaceChar(final Properties props) {
-        MaskAlgorithmUtil.checkSingleCharConfig(props, REPLACE_CHAR, getType());
+        MaskAlgorithmPropsChecker.checkSingleCharConfig(props, REPLACE_CHAR, getType());
         return props.getProperty(REPLACE_CHAR).charAt(0);
     }
     

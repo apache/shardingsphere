@@ -44,7 +44,7 @@ public final class PipelineDistributedBarrierTest {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrier instance = new PipelineDistributedBarrier();
+        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
         String parentPath = "/barrier";
         instance.register(parentPath, 1);
         Map<?, ?> countDownLatchMap = (Map<?, ?>) Plugins.getMemberAccessor().get(PipelineDistributedBarrier.class.getDeclaredField("countDownLatchHolders"), instance);
@@ -59,7 +59,7 @@ public final class PipelineDistributedBarrierTest {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrier instance = new PipelineDistributedBarrier();
+        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         instance.register(barrierEnablePath, 1);
         instance.persistEphemeralChildrenNode(barrierEnablePath, 1);

@@ -126,11 +126,6 @@ public final class EncryptRuleTest {
     }
     
     @Test
-    public void assertGetLikeQueryColumns() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).getLikeQueryColumns("t_encrypt").isEmpty());
-    }
-    
-    @Test
     public void assertGetTables() {
         assertThat(new EncryptRule(createEncryptRuleConfiguration()).getTables(), is(Collections.singleton("t_encrypt")));
     }

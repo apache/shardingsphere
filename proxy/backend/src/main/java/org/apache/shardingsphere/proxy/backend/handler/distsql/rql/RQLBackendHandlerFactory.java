@@ -41,14 +41,14 @@ public final class RQLBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
         // TODO remove this judgment after the refactoring of DistSQLResultSet is completed
-        if (TypedSPILoader.contains(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName())) {
+        if (TypedSPILoader.contains(DistSQLResultSet.class, sqlStatement.getClass().getName())) {
             return newInstanceByDistSQLResultSet(sqlStatement, connectionSession);
         }
         return new RQLBackendHandler<>(sqlStatement, connectionSession);
     }
     
     private static ProxyBackendHandler newInstanceByDistSQLResultSet(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        DistSQLResultSet resultSet = TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName());
+        DistSQLResultSet resultSet = TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getName());
         return new RQLResultSetBackendHandler(sqlStatement, connectionSession, (DatabaseDistSQLResultSet) resultSet);
     }
 }

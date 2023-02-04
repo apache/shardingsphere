@@ -38,7 +38,7 @@ public final class BarrierMetaDataChangedEventHandler implements PipelineMetaDat
     @Override
     public void handle(final DataChangedEvent event) {
         if (event.getType() == Type.ADDED) {
-            new PipelineDistributedBarrier().notifyChildrenNodeCountCheck(event.getKey());
+            PipelineDistributedBarrier.getInstance().notifyChildrenNodeCountCheck(event.getKey());
         }
     }
 }

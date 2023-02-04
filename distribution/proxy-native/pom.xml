@@ -100,6 +100,7 @@
             <id>native</id>
             <properties>
                 <hikari-cp.version>5.0.1</hikari-cp.version>
+                <truffle-api.version>22.3.1</truffle-api.version>
             </properties>
             <build>
                 <plugins>
@@ -124,6 +125,7 @@
                             <fallback>false</fallback>
                             <verbose>true</verbose>
                             <buildArgs>
+                                <arg>--language:java</arg>
                                 <arg>--report-unsupported-elements-at-runtime</arg>
                             </buildArgs>
                             <jvmArgs>
@@ -131,6 +133,7 @@
                             </jvmArgs>
                             <metadataRepository>
                                 <enabled>true</enabled>
+                                <version>0.2.6</version>
                             </metadataRepository>
                         </configuration>
                         <executions>
