@@ -18,20 +18,23 @@
 package org.apache.shardingsphere.encrypt.metadata;
 
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
+import org.apache.shardingsphere.encrypt.metadata.reviser.EncryptColumnNameReviser;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.ColumnReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.ColumnReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Schema meta data decorator for encrypt.
@@ -52,43 +55,12 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
     }
     
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
-        return encryptRule.findEncryptTable(tableName).map(optional -> new TableMetaData(tableName,
-                getEncryptColumnMetaDataList(optional, tableMetaData.getColumns()), tableMetaData.getIndexes(), tableMetaData.getConstrains())).orElse(tableMetaData);
-    }
-    
-    private Collection<ColumnMetaData> getEncryptColumnMetaDataList(final EncryptTable encryptTable, final Collection<ColumnMetaData> originalColumnMetaDataList) {
-        Collection<ColumnMetaData> result = new LinkedHashSet<>();
-        Collection<String> plainColumns = encryptTable.getPlainColumns();
-        Collection<String> assistedQueryColumns = encryptTable.getAssistedQueryColumns();
-        Collection<String> likeQueryColumns = encryptTable.getLikeQueryColumns();
-        for (ColumnMetaData each : originalColumnMetaDataList) {
-            String columnName = each.getName();
-            if (plainColumns.contains(columnName)) {
-                result.add(createMetaDataByPlainColumn(encryptTable, columnName, each));
-                continue;
-            }
-            if (encryptTable.isCipherColumn(columnName)) {
-                result.add(createMetaDataByCipherColumn(encryptTable, columnName, each));
-                continue;
-            }
-            if (!assistedQueryColumns.contains(columnName) && !likeQueryColumns.contains(columnName)) {
-                result.add(each);
-            }
+        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return tableMetaData;
         }
-        return result;
-    }
-    
-    private ColumnMetaData createMetaDataByPlainColumn(final EncryptTable encryptTable, final String columnName, final ColumnMetaData columnMetaData) {
-        return createColumnMetaData(encryptTable.getLogicColumnByPlainColumn(columnName), columnMetaData);
-    }
-    
-    private ColumnMetaData createMetaDataByCipherColumn(final EncryptTable encryptTable, final String columnName, final ColumnMetaData columnMetaData) {
-        return createColumnMetaData(encryptTable.getLogicColumnByCipherColumn(columnName), columnMetaData);
-    }
-    
-    private ColumnMetaData createColumnMetaData(final String columnName, final ColumnMetaData columnMetaData) {
-        return new ColumnMetaData(columnName, columnMetaData.getDataType(),
-                columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive(), columnMetaData.isVisible(), columnMetaData.isUnsigned());
+        Collection<ColumnReviser> revisers = Collections.singleton(new EncryptColumnNameReviser(encryptTable.get()));
+        return new TableMetaData(tableName, new ColumnReviseEngine().revise(tableMetaData.getColumns(), revisers), tableMetaData.getIndexes(), tableMetaData.getConstrains());
     }
     
     @Override
