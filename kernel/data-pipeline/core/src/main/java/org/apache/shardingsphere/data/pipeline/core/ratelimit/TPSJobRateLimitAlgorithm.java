@@ -45,11 +45,6 @@ public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     }
     
     @Override
-    public String getType() {
-        return "TPS";
-    }
-    
-    @Override
     public void intercept(final JobOperationType type, final Number data) {
         switch (type) {
             case INSERT:
@@ -59,5 +54,10 @@ public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
                 break;
             default:
         }
+    }
+    
+    @Override
+    public String getType() {
+        return "TPS";
     }
 }

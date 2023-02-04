@@ -45,15 +45,15 @@ public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     }
     
     @Override
-    public String getType() {
-        return "QPS";
-    }
-    
-    @Override
     public void intercept(final JobOperationType type, final Number data) {
         if (type != JobOperationType.SELECT) {
             return;
         }
         rateLimiter.acquire(null != data ? data.intValue() : 1);
+    }
+    
+    @Override
+    public String getType() {
+        return "QPS";
     }
 }
