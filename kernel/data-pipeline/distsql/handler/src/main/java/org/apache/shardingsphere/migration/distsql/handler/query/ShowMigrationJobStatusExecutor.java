@@ -21,74 +21,50 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show migration job status.
+ * Show migration job status executor.
  */
-public final class ShowMigrationJobStatusResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<Collection<Object>> data;
+public final class ShowMigrationJobStatusExecutor implements QueryableRALExecutor<ShowMigrationStatusStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationStatusStatement sqlStatement) {
         InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION");
-        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(((ShowMigrationStatusStatement) sqlStatement).getJobId());
+        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
-        data = jobItemInfos.stream().map(each -> {
-            Collection<Object> result = new LinkedList<>();
-            result.add(each.getShardingItem());
+        Collection<LocalDataQueryResultRow> result = jobItemInfos.stream().map(each -> {
+            LocalDataQueryResultRow row;
             InventoryIncrementalJobItemProgress jobItemProgress = each.getJobItemProgress();
             if (null != jobItemProgress) {
-                result.add(jobItemProgress.getDataSourceName());
-                result.add(jobItemProgress.getStatus());
-                result.add(jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
-                result.add(jobItemProgress.getProcessedRecordsCount());
-                result.add(each.getInventoryFinishedPercentage());
                 String incrementalIdleSeconds = "";
                 if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
                     long latestActiveTimeMillis = Math.max(each.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
                     incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
                 }
-                result.add(incrementalIdleSeconds);
+                row = new LocalDataQueryResultRow(each.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(),
+                        jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), each.getInventoryFinishedPercentage(),
+                        incrementalIdleSeconds, each.getErrorMessage());
             } else {
-                result.add("");
-                result.add("");
-                result.add("");
-                result.add("");
-                result.add("");
-                result.add("");
+                row = new LocalDataQueryResultRow(each.getShardingItem(), "", "", "", "", "", "", each.getErrorMessage());
             }
-            result.add(each.getErrorMessage());
-            return result;
-        }).collect(Collectors.toList()).iterator();
+            return row;
+        }).collect(Collectors.toList());
+        return result;
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("item", "data_source", "status", "active", "processed_records_count", "inventory_finished_percentage", "incremental_idle_seconds", "error_message");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
     }
     
     @Override
