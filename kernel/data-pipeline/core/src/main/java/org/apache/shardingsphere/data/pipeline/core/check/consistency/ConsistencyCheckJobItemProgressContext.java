@@ -44,6 +44,8 @@ public final class ConsistencyCheckJobItemProgressContext implements PipelineJob
     
     private final Collection<String> tableNames = new CopyOnWriteArraySet<>();
     
+    private final Collection<String> ignoredTableNames = new CopyOnWriteArraySet<>();
+    
     private volatile long recordsCount;
     
     private final AtomicLong checkedRecordsCount = new AtomicLong(0);

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.exception.algorithm.sharding.Mismatche
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -59,7 +60,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     private String getAlgorithmExpression(final Properties props) {
         String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
         ShardingSpherePreconditions.checkState(null != expression && !expression.isEmpty(),
-                () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression cannot be null or empty."));
+                () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression cannot be null or empty"));
         return InlineExpressionParser.handlePlaceHolder(expression.trim());
     }
     
@@ -94,6 +95,11 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         } catch (final MissingMethodException | NullPointerException ex) {
             throw new MismatchedInlineShardingAlgorithmExpressionAndColumnException(algorithmExpression, columnName);
         }
+    }
+    
+    @Override
+    public Optional<String> getAlgorithmStructure(final String dataNodePrefix, final String shardingColumn) {
+        return Optional.of(algorithmExpression.replaceFirst(dataNodePrefix, "").replaceFirst(shardingColumn, "").replaceAll(" ", ""));
     }
     
     @Override

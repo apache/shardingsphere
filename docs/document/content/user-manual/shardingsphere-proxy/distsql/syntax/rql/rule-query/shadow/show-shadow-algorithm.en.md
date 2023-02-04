@@ -37,9 +37,6 @@ databaseName ::=
 | props                 | Shadow algorithm properties |
 | is_default            | Default                     |
 
-
-
-
 ### Example
 
 - Query shadow algorithms for specified database.

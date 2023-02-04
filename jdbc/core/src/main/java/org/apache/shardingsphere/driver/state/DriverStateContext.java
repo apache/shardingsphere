@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.state;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.Connection;
@@ -40,7 +40,7 @@ public final class DriverStateContext {
      * @return connection
      */
     public static Connection getConnection(final String databaseName, final ContextManager contextManager, final JDBCContext jdbcContext) {
-        return TypedSPIRegistry.getRegisteredService(
+        return TypedSPILoader.getService(
                 DriverState.class, contextManager.getInstanceContext().getInstance().getState().getCurrentState().name()).getConnection(databaseName, contextManager, jdbcContext);
     }
 }

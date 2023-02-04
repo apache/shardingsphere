@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,9 +48,7 @@ public final class SQLTranslatorRuleResultSetTest {
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
         SQLTranslatorRule authorityRule = mock(SQLTranslatorRule.class);
         when(authorityRule.getConfiguration()).thenReturn(createSQLTranslatorRuleConfiguration());
-        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
-        when(result.findSingleRule(SQLTranslatorRule.class)).thenReturn(Optional.of(authorityRule));
-        return result;
+        return new ShardingSphereRuleMetaData(Collections.singleton(authorityRule));
     }
     
     private SQLTranslatorRuleConfiguration createSQLTranslatorRuleConfiguration() {

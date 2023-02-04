@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
@@ -65,7 +65,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         this.resourceName = resourceName;
         this.dataSource = dataSource;
         if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
-            xaDataSource = new DataSourceSwapper(TypedSPIRegistry.getRegisteredService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
+            xaDataSource = new DataSourceSwapper(TypedSPILoader.getService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
             this.xaTransactionManagerProvider = xaTransactionManagerProvider;
             xaTransactionManagerProvider.registerRecoveryResource(resourceName, xaDataSource);
         }
@@ -86,7 +86,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
         if (!enlistedTransactions.get().containsKey(transaction)) {
             Connection connection = dataSource.getConnection();
-            XAConnection xaConnection = TypedSPIRegistry.getRegisteredService(XAConnectionWrapper.class, databaseType.getType()).wrap(xaDataSource, connection);
+            XAConnection xaConnection = TypedSPILoader.getService(XAConnectionWrapper.class, databaseType.getType()).wrap(xaDataSource, connection);
             transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
             transaction.registerSynchronization(new Synchronization() {
                 

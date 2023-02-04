@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCasesLoader;
@@ -173,6 +173,6 @@ public final class E2ETestParameterGenerator {
     
     private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
         String candidates = Strings.isNullOrEmpty(databaseTypes) ? "H2,MySQL,Oracle,SQLServer,PostgreSQL,openGauss" : databaseTypes;
-        return Splitter.on(',').trimResults().splitToList(candidates).stream().map(each -> TypedSPIRegistry.getRegisteredService(DatabaseType.class, each)).collect(Collectors.toList());
+        return Splitter.on(',').trimResults().splitToList(candidates).stream().map(each -> TypedSPILoader.getService(DatabaseType.class, each)).collect(Collectors.toList());
     }
 }

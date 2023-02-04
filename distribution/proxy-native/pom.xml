@@ -31,7 +31,7 @@
         <native.image.name>apache-shardingsphere-proxy-native</native.image.name>
         <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
-        <native.maven.plugin.version>0.9.17</native.maven.plugin.version>
+        <native.maven.plugin.version>0.9.19</native.maven.plugin.version>
     </properties>
     
     <dependencies>

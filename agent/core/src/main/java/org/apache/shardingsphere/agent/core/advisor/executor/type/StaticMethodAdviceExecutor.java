@@ -30,8 +30,8 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.type.StaticMethodAdvice;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
 import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
-import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory.Logger;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
+import org.apache.shardingsphere.agent.log.api.AgentLogger;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -45,7 +45,7 @@ import java.util.concurrent.Callable;
 @RequiredArgsConstructor
 public final class StaticMethodAdviceExecutor implements AdviceExecutor {
     
-    private static final Logger LOGGER = AgentLoggerFactory.getLogger(StaticMethodAdviceExecutor.class);
+    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(StaticMethodAdviceExecutor.class);
     
     private final Map<String, Collection<StaticMethodAdvice>> advices;
     

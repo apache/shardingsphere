@@ -45,4 +45,13 @@ public final class GenericSQLRewriteEngineTest {
         assertThat(actual.getSqlRewriteUnit().getSql(), is("SELECT 1"));
         assertThat(actual.getSqlRewriteUnit().getParameters(), is(Collections.emptyList()));
     }
+    
+    @Test
+    public void assertRewriteStorageTypeIsEmpty() {
+        SQLTranslatorRule rule = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration());
+        GenericSQLRewriteResult actual = new GenericSQLRewriteEngine(rule, mock(DatabaseType.class), Collections.emptyMap()).rewrite(new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList(), mock(ConnectionContext.class)));
+        assertThat(actual.getSqlRewriteUnit().getSql(), is("SELECT 1"));
+        assertThat(actual.getSqlRewriteUnit().getParameters(), is(Collections.emptyList()));
+    }
 }

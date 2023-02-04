@@ -102,6 +102,10 @@
         <assertion expected-data-file="select_sharding_table_statistics.xml" />
     </test-case>
 
+    <test-case sql="select * from shardingsphere.cluster_information;" db-types="MySQL,PostgreSQL,openGauss">
+        <assertion expected-data-file="select_cluster_information.xml" />
+    </test-case>
+
     <test-case sql="SHOW AUTHORITY RULE;">
         <assertion expected-data-file="show_authority_rule.xml" />
     </test-case>

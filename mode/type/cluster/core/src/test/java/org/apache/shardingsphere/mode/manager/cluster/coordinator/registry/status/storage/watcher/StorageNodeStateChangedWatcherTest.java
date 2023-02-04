@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
+import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
@@ -36,7 +38,7 @@ public final class StorageNodeStateChangedWatcherTest {
     @Test
     public void assertCreatePrimaryStateChangedEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: primary\nstatus: enable\n", Type.ADDED));
+                new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: PRIMARY\nstatus: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
         PrimaryStateChangedEvent actualEvent = (PrimaryStateChangedEvent) actual.get();
         assertThat(actualEvent.getQualifiedDatabase().getDatabaseName(), is("replica_query_db"));
@@ -47,27 +49,27 @@ public final class StorageNodeStateChangedWatcherTest {
     @Test
     public void assertCreateEnabledStorageNodeChangedEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: member\nstatus: enable\n", Type.ADDED));
+                new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: MEMBER\nstatus: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
         StorageNodeChangedEvent actualEvent = (StorageNodeChangedEvent) actual.get();
         assertThat(actualEvent.getQualifiedDatabase().getDatabaseName(), is("replica_query_db"));
         assertThat(actualEvent.getQualifiedDatabase().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedDatabase().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getDataSource().getRole(), is("member"));
-        assertThat(actualEvent.getDataSource().getStatus(), is("enable"));
+        assertThat(actualEvent.getDataSource().getRole(), is(StorageNodeRole.MEMBER));
+        assertThat(actualEvent.getDataSource().getStatus(), is(StorageNodeStatus.ENABLED));
     }
     
     @Test
     public void assertCreateDisabledStorageNodeChangedEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: member\nstatus: disable\n", Type.DELETED));
+                new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: MEMBER\nstatus: DISABLED\n", Type.DELETED));
         assertTrue(actual.isPresent());
         StorageNodeChangedEvent actualEvent = (StorageNodeChangedEvent) actual.get();
         assertThat(actualEvent.getQualifiedDatabase().getDatabaseName(), is("replica_query_db"));
         assertThat(actualEvent.getQualifiedDatabase().getGroupName(), is("readwrite_ds"));
         assertThat(actualEvent.getQualifiedDatabase().getDataSourceName(), is("replica_ds_0"));
-        assertThat(actualEvent.getDataSource().getRole(), is("member"));
-        assertThat(actualEvent.getDataSource().getStatus(), is("disable"));
+        assertThat(actualEvent.getDataSource().getRole(), is(StorageNodeRole.MEMBER));
+        assertThat(actualEvent.getDataSource().getStatus(), is(StorageNodeStatus.DISABLED));
     }
     
     @Test

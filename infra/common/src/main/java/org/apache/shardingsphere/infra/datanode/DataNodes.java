@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.datanode;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +42,7 @@ public final class DataNodes {
     
     public DataNodes(final Collection<ShardingSphereRule> rules) {
         this.rules = rules;
-        dataNodeBuilders = OrderedSPIRegistry.getRegisteredServices(DataNodeBuilder.class, rules);
+        dataNodeBuilders = OrderedSPILoader.getServices(DataNodeBuilder.class, rules);
     }
     
     /**

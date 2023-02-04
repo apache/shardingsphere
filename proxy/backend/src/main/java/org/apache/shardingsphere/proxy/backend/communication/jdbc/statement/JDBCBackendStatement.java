@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -70,7 +70,7 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     }
     
     private void setFetchSize(final Statement statement, final DatabaseType databaseType) throws SQLException {
-        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = TypedSPIRegistry.findRegisteredService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getType());
+        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = TypedSPILoader.findService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getType());
         if (fetchSizeSetter.isPresent()) {
             fetchSizeSetter.get().setFetchSize(statement);
         }

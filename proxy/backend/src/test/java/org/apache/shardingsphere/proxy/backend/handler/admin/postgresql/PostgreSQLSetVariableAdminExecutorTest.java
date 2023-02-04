@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
@@ -42,9 +42,9 @@ public final class PostgreSQLSetVariableAdminExecutorTest {
         PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
         setStatement.getVariableAssigns().add(variableAssignSegment);
         PostgreSQLSetVariableAdminExecutor executor = new PostgreSQLSetVariableAdminExecutor(setStatement);
-        try (MockedStatic<TypedSPIRegistry> mockStatic = mockStatic(TypedSPIRegistry.class)) {
+        try (MockedStatic<TypedSPILoader> mockStatic = mockStatic(TypedSPILoader.class)) {
             PostgreSQLSessionVariableHandler mockHandler = mock(PostgreSQLSessionVariableHandler.class);
-            mockStatic.when(() -> TypedSPIRegistry.findRegisteredService(PostgreSQLSessionVariableHandler.class, "key")).thenReturn(Optional.of(mockHandler));
+            mockStatic.when(() -> TypedSPILoader.findService(PostgreSQLSessionVariableHandler.class, "key")).thenReturn(Optional.of(mockHandler));
             executor.execute(null);
             verify(mockHandler).handle(null, "key", "value");
         }

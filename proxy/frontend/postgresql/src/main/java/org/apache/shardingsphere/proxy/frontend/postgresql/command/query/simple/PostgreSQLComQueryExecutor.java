@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.sim
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -69,7 +69,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     public PostgreSQLComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket comQueryPacket, final ConnectionSession connectionSession) throws SQLException {
         this.portalContext = portalContext;
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"), comQueryPacket.getSql(), connectionSession);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), comQueryPacket.getSql(), connectionSession);
     }
     
     @Override

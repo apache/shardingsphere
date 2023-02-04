@@ -17,8 +17,8 @@ chapter = true
 
 ### 已知实现
 
-| *配置标识*      | *详细说明*                    | *全限定类名* |
-| ------------- | ---------------------------- | ---------- |
+| *配置标识*      | *详细说明*                     | *全限定类名* |
+| ------------- | ----------------------------- | ---------- |
 | Prometheus    | Prometheus 插件生命周期管理类    | [`org.apache.shardingsphere.agent.plugin.metrics.prometheus.PrometheusPluginLifecycleService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/metrics/type/prometheus/src/main/java/org/apache/shardingsphere/agent/plugin/metrics/prometheus/PrometheusPluginLifecycleService.java) |
 | File          | File 插件生命周期管理类          | [`org.apache.shardingsphere.agent.plugin.logging.file.FileLoggingPluginLifecycleService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/logging/type/file/src/main/java/org/apache/shardingsphere/agent/plugin/logging/file/FileLoggingPluginLifecycleService.java) |
 | Jaeger        | Jaeger 插件生命周期管理类        | [`org.apache.shardingsphere.agent.plugin.tracing.jaeger.JaegerTracingPluginLifecycleService`](https://github.com/apache/shardingsphere/blob/master/agent/plugins/tracing/type/jaeger/src/main/java/org/apache/shardingsphere/agent/plugin/tracing/jaeger/JaegerTracingPluginLifecycleService.java) |

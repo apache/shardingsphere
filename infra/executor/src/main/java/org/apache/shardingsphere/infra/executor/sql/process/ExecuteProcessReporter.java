@@ -51,7 +51,7 @@ public final class ExecuteProcessReporter {
      */
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
                        final ExecuteProcessConstants constants) {
-        ExecuteProcessContext originExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionGroupContext.getExecutionID());
+        ExecuteProcessContext originExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionGroupContext.getReportContext().getExecutionID());
         boolean isProxyContext = null != originExecuteProcessContext && originExecuteProcessContext.isProxyContext();
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants, isProxyContext);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);

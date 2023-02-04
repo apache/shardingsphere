@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
@@ -45,7 +44,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 
 import java.sql.SQLException;
@@ -140,7 +139,7 @@ public final class MigrationJobPreparer {
         CreateTableConfiguration createTableConfig = jobItemContext.getTaskConfig().getCreateTableConfig();
         PipelineDataSourceManager dataSourceManager = (PipelineDataSourceManager) jobItemContext.getImporterConnector().getConnector();
         PrepareTargetSchemasParameter prepareTargetSchemasParam = new PrepareTargetSchemasParameter(
-                TypedSPIRegistry.getRegisteredService(DatabaseType.class, targetDatabaseType), createTableConfig, dataSourceManager);
+                TypedSPILoader.getService(DatabaseType.class, targetDatabaseType), createTableConfig, dataSourceManager);
         PipelineJobPreparerUtils.prepareTargetSchema(targetDatabaseType, prepareTargetSchemasParam);
         ShardingSphereSQLParserEngine sqlParserEngine = PipelineJobPreparerUtils.getSQLParserEngine(jobConfig.getTargetDatabaseName());
         PipelineJobPreparerUtils.prepareTargetTables(targetDatabaseType, new PrepareTargetTablesParameter(createTableConfig, dataSourceManager, sqlParserEngine));
@@ -148,9 +147,10 @@ public final class MigrationJobPreparer {
     
     private void initInventoryTasks(final MigrationJobItemContext jobItemContext) {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
-        PipelineColumnMetaData uniqueKeyColumn = jobItemContext.getJobConfig().getUniqueKeyColumn();
-        inventoryDumperConfig.setUniqueKey(uniqueKeyColumn.getName());
-        inventoryDumperConfig.setUniqueKeyDataType(uniqueKeyColumn.getDataType());
+        Optional.ofNullable(jobItemContext.getJobConfig().getUniqueKeyColumn()).ifPresent(uniqueKeyColumn -> {
+            inventoryDumperConfig.setUniqueKey(uniqueKeyColumn.getName());
+            inventoryDumperConfig.setUniqueKeyDataType(uniqueKeyColumn.getDataType());
+        });
         InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), inventoryDumperConfig, jobItemContext.getTaskConfig().getImporterConfig());
         jobItemContext.getInventoryTasks().addAll(inventoryTaskSplitter.splitInventoryData(jobItemContext));
     }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -41,8 +42,8 @@ import java.util.Optional;
 public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSplittingRule> {
     
     @Override
-    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final ReadwriteSplittingRule rule,
-                                           final ConfigurationProperties props, final ConnectionContext connectionContext) {
+    public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData,
+                                           final ShardingSphereDatabase database, final ReadwriteSplittingRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         RouteContext result = new RouteContext();
         ReadwriteSplittingDataSourceRule singleDataSourceRule = rule.getSingleDataSourceRule();
         String dataSourceName = new ReadwriteSplittingDataSourceRouter(singleDataSourceRule, connectionContext).route(queryContext.getSqlStatementContext());
@@ -51,9 +52,8 @@ public final class ReadwriteSplittingSQLRouter implements SQLRouter<ReadwriteSpl
     }
     
     @Override
-    public void decorateRouteContext(final RouteContext routeContext,
-                                     final QueryContext queryContext, final ShardingSphereDatabase database, final ReadwriteSplittingRule rule,
-                                     final ConfigurationProperties props, final ConnectionContext connectionContext) {
+    public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
+                                     final ReadwriteSplittingRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
         Collection<RouteUnit> toBeRemoved = new LinkedList<>();
         Collection<RouteUnit> toBeAdded = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {

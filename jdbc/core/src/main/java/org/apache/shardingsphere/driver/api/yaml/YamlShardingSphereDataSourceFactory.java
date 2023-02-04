@@ -24,6 +24,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -48,6 +49,25 @@ public final class YamlShardingSphereDataSourceFactory {
     private static final YamlRuleConfigurationSwapperEngine SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
     
     private static final YamlDataSourceConfigurationSwapper DATA_SOURCE_SWAPPER = new YamlDataSourceConfigurationSwapper();
+    
+    /**
+     * Create ShardingSphere data source without cache.
+     *
+     * @param rootConfig rule configurations
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSourceWithoutCache(final YamlRootConfiguration rootConfig) throws SQLException {
+        Map<String, DataSource> dataSourceMap = DATA_SOURCE_SWAPPER.swapToDataSources(rootConfig.getDataSources(), false);
+        try {
+            return createDataSource(dataSourceMap, rootConfig);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            dataSourceMap.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
+            throw ex;
+        }
+    }
     
     /**
      * Create ShardingSphere data source.

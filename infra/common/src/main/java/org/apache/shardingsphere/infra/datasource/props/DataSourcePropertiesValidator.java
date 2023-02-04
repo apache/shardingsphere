@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -56,7 +56,7 @@ public final class DataSourcePropertiesValidator {
     }
     
     private void validateProperties(final String dataSourceName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
-        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPIRegistry.findRegisteredService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
+        Optional<DataSourcePoolMetaData> poolMetaData = TypedSPILoader.findService(DataSourcePoolMetaData.class, dataSourceProps.getDataSourceClassName());
         if (!poolMetaData.isPresent()) {
             return;
         }

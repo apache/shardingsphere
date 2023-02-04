@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.sql.Connection;
@@ -35,7 +34,7 @@ import java.sql.SQLException;
 /**
  * SQL federation executor.
  */
-public interface SQLFederationExecutor extends TypedSPI, RequiredSPI, AutoCloseable {
+public interface SQLFederationExecutor extends TypedSPI, AutoCloseable {
     
     /**
      * Init SQL federation executor.
