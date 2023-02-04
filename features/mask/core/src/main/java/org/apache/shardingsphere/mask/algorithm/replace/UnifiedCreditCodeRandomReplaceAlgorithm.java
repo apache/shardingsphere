@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmUtil;
+import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.List;
@@ -51,26 +51,23 @@ public final class UnifiedCreditCodeRandomReplaceAlgorithm implements MaskAlgori
     @Override
     public void init(final Properties props) {
         this.props = props;
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, REGISTRATION_DEPARTMENT_CODES, getType());
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, CATEGORY_CODES, getType());
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, ADMINISTRATIVE_DIVISION_CODES, getType());
         this.registrationDepartmentCodes = createRegistrationDepartmentCodes(props);
         this.categoryCodes = createCategoryCodes(props);
         this.administrativeDivisionCodes = createAdministrativeDivisionCodes(props);
     }
     
     private List<Character> createRegistrationDepartmentCodes(final Properties props) {
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, REGISTRATION_DEPARTMENT_CODES, getType());
+        MaskAlgorithmPropsChecker.checkAtLeastOneCharConfig(props, REGISTRATION_DEPARTMENT_CODES, getType());
         return Splitter.on(",").trimResults().splitToList(props.getProperty(REGISTRATION_DEPARTMENT_CODES)).stream().map(each -> each.charAt(0)).collect(Collectors.toList());
     }
     
     private List<Character> createCategoryCodes(final Properties props) {
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, CATEGORY_CODES, getType());
+        MaskAlgorithmPropsChecker.checkAtLeastOneCharConfig(props, CATEGORY_CODES, getType());
         return Splitter.on(",").trimResults().splitToList(props.getProperty(CATEGORY_CODES)).stream().map(each -> each.charAt(0)).collect(Collectors.toList());
     }
     
     private List<String> createAdministrativeDivisionCodes(final Properties props) {
-        MaskAlgorithmUtil.checkAtLeastOneCharConfig(props, ADMINISTRATIVE_DIVISION_CODES, getType());
+        MaskAlgorithmPropsChecker.checkAtLeastOneCharConfig(props, ADMINISTRATIVE_DIVISION_CODES, getType());
         return Splitter.on(",").trimResults().splitToList(props.getProperty(ADMINISTRATIVE_DIVISION_CODES));
     }
     
