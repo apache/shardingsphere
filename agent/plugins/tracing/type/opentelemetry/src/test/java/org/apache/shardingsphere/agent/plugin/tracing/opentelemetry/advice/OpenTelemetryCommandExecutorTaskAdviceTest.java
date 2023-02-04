@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice;
 
 import io.opentelemetry.api.common.AttributeKey;
-import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
+import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.collector.OpenTelemetryCollector;
-import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -47,8 +46,8 @@ public final class OpenTelemetryCommandExecutorTaskAdviceTest extends AbstractCo
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));
-        assertThat(spanData.getAttributes().get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
-        assertThat(spanData.getKind(), is(SpanKind.CLIENT));
+        assertThat(spanData.getAttributes().get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
+        assertThat(spanData.getAttributes().get(AttributeKey.stringKey(AttributeConstants.SPAN_KIND)), is(AttributeConstants.SPAN_KIND_CLIENT));
     }
     
     @Test
@@ -61,8 +60,8 @@ public final class OpenTelemetryCommandExecutorTaskAdviceTest extends AbstractCo
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));
-        assertThat(spanData.getAttributes().get(AttributeKey.stringKey(OpenTelemetryConstants.COMPONENT)), is(OpenTelemetryConstants.COMPONENT_NAME));
-        assertThat(spanData.getKind(), is(SpanKind.CLIENT));
+        assertThat(spanData.getAttributes().get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
+        assertThat(spanData.getAttributes().get(AttributeKey.stringKey(AttributeConstants.SPAN_KIND)), is(AttributeConstants.SPAN_KIND_CLIENT));
         assertThat(spanData.getStatus().getStatusCode(), is(StatusCode.ERROR));
     }
 }

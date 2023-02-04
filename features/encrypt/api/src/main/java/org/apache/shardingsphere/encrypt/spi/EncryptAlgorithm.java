@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.spi;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Encrypt algorithm.
  */
-public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
+public interface EncryptAlgorithm extends TypedSPI {
 }

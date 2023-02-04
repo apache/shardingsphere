@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
@@ -38,7 +37,6 @@ import java.util.stream.Collectors;
 /**
  * Cluster mode context manager.
  */
-@RequiredArgsConstructor
 public final class ClusterModeContextManager implements ModeContextManager, ContextManagerAware {
     
     private ContextManager contextManager;
@@ -60,11 +58,13 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     
     @Override
     public void alterSchema(final AlterSchemaPOJO alterSchemaPOJO) {
-        ShardingSphereSchema schema = contextManager.getMetaDataContexts().getMetaData().getDatabase(alterSchemaPOJO.getDatabaseName()).getSchema(alterSchemaPOJO.getSchemaName());
+        String databaseName = alterSchemaPOJO.getDatabaseName();
+        String schemaName = alterSchemaPOJO.getSchemaName();
+        ShardingSphereSchema schema = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchema(schemaName);
         DatabaseMetaDataPersistService databaseMetaDataService = contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService();
-        databaseMetaDataService.persist(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getRenameSchemaName(), schema);
-        databaseMetaDataService.getViewMetaDataPersistService().persist(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getRenameSchemaName(), schema.getViews());
-        databaseMetaDataService.dropSchema(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getSchemaName());
+        databaseMetaDataService.persist(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema);
+        databaseMetaDataService.getViewMetaDataPersistService().persist(databaseName, alterSchemaPOJO.getRenameSchemaName(), schema.getViews());
+        databaseMetaDataService.dropSchema(databaseName, schemaName);
     }
     
     @Override

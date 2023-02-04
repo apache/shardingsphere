@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
-import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
@@ -33,12 +32,8 @@ public final class MD5EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private String salt;
     
-    @Getter
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
         this.salt = props.getProperty(SALT, "");
     }
     

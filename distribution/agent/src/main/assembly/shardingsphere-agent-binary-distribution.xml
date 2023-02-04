@@ -39,6 +39,13 @@
                 <include>NOTICE</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>src/main/release-docs</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
         
         <fileSet>
             <directory>../../agent/plugins/core/target/lib</directory>
@@ -92,15 +99,4 @@
             </binaries>
         </moduleSet>
     </moduleSets>
-    
-    <dependencySets>
-        <dependencySet>
-            <outputDirectory>./log-lib</outputDirectory>
-            <includes>
-                <include>org.slf4j:slf4j-api</include>
-                <include>ch.qos.logback:*</include>
-                <include>org.apache.shardingsphere:shardingsphere-agent-log-to-slf4j</include>
-            </includes>
-        </dependencySet>
-    </dependencySets>
 </assembly>

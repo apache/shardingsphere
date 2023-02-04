@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.fixture;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
@@ -26,23 +25,14 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Map;
-import java.util.Properties;
 
 @Getter
 @Setter
 public final class CoreSchemaMetaDataAwareEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Integer, Integer>, SchemaMetaDataAware {
     
-    @Setter(AccessLevel.NONE)
-    private Properties props;
-    
     private String databaseName;
     
     private Map<String, ShardingSphereSchema> schemas;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
     
     @Override
     public Integer encrypt(final Integer plainValue, final EncryptContext encryptContext) {

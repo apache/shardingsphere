@@ -58,9 +58,6 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     
     public static final String ZONE_ID_KEY = "zone-id";
     
-    @Getter
-    private Properties props;
-    
     @Getter(AccessLevel.PROTECTED)
     private ZoneId zoneId;
     
@@ -68,7 +65,6 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         zoneId = getZoneId(props);
         intervalTimeline = getIntervalTimeline(props);
     }

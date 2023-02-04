@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.mask.merge.dql;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.junit.Before;
@@ -35,7 +34,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -62,7 +60,7 @@ public final class MaskAlgorithmMetaDataTest {
     @Before
     public void setUp() {
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        maskAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("MD5", new Properties()), MaskAlgorithm.class);
+        maskAlgorithm = TypedSPILoader.getService(MaskAlgorithm.class, "MD5");
     }
     
     @SuppressWarnings("rawtypes")

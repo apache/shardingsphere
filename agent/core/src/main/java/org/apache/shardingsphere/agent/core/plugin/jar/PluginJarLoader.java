@@ -20,8 +20,8 @@ package org.apache.shardingsphere.agent.core.plugin.jar;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.agent.core.log.AgentLogger;
 import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
-import org.apache.shardingsphere.agent.log.api.AgentLogger;
 
 import java.io.File;
 import java.io.IOException;

@@ -21,8 +21,7 @@ import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlg
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
@@ -38,31 +37,34 @@ public final class SM4EncryptAlgorithmTest {
     
     @Test(expected = EncryptAlgorithmInitializationException.class)
     public void assertInitWithoutKey() {
-        StandardEncryptAlgorithm<Object, String> algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SM4", createECBProperties()), EncryptAlgorithm.class);
-        algorithm.init(PropertiesBuilder.build(new Property("sm4-mode", "ECB"), new Property("sm4-padding", "PKCS5Padding")));
+        TypedSPILoader.getService(EncryptAlgorithm.class, "SM4", PropertiesBuilder.build(new Property("sm4-mode", "ECB"), new Property("sm4-padding", "PKCS5Padding")));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertEncryptNullValue() {
-        StandardEncryptAlgorithm<Object, String> algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SM4", createECBProperties()), EncryptAlgorithm.class);
+        StandardEncryptAlgorithm<Object, String> algorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "SM4", createECBProperties());
         assertNull(algorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertEncryptWithECBMode() {
-        StandardEncryptAlgorithm<Object, String> algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SM4", createECBProperties()), EncryptAlgorithm.class);
+        StandardEncryptAlgorithm<Object, String> algorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "SM4", createECBProperties());
         assertThat(algorithm.encrypt("test", mock(EncryptContext.class)), is("028654f2ca4f575dee9e1faae85dadde"));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertDecryptNullValue() {
-        StandardEncryptAlgorithm<Object, String> algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SM4", createECBProperties()), EncryptAlgorithm.class);
+        StandardEncryptAlgorithm<Object, String> algorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "SM4", createECBProperties());
         assertNull(algorithm.decrypt(null, mock(EncryptContext.class)));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertDecryptWithECBMode() {
-        StandardEncryptAlgorithm<Object, String> algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SM4", createECBProperties()), EncryptAlgorithm.class);
+        StandardEncryptAlgorithm<Object, String> algorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "SM4", createECBProperties());
         assertThat(algorithm.decrypt("028654f2ca4f575dee9e1faae85dadde", mock(EncryptContext.class)).toString(), is("test"));
     }
     
@@ -70,15 +72,17 @@ public final class SM4EncryptAlgorithmTest {
         return PropertiesBuilder.build(new Property("sm4-key", "4D744E003D713D054E7E407C350E447E"), new Property("sm4-mode", "ECB"), new Property("sm4-padding", "PKCS5Padding"));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertEncryptWithCBCMode() {
-        StandardEncryptAlgorithm<Object, String> algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SM4", createCBCProperties()), EncryptAlgorithm.class);
+        StandardEncryptAlgorithm<Object, String> algorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "SM4", createCBCProperties());
         assertThat(algorithm.encrypt("test", mock(EncryptContext.class)), is("dca2127b57ba8cac36a0914e0208dc11"));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertDecrypt() {
-        StandardEncryptAlgorithm<Object, String> algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SM4", createCBCProperties()), EncryptAlgorithm.class);
+        StandardEncryptAlgorithm<Object, String> algorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "SM4", createCBCProperties());
         assertThat(algorithm.decrypt("dca2127b57ba8cac36a0914e0208dc11", mock(EncryptContext.class)).toString(), is("test"));
     }
     

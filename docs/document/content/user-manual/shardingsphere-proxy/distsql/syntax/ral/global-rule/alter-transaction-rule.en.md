@@ -48,7 +48,7 @@ value ::=
 
 ```sql
 ALTER TRANSACTION RULE(
-  DEFAULT="XA”,TYPE(NAME="Narayana”, PROPERTIES(“databaseName"="jbossts”,“host"="127.0.0.1”))
+  DEFAULT="XA", TYPE(NAME="Narayana", PROPERTIES("databaseName"="jbossts", "host"="127.0.0.1"))
 );
 ```
 

@@ -34,8 +34,8 @@ public abstract class TracingSQLParserEngineAdvice<T> implements InstanceMethodA
     
     @Override
     public final void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        target.setAttachment(recordSQLParseInfo(RootSpanContext.get(), target, String.valueOf(args[0])));
+        recordSQLParseInfo(RootSpanContext.get(), target, String.valueOf(args[0]));
     }
     
-    protected abstract Object recordSQLParseInfo(T rootSpan, TargetAdviceObject target, String sql);
+    protected abstract Object recordSQLParseInfo(T parentSpan, TargetAdviceObject target, String sql);
 }

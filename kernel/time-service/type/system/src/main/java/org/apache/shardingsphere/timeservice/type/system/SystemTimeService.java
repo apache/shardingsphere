@@ -20,16 +20,11 @@ package org.apache.shardingsphere.timeservice.type.system;
 import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
 
 import java.util.Date;
-import java.util.Properties;
 
 /**
  * System time service.
  */
 public final class SystemTimeService implements ShardingSphereTimeService {
-    
-    @Override
-    public void init(final Properties props) {
-    }
     
     @Override
     public Date getDatetime() {

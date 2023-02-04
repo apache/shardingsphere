@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -38,8 +37,8 @@ public final class SQLMatchTrafficAlgorithmTest {
     
     @Before
     public void setUp() {
-        sqlMatchAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SQL_MATCH",
-                PropertiesBuilder.build(new Property("sql", "SELECT * FROM t_order; UPDATE t_order SET order_id = ? WHERE user_id = ?;"))), TrafficAlgorithm.class);
+        sqlMatchAlgorithm = (SQLMatchTrafficAlgorithm) TypedSPILoader.getService(TrafficAlgorithm.class, "SQL_MATCH",
+                PropertiesBuilder.build(new Property("sql", "SELECT * FROM t_order; UPDATE t_order SET order_id = ? WHERE user_id = ?;")));
     }
     
     @Test

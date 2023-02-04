@@ -21,6 +21,7 @@ import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
+import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.junit.Before;
@@ -67,6 +68,9 @@ public final class OpenTracingSQLParserEngineAdviceTest extends AbstractJDBCExec
         assertThat(spans.size(), is(1));
         assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(spans.get(0).operationName(), is("/ShardingSphere/parseSQL/"));
+        assertThat(spans.get(0).tags().get(AttributeConstants.COMPONENT), is(AttributeConstants.COMPONENT_NAME));
+        assertThat(spans.get(0).tags().get(AttributeConstants.DB_STATEMENT), is("select 1"));
+        assertThat(spans.get(0).tags().get(AttributeConstants.SPAN_KIND), is(AttributeConstants.SPAN_KIND_INTERNAL));
     }
     
     @Test

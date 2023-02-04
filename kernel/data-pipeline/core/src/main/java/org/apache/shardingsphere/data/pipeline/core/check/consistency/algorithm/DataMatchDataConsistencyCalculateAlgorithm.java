@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsis
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
+import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 /**
  * Data match data consistency calculate algorithm.
  */
-@AlgorithmDescription("Match raw data of records.")
+@SPIDescription("Match raw data of records.")
 @Slf4j
 public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
     
@@ -66,9 +66,6 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     private static final int DEFAULT_CHUNK_SIZE = 1000;
     
-    @Getter
-    private Properties props;
-    
     private int chunkSize;
     
     private final Map<String, String> firstSQLCache = new ConcurrentHashMap<>();
@@ -77,7 +74,6 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         chunkSize = getChunkSize(props);
     }
     

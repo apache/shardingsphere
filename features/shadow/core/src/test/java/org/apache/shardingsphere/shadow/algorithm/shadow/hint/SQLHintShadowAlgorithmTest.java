@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
@@ -38,8 +37,7 @@ public final class SQLHintShadowAlgorithmTest {
     
     @Before
     public void init() {
-        shadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("SIMPLE_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()))), ShadowAlgorithm.class);
+        shadowAlgorithm = (SQLHintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SIMPLE_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString())));
     }
     
     @Test

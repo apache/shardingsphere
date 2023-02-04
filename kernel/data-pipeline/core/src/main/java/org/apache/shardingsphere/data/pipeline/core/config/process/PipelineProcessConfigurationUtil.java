@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.config.process;
 
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineReadConfiguration;
@@ -64,8 +63,8 @@ public final class PipelineProcessConfigurationUtil {
         }
         if (null == yamlConfig.getStreamChannel()) {
             Properties props = new Properties();
-            props.put(MemoryPipelineChannelCreator.BLOCK_QUEUE_SIZE_KEY, MemoryPipelineChannelCreator.BLOCK_QUEUE_SIZE_DEFAULT_VALUE);
-            yamlConfig.setStreamChannel(new YamlAlgorithmConfiguration(MemoryPipelineChannelCreator.TYPE, props));
+            props.setProperty("block-queue-size", "10000");
+            yamlConfig.setStreamChannel(new YamlAlgorithmConfiguration("MEMORY", props));
         }
     }
 }

@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -45,8 +44,8 @@ public final class BoundaryBasedRangeShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        shardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("BOUNDARY_RANGE", PropertiesBuilder.build(new Property("sharding-ranges", "1,5,10"))), ShardingAlgorithm.class);
+        shardingAlgorithm = (BoundaryBasedRangeShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class,
+                "BOUNDARY_RANGE", PropertiesBuilder.build(new Property("sharding-ranges", "1,5,10")));
     }
     
     @Test
