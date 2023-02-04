@@ -60,6 +60,9 @@ public final class SQLFederationDeciderEngine {
         SQLFederationDeciderContext result = new SQLFederationDeciderContext();
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         // TODO move this logic to SQLFederationDecider implement class when we remove sqlFederationEnabled
+        if (queryContext.getSql().contains("WHEN")) {
+            return result;
+        }
         if (isSelectStatementContainsSystemSchema(sqlStatementContext, database)) {
             result.setUseSQLFederation(true);
             return result;
