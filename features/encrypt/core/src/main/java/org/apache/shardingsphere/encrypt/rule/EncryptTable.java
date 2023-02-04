@@ -45,8 +45,9 @@ public final class EncryptTable {
     private Map<String, EncryptColumn> createEncryptColumns(final EncryptTableRuleConfiguration config) {
         Map<String, EncryptColumn> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            result.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getLikeQueryColumn(),
-                    each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName(), each.getQueryWithCipherColumn()));
+            EncryptColumn encryptColumn = new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(),
+                    each.getLikeQueryColumn(), each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName(), each.getQueryWithCipherColumn());
+            result.put(each.getLogicColumn(), encryptColumn);
         }
         return result;
     }
