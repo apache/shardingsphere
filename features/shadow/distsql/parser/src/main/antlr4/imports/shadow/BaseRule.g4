@@ -34,7 +34,7 @@ algorithmTypeName
 buildInAlgorithmTypeName
     : VALUE_MATCH
     | REGEX_MATCH
-    | SIMPLE_HINT
+    | SQL_HINT
     ;
 
 propertiesDefinition

@@ -21,12 +21,11 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Properties;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -37,7 +36,7 @@ public final class SQLHintShadowAlgorithmTest {
     
     @Before
     public void init() {
-        shadowAlgorithm = (SQLHintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SIMPLE_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString())));
+        shadowAlgorithm = (SQLHintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SQL_HINT", new Properties());    
     }
     
     @Test
