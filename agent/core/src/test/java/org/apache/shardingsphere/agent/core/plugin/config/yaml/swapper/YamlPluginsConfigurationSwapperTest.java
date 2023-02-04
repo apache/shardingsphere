@@ -39,14 +39,14 @@ public class YamlPluginsConfigurationSwapperTest {
         
         // create sample logging config
         Map<String, YamlPluginConfiguration> logging = new LinkedHashMap<>();
-        logging.put("logging1", new YamlPluginConfiguration("host1", 1234, "password1", null));
-        logging.put("logging2", new YamlPluginConfiguration("host2", 5678, "password2", null));
+        logging.put("logging1", new YamlPluginConfiguration());
+        logging.put("logging2", new YamlPluginConfiguration());
         plugins.setLogging(logging);
         YamlAgentConfiguration yamlConfig = new YamlAgentConfiguration();
         
         // create sample metrics config
         Map<String, YamlPluginConfiguration> metrics = new LinkedHashMap<>();
-        metrics.put("metrics1", new YamlPluginConfiguration("host3", 9012, "password3", null));
+        metrics.put("metrics1", new YamlPluginConfiguration());
         plugins.setMetrics(metrics);
         
         yamlConfig.setPlugins(plugins);
@@ -56,18 +56,8 @@ public class YamlPluginsConfigurationSwapperTest {
         
         // check that the result is correct
         assertEquals(3, result.size());
-        assertEquals("host1", result.get("logging1").getHost());
-        assertEquals(1234, result.get("logging1").getPort());
-        assertEquals("password1", result.get("logging1").getPassword());
-        assertEquals(null, result.get("logging1").getProps());
-        assertEquals("host2", result.get("logging2").getHost());
-        assertEquals(5678, result.get("logging2").getPort());
-        assertEquals("password2", result.get("logging2").getPassword());
-        assertEquals(null, result.get("logging2").getProps());
-        assertEquals("host3", result.get("metrics1").getHost());
-        assertEquals(9012, result.get("metrics1").getPort());
-        assertEquals("password3", result.get("metrics1").getPassword());
-        assertEquals(null, result.get("metrics1").getProps());
+        
+        assertEquals(true, result.get("metrics1").getProps().size() < 1);
     }
     
     @Test

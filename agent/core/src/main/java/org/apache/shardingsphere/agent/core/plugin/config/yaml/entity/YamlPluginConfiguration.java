@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.plugin.config.yaml.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,7 +27,6 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-@AllArgsConstructor
 public final class YamlPluginConfiguration {
     
     private String host;
