@@ -29,10 +29,22 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public final class TypedSPILoaderTest {
+    
+    @Test
+    public void assertContains() {
+        assertTrue(TypedSPILoader.contains(TypedSPIFixture.class, "TYPED.FIXTURE"));
+        assertFalse(TypedSPILoader.contains(TypedSPIFixture.class, "NOT_EXISTED"));
+    }
+    
+    @Test
+    public void assertGetAllServices() {
+        assertThat(TypedSPILoader.getAllServices(TypedSPIFixture.class).size(), is(1));
+    }
     
     @Test
     public void assertFindServiceWithoutProperties() {
