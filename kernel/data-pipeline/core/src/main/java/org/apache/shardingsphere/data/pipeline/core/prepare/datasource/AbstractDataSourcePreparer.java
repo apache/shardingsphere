@@ -53,7 +53,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
     @Override
-    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) {
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
         DatabaseType targetDatabaseType = param.getTargetDatabaseType();
         if (!targetDatabaseType.isSchemaAvailable()) {
             return;
@@ -75,14 +75,12 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
     }
     
-    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) {
+    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
         log.info("prepareTargetSchemas, sql={}", sql);
         try (Connection connection = getCachedDataSource(dataSourceManager, targetDataSourceConfig).getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(sql);
             }
-        } catch (final SQLException ex) {
-            log.warn("create schema failed, error: {}", ex.getMessage());
         }
     }
     
