@@ -46,14 +46,15 @@ import java.util.Optional;
 /**
  * Encrypt rule.
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
 public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
     @Getter
     private final RuleConfiguration configuration;
     
+    @SuppressWarnings("rawtypes")
     private final Map<String, StandardEncryptAlgorithm> standardEncryptors = new LinkedHashMap<>();
     
+    @SuppressWarnings("rawtypes")
     private final Map<String, LikeEncryptAlgorithm> likeEncryptors = new LinkedHashMap<>();
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
@@ -68,6 +69,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
         queryWithCipherColumn = ruleConfig.isQueryWithCipherColumn();
     }
     
+    @SuppressWarnings("rawtypes")
     private void putAllEncryptors(final String encryptorName, final EncryptAlgorithm algorithm) {
         if (algorithm instanceof StandardEncryptAlgorithm) {
             standardEncryptors.put(encryptorName, (StandardEncryptAlgorithm) algorithm);
@@ -104,6 +106,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @param logicColumn logic column name
      * @return encryptor
      */
+    @SuppressWarnings("rawtypes")
     public Optional<StandardEncryptAlgorithm> findEncryptor(final String logicTable, final String logicColumn) {
         String lowerCaseLogicTable = logicTable.toLowerCase();
         return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findEncryptorName(logicColumn).map(standardEncryptors::get) : Optional.empty();
@@ -116,6 +119,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @param logicColumn logic column name
      * @return encryptor
      */
+    @SuppressWarnings("rawtypes")
     public Optional<StandardEncryptAlgorithm> findAssistedQueryEncryptor(final String logicTable, final String logicColumn) {
         String lowerCaseLogicTable = logicTable.toLowerCase();
         return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findAssistedQueryEncryptorName(logicColumn).map(standardEncryptors::get) : Optional.empty();
@@ -128,6 +132,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @param logicColumn logic column name
      * @return like query encryptor
      */
+    @SuppressWarnings("rawtypes")
     public Optional<LikeEncryptAlgorithm> findLikeQueryEncryptor(final String logicTable, final String logicColumn) {
         String lowerCaseLogicTable = logicTable.toLowerCase();
         return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findLikeQueryEncryptorName(logicColumn).map(likeEncryptors::get) : Optional.empty();
@@ -144,14 +149,15 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @return encrypt values
      */
     public List<Object> getEncryptValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<StandardEncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
+        @SuppressWarnings("rawtypes") Optional<StandardEncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
         ShardingSpherePreconditions.checkState(encryptor.isPresent(),
                 () -> new EncryptEncryptorNotFoundException(String.format("Can not find StandardEncryptAlgorithm by %s.%s.", logicTable, logicColumn)));
         return getEncryptValues(encryptor.get(), originalValues, encryptContext);
     }
     
-    private List<Object> getEncryptValues(final StandardEncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext encryptContext) {
+    @SuppressWarnings("unchecked")
+    private List<Object> getEncryptValues(@SuppressWarnings("rawtypes") final StandardEncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext encryptContext) {
         List<Object> result = new LinkedList<>();
         for (Object each : originalValues) {
             Object encryptValue = null == each ? null : encryptor.encrypt(each, encryptContext);
@@ -237,14 +243,16 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @return assisted query values
      */
     public List<Object> getEncryptAssistedQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<StandardEncryptAlgorithm> encryptor = findAssistedQueryEncryptor(logicTable, logicColumn);
+        @SuppressWarnings("rawtypes") Optional<StandardEncryptAlgorithm> encryptor = findAssistedQueryEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
         ShardingSpherePreconditions.checkState(encryptor.isPresent(),
                 () -> new EncryptAssistedQueryEncryptorNotFoundException(String.format("Can not find assist encryptor by %s.%s.", logicTable, logicColumn)));
         return getEncryptAssistedQueryValues(encryptor.get(), originalValues, encryptContext);
     }
     
-    private List<Object> getEncryptAssistedQueryValues(final StandardEncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext encryptContext) {
+    @SuppressWarnings("unchecked")
+    private List<Object> getEncryptAssistedQueryValues(@SuppressWarnings("rawtypes") final StandardEncryptAlgorithm encryptor,
+                                                       final List<Object> originalValues, final EncryptContext encryptContext) {
         List<Object> result = new LinkedList<>();
         for (Object each : originalValues) {
             result.add(null == each ? null : encryptor.encrypt(each, encryptContext));
@@ -263,14 +271,15 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
      * @return like query values
      */
     public List<Object> getEncryptLikeQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<LikeEncryptAlgorithm> encryptor = findLikeQueryEncryptor(logicTable, logicColumn);
+        @SuppressWarnings("rawtypes") Optional<LikeEncryptAlgorithm> encryptor = findLikeQueryEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
         ShardingSpherePreconditions.checkState(encryptor.isPresent(),
                 () -> new EncryptLikeQueryEncryptorNotFoundException(String.format("Can not find like encryptor by %s.%s.", logicTable, logicColumn)));
         return getEncryptLikeQueryValues(encryptor.get(), originalValues, encryptContext);
     }
     
-    private List<Object> getEncryptLikeQueryValues(final LikeEncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext encryptContext) {
+    @SuppressWarnings("unchecked")
+    private List<Object> getEncryptLikeQueryValues(@SuppressWarnings("rawtypes") final LikeEncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext encryptContext) {
         List<Object> result = new LinkedList<>();
         for (Object each : originalValues) {
             result.add(null == each ? null : encryptor.encrypt(each, encryptContext));
