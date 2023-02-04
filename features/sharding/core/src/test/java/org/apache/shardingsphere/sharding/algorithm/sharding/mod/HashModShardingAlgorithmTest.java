@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -44,8 +43,7 @@ public final class HashModShardingAlgorithmTest {
     
     @Before
     public void setup() {
-        shardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("HASH_MOD", PropertiesBuilder.build(new Property("sharding-count", "4"))), ShardingAlgorithm.class);
+        shardingAlgorithm = (HashModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "HASH_MOD", PropertiesBuilder.build(new Property("sharding-count", "4")));
     }
     
     @Test

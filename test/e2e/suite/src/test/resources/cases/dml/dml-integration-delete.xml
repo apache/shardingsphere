@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<integration-test-cases>
+    <test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status= ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+        <assertion parameters="1000:int, 10:int, init:String" expected-data-file="delete_with_sharding_value.xml" />
+    </test-case>
+    
+    <test-case sql="DELETE FROM t_order WHERE status= ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+        <assertion parameters="init:String" expected-data-file="delete_without_sharding_value.xml" />
+    </test-case>
+    
+    <test-case sql="DELETE FROM t_user WHERE user_id = ?" db-types="H2,MySQL,PostgreSQL,openGauss,SQLServer,Oracle" scenario-types="encrypt">
+        <assertion parameters="10:int" expected-data-file="delete_user_table.xml" />
+    </test-case>
+    
+    <test-case sql="DELETE FROM t_user WHERE password = ?" db-types="H2,MySQL,PostgreSQL,openGauss,SQLServer,Oracle" scenario-types="encrypt">
+        <assertion parameters="111111:String" expected-data-file="delete_user_table.xml" />
+    </test-case>
+    
+    <!--fixme! issue #9769-->
+    <!--    <test-case sql="DELETE FROM t_single_table WHERE single_id = 1" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt">-->
+    <!--        <assertion expected-data-file="delete_single_table_by_id.xml" />-->
+    <!--    </test-case>-->
+    
+    <test-case sql="DELETE /*+ index(status) */ ONLY t_order WHERE status=1 RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+        <assertion expected-data-file="delete_with_special_comments_return_without_sharding_value.xml" />
+    </test-case>
+    
+    <test-case sql="DELETE /*+ index(status) */ ONLY (t_order) WHERE status=1 RETURNING *" db-types="Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+        <assertion expected-data-file="delete_with_special_comments_returning_without_sharding_value.xml" />
+    </test-case>
+    
+    <!-- Can't support delete multiple tables-->
+    <!--<test-case sql="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">-->
+    <!--<assertion parameters="init:String" expected-data-file="delete_with_alias.xml" />-->
+    <!--</test-case>-->
+    
+    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
+        <assertion parameters="1:int, 4:int, 5:int" expected-data-file="pro_delete_order_by_user_id.xml" />
+    </test-case>
+    
+    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="MySQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
+        <assertion parameters="0:int, 4:int, 5:int" expected-data-file="shadow_delete_order_by_user_id.xml" />
+    </test-case>
+    
+    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
+        <assertion parameters="1:int, 4:int, 5:int" expected-data-file="pro_delete_order_by_user_id.xml" />
+    </test-case>
+    
+    <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
+        <assertion parameters="0:int, 4:int, 5:int" expected-data-file="shadow_delete_order_by_user_id.xml" />
+    </test-case>
+</integration-test-cases>

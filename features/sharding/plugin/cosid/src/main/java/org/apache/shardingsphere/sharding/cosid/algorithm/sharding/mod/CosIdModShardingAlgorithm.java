@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.mod;
 
-import lombok.Getter;
 import me.ahoo.cosid.sharding.ModCycle;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -36,14 +35,10 @@ public final class CosIdModShardingAlgorithm<T extends Number & Comparable<T>> i
     
     private static final String MODULO_KEY = "mod";
     
-    @Getter
-    private Properties props;
-    
     private ModCycle<T> modCycle;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         String divisorStr = getRequiredValue(props, MODULO_KEY);
         int divisor = Integer.parseInt(divisorStr);
         String logicNamePrefix = getRequiredValue(props, CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY);

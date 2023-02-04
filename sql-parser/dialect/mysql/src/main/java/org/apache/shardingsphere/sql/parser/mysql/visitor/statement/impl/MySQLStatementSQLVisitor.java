@@ -784,6 +784,9 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         String functionName;
         if (null != functionNameContext) {
             functionName = functionNameContext.getText();
+            for (ExprContext each : ctx.expr()) {
+                visit(each);
+            }
         } else if (null != ctx.JSON_SEPARATOR()) {
             functionName = ctx.JSON_SEPARATOR().getText();
         } else {

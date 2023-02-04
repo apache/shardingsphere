@@ -95,14 +95,6 @@ Attributes:
 | -------------- |------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ${replica-name} | double     | Attribute name uses the name of the replica, and the parameter fills in the weight value corresponding to the replica. Weight parameter range min > 0, total <= Double.MAX_VALUE. |
 
-### Fixed Primary Load Balance Algorithm
-
-Type: FIXED_PRIMARY
-
-Description: All read query are routed to the primary.
-
-Attributes: None
-
 ## Procedure
 
 1. Configure a load balancer algorithm for the loadBalancers attribute to use read/write splitting.

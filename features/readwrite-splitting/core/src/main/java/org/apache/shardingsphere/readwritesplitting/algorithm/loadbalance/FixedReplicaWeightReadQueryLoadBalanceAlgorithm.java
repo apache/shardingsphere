@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.InvalidReadDatabaseWeightException;
@@ -34,7 +33,6 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Fixed replica weight read query load-balance algorithm.
  */
-@Getter
 public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;

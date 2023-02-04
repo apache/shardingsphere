@@ -100,7 +100,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             return false;
         }
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
-        new PipelineDistributedBarrier().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
+        PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
         return true;
     }
     

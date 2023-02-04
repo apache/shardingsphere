@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
@@ -26,23 +25,14 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 
 import java.util.Map;
-import java.util.Properties;
 
 public final class RewriteSchemaMetaDataAwareEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String>, SchemaMetaDataAware {
-    
-    @Getter
-    private Properties props;
     
     @Setter
     private String databaseName;
     
     @Setter
     private Map<String, ShardingSphereSchema> schemas;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {

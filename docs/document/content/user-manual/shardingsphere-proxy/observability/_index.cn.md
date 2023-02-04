@@ -3,7 +3,9 @@ title = "可观察性"
 weight = 5
 +++
 
-## 源码编译
+## Agent
+
+### 源码编译
 
 从 Github 下载 Apache ShardingSphere 源码，对源码进行编译，操作命令如下。
 
@@ -14,9 +16,7 @@ mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=tr
 ```
 agent 包输出目录为 distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
 
-## agent 配置
-
-* 目录说明
+### 目录说明
 
 创建 agent 目录，解压 agent 二进制包到 agent 目录。
 
@@ -25,29 +25,28 @@ mkdir agent
 tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz -C agent
 cd agent
 tree 
-.
 ├── LICENSE
 ├── NOTICE
 ├── conf
 │   └── agent.yaml
-├── lib
-│   ├── shardingsphere-agent-metrics-core-${latest.release.version}.jar
-│   └── shardingsphere-agent-plugin-core-${latest.release.version}.jar
 ├── plugins
-│   ├── shardingsphere-agent-logging-file-${latest.release.version}.jar
-│   ├── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
-│   ├── shardingsphere-agent-tracing-jaeger-${latest.release.version}.jar
-│   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
-│   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
-│   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
+│   ├── lib
+│   │   ├── shardingsphere-agent-metrics-core-${latest.release.version}.jar
+│   │   └── shardingsphere-agent-plugin-core-${latest.release.version}.jar
+│   ├── logging
+│   │   └── shardingsphere-agent-logging-file-${latest.release.version}.jar
+│   ├── metrics
+│   │   └── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
+│   └── tracing
+│       ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
+│       └── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
 └── shardingsphere-agent-${latest.release.version}.jar
 ```
+Agent 日志输出位置在 `agent/logs/stdout.log`。
 
-* 配置说明
+### 配置说明
 
-`conf/agent.yaml` 用于管理 agent 配置。
-内置插件包括 Jaeger、OpenTracing、Zipkin、OpenTelemetry、Log 及 Prometheus。
-默认不开启任何插件。
+`conf/agent.yaml` 用于管理 agent 配置。内置插件包括 File、Prometheus、OpenTelemetry、OpenTracing。
 
 ```yaml
 plugins:
@@ -62,49 +61,50 @@ plugins:
 #      props:
 #        jvm-information-collector-enabled: "true"
 #  tracing:
-#    Jaeger:
-#      host: "localhost"
-#      port: 6831
+#    OpenTelemetry:
 #      props:
-#        service-name: "shardingsphere"
-#        jaeger-sampler-type: "const"
-#        jaeger-sampler-param: "1"
-#        jaeger-reporter-flush-interval: "1000"
-#        jaeger-reporter-max-queue-size: "100"
-#    Zipkin:
-#      host: "localhost"
-#      port: 9411
-#      props:
-#        service-name: "shardingsphere"
-#        url-version: "/api/v2/spans"
-#        sampler-type: "const"
-#        sampler-param: "1"
+#        otel.service.name: "shardingsphere"
+#        otel.traces.exporter: "jaeger"
+#        otel.exporter.otlp.traces.endpoint: "http://localhost:14250"
+#        otel.traces.sampler: "always_on"
 #    OpenTracing:
 #      props:
 #        opentracing-tracer-class-name: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
-#    OpenTelemetry:
-#      props:
-#        otel-resource-attributes: "service.name=shardingsphere"
-#        otel-traces-exporter: "zipkin"
 ```
 
-* 参数说明；
+### 插件说明
 
-| 名称                                | 说明                        | 取值范围                                                                                                                    | 默认值                               |
-|:----------------------------------|:-----------------------------|:------------------------------------------------------------------------------------------------------------------------|:----------------------------------|
-| jvm-information-collector-enabled | 是否开启 JVM 采集器             | true、false                                                                                                              | true                              |
-| service-name                      | 链路跟踪的服务名称               | 自定义                                                                                                                     | shardingsphere                    |
-| jaeger-sampler-type               | Jaeger 采样率类型               | const、probabilistic、ratelimiting、remote                                                                                 | const                             |
-| jaeger-sampler-param              | Jaeger 采样率参数               | const：0、1，probabilistic：0.0 - 1.0，ratelimiting：> 0，自定义每秒采集数量，remote：需要自定义配置远程采样率管理服务地址，JAEGER_SAMPLER_MANAGER_HOST_PORT | 1（const 类型）|
-| jaeger-reporter-flush-interval    | Jaeger 上报数据刷新间隔(毫秒)    | 自定义                                                                                                                     | 1000                              |
-| jaeger-reporter-max-queue-size    | Jaeger 上报 span 时最大队列大小   | 自定义                                                                                                                     | 100                               |
-| url-version                       | Zipkin url 地址                 | 自定义                                                                                                                     | /api/v2/spans                     |
-| sampler-type                      | Zipkin 采样率类型                | const、counting、ratelimiting、boundary                                                                                    | const                             |
-| sampler-param                     | Zipkin 采样率参数                | const： 0、1，counting：0.01 - 1.0，ratelimiting：> 0，自定义每秒采集数量，boundary: 0.0001 - 1.0                               | 1（const 类型）                    |
-| otel-resource-attributes          | opentelemetry 资源属性          | 字符串键值对（,分割）                                                                                                         | service.name=shardingsphere-agent |
-| otel-traces-exporter              | Tracing expoter                | zipkin、jaeger                                                                                                            | zipkin                            |
-| otel-traces-sampler               | opentelemetry 采样率类型         | always_on、always_off、traceidratio                                                                                        | always_on                         |
-| otel-traces-sampler-arg           | opentelemetry 采样率参数         | traceidratio：0.0 - 1.0                                                                                                    | 1.0                               |
+#### File
+
+目前 File 插件只有构建元数据耗时日志输出，暂无其他日志输出。
+
+#### Prometheus
+
+用于暴露监控指标
+
+* 参数说明
+
+| 名称                               | 说明                 |
+|-----------------------------------|----------------------|
+| host                              | 主机                 |
+| port                              | 端口                 |
+| jvm-information-collector-enabled | 是否采集 JVM 指标信息  |
+
+#### OpenTelemetry
+
+OpenTelemetry 可以导出 tracing 数据到 Jaeger，Zipkin。
+
+* 参数说明
+
+| 名称                                 | 说明                |
+|------------------------------------|----------------------|
+| otel.service.name                  | 服务名称              |
+| otel.traces.exporter               | traces exporter      |
+| otel.exporter.otlp.traces.endpoint | traces endpoint      |
+| otel.traces.sampler                | traces sampler       |
+
+参数参考 [OpenTelemetry SDK Autoconfigure](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure)
+
 
 ## ShardingSphere-Proxy 中使用
 

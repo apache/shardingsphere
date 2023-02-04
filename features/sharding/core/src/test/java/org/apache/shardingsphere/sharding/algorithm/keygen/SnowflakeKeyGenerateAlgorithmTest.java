@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -28,6 +26,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.FixedTimeService;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
 import org.apache.shardingsphere.sharding.exception.algorithm.keygen.KeyGenerateAlgorithmInitializationException;
@@ -74,7 +73,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         int threadNumber = Runtime.getRuntime().availableProcessors() * 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber * 4;
-        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SNOWFLAKE", new Properties()), KeyGenerateAlgorithm.class);
+        KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
@@ -88,7 +87,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     @Test
     public void assertGenerateKeyWithSingleThread() {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(1));
-        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SNOWFLAKE", new Properties()), KeyGenerateAlgorithm.class);
+        KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
@@ -103,8 +102,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     @Test
     public void assertLastDigitalOfGenerateKeySameMillisecond() {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(5));
-        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "3"))), KeyGenerateAlgorithm.class);
+        KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "3")));
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
@@ -118,8 +116,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     @Test
     public void assertLastDigitalOfGenerateKeyDifferentMillisecond() throws InterruptedException {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new TimeService());
-        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "3"))), KeyGenerateAlgorithm.class);
+        KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "3")));
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
@@ -143,7 +140,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWithClockCallBack() {
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
-        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SNOWFLAKE", new Properties()), KeyGenerateAlgorithm.class);
+        KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
@@ -160,8 +157,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWithClockCallBackBeyondTolerateTime() {
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
-        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "0"))), KeyGenerateAlgorithm.class);
+        KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "0")));
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
@@ -177,7 +173,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKeyBeyondMaxSequencePerMilliSecond() {
         TimeService timeService = new FixedTimeService(2);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
-        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SNOWFLAKE", new Properties()), KeyGenerateAlgorithm.class);
+        KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
@@ -203,7 +199,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
-        SnowflakeKeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SNOWFLAKE", new Properties()), KeyGenerateAlgorithm.class);
+        SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
         InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(-1),
                 new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
         algorithm.setInstanceContext(instanceContext);
@@ -212,13 +208,12 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = KeyGenerateAlgorithmInitializationException.class)
     public void assertSetMaxVibrationOffsetFailureWhenNegative() {
-        ((KeyGenerateAlgorithm) ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "-1"))), KeyGenerateAlgorithm.class)).generateKey();
+        TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "-1"))).generateKey();
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenOutOfRange() {
-        SnowflakeKeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SNOWFLAKE", new Properties()), KeyGenerateAlgorithm.class);
+        SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
         InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE),
                 new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
         algorithm.setInstanceContext(instanceContext);
@@ -227,14 +222,12 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     
     @Test(expected = KeyGenerateAlgorithmInitializationException.class)
     public void assertSetMaxVibrationOffsetFailureWhenOutOfRange() {
-        ((KeyGenerateAlgorithm) ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "4096"))), KeyGenerateAlgorithm.class)).generateKey();
+        TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "4096"))).generateKey();
     }
     
     @Test
     public void assertSetMaxTolerateTimeDifferenceMilliseconds() throws ReflectiveOperationException {
-        KeyGenerateAlgorithm algorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "1"))), KeyGenerateAlgorithm.class);
+        KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "1")));
         assertThat(((Properties) Plugins.getMemberAccessor().get(algorithm.getClass().getDeclaredField("props"), algorithm)).getProperty("max-tolerate-time-difference-milliseconds"), is("1"));
     }
 }
