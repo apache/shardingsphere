@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePreparer {
     
+    private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
+    
     @Override
     public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) {
         try {
@@ -57,6 +59,20 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
                     executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(sql));
                 }
             }
+        }
+    }
+    
+    @Override
+    protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
+        try {
+            super.executeTargetTableSQL(targetConnection, sql);
+        } catch (final SQLException ex) {
+            for (String ignoreMessage : IGNORE_EXCEPTION_MESSAGE) {
+                if (ex.getMessage().contains(ignoreMessage)) {
+                    return;
+                }
+            }
+            throw ex;
         }
     }
     
