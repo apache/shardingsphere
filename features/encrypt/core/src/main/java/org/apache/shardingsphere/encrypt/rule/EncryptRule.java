@@ -223,16 +223,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Get like query columns.
-     *
-     * @param logicTable logic table
-     * @return like query columns
-     */
-    public Collection<String> getLikeQueryColumns(final String logicTable) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getLikeQueryColumns() : Collections.emptyList();
-    }
-    
-    /**
      * Get encrypt assisted query values.
      *
      * @param databaseName database name
