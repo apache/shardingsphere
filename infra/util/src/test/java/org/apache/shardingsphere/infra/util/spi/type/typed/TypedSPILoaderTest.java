@@ -42,11 +42,6 @@ public final class TypedSPILoaderTest {
     }
     
     @Test
-    public void assertGetAllServices() {
-        assertThat(TypedSPILoader.getAllServices(TypedSPIFixture.class).size(), is(1));
-    }
-    
-    @Test
     public void assertFindServiceWithoutProperties() {
         assertTrue(TypedSPILoader.findService(TypedSPIFixture.class, "TYPED.FIXTURE").isPresent());
     }
