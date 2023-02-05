@@ -18,26 +18,41 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryAware;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Random read query load-balance algorithm.
  */
-public final class RandomReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class RandomReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, TransactionReadQueryAware {
+    
+    private TransactionReadQueryStrategy strategyInTransaction;
+    
+    @Override
+    public void init(final Properties props) {
+        strategyInTransaction = props.contains("strategyInTransaction") ? TransactionReadQueryStrategy.valueOf(props.getProperty("strategyInTransaction")) : TransactionReadQueryStrategy.FIXED_PRIMARY;
+    }
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
         if (context.isInTransaction()) {
-            return writeDataSourceName;
+            return routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, strategyInTransaction);
         }
-        return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
+        return getDataSourceName(name, readDataSourceNames);
     }
     
     @Override
     public String getType() {
         return "RANDOM";
+    }
+    
+    @Override
+    public String getDataSourceName(final String name, final List<String> readDataSourceNames) {
+        return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
     }
 }

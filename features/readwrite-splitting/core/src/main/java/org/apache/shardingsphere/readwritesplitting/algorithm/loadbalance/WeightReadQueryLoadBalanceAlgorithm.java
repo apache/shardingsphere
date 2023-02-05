@@ -21,6 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryAware;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.InvalidReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingRequiredReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
@@ -32,11 +34,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * Weight read query load-balance algorithm.
  */
-public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, WeightAware {
+public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, TransactionReadQueryAware {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
@@ -44,20 +47,33 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     private Properties props;
     
+    private TransactionReadQueryStrategy strategyInTransaction;
+    
     @Getter
     private Collection<String> dataSourceNames;
     
     @Override
     public void init(final Properties props) {
         this.props = props;
-        dataSourceNames = props.stringPropertyNames();
+        if (props.contains("strategyInTransaction")) {
+            strategyInTransaction = TransactionReadQueryStrategy.valueOf(props.getProperty("strategyInTransaction"));
+            dataSourceNames = props.stringPropertyNames().stream().filter(each -> !each.equals("strategyInTransaction")).collect(Collectors.toList());
+        } else {
+            strategyInTransaction = TransactionReadQueryStrategy.FIXED_PRIMARY;
+            dataSourceNames = props.stringPropertyNames();
+        }
     }
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
         if (context.isInTransaction()) {
-            return writeDataSourceName;
+            return routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, strategyInTransaction);
         }
+        return getDataSourceName(name, readDataSourceNames);
+    }
+    
+    @Override
+    public String getDataSourceName(final String name, final List<String> readDataSourceNames) {
         double[] weight = weightMap.containsKey(name) && weightMap.get(name).length == readDataSourceNames.size() ? weightMap.get(name) : initWeight(readDataSourceNames);
         weightMap.put(name, weight);
         return getDataSourceName(readDataSourceNames, weight);
