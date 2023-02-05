@@ -22,18 +22,18 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Col
 import java.util.Optional;
 
 /**
- * Column name reviser.
+ * Column generated reviser.
  */
-public abstract class ColumnNameReviser implements ColumnReviser {
+public abstract class ColumnGeneratedReviser implements ColumnReviser {
     
     @Override
     public final Optional<ColumnMetaData> revise(final ColumnMetaData originalMetaData) {
-        return getColumnName(originalMetaData.getName()).map(optional -> createColumnMetaData(optional, originalMetaData));
+        return Optional.of(createColumnMetaData(isGenerated(originalMetaData), originalMetaData));
     }
     
-    private ColumnMetaData createColumnMetaData(final String name, final ColumnMetaData metaData) {
-        return new ColumnMetaData(name, metaData.getDataType(), metaData.isPrimaryKey(), metaData.isGenerated(), metaData.isCaseSensitive(), metaData.isVisible(), metaData.isUnsigned());
+    private ColumnMetaData createColumnMetaData(final boolean isGenerated, final ColumnMetaData metaData) {
+        return new ColumnMetaData(metaData.getName(), metaData.getDataType(), metaData.isPrimaryKey(), isGenerated, metaData.isCaseSensitive(), metaData.isVisible(), metaData.isUnsigned());
     }
     
-    protected abstract Optional<String> getColumnName(String originalName);
+    protected abstract boolean isGenerated(ColumnMetaData originalMetaData);
 }
