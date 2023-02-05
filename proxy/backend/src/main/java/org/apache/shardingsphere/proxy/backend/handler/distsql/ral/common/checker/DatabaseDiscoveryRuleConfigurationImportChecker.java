@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
@@ -62,7 +62,7 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
     
     private void checkDiscoverTypeAndHeartbeat(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         Collection<String> invalidInput = currentRuleConfig.getDiscoveryTypes().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPILoader.contains(DatabaseDiscoveryProviderAlgorithm.class, each)).collect(Collectors.toList());
+                .filter(each -> !TypedSPILoader.contains(DatabaseDiscoveryProvider.class, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException(DB_DISCOVERY.toLowerCase(), invalidInput));
         currentRuleConfig.getDataSources().forEach(each -> {
             if (!currentRuleConfig.getDiscoveryTypes().containsKey(each.getDiscoveryTypeName())) {

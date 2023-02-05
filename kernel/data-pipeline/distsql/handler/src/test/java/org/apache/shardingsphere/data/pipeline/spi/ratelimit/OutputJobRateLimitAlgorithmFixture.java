@@ -22,11 +22,11 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 public final class OutputJobRateLimitAlgorithmFixture implements JobRateLimitAlgorithm {
     
     @Override
-    public String getType() {
-        return "FIXTURE_OUTPUT";
+    public void intercept(final JobOperationType type, final Number data) {
     }
     
     @Override
-    public void intercept(final JobOperationType type, final Number data) {
+    public String getType() {
+        return "FIXTURE_OUTPUT";
     }
 }

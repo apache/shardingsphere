@@ -148,7 +148,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     public void assertExecuteAlterDefaultShadowAlgorithm() throws SQLException {
         mockShardingSphereRuleMetaData();
         AlterDefaultShadowAlgorithmStatement statement = new AlterDefaultShadowAlgorithmStatement(
-                new ShadowAlgorithmSegment("foo", new AlgorithmSegment("SIMPLE_HINT", PropertiesBuilder.build(new Property("type", "value")))));
+                new ShadowAlgorithmSegment("foo", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
         assertThat(RDLBackendHandlerFactory.newInstance(statement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
