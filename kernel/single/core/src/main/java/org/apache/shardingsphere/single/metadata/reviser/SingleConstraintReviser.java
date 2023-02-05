@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDa
 public final class SingleConstraintReviser implements ConstraintReviser {
     
     @Override
-    public ConstraintMetaData revise(TableMetaData tableMetaData, ConstraintMetaData originalMetaData) {
+    public ConstraintMetaData revise(final TableMetaData tableMetaData, final ConstraintMetaData originalMetaData) {
         return new ConstraintMetaData(
                 IndexMetaDataUtil.getLogicIndexName(originalMetaData.getName(), tableMetaData.getName()), originalMetaData.getReferencedTableName());
         

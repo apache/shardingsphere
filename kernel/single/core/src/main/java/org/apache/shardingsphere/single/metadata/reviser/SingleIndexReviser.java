@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDa
 public final class SingleIndexReviser implements IndexReviser {
     
     @Override
-    public IndexMetaData revise(TableMetaData tableMetaData, IndexMetaData originalMetaData) {
+    public IndexMetaData revise(final TableMetaData tableMetaData, final IndexMetaData originalMetaData) {
         return new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(originalMetaData.getName(), tableMetaData.getName()));
     }
 }
