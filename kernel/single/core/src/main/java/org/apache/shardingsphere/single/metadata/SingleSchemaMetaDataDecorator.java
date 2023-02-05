@@ -23,8 +23,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Con
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.single.constant.SingleOrder;
+import org.apache.shardingsphere.single.metadata.reviser.SingleConstraintReviser;
+import org.apache.shardingsphere.single.metadata.reviser.SingleIndexReviser;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
@@ -57,12 +58,11 @@ public final class SingleSchemaMetaDataDecorator implements RuleBasedSchemaMetaD
     }
     
     private Collection<IndexMetaData> getIndex(final TableMetaData tableMetaData) {
-        return tableMetaData.getIndexes().stream().map(each -> new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()))).collect(Collectors.toList());
+        return tableMetaData.getIndexes().stream().map(each -> new SingleIndexReviser().revise(tableMetaData, each)).collect(Collectors.toList());
     }
     
     private Collection<ConstraintMetaData> getConstraint(final TableMetaData tableMetaData) {
-        return tableMetaData.getConstrains().stream().map(each -> new ConstraintMetaData(
-                IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()), each.getReferencedTableName())).collect(Collectors.toList());
+        return tableMetaData.getConstrains().stream().map(each -> new SingleConstraintReviser().revise(tableMetaData, each)).collect(Collectors.toList());
     }
     
     @Override

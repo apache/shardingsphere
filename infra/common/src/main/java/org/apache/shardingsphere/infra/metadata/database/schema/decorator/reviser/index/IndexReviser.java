@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 
 /**
- * Column reviser.
+ * Index reviser.
  */
-public interface ColumnReviser {
+public interface IndexReviser {
     
     /**
-     * Revise column meta data.
+     * Revise index meta data.
      * 
-     * @param originalMetaData original column meta data
-     * @return revised column meta data
+     * @param tableMetaData table meta data
+     * @param originalMetaData original index meta data
+     * @return revised index meta data
      */
-    Optional<ColumnMetaData> revise(ColumnMetaData originalMetaData);
+    IndexMetaData revise(TableMetaData tableMetaData, IndexMetaData originalMetaData);
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 
