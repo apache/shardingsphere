@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
@@ -67,7 +67,7 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
     }
     
     private TableMetaData createTableMetaData(final ShardingRule rule, final TableRule tableRule, final TableMetaData tableMetaData) {
-        return new TableReviseEngine<>(rule).revise(tableMetaData, Collections.singleton(new ShardingColumnGeneratedReviser(tableRule)),
+        return new TableMetaDataReviseEngine<>(rule).revise(tableMetaData, Collections.singleton(new ShardingColumnGeneratedReviser(tableRule)),
                 Collections.singleton(new ShardingIndexReviser(tableRule)), Collections.singleton(new ShardingConstraintReviser(rule, tableRule)));
     }
     

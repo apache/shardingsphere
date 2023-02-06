@@ -32,12 +32,12 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Table revise engine.
+ * Table meta data revise engine.
  *
  * @param <R> type of rule
  */
 @RequiredArgsConstructor
-public final class TableReviseEngine<R extends ShardingSphereRule> {
+public final class TableMetaDataReviseEngine<R extends ShardingSphereRule> {
     
     private final R rule;
     

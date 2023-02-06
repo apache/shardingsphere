@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
@@ -53,7 +53,7 @@ public final class SingleSchemaMetaDataDecorator implements RuleBasedSchemaMetaD
     }
     
     private TableMetaData decorate(final SingleRule rule, final TableMetaData tableMetaData) {
-        return new TableReviseEngine<>(rule).revise(tableMetaData, Collections.emptyList(), Collections.singleton(new SingleIndexReviser()), Collections.singleton(new SingleConstraintReviser()));
+        return new TableMetaDataReviseEngine<>(rule).revise(tableMetaData, Collections.emptyList(), Collections.singleton(new SingleIndexReviser()), Collections.singleton(new SingleConstraintReviser()));
     }
     
     @Override
