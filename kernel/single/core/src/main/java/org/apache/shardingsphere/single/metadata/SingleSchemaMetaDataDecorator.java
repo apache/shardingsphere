@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.single.metadata.reviser.SingleIndexReviser;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -58,7 +60,7 @@ public final class SingleSchemaMetaDataDecorator implements RuleBasedSchemaMetaD
     }
     
     private Collection<IndexMetaData> getIndex(final TableMetaData tableMetaData) {
-        return tableMetaData.getIndexes().stream().map(each -> new SingleIndexReviser().revise(tableMetaData, each)).collect(Collectors.toList());
+        return new IndexReviseEngine().revise(tableMetaData.getName(), tableMetaData.getIndexes(), Collections.singleton(new SingleIndexReviser()));
     }
     
     private Collection<ConstraintMetaData> getConstraint(final TableMetaData tableMetaData) {

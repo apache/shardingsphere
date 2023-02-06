@@ -19,19 +19,37 @@ package org.apache.shardingsphere.infra.metadata.database.schema.decorator.revis
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
- * Index reviser.
+ * Index revise engine.
  */
-public interface IndexReviser {
+public final class IndexReviseEngine {
     
     /**
      * Revise index meta data.
      * 
      * @param tableName table name
-     * @param originalMetaData original index meta data
+     * @param originalMetaDataList original index meta data list
+     * @param revisers index revisers
      * @return revised index meta data
      */
-    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData);
+    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList, final Collection<IndexReviser> revisers) {
+        return originalMetaDataList.stream().map(each -> revise(tableName, each, revisers)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+    
+    private Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<IndexReviser> revisers) {
+        IndexMetaData result = originalMetaData;
+        for (IndexReviser each : revisers) {
+            Optional<IndexMetaData> revisedMetaData = each.revise(tableName, result);
+            if (!revisedMetaData.isPresent()) {
+                return Optional.empty();
+            }
+            result = revisedMetaData.get();
+        }
+        return Optional.of(result);
+    }
 }
