@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableNameReviser;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
+
+import java.util.Optional;
 
 /**
  * Sharding table name reviser.
  */
-@RequiredArgsConstructor
-public final class ShardingTableNameReviser implements TableNameReviser {
-    
-    private final TableRule tableRule;
+public final class ShardingTableNameReviser implements TableNameReviser<ShardingRule, TableRule> {
     
     @Override
-    public String revise(final String originalName) {
+    public String revise(final String originalName, final TableRule tableRule) {
         return tableRule.getLogicTable();
+    }
+    
+    @Override
+    public Optional<TableRule> findTableRule(final String name, final ShardingRule rule) {
+        return rule.findTableRuleByActualTable(name);
     }
 }

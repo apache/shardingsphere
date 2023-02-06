@@ -17,16 +17,33 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table;
 
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import java.util.Optional;
+
 /**
  * Table name reviser.
+ * 
+ * @param <R> type of rule
+ * @param <T> type of table rule
  */
-public interface TableNameReviser {
+public interface TableNameReviser<R extends ShardingSphereRule, T> {
     
     /**
      * Revise table meta data.
      * 
      * @param originalName original table name
+     * @param tableRule table rule
      * @return revised table name
      */
-    String revise(String originalName);
+    String revise(String originalName, T tableRule);
+    
+    /**
+     * Find table rule.
+     * 
+     * @param name table name
+     * @param rule ShardingSphere rule
+     * @return found table rule
+     */
+    Optional<T> findTableRule(String name, R rule);
 }

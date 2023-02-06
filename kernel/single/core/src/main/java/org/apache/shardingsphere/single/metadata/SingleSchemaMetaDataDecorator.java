@@ -45,15 +45,15 @@ public final class SingleSchemaMetaDataDecorator implements RuleBasedSchemaMetaD
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             Collection<TableMetaData> tables = new LinkedList<>();
             for (TableMetaData each : entry.getValue().getTables()) {
-                tables.add(decorate(each));
+                tables.add(decorate(rule, each));
             }
             result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
         }
         return result;
     }
     
-    private TableMetaData decorate(final TableMetaData tableMetaData) {
-        return new TableReviseEngine().revise(tableMetaData, Collections.emptyList(), Collections.singleton(new SingleIndexReviser()), Collections.singleton(new SingleConstraintReviser()));
+    private TableMetaData decorate(final SingleRule rule, final TableMetaData tableMetaData) {
+        return new TableReviseEngine<>(rule).revise(tableMetaData, Collections.emptyList(), Collections.singleton(new SingleIndexReviser()), Collections.singleton(new SingleConstraintReviser()));
     }
     
     @Override

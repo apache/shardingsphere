@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviseEngine;
@@ -24,13 +25,20 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.revise
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Table revise engine.
+ *
+ * @param <R> type of rule
  */
-public final class TableReviseEngine {
+@RequiredArgsConstructor
+public final class TableReviseEngine<R extends ShardingSphereRule> {
+    
+    private final R rule;
     
     /**
      * Revise table meta data.
@@ -56,11 +64,16 @@ public final class TableReviseEngine {
      * @param columnRevisers column revisers
      * @param indexRevisers index revisers
      * @param constraintRevisers constraint revisers
+     * @param <T> type of table rule
      * @return revised table meta data
      */
-    public TableMetaData revise(final TableMetaData originalMetaData, final TableNameReviser tableNameReviser,
-                                final Collection<ColumnReviser> columnRevisers, final Collection<IndexReviser> indexRevisers, final Collection<ConstraintReviser> constraintRevisers) {
-        String revisedTableName = tableNameReviser.revise(originalMetaData.getName());
+    public <T> TableMetaData revise(final TableMetaData originalMetaData, final TableNameReviser<R, T> tableNameReviser,
+                                    final Collection<ColumnReviser> columnRevisers, final Collection<IndexReviser> indexRevisers, final Collection<ConstraintReviser> constraintRevisers) {
+        Optional<T> tableRule = tableNameReviser.findTableRule(originalMetaData.getName(), rule);
+        if (!tableRule.isPresent()) {
+            return originalMetaData;
+        }
+        String revisedTableName = tableNameReviser.revise(originalMetaData.getName(), tableRule.get());
         return new TableMetaData(revisedTableName, new ColumnReviseEngine().revise(originalMetaData.getColumns(), columnRevisers),
                 new IndexReviseEngine().revise(revisedTableName, originalMetaData.getIndexes(), indexRevisers),
                 new ConstraintReviseEngine().revise(revisedTableName, originalMetaData.getConstrains(), constraintRevisers));
