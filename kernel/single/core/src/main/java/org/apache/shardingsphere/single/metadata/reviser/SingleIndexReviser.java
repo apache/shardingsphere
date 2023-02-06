@@ -19,8 +19,9 @@ package org.apache.shardingsphere.single.metadata.reviser;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
+
+import java.util.Optional;
 
 /**
  * Single index reviser.
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDa
 public final class SingleIndexReviser implements IndexReviser {
     
     @Override
-    public IndexMetaData revise(final TableMetaData tableMetaData, final IndexMetaData originalMetaData) {
-        return new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(originalMetaData.getName(), tableMetaData.getName()));
+    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData) {
+        return Optional.of(new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(originalMetaData.getName(), tableName)));
     }
 }

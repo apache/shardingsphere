@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+
+import java.util.Optional;
 
 /**
  * Index reviser.
@@ -28,9 +29,9 @@ public interface IndexReviser {
     /**
      * Revise index meta data.
      * 
-     * @param tableMetaData table meta data
+     * @param tableName table name
      * @param originalMetaData original index meta data
      * @return revised index meta data
      */
-    IndexMetaData revise(TableMetaData tableMetaData, IndexMetaData originalMetaData);
+    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData);
 }
