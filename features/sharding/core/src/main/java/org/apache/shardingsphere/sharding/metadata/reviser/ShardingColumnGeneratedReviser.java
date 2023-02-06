@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
+package org.apache.shardingsphere.sharding.metadata.reviser;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnGeneratedReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 
 /**
- * Column name reviser.
+ * Sharding column generated reviser.
  */
-public abstract class ColumnNameReviser implements ColumnReviser {
+@RequiredArgsConstructor
+public final class ShardingColumnGeneratedReviser extends ColumnGeneratedReviser {
+    
+    private final TableRule tableRule;
     
     @Override
-    public final Optional<ColumnMetaData> revise(final ColumnMetaData originalMetaData) {
-        return getColumnName(originalMetaData.getName()).map(optional -> createColumnMetaData(optional, originalMetaData));
+    protected boolean isGenerated(final ColumnMetaData originalMetaData) {
+        return originalMetaData.getName().equalsIgnoreCase(tableRule.getGenerateKeyColumn().orElse(null));
     }
-    
-    private ColumnMetaData createColumnMetaData(final String name, final ColumnMetaData metaData) {
-        return new ColumnMetaData(name, metaData.getDataType(), metaData.isPrimaryKey(), metaData.isGenerated(), metaData.isCaseSensitive(), metaData.isVisible(), metaData.isUnsigned());
-    }
-    
-    protected abstract Optional<String> getColumnName(String originalName);
 }
