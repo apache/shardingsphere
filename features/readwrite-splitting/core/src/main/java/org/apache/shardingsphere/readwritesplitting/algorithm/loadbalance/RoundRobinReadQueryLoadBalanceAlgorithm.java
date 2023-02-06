@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.context.transaction.TransactionConnection
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategyAware;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.transaction.TransactionReadQueryStrategyUtil;
 
 import java.util.List;
 import java.util.Properties;
@@ -45,7 +46,7 @@ public final class RoundRobinReadQueryLoadBalanceAlgorithm implements ReadQueryL
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
         if (context.isInTransaction()) {
-            return routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionReadQueryStrategy);
+            return TransactionReadQueryStrategyUtil.routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionReadQueryStrategy, this);
         }
         return getDataSourceName(name, readDataSourceNames);
     }

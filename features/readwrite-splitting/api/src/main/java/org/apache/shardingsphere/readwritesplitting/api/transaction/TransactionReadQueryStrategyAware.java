@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.api.transaction;
 
-import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
-
 import java.util.List;
 
 /**
@@ -27,32 +25,6 @@ import java.util.List;
 public interface TransactionReadQueryStrategyAware {
     
     String TRANSACTION_READ_QUERY_STRATEGY = "transactionReadQueryStrategy";
-    
-    /**
-     * Get data source name in transaction.
-     *
-     * @param name read query logic data source name
-     * @param writeDataSourceName name of write data source
-     * @param readDataSourceNames names of read data sources
-     * @param context context
-     * @param transactionReadQueryStrategy read query strategy in transaction
-     * @return name of selected data source
-     */
-    default String routeInTransaction(final String name, final String writeDataSourceName, final List<String> readDataSourceNames,
-                                      TransactionConnectionContext context, TransactionReadQueryStrategy transactionReadQueryStrategy) {
-        switch (transactionReadQueryStrategy) {
-            case FIXED_REPLICA:
-                if (null == context.getReadWriteSplitReplicaRoute()) {
-                    context.setReadWriteSplitReplicaRoute(getDataSourceName(name, readDataSourceNames));
-                }
-                return context.getReadWriteSplitReplicaRoute();
-            case DYNAMIC_REPLICA:
-                return getDataSourceName(name, readDataSourceNames);
-            case FIXED_PRIMARY:
-            default:
-                return writeDataSourceName;
-        }
-    }
     
     /**
      * Get data source name.

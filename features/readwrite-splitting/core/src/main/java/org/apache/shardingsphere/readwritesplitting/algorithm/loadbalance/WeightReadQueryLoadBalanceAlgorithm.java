@@ -26,6 +26,7 @@ import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionR
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.InvalidReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingRequiredReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.transaction.TransactionReadQueryStrategyUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,7 +68,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
         if (context.isInTransaction()) {
-            return routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionReadQueryStrategy);
+            return TransactionReadQueryStrategyUtil.routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionReadQueryStrategy, this);
         }
         return getDataSourceName(name, readDataSourceNames);
     }
