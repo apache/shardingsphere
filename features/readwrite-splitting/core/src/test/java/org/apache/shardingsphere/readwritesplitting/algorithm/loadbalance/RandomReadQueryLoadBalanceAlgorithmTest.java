@@ -40,8 +40,8 @@ public final class RandomReadQueryLoadBalanceAlgorithmTest {
     public void assertGetDataSourceWithDefaultStrategy() {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "RANDOM", new Properties());
         String writeDataSourceName = "test_write_ds";
-        String readDataSourceName1 = "test_replica_ds_1";
-        String readDataSourceName2 = "test_replica_ds_2";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionConnectionContext context = new TransactionConnectionContext();
         assertRandomReadQueryLoadBalance(readDataSourceNames, loadBalanceAlgorithm, writeDataSourceName, context);
@@ -62,8 +62,8 @@ public final class RandomReadQueryLoadBalanceAlgorithmTest {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "RANDOM",
                 PropertiesBuilder.build(new Property(TransactionReadQueryStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_PRIMARY.name())));
         String writeDataSourceName = "test_write_ds";
-        String readDataSourceName1 = "test_replica_ds_1";
-        String readDataSourceName2 = "test_replica_ds_2";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionConnectionContext context = new TransactionConnectionContext();
         assertRandomReadQueryLoadBalance(readDataSourceNames, loadBalanceAlgorithm, writeDataSourceName, context);
@@ -78,8 +78,8 @@ public final class RandomReadQueryLoadBalanceAlgorithmTest {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "RANDOM",
                 PropertiesBuilder.build(new Property(TransactionReadQueryStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_REPLICA.name())));
         String writeDataSourceName = "test_write_ds";
-        String readDataSourceName1 = "test_replica_ds_1";
-        String readDataSourceName2 = "test_replica_ds_2";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionConnectionContext context = new TransactionConnectionContext();
         assertRandomReadQueryLoadBalance(readDataSourceNames, loadBalanceAlgorithm, writeDataSourceName, context);
@@ -95,8 +95,8 @@ public final class RandomReadQueryLoadBalanceAlgorithmTest {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "RANDOM",
                 PropertiesBuilder.build(new Property(TransactionReadQueryStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.DYNAMIC_REPLICA.name())));
         String writeDataSourceName = "test_write_ds";
-        String readDataSourceName1 = "test_replica_ds_1";
-        String readDataSourceName2 = "test_replica_ds_2";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionConnectionContext context = new TransactionConnectionContext();
         assertRandomReadQueryLoadBalance(readDataSourceNames, loadBalanceAlgorithm, writeDataSourceName, context);
