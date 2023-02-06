@@ -19,8 +19,9 @@ package org.apache.shardingsphere.single.metadata.reviser;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
+
+import java.util.Optional;
 
 /**
  * Single constraint reviser.
@@ -28,9 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDa
 public final class SingleConstraintReviser implements ConstraintReviser {
     
     @Override
-    public ConstraintMetaData revise(final TableMetaData tableMetaData, final ConstraintMetaData originalMetaData) {
-        return new ConstraintMetaData(
-                IndexMetaDataUtil.getLogicIndexName(originalMetaData.getName(), tableMetaData.getName()), originalMetaData.getReferencedTableName());
-        
+    public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData) {
+        return Optional.of(new ConstraintMetaData(IndexMetaDataUtil.getLogicIndexName(originalMetaData.getName(), tableName), originalMetaData.getReferencedTableName()));
     }
 }

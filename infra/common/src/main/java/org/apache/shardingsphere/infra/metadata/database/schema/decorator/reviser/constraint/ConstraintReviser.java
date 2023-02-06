@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+
+import java.util.Optional;
 
 /**
  * Constraint reviser.
@@ -28,9 +29,9 @@ public interface ConstraintReviser {
     /**
      * Revise constraint meta data.
      * 
-     * @param tableMetaData table meta data
+     * @param tableName table name
      * @param originalMetaData original constraint meta data
      * @return revised constraint meta data
      */
-    ConstraintMetaData revise(TableMetaData tableMetaData, ConstraintMetaData originalMetaData);
+    Optional<ConstraintMetaData> revise(String tableName, ConstraintMetaData originalMetaData);
 }
