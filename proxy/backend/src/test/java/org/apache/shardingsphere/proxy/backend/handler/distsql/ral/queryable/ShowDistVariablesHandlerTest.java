@@ -57,7 +57,8 @@ public final class ShowDistVariablesHandlerTest extends ProxyContextRestorer {
         MetaDataContexts metaDataContexts = mockMetaDataContexts();
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
-                .thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build(), new ConfigurationProperties(new Properties())))));
+                .thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build(),
+                        new ConfigurationProperties(new Properties())))));
         ProxyContext.init(contextManager);
     }
     
