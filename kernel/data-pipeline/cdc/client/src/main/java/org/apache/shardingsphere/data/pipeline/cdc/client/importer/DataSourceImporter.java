@@ -35,28 +35,26 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Abstract data source importer.
+ * Data source importer.
  */
 @Slf4j
-public abstract class AbstractDataSourceImporter implements Importer {
+public final class DataSourceImporter implements Importer {
     
     private final Connection connection;
     
     private final SQLBuilder sqlBuilder;
     
-    public AbstractDataSourceImporter(final ImportDataSourceParameter dataSourceParameter) {
-        String url = Optional.ofNullable(dataSourceParameter.getUrl()).orElseThrow(() -> new IllegalArgumentException("CDC url is null"));
-        String username = Optional.ofNullable(dataSourceParameter.getUsername()).orElseThrow(() -> new IllegalArgumentException("username is null"));
-        String password = Optional.ofNullable(dataSourceParameter.getPassword()).orElseThrow(() -> new IllegalArgumentException("password is null"));
+    public DataSourceImporter(final String databaseType, final ImportDataSourceParameter dataSourceParam) {
+        String jdbcUrl = Optional.ofNullable(dataSourceParam.getJdbcUrl()).orElseThrow(() -> new IllegalArgumentException("jdbcUrl is null"));
+        String username = Optional.ofNullable(dataSourceParam.getUsername()).orElseThrow(() -> new IllegalArgumentException("username is null"));
+        String password = Optional.ofNullable(dataSourceParam.getPassword()).orElseThrow(() -> new IllegalArgumentException("password is null"));
         try {
-            connection = DriverManager.getConnection(buildJdbcUrl(url), username, password);
+            connection = DriverManager.getConnection(jdbcUrl, username, password);
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
-        sqlBuilder = SQLBuilderFactory.getSQLBuilder(getType());
+        sqlBuilder = SQLBuilderFactory.getSQLBuilder(databaseType);
     }
-    
-    protected abstract String buildJdbcUrl(String url);
     
     @Override
     public void write(final Record record) throws Exception {
@@ -100,7 +98,7 @@ public abstract class AbstractDataSourceImporter implements Importer {
         }
     }
     
-    protected Optional<String> buildSQL(final Record record) {
+    private Optional<String> buildSQL(final Record record) {
         switch (record.getDataChangeType()) {
             case INSERT:
                 return Optional.ofNullable(sqlBuilder.buildInsertSQL(record));
@@ -112,8 +110,6 @@ public abstract class AbstractDataSourceImporter implements Importer {
                 return Optional.empty();
         }
     }
-    
-    protected abstract String getType();
     
     @Override
     public void close() throws Exception {

@@ -52,7 +52,7 @@ public final class MySQLSQLBuilderTest {
     
     @Test
     public void assertBuildInsertSQLWithoutUniqueKey() {
-        PostgreSQLSQLBuilder sqlBuilder = new PostgreSQLSQLBuilder();
+        MySQLSQLBuilder sqlBuilder = new MySQLSQLBuilder();
         TableMetaData tableMetaData = TableMetaData.newBuilder().setTableName("t_order").setDatabase("cdc_db").build();
         Record record = Record.newBuilder().setTableMetaData(tableMetaData).putAllAfter(buildAfterMap()).build();
         String actualSql = sqlBuilder.buildInsertSQL(record);

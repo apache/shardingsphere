@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Pipeline SQL builder of openGauss.
@@ -62,17 +61,15 @@ public final class OpenGaussSQLBuilder extends AbstractSQLBuilder {
         List<String> uniqueKeyNamesList = record.getTableMetaData().getUniqueKeyNamesList();
         if (uniqueKeyNamesList.isEmpty()) {
             return insertSql;
-        } else {
-            StringBuilder updateValue = new StringBuilder();
-            for (String each : record.getAfterMap().keySet()) {
-                if (uniqueKeyNamesList.contains(each)) {
-                    continue;
-                }
-                updateValue.append(quote(each)).append("=EXCLUDED.").append(quote(each)).append(",");
-            }
-            updateValue.setLength(updateValue.length() - 1);
-            String uniqueKeyNames = uniqueKeyNamesList.stream().map(this::quote).collect(Collectors.joining(","));
-            return insertSql + String.format(" ON CONFLICT (%s) DO UPDATE SET %s", uniqueKeyNames, updateValue);
         }
+        StringBuilder updateValue = new StringBuilder();
+        for (String each : record.getAfterMap().keySet()) {
+            if (uniqueKeyNamesList.contains(each)) {
+                continue;
+            }
+            updateValue.append(quote(each)).append("=EXCLUDED.").append(quote(each)).append(",");
+        }
+        updateValue.setLength(updateValue.length() - 1);
+        return insertSql + " ON DUPLICATE KEY UPDATE " + updateValue;
     }
 }

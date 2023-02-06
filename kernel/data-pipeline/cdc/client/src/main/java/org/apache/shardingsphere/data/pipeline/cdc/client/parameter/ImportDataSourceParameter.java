@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class ImportDataSourceParameter {
     
-    private final String url;
+    private final String jdbcUrl;
     
     private final String username;
     

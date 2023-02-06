@@ -28,17 +28,15 @@ public final class ImporterFactory {
      * Get importer.
      *
      * @param databaseType database type
-     * @param dataSourceParameter data source parameter
+     * @param dataSourceParam data source parameter
      * @return importer
      */
-    public static Importer getImporter(final String databaseType, final ImportDataSourceParameter dataSourceParameter) {
+    public static Importer getImporter(final String databaseType, final ImportDataSourceParameter dataSourceParam) {
         switch (databaseType) {
             case "openGauss":
-                return new OpenGaussImporter(dataSourceParameter);
             case "MySQL":
-                return new MySQLImporter(dataSourceParameter);
             case "PostgreSQL":
-                return new PostgreSQLImporter(dataSourceParameter);
+                return new DataSourceImporter(databaseType, dataSourceParam);
             default:
                 throw new UnsupportedOperationException(String.format("Not support %s now", databaseType));
         }

@@ -65,16 +65,15 @@ public final class MySQLSQLBuilder extends AbstractSQLBuilder {
         List<String> uniqueKeyNamesList = record.getTableMetaData().getUniqueKeyNamesList();
         if (uniqueKeyNamesList.isEmpty()) {
             return insertSql;
-        } else {
-            StringBuilder updateValue = new StringBuilder();
-            for (String each : record.getAfterMap().keySet()) {
-                if (uniqueKeyNamesList.contains(each)) {
-                    continue;
-                }
-                updateValue.append(quote(each)).append("=VALUES(").append(quote(each)).append("),");
-            }
-            updateValue.setLength(updateValue.length() - 1);
-            return insertSql + " ON DUPLICATE KEY UPDATE " + updateValue;
         }
+        StringBuilder updateValue = new StringBuilder();
+        for (String each : record.getAfterMap().keySet()) {
+            if (uniqueKeyNamesList.contains(each)) {
+                continue;
+            }
+            updateValue.append(quote(each)).append("=VALUES(").append(quote(each)).append("),");
+        }
+        updateValue.setLength(updateValue.length() - 1);
+        return insertSql + " ON DUPLICATE KEY UPDATE " + updateValue;
     }
 }

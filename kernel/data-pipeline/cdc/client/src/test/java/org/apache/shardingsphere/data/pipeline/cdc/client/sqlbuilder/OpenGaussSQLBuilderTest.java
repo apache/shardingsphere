@@ -38,7 +38,7 @@ public final class OpenGaussSQLBuilderTest {
         TableMetaData tableMetaData = TableMetaData.newBuilder().setTableName("t_order").addUniqueKeyNames("order_id").setDatabase("cdc_db").build();
         Record record = Record.newBuilder().setTableMetaData(tableMetaData).putAllAfter(buildAfterMap()).build();
         String actualSql = sqlBuilder.buildInsertSQL(record);
-        String expectedSql = "INSERT INTO t_order(order_id,user_id,status) VALUES(?,?,?) ON CONFLICT (order_id) DO UPDATE SET user_id=EXCLUDED.user_id,status=EXCLUDED.status";
+        String expectedSql = "INSERT INTO t_order(order_id,user_id,status) VALUES(?,?,?) ON DUPLICATE KEY UPDATE user_id=EXCLUDED.user_id,status=EXCLUDED.status";
         assertThat(actualSql, is(expectedSql));
     }
     
