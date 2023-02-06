@@ -20,31 +20,19 @@ package org.apache.shardingsphere.infra.metadata.database.schema.decorator.revis
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-import java.util.Optional;
-
 /**
  * Table name reviser.
  * 
- * @param <R> type of rule
- * @param <T> type of table rule
+ * @param <T> type of rule
  */
-public interface TableNameReviser<R extends ShardingSphereRule, T> extends TypedSPI {
+public interface TableNameReviser<T extends ShardingSphereRule> extends TypedSPI {
     
     /**
      * Revise table meta data.
      * 
      * @param originalName original table name
-     * @param tableRule table rule
+     * @param rule rule
      * @return revised table name
      */
-    String revise(String originalName, T tableRule);
-    
-    /**
-     * Find table rule.
-     * 
-     * @param name table name
-     * @param rule ShardingSphere rule
-     * @return found table rule
-     */
-    Optional<T> findTableRule(String name, R rule);
+    String revise(String originalName, T rule);
 }

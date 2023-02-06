@@ -21,21 +21,14 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.revise
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
-import java.util.Optional;
-
 /**
  * Sharding table name reviser.
  */
-public final class ShardingTableNameReviser implements TableNameReviser<ShardingRule, TableRule> {
+public final class ShardingTableNameReviser implements TableNameReviser<ShardingRule> {
     
     @Override
-    public String revise(final String originalName, final TableRule tableRule) {
-        return tableRule.getLogicTable();
-    }
-    
-    @Override
-    public Optional<TableRule> findTableRule(final String name, final ShardingRule rule) {
-        return rule.findTableRuleByActualTable(name);
+    public String revise(final String originalName, final ShardingRule rule) {
+        return rule.findTableRuleByActualTable(originalName).map(TableRule::getLogicTable).orElse(originalName);
     }
     
     @Override

@@ -29,17 +29,16 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Table meta data revise engine.
  *
- * @param <R> type of rule
+ * @param <T> type of rule
  */
 @RequiredArgsConstructor
-public final class TableMetaDataReviseEngine<R extends ShardingSphereRule> {
+public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
     
-    private final R rule;
+    private final T rule;
     
     /**
      * Revise table meta data.
@@ -48,15 +47,13 @@ public final class TableMetaDataReviseEngine<R extends ShardingSphereRule> {
      * @param columnRevisers column revisers
      * @param indexRevisers index revisers
      * @param constraintRevisers constraint revisers
-     * @param <T> type of table rule
      * @return revised table meta data
      */
-    public <T> TableMetaData revise(final TableMetaData originalMetaData,
-                                    final Collection<ColumnReviser> columnRevisers, final Collection<IndexReviser> indexRevisers, final Collection<ConstraintReviser> constraintRevisers) {
+    public TableMetaData revise(final TableMetaData originalMetaData,
+                                final Collection<ColumnReviser> columnRevisers, final Collection<IndexReviser> indexRevisers, final Collection<ConstraintReviser> constraintRevisers) {
         @SuppressWarnings("unchecked")
-        TableNameReviser<R, T> tableNameReviser = TypedSPILoader.getService(TableNameReviser.class, rule.getClass().getSimpleName());
-        Optional<T> tableRule = tableNameReviser.findTableRule(originalMetaData.getName(), rule);
-        String revisedTableName = tableRule.isPresent() ? tableNameReviser.revise(originalMetaData.getName(), tableRule.get()) : originalMetaData.getName();
+        TableNameReviser<T> tableNameReviser = TypedSPILoader.getService(TableNameReviser.class, rule.getClass().getSimpleName());
+        String revisedTableName = tableNameReviser.revise(originalMetaData.getName(), rule);
         return new TableMetaData(revisedTableName, new ColumnReviseEngine().revise(originalMetaData.getColumns(), columnRevisers),
                 new IndexReviseEngine().revise(revisedTableName, originalMetaData.getIndexes(), indexRevisers),
                 new ConstraintReviseEngine().revise(revisedTableName, originalMetaData.getConstrains(), constraintRevisers));

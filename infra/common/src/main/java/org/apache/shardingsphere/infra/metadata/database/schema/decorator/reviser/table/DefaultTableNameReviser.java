@@ -19,21 +19,14 @@ package org.apache.shardingsphere.infra.metadata.database.schema.decorator.revis
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Optional;
-
 /**
  * Default table name reviser.
  */
-public final class DefaultTableNameReviser implements TableNameReviser<ShardingSphereRule, Object> {
+public final class DefaultTableNameReviser implements TableNameReviser<ShardingSphereRule> {
     
     @Override
-    public String revise(final String originalName, final Object tableRule) {
+    public String revise(final String originalName, final ShardingSphereRule rule) {
         return originalName;
-    }
-    
-    @Override
-    public Optional<Object> findTableRule(final String name, final ShardingSphereRule rule) {
-        return Optional.empty();
     }
     
     @Override
