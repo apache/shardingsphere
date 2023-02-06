@@ -104,14 +104,11 @@ public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
     
     @Test(expected = InvalidValueException.class)
     public void assertExecuteWithWrongSystemLogLevel() throws SQLException {
-        ContextManager contextManager = mockContextManager();
-        SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debag");
+        mockContextManager();
+        SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");
         SetDistVariableHandler handler = new SetDistVariableHandler();
         handler.init(statement, connectionSession);
         handler.execute();
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("system-log-level");
-        assertThat(actualValue.toString(), is("DEBUG"));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.DEBUG));
     }
     
     private ContextManager mockContextManager() {
