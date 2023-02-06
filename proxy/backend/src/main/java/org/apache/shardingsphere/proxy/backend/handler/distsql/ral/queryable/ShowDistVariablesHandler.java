@@ -63,11 +63,13 @@ public final class ShowDistVariablesHandler extends AbstractQueryableRALBackendH
         Optional<ShardingSphereLogger> sqlLogger = getSQLLogger(contextManager);
         if (sqlLogger.isPresent()) {
             Properties sqlLoggerProps = sqlLogger.get().getProps();
-            result.add(new LocalDataQueryResultRow("sql_show", sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_ENABLE, Boolean.FALSE).toString()));
-            result.add(new LocalDataQueryResultRow("sql_simple", sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE, Boolean.FALSE).toString()));
+            result.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SHOW_VARIABLE_NAME, sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_ENABLE, Boolean.FALSE).toString()));
+            result.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SIMPLE_VARIABLE_NAME, sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE, Boolean.FALSE).toString()));
         } else {
-            result.add(new LocalDataQueryResultRow("sql_show", Boolean.FALSE.toString()));
-            result.add(new LocalDataQueryResultRow("sql_simple", Boolean.FALSE.toString()));
+            result.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SHOW_VARIABLE_NAME,
+                    contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.valueOf(LoggingConstants.SQL_SHOW_VARIABLE_NAME)).toString()));
+            result.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SIMPLE_VARIABLE_NAME,
+                    contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.valueOf(LoggingConstants.SQL_SHOW_VARIABLE_NAME)).toString()));
         }
         return result;
     }

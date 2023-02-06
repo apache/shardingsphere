@@ -22,6 +22,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDist
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.logging.rule.LoggingRule;
+import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -39,6 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -114,10 +118,13 @@ public final class ShowDistVariableBackendHandlerTest extends ProxyContextRestor
     public void assertShowPropsVariable() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mock(ContextManager.class);
-        ProxyContext.init(contextManager);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        ProxyContext.init(contextManager);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("sql-show", Boolean.TRUE.toString()))));
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
+                .thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build(),
+                        new ConfigurationProperties(PropertiesBuilder.build(new Property("sql-show", Boolean.TRUE.toString())))))));
         ShowDistVariableHandler backendHandler = new ShowDistVariableHandler();
         backendHandler.init(new ShowDistVariableStatement("SQL_SHOW"), connectionSession);
         ResponseHeader actual = backendHandler.execute();

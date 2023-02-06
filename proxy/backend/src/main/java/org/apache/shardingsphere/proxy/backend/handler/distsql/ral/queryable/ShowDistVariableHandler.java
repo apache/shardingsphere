@@ -78,13 +78,15 @@ public final class ShowDistVariableHandler extends AbstractQueryableRALBackendHa
             Properties props = sqlLogger.get().getProps();
             switch (key) {
                 case LoggingConstants.SQL_SHOW_VARIABLE_NAME:
-                    return props.getOrDefault(LoggingConstants.SQL_LOG_ENABLE, Boolean.FALSE).toString();
+                    return props.getOrDefault(LoggingConstants.SQL_LOG_ENABLE,
+                            contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString()).toString();
                 case LoggingConstants.SQL_SIMPLE_VARIABLE_NAME:
-                    return props.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE, Boolean.FALSE).toString();
+                    return props.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE,
+                            contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString()).toString();
                 default:
             }
         }
-        return Boolean.FALSE.toString();
+        return contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString();
     }
     
     private Optional<ShardingSphereLogger> getSQLLogger(final ContextManager contextManager) {
