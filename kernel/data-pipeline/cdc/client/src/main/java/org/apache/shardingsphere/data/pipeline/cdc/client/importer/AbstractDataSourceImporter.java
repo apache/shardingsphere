@@ -20,22 +20,43 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.importer;
 import com.google.protobuf.Any;
 import com.google.protobuf.ProtocolStringList;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.ImportDataSourceParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder.SQLBuilder;
+import org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder.SQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.AnyValueConvert;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Abstract data source importer.
+ */
 @Slf4j
 public abstract class AbstractDataSourceImporter implements Importer {
     
-    protected abstract Connection getConnection();
+    private final Connection connection;
     
-    protected abstract SQLBuilder getSQLBuilder();
+    private final SQLBuilder sqlBuilder;
+    
+    public AbstractDataSourceImporter(final ImportDataSourceParameter dataSourceParameter) {
+        String url = Optional.ofNullable(dataSourceParameter.getUrl()).orElseThrow(() -> new IllegalArgumentException("CDC url is null"));
+        String username = Optional.ofNullable(dataSourceParameter.getUsername()).orElseThrow(() -> new IllegalArgumentException("username is null"));
+        String password = Optional.ofNullable(dataSourceParameter.getPassword()).orElseThrow(() -> new IllegalArgumentException("password is null"));
+        try {
+            connection = DriverManager.getConnection(buildJdbcUrl(url), username, password);
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        sqlBuilder = SQLBuilderFactory.getSQLBuilder(getType());
+    }
+    
+    protected abstract String buildJdbcUrl(String url);
     
     @Override
     public void write(final Record record) throws Exception {
@@ -45,7 +66,7 @@ public abstract class AbstractDataSourceImporter implements Importer {
             throw new RuntimeException("build sql failed");
         }
         String sql = sqlOptional.get();
-        try (PreparedStatement preparedStatement = getConnection().prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             List<Any> afterValue = new ArrayList<>(record.getAfterMap().values());
             ProtocolStringList uniqueKeyNamesList = record.getTableMetaData().getUniqueKeyNamesList();
             List<String> conditionColumnNames = record.getBeforeMap().keySet().containsAll(uniqueKeyNamesList) ? uniqueKeyNamesList : new ArrayList<>(record.getBeforeMap().keySet());
@@ -82,13 +103,20 @@ public abstract class AbstractDataSourceImporter implements Importer {
     protected Optional<String> buildSQL(final Record record) {
         switch (record.getDataChangeType()) {
             case INSERT:
-                return Optional.ofNullable(getSQLBuilder().buildInsertSQL(record));
+                return Optional.ofNullable(sqlBuilder.buildInsertSQL(record));
             case UPDATE:
-                return Optional.ofNullable(getSQLBuilder().buildUpdateSQL(record));
+                return Optional.ofNullable(sqlBuilder.buildUpdateSQL(record));
             case DELETE:
-                return Optional.ofNullable(getSQLBuilder().buildDeleteSQL(record));
+                return Optional.ofNullable(sqlBuilder.buildDeleteSQL(record));
             default:
                 return Optional.empty();
         }
+    }
+    
+    protected abstract String getType();
+    
+    @Override
+    public void close() throws Exception {
+        connection.close();
     }
 }

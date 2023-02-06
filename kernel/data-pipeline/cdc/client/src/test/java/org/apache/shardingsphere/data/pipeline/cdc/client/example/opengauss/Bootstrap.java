@@ -33,7 +33,8 @@ public final class Bootstrap {
      * @param args args
      */
     public static void main(final String[] args) {
-        StartCDCClientParameter parameter = new StartCDCClientParameter();
+        ImportDataSourceParameter importDataSourceParameter = new ImportDataSourceParameter("localhost:5432/cdc_db", "gaussdb", "Root@123");
+        StartCDCClientParameter parameter = new StartCDCClientParameter(importDataSourceParameter);
         parameter.setAddress("127.0.0.1");
         parameter.setPort(33071);
         parameter.setUsername("root");
@@ -44,10 +45,6 @@ public final class Bootstrap {
         parameter.setIncrementalGlobalOrderly(true);
         parameter.setSubscribeTables(Collections.singletonList(TableName.newBuilder().setName("t_order").build()));
         parameter.setDatabaseType("openGauss");
-        ImportDataSourceParameter importDataSourceParameter = new ImportDataSourceParameter();
-        importDataSourceParameter.setUsername("gaussdb");
-        importDataSourceParameter.setPassword("Root@123");
-        parameter.setImportDataSourceParameter(importDataSourceParameter);
         CDCClient cdcClient = new CDCClient(parameter);
         cdcClient.start();
     }

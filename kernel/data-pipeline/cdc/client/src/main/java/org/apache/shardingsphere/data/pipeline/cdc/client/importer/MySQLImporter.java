@@ -17,50 +17,26 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client.importer;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.ImportDataSourceParameter;
-import org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder.SQLBuilder;
-import org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder.SQLBuilderFactory;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Optional;
 
 /**
  * MySQL importer.
  */
-@RequiredArgsConstructor
 @Slf4j
 public final class MySQLImporter extends AbstractDataSourceImporter {
     
-    private final SQLBuilder sqlBuilder = SQLBuilderFactory.getSQLBuilder("MySQL");
-    
-    @Getter
-    private final Connection connection;
-    
     public MySQLImporter(final ImportDataSourceParameter dataSourceParameter) {
-        String url = Optional.ofNullable(dataSourceParameter.getUrl()).orElse("localhost");
-        String port = Optional.ofNullable(dataSourceParameter.getPort()).orElse(3306).toString();
-        String database = Optional.ofNullable(dataSourceParameter.getDatabase()).orElse("cdc_db");
-        String username = Optional.ofNullable(dataSourceParameter.getUsername()).orElse("test_user");
-        String password = Optional.ofNullable(dataSourceParameter.getPassword()).orElse("Root@123");
-        try {
-            connection = DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true", url, port, database), username, password);
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+        super(dataSourceParameter);
     }
     
     @Override
-    protected SQLBuilder getSQLBuilder() {
-        return sqlBuilder;
+    protected String buildJdbcUrl(final String url) {
+        return String.format("jdbc:mysql://%s?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true", url);
     }
     
     @Override
-    public void close() throws Exception {
-        connection.close();
+    protected String getType() {
+        return "MySQL";
     }
 }

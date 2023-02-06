@@ -18,22 +18,18 @@
 package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Import data source parameter.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class ImportDataSourceParameter {
     
-    private String url;
+    private final String url;
     
-    private Integer port;
+    private final String username;
     
-    private String database;
-    
-    private String username;
-    
-    private String password;
+    private final String password;
 }

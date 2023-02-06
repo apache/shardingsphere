@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnecti
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
 import org.apache.shardingsphere.data.pipeline.cdc.client.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.cdc.client.importer.ImporterFactory;
-import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.ImportDataSourceParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckRequest;
@@ -39,7 +38,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Subscription request handler.
@@ -53,7 +51,7 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
     
     public SubscriptionRequestHandler(final StartCDCClientParameter parameter) {
         this.parameter = parameter;
-        importer = ImporterFactory.getImporter(parameter.getDatabaseType(), Optional.ofNullable(parameter.getImportDataSourceParameter()).orElse(new ImportDataSourceParameter()));
+        importer = ImporterFactory.getImporter(parameter.getDatabaseType(), parameter.getImportDataSourceParameter());
     }
     
     @Override

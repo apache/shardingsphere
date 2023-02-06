@@ -64,37 +64,37 @@ public final class ColumnValueConvertUtil {
             return NullValue.newBuilder().build();
         }
         if (object instanceof Integer) {
-            return Int32Value.newBuilder().setValue((int) object).build();
+            return Int32Value.of((int) object);
         }
         if (object instanceof Short) {
-            return Int32Value.newBuilder().setValue(((Short) object).intValue()).build();
+            return Int32Value.of(((Short) object).intValue());
         }
         if (object instanceof Byte) {
-            return Int32Value.newBuilder().setValue(((Byte) object).intValue()).build();
+            return Int32Value.of(((Byte) object).intValue());
         }
         if (object instanceof Long) {
-            return Int64Value.newBuilder().setValue((long) object).build();
+            return Int64Value.of((long) object);
         }
         if (object instanceof BigInteger) {
             return BigIntegerValue.newBuilder().setValue(ByteString.copyFrom(((BigInteger) object).toByteArray())).build();
         }
         if (object instanceof Float) {
-            return FloatValue.newBuilder().setValue((float) object).build();
+            return FloatValue.of((float) object);
         }
         if (object instanceof Double) {
-            return DoubleValue.newBuilder().setValue((double) object).build();
+            return DoubleValue.of((double) object);
         }
         if (object instanceof BigDecimal) {
             return BigDecimalValue.newBuilder().setValue(object.toString()).build();
         }
         if (object instanceof String) {
-            return StringValue.newBuilder().setValue(object.toString()).build();
+            return StringValue.of(object.toString());
         }
         if (object instanceof Boolean) {
-            return BoolValue.newBuilder().setValue((boolean) object).build();
+            return BoolValue.of((boolean) object);
         }
         if (object instanceof byte[]) {
-            return BytesValue.newBuilder().setValue(ByteString.copyFrom((byte[]) object)).build();
+            return BytesValue.of(ByteString.copyFrom((byte[]) object));
         }
         if (object instanceof Date) {
             return converToProtobufTimestamp((Date) object);

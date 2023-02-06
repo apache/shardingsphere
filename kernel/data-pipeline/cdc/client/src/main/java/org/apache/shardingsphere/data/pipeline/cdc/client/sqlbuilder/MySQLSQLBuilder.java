@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * MySQL SQL builder.
@@ -45,8 +44,6 @@ public final class MySQLSQLBuilder extends AbstractSQLBuilder {
             "UNION", "UNIQUE", "UNLOCK", "UNSIGNED", "UPDATE", "USAGE", "USE", "USING", "UTC_DATE", "UTC_TIME", "UTC_TIMESTAMP", "VALUES", "VARBINARY", "VARCHAR", "VARCHARACTER", "VARYING", "VIRTUAL",
             "WHEN", "WHERE", "WHILE", "WINDOW", "WITH", "WRITE", "XOR", "YEAR_MONTH", "ZEROFILL");
     
-    private static final Pattern PATTERN_INSERT_TABLE = Pattern.compile("INSERT\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
-    
     @Override
     protected boolean isKeyword(final String item) {
         return RESERVED_KEYWORDS.contains(item.toUpperCase());
@@ -65,9 +62,19 @@ public final class MySQLSQLBuilder extends AbstractSQLBuilder {
     @Override
     public String buildInsertSQL(final Record record) {
         String insertSql = super.buildInsertSQL(record);
-        if (!record.getTableMetaData().getUniqueKeyNamesList().isEmpty()) {
-            return PATTERN_INSERT_TABLE.matcher(insertSql).replaceFirst("INSERT IGNORE TABLE ");
+        List<String> uniqueKeyNamesList = record.getTableMetaData().getUniqueKeyNamesList();
+        if (uniqueKeyNamesList.isEmpty()) {
+            return insertSql;
+        } else {
+            StringBuilder updateValue = new StringBuilder();
+            for (String each : record.getAfterMap().keySet()) {
+                if (uniqueKeyNamesList.contains(each)) {
+                    continue;
+                }
+                updateValue.append(quote(each)).append("=VALUES(").append(quote(each)).append("),");
+            }
+            updateValue.setLength(updateValue.length() - 1);
+            return insertSql + " ON DUPLICATE KEY UPDATE " + updateValue;
         }
-        return insertSql;
     }
 }

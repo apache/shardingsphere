@@ -31,7 +31,6 @@ public final class ImporterFactory {
      * @param dataSourceParameter data source parameter
      * @return importer
      */
-    // TODO use SPI
     public static Importer getImporter(final String databaseType, final ImportDataSourceParameter dataSourceParameter) {
         switch (databaseType) {
             case "openGauss":
