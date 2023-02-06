@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -36,13 +35,9 @@ public final class LandlineNumberRandomAlgorithm implements MaskAlgorithm<Object
     
     private List<String> landLineNumbers;
     
-    @Getter
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
-        this.landLineNumbers = createLandLineNumbers(props);
+        landLineNumbers = createLandLineNumbers(props);
     }
     
     private List<String> createLandLineNumbers(final Properties props) {

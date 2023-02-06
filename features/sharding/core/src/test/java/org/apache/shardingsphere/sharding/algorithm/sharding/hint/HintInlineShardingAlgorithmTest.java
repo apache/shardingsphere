@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.hint;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -42,8 +41,8 @@ public final class HintInlineShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        hintInlineShardingAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("HINT_INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_$->{value % 4}"))), ShardingAlgorithm.class);
+        hintInlineShardingAlgorithm = (HintInlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class,
+                "HINT_INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_$->{value % 4}")));
         hintInlineShardingAlgorithmDefault = new HintInlineShardingAlgorithm();
         hintInlineShardingAlgorithmDefault.init(new Properties());
     }

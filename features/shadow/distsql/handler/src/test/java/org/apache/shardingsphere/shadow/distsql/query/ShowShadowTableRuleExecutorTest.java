@@ -77,7 +77,7 @@ public final class ShowShadowTableRuleExecutorTest {
     private RuleConfiguration createRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.getTables().put("t_order", new ShadowTableConfiguration(Collections.emptyList(), Arrays.asList("shadowAlgorithmName_1", "shadowAlgorithmName_2")));
-        result.getShadowAlgorithms().put("shadowAlgorithmName", new AlgorithmConfiguration("simple_hint", PropertiesBuilder.build(new Property("foo", "bar"))));
+        result.getShadowAlgorithms().put("shadowAlgorithmName", new AlgorithmConfiguration("sql_hint", PropertiesBuilder.build(new Property("foo", "bar"))));
         return result;
     }
 }

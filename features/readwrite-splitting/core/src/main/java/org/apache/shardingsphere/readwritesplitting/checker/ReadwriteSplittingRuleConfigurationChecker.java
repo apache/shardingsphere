@@ -19,13 +19,13 @@ package org.apache.shardingsphere.readwritesplitting.checker;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightAware;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -157,7 +157,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     
     private Map<String, ReadQueryLoadBalanceAlgorithm> getLoadBalancer(final ReadwriteSplittingRuleConfiguration config) {
         Map<String, ReadQueryLoadBalanceAlgorithm> result = new LinkedHashMap<>(config.getLoadBalancers().size(), 1);
-        config.getLoadBalancers().forEach((key, value) -> result.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ReadQueryLoadBalanceAlgorithm.class)));
+        config.getLoadBalancers().forEach((key, value) -> result.put(key, TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, value.getType(), value.getProps())));
         return result;
     }
     

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.List;
@@ -56,12 +55,8 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
     
     private List<Character> specialCodes;
     
-    @Getter
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
         uppercaseLetterCodes = splitPropsToList(props.getProperty(UPPERCASE_LETTER_CODES, DEFAULT_UPPERCASE_LETTER_CODES));
         lowercaseLetterCodes = splitPropsToList(props.getProperty(LOWERCASE_LETTER_CODES, DEFAULT_LOWERCASE_LETTER_CODES));
         digitalCodes = splitPropsToList(props.getProperty(DIGITAL_CODES, DEFAULT_DIGITAL_CODES));

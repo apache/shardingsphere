@@ -20,10 +20,9 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 import java.util.Optional;
 
@@ -38,7 +37,7 @@ public final class ExecuteProcessReporter {
      * @param executionGroupContext execution group context
      */
     public void report(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("", executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_SLEEP, true);
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("", executionGroupContext, ExecuteProcessStatusEnum.SLEEP, true);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
     }
     
@@ -47,13 +46,13 @@ public final class ExecuteProcessReporter {
      *
      * @param queryContext query context
      * @param executionGroupContext execution group context
-     * @param constants constants
+     * @param processStatus process status
      */
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
-                       final ExecuteProcessConstants constants) {
+                       final ExecuteProcessStatusEnum processStatus) {
         ExecuteProcessContext originExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionGroupContext.getReportContext().getExecutionID());
         boolean isProxyContext = null != originExecuteProcessContext && originExecuteProcessContext.isProxyContext();
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants, isProxyContext);
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, processStatus, isProxyContext);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
         ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
     }
@@ -63,22 +62,12 @@ public final class ExecuteProcessReporter {
      *
      * @param executionID execution ID
      * @param executionUnit execution unit
-     * @param constants constants
+     * @param processStatus process status
      */
-    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants) {
-        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
+    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatusEnum processStatus) {
+        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), processStatus);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(executeProcessUnit.getStatus()));
-    }
-    
-    /**
-     * Report this task on completion.
-     *
-     * @param executionID execution ID
-     * @param constants constants
-     * @param eventBusContext event bus context
-     */
-    public void report(final String executionID, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
+        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setProcessStatus(executeProcessUnit.getProcessStatus()));
     }
     
     /**

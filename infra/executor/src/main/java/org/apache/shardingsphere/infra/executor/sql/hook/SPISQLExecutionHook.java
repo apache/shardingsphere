@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * SQL Execution hook for SPI.
@@ -32,10 +31,9 @@ public final class SPISQLExecutionHook implements SQLExecutionHook {
     private final Collection<SQLExecutionHook> sqlExecutionHooks = ShardingSphereServiceLoader.getServiceInstances(SQLExecutionHook.class);
     
     @Override
-    public void start(final String dataSourceName, final String sql, final List<Object> params,
-                      final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread, final Map<String, Object> shardingExecuteDataMap) {
+    public void start(final String dataSourceName, final String sql, final List<Object> params, final DataSourceMetaData dataSourceMetaData, final boolean isTrunkThread) {
         for (SQLExecutionHook each : sqlExecutionHooks) {
-            each.start(dataSourceName, sql, params, dataSourceMetaData, isTrunkThread, shardingExecuteDataMap);
+            each.start(dataSourceName, sql, params, dataSourceMetaData, isTrunkThread);
         }
     }
     

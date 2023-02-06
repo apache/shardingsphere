@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -38,8 +37,8 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetSingleReadDataSource() {
-        TransactionWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("TRANSACTION_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"))), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(
+                ReadQueryLoadBalanceAlgorithm.class, "TRANSACTION_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5")));
         TransactionConnectionContext context = new TransactionConnectionContext();
         context.setInTransaction(true);
         assertThat(loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), context), is("test_read_ds_1"));
@@ -47,8 +46,8 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetMultipleReadDataSources() {
-        TransactionWeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(
-                "TRANSACTION_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5"))), ReadQueryLoadBalanceAlgorithm.class);
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(
+                ReadQueryLoadBalanceAlgorithm.class, "TRANSACTION_WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5")));
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";

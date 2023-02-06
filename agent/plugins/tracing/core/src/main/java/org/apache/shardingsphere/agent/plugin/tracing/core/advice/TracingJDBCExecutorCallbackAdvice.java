@@ -46,11 +46,12 @@ public abstract class TracingJDBCExecutorCallbackAdvice<T> implements InstanceMe
     public final void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
         Map<String, DatabaseType> storageTypes = AgentReflectionUtil.getFieldValue(target, "storageTypes");
+        DatabaseType storageType = storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName());
         DataSourceMetaData metaData = AgentReflectionUtil.invokeMethod(
                 JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
-                target, executionUnit.getStorageResource().getConnection().getMetaData(), storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName()));
-        recordExecuteInfo(RootSpanContext.get(), target, executionUnit, (boolean) args[1], metaData);
+                target, executionUnit.getStorageResource().getConnection().getMetaData(), storageType);
+        recordExecuteInfo(RootSpanContext.get(), target, executionUnit, (boolean) args[1], metaData, storageType.getType());
     }
     
-    protected abstract void recordExecuteInfo(T rootSpan, TargetAdviceObject target, JDBCExecutionUnit executionUnit, boolean isTrunkThread, DataSourceMetaData metaData);
+    protected abstract void recordExecuteInfo(T parentSpan, TargetAdviceObject target, JDBCExecutionUnit executionUnit, boolean isTrunkThread, DataSourceMetaData metaData, String databaseType);
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 import groovy.util.Expando;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
@@ -43,16 +42,12 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     private static final String ALLOW_RANGE_QUERY_KEY = "allow-range-query-with-inline-sharding";
     
-    @Getter
-    private Properties props;
-    
     private String algorithmExpression;
     
     private boolean allowRangeQuery;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         algorithmExpression = getAlgorithmExpression(props);
         allowRangeQuery = isAllowRangeQuery(props);
     }

@@ -31,8 +31,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATDisabledException;
 import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATConfigurationException;
+import org.apache.shardingsphere.transaction.base.seata.at.exception.SeataATDisabledException;
 import org.apache.shardingsphere.transaction.exception.TransactionTimeoutException;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
@@ -120,6 +120,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
         } finally {
             SeataTransactionHolder.clear();
             RootContext.unbind();
+            SeataXIDContext.remove();
         }
     }
     
@@ -132,6 +133,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
         } finally {
             SeataTransactionHolder.clear();
             RootContext.unbind();
+            SeataXIDContext.remove();
         }
     }
     

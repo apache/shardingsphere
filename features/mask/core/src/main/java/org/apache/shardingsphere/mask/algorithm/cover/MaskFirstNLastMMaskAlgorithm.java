@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -41,15 +40,11 @@ public final class MaskFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object,
     
     private Character replaceChar;
     
-    @Getter
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
-        this.firstN = createFirstN(props);
-        this.lastM = createLastM(props);
-        this.replaceChar = createReplaceChar(props);
+        firstN = createFirstN(props);
+        lastM = createLastM(props);
+        replaceChar = createReplaceChar(props);
     }
     
     private Integer createFirstN(final Properties props) {

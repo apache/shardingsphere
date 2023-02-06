@@ -49,7 +49,6 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -136,19 +135,17 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         SQLFederationExecutorContext context = new SQLFederationExecutorContext(true, queryContext, metaDataContexts.getMetaData());
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(getDatabaseName());
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), databaseName));
-        EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
         SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
         SQLFederationExecutor sqlFederationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName,
                 metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
-                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), getConnectionSession().getConnectionContext()), eventBusContext);
-        sqlFederationExecutor.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatement, eventBusContext),
+                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), getConnectionSession().getConnectionContext()));
+        sqlFederationExecutor.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatement),
                 context);
         return context.getExecutionUnits();
     }
     
-    private JDBCExecutorCallback<ExecuteResult> createPreviewFederationCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement,
-                                                                                final EventBusContext eventBusContext) {
-        return new JDBCExecutorCallback<ExecuteResult>(protocolType, storageTypes, sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown(), eventBusContext) {
+    private JDBCExecutorCallback<ExecuteResult> createPreviewFederationCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement) {
+        return new JDBCExecutorCallback<ExecuteResult>(protocolType, storageTypes, sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()) {
             
             @Override
             protected ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {

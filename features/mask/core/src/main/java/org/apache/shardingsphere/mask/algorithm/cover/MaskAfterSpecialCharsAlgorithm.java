@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -37,14 +36,10 @@ public final class MaskAfterSpecialCharsAlgorithm implements MaskAlgorithm<Objec
     
     private Character replaceChar;
     
-    @Getter
-    private Properties props;
-    
     @Override
     public void init(final Properties props) {
-        this.props = props;
-        this.specialChars = createSpecialChars(props);
-        this.replaceChar = createReplaceChar(props);
+        specialChars = createSpecialChars(props);
+        replaceChar = createReplaceChar(props);
     }
     
     private String createSpecialChars(final Properties props) {

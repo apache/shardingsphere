@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.distsql.fixture.sharding;
 import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
 import groovy.util.Expando;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
@@ -37,14 +36,10 @@ public final class CoreHintShardingAlgorithmFixture implements HintShardingAlgor
     
     private static final String HINT_INLINE_VALUE_PROPERTY_NAME = "value";
     
-    @Getter
-    private Properties props = new Properties();
-    
     private String algorithmExpression;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         algorithmExpression = getAlgorithmExpression(props);
     }
     

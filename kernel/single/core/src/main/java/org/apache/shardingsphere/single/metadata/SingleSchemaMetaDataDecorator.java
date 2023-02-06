@@ -18,21 +18,23 @@
 package org.apache.shardingsphere.single.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.single.constant.SingleOrder;
+import org.apache.shardingsphere.single.metadata.reviser.SingleConstraintReviser;
+import org.apache.shardingsphere.single.metadata.reviser.SingleIndexReviser;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Schema meta data decorator for single.
@@ -53,16 +55,9 @@ public final class SingleSchemaMetaDataDecorator implements RuleBasedSchemaMetaD
     }
     
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData) {
-        return new TableMetaData(tableName, tableMetaData.getColumns(), getIndex(tableMetaData), getConstraint(tableMetaData));
-    }
-    
-    private Collection<IndexMetaData> getIndex(final TableMetaData tableMetaData) {
-        return tableMetaData.getIndexes().stream().map(each -> new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()))).collect(Collectors.toList());
-    }
-    
-    private Collection<ConstraintMetaData> getConstraint(final TableMetaData tableMetaData) {
-        return tableMetaData.getConstrains().stream().map(each -> new ConstraintMetaData(
-                IndexMetaDataUtil.getLogicIndexName(each.getName(), tableMetaData.getName()), each.getReferencedTableName())).collect(Collectors.toList());
+        return new TableMetaData(tableName, new ColumnReviseEngine().revise(tableMetaData.getColumns(), Collections.emptyList()),
+                new IndexReviseEngine().revise(tableMetaData.getName(), tableMetaData.getIndexes(), Collections.singleton(new SingleIndexReviser())),
+                new ConstraintReviseEngine().revise(tableMetaData.getName(), tableMetaData.getConstrains(), Collections.singleton(new SingleConstraintReviser())));
     }
     
     @Override

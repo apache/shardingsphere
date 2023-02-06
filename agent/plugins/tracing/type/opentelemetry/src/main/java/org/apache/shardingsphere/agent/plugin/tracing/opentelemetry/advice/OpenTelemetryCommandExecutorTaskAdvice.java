@@ -20,10 +20,10 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
-import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.StatusCode;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingCommandExecutorTaskAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 
 import java.lang.reflect.Method;
@@ -35,22 +35,20 @@ public final class OpenTelemetryCommandExecutorTaskAdvice extends TracingCommand
     
     @Override
     protected Span createRootSpan(final TargetAdviceObject target, final Method method, final Object[] args) {
-        SpanBuilder spanBuilder = GlobalOpenTelemetry.getTracer("shardingsphere-agent")
+        SpanBuilder spanBuilder = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME)
                 .spanBuilder(OPERATION_NAME)
-                .setAttribute(OpenTelemetryConstants.COMPONENT, OpenTelemetryConstants.COMPONENT_NAME)
-                .setSpanKind(SpanKind.CLIENT);
-        Span result = spanBuilder.startSpan();
-        target.setAttachment(result);
-        return result;
+                .setAttribute(AttributeConstants.COMPONENT, AttributeConstants.COMPONENT_NAME)
+                .setAttribute(AttributeConstants.SPAN_KIND, AttributeConstants.SPAN_KIND_CLIENT);
+        return spanBuilder.startSpan();
     }
     
     @Override
-    protected void finishRootSpan(final Span rootSpan, final TargetAdviceObject target, final int connectionSize) {
-        ((Span) target.getAttachment()).end();
+    protected void finishRootSpan(final Span rootSpan, final TargetAdviceObject target) {
+        rootSpan.end();
     }
     
     @Override
     protected void recordException(final Span rootSpan, final TargetAdviceObject target, final Throwable throwable) {
-        ((Span) target.getAttachment()).setStatus(StatusCode.ERROR).recordException(throwable);
+        rootSpan.setStatus(StatusCode.ERROR).recordException(throwable);
     }
 }

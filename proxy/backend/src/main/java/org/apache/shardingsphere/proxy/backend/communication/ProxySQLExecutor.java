@@ -88,8 +88,7 @@ public final class ProxySQLExecutor {
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         ConnectionContext connectionContext = backendConnection.getConnectionSession().getConnectionContext();
         jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection.getConnectionSession(), databaseCommunicationEngine, new JDBCExecutor(executorEngine, connectionContext));
-        rawExecutor = new RawExecutor(executorEngine, connectionContext, ProxyContext.getInstance().getContextManager().getInstanceContext()
-                .getEventBusContext());
+        rawExecutor = new RawExecutor(executorEngine, connectionContext);
     }
     
     /**

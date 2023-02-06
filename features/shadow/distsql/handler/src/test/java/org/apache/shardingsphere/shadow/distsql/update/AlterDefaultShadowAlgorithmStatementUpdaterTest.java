@@ -54,23 +54,23 @@ public final class AlterDefaultShadowAlgorithmStatementUpdaterTest {
     @Test(expected = MissingRequiredRuleException.class)
     public void assertExecuteAlgorithmWithoutConfiguration() {
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
-                new ShadowAlgorithmSegment("simpleHintAlgorithm", new AlgorithmSegment("SIMPLE_HINT", PropertiesBuilder.build(new Property("type", "value")))));
+                new ShadowAlgorithmSegment("sqlHintAlgorithm", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
         updater.checkSQLStatement(database, sqlStatement, null);
     }
     
     @Test(expected = MissingRequiredAlgorithmException.class)
     public void assertExecuteAlgorithmNotInMetaData() {
         Properties props = PropertiesBuilder.build(new Property("type", "value"));
-        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleHintAlgorithm", new AlgorithmConfiguration("type", props)));
+        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("sqlHintAlgorithm", new AlgorithmConfiguration("type", props)));
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
-                new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SIMPLE_HINT", props)));
+                new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SQL_HINT", props)));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteInvalidAlgorithmType() {
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
-                new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("NOT_EXIST_SIMPLE_HINT", PropertiesBuilder.build(new Property("type", "value")))));
+                new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("NOT_EXIST_SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
@@ -86,7 +86,7 @@ public final class AlterDefaultShadowAlgorithmStatementUpdaterTest {
         Properties props = PropertiesBuilder.build(new Property("type", "value"));
         when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("default_shadow_algorithm", new AlgorithmConfiguration("type", props)));
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
-                new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SIMPLE_HINT", props)));
+                new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SQL_HINT", props)));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
 }

@@ -17,30 +17,20 @@
 
 package org.apache.shardingsphere.traffic.distsql.handler.fixture;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.List;
-import java.util.Properties;
 
-@Getter
 public final class DistSQLTrafficLoadBalanceAlgorithmFixture implements TrafficLoadBalanceAlgorithm {
     
-    private Properties props;
-    
     @Override
-    public void init(final Properties props) {
-        this.props = props;
+    public InstanceMetaData getInstanceId(final String name, final List<InstanceMetaData> instances) {
+        return null;
     }
     
     @Override
     public String getType() {
         return "DISTSQL.FIXTURE";
-    }
-    
-    @Override
-    public InstanceMetaData getInstanceId(final String name, final List<InstanceMetaData> instances) {
-        return null;
     }
 }

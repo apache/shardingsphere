@@ -19,9 +19,8 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -114,7 +113,7 @@ public final class IntervalShardingAlgorithmTest {
                 new Property("sharding-suffix-pattern", "yyyyQQ"),
                 new Property("datetime-interval-amount", "3"),
                 new Property("datetime-interval-unit", "Months"));
-        shardingAlgorithmByQuarter = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
+        shardingAlgorithmByQuarter = (IntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", props);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 4; j++) {
                 availableTablesForQuarterDataSources.add(String.format("t_order_%04d%02d", i, j));
@@ -130,7 +129,7 @@ public final class IntervalShardingAlgorithmTest {
                 new Property("sharding-suffix-pattern", "yyyyMM"),
                 new Property("datetime-interval-amount", "1"),
                 new Property("datetime-interval-unit", "Months"));
-        shardingAlgorithmByMonth = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
+        shardingAlgorithmByMonth = (IntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", props);
         for (int i = 2016; i <= 2020; i++) {
             for (int j = 1; j <= 12; j++) {
                 availableTablesForMonthDataSources.add(String.format("t_order_%04d%02d", i, j));
@@ -146,7 +145,7 @@ public final class IntervalShardingAlgorithmTest {
                 new Property("datetime-upper", "2021-07-31 00:00:00"),
                 new Property("sharding-suffix-pattern", "yyyyMMdd"),
                 new Property("datetime-interval-amount", Integer.toString(stepAmount)));
-        shardingAlgorithmByDay = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
+        shardingAlgorithmByDay = (IntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", props);
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
                 availableTablesForDayDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
@@ -163,8 +162,7 @@ public final class IntervalShardingAlgorithmTest {
                 new Property("sharding-suffix-pattern", "yyyyMMdd"),
                 new Property("datetime-interval-amount", Integer.toString(stepAmount)),
                 new Property("datetime-interval-unit", "DAYS"));
-        shardingAlgorithmByDayWithMillisecond = ShardingSphereAlgorithmFactory.createAlgorithm(
-                new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
+        shardingAlgorithmByDayWithMillisecond = (IntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", props);
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
                 availableTablesForDayWithMillisecondDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
@@ -180,7 +178,7 @@ public final class IntervalShardingAlgorithmTest {
                 new Property("datetime-upper", "2021-07-31"),
                 new Property("sharding-suffix-pattern", "yyyyMMdd"),
                 new Property("datetime-interval-amount", Integer.toString(stepAmount)));
-        shardingAlgorithmByJDBCDate = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
+        shardingAlgorithmByJDBCDate = (IntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", props);
         for (int j = 6; j <= 7; j++) {
             for (int i = 1; j == 6 ? i <= 30 : i <= 31; i = i + stepAmount) {
                 availableTablesForJDBCDateDataSources.add(String.format("t_order_%04d%02d%02d", 2021, j, i));
@@ -197,7 +195,7 @@ public final class IntervalShardingAlgorithmTest {
                 new Property("sharding-suffix-pattern", "HHmm"),
                 new Property("datetime-interval-amount", Integer.toString(stepAmount)),
                 new Property("datetime-interval-unit", "Hours"));
-        shardingAlgorithmByJDBCTime = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
+        shardingAlgorithmByJDBCTime = (IntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", props);
         for (int i = 2; i < 13; i++) {
             availableTablesForJDBCTimeDataSources.add(String.format("t_order_%02d%02d", i, 0));
         }
@@ -212,7 +210,7 @@ public final class IntervalShardingAlgorithmTest {
                 new Property("sharding-suffix-pattern", "yyyy"),
                 new Property("datetime-interval-amount", Integer.toString(stepAmount)),
                 new Property("datetime-interval-unit", "Years"));
-        shardingAlgorithmByYear = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
+        shardingAlgorithmByYear = (IntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", props);
         for (int i = 2000; i < 2023; i++) {
             availableTablesForYearDataSources.add(String.format("t_order_%04d", i));
         }
@@ -227,7 +225,7 @@ public final class IntervalShardingAlgorithmTest {
                 new Property("sharding-suffix-pattern", "yyyyMM"),
                 new Property("datetime-interval-amount", Integer.toString(stepAmount)),
                 new Property("datetime-interval-unit", "Years"));
-        shardingAlgorithmByYearMonth = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
+        shardingAlgorithmByYearMonth = (IntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", props);
         for (int i = 2016; i <= 2021; i++) {
             for (int j = 1; j <= 12; j++) {
                 availableTablesForYearMonthDataSources.add(String.format("t_order_%04d%02d", i, j));
@@ -244,7 +242,7 @@ public final class IntervalShardingAlgorithmTest {
                 new Property("sharding-suffix-pattern", "MM"),
                 new Property("datetime-interval-amount", Integer.toString(stepAmount)),
                 new Property("datetime-interval-unit", "Months"));
-        shardingAlgorithmByMonthInJSR310 = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INTERVAL", props), ShardingAlgorithm.class);
+        shardingAlgorithmByMonthInJSR310 = (IntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", props);
         for (int i = 2; i < 13; i++) {
             availableTablesForMonthInJSR310DataSources.add(String.format("t_order_%02d", i));
         }

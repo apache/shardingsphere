@@ -28,27 +28,42 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <opentelemetry.version>1.3.0</opentelemetry.version>
-        <opentelemetry-autoconfigure.version>1.3.0-alpha</opentelemetry-autoconfigure.version>
+        <opentelemetry-bom.version>1.22.0</opentelemetry-bom.version>
+        <opentelemetry-autoconfigure.version>1.22.0-alpha</opentelemetry-autoconfigure.version>
     </properties>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-bom</artifactId>
+                <version>${opentelemetry-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     
     <dependencies>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-util</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-api</artifactId>
-            <version>${opentelemetry.version}</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-sdk</artifactId>
-            <version>${opentelemetry.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-jaeger</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-zipkin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-otlp</artifactId>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
@@ -57,24 +72,14 @@
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-exporter-jaeger</artifactId>
-            <version>${opentelemetry.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-exporter-zipkin</artifactId>
-            <version>${opentelemetry.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-exporter-otlp-trace</artifactId>
-            <version>${opentelemetry.version}</version>
+            <artifactId>opentelemetry-sdk-testing</artifactId>
+            <scope>test</scope>
         </dependency>
         
         <dependency>
-            <groupId>io.opentelemetry</groupId>
-            <artifactId>opentelemetry-sdk-testing</artifactId>
-            <version>${opentelemetry.version}</version>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-util</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -84,6 +89,7 @@
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
+                    <minimizeJar>false</minimizeJar>
                     <outputFile>${target.directory}/${project.build.finalName}.jar</outputFile>
                 </configuration>
                 <executions>
@@ -95,24 +101,20 @@
                         <configuration>
                             <relocations>
                                 <relocation>
-                                    <pattern>com.google.common</pattern>
-                                    <shadedPattern>${shade.package}.com.google.common</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>net.bytebuddy</pattern>
                                     <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>io.grpc</pattern>
-                                    <shadedPattern>${shade.package}.io.grpc</shadedPattern>
+                                    <pattern>com.google</pattern>
+                                    <shadedPattern>${shade.package}.com.google</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>io.opentelemetry</pattern>
                                     <shadedPattern>${shade.package}.io.opentelemetry</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>io.opentelemetry</pattern>
-                                    <shadedPattern>${shade.package}.io.opentelemetry</shadedPattern>
+                                    <pattern>io.netty</pattern>
+                                    <shadedPattern>${shade.package}.io.netty</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>okhttp3</pattern>
@@ -127,16 +129,20 @@
                                     <shadedPattern>${shade.package}.zipkin2</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>com.google</pattern>
-                                    <shadedPattern>${shade.package}.com.google</shadedPattern>
+                                    <pattern>com.fasterxml.jackson</pattern>
+                                    <shadedPattern>${shade.package}.com.fasterxml.jackson</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.codehaus.mojo.animal_sniffer</pattern>
-                                    <shadedPattern>${shade.package}.org.codehaus.mojo.animal_sniffer</shadedPattern>
+                                    <pattern>kotlin</pattern>
+                                    <shadedPattern>${shade.package}.kotlin</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.checkerframework</pattern>
-                                    <shadedPattern>${shade.package}.org.checkerframework</shadedPattern>
+                                    <pattern>org.intellij.lang.annotations</pattern>
+                                    <shadedPattern>${shade.package}.org.intellij.lang.annotations</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.jetbrains.annotations</pattern>
+                                    <shadedPattern>${shade.package}.org.jetbrains.annotations</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
