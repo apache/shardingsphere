@@ -32,6 +32,7 @@ public final class IndexReviseEngine {
     /**
      * Revise index meta data.
      * 
+     * @param tableName table name
      * @param originalMetaDataList original index meta data list
      * @param revisers index revisers
      * @return revised index meta data
