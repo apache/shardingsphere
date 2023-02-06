@@ -22,9 +22,11 @@ import org.apache.shardingsphere.infra.context.transaction.TransactionConnection
 import java.util.List;
 
 /**
- * Transaction read query aware.
+ * Transaction read query strategy aware.
  */
-public interface TransactionReadQueryAware {
+public interface TransactionReadQueryStrategyAware {
+    
+    String TRANSACTION_READ_QUERY_STRATEGY = "transactionReadQueryStrategy";
     
     /**
      * Get data source name in transaction.
@@ -54,6 +56,7 @@ public interface TransactionReadQueryAware {
     
     /**
      * Get data source name.
+     * 
      * @param name name
      * @param readDataSourceNames names of read data sources
      * @return name of selected data source

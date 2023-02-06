@@ -132,7 +132,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
             ReadQueryLoadBalanceAlgorithm loadBalancer = loadBalancers.get(each.getLoadBalancerName());
             ShardingSpherePreconditions.checkNotNull(loadBalancer, () -> new LoadBalancerAlgorithmNotFoundException(databaseName));
             if (loadBalancer instanceof WeightReadQueryLoadBalanceAlgorithm) {
-                ShardingSpherePreconditions.checkState(!((WeightReadQueryLoadBalanceAlgorithm) loadBalancer).getDataSourceNames().isEmpty(), 
+                ShardingSpherePreconditions.checkState(!((WeightReadQueryLoadBalanceAlgorithm) loadBalancer).getDataSourceNames().isEmpty(),
                         () -> new MissingRequiredReadDatabaseWeightException(loadBalancer.getType(), String.format("Read data source weight config are required in database `%s`", databaseName)));
                 Collection<String> dataSourceNames = getDataSourceNames(each, rules);
                 ((WeightReadQueryLoadBalanceAlgorithm) loadBalancer).getDataSourceNames().forEach(dataSourceName -> ShardingSpherePreconditions.checkState(dataSourceNames.contains(dataSourceName),

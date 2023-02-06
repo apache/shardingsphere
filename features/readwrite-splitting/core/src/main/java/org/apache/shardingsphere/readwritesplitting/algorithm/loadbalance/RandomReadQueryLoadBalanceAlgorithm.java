@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryAware;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategyAware;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
@@ -29,19 +29,21 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Random read query load-balance algorithm.
  */
-public final class RandomReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, TransactionReadQueryAware {
+public final class RandomReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, TransactionReadQueryStrategyAware {
     
-    private TransactionReadQueryStrategy strategyInTransaction;
+    private TransactionReadQueryStrategy transactionReadQueryStrategy;
     
     @Override
     public void init(final Properties props) {
-        strategyInTransaction = props.contains("strategyInTransaction") ? TransactionReadQueryStrategy.valueOf(props.getProperty("strategyInTransaction")) : TransactionReadQueryStrategy.FIXED_PRIMARY;
+        transactionReadQueryStrategy = props.containsKey(TRANSACTION_READ_QUERY_STRATEGY)
+                ? TransactionReadQueryStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY))
+                : TransactionReadQueryStrategy.FIXED_PRIMARY;
     }
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
         if (context.isInTransaction()) {
-            return routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, strategyInTransaction);
+            return routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionReadQueryStrategy);
         }
         return getDataSourceName(name, readDataSourceNames);
     }
