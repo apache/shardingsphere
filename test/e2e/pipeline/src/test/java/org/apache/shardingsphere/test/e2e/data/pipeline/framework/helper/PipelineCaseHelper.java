@@ -102,7 +102,13 @@ public final class PipelineCaseHelper {
         return RandomStringUtils.randomAlphabetic(strLength);
     }
     
-    private static String generateJsonString(final int strLength) {
+    /**
+     * Generate json string.
+     *
+     * @param strLength string length
+     * @return json string
+     */
+    public static String generateJsonString(final int strLength) {
         return String.format("{\"test\":\"%s\"}", generateString(strLength));
     }
     
