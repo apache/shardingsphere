@@ -81,6 +81,7 @@ public final class ShowDistVariableHandler extends AbstractQueryableRALBackendHa
                     return props.getOrDefault(LoggingConstants.SQL_LOG_ENABLE, Boolean.FALSE).toString();
                 case LoggingConstants.SQL_SIMPLE_VARIABLE_NAME:
                     return props.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE, Boolean.FALSE).toString();
+                default:
             }
         }
         return Boolean.FALSE.toString();
