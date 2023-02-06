@@ -18,29 +18,27 @@
 package org.apache.shardingsphere.sharding.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.InconsistentShardingTableMetaDataException;
 import org.apache.shardingsphere.sharding.metadata.reviser.ShardingColumnGeneratedReviser;
+import org.apache.shardingsphere.sharding.metadata.reviser.ShardingConstraintReviser;
 import org.apache.shardingsphere.sharding.metadata.reviser.ShardingIndexReviser;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -70,10 +68,9 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
     }
     
     private TableMetaData createTableMetaData(final ShardingRule rule, final TableRule tableRule, final TableMetaData tableMetaData) {
-        Collection<ConstraintMetaData> constraintMetaDataList = getConstraintMetaDataList(tableMetaData, rule, tableRule);
         return new TableMetaData(tableRule.getLogicTable(), new ColumnReviseEngine().revise(tableMetaData.getColumns(), Collections.singleton(new ShardingColumnGeneratedReviser(tableRule))),
                 new IndexReviseEngine().revise(tableMetaData.getName(), tableMetaData.getIndexes(), Collections.singleton(new ShardingIndexReviser(tableRule))),
-                constraintMetaDataList);
+                new ConstraintReviseEngine().revise(tableMetaData.getName(), tableMetaData.getConstrains(), Collections.singleton(new ShardingConstraintReviser(rule, tableRule))));
     }
     
     private Map<String, Collection<TableMetaData>> getLogicTableMetaDataMap(final SchemaMetaData schemaMetaData, final ShardingRule rule) {
@@ -93,23 +90,6 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
         if (!violations.isEmpty()) {
             throw new InconsistentShardingTableMetaDataException(logicTableName, violations);
         }
-    }
-    
-    private Collection<ConstraintMetaData> getConstraintMetaDataList(final TableMetaData tableMetaData, final ShardingRule shardingRule, final TableRule tableRule) {
-        Collection<ConstraintMetaData> result = new HashSet<>();
-        for (ConstraintMetaData each : tableMetaData.getConstrains()) {
-            for (DataNode dataNode : tableRule.getActualDataNodes()) {
-                String referencedTableName = each.getReferencedTableName();
-                getLogicIndex(each.getName(), dataNode.getTableName()).ifPresent(optional -> result.add(
-                        new ConstraintMetaData(optional, shardingRule.findLogicTableByActualTable(referencedTableName).orElse(referencedTableName))));
-            }
-        }
-        return result;
-    }
-    
-    private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
-        String indexNameSuffix = "_" + actualTableName;
-        return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
     }
     
     @Override
