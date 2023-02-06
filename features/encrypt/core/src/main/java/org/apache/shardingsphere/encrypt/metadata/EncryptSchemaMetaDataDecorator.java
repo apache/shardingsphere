@@ -22,8 +22,8 @@ import org.apache.shardingsphere.encrypt.metadata.reviser.EncryptColumnNameRevis
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
@@ -34,7 +34,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Schema meta data decorator for encrypt.
@@ -55,12 +54,8 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
     }
     
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return tableMetaData;
-        }
-        Collection<ColumnReviser> revisers = getColumnRevisers(encryptTable.get());
-        return new TableMetaData(tableName, new ColumnReviseEngine().revise(tableMetaData.getColumns(), revisers), tableMetaData.getIndexes(), tableMetaData.getConstrains());
+        return encryptRule.findEncryptTable(tableName)
+                .map(optional -> new TableReviseEngine().revise(tableMetaData, getColumnRevisers(optional), Collections.emptyList(), Collections.emptyList())).orElse(tableMetaData);
     }
     
     private Collection<ColumnReviser> getColumnRevisers(final EncryptTable encryptTable) {
