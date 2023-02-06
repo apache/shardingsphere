@@ -49,11 +49,11 @@ public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
      * @param constraintRevisers constraint revisers
      * @return revised table meta data
      */
+    @SuppressWarnings("unchecked")
     public TableMetaData revise(final TableMetaData originalMetaData,
                                 final Collection<ColumnReviser> columnRevisers, final Collection<IndexReviser> indexRevisers, final Collection<ConstraintReviser> constraintRevisers) {
-        @SuppressWarnings("unchecked")
-        TableNameReviser<T> tableNameReviser = TypedSPILoader.getService(TableNameReviser.class, rule.getClass().getSimpleName());
-        String revisedTableName = tableNameReviser.revise(originalMetaData.getName(), rule);
+        String revisedTableName = TypedSPILoader.findService(TableNameReviser.class, rule.getClass().getSimpleName())
+                .map(optional -> optional.revise(originalMetaData.getName(), rule)).orElse(originalMetaData.getName());
         return new TableMetaData(revisedTableName, new ColumnReviseEngine().revise(originalMetaData.getColumns(), columnRevisers),
                 new IndexReviseEngine().revise(revisedTableName, originalMetaData.getIndexes(), indexRevisers),
                 new ConstraintReviseEngine().revise(revisedTableName, originalMetaData.getConstrains(), constraintRevisers));
