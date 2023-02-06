@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Optional;
 
@@ -27,7 +28,7 @@ import java.util.Optional;
  * @param <R> type of rule
  * @param <T> type of table rule
  */
-public interface TableNameReviser<R extends ShardingSphereRule, T> {
+public interface TableNameReviser<R extends ShardingSphereRule, T> extends TypedSPI {
     
     /**
      * Revise table meta data.

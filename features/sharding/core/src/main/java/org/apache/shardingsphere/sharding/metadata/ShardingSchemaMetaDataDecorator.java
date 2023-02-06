@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sharding.exception.metadata.InconsistentShardin
 import org.apache.shardingsphere.sharding.metadata.reviser.ShardingColumnGeneratedReviser;
 import org.apache.shardingsphere.sharding.metadata.reviser.ShardingConstraintReviser;
 import org.apache.shardingsphere.sharding.metadata.reviser.ShardingIndexReviser;
-import org.apache.shardingsphere.sharding.metadata.reviser.ShardingTableNameReviser;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -68,7 +67,7 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
     }
     
     private TableMetaData createTableMetaData(final ShardingRule rule, final TableRule tableRule, final TableMetaData tableMetaData) {
-        return new TableReviseEngine<>(rule).revise(tableMetaData, new ShardingTableNameReviser(), Collections.singleton(new ShardingColumnGeneratedReviser(tableRule)),
+        return new TableReviseEngine<>(rule).revise(tableMetaData, Collections.singleton(new ShardingColumnGeneratedReviser(tableRule)),
                 Collections.singleton(new ShardingIndexReviser(tableRule)), Collections.singleton(new ShardingConstraintReviser(rule, tableRule)));
     }
     

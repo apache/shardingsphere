@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.metadata.reviser;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableNameReviser;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Optional;
 
 /**
- * Sharding table name reviser.
+ * Default table name reviser.
  */
-public final class ShardingTableNameReviser implements TableNameReviser<ShardingRule, TableRule> {
+public final class DefaultTableNameReviser implements TableNameReviser<ShardingSphereRule, Object> {
     
     @Override
-    public String revise(final String originalName, final TableRule tableRule) {
-        return tableRule.getLogicTable();
+    public String revise(final String originalName, final Object tableRule) {
+        return originalName;
     }
     
     @Override
-    public Optional<TableRule> findTableRule(final String name, final ShardingRule rule) {
-        return rule.findTableRuleByActualTable(name);
+    public Optional<Object> findTableRule(final String name, final ShardingSphereRule rule) {
+        return Optional.empty();
     }
     
     @Override
-    public String getType() {
-        return ShardingRule.class.getSimpleName();
+    public boolean isDefault() {
+        return true;
     }
 }
