@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent</artifactId>
-        <version>5.3.1-SNAPSHOT</version>
+        <version>5.3.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-core</artifactId>
     <name>${project.artifactId}</name>
@@ -65,10 +65,7 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
-                            <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <createSourcesJar>true</createSourcesJar>
-                            <shadeSourcesContent>true</shadeSourcesContent>
+                            <minimizeJar>false</minimizeJar>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
@@ -77,16 +74,8 @@
                                         <Can-Retransform-Classes>true</Can-Retransform-Classes>
                                     </manifestEntries>
                                 </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                             </transformers>
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>com.google.errorprone:error_prone_annotations:jar:</exclude>
-                                    <exclude>com.google.code.findbugs:jsr305:jar:</exclude>
-                                    <exclude>com.google.guava:listenablefuture:jar:*</exclude>
-                                    <exclude>com.google.j2objc:j2objc-annotations:jar:*</exclude>
-                                    <exclude>org.checkerframework:checker-qual:jar:</exclude>
-                                </excludes>
-                            </artifactSet>
                             <relocations>
                                 <relocation>
                                     <pattern>com.google</pattern>
@@ -105,24 +94,14 @@
                                     <shadedPattern>${shade.package}.org.slf4j</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.apache.commons.logging</pattern>
-                                    <shadedPattern>${shade.package}.org.apache.commons.logging</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>ch.qos.logback</pattern>
                                     <shadedPattern>${shade.package}.ch.qos.logback</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons.logging</pattern>
+                                    <shadedPattern>${shade.package}.org.apache.commons.logging</shadedPattern>
+                                </relocation>
                             </relocations>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
                         </configuration>
                     </execution>
                 </executions>

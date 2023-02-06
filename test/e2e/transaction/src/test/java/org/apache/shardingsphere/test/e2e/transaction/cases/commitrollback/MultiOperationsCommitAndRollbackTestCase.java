@@ -49,29 +49,35 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
     }
     
     private void assertRollback() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
-        executeUpdateWithLog(connection, "update account set balance = 3, transaction_id = 3 where id = 2;");
-        assertQueryAccount(connection, 1, 3);
-        connection.rollback();
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-        assertQueryAccount(connection, 1, 2);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
+            executeUpdateWithLog(connection, "update account set balance = 3, transaction_id = 3 where id = 2;");
+            assertQueryAccount(connection, 1, 3);
+            connection.rollback();
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+            assertQueryAccount(connection, 1, 2);
+        }
     }
     
     private void assertCommit() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
-        executeUpdateWithLog(connection, "update account set balance = 3, transaction_id = 3 where id = 2;");
-        assertQueryAccount(connection, 1, 3);
-        connection.commit();
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 2);
-        assertQueryAccount(connection, 1, 3);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
+            executeUpdateWithLog(connection, "update account set balance = 3, transaction_id = 3 where id = 2;");
+            assertQueryAccount(connection, 1, 3);
+            connection.commit();
+        }
+        try (Connection connection = getDataSource().getConnection()) {
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 2);
+            assertQueryAccount(connection, 1, 3);
+        }
     }
     
     private void assertQueryAccount(final Connection connection, final int... expectedBalances) throws SQLException {

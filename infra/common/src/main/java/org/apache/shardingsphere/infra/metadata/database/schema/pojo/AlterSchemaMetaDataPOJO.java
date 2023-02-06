@@ -36,7 +36,7 @@ public final class AlterSchemaMetaDataPOJO {
     
     private final String schemaName;
     
-    private final String logicDataSourceName;
+    private String logicDataSourceName;
     
     private final Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
     
@@ -45,4 +45,10 @@ public final class AlterSchemaMetaDataPOJO {
     private final Collection<String> droppedTables = new LinkedList<>();
     
     private final Collection<String> droppedViews = new LinkedList<>();
+    
+    public AlterSchemaMetaDataPOJO(final String databaseName, final String schemaName, final Collection<String> logicDataSourceNames) {
+        this.databaseName = databaseName;
+        this.schemaName = schemaName;
+        this.logicDataSourceName = logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next();
+    }
 }

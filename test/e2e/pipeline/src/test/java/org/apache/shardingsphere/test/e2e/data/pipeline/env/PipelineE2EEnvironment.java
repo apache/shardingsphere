@@ -22,7 +22,9 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -95,11 +97,11 @@ public final class PipelineE2EEnvironment {
     public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mysql.port", StorageContainerConstants.MYSQL_EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mysql.port", MySQLContainer.MYSQL_EXPOSED_PORT).toString());
             case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.postgresql.port", StorageContainerConstants.POSTGRESQL_EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.postgresql.port", PostgreSQLContainer.POSTGRESQL_EXPOSED_PORT).toString());
             case "openGauss":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.opengauss.port", StorageContainerConstants.OPENGAUSS_EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.opengauss.port", OpenGaussContainer.OPENGAUSS_EXPOSED_PORT).toString());
             default:
                 throw new IllegalArgumentException("Unsupported database type: " + databaseType.getType());
         }

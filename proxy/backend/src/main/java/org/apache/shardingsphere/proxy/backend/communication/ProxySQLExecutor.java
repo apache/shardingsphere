@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -40,8 +41,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
@@ -86,11 +86,9 @@ public final class ProxySQLExecutor {
         this.type = type;
         this.backendConnection = backendConnection;
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ConnectionContext connectionContext = backendConnection.getConnectionSession().getConnectionContext();
         jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection.getConnectionSession(), databaseCommunicationEngine, new JDBCExecutor(executorEngine, connectionContext));
-        rawExecutor = new RawExecutor(executorEngine, connectionContext, metaDataContexts.getMetaData().getProps(), ProxyContext.getInstance().getContextManager().getInstanceContext()
-                .getEventBusContext());
+        rawExecutor = new RawExecutor(executorEngine, connectionContext);
     }
     
     /**
@@ -199,16 +197,13 @@ public final class ProxySQLExecutor {
         RawExecutionPrepareEngine prepareEngine = new RawExecutionPrepareEngine(maxConnectionsSizePerQuery, rules);
         ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext;
         try {
-            executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+            executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(
+                    backendConnection.getConnectionSession().getDatabaseName(), backendConnection.getConnectionSession().getGrantee(), backendConnection.getConnectionSession().getExecutionId()));
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }
-        executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
-        executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
-        executionGroupContext.setExecutionID(backendConnection.getConnectionSession().getExecutionId());
         // TODO handle query header
-        return rawExecutor.execute(executionGroupContext, executionContext.getQueryContext(), new RawSQLExecutorCallback(ProxyContext.getInstance().getContextManager().getInstanceContext()
-                .getEventBusContext()));
+        return rawExecutor.execute(executionGroupContext, executionContext.getQueryContext(), new RawSQLExecutorCallback());
     }
     
     private List<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,
@@ -219,19 +214,17 @@ public final class ProxySQLExecutor {
                 ProxyContext.getInstance().getDatabase(backendConnection.getConnectionSession().getDatabaseName()).getResourceMetaData().getStorageTypes());
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
         try {
-            executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+            executionGroupContext = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits(), new ExecutionGroupReportContext(
+                    backendConnection.getConnectionSession().getDatabaseName(), backendConnection.getConnectionSession().getGrantee(), backendConnection.getConnectionSession().getExecutionId()));
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }
-        executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
-        executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
-        executionGroupContext.setExecutionID(backendConnection.getConnectionSession().getExecutionId());
         return jdbcExecutor.execute(executionContext.getQueryContext(), executionGroupContext, isReturnGeneratedKeys, isExceptionThrown);
     }
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getDatabase(backendConnection.getConnectionSession().getDatabaseName()).getProtocolType();
-        Optional<ExecuteResult> executeResult = TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getType()).orElseGet(DefaultSaneQueryResultEngine::new)
+        Optional<ExecuteResult> executeResult = TypedSPILoader.findService(SaneQueryResultEngine.class, databaseType.getType()).orElseGet(DefaultSaneQueryResultEngine::new)
                 .getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement(), originalException);
         if (executeResult.isPresent()) {
             return Collections.singletonList(executeResult.get());

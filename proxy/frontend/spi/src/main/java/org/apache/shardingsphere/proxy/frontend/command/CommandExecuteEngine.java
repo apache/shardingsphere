@@ -50,9 +50,8 @@ public interface CommandExecuteEngine {
      * @param type command packet type
      * @param connectionSession connection session
      * @return command packet
-     * @throws SQLException SQL exception
      */
-    CommandPacket getCommandPacket(PacketPayload payload, CommandPacketType type, ConnectionSession connectionSession) throws SQLException;
+    CommandPacket getCommandPacket(PacketPayload payload, CommandPacketType type, ConnectionSession connectionSession);
     
     /**
      * Get command executor.

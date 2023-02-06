@@ -5,10 +5,10 @@ weight = 1
 
 ## Background
 
-Apache ShardingSphere uses ThreadLocal to manage primary database routing marks for mandatory routing. A primary database routing mark can be added to HintManager through programming, and this value is valid only in the current thread.
+Apache ShardingSphere uses `ThreadLocal` to manage primary database routing marks for mandatory routing. A primary database routing mark can be added to `HintManager` through programming, and this value is valid only in the current thread.
 Apache ShardingSphere can also route the primary database by adding comments to SQL.
 
-Hint is mainly used to perform mandatory data operations in the primary database under the read/write splitting scenarios.
+`Hint` is mainly used to perform mandatory data operations in the primary database for read/write splitting scenarios.
 
 ## Procedure
 
@@ -25,7 +25,7 @@ Hint is mainly used to perform mandatory data operations in the primary database
 
 ##### Get HintManager
 
-Be the same as sharding based on hint.
+The same as sharding based on hint.
 
 ##### Configure Primary Database Route
 
@@ -33,9 +33,9 @@ Be the same as sharding based on hint.
 
 ##### Clean Hint Value
 
-Be the same as data sharding based on hint.
+The same as data sharding based on hint.
 
-##### Codes:
+##### Code:
 
 ```java
 String sql = "SELECT * FROM t_order";
@@ -55,10 +55,9 @@ try (HintManager hintManager = HintManager.getInstance();
 
 ##### Terms of Use
 
-To use SQL Hint function, users need to set `sqlCommentParseEnabled` to `true`.
-The comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and the attribute name needs to be `WRITE_ROUTE_ONLY`.
+For the SQL Hint function, the comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and the attribute name needs to be `WRITE_ROUTE_ONLY`.
 
-##### Codes:
+##### Code:
 ```sql
 /* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */
 SELECT * FROM t_order;
@@ -70,13 +69,13 @@ SELECT * FROM t_order;
 
 ##### Get HintManager
 
-Be the same as sharding based on hint.
+The same as sharding based on hint.
 
 ##### Configure Database Route
 
 - Use `hintManager.setDataSourceName` to configure database route.
 
-##### Codes:
+##### Code:
 
 ```java
 String sql = "SELECT * FROM t_order";
@@ -94,13 +93,13 @@ try (HintManager hintManager = HintManager.getInstance();
 
 #### Use special SQL comments
 
-##### Terms of Use
+##### Terms of Use:
 
-To use SQL Hint function, users need to set `sqlCommentParseEnabled` to `true`. Currently, only support routing to one data source.
+Currently, the SQL Hint function only supports routing to one data source.
 The comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and the attribute name needs to be `DATA_SOURCE_NAME`.
 Client connections using `MySQL` need to add the `-c` option to preserve comments, because the client defaults to `--skip-comments` to filter comments.
 
-##### Codes:
+##### Code:
 ```sql
 /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_0 */
 SELECT * FROM t_order;
@@ -108,5 +107,5 @@ SELECT * FROM t_order;
 
 ## Related References
 
-- [Core Feature: Readwrite Splitting](/en/features/readwrite-splitting/)
-- [Developer Guide: Readwrite Splitting](/en/dev-manual/readwrite-splitting/)
+- [Core Feature: Read/write Splitting](/en/features/readwrite-splitting/)
+- [Developer Guide: Read/write Splitting](/en/dev-manual/readwrite-splitting/)

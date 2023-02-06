@@ -19,8 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler
 
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
-import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
@@ -39,7 +38,7 @@ public final class BarrierMetaDataChangedEventHandler implements PipelineMetaDat
     @Override
     public void handle(final DataChangedEvent event) {
         if (event.getType() == Type.ADDED) {
-            RequiredSPIRegistry.getRegisteredService(PipelineDistributedBarrier.class).notifyChildrenNodeCountCheck(event.getKey());
+            PipelineDistributedBarrier.getInstance().notifyChildrenNodeCountCheck(event.getKey());
         }
     }
 }

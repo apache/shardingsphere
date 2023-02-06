@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra</artifactId>
-        <version>5.3.1-SNAPSHOT</version>
+        <version>5.3.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-executor</artifactId>
     <name>${project.artifactId}</name>
@@ -44,6 +44,11 @@
             <artifactId>shardingsphere-test-fixture-infra</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
         </dependency>
     </dependencies>
 </project>

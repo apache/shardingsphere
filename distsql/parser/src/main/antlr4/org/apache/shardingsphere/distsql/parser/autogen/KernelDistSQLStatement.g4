@@ -36,11 +36,12 @@ execute
     | showComputeNodeMode
     | labelComputeNode
     | unlabelComputeNode
-    | countSingleTableRule
+    | countSingleTable
     | alterComputeNode
     | prepareDistSQL
     | applyDistSQL
     | discardDistSQL
+    | showLogicalTables
     | showSingleTable
     | showDefaultSingleTableStorageUnit
     | setDefaultSingleTableStorageUnit

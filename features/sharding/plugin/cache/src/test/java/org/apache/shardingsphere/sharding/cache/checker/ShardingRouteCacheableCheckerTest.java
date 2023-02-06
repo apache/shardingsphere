@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -45,6 +45,10 @@ import org.apache.shardingsphere.sharding.cache.rule.ShardingCacheRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -116,7 +120,8 @@ public final class ShardingRouteCacheableCheckerTest {
     public void assertCheckCacheable() {
         ShardingRule shardingRule = prepareShardingRule();
         ShardingCacheRule shardingCacheRule = prepareShardingCacheRule(shardingRule);
-        ShardingSphereDatabase database = prepareDatabase(shardingRule, shardingCacheRule);
+        TimeServiceRule timeServiceRule = prepareTimeServiceRule();
+        ShardingSphereDatabase database = prepareDatabase(shardingRule, shardingCacheRule, timeServiceRule);
         ShardingRouteCacheableCheckResult actual = new ShardingRouteCacheableChecker(shardingCacheRule).check(database, prepareQueryContext(database, sql, parameters));
         assertThat(actual.isProbablyCacheable(), is(expectedProbablyCacheable));
         assertThat(actual.getShardingConditionParameterMarkerIndexes(), is(expectedShardingConditionParameterMarkerIndexes));
@@ -126,12 +131,8 @@ public final class ShardingRouteCacheableCheckerTest {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getBroadcastTables().add("t_broadcast_table");
         ruleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
-        Properties modShardingAlgorithmProps = new Properties();
-        modShardingAlgorithmProps.setProperty("sharding-count", "2");
-        ruleConfig.getShardingAlgorithms().put("mod", new AlgorithmConfiguration("MOD", modShardingAlgorithmProps));
-        Properties inlineShardingAlgorithmProps = new Properties();
-        inlineShardingAlgorithmProps.setProperty("algorithm-expression", "ds_${id % 2}");
-        ruleConfig.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", inlineShardingAlgorithmProps));
+        ruleConfig.getShardingAlgorithms().put("mod", new AlgorithmConfiguration("MOD", PropertiesBuilder.build(new Property("sharding-count", "2"))));
+        ruleConfig.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${id % 2}"))));
         ruleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("warehouse_id", "mod"));
         ShardingTableRuleConfiguration warehouse = new ShardingTableRuleConfiguration("t_warehouse", "ds_${0..1}.t_warehouse");
         warehouse.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("id", "mod"));
@@ -148,10 +149,15 @@ public final class ShardingRouteCacheableCheckerTest {
     }
     
     private ShardingCacheRule prepareShardingCacheRule(final ShardingRule shardingRule) {
-        return new ShardingCacheRule(new ShardingCacheRuleConfiguration(100, new ShardingCacheOptions(true, 0, 0)), shardingRule);
+        return new ShardingCacheRule(new ShardingCacheRuleConfiguration(100, new ShardingCacheOptions(true, 0, 0)), shardingRule,
+                new TimeServiceRule(new TimeServiceRuleConfiguration("System", new Properties())));
     }
     
-    private ShardingSphereDatabase prepareDatabase(final ShardingRule shardingRule, final ShardingCacheRule shardingCacheRule) {
+    private TimeServiceRule prepareTimeServiceRule() {
+        return new TimeServiceRule(new TimeServiceRuleConfiguration("System", new Properties()));
+    }
+    
+    private ShardingSphereDatabase prepareDatabase(final ShardingRule shardingRule, final ShardingCacheRule shardingCacheRule, final TimeServiceRule timeServiceRule) {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_broadcast_table", new ShardingSphereTable("t_broadcast_table", Arrays.asList(
                 new ShardingSphereColumn("broadcast_table_id", Types.INTEGER, true, false, false, true, false),
@@ -168,8 +174,8 @@ public final class ShardingRouteCacheableCheckerTest {
                 new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false),
                 new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, false, true, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereDatabase(DATABASE_NAME, TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"),
-                new ShardingSphereResourceMetaData(DATABASE_NAME, Collections.emptyMap()), new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, shardingCacheRule)),
+        return new ShardingSphereDatabase(DATABASE_NAME, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
+                new ShardingSphereResourceMetaData(DATABASE_NAME, Collections.emptyMap()), new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, shardingCacheRule, timeServiceRule)),
                 Collections.singletonMap(SCHEMA_NAME, schema));
     }
     

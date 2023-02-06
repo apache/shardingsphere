@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
+import org.apache.shardingsphere.authority.checker.AuthorityChecker;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,8 +56,10 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Collection<LocalDataQueryResultRow> getDatabaseNames(final ConnectionSession connectionSession) {
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getGrantee());
         return ProxyContext.getInstance().getAllDatabaseNames().stream().sorted()
-                .filter(each -> checkLikePattern(each) && SQLCheckEngine.check(each, getRules(each), connectionSession.getGrantee())).map(LocalDataQueryResultRow::new).collect(Collectors.toList());
+                .filter(each -> checkLikePattern(each) && authorityChecker.isAuthorized(each)).map(LocalDataQueryResultRow::new).collect(Collectors.toList());
     }
     
     private boolean checkLikePattern(final String databaseName) {
@@ -67,13 +68,6 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
             return !pattern.isPresent() || databaseName.matches(pattern.get());
         }
         return true;
-    }
-    
-    private Collection<ShardingSphereRule> getRules(final String databaseName) {
-        Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
-        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
-        return result;
     }
     
     @Override

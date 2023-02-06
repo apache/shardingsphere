@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.distsql.fixture.sharding;
 
 import com.google.common.base.Preconditions;
-import lombok.Getter;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtil;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -40,9 +39,6 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
     
     private static final String ZERO_PADDING_KEY = "zero-padding";
     
-    @Getter
-    private Properties props;
-    
     private int shardingCount;
     
     private int startOffset;
@@ -55,7 +51,6 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         shardingCount = getShardingCount(props);
         startOffset = getStartOffset(props);
         stopOffset = getStopOffset(props);

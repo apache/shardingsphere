@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -34,7 +32,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.DuplicateInsertDataRecordException;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.exception.syntax.InsertSelectTableViolationException;
 import org.apache.shardingsphere.sharding.exception.syntax.MissingGenerateKeyColumnWithInsertSelectException;
@@ -59,6 +59,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -70,7 +72,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -177,7 +178,7 @@ public final class ShardingInsertStatementValidatorTest {
                 Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = DuplicateInsertDataRecordException.class)
     public void assertPostValidateWhenInsertWithRoutingToMultipleDataNodes() {
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
@@ -225,14 +226,8 @@ public final class ShardingInsertStatementValidatorTest {
         when(databaseStrategyConfig.getShardingColumn()).thenReturn("id");
         when(databaseStrategyConfig.getShardingAlgorithmName()).thenReturn("database_inline");
         when(shardingRule.getDatabaseShardingStrategyConfiguration(tableRule)).thenReturn(databaseStrategyConfig);
-        when(shardingRule.getShardingAlgorithms()).thenReturn(
-                Collections.singletonMap("database_inline", ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INLINE", createProperties()), ShardingAlgorithm.class)));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.put("algorithm-expression", "ds_${id % 2}");
-        return result;
+        when(shardingRule.getShardingAlgorithms()).thenReturn(Collections.singletonMap("database_inline",
+                TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${id % 2}")))));
     }
     
     private RouteContext createSingleRouteContext() {

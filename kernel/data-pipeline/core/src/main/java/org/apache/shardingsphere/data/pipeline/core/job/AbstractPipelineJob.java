@@ -28,10 +28,9 @@ import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +60,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected void setJobId(final String jobId) {
         this.jobId = jobId;
-        jobAPI = TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName());
+        jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName());
     }
     
     protected void prepare(final PipelineJobItemContext jobItemContext) {
@@ -101,7 +100,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             return false;
         }
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
-        RequiredSPIRegistry.getRegisteredService(PipelineDistributedBarrier.class).persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
+        PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
         return true;
     }
     
@@ -120,7 +119,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         if (null != jobBootstrap) {
             jobBootstrap.shutdown();
         }
-        log.info("stop tasks runner, jobId={}", getJobId());
+        log.info("stop tasks runner, jobId={}", jobId);
         for (PipelineTasksRunner each : tasksRunnerMap.values()) {
             each.stop();
         }
@@ -128,7 +127,9 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private void innerClean() {
         tasksRunnerMap.clear();
-        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
+        if (null != jobId) {
+            PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
+        }
     }
     
     protected abstract void doClean();

@@ -110,9 +110,8 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
     public void setUp() {
         Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>(1, 1);
         databases.put("logic_db", mockDatabase());
-        ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databases, metaData, new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
@@ -120,13 +119,13 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<?> selectStatementContext = prepareSelectStatementContext();
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
-                .thenReturn(new MySQLServerPreparedStatement("select * from tbl where id = ?", selectStatementContext));
+                .thenReturn(new MySQLServerPreparedStatement("select * from tbl where id = ?", selectStatementContext, Collections.emptyList()));
         UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
         when(updateStatementContext.getSqlStatement()).thenReturn(prepareUpdateStatement());
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2))
-                .thenReturn(new MySQLServerPreparedStatement("update tbl set col=1 where id = ?", updateStatementContext));
+                .thenReturn(new MySQLServerPreparedStatement("update tbl set col=1 where id = ?", updateStatementContext, Collections.emptyList()));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(3))
-                .thenReturn(new MySQLServerPreparedStatement("commit", new CommonSQLStatementContext<>(new MySQLCommitStatement())));
+                .thenReturn(new MySQLServerPreparedStatement("commit", new CommonSQLStatementContext<>(new MySQLCommitStatement()), Collections.emptyList()));
     }
     
     private ShardingSphereDatabase mockDatabase() {

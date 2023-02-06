@@ -27,3 +27,5 @@ CREATE TABLE t_data_type_integer (id INT PRIMARY KEY, col_bigint BIGINT NOT NULL
 CREATE TABLE t_data_type_integer_unsigned (id INT PRIMARY KEY, col_bigint_unsigned DECIMAL NOT NULL, col_int_unsigned DECIMAL NOT NULL, col_mediumint_unsigned DECIMAL NOT NULL, col_smallint_unsigned DECIMAL NOT NULL, col_tinyint_unsigned DECIMAL NOT NULL);
 CREATE TABLE t_data_type_floating_point (id INT PRIMARY KEY, col_float REAL NOT NULL, col_double DOUBLE PRECISION NOT NULL);
 CREATE TABLE t_with_generated_id (id SERIAL PRIMARY KEY, val VARCHAR NOT NULL);
+CREATE TABLE t_data_type_money (id INT PRIMARY KEY, val money);
+CREATE TABLE t_data_type_bytea (id INT PRIMARY KEY, val bytea NOT NULL);

@@ -48,7 +48,6 @@ import java.util.Optional;
 @Slf4j
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
-    @Getter
     private final DatabaseType databaseType;
     
     @Getter(AccessLevel.NONE)
@@ -86,7 +85,6 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     protected final void setCommands(final String command) {
         if (Strings.isNullOrEmpty(command)) {
-            log.info("command is blank, not set");
             return;
         }
         setCommand(command);

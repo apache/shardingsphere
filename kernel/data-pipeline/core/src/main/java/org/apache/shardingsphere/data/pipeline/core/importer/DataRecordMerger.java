@@ -76,8 +76,8 @@ public final class DataRecordMerger {
      * @return grouped data records
      */
     public List<GroupedDataRecord> group(final List<DataRecord> dataRecords) {
-        List<DataRecord> mergedDataRecords = merge(dataRecords);
         List<GroupedDataRecord> result = new ArrayList<>(100);
+        List<DataRecord> mergedDataRecords = dataRecords.get(0).getUniqueKeyValue().isEmpty() ? dataRecords : merge(dataRecords);
         Map<String, List<DataRecord>> tableGroup = mergedDataRecords.stream().collect(Collectors.groupingBy(DataRecord::getTableName));
         for (Entry<String, List<DataRecord>> entry : tableGroup.entrySet()) {
             Map<String, List<DataRecord>> typeGroup = entry.getValue().stream().collect(Collectors.groupingBy(DataRecord::getType));

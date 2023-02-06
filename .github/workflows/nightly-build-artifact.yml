@@ -51,7 +51,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 11
       - name: Build project
         run: |
           ./mvnw -B clean install -Prelease
@@ -80,7 +80,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 11
       - name: Cache Maven Repos
         uses: actions/cache@v3
         with:
@@ -114,9 +114,9 @@ jobs:
           ref: ${{ inputs.commit-id }}
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: 'dev'
+          version: '22.3.1'
           java-version: '17'
-          components: 'native-image'
+          components: 'espresso,native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: 'maven'
       - uses: docker/login-action@v2

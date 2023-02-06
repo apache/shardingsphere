@@ -21,12 +21,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.spi.AuthorityProviderAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.authority.spi.AuthorityProvider;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.Map;
@@ -42,19 +42,20 @@ public final class AuthorityRule implements GlobalRule {
     
     private final Collection<ShardingSphereUser> users;
     
-    private final AuthorityProviderAlgorithm provider;
+    private final AuthorityProvider provider;
     
     private volatile AuthorityRegistry authorityRegistry;
     
     public AuthorityRule(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
         users = ruleConfig.getUsers();
-        provider = ShardingSphereAlgorithmFactory.createAlgorithm(ruleConfig.getProvider(), AuthorityProviderAlgorithm.class);
+        provider = TypedSPILoader.getService(AuthorityProvider.class, ruleConfig.getProvider().getType(), ruleConfig.getProvider().getProps());
         authorityRegistry = provider.buildAuthorityRegistry(databases, ruleConfig.getUsers());
     }
     
     /**
      * Find user.
+     * 
      * @param grantee grantee user
      * @return user
      */
@@ -63,7 +64,7 @@ public final class AuthorityRule implements GlobalRule {
     }
     
     /**
-     * Find Privileges.
+     * Find privileges.
      *
      * @param grantee grantee
      * @return found privileges

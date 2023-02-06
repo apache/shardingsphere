@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.agent.core.plugin;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Plugin Context.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PluginContext {
     
     private static final String PLUGIN_ENABLED_KEY = "AGENT_PLUGINS_ENABLED";

@@ -47,7 +47,7 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         ShardingSphereTable table = newShardingSphereTable(database.getSchema(schemaName).getTable(tableName));
         table.getIndexes().put(indexName, new ShardingSphereIndex(indexName));
-        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName, null);
+        AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         alterSchemaMetaDataPOJO.getAlteredTables().add(table);
         modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
     }

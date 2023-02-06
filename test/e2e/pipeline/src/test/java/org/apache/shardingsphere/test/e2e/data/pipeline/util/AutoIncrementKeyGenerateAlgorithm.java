@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.util;
 
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class AutoIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
@@ -32,11 +31,7 @@ public final class AutoIncrementKeyGenerateAlgorithm implements KeyGenerateAlgor
     }
     
     @Override
-    public Properties getProps() {
-        return null;
-    }
-    
-    @Override
-    public void init(final Properties props) {
+    public boolean isSupportAutoIncrement() {
+        return true;
     }
 }

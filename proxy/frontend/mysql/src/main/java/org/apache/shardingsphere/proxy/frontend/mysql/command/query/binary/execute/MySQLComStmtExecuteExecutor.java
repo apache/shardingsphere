@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -70,7 +70,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
-        List<Object> params = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
+        List<Object> params = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet(), preparedStatement.getParameterColumnDefinitionFlags());
         preparedStatement.getLongData().forEach(params::set);
         SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
@@ -78,7 +78,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params);
         connectionSession.setQueryContext(queryContext);
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL"), queryContext, connectionSession, true);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "MySQL"), queryContext, connectionSession, true);
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         return responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader) : processUpdate((UpdateResponseHeader) responseHeader);
     }

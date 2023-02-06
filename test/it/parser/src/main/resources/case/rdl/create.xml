@@ -25,6 +25,10 @@
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
     </register-storage-unit>
     
+    <register-storage-unit sql-case-id="register-storage-unit-simple-single-with-password-if-not-exists" if-not-exists="true">
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
+    </register-storage-unit>
+    
     <register-storage-unit sql-case-id="register-storage-unit-simple-multiple">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
         <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456" />
@@ -69,6 +73,17 @@
     </register-storage-unit>
     
     <create-sharding-auto-table-rule sql-case-id="create-sharding-auto-table-rule">
+        <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
+            <data-source>ms_group_0</data-source>
+            <data-source>ms_group_1</data-source>
+            <table-strategy algorithm-name="hash_mod">
+                <property key="sharding-count" value="4" />
+            </table-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
+        </rule>
+    </create-sharding-auto-table-rule>
+    
+    <create-sharding-auto-table-rule sql-case-id="create-sharding-auto-table-rule-if-not-exists" if-not-exists="true">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
             <data-source>ms_group_0</data-source>
             <data-source>ms_group_1</data-source>
@@ -250,17 +265,52 @@
         </rule>
     </create-sharding-table-rule>
     
+    <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-auditor-if-not-exists" if-not-exists="true">
+        <rule name="t_order" key-generate-strategy-column="another_id">
+            <data-node>ms_group_${0..1}.t_order_${0..1}</data-node>
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id" >
+                <algorithm-segment algorithm-name="INLINE">
+                    <property key="algorithm-expression" value="ms_group_${order_id % 2}" />
+                </algorithm-segment>
+            </database-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
+            <audit-strategy allow-hint-disable="true">
+                <auditor auditor-name = "t_order_dml_sharding_conditions_0">
+                    <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+                </auditor>
+                <auditor auditor-name = "t_order_dml_sharding_conditions_1">
+                    <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+                </auditor>
+            </audit-strategy>
+        </rule>
+    </create-sharding-table-rule>
+    
     <create-sharding-table-reference-rule sql-case-id="create-sharding-table-reference-rule">
-        <rule table-groups="t_order,t_order_item" />
-        <rule table-groups="t_1,t_2" />
+        <rule name="reference_0" table-groups="t_order,t_order_item" />
+        <rule name="reference_1" table-groups="t_1,t_2" />
+    </create-sharding-table-reference-rule>
+    
+    <create-sharding-table-reference-rule sql-case-id="create-sharding-table-reference-rule-if-not-exists" if-not-exists="true">
+        <rule name="reference_0" table-groups="t_order,t_order_item" />
+        <rule name="reference_1" table-groups="t_1,t_2" />
     </create-sharding-table-reference-rule>
 
     <create-sharding-table-reference-rule sql-case-id="create-sharding-table-reference-rule-with-quota">
-        <rule table-groups="t_order,t_order_item" />
-        <rule table-groups="t_1,t_2" />
+        <rule name="reference_0" table-groups="t_order,t_order_item" />
+        <rule name="reference_1" table-groups="t_1,t_2" />
     </create-sharding-table-reference-rule>
     
     <create-broadcast-table-rule sql-case-id="create-broadcast-table-rule">
+        <table>t_1</table>
+        <table>t_2</table>
+    </create-broadcast-table-rule>
+    
+    <create-broadcast-table-rule sql-case-id="create-broadcast-table-rule-if-not-exists" if-not-exists="true">
         <table>t_1</table>
         <table>t_2</table>
     </create-broadcast-table-rule>
@@ -271,6 +321,13 @@
     </create-broadcast-table-rule>
     
     <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule">
+        <rule name="ms_group_0" write-data-source="primary_ds" load-balancer="random">
+            <read-data-source>replica_ds_0</read-data-source>
+            <read-data-source>replica_ds_1</read-data-source>
+        </rule>
+    </create-readwrite-splitting-rule>
+    
+    <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule-if-not-exists" if-not-exists="true">
         <rule name="ms_group_0" write-data-source="primary_ds" load-balancer="random">
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
@@ -290,8 +347,14 @@
         </rule>
     </create-readwrite-splitting-rule>
     
-    <create-database-discovery-definition-rule sql-case-id="create-database-discovery-definition-rule">
-        <rule rule-name="ha_group_0" type="mgr">
+    <create-readwrite-splitting-rule sql-case-id="create-dynamic-readwrite-splitting-rule-if-not-exists" if-not-exists="true">
+        <rule name="ms_group_1" auto-aware-resource="group_0" load-balancer="random">
+            <property key="read_weight" value="2:1" />
+        </rule>
+    </create-readwrite-splitting-rule>
+    
+    <create-database-discovery-rule sql-case-id="create-database-discovery-rule">
+        <rule name="ha_group_0" type="mgr">
             <data-source>ds_0</data-source>
             <data-source>ds_1</data-source>
             <discovery-type algorithm-name="mgr">
@@ -299,7 +362,7 @@
             </discovery-type>
             <property key="keepAliveCron" value="0/5 * * * * ?" />
         </rule>
-        <rule rule-name="ha_group_1" type="mgr2">
+        <rule name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
             <data-source>ds_3</data-source>
             <discovery-type algorithm-name="mgr2">
@@ -307,10 +370,29 @@
             </discovery-type>
             <property key="keepAliveCron" value="0/6 * * * * ?" />
         </rule>
-    </create-database-discovery-definition-rule>
+    </create-database-discovery-rule>
+    
+    <create-database-discovery-rule sql-case-id="create-database-discovery-rule-if-not-exists" if-not-exists="true">
+        <rule name="ha_group_0" type="mgr">
+            <data-source>ds_0</data-source>
+            <data-source>ds_1</data-source>
+            <discovery-type algorithm-name="mgr">
+                <property key="groupName" value="92504d5b-6dec" />
+            </discovery-type>
+            <property key="keepAliveCron" value="0/5 * * * * ?" />
+        </rule>
+        <rule name="ha_group_1" type="mgr2">
+            <data-source>ds_2</data-source>
+            <data-source>ds_3</data-source>
+            <discovery-type algorithm-name="mgr2">
+                <property key="groupName" value="92504d5b-6dec-2" />
+            </discovery-type>
+            <property key="keepAliveCron" value="0/6 * * * * ?" />
+        </rule>
+    </create-database-discovery-rule>
 
-    <create-database-discovery-definition-rule sql-case-id="create-database-discovery-rule-with-quota">
-        <rule rule-name="ha_group_0" type="mgr">
+    <create-database-discovery-rule sql-case-id="create-database-discovery-rule-with-quota">
+        <rule name="ha_group_0" type="mgr">
             <data-source>ds_0</data-source>
             <data-source>ds_1</data-source>
             <discovery-type algorithm-name="mgr">
@@ -318,7 +400,7 @@
             </discovery-type>
             <property key="keepAliveCron" value="0/5 * * * * ?" />
         </rule>
-        <rule rule-name="ha_group_1" type="mgr2">
+        <rule name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
             <data-source>ds_3</data-source>
             <discovery-type algorithm-name="mgr2">
@@ -326,9 +408,22 @@
             </discovery-type>
             <property key="keepAliveCron" value="0/6 * * * * ?" />
         </rule>
-    </create-database-discovery-definition-rule>
+    </create-database-discovery-rule>
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule">
+        <rule name="t_encrypt">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+                <encryptor algorithm-name="AES">
+                    <property key="aes-key-value" value="123456abc" />
+                </encryptor>
+            </column>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5" />
+            </column>
+        </rule>
+    </create-encrypt-rule>
+    
+    <create-encrypt-rule sql-case-id="create-encrypt-rule-if-not-exists" if-not-exists="true">
         <rule name="t_encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
@@ -393,7 +488,7 @@
     </create-encrypt-rule>
     
     <create-shadow-rule sql-case-id="create-shadow-rule">
-        <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+        <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
@@ -402,18 +497,32 @@
                         <property key="regex" value="[1]" />
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
-                    <algorithm algorithm-name="SIMPLE_HINT">
-                        <property key="shadow" value="true" />
-                        <property key="foo" value="bar" />
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_sql_hint_1">
+                    <algorithm algorithm-name="SQL_HINT"/>
+                </shadow-algorithm>
+            </table-rule>
+        </rule>
+    </create-shadow-rule>
+    
+    <create-shadow-rule sql-case-id="create-shadow-rule-if-not-exists" if-not-exists="true">
+        <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+            <table-rule table-name="t_order">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
+                    <algorithm algorithm-name="REGEX_MATCH">
+                        <property key="operation" value="insert" />
+                        <property key="column" value="user_id" />
+                        <property key="regex" value="[1]" />
                     </algorithm>
+                </shadow-algorithm>
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_sql_hint_1">
+                    <algorithm algorithm-name="SQL_HINT"/>
                 </shadow-algorithm>
             </table-rule>
         </rule>
     </create-shadow-rule>
     
     <create-shadow-rule sql-case-id="create-shadow-rule-with-quota">
-        <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+        <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
@@ -422,11 +531,8 @@
                         <property key="regex" value="[1]" />
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
-                    <algorithm algorithm-name="SIMPLE_HINT">
-                        <property key="shadow" value="true" />
-                        <property key="foo" value="bar" />
-                    </algorithm>
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_sql_hint_1">
+                    <algorithm algorithm-name="SQL_HINT"/>
                 </shadow-algorithm>
             </table-rule>
         </rule>
@@ -440,7 +546,23 @@
         </strategy>
     </create-default-sharding-strategy>
     
+    <create-default-sharding-strategy sql-case-id="create-default-sharding-table-strategy-if-not-exists-with-lower-case" if-not-exists="true">
+        <strategy default-type="table" strategy-type="standard" sharding-column="order_id">
+            <algorithm-segment algorithm-name="INLINE">
+                <property key="algorithm-expression" value="t_order_${order_id % 2}" />
+            </algorithm-segment>
+        </strategy>
+    </create-default-sharding-strategy>
+    
     <create-default-sharding-strategy sql-case-id="create-default-sharding-database-strategy">
+        <strategy default-type="DATABASE" strategy-type="STANDARD" sharding-column="ORDER_ID">
+            <algorithm-segment algorithm-name="INLINE">
+                <property key="algorithm-expression" value="ms_group_${user_id % 2}" />
+            </algorithm-segment>
+        </strategy>
+    </create-default-sharding-strategy>
+    
+    <create-default-sharding-strategy sql-case-id="create-default-sharding-database-strategy-if-not-exists" if-not-exists="true">
         <strategy default-type="DATABASE" strategy-type="STANDARD" sharding-column="ORDER_ID">
             <algorithm-segment algorithm-name="INLINE">
                 <property key="algorithm-expression" value="ms_group_${user_id % 2}" />
@@ -457,6 +579,15 @@
     </create-default-sharding-strategy>
     
     <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm">
+        <shadow-algorithm algorithm-id="default">
+            <algorithm algorithm-name="HINT">
+                <property key="shadow" value="true" />
+                <property key="foo" value="bar" />
+            </algorithm>
+        </shadow-algorithm>
+    </create-default-shadow-algorithm>
+    
+    <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm-if-not-exists" if-not-exists="true">
         <shadow-algorithm algorithm-id="default">
             <algorithm algorithm-name="HINT">
                 <property key="shadow" value="true" />
@@ -505,8 +636,8 @@
         </rule>
     </create-readwrite-splitting-rule>
 
-    <create-database-discovery-definition-rule sql-case-id="create-db-discovery-rule-without-quote-on-build-in-db-discovery-type-name">
-        <rule rule-name="db_discovery_group_0" type="MYSQL.MGR">
+    <create-database-discovery-rule sql-case-id="create-db-discovery-rule-without-quote-on-build-in-db-discovery-type-name">
+        <rule name="db_discovery_group_0" type="MYSQL.MGR">
             <data-source>ds_0</data-source>
             <data-source>ds_1</data-source>
             <discovery-type algorithm-name="MYSQL.MGR">
@@ -514,18 +645,45 @@
             </discovery-type>
             <property key="keep-alive-cron" value="0/5 * * * * ?" />
         </rule>
-    </create-database-discovery-definition-rule>
+    </create-database-discovery-rule>
 
     <create-shadow-rule sql-case-id="create-shadow-rule-without-quote-on-build-in-shadow-algorithm-name">
-        <rule rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+        <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_0">
-                    <algorithm algorithm-name="SIMPLE_HINT">
-                        <property key="shadow" value="true" />
-                        <property key="foo" value="bar" />
-                    </algorithm>
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_sql_hint_0">
+                    <algorithm algorithm-name="SQL_HINT" />
                 </shadow-algorithm>
             </table-rule>
         </rule>
     </create-shadow-rule>
+    
+    <create-mask-rule sql-case-id="create-mask-rule">
+        <rule name="t_mask">
+            <column name="phone_number">
+                <algorithm algorithm-name="MASK_FROM_X_TO_Y">
+                    <property key="from-x" value="1" />
+                    <property key="to-y" value="2" />
+                    <property key="replace-char" value="*" />
+                </algorithm>
+            </column>
+            <column name="address">
+                <algorithm algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </create-mask-rule>
+    
+    <create-mask-rule sql-case-id="create-mask-rule-if-not-exists" if-not-exists="true">
+        <rule name="t_mask">
+            <column name="phone_number">
+                <algorithm algorithm-name="MASK_FROM_X_TO_Y">
+                    <property key="from-x" value="1" />
+                    <property key="to-y" value="2" />
+                    <property key="replace-char" value="*" />
+                </algorithm>
+            </column>
+            <column name="address">
+                <algorithm algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </create-mask-rule>
 </sql-parser-test-cases>

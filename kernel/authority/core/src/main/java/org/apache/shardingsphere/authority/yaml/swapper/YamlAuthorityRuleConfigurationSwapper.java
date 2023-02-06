@@ -39,15 +39,15 @@ public final class YamlAuthorityRuleConfigurationSwapper implements YamlRuleConf
     @Override
     public YamlAuthorityRuleConfiguration swapToYamlConfiguration(final AuthorityRuleConfiguration data) {
         YamlAuthorityRuleConfiguration result = new YamlAuthorityRuleConfiguration();
-        result.setProvider(algorithmSwapper.swapToYamlConfiguration(data.getProvider()));
-        result.setUsers(YamlUsersConfigurationConverter.convertYamlUserConfigurations(data.getUsers()));
+        result.setPrivilege(algorithmSwapper.swapToYamlConfiguration(data.getProvider()));
+        result.setUsers(YamlUsersConfigurationConverter.convertToYamlUserConfiguration(data.getUsers()));
         return result;
     }
     
     @Override
     public AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {
-        Collection<ShardingSphereUser> users = YamlUsersConfigurationConverter.convertShardingSphereUser(yamlConfig.getUsers());
-        AlgorithmConfiguration provider = algorithmSwapper.swapToObject(yamlConfig.getProvider());
+        Collection<ShardingSphereUser> users = YamlUsersConfigurationConverter.convertToShardingSphereUser(yamlConfig.getUsers());
+        AlgorithmConfiguration provider = algorithmSwapper.swapToObject(yamlConfig.getPrivilege());
         if (null == provider) {
             provider = new DefaultAuthorityRuleConfigurationBuilder().build().getProvider();
         }

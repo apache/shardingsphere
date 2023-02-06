@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.infra.config.props;
 
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class ConfigurationPropertiesTest {
@@ -31,6 +33,7 @@ public final class ConfigurationPropertiesTest {
     @Test
     public void assertGetValue() {
         ConfigurationProperties actual = new ConfigurationProperties(createProperties());
+        assertThat(actual.getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.DEBUG));
         assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(20));
@@ -50,29 +53,30 @@ public final class ConfigurationPropertiesTest {
     }
     
     private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        result.setProperty(ConfigurationPropertyKey.SQL_SIMPLE.getKey(), Boolean.TRUE.toString());
-        result.setProperty(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "20");
-        result.setProperty(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), "20");
-        result.setProperty(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED.getKey(), Boolean.TRUE.toString());
-        result.setProperty(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL");
-        result.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL");
-        result.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), "20");
-        result.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
-        result.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE.getKey(), "20");
-        result.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE.getKey(), "20");
-        result.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getKey(), BackendExecutorType.OLTP.name());
-        result.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS.getKey(), "20");
-        result.setProperty(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION.getKey(), "5.7.22");
-        result.setProperty(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getKey(), "3308");
-        result.setProperty(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG.getKey(), "1024");
-        return result;
+        return PropertiesBuilder.build(
+                new Property(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getKey(), LoggerLevel.DEBUG.toString()),
+                new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString()),
+                new Property(ConfigurationPropertyKey.SQL_SIMPLE.getKey(), Boolean.TRUE.toString()),
+                new Property(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "20"),
+                new Property(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), "20"),
+                new Property(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED.getKey(), Boolean.TRUE.toString()),
+                new Property(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL"),
+                new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL"),
+                new Property(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), "20"),
+                new Property(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString()),
+                new Property(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE.getKey(), "20"),
+                new Property(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE.getKey(), "20"),
+                new Property(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getKey(), BackendExecutorType.OLTP.name()),
+                new Property(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS.getKey(), "20"),
+                new Property(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION.getKey(), "5.7.22"),
+                new Property(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getKey(), "3308"),
+                new Property(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG.getKey(), "1024"));
     }
     
     @Test
     public void assertGetDefaultValue() {
         ConfigurationProperties actual = new ConfigurationProperties(new Properties());
+        assertThat(actual.getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.INFO));
         assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(0));

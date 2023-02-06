@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -36,9 +35,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
@@ -59,15 +56,14 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.core.sharding.ShardingColumnsExtractor;
 import org.apache.shardingsphere.data.pipeline.core.util.JobDataNodeLineConvertUtil;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.sharding.ShardingColumnsExtractor;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
@@ -84,7 +80,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -112,6 +107,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         yamlJobConfig.setTableNames(event.getSubscribeTableNames());
         yamlJobConfig.setSubscriptionName(event.getSubscriptionName());
         yamlJobConfig.setSubscriptionMode(event.getSubscriptionMode());
+        yamlJobConfig.setDecodeWithTX(event.isDecodeWithTX());
         ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(event.getDatabase());
         yamlJobConfig.setDataSourceConfiguration(pipelineDataSourceConfigSwapper.swapToYamlConfiguration(getDataSourceConfiguration(database)));
         List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtil.convertDataNodesToLines(event.getDataNodesMap());
@@ -182,21 +178,22 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(Collections.emptyMap());
         String dataSourceName = dataNodeLine.getEntries().iterator().next().getDataNodes().iterator().next().getDataSourceName();
         StandardPipelineDataSourceConfiguration actualDataSourceConfiguration = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
-        DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig.getJobId(), dataSourceName, actualDataSourceConfiguration, tableNameMap, tableNameSchemaNameMapping);
+        DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig, dataSourceName, actualDataSourceConfiguration, tableNameMap, tableNameSchemaNameMapping);
         ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, jobConfig.getTableNames(), tableNameSchemaNameMapping);
         CDCTaskConfiguration result = new CDCTaskConfiguration(dumperConfig, importerConfig);
         log.debug("buildTaskConfiguration, result={}", result);
         return result;
     }
     
-    private static DumperConfiguration buildDumperConfiguration(final String jobId, final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSourceConfig,
+    private static DumperConfiguration buildDumperConfiguration(final CDCJobConfiguration jobConfig, final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSourceConfig,
                                                                 final Map<ActualTableName, LogicTableName> tableNameMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
         DumperConfiguration result = new DumperConfiguration();
-        result.setJobId(jobId);
+        result.setJobId(jobConfig.getJobId());
         result.setDataSourceName(dataSourceName);
         result.setDataSourceConfig(sourceDataSourceConfig);
         result.setTableNameMap(tableNameMap);
         result.setTableNameSchemaNameMapping(tableNameSchemaNameMapping);
+        result.setDecodeWithTX(jobConfig.isDecodeWithTX());
         return result;
     }
     
@@ -207,7 +204,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         CDCProcessContext processContext = new CDCProcessContext(jobConfig.getJobId(), pipelineProcessConfig);
         JobRateLimitAlgorithm writeRateLimitAlgorithm = processContext.getWriteRateLimitAlgorithm();
         int batchSize = pipelineProcessConfig.getWrite().getBatchSize();
-        Map<LogicTableName, Set<String>> shardingColumnsMap = RequiredSPIRegistry.getRegisteredService(ShardingColumnsExtractor.class)
+        Map<LogicTableName, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor()
                 .getShardingColumnsMap(jobConfig.getDataSourceConfig().getRootConfig().getRules(), logicalTableNames.stream().map(LogicTableName::new).collect(Collectors.toSet()));
         return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, tableNameSchemaNameMapping, batchSize, writeRateLimitAlgorithm, 0, 1);
     }
@@ -233,30 +230,14 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     @Override
-    public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
-        // TODO to be implemented
-    }
-    
-    @Override
-    public Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
-        // TODO to be implemented
-        return Optional.empty();
-    }
-    
-    @Override
-    public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
-        // TODO to be implemented
-    }
-    
-    @Override
     protected PipelineJobInfo getJobInfo(final String jobId) {
-        // TODO to be implemented
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     @Override
     public void rollback(final String jobId) throws SQLException {
-        // TODO to be implemented
+        stop(jobId);
+        dropJob(jobId);
     }
     
     @Override

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingT
 import org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingDistSQLStatementParserFacade;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
@@ -46,6 +47,8 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +62,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -74,21 +78,16 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    @Mock
-    private ShardingSphereRuleMetaData ruleMetaData;
-    
     private final ShardingRuleConfiguration currentRuleConfig = createCurrentShardingRuleConfiguration();
-    
-    private final ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSource());
     
     private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
     
     @Before
     public void before() {
         when(database.getName()).thenReturn("schema");
+        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSource());
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(ruleMetaData.getRules()).thenReturn(Collections.singleton(new MockDataSourceContainedRule()));
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new MockDataSourceContainedRule())));
     }
     
     @Test
@@ -155,23 +154,12 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     @Test
     public void assertUpdateWithIfNotExistsStatement() {
-        CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(false, Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
-        updater.checkSQLStatement(database, statement, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_order_item_input", Collections.singletonList("logic_ds"));
-        autoTableRuleSegment.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("test_product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
-        autoTableRuleSegment.setShardingColumn("custom_id");
-        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", createProperties("", "")));
-        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order_input", Collections.singletonList("ds_${0..1}.t_order_${0..5}"));
-        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "user_id", new AlgorithmSegment("CORE.STANDARD.FIXTURE", new Properties())));
-        AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", createProperties("algorithm-expression", "ds_${user_id% 2}"));
-        tableRuleSegment.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "order_id", databaseAlgorithmSegment));
-        tableRuleSegment.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
-        CreateShardingTableRuleStatement statementWithIfNotExists = new CreateShardingTableRuleStatement(true, Arrays.asList(autoTableRuleSegment, tableRuleSegment));
+        Collection<AbstractTableRuleSegment> segments = new LinkedList<>();
+        segments.add(createCompleteAutoTableRule());
+        segments.add(createCompleteTableRule());
+        CreateShardingTableRuleStatement statementWithIfNotExists = new CreateShardingTableRuleStatement(true, segments);
         updater.checkSQLStatement(database, statementWithIfNotExists, currentRuleConfig);
-        ShardingRuleConfiguration toBeCreatedRuleConfigWithIfNotExists = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfigWithIfNotExists);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statementWithIfNotExists));
         assertThat(currentRuleConfig.getTables().size(), is(2));
         Iterator<ShardingTableRuleConfiguration> tableRuleIterator = currentRuleConfig.getTables().iterator();
         ShardingTableRuleConfiguration tableRule = tableRuleIterator.next();
@@ -210,16 +198,16 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         AutoTableRuleSegment result = new AutoTableRuleSegment("t_order_item_input", Collections.singletonList("logic_ds"));
         result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         result.setShardingColumn("order_id");
-        result.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", createProperties("", "")));
+        result.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("", ""))));
         return result;
     }
     
     private TableRuleSegment createCompleteTableRule() {
-        TableRuleSegment result = new TableRuleSegment("t_order_input", Collections.singletonList("ds_${0..1}.t_order_${0..1}"));
+        KeyGenerateStrategySegment keyGenerator = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
+        TableRuleSegment result = new TableRuleSegment("t_order_input", Collections.singletonList("ds_${0..1}.t_order_${0..1}"), keyGenerator, null);
         result.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", new AlgorithmSegment("CORE.STANDARD.FIXTURE", new Properties())));
-        AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", createProperties("algorithm-expression", "ds_${user_id% 2}"));
+        AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
         result.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "product_id", databaseAlgorithmSegment));
-        result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         return result;
     }
     
@@ -227,7 +215,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(createTableRuleConfiguration());
         result.getAutoTables().add(createAutoTableRuleConfiguration());
-        result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", createProperties("sharding-count", "4")));
+        result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", PropertiesBuilder.build(new Property("sharding-count", "4"))));
         result.getKeyGenerators().put("t_order_item_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
         return result;
     }
@@ -245,12 +233,6 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         return result;
     }
     
-    private Properties createProperties(final String key, final String value) {
-        Properties result = new Properties();
-        result.put(key, value);
-        return result;
-    }
-    
     private Map<String, DataSource> createDataSource() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("ds_0", new MockedDataSource());
@@ -263,7 +245,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     private DistSQLStatement getDistSQLStatement(final String sql) {
         ShardingDistSQLStatementParserFacade facade = new ShardingDistSQLStatementParserFacade();
         ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, facade.getLexerClass(), facade.getParserClass()).parse();
-        SQLVisitor visitor = TypedSPIRegistry.getRegisteredService(FeaturedDistSQLStatementParserFacade.class, facade.getType()).getVisitorClass().getDeclaredConstructor().newInstance();
+        SQLVisitor visitor = TypedSPILoader.getService(FeaturedDistSQLStatementParserFacade.class, facade.getType()).getVisitorClass().getDeclaredConstructor().newInstance();
         return (DistSQLStatement) ((ParseTreeVisitor) visitor).visit(parseASTNode.getRootNode());
     }
     

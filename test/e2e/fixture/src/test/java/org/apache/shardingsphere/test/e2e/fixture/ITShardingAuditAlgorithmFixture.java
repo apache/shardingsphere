@@ -19,25 +19,17 @@ package org.apache.shardingsphere.test.e2e.fixture;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 
 import java.util.List;
-import java.util.Properties;
 
 public final class ITShardingAuditAlgorithmFixture implements ShardingAuditAlgorithm {
     
     @Override
-    public void init(final Properties props) {
-    }
-    
-    @Override
-    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereDatabase database) {
-    }
-    
-    @Override
-    public Properties getProps() {
-        return new Properties();
+    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params,
+                      final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
     }
     
     @Override

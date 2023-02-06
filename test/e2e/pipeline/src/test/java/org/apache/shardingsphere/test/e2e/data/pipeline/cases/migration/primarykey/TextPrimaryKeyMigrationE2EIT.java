@@ -18,14 +18,16 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.primarykey;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
-import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
-import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
+import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,13 +35,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -48,8 +47,11 @@ import static org.hamcrest.Matchers.is;
 @Slf4j
 public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
+    private final PipelineTestParameter testParam;
+    
     public TextPrimaryKeyMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
+        this.testParam = testParam;
     }
     
     @Override
@@ -81,8 +83,13 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @Test
     public void assertTextPrimaryMigrationSuccess() throws SQLException, InterruptedException {
+        log.info("assertTextPrimaryMigrationSuccess testParam:{}", testParam);
+        initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         createSourceOrderTable();
-        batchInsertOrder();
+        try (Connection connection = getSourceDataSource().getConnection()) {
+            UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
+            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, getSourceTableOrderName(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
+        }
         addMigrationProcessConfig();
         addMigrationSourceResource();
         addMigrationTargetResource();
@@ -92,26 +99,9 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
         sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableOrderName(), "1000000000", 1, "afterStop"));
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
-            commitMigrationByJobId(jobId);
-            List<String> lastJobIds = listJobId();
-            assertThat(lastJobIds.size(), is(0));
-        }
-    }
-    
-    private void batchInsertOrder() throws SQLException {
-        log.info("init data begin: {}", LocalDateTime.now());
-        UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-        try (Connection connection = getSourceDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?,?,?)", getSourceTableOrderName()));
-            for (int i = 0; i < PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT * 2; i++) {
-                preparedStatement.setObject(1, keyGenerateAlgorithm.generateKey());
-                preparedStatement.setObject(2, ThreadLocalRandom.current().nextInt(0, 6));
-                preparedStatement.setObject(3, "OK");
-                preparedStatement.addBatch();
-            }
-            preparedStatement.executeBatch();
-        }
-        log.info("init data end: {}", LocalDateTime.now());
+        commitMigrationByJobId(jobId);
+        List<String> lastJobIds = listJobId();
+        assertThat(lastJobIds.size(), is(0));
+        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
 }

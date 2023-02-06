@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorAssertionEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorOutputEntity;
@@ -31,12 +31,12 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironme
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DockerImageVersion;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.junit.After;
 import org.junit.Test;
@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -90,9 +91,14 @@ public final class CreateTableSQLGeneratorIT {
         rootEntity = JAXB.unmarshal(
                 Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(testParam.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
         DatabaseType databaseType = testParam.getDatabaseType();
-        StorageContainerConfiguration storageContainerConfig = DatabaseTypeUtil.isMySQL(databaseType) && new DockerImageVersion(testParam.getStorageContainerImage()).getMajorVersion() > 5
-                ? MySQLContainerConfigurationFactory.newInstance(null, null, Collections.singletonMap("/env/mysql/mysql8/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER))
-                : StorageContainerConfigurationFactory.newInstance(databaseType);
+        StorageContainerConfiguration storageContainerConfig;
+        if (DatabaseTypeUtil.isMySQL(databaseType)) {
+            int majorVersion = new DockerImageVersion(testParam.getStorageContainerImage()).getMajorVersion();
+            Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+            storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);
+        } else {
+            storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);
+        }
         storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(), "",
                 storageContainerConfig);
         storageContainer.start();
@@ -126,11 +132,12 @@ public final class CreateTableSQLGeneratorIT {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             for (CreateTableSQLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
-                Collection<String> actualDDLs = TypedSPIRegistry.getRegisteredService(
+                Collection<String> actualDDLs = TypedSPILoader.getService(
                         CreateTableSQLGenerator.class, testParam.getDatabaseType().getType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
                 assertSQL(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
+        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
     
     private void assertSQL(final Collection<String> actualSQL, final Collection<String> expectedSQL) {

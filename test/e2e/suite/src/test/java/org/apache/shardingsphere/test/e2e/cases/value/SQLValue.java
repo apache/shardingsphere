@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.cases.value;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -43,7 +44,7 @@ public final class SQLValue {
     }
     
     private Object getValue(final String value, final String type) throws ParseException {
-        if (type.startsWith("enum#")) {
+        if (type.startsWith("enum#") || type.startsWith("cast#")) {
             return value;
         }
         if ("null".equalsIgnoreCase(value)) {
@@ -79,6 +80,8 @@ public final class SQLValue {
                 return new Time(new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).parse(value).getTime());
             case "timestamp":
                 return new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(value).getTime());
+            case "bytes":
+                return value.getBytes(StandardCharsets.UTF_8);
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
         }
@@ -97,6 +100,9 @@ public final class SQLValue {
         }
         if (value instanceof Timestamp) {
             return formatString(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(value));
+        }
+        if (value instanceof byte[]) {
+            return formatString(new String((byte[]) value, StandardCharsets.UTF_8));
         }
         return value.toString();
     }

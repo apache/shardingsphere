@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtil;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -35,19 +35,15 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
     
-    @Getter
-    private Properties props;
-    
     private int shardingCount;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         shardingCount = getShardingCount(props);
     }
     
     private int getShardingCount(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count cannot be null.");
+        ShardingSpherePreconditions.checkState(props.containsKey(SHARDING_COUNT_KEY), () -> new ShardingAlgorithmInitializationException(getType(), "Sharding count cannot be null."));
         return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
     }
     

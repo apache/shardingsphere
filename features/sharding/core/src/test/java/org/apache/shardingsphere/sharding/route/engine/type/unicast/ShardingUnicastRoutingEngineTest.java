@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.exception.metadata.ShardingRuleNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +80,7 @@ public final class ShardingUnicastRoutingEngineTest {
         assertThat(actual.getRouteUnits().size(), is(1));
     }
     
-    @Test(expected = ShardingRuleNotFoundException.class)
+    @Test(expected = ShardingTableRuleNotFoundException.class)
     public void assertRouteForWithNoIntersection() {
         Set<String> tables = new HashSet<>(3, 1);
         tables.add("t_order");

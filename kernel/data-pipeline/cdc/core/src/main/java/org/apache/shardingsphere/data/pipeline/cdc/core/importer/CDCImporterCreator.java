@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
+import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 /**
@@ -31,8 +32,8 @@ public final class CDCImporterCreator implements ImporterCreator {
     
     @Override
     public Importer createImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
-                                   final PipelineJobProgressListener jobProgressListener) {
-        return new CDCImporter(importerConfig, importerConnector, channel, jobProgressListener);
+                                   final PipelineJobProgressListener jobProgressListener, final ImporterType importerType) {
+        return new CDCImporter(importerConfig, importerConnector, channel, jobProgressListener, importerType);
     }
     
     @Override

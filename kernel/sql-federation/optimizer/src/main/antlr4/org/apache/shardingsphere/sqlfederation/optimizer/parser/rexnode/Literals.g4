@@ -19,6 +19,10 @@ lexer grammar Literals;
 
 import Alphabet, Symbol;
 
+PLACEHOLDER_
+    :  QUESTION_ INTEGER_
+    ;
+
 STRING_ 
     : (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
     | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)

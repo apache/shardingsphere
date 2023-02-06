@@ -56,6 +56,8 @@ public final class DataSetEnvironmentManager {
     // TODO ExecutorEngine.execute and callback
     private static final ExecutorServiceManager EXECUTOR_SERVICE_MANAGER = ExecutorEngine.createExecutorEngineWithCPU().getExecutorServiceManager();
     
+    private static final String DATA_COLUMN_DELIMITER = ", ";
+    
     private final DataSet dataSet;
     
     private final Map<String, DataSource> dataSourceMap;
@@ -82,7 +84,7 @@ public final class DataSetEnvironmentManager {
             DataSetMetaData dataSetMetaData = dataSet.findMetaData(dataNode);
             List<SQLValueGroup> sqlValueGroups = new LinkedList<>();
             for (DataSetRow row : dataSetRows) {
-                sqlValueGroups.add(new SQLValueGroup(dataSetMetaData, row.splitValues(",")));
+                sqlValueGroups.add(new SQLValueGroup(dataSetMetaData, row.splitValues(DATA_COLUMN_DELIMITER)));
             }
             String insertSQL;
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
@@ -116,17 +118,17 @@ public final class DataSetEnvironmentManager {
         List<String> placeholders = new LinkedList<>();
         for (DataSetColumn each : columnMetaData) {
             columnNames.add(each.getName());
-            String type = each.getType();
-            if (type.startsWith("enum#") && "PostgreSQL".equals(databaseTypeName)) {
-                placeholders.add(generateEnum(type));
-                continue;
-            }
-            placeholders.add("?");
+            placeholders.add(generateProperPlaceholderExpression(databaseTypeName, each));
         }
         return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, String.join(",", columnNames), String.join(",", placeholders));
     }
     
-    private String generateEnum(final String type) {
+    private String generateProperPlaceholderExpression(final String databaseTypeName, final DataSetColumn dataSetColumn) {
+        String type = dataSetColumn.getType();
+        return type.startsWith("enum#") && "PostgreSQL".equals(databaseTypeName) || type.startsWith("cast#") ? generateTypeCastPlaceholder(type) : "?";
+    }
+    
+    private String generateTypeCastPlaceholder(final String type) {
         String[] split = type.split("#");
         return split.length == 2 ? String.format("CAST( ? AS %s )", split[1]) : "?";
     }

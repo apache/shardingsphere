@@ -20,6 +20,7 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.junit.Test;
 
@@ -40,14 +41,14 @@ public final class YamlAuthorityRuleConfigurationSwapperTest {
         AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.emptyList(), new AlgorithmConfiguration("type", new Properties()));
         YamlAuthorityRuleConfiguration actual = swapper.swapToYamlConfiguration(authorityRuleConfig);
         assertTrue(actual.getUsers().isEmpty());
-        assertNotNull(actual.getProvider());
+        assertNotNull(actual.getPrivilege());
     }
     
     @Test
     public void assertSwapToObject() {
         YamlAuthorityRuleConfiguration authorityRuleConfig = new YamlAuthorityRuleConfiguration();
-        authorityRuleConfig.setUsers(Collections.singletonList("root@localhost:pass"));
-        authorityRuleConfig.setProvider(new YamlAlgorithmConfiguration("type", new Properties()));
+        authorityRuleConfig.setUsers(Collections.singletonList(getYamlUser()));
+        authorityRuleConfig.setPrivilege(new YamlAlgorithmConfiguration("type", new Properties()));
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);
         assertThat(actual.getUsers().size(), is(1));
         assertNotNull(actual.getProvider());
@@ -56,9 +57,16 @@ public final class YamlAuthorityRuleConfigurationSwapperTest {
     @Test
     public void assertSwapToObjectWithDefaultProvider() {
         YamlAuthorityRuleConfiguration authorityRuleConfig = new YamlAuthorityRuleConfiguration();
-        authorityRuleConfig.setUsers(Collections.singletonList("root@localhost:pass"));
+        authorityRuleConfig.setUsers(Collections.singletonList(getYamlUser()));
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);
         assertThat(actual.getUsers().size(), is(1));
         assertThat(actual.getProvider().getType(), is("ALL_PERMITTED"));
+    }
+    
+    private YamlUserConfiguration getYamlUser() {
+        YamlUserConfiguration result = new YamlUserConfiguration();
+        result.setUser("root@localhost");
+        result.setPassword("password");
+        return result;
     }
 }

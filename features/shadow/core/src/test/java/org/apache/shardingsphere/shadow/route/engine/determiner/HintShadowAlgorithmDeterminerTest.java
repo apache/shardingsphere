@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -41,21 +41,15 @@ public final class HintShadowAlgorithmDeterminerTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertIsShadow() {
-        HintShadowAlgorithm hintShadowAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("SIMPLE_HINT", createProperties()), ShadowAlgorithm.class);
+        HintShadowAlgorithm hintShadowAlgorithm = (HintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SQL_HINT", new Properties());
         assertTrue(HintShadowAlgorithmDeterminer.isShadow(hintShadowAlgorithm, createShadowDetermineCondition(), new ShadowRule(createShadowRuleConfiguration())));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("foo", "foo_value");
-        return result;
     }
     
     private ShadowRuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setDataSources(createDataSources());
-        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), Collections.singleton("simple-hint-algorithm"))));
-        result.setShadowAlgorithms(Collections.singletonMap("simple-hint-algorithm", new AlgorithmConfiguration("SIMPLE_HINT", createProperties())));
+        result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), Collections.singleton("sql-hint-algorithm"))));
+        result.setShadowAlgorithms(Collections.singletonMap("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties())));
         return result;
     }
     

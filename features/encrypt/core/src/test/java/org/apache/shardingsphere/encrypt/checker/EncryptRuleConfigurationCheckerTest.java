@@ -20,9 +20,10 @@ package org.apache.shardingsphere.encrypt.checker;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.exception.metadata.EncryptEncryptorNotFoundException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -37,7 +38,7 @@ public final class EncryptRuleConfigurationCheckerTest {
     @Test
     public void assertCheckWhenConfigValidConfiguration() {
         EncryptRuleConfiguration config = createValidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
@@ -50,10 +51,10 @@ public final class EncryptRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = EncryptEncryptorNotFoundException.class)
     public void assertCheckWhenConfigInvalidCipherColumn() {
         EncryptRuleConfiguration config = createInvalidCipherColumnConfig();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
@@ -66,10 +67,10 @@ public final class EncryptRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = EncryptEncryptorNotFoundException.class)
     public void assertCheckWhenConfigInvalidAssistColumn() {
         EncryptRuleConfiguration config = createInvalidAssistColumnConfig();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
@@ -83,10 +84,10 @@ public final class EncryptRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = EncryptEncryptorNotFoundException.class)
     public void assertCheckWhenConfigInvalidLikeColumn() {
         EncryptRuleConfiguration config = createInvalidLikeColumnConfig();
-        RuleConfigurationChecker checker = OrderedSPIRegistry.getRegisteredServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
+        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     

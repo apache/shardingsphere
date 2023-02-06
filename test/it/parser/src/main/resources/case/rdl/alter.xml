@@ -152,8 +152,8 @@
     </alter-sharding-table-rule>
     
     <alter-sharding-table-reference-rule sql-case-id="alter-sharding-table-reference-rule">
-        <rule table-groups="t_order,t_order_item" />
-        <rule table-groups="t_1,t_2" />
+        <rule name="reference_0" table-groups="t_order,t_order_item" />
+        <rule name="reference_1" table-groups="t_1,t_2" />
     </alter-sharding-table-reference-rule>
     
     <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
@@ -166,8 +166,8 @@
         </rule>
     </alter-readwrite-splitting-rule>
 
-    <alter-database-discovery-definition-rule sql-case-id="alter-database-discovery-definition-rule">
-        <rule rule-name="ha_group_0" type="mgr">
+    <alter-database-discovery-rule sql-case-id="alter-database-discovery-rule">
+        <rule name="ha_group_0" type="mgr">
             <data-source>ds_0</data-source>
             <data-source>ds_1</data-source>
             <discovery-type algorithm-name="mgr">
@@ -175,7 +175,7 @@
             </discovery-type>
             <property key="keepAliveCron" value="0/5 * * * * ?" />
         </rule>
-        <rule rule-name="ha_group_1" type="mgr2">
+        <rule name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
             <data-source>ds_3</data-source>
             <discovery-type algorithm-name="mgr2">
@@ -183,7 +183,7 @@
             </discovery-type>
             <property key="keepAliveCron" value="0/6 * * * * ?" />
         </rule>
-    </alter-database-discovery-definition-rule>
+    </alter-database-discovery-rule>
     
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
         <rule name="t_encrypt">
@@ -240,7 +240,7 @@
     </alter-encrypt-rule>
     
     <alter-shadow-rule sql-case-id="alter-shadow-rule">
-        <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+        <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
@@ -249,11 +249,8 @@
                         <property key="regex" value="[1]" />
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
-                    <algorithm algorithm-name="SIMPLE_HINT">
-                        <property key="shadow" value="true" />
-                        <property key="foo" value="bar" />
-                    </algorithm>
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_sql_hint_1">
+                    <algorithm algorithm-name="SQL_HINT"/>
                 </shadow-algorithm>
             </table-rule>
         </rule>
@@ -261,10 +258,7 @@
     
     <alter-default-shadow-algorithm sql-case-id="alter-default-shadow-algorithm">
         <shadow-algorithm algorithm-id="default">
-            <algorithm algorithm-name="SIMPLE_HINT">
-                <property key="shadow" value="true" />
-                <property key="foo" value="bar" />
-            </algorithm>
+            <algorithm algorithm-name="SQL_HINT"/>
         </shadow-algorithm>
     </alter-default-shadow-algorithm>
     
@@ -283,4 +277,19 @@
             </algorithm-segment>
         </strategy>
     </alter-default-sharding-strategy>
+    
+    <alter-mask-rule sql-case-id="alter-mask-rule">
+        <rule name="t_mask">
+            <column name="phone_number">
+                <algorithm algorithm-name="MASK_FROM_X_TO_Y">
+                    <property key="from-x" value="1" />
+                    <property key="to-y" value="2" />
+                    <property key="replace-char" value="*" />
+                </algorithm>
+            </column>
+            <column name="address">
+                <algorithm algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </alter-mask-rule>
 </sql-parser-test-cases>

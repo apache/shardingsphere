@@ -18,20 +18,28 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.pojo;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
  * Alter schema pojo.
  */
-@RequiredArgsConstructor
 @Getter
 public final class AlterSchemaPOJO {
     
     private final String databaseName;
     
-    private final String logicDataSourceName;
-    
     private final String schemaName;
     
     private final String renameSchemaName;
+    
+    private final String logicDataSourceName;
+    
+    public AlterSchemaPOJO(final String databaseName, final String schemaName,
+                           final String renameSchemaName, final Collection<String> logicDataSourceNames) {
+        this.databaseName = databaseName;
+        this.schemaName = schemaName;
+        this.renameSchemaName = renameSchemaName;
+        this.logicDataSourceName = logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next();
+    }
 }

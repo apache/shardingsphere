@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayRequiredSessionVariables;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
@@ -46,10 +46,10 @@ public final class DefaultMySQLSessionVariableHandlerTest {
     public void assertHandleRecord() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(mock(RequiredSessionVariableRecorder.class));
-        try (MockedStatic<TypedSPIRegistry> typedSPIRegistry = mockStatic(TypedSPIRegistry.class)) {
+        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
             ReplayRequiredSessionVariables replayRequiredSessionVariables = mock(ReplayRequiredSessionVariables.class);
             when(replayRequiredSessionVariables.getReplayRequiredVariables()).thenReturn(Collections.singleton("sql_mode"));
-            typedSPIRegistry.when(() -> TypedSPIRegistry.findRegisteredService(ReplayRequiredSessionVariables.class, "MySQL")).thenReturn(Optional.of(replayRequiredSessionVariables));
+            typedSPILoader.when(() -> TypedSPILoader.findService(ReplayRequiredSessionVariables.class, "MySQL")).thenReturn(Optional.of(replayRequiredSessionVariables));
             new DefaultMySQLSessionVariableHandler().handle(connectionSession, "sql_mode", "''");
             verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("sql_mode", "''");
         }

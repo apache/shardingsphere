@@ -35,13 +35,13 @@ public final class ConsistencyCheckJobItemInfo {
     
     private int finishedPercentage;
     
-    private Long remainingSeconds;
+    private long remainingSeconds;
     
     private String checkBeginTime;
     
     private String checkEndTime;
     
-    private Long durationSeconds;
+    private long durationSeconds;
     
     private String errorMessage;
 }

@@ -22,12 +22,13 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.decider.engine.SQLFederationDeciderEngine;
+import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
@@ -47,7 +48,6 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -156,12 +156,14 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
      * Execute to database.
      *
      * @return backend response
+     * @throws SQLException SQL exception
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ResponseHeader execute() throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLFederationDeciderContext deciderContext = decide(queryContext, metaDataContexts.getMetaData().getProps(), database);
+        SQLFederationDeciderContext deciderContext = new SQLFederationDeciderEngine(
+                database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps()).decide(queryContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(), database);
         if (deciderContext.isUseSQLFederation()) {
             prepareFederationExecutor();
             ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);
@@ -176,14 +178,7 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
         List result = proxySQLExecutor.execute(executionContext);
         refreshMetaData(executionContext);
         Object executeResultSample = result.iterator().next();
-        return executeResultSample instanceof QueryResult
-                ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample)
-                : processExecuteUpdate(executionContext, result);
-    }
-    
-    private static SQLFederationDeciderContext decide(final QueryContext queryContext, final ConfigurationProperties props, final ShardingSphereDatabase database) {
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
-        return deciderEngine.decide(queryContext, database);
+        return executeResultSample instanceof QueryResult ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample) : processExecuteUpdate(executionContext, result);
     }
     
     private void prepareFederationExecutor() {
@@ -193,8 +188,7 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
         federationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
-                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.getConnectionSession().getConnectionContext()),
-                ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
+                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.getConnectionSession().getConnectionContext()));
     }
     
     private ResultSet doExecuteFederation(final QueryContext queryContext, final MetaDataContexts metaDataContexts) throws SQLException {
@@ -299,7 +293,12 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
     }
     
     private UpdateResponseHeader processExecuteUpdate(final ExecutionContext executionContext, final Collection<UpdateResult> updateResults) {
-        UpdateResponseHeader result = new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement(), updateResults);
+        Optional<GeneratedKeyContext> generatedKeyContext = executionContext.getSqlStatementContext() instanceof InsertStatementContext
+                ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext()
+                : Optional.empty();
+        Collection<Comparable<?>> autoIncrementGeneratedValues =
+                generatedKeyContext.filter(GeneratedKeyContext::isSupportAutoIncrement).map(GeneratedKeyContext::getGeneratedValues).orElseGet(Collections::emptyList);
+        UpdateResponseHeader result = new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement(), updateResults, autoIncrementGeneratedValues);
         mergeUpdateCount(executionContext.getSqlStatementContext(), result);
         return result;
     }
@@ -311,17 +310,8 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
-        Optional<DataNodeContainedRule> dataNodeContainedRule = findDataNodeContainedRule();
+        Optional<DataNodeContainedRule> dataNodeContainedRule = database.getRuleMetaData().findSingleRule(DataNodeContainedRule.class);
         return dataNodeContainedRule.isPresent() && dataNodeContainedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
-    }
-    
-    private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
-        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
-            if (each instanceof DataNodeContainedRule) {
-                return Optional.of((DataNodeContainedRule) each);
-            }
-        }
-        return Optional.empty();
     }
     
     /**

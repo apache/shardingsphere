@@ -43,13 +43,11 @@ import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.infra.algorithm.AlgorithmDescription;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.Collection;
@@ -98,7 +96,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         return IntStream.range(0, jobConfig.getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
             Optional<InventoryIncrementalJobItemProgress> jobItemProgress = getJobItemProgress(jobId, each);
-            jobItemProgress.ifPresent(progress -> progress.setActive(!jobConfigPOJO.isDisabled()));
+            jobItemProgress.ifPresent(optional -> optional.setActive(!jobConfigPOJO.isDisabled()));
             map.put(each, jobItemProgress.orElse(null));
         }, LinkedHashMap::putAll);
     }
@@ -176,7 +174,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         checkModeConfig();
         Collection<DataConsistencyCheckAlgorithmInfo> result = new LinkedList<>();
         for (DataConsistencyCalculateAlgorithm each : ShardingSphereServiceLoader.getServiceInstances(DataConsistencyCalculateAlgorithm.class)) {
-            AlgorithmDescription description = each.getClass().getAnnotation(AlgorithmDescription.class);
+            SPIDescription description = each.getClass().getAnnotation(SPIDescription.class);
             result.add(new DataConsistencyCheckAlgorithmInfo(each.getType(), getSupportedDatabaseTypes(each.getSupportedDatabaseTypes()), null == description ? "" : description.value()));
         }
         return result;
@@ -193,9 +191,9 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         ShardingSpherePreconditions.checkState(null != algorithmType || null != jobConfig, () -> new IllegalArgumentException("Algorithm type and job configuration are null."));
         return null == algorithmType
                 ? DataConsistencyCalculateAlgorithmChooser.choose(
-                        TypedSPIRegistry.getRegisteredService(DatabaseType.class, jobConfig.getSourceDatabaseType()),
-                        TypedSPIRegistry.getRegisteredService(DatabaseType.class, getTargetDatabaseType(jobConfig)))
-                : ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(algorithmType, algorithmProps), DataConsistencyCalculateAlgorithm.class);
+                        TypedSPILoader.getService(DatabaseType.class, jobConfig.getSourceDatabaseType()),
+                        TypedSPILoader.getService(DatabaseType.class, getTargetDatabaseType(jobConfig)))
+                : TypedSPILoader.getService(DataConsistencyCalculateAlgorithm.class, algorithmType, algorithmProps);
     }
     
     @Override

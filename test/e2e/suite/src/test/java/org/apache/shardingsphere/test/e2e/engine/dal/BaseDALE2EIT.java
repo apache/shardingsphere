@@ -56,10 +56,6 @@ public abstract class BaseDALE2EIT extends SingleE2EIT {
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
-        // TODO Fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
         assertThat(actual.getColumnCount(), is(expected.size()));
         int index = 1;
         for (DataSetColumn each : expected) {

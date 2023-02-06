@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-sql-federation-executor</artifactId>
-        <version>5.3.1-SNAPSHOT</version>
+        <version>5.3.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sql-federation-executor-core</artifactId>
     <name>${project.artifactId}</name>
@@ -47,6 +47,10 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-merge</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
 </project>

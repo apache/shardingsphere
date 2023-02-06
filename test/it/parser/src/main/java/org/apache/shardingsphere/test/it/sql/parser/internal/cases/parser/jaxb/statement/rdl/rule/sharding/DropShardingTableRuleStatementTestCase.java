@@ -33,8 +33,8 @@ import java.util.List;
 @Setter
 public final class DropShardingTableRuleStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "table")
-    private final List<String> tables = new LinkedList<>();
+    @XmlElement(name = "rule-name")
+    private final List<String> ruleNames = new LinkedList<>();
     
     @XmlAttribute(name = "if-exists")
     private boolean ifExists;

@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.sharding.api.config.rule;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 /**
  * Sharding table rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 public final class ShardingTableRuleConfiguration {
@@ -43,14 +43,4 @@ public final class ShardingTableRuleConfiguration {
     private KeyGenerateStrategyConfiguration keyGenerateStrategy;
     
     private ShardingAuditStrategyConfiguration auditStrategy;
-    
-    public ShardingTableRuleConfiguration(final String logicTable) {
-        this(logicTable, null);
-    }
-    
-    public ShardingTableRuleConfiguration(final String logicTable, final String actualDataNodes) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "LogicTable is required.");
-        this.logicTable = logicTable;
-        this.actualDataNodes = actualDataNodes;
-    }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.update;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
@@ -50,6 +51,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
         String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, sqlStatement, currentRuleConfig);
         checkIsInUse(databaseName, sqlStatement, database);
+        closeHeartbeatJob(database, sqlStatement);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
@@ -77,6 +79,10 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
         });
         Collection<String> invalid = sqlStatement.getNames().stream().filter(rulesInUse::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalid.isEmpty(), () -> new RuleInUsedException(RULE_TYPE, databaseName, invalid));
+    }
+    
+    private void closeHeartbeatJob(final ShardingSphereDatabase database, final DropDatabaseDiscoveryRuleStatement sqlStatement) {
+        sqlStatement.getNames().forEach(each -> database.getRuleMetaData().findSingleRule(DynamicDataSourceContainedRule.class).ifPresent(optional -> optional.closeSingleHeartBeatJob(each)));
     }
     
     @Override

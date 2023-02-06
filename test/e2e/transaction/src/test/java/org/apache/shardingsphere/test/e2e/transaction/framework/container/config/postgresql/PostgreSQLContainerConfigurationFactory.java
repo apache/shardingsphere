@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,6 +54,6 @@ public final class PostgreSQLContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/postgresql/postgresql.conf", StorageContainerConstants.OPENGAUSS_CONF_IN_CONTAINER);
+        return Collections.singletonMap("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
     }
 }

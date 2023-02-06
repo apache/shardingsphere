@@ -20,11 +20,15 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.InvalidReadDatabaseWeightException;
+import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingRequiredReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -32,28 +36,31 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Transaction weight read query load-balance algorithm.
  */
-@Getter
-public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, WeightAware {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
-    private static final ConcurrentHashMap<String, double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
+    private final Map<String, double[]> weightMap = new ConcurrentHashMap<>();
     
     private Properties props;
+    
+    @Getter
+    private Collection<String> dataSourceNames;
     
     @Override
     public void init(final Properties props) {
         this.props = props;
+        dataSourceNames = props.stringPropertyNames();
     }
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
-        double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
-        WEIGHT_MAP.putIfAbsent(name, weight);
-        return getDataSourceName(readDataSourceNames, weight);
+        double[] weight = weightMap.containsKey(name) ? weightMap.get(name) : initWeight(readDataSourceNames);
+        weightMap.putIfAbsent(name, weight);
+        return getDataSourceNames(readDataSourceNames, weight);
     }
     
-    private String getDataSourceName(final List<String> readDataSourceNames, final double[] weight) {
+    private String getDataSourceNames(final List<String> readDataSourceNames, final double[] weight) {
         double randomWeight = ThreadLocalRandom.current().nextDouble(0, 1);
         int index = Arrays.binarySearch(weight, randomWeight);
         if (index < 0) {
@@ -100,7 +107,8 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements Rea
     
     private double getWeightValue(final String readDataSourceName) {
         Object weightObject = props.get(readDataSourceName);
-        Preconditions.checkNotNull(weightObject, "Read database `%s` access weight is not configured", readDataSourceName);
+        ShardingSpherePreconditions.checkNotNull(weightObject, () -> new MissingRequiredReadDatabaseWeightException(getType(),
+                String.format("Read database `%s` access weight is not configured", readDataSourceName)));
         double result;
         try {
             result = Double.parseDouble(weightObject.toString());

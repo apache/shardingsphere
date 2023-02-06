@@ -19,9 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -45,10 +43,6 @@ public final class RawExecutor {
     
     private final ConnectionContext connectionContext;
     
-    private final ConfigurationProperties props;
-    
-    private final EventBusContext eventBusContext;
-    
     /**
      * Execute.
      *
@@ -58,17 +52,16 @@ public final class RawExecutor {
      * @return execute results
      * @throws SQLException SQL exception
      */
-    public List<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext, final QueryContext queryContext,
-                                       final RawSQLExecutorCallback callback) throws SQLException {
+    public List<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext,
+                                       final QueryContext queryContext, final RawSQLExecutorCallback callback) throws SQLException {
+        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            ExecuteProcessEngine.initializeExecution(queryContext, executionGroupContext, eventBusContext);
+            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
             // TODO Load query header for first query
             List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
-            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
-            return results.isEmpty() || Objects.isNull(results.get(0)) ? Collections
-                    .singletonList(new UpdateResult(0, 0L)) : results;
+            return results.isEmpty() || Objects.isNull(results.get(0)) ? Collections.singletonList(new UpdateResult(0, 0L)) : results;
         } finally {
-            ExecuteProcessEngine.cleanExecution();
+            executeProcessEngine.cleanExecution();
         }
     }
     

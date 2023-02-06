@@ -17,15 +17,28 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 import java.util.List;
 
 /**
  * Sharding condition engine.
  */
-public interface ShardingConditionEngine<T extends SQLStatementContext<?>> {
+@RequiredArgsConstructor
+public final class ShardingConditionEngine {
+    
+    private final ShardingSphereRuleMetaData globalRuleMetaData;
+    
+    private final ShardingSphereDatabase database;
+    
+    private final ShardingRule shardingRule;
     
     /**
      * Create sharding conditions.
@@ -34,5 +47,10 @@ public interface ShardingConditionEngine<T extends SQLStatementContext<?>> {
      * @param params SQL parameters
      * @return sharding conditions
      */
-    List<ShardingCondition> createShardingConditions(T sqlStatementContext, List<Object> params);
+    public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
+        TimeServiceRule timeServiceRule = globalRuleMetaData.getSingleRule(TimeServiceRule.class);
+        return sqlStatementContext instanceof InsertStatementContext
+                ? new InsertClauseShardingConditionEngine(database, shardingRule, timeServiceRule).createShardingConditions((InsertStatementContext) sqlStatementContext, params)
+                : new WhereClauseShardingConditionEngine(database, shardingRule, timeServiceRule).createShardingConditions(sqlStatementContext, params);
+    }
 }

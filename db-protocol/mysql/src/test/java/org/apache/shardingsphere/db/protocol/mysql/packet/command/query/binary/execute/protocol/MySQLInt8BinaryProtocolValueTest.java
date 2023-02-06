@@ -39,7 +39,7 @@ public final class MySQLInt8BinaryProtocolValueTest {
     @Test
     public void assertRead() {
         when(payload.readInt8()).thenReturn(1L);
-        assertThat(new MySQLInt8BinaryProtocolValue().read(payload), is(1L));
+        assertThat(new MySQLInt8BinaryProtocolValue().read(payload, false), is(1L));
     }
     
     @Test

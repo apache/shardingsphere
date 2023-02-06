@@ -193,4 +193,16 @@ public final class DistSQLScriptConstants {
             + ")";
     
     public static final String SHADOW_TABLE = "%s(%s)";
+    
+    public static final String CREATE_MASK = "CREATE MASK RULE";
+    
+    public static final String MASK = " %s ("
+            + System.lineSeparator()
+            + "COLUMNS("
+            + System.lineSeparator()
+            + "%s"
+            + System.lineSeparator()
+            + "),";
+    
+    public static final String MASK_COLUMN = "(NAME=%s, %s)";
 }

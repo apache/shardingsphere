@@ -21,14 +21,12 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.executor.sql.process.ExecuteIDContext;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Raw SQL executor callback.
@@ -38,22 +36,19 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     @SuppressWarnings("rawtypes")
     private final Collection<RawExecutorCallback> callbacks;
     
-    private final EventBusContext eventBusContext;
-    
-    public RawSQLExecutorCallback(final EventBusContext eventBusContext) {
-        this.eventBusContext = eventBusContext;
+    public RawSQLExecutorCallback() {
         callbacks = ShardingSphereServiceLoader.getServiceInstances(RawExecutorCallback.class);
         Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
     }
     
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<ExecuteResult> execute(final Collection<RawSQLExecutionUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
-        Collection<ExecuteResult> result = callbacks.iterator().next().execute(inputs, isTrunkThread, dataMap);
-        if (dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            String executionID = dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name()).toString();
+    public Collection<ExecuteResult> execute(final Collection<RawSQLExecutionUnit> inputs, final boolean isTrunkThread) throws SQLException {
+        Collection<ExecuteResult> result = callbacks.iterator().next().execute(inputs, isTrunkThread);
+        if (!ExecuteIDContext.isEmpty()) {
+            ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
             for (RawSQLExecutionUnit each : inputs) {
-                ExecuteProcessEngine.finishExecution(executionID, each, eventBusContext);
+                executeProcessEngine.finishExecution(each);
             }
         }
         return result;

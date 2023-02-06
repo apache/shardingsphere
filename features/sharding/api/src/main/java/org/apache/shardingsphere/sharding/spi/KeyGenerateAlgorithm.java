@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.sharding.spi;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Key generate algorithm.
  */
-public interface KeyGenerateAlgorithm extends ShardingSphereAlgorithm, RequiredSPI {
+public interface KeyGenerateAlgorithm extends TypedSPI {
     
     /**
      * Generate key.
@@ -31,4 +30,13 @@ public interface KeyGenerateAlgorithm extends ShardingSphereAlgorithm, RequiredS
      * @return generated key
      */
     Comparable<?> generateKey();
+    
+    /**
+     * Judge whether support auto increment or not.
+     * 
+     * @return whether support auto increment or not
+     */
+    default boolean isSupportAutoIncrement() {
+        return false;
+    }
 }

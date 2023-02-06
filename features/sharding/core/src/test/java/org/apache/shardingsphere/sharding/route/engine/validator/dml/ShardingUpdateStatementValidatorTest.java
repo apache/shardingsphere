@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardingTablesException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingShardingValueException;
@@ -45,6 +44,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -57,7 +58,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -136,13 +136,7 @@ public final class ShardingUpdateStatementValidatorTest {
     }
     
     private Map<String, ShardingAlgorithm> createShardingAlgorithmMap() {
-        return Collections.singletonMap("database_inline", ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("INLINE", createProperties()), ShardingAlgorithm.class));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.put("algorithm-expression", "ds_${id % 2}");
-        return result;
+        return Collections.singletonMap("database_inline", TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${id % 2}"))));
     }
     
     private RouteContext createSingleRouteContext() {

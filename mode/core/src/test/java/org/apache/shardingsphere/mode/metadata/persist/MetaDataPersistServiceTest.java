@@ -32,6 +32,8 @@ import org.apache.shardingsphere.mode.metadata.persist.service.config.global.Glo
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,11 +93,10 @@ public final class MetaDataPersistServiceTest {
     @Test
     public void assertConditionalPersistConfigurations() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        Collection<RuleConfiguration> ruleConfigs = createRuleConfigurations();
-        Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
-        Properties props = createProperties();
-        metaDataPersistService.persistConfigurations(
-                Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props);
+        Collection<RuleConfiguration> ruleConfigs = Collections.emptyList();
+        Collection<RuleConfiguration> globalRuleConfigs = Collections.emptyList();
+        Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE.toString()));
+        metaDataPersistService.persistConfigurations(Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props);
         verify(dataSourceService).conditionalPersist("foo_db", createDataSourcePropertiesMap(dataSourceMap));
         verify(databaseRulePersistService).conditionalPersist("foo_db", ruleConfigs);
         verify(globalRuleService).conditionalPersist(globalRuleConfigs);
@@ -105,6 +106,16 @@ public final class MetaDataPersistServiceTest {
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
         return dataSourceMap.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void assertGetEffectiveDataSources() {
+        Map<String, DataSource> dataSourceMap = createDataSourceMap();
+        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SCHEMA_RULE_YAML), Collection.class));
+        Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs));
+        Map<String, DataSource> resultEffectiveDataSources = metaDataPersistService.getEffectiveDataSources("foo_db", databaseConfigs);
+        assertTrue(resultEffectiveDataSources.isEmpty());
     }
     
     private Map<String, DataSource> createDataSourceMap() {
@@ -123,32 +134,8 @@ public final class MetaDataPersistServiceTest {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
-    private Collection<RuleConfiguration> createRuleConfigurations() {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SCHEMA_RULE_YAML), Collection.class));
-    }
-    
-    private Collection<RuleConfiguration> createGlobalRuleConfigurations() {
-        return Collections.emptyList();
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE);
-        return result;
-    }
-    
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String readYAML(final String yamlFile) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
-    }
-    
-    @Test
-    public void assertGetEffectiveDataSources() {
-        Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        Collection<RuleConfiguration> ruleConfigs = createRuleConfigurations();
-        Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs));
-        Map<String, DataSource> resultEffectiveDataSources = metaDataPersistService.getEffectiveDataSources("foo_db", databaseConfigs);
-        assertTrue(resultEffectiveDataSources.isEmpty());
     }
 }

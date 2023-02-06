@@ -23,6 +23,7 @@ import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.rule.CollectorRule;
 import org.junit.rules.ExternalResource;
 
@@ -40,7 +41,7 @@ public final class OpenTelemetryCollector extends ExternalResource implements Co
         OpenTelemetrySdk.builder()
                 .setTracerProvider(sdkTracerProvider)
                 .buildAndRegisterGlobal()
-                .getTracer("shardingsphere-agent");
+                .getTracer(OpenTelemetryConstants.TRACER_NAME);
     }
     
     /**

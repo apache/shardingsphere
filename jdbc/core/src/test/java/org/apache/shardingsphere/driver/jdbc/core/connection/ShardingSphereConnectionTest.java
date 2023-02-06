@@ -37,6 +37,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -62,10 +63,8 @@ public final class ShardingSphereConnectionTest {
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
-        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));
-        when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(mock(TrafficRule.class));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
+                .thenReturn(new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class))));
         return result;
     }
     

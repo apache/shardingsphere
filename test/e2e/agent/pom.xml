@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e</artifactId>
-        <version>5.3.1-SNAPSHOT</version>
+        <version>5.3.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent</artifactId>
     <packaging>pom</packaging>
@@ -34,7 +34,15 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <docker.distribution.name>apache-shardingsphere-${project.version}-shardingsphere-proxy-bin</docker.distribution.name>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+        </dependency>
+    </dependencies>
     
     <build>
         <plugins>

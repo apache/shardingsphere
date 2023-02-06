@@ -19,8 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.math.BigDecimal;
-
 /**
  * Binary protocol value for int8 for PostgreSQL.
  */
@@ -38,6 +36,6 @@ public final class PostgreSQLInt8BinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeInt8(value instanceof BigDecimal ? ((BigDecimal) value).longValue() : (Long) value);
+        payload.writeInt8(((Number) value).longValue());
     }
 }

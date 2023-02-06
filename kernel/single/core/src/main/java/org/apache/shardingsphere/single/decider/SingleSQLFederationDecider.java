@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.single.constant.SingleOrder;
@@ -45,7 +46,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     
     @Override
     public void decide(final SQLFederationDeciderContext deciderContext, final QueryContext queryContext,
-                       final ShardingSphereDatabase database, final SingleRule rule, final ConfigurationProperties props) {
+                       final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule, final ConfigurationProperties props) {
         SelectStatementContext select = (SelectStatementContext) queryContext.getSqlStatementContext();
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(select, database, rule);
         if (singleTableNames.isEmpty()) {

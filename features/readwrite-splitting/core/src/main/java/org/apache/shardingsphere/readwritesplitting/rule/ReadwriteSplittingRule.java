@@ -19,8 +19,9 @@ package org.apache.shardingsphere.readwritesplitting.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
@@ -31,14 +32,15 @@ import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReus
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.exception.rule.InvalidInlineExpressionDataSourceNameException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
@@ -66,9 +68,13 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     public ReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
-        ruleConfig.getDataSources().stream().filter(each -> null != ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()))
-                .forEach(each -> loadBalancers.put(each.getName() + "." + each.getLoadBalancerName(),
-                        ShardingSphereAlgorithmFactory.createAlgorithm(ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()), ReadQueryLoadBalanceAlgorithm.class)));
+        for (ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfiguration : ruleConfig.getDataSources()) {
+            if (ruleConfig.getLoadBalancers().containsKey(dataSourceRuleConfiguration.getLoadBalancerName())) {
+                AlgorithmConfiguration algorithmConfig = ruleConfig.getLoadBalancers().get(dataSourceRuleConfiguration.getLoadBalancerName());
+                loadBalancers.put(dataSourceRuleConfiguration.getName() + "." + dataSourceRuleConfiguration.getLoadBalancerName(),
+                        TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, algorithmConfig.getType(), algorithmConfig.getProps()));
+            }
+        }
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             dataSourceRules.putAll(createReadwriteSplittingDataSourceRules(each, builtRules));
@@ -78,7 +84,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     private Map<String, ReadwriteSplittingDataSourceRule> createReadwriteSplittingDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config,
                                                                                                   final Collection<ShardingSphereRule> builtRules) {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = loadBalancers.getOrDefault(
-                config.getName() + "." + config.getLoadBalancerName(), RequiredSPIRegistry.getRegisteredService(ReadQueryLoadBalanceAlgorithm.class));
+                config.getName() + "." + config.getLoadBalancerName(), TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, null));
         return null == config.getStaticStrategy()
                 ? createDynamicReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm)
                 : createStaticReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm);
@@ -92,8 +98,10 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         List<String> inlineWriteDatasourceNames = new InlineExpressionParser(config.getStaticStrategy().getWriteDataSourceName()).splitAndEvaluate();
         List<List<String>> inlineReadDatasourceNames = config.getStaticStrategy().getReadDataSourceNames().stream()
                 .map(each -> new InlineExpressionParser(each).splitAndEvaluate()).collect(Collectors.toList());
-        Preconditions.checkArgument(inlineWriteDatasourceNames.size() == inlineReadwriteDataSourceNames.size(), "Inline expression write data source names size error");
-        inlineReadDatasourceNames.forEach(each -> Preconditions.checkArgument(each.size() == inlineReadwriteDataSourceNames.size(), "Inline expression read data source names size error"));
+        ShardingSpherePreconditions.checkState(inlineWriteDatasourceNames.size() == inlineReadwriteDataSourceNames.size(),
+                () -> new InvalidInlineExpressionDataSourceNameException("Inline expression write data source names size error."));
+        inlineReadDatasourceNames.forEach(each -> ShardingSpherePreconditions.checkState(each.size() == inlineReadwriteDataSourceNames.size(),
+                () -> new InvalidInlineExpressionDataSourceNameException("Inline expression read data source names size error.")));
         for (int i = 0; i < inlineReadwriteDataSourceNames.size(); i++) {
             ReadwriteSplittingDataSourceRuleConfiguration staticConfig = createStaticDataSourceRuleConfiguration(
                     config, i, inlineReadwriteDataSourceNames, inlineWriteDatasourceNames, inlineReadDatasourceNames);
@@ -116,7 +124,8 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         Map<String, ReadwriteSplittingDataSourceRule> result = new LinkedHashMap<>();
         List<String> inlineReadwriteDataSourceNames = new InlineExpressionParser(config.getName()).splitAndEvaluate();
         List<String> inlineAutoAwareDataSourceNames = new InlineExpressionParser(config.getDynamicStrategy().getAutoAwareDataSourceName()).splitAndEvaluate();
-        Preconditions.checkArgument(inlineAutoAwareDataSourceNames.size() == inlineReadwriteDataSourceNames.size(), "Inline expression auto aware data source names size error");
+        ShardingSpherePreconditions.checkState(inlineAutoAwareDataSourceNames.size() == inlineReadwriteDataSourceNames.size(),
+                () -> new InvalidInlineExpressionDataSourceNameException("Inline expression auto aware data source names size error."));
         for (int i = 0; i < inlineReadwriteDataSourceNames.size(); i++) {
             ReadwriteSplittingDataSourceRuleConfiguration dynamicConfig = createDynamicDataSourceRuleConfiguration(config, i, inlineReadwriteDataSourceNames, inlineAutoAwareDataSourceNames);
             result.put(inlineReadwriteDataSourceNames.get(i), new ReadwriteSplittingDataSourceRule(dynamicConfig, loadBalanceAlgorithm, builtRules));
@@ -164,7 +173,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         QualifiedDatabase qualifiedDatabase = dataSourceEvent.getQualifiedDatabase();
         ReadwriteSplittingDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
         Preconditions.checkNotNull(dataSourceRule, "Can not find readwrite-splitting data source rule in database `%s`", qualifiedDatabase.getDatabaseName());
-        dataSourceRule.updateDisabledDataSourceNames(dataSourceEvent.getQualifiedDatabase().getDataSourceName(), StorageNodeStatus.isDisable(dataSourceEvent.getDataSource().getStatus()));
+        dataSourceRule.updateDisabledDataSourceNames(dataSourceEvent.getQualifiedDatabase().getDataSourceName(), DataSourceState.DISABLED == dataSourceEvent.getDataSource().getStatus());
     }
     
     @Override

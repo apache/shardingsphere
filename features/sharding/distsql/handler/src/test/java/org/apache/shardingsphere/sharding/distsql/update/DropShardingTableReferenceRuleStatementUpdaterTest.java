@@ -84,7 +84,7 @@ public final class DropShardingTableReferenceRuleStatementUpdaterTest {
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item", null));
         result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order", null));
         result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_0", "t_order,t_order_item"));
         return result;

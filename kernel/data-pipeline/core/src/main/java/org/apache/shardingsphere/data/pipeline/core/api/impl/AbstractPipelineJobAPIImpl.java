@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
-import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
@@ -28,17 +27,18 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.ModeConfigNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.UnsupportedModeTypeException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.time.LocalDateTime;
@@ -72,8 +72,8 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected void checkModeConfig() {
         ModeConfiguration modeConfig = PipelineContext.getModeConfig();
-        Preconditions.checkNotNull(modeConfig, "Mode configuration is required.");
-        Preconditions.checkArgument("Cluster".equals(modeConfig.getType()), "Mode must be `Cluster`.");
+        ShardingSpherePreconditions.checkNotNull(modeConfig, ModeConfigNotFoundException::new);
+        ShardingSpherePreconditions.checkState("Cluster".equals(modeConfig.getType()), () -> new UnsupportedModeTypeException(modeConfig.getType()));
     }
     
     private Stream<JobBriefInfo> getJobBriefInfos() {
@@ -117,7 +117,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public void startDisabledJob(final String jobId) {
-        PipelineDistributedBarrier pipelineDistributedBarrier = RequiredSPIRegistry.getRegisteredService(PipelineDistributedBarrier.class);
+        PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrier.getInstance();
         pipelineDistributedBarrier.unregister(PipelineMetaDataNode.getJobBarrierDisablePath(jobId));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         ShardingSpherePreconditions.checkState(jobConfigPOJO.isDisabled(), () -> new PipelineJobHasAlreadyStartedException(jobId));
@@ -133,7 +133,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public void stop(final String jobId) {
-        PipelineDistributedBarrier pipelineDistributedBarrier = RequiredSPIRegistry.getRegisteredService(PipelineDistributedBarrier.class);
+        PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrier.getInstance();
         pipelineDistributedBarrier.unregister(PipelineMetaDataNode.getJobBarrierEnablePath(jobId));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(true);

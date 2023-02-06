@@ -19,12 +19,11 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryHeartbeatStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.SetDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
+import org.apache.shardingsphere.mask.distsql.parser.statement.CreateMaskRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRuleStatement;
@@ -34,21 +33,20 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateBroadcastTableRuleStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateDatabaseDiscoveryHeartbeatStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateDatabaseDiscoveryRuleStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateDatabaseDiscoveryTypeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateDefaultShadowAlgorithmStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateDefaultShardingStrategyStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateEncryptRuleStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateMaskRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateReadwriteSplittingRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateShadowRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateShardingTableReferenceRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.CreateShardingTableRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.create.impl.SetDefaultSingleTableStorageUnitStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.CreateDatabaseDiscoveryHeartbeatStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.CreateDatabaseDiscoveryTypeStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.CreateDatabaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.CreateEncryptRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.mask.CreateMaskRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.readwritesplitting.CreateReadwriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.shadow.CreateDefaultShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.shadow.CreateShadowRuleStatementTestCase;
@@ -72,11 +70,7 @@ public final class CreateRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateRuleStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof CreateDatabaseDiscoveryRuleStatement) {
-            CreateDatabaseDiscoveryRuleStatementAssert.assertIs(assertContext, (CreateDatabaseDiscoveryRuleStatement) actual, expected);
-        } else if (actual instanceof CreateDatabaseDiscoveryTypeStatement) {
-            CreateDatabaseDiscoveryTypeStatementAssert.assertIs(assertContext, (CreateDatabaseDiscoveryTypeStatement) actual, (CreateDatabaseDiscoveryTypeStatementTestCase) expected);
-        } else if (actual instanceof CreateDatabaseDiscoveryHeartbeatStatement) {
-            CreateDatabaseDiscoveryHeartbeatStatementAssert.assertIs(assertContext, (CreateDatabaseDiscoveryHeartbeatStatement) actual, (CreateDatabaseDiscoveryHeartbeatStatementTestCase) expected);
+            CreateDatabaseDiscoveryRuleStatementAssert.assertIs(assertContext, (CreateDatabaseDiscoveryRuleStatement) actual, (CreateDatabaseDiscoveryRuleStatementTestCase) expected);
         } else if (actual instanceof CreateEncryptRuleStatement) {
             CreateEncryptRuleStatementAssert.assertIs(assertContext, (CreateEncryptRuleStatement) actual, (CreateEncryptRuleStatementTestCase) expected);
         } else if (actual instanceof CreateReadwriteSplittingRuleStatement) {
@@ -94,6 +88,8 @@ public final class CreateRuleStatementAssert {
             CreateDefaultShardingStrategyStatementAssert.assertIs(assertContext, (CreateDefaultShardingStrategyStatement) actual, (CreateDefaultShardingStrategyStatementTestCase) expected);
         } else if (actual instanceof CreateDefaultShadowAlgorithmStatement) {
             CreateDefaultShadowAlgorithmStatementAssert.assertIs(assertContext, (CreateDefaultShadowAlgorithmStatement) actual, (CreateDefaultShadowAlgorithmStatementTestCase) expected);
+        } else if (actual instanceof CreateMaskRuleStatement) {
+            CreateMaskRuleStatementAssert.assertIs(assertContext, (CreateMaskRuleStatement) actual, (CreateMaskRuleStatementTestCase) expected);
         } else if (actual instanceof SetDefaultSingleTableStorageUnitStatement) {
             SetDefaultSingleTableStorageUnitStatementAssert.assertIs(assertContext, (SetDefaultSingleTableStorageUnitStatement) actual, (SetDefaultSingleTableStorageUnitStatementTestCase) expected);
         }

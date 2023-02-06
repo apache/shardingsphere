@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.container.compose.mode.ClusterContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.mode.StandaloneContainerComposer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import javax.sql.DataSource;
@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public final class ContainerComposerRegistry implements AutoCloseable {
     
-    private final Map<String, ContainerComposer> containerComposers = new HashMap<>(EnvironmentConstants.MAX_CONTAINER_QUANTITY, 1);
+    private final Map<String, ContainerComposer> containerComposers = new HashMap<>(7, 1);
     
     /**
      * Get container composer.
@@ -61,7 +61,7 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     
     private boolean isClusterMode(final E2ETestParameter testParam) {
         // TODO cluster mode often throw exception sometimes, issue is #15517
-        return EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(testParam.getMode()) && AdapterContainerConstants.PROXY.equalsIgnoreCase(testParam.getAdapter());
+        return AdapterMode.CLUSTER.getValue().equalsIgnoreCase(testParam.getMode()) && AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter());
     }
     
     @Override

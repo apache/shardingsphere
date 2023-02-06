@@ -58,6 +58,7 @@ explain
     : EXPLAIN
     (analyzeKeyword VERBOSE?
     | VERBOSE
+    | PERFORMANCE
     | LP_ explainOptionList RP_)?
     explainableStmt
     ;

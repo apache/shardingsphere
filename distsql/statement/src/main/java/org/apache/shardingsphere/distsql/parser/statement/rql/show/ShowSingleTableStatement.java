@@ -17,22 +17,28 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+
+import java.util.Optional;
 
 /**
  * Show single table statement.
  */
-@Getter
-public final class ShowSingleTableStatement extends ShowRulesStatement {
+public final class ShowSingleTableStatement extends ShowTablesStatement {
     
     private final String tableName;
     
-    private final String likeLiteral;
-    
-    public ShowSingleTableStatement(final String tableName, final String likeLiteral, final DatabaseSegment database) {
-        super(database);
+    public ShowSingleTableStatement(final String tableName, final String likePattern, final DatabaseSegment database) {
+        super(likePattern, database);
         this.tableName = tableName;
-        this.likeLiteral = likeLiteral;
+    }
+    
+    /**
+     * Get table name.
+     *
+     * @return table name
+     */
+    public Optional<String> getTableName() {
+        return Optional.ofNullable(tableName);
     }
 }

@@ -343,14 +343,17 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.AlterStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.RegisterStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.UnregisterStorageUnitStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.AlterDatabaseDiscoveryDefinitionRuleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.CreateDatabaseDiscoveryDefinitionRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.AlterDatabaseDiscoveryRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.CreateDatabaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryHeartbeatStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryTypeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.AlterEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.CreateEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.DropEncryptRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.mask.AlterMaskRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.mask.CreateMaskRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.mask.DropMaskRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.readwritesplitting.AlterReadwriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.readwritesplitting.CreateReadwriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.readwritesplitting.DropReadwriteSplittingRuleStatementTestCase;
@@ -384,6 +387,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.dbdiscovery.ShowDatabaseDiscoveryRulesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.encrypt.CountEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.encrypt.ShowEncryptRulesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.mask.CountMaskRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.mask.ShowMaskRulesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.readwritesplitting.CountReadwriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.readwritesplitting.ShowReadwriteSplittingRulesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.shadow.CountShadowRuleStatementTestCase;
@@ -406,7 +411,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.sharding.ShowUnusedShardingAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.sharding.ShowUnusedShardingAuditorsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.sharding.ShowUnusedShardingKeyGeneratorsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.single.CountSingleTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.single.CountSingleTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.single.ShowDefaultSingleTableStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.single.ShowSingleTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rul.FormatSQLStatementTestCase;
@@ -881,8 +886,8 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "alter-storage-unit")
     private final List<AlterStorageUnitStatementTestCase> alterStorageUnitTestCases = new LinkedList<>();
     
-    @XmlElement(name = "alter-database-discovery-definition-rule")
-    private final List<AlterDatabaseDiscoveryDefinitionRuleStatementTestCase> alterDatabaseDiscoveryDefinitionRuleTestCases = new LinkedList<>();
+    @XmlElement(name = "alter-database-discovery-rule")
+    private final List<AlterDatabaseDiscoveryRuleStatementTestCase> alterDatabaseDiscoveryRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-encrypt-rule")
     private final List<AlterEncryptRuleStatementTestCase> alterEncryptRuleTestCases = new LinkedList<>();
@@ -899,11 +904,20 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "alter-sharding-table-rule")
     private final List<AlterShardingTableRuleStatementTestCase> alterShardingTableRuleTestCases = new LinkedList<>();
     
-    @XmlElement(name = "create-database-discovery-definition-rule")
-    private final List<CreateDatabaseDiscoveryDefinitionRuleStatementTestCase> createDatabaseDiscoveryDefinitionRuleTestCases = new LinkedList<>();
+    @XmlElement(name = "create-database-discovery-rule")
+    private final List<CreateDatabaseDiscoveryRuleStatementTestCase> createDatabaseDiscoveryRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-encrypt-rule")
     private final List<CreateEncryptRuleStatementTestCase> createEncryptRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-mask-rule")
+    private final List<CreateMaskRuleStatementTestCase> createMaskRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-mask-rule")
+    private final List<AlterMaskRuleStatementTestCase> alterMaskRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-mask-rule")
+    private final List<DropMaskRuleStatementTestCase> dropMaskRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-readwrite-splitting-rule")
     private final List<CreateReadwriteSplittingRuleStatementTestCase> createReadwriteSplittingRuleTestCases = new LinkedList<>();
@@ -1241,6 +1255,9 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "show-default-sharding-strategy")
     private final List<ShowDefaultShardingStrategyStatementTestCase> showDefaultShardingStrategyTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-mask-rules")
+    private final List<ShowMaskRulesStatementTestCase> showMaskRulesStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "delimiter")
     private final List<DelimiterStatementTestCase> delimiterTestCases = new LinkedList<>();
     
@@ -1574,8 +1591,8 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "create-access-method")
     private final List<CreateAccessMethodStatementTestCase> createAccessMethodTestCases = new LinkedList<>();
     
-    @XmlElement(name = "count-single-table-rule")
-    private final List<CountSingleTableRuleStatementTestCase> countSingleTableRuleStatementTestCases = new LinkedList<>();
+    @XmlElement(name = "count-single-table")
+    private final List<CountSingleTableStatementTestCase> countSingleTableStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "count-sharding-rule")
     private final List<CountShardingRuleStatementTestCase> countShardingRuleStatementTestCases = new LinkedList<>();
@@ -1591,6 +1608,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "count-shadow-rule")
     private final List<CountShadowRuleStatementTestCase> countShadowRuleStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "count-mask-rule")
+    private final List<CountMaskRuleStatementTestCase> countMaskRuleStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-collation")
     private final List<CreateCollationStatementTestCase> createCollationStatementTestCases = new LinkedList<>();

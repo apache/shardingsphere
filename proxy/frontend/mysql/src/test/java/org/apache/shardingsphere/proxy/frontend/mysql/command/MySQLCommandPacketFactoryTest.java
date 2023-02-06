@@ -45,6 +45,8 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -96,7 +98,7 @@ public final class MySQLCommandPacketFactoryTest {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(serverPreparedStatementRegistry);
         SQLStatementContext<SelectStatement> sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLSelectStatement());
-        serverPreparedStatementRegistry.addPreparedStatement(1, new MySQLServerPreparedStatement("select 1", sqlStatementContext));
+        serverPreparedStatementRegistry.addPreparedStatement(1, new MySQLServerPreparedStatement("select 1", sqlStatementContext, Collections.emptyList()));
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, payload, connectionSession, false), instanceOf(MySQLComStmtExecutePacket.class));
     }
     

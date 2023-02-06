@@ -41,6 +41,16 @@
         <column name="id" type="numeric" />
         <column name="val" type="varchar" />
     </metadata>
+    <metadata data-nodes="passthrough.t_data_type_money">
+        <column name="id" type="numeric" />
+        <column name="val" type="cast#money" />
+    </metadata>
+    <metadata data-nodes="passthrough.t_data_type_bytea">
+        <column name="id" type="numeric" />
+        <column name="val" type="varchar" />
+    </metadata>
     <row data-node="passthrough.t_data_type_integer_unsigned" values="1001, 18446744073709551615, 4294967295, 16777215, 65535, 255" />
     <row data-node="passthrough.t_data_type_integer_unsigned" values="1002, 0, 0, 0, 0, 0" />
+    <row data-node="passthrough.t_data_type_money" values="1001, 123" />
+    <row data-node="passthrough.t_data_type_money" values="1002, 456" />
 </dataset>

@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.sharding.api.config.strategy.audit;
 
-import com.google.common.base.Preconditions;
-import java.util.Collection;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
  * Sharding audit strategy configuration.
  */
-
+@RequiredArgsConstructor
 @Getter
 public final class ShardingAuditStrategyConfiguration {
     
     private final Collection<String> auditorNames;
     
     private final boolean allowHintDisable;
-    
-    public ShardingAuditStrategyConfiguration(final Collection<String> auditorNames, final boolean allowHintDisable) {
-        Preconditions.checkNotNull(auditorNames, "Sharding audit algorithm names is required.");
-        this.auditorNames = auditorNames;
-        this.allowHintDisable = allowHintDisable;
-    }
 }

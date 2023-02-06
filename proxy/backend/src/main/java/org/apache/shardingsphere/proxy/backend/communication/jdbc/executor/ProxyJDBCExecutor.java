@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -64,23 +63,21 @@ public final class ProxyJDBCExecutor {
      */
     public List<ExecuteResult> execute(final QueryContext queryContext, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                        final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
+        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-            EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
             DatabaseType protocolType = database.getProtocolType();
             Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
-            ExecuteProcessEngine.initializeExecution(queryContext, executionGroupContext, eventBusContext);
+            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
             SQLStatementContext<?> context = queryContext.getSqlStatementContext();
-            List<ExecuteResult> result = jdbcExecutor.execute(executionGroupContext,
+            return jdbcExecutor.execute(executionGroupContext,
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, storageTypes, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown,
                             true),
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, storageTypes, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown,
                             false));
-            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
-            return result;
         } finally {
-            ExecuteProcessEngine.cleanExecution();
+            executeProcessEngine.cleanExecution();
         }
     }
 }

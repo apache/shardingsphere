@@ -98,8 +98,7 @@ public final class CreateBroadcastTableRuleStatementUpdaterTest {
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getBroadcastTables().add("t_order");
-        result.getBroadcastTables().add("t_address");
+        result.getBroadcastTables().addAll(Arrays.asList("t_order", "t_address"));
         return result;
     }
 }

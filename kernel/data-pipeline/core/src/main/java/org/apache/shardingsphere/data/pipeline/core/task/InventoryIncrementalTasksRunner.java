@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,7 +40,7 @@ import java.util.concurrent.CompletableFuture;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
+public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
     @Getter
     private final PipelineJobItemContext jobItemContext;
@@ -55,7 +55,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
         this.jobItemContext = jobItemContext;
         this.inventoryTasks = inventoryTasks;
         this.incrementalTasks = incrementalTasks;
-        jobAPI = TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName());
+        jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName());
     }
     
     @Override
@@ -76,7 +76,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
         if (jobItemContext.isStopping()) {
             return;
         }
-        TypedSPIRegistry.getRegisteredService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName()).persistJobItemProgress(jobItemContext);
+        TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()).getTypeName()).persistJobItemProgress(jobItemContext);
         if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
             log.info("All inventory tasks finished.");
             executeIncrementalTask();
@@ -102,7 +102,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
         jobAPI.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
-    private synchronized void executeIncrementalTask() {
+    protected synchronized void executeIncrementalTask() {
         if (incrementalTasks.isEmpty()) {
             log.info("incrementalTasks empty, ignore");
             return;
@@ -122,16 +122,20 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
         ExecuteEngine.trigger(futures, new IncrementalExecuteCallback());
     }
     
+    protected void inventorySuccessCallback() {
+        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
+            log.info("onSuccess, all inventory tasks finished.");
+            executeIncrementalTask();
+        } else {
+            log.info("onSuccess, inventory tasks not finished");
+        }
+    }
+    
     private final class InventoryTaskExecuteCallback implements ExecuteCallback {
         
         @Override
         public void onSuccess() {
-            if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
-                log.info("onSuccess, all inventory tasks finished.");
-                executeIncrementalTask();
-            } else {
-                log.info("onSuccess, inventory tasks not finished");
-            }
+            inventorySuccessCallback();
         }
         
         @Override

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.env.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.test.e2e.transaction.engine.database.mysql.MySQLJdbcTransactionE2ETT;
@@ -27,23 +28,22 @@ import org.apache.shardingsphere.test.e2e.transaction.engine.database.opengauss.
 import org.apache.shardingsphere.test.e2e.transaction.engine.database.opengauss.OpenGaussProxyTransactionE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.database.postgresql.PostgreSQLJdbcTransactionE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.database.postgresql.PostgreSQLProxyTransactionE2EIT;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
 
 @RequiredArgsConstructor
 @Getter
 public enum TransactionTestCaseRegistry {
     
-    MySQL_JDBC_IT(MySQLJdbcTransactionE2ETT.class, TransactionTestConstants.MYSQL, AdapterContainerConstants.JDBC),
+    MySQL_JDBC_IT(MySQLJdbcTransactionE2ETT.class, TransactionTestConstants.MYSQL, AdapterType.JDBC.getValue()),
     
-    MySQL_PROXY_IT(MySQLProxyTransactionE2EIT.class, TransactionTestConstants.MYSQL, AdapterContainerConstants.PROXY),
+    MySQL_PROXY_IT(MySQLProxyTransactionE2EIT.class, TransactionTestConstants.MYSQL, AdapterType.PROXY.getValue()),
     
-    OPENGAUSS_JDBC_IT(OpenGaussJdbcTransactionE2EIT.class, TransactionTestConstants.OPENGAUSS, AdapterContainerConstants.JDBC),
+    OPENGAUSS_JDBC_IT(OpenGaussJdbcTransactionE2EIT.class, TransactionTestConstants.OPENGAUSS, AdapterType.JDBC.getValue()),
     
-    OPENGAUSS_PROXY_IT(OpenGaussProxyTransactionE2EIT.class, TransactionTestConstants.OPENGAUSS, AdapterContainerConstants.PROXY),
+    OPENGAUSS_PROXY_IT(OpenGaussProxyTransactionE2EIT.class, TransactionTestConstants.OPENGAUSS, AdapterType.PROXY.getValue()),
     
-    POSTGRESQL_JDBC_IT(PostgreSQLJdbcTransactionE2EIT.class, TransactionTestConstants.POSTGRESQL, AdapterContainerConstants.JDBC),
+    POSTGRESQL_JDBC_IT(PostgreSQLJdbcTransactionE2EIT.class, TransactionTestConstants.POSTGRESQL, AdapterType.JDBC.getValue()),
     
-    POSTGRESQL_PROXY_IT(PostgreSQLProxyTransactionE2EIT.class, TransactionTestConstants.POSTGRESQL, AdapterContainerConstants.PROXY);
+    POSTGRESQL_PROXY_IT(PostgreSQLProxyTransactionE2EIT.class, TransactionTestConstants.POSTGRESQL, AdapterType.PROXY.getValue());
     
     private final Class<? extends TransactionBaseE2EIT> testCaseClass;
     

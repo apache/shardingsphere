@@ -156,4 +156,8 @@
     <sql-case id="select_xmlserialize_function" value="SELECT XMLSERIALIZE(DOCUMENT c2 AS BLOB ENCODING 'UTF-8' VERSION 'a' IDENT SIZE = 0 SHOW DEFAULT) FROM b;" db-types="Oracle" />
     <sql-case id="select_from_xmltable_function" value="SELECT warehouse_name warehouse, warehouse2.Water, warehouse2.Rail FROM warehouses, XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess') warehouse2;" db-types="Oracle" />
     <sql-case id="select_with_null_keyword_in_projection" value="select null as order_id, item_id from t_order" db-types="MySQL" />
+    <sql-case id="select_literal_type_cast_money" value="SELECT '$99'::money" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_positional_parameter_type_cast_money" value="SELECT $1::money" db-types="PostgreSQL,openGauss" case-types="Placeholder" />
+    <sql-case id="select_string_constant_type_cast" value="SELECT int4 '1', money '2'" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_constant_with_nested_type_cast" value="SELECT CAST(MONEY '1' AS VARCHAR)::CHAR(10)::VARCHAR::CHAR(4)" db-types="PostgreSQL,openGauss"  />
 </sql-cases>

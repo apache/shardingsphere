@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -111,7 +112,7 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     
     @Test
     public void assertGetAuthenticator() {
-        PostgreSQLAuthenticator authenticator = new PostgreSQLAuthenticationHandler().getAuthenticator(username, "");
+        PostgreSQLAuthenticator authenticator = new PostgreSQLAuthenticationHandler().getAuthenticator(new Grantee(username, ""));
         assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
         assertThat(authenticator.getAuthenticationMethodName(), is(PostgreSQLAuthenticationMethod.MD5.getMethodName()));
     }

@@ -19,8 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 
@@ -31,10 +30,14 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
+    public static final int POSTGRESQL_EXPOSED_PORT = 5432;
+    
+    public static final String POSTGRESQL_CONF_IN_CONTAINER = "/etc/postgresql/postgresql.conf";
+    
     private final StorageContainerConfiguration storageContainerConfig;
     
     public PostgreSQLContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPIRegistry.getRegisteredService(DatabaseType.class, "PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage, scenario);
+        super(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage, scenario);
         this.storageContainerConfig = storageContainerConfig;
     }
     
@@ -48,12 +51,12 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     
     @Override
     public int getExposedPort() {
-        return StorageContainerConstants.POSTGRESQL_EXPOSED_PORT;
+        return POSTGRESQL_EXPOSED_PORT;
     }
     
     @Override
     public int getMappedPort() {
-        return getMappedPort(StorageContainerConstants.POSTGRESQL_EXPOSED_PORT);
+        return getMappedPort(POSTGRESQL_EXPOSED_PORT);
     }
     
     @Override

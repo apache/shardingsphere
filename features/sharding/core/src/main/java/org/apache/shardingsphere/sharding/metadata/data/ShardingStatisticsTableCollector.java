@@ -50,6 +50,10 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
     
     private static final String MYSQL_TABLE_ROWS_AND_DATA_LENGTH = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'";
     
+    private static final String POSTGRESQL_TABLE_ROWS_LENGTH = "SELECT RELTUPLES FROM PG_CLASS WHERE RELNAMESPACE = (SELECT OID FROM PG_NAMESPACE WHERE NSPNAME='%s') AND RELNAME = '%s'";
+    
+    private static final String POSTGRESQL_TABLE_DATA_LENGTH = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH  FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME='%s' AND RELNAME = '%s'";
+    
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
@@ -83,17 +87,21 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
                 row.add(each.getLogicTable());
                 row.add(dataNode.getDataSourceName());
                 row.add(dataNode.getTableName());
-                addTableRowsAndDataLength(shardingSphereDatabase.getResourceMetaData().getDataSources(), dataNode, row, shardingSphereDatabase.getProtocolType());
+                addTableRowsAndDataLength(shardingSphereDatabase.getResourceMetaData().getStorageTypes(), shardingSphereDatabase.getResourceMetaData().getDataSources(), dataNode, row);
                 tableData.getRows().add(new ShardingSphereRowData(row));
             }
         }
     }
     
-    private void addTableRowsAndDataLength(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row, final DatabaseType databaseType) throws SQLException {
+    private void addTableRowsAndDataLength(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources,
+                                           final DataNode dataNode, final List<Object> row) throws SQLException {
+        DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
         if (databaseType instanceof MySQLDatabaseType) {
             addForMySQL(dataSources, dataNode, row);
-        } else if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            // TODO get postgres rows and data length
+        } else if (databaseType instanceof PostgreSQLDatabaseType) {
+            addForPostgreSQL(dataSources, dataNode, row);
+        } else if (databaseType instanceof OpenGaussDatabaseType) {
+            // TODO get OpenGauss rows and data length
             row.add(BigDecimal.ZERO);
             row.add(BigDecimal.ZERO);
         }
@@ -109,6 +117,28 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
             try (ResultSet resultSet = statement.executeQuery(String.format(MYSQL_TABLE_ROWS_AND_DATA_LENGTH, connection.getCatalog(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
                     tableRows = resultSet.getBigDecimal("TABLE_ROWS");
+                    dataLength = resultSet.getBigDecimal("DATA_LENGTH");
+                }
+            }
+        }
+        row.add(tableRows);
+        row.add(dataLength);
+    }
+    
+    private void addForPostgreSQL(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row) throws SQLException {
+        DataSource dataSource = dataSources.get(dataNode.getDataSourceName());
+        BigDecimal tableRows = BigDecimal.ZERO;
+        BigDecimal dataLength = BigDecimal.ZERO;
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_ROWS_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
+                if (resultSet.next()) {
+                    tableRows = resultSet.getBigDecimal("TABLE_ROWS");
+                }
+            }
+            try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_DATA_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
+                if (resultSet.next()) {
                     dataLength = resultSet.getBigDecimal("DATA_LENGTH");
                 }
             }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,4 +33,7 @@ public final class CreateBroadcastTableRuleStatementTestCase extends SQLParserTe
     
     @XmlElement(name = "table")
     private final List<String> tables = new LinkedList<>();
+    
+    @XmlAttribute(name = "if-not-exists")
+    private boolean ifNotExists;
 }

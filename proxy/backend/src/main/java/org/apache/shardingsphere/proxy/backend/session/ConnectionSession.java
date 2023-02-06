@@ -101,7 +101,7 @@ public final class ConnectionSession {
      * @return database name
      */
     public String getDatabaseName() {
-        return null == queryContext ? databaseName : queryContext.findSqlStatementDatabaseName().orElse(databaseName);
+        return null == queryContext ? databaseName : queryContext.getDatabaseNameFromSQLStatement().orElse(databaseName);
     }
     
     /**

@@ -23,6 +23,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer
 import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
@@ -48,7 +50,8 @@ public final class StandaloneContainerComposer implements ContainerComposer {
         // TODO add more version of databases
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "", scenario,
                 StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType())));
-        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(testParam.getMode(), testParam.getAdapter(),
+        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(AdapterMode.valueOf(testParam.getMode().toUpperCase()),
+                AdapterType.valueOf(testParam.getAdapter().toUpperCase()),
                 testParam.getDatabaseType(), storageContainer, scenario, ProxyStandaloneContainerConfigurationFactory.newInstance(scenario, testParam.getDatabaseType())));
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(storageContainer);

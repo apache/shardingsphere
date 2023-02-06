@@ -19,10 +19,11 @@ package org.apache.shardingsphere.transaction.xa;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
+import org.apache.shardingsphere.transaction.exception.TransactionTimeoutException;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
@@ -41,7 +42,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * ShardingSphere Transaction manager for XA.
@@ -54,9 +54,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
-        xaTransactionManagerProvider = null == providerType
-                ? RequiredSPIRegistry.getRegisteredService(XATransactionManagerProvider.class)
-                : TypedSPIRegistry.getRegisteredService(XATransactionManagerProvider.class, providerType, new Properties());
+        xaTransactionManagerProvider = TypedSPILoader.getService(XATransactionManagerProvider.class, providerType);
         xaTransactionManagerProvider.init();
         Map<String, ResourceDataSource> resourceDataSources = getResourceDataSources(dataSources);
         resourceDataSources.forEach((key, value) -> cachedDataSources.put(value.getOriginalName(), newXATransactionDataSource(databaseTypes.get(key), value)));
@@ -105,9 +103,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     @Override
     @SneakyThrows({SystemException.class, NotSupportedException.class})
     public void begin(final int timeout) {
-        if (timeout < 0) {
-            throw new NotSupportedException("timeout should more than 0s");
-        }
+        ShardingSpherePreconditions.checkState(timeout >= 0, TransactionTimeoutException::new);
         TransactionManager transactionManager = xaTransactionManagerProvider.getTransactionManager();
         transactionManager.setTransactionTimeout(timeout);
         transactionManager.begin();
@@ -142,6 +138,6 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public boolean containsProviderType(final String providerType) {
-        return TypedSPIRegistry.findRegisteredService(XATransactionManagerProvider.class, providerType).isPresent();
+        return TypedSPILoader.contains(XATransactionManagerProvider.class, providerType);
     }
 }

@@ -34,7 +34,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Meta data contexts.
+ * ShardingSphere meta data.
  */
 @Getter
 public final class ShardingSphereMetaData {
@@ -78,7 +78,7 @@ public final class ShardingSphereMetaData {
      * @return contains database from meta data or not
      */
     public boolean containsDatabase(final String databaseName) {
-        return databases.containsKey(databaseName.toLowerCase());
+        return null != databaseName && databases.containsKey(databaseName.toLowerCase());
     }
     
     /**
@@ -88,7 +88,7 @@ public final class ShardingSphereMetaData {
      * @return meta data database
      */
     public ShardingSphereDatabase getDatabase(final String databaseName) {
-        return databases.get(databaseName.toLowerCase());
+        return null != databaseName ? databases.get(databaseName.toLowerCase()) : null;
     }
     
     /**
@@ -124,7 +124,7 @@ public final class ShardingSphereMetaData {
         String databaseName = database.getName();
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
         database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
-        database.getRuleMetaData().findSingleRule(DynamicDataSourceContainedRule.class).ifPresent(DynamicDataSourceContainedRule::closeHeartBeatJob);
+        database.getRuleMetaData().findSingleRule(DynamicDataSourceContainedRule.class).ifPresent(DynamicDataSourceContainedRule::closeAllHeartBeatJob);
         Optional.ofNullable(database.getResourceMetaData()).ifPresent(optional -> optional.getDataSources().values().forEach(each -> database.getResourceMetaData().close(each)));
     }
 }

@@ -130,4 +130,17 @@ public final class JDBCAgentTestUtils {
         }
         return result;
     }
+    
+    /**
+     * Create execute error.
+     *
+     * @param dataSource data source
+     */
+    public static void createExecuteError(final DataSource dataSource) {
+        String sql = "SELECT * FROM non_existent_table";
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            statement.executeQuery(sql);
+        } catch (final SQLException ignored) {
+        }
+    }
 }

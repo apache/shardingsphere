@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.shadow.spi;
 
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Shadow algorithm.
  */
-public interface ShadowAlgorithm extends ShardingSphereAlgorithm {
+public interface ShadowAlgorithm extends TypedSPI {
 }

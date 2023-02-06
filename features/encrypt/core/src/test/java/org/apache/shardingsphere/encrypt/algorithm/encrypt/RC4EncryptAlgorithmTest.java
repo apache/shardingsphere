@@ -21,12 +21,14 @@ import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlg
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,15 +39,10 @@ public final class RC4EncryptAlgorithmTest {
     
     private StandardEncryptAlgorithm<Object, String> encryptAlgorithm;
     
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
-        encryptAlgorithm = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("RC4", createProperties()), EncryptAlgorithm.class);
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("rc4-key-value", "test-sharding");
-        return result;
+        encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "RC4", PropertiesBuilder.build(new Property("rc4-key-value", "test-sharding")));
     }
     
     @Test
@@ -60,17 +57,7 @@ public final class RC4EncryptAlgorithmTest {
     
     @Test(expected = EncryptAlgorithmInitializationException.class)
     public void assertKeyIsToLong() {
-        encryptAlgorithm.init(createInvalidProperties());
-    }
-    
-    private Properties createInvalidProperties() {
-        Properties result = new Properties();
-        StringBuilder keyBuffer = new StringBuilder();
-        for (int i = 0; i < 100; i++) {
-            keyBuffer.append("test");
-        }
-        result.setProperty("rc4-key-value", keyBuffer.toString());
-        return result;
+        encryptAlgorithm.init(PropertiesBuilder.build(new Property("rc4-key-value", IntStream.range(0, 100).mapToObj(each -> "test").collect(Collectors.joining()))));
     }
     
     @Test

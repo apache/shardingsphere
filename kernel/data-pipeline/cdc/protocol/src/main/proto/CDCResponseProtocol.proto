@@ -47,7 +47,7 @@ message ServerGreetingResult {
 }
 
 message CreateSubscriptionResult {
-  string subscriptionName = 1;
+  string subscription_name = 1;
   bool existing = 2;
 }
 
@@ -63,8 +63,16 @@ message BigDecimalValue {
   string value = 1;
 }
 
+message LocalTimeValue {
+  string value = 1;
+}
+
 message ClobValue {
   string value = 1;
+}
+
+message BlobValue {
+  bytes value = 1;
 }
 
 message DataRecordResult {
@@ -74,9 +82,10 @@ message DataRecordResult {
     message TableMetaData {
       string database = 1;
       optional string schema = 2;
-      string tableName = 3;
+      string table_name = 3;
+      repeated string unique_key_names = 4;
     }
-    TableMetaData tableMetaData = 3;
+    TableMetaData table_meta_data = 3;
     int64 transaction_commit_millis = 4;
     enum DataChangeType {
       UNKNOWN = 0;
@@ -90,8 +99,9 @@ message DataRecordResult {
       ALTER_INDEX = 8;
       DROP_INDEX = 9;
     }
-    bool isDDL = 6;
-    optional string ddlSQL = 7;
+    DataChangeType data_change_type = 5;
+    bool is_ddl = 6;
+    optional string ddl_SQL = 7;
   }
   string ack_id = 1;
   repeated Record records = 2;

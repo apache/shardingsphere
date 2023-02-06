@@ -21,8 +21,7 @@ import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguratio
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
@@ -35,6 +34,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * Standalone context manager builder.
@@ -44,9 +44,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     @Override
     public ContextManager build(final ContextManagerBuilderParameter param) throws SQLException {
         PersistRepositoryConfiguration repositoryConfig = param.getModeConfiguration().getRepository();
-        StandalonePersistRepository repository = null == repositoryConfig
-                ? RequiredSPIRegistry.getRegisteredService(StandalonePersistRepository.class)
-                : TypedSPIRegistry.getRegisteredService(StandalonePersistRepository.class, repositoryConfig.getType(), repositoryConfig.getProps());
+        StandalonePersistRepository repository = TypedSPILoader.getService(
+                StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, param);
         InstanceContext instanceContext = buildInstanceContext(param);

@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter;
 
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryHeartbeatStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
+import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRuleStatement;
@@ -29,20 +28,19 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterDefaultS
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableReferenceRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterDatabaseDiscoveryHeartbeatStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterDatabaseDiscoveryRuleStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterDatabaseDiscoveryTypeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterDefaultShadowAlgorithmStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterDefaultShardingStrategyStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterEncryptRuleStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterMaskRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterReadwriteSplittingRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterShadowRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterShardingTableReferenceRulesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterShardingTableRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.AlterDatabaseDiscoveryHeartbeatStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.AlterDatabaseDiscoveryTypeStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.AlterDatabaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.AlterEncryptRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.mask.AlterMaskRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.readwritesplitting.AlterReadwriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.shadow.AlterDefaultShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.shadow.AlterShadowRuleStatementTestCase;
@@ -63,11 +61,7 @@ public final class AlterRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterRuleStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof AlterDatabaseDiscoveryRuleStatement) {
-            AlterDatabaseDiscoveryRuleStatementAssert.assertIs(assertContext, (AlterDatabaseDiscoveryRuleStatement) actual, expected);
-        } else if (actual instanceof AlterDatabaseDiscoveryHeartbeatStatement) {
-            AlterDatabaseDiscoveryHeartbeatStatementAssert.assertIs(assertContext, (AlterDatabaseDiscoveryHeartbeatStatement) actual, (AlterDatabaseDiscoveryHeartbeatStatementTestCase) expected);
-        } else if (actual instanceof AlterDatabaseDiscoveryTypeStatement) {
-            AlterDatabaseDiscoveryTypeStatementAssert.assertIs(assertContext, (AlterDatabaseDiscoveryTypeStatement) actual, (AlterDatabaseDiscoveryTypeStatementTestCase) expected);
+            AlterDatabaseDiscoveryRuleStatementAssert.assertIs(assertContext, (AlterDatabaseDiscoveryRuleStatement) actual, (AlterDatabaseDiscoveryRuleStatementTestCase) expected);
         } else if (actual instanceof AlterDefaultShardingStrategyStatement) {
             AlterDefaultShardingStrategyStatementAssert.assertIs(assertContext, (AlterDefaultShardingStrategyStatement) actual, (AlterDefaultShardingStrategyStatementTestCase) expected);
         } else if (actual instanceof AlterEncryptRuleStatement) {
@@ -82,6 +76,8 @@ public final class AlterRuleStatementAssert {
             AlterShadowRuleStatementAssert.assertIs(assertContext, (AlterShadowRuleStatement) actual, (AlterShadowRuleStatementTestCase) expected);
         } else if (actual instanceof AlterDefaultShadowAlgorithmStatement) {
             AlterDefaultShadowAlgorithmStatementAssert.assertIs(assertContext, (AlterDefaultShadowAlgorithmStatement) actual, (AlterDefaultShadowAlgorithmStatementTestCase) expected);
+        } else if (actual instanceof AlterMaskRuleStatement) {
+            AlterMaskRuleStatementAssert.assertIs(assertContext, (AlterMaskRuleStatement) actual, (AlterMaskRuleStatementTestCase) expected);
         }
     }
 }

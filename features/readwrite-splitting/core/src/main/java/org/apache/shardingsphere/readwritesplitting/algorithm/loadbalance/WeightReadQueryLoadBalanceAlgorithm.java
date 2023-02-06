@@ -20,11 +20,15 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.InvalidReadDatabaseWeightException;
+import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingRequiredReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -32,18 +36,21 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Weight read query load-balance algorithm.
  */
-@Getter
-public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, WeightAware {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
-    private final ConcurrentHashMap<String, double[]> weightMap = new ConcurrentHashMap<>();
+    private final Map<String, double[]> weightMap = new ConcurrentHashMap<>();
     
     private Properties props;
+    
+    @Getter
+    private Collection<String> dataSourceNames;
     
     @Override
     public void init(final Properties props) {
         this.props = props;
+        dataSourceNames = props.stringPropertyNames();
     }
     
     @Override
@@ -68,7 +75,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     private double[] initWeight(final List<String> readDataSourceNames) {
         double[] result = getWeights(readDataSourceNames);
-        Preconditions.checkState(result.length == 0 || !(Math.abs(result[result.length - 1] - 1.0D) >= ACCURACY_THRESHOLD),
+        Preconditions.checkState(0 == result.length || !(Math.abs(result[result.length - 1] - 1.0D) >= ACCURACY_THRESHOLD),
                 "The cumulative weight is calculated incorrectly, and the sum of the probabilities is not equal to 1");
         return result;
     }
@@ -103,7 +110,8 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     private double getWeightValue(final String readDataSourceName) {
         Object weightObject = props.get(readDataSourceName);
-        Preconditions.checkNotNull(weightObject, "Read database `%s` access weight is not configured", readDataSourceName);
+        ShardingSpherePreconditions.checkNotNull(weightObject, () -> new MissingRequiredReadDatabaseWeightException(getType(),
+                String.format("Read database `%s` access weight is not configured", readDataSourceName)));
         double result;
         try {
             result = Double.parseDouble(weightObject.toString());

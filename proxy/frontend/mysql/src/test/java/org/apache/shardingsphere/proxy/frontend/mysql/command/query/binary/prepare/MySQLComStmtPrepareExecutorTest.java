@@ -29,9 +29,12 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -47,6 +50,7 @@ import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.junit.Before;
@@ -58,6 +62,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Types;
+import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -81,6 +86,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
     public void setup() {
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         prepareSQLParser();
+        prepareMetaData();
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_UNICODE_CI);
     }
@@ -93,6 +99,18 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
                 .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
         when(metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
+    }
+    
+    private static void prepareMetaData() {
+        ShardingSphereTable table = new ShardingSphereTable();
+        table.getColumns().put("id", new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
+        table.getColumns().put("name", new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
+        table.getColumns().put("age", new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
+        ShardingSphereSchema schema = new ShardingSphereSchema();
+        schema.getTables().put("user", table);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("db", new MySQLDatabaseType(), new ShardingSphereResourceMetaData("db", Collections.emptyMap()),
+                new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.singletonMap("db", schema));
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
     }
     
     @Test(expected = UnsupportedPreparedStatementException.class)
@@ -130,7 +148,6 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         int connectionId = 2;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
         MySQLStatementIDGenerator.getInstance().registerConnection(connectionId);
-        prepareTable();
         Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
         assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
         assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
@@ -153,14 +170,34 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         MySQLStatementIDGenerator.getInstance().unregisterConnection(connectionId);
     }
     
-    private static void prepareTable() {
-        ShardingSphereTable table = new ShardingSphereTable();
-        table.getColumns().put("id", new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
-        table.getColumns().put("name", new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
-        table.getColumns().put("age", new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
-        ShardingSphereSchema schema = new ShardingSphereSchema();
-        schema.getTables().put("user", table);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getSchema("db")).thenReturn(schema);
+    @Test
+    public void assertPrepareInsertStatement() {
+        String sql = "insert into user (id, name, age) values (1, ?, ?), (?, 'bar', ?)";
+        when(packet.getSql()).thenReturn(sql);
+        int connectionId = 2;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
+        MySQLStatementIDGenerator.getInstance().registerConnection(connectionId);
+        Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+        assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
+        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+        DatabasePacket<?> firstAgeColumnDefinitionPacket = actualIterator.next();
+        assertThat(firstAgeColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
+        assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) firstAgeColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
+        DatabasePacket<?> idColumnDefinitionPacket = actualIterator.next();
+        assertThat(idColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
+        assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) idColumnDefinitionPacket),
+                is(MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() | MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
+        DatabasePacket<?> secondAgeColumnDefinitionPacket = actualIterator.next();
+        assertThat(secondAgeColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
+        assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) secondAgeColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
+        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
+        assertFalse(actualIterator.hasNext());
+        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+        assertThat(actualPreparedStatement.getSql(), is(sql));
+        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(InsertStatementContext.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLInsertStatement.class));
+        MySQLStatementIDGenerator.getInstance().unregisterConnection(connectionId);
     }
     
     private int getColumnDefinitionFlag(final MySQLColumnDefinition41Packet packet) {
@@ -171,12 +208,15 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
     
     @Test
     public void assertPrepareUpdateStatement() {
-        String sql = "update t set v = ?";
+        String sql = "update user set name = ?, age = ? where id = ?";
         when(packet.getSql()).thenReturn(sql);
         when(connectionSession.getConnectionId()).thenReturn(1);
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
         MySQLStatementIDGenerator.getInstance().registerConnection(1);
         Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
         assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
+        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
         assertFalse(actualIterator.hasNext());

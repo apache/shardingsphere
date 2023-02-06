@@ -25,14 +25,15 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
 import org.junit.After;
 import org.junit.Before;
 
 import javax.sql.DataSource;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -148,22 +149,32 @@ public abstract class BatchE2EIT extends BaseE2EIT {
         }
     }
     
-    private void assertRows(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
+    private void assertRows(final ResultSet actual, final List<DataSetRow> expectedDatSetRows) throws SQLException {
         int count = 0;
-        while (actualResultSet.next()) {
-            int index = 1;
-            for (String each : expectedDatSetRows.get(count).splitValues(",")) {
-                if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    if (!NOT_VERIFY_FLAG.equals(each)) {
-                        assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
+        while (actual.next()) {
+            int columnIndex = 1;
+            for (String expected : expectedDatSetRows.get(count).splitValues(", ")) {
+                if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
+                    if (!NOT_VERIFY_FLAG.equals(expected)) {
+                        assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actual.getDate(columnIndex)), is(expected));
                     }
+                } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()))) {
+                    assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
+                } else if (isPostgreSQLOrOpenGaussMoney(actual.getMetaData().getColumnTypeName(columnIndex))) {
+                    assertThat(actual.getString(columnIndex), is(expected));
+                } else if (Types.BINARY == actual.getMetaData().getColumnType(columnIndex)) {
+                    assertThat(actual.getObject(columnIndex), is(expected.getBytes(StandardCharsets.UTF_8)));
                 } else {
-                    assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
+                    assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
                 }
-                index++;
+                columnIndex++;
             }
             count++;
         }
         assertThat("Size of actual result set is different with size of expected dat set rows.", count, is(expectedDatSetRows.size()));
+    }
+    
+    private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName) {
+        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()));
     }
 }

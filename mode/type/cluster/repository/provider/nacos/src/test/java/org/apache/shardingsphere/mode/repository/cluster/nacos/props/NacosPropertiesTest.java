@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.nacos.props;
 
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -36,12 +38,11 @@ public final class NacosPropertiesTest {
     }
     
     private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty(NacosPropertyKey.CLUSTER_IP.getKey(), "127.0.0.1");
-        result.setProperty(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000");
-        result.setProperty(NacosPropertyKey.MAX_RETRIES.getKey(), "5");
-        result.setProperty(NacosPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "60");
-        return result;
+        return PropertiesBuilder.build(
+                new Property(NacosPropertyKey.CLUSTER_IP.getKey(), "127.0.0.1"),
+                new Property(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000"),
+                new Property(NacosPropertyKey.MAX_RETRIES.getKey(), "5"),
+                new Property(NacosPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "60"));
     }
     
     @Test

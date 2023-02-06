@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.datetime.DatetimeService;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
@@ -28,6 +26,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShar
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,7 +39,7 @@ import java.util.Optional;
 public final class ConditionValueBetweenOperatorGenerator implements ConditionValueGenerator<BetweenExpression> {
     
     @Override
-    public Optional<ShardingConditionValue> generate(final BetweenExpression predicate, final Column column, final List<Object> params) {
+    public Optional<ShardingConditionValue> generate(final BetweenExpression predicate, final Column column, final List<Object> params, final TimeServiceRule timeServiceRule) {
         ConditionValue betweenConditionValue = new ConditionValue(predicate.getBetweenExpr(), params);
         ConditionValue andConditionValue = new ConditionValue(predicate.getAndExpr(), params);
         Optional<Comparable<?>> betweenValue = betweenConditionValue.getValue();
@@ -52,7 +51,7 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
             return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtil.safeClosed(betweenValue.get(), andValue.get()),
                     parameterMarkerIndexes));
         }
-        Date datetime = RequiredSPIRegistry.getRegisteredService(DatetimeService.class).getDatetime();
+        Date datetime = timeServiceRule.getDatetime();
         if (!betweenValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getBetweenExpr())) {
             betweenValue = Optional.of(datetime);
         }

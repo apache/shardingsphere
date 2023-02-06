@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.ExtraSQLCommand;
@@ -38,6 +39,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerSto
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Rule;
 
 import javax.sql.DataSource;
@@ -57,7 +60,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -110,51 +112,84 @@ public abstract class PipelineBaseE2EIT {
     public PipelineBaseE2EIT(final PipelineTestParameter testParam) {
         databaseType = testParam.getDatabaseType();
         containerComposer = ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER
-                ? new DockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage())
+                ? new DockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage(), testParam.getStorageContainerCount())
                 : new NativeContainerComposer(testParam.getDatabaseType());
         containerComposer.start();
         if (ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
             username = storageContainer.getUsername();
             password = storageContainer.getPassword();
         } else {
             username = ENV.getActualDataSourceUsername(databaseType);
             password = ENV.getActualDataSourcePassword(databaseType);
         }
-        createProxyDatabase(testParam.getDatabaseType());
-        if (PipelineEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
-            cleanUpDataSource();
-        }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineBaseE2EIT.class.getClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
         pipelineWatcher = new PipelineWatcher(containerComposer);
     }
     
-    private void cleanUpDataSource() {
-        for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
-            containerComposer.cleanUpDatabase(each);
-        }
-    }
-    
-    protected void createProxyDatabase(final DatabaseType databaseType) {
+    protected void initEnvironment(final DatabaseType databaseType, final JobType jobType) throws SQLException {
+        sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
+        proxyDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(containerComposer.getProxyJdbcUrl(PROXY_DATABASE)),
+                ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
         String defaultDatabaseName = "";
         if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             defaultDatabaseName = "postgres";
         }
         String jdbcUrl = containerComposer.getProxyJdbcUrl(defaultDatabaseName);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
-            if (PipelineEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
-                try {
-                    connectionExecuteWithLog(connection, String.format("DROP DATABASE %s", PROXY_DATABASE));
-                } catch (final SQLException ex) {
-                    log.warn("Drop proxy database failed, maybe it's not exist. error msg={}", ex.getMessage());
-                }
-            }
-            connectionExecuteWithLog(connection, String.format("CREATE DATABASE %s", PROXY_DATABASE));
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex);
+            cleanUpPipelineJobs(connection, jobType);
+            cleanUpProxyDatabase(connection);
+            createProxyDatabase(connection);
         }
-        sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
-        proxyDataSource = StorageContainerUtil.generateDataSource(containerComposer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
+        cleanUpDataSource();
+    }
+    
+    private void cleanUpProxyDatabase(final Connection connection) {
+        if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
+            return;
+        }
+        try {
+            connection.createStatement().execute(String.format("DROP DATABASE %s", PROXY_DATABASE));
+        } catch (final SQLException ex) {
+            log.warn("Drop proxy database failed, maybe it's not exist. error msg={}", ex.getMessage());
+        }
+    }
+    
+    private void cleanUpPipelineJobs(final Connection connection, final JobType jobType) throws SQLException {
+        if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
+            return;
+        }
+        String jobTypeName = jobType.getTypeName();
+        List<Map<String, Object>> jobList;
+        try (ResultSet resultSet = connection.createStatement().executeQuery(String.format("SHOW %s LIST", jobTypeName))) {
+            jobList = transformResultSetToList(resultSet);
+        }
+        if (jobList.isEmpty()) {
+            return;
+        }
+        for (Map<String, Object> each : jobList) {
+            String jobId = each.get("id").toString();
+            Map<String, Object> jobInfo = queryForListWithLog(String.format("SHOW %s STATUS '%s'", jobTypeName, jobId)).get(0);
+            String status = jobInfo.get("status").toString();
+            if (JobStatus.FINISHED.name().equals(status)) {
+                connection.createStatement().execute(String.format("COMMIT %s '%s'", jobTypeName, jobId));
+            } else {
+                connection.createStatement().execute(String.format("ROLLBACK %s '%s'", jobTypeName, jobId));
+            }
+        }
+    }
+    
+    private void cleanUpDataSource() {
+        if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
+            return;
+        }
+        for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
+            containerComposer.cleanUpDatabase(each);
+        }
+    }
+    
+    private void createProxyDatabase(final Connection connection) throws SQLException {
+        connection.createStatement().execute(String.format("CREATE DATABASE %s", PROXY_DATABASE));
     }
     
     protected void addResource(final String distSQL) throws SQLException {
@@ -162,22 +197,23 @@ public abstract class PipelineBaseE2EIT {
     }
     
     protected String appendExtraParam(final String jdbcUrl) {
-        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
-            Properties addProps = new Properties();
-            addProps.setProperty("rewriteBatchedStatements", "true");
-            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, addProps);
+        return DatabaseTypeUtil.isMySQL(getDatabaseType())
+                ? new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())))
+                : jdbcUrl;
+    }
+    
+    protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
+        if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(storageContainerIndex);
+            return isInContainer
+                    ? DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getNetworkAliases().get(0), storageContainer.getExposedPort(), databaseName)
+                    : storageContainer.getJdbcUrl(databaseName);
         }
-        return jdbcUrl;
+        return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }
     
     protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
-        if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
-            return isInContainer
-                    ? DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName)
-                    : DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getHost(), storageContainer.getFirstMappedPort(), databaseName);
-        }
-        return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
+        return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
     }
     
     protected abstract String getSourceTableOrderName();
@@ -229,12 +265,6 @@ public abstract class PipelineBaseE2EIT {
                 ThreadUtil.sleep(2, TimeUnit.SECONDS);
             }
         }
-    }
-    
-    protected void connectionExecuteWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("connection execute:{}", sql);
-        connection.createStatement().execute(sql);
-        ThreadUtil.sleep(2, TimeUnit.SECONDS);
     }
     
     protected List<Map<String, Object>> queryForListWithLog(final String sql) {

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.range;
 
 import com.google.common.collect.Range;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtil;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
@@ -37,14 +36,10 @@ import java.util.Properties;
  */
 public abstract class AbstractRangeShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
-    @Getter
-    private Properties props;
-    
     private Map<Integer, Range<Comparable<?>>> partitionRange;
     
     @Override
     public final void init(final Properties props) {
-        this.props = props;
         partitionRange = calculatePartitionRange(props);
     }
     

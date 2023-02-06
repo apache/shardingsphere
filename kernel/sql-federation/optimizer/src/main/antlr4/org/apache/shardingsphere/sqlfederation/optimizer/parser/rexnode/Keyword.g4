@@ -25,6 +25,8 @@ LIKE: L I K E;
 
 INTEGER: I N T E G E R;
 
+BIGINT: B I G I N T;
+
 VARCHAR: V A R C H A R;
 
 CAST: C A S T;

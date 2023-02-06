@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.transaction;
 
-import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.exception.TransactionManagerNotExistedException;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import javax.sql.DataSource;
@@ -72,7 +73,7 @@ public final class ShardingSphereTransactionManagerEngine {
     public ShardingSphereTransactionManager getTransactionManager(final TransactionType transactionType) {
         ShardingSphereTransactionManager result = transactionManagers.get(transactionType);
         if (TransactionType.LOCAL != transactionType) {
-            Preconditions.checkNotNull(result, "Can not find transaction manager of `%s`", transactionType);
+            ShardingSpherePreconditions.checkNotNull(result, () -> new TransactionManagerNotExistedException(transactionType));
         }
         return result;
     }

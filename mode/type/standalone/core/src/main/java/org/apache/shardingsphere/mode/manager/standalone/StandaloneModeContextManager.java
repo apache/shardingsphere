@@ -254,12 +254,9 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     
     @Override
     public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
-        ShardingSphereDatabase currentDatabase = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
         contextManager.alterRuleConfiguration(databaseName, ruleConfigs);
-        ShardingSphereDatabase reloadDatabase = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
-        contextManager.alterSchemaMetaData(databaseName, reloadDatabase, currentDatabase);
-        contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService()
-                .persist(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName), ruleConfigs);
+        contextManager.getMetaDataContexts().getPersistService()
+                .getDatabaseRulePersistService().persist(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName), ruleConfigs);
         clearServiceCache();
     }
     

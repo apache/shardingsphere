@@ -106,7 +106,7 @@ try (HintManager hintManager = HintManager.getInstance();
 
 ##### 使用规范
 
-SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sqlCommentParseEnabled` 为 `true`。 注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，可选的属性包括：
+SQL Hint 功能的注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，可选的属性包括：
 
 - `{table}.SHARDING_DATABASE_VALUE`：用于添加 `{table}` 表对应的数据源分片键值，多个属性使用逗号分隔；
 - `{table}.SHARDING_TABLE_VALUE`：用于添加 `{table}` 表对应的表分片键值，多个属性使用逗号分隔。

@@ -288,6 +288,7 @@ The text of each license is the standard Apache 2.0 license.
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0
     sketches-core 0.9.0, Apache 2.0
     snakeyaml 1.33: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
+    transmittable-thread-local 2.14.2: https://github.com/alibaba/transmittable-thread-local, Apache 2.0
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
     zookeeper 3.8.0: https://github.com/apache/zookeeper, Apache 2.0
     zookeeper-jute 3.8.0: https://github.com/apache/zookeeper, Apache 2.0
@@ -312,11 +313,11 @@ BSD licenses
 The following components are provided under a BSD license. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    antlr4-runtime 4.9.2: https://github.com/antlr/antlr4, BSD-3-Clause
+    antlr4-runtime 4.10.1: https://github.com/antlr/antlr4, BSD-3-Clause
     asm 9.1: https://github.com/llbit/ow2-asm, BSD-3-Clause
     commons-compiler 3.1.8: https://github.com/janino-compiler/janino, BSD-3-Clause
     janino 3.1.8: https://github.com/janino-compiler/janino, BSD-3-Clause
-    opengauss-jdbc 3.0.0: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
+    opengauss-jdbc 3.1.0-og: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
     postgresql 42.4.1: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
     protobuf-java 3.17.2: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     protobuf-java-util 3.17.2: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
@@ -356,4 +357,13 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
     slf4j-api 1.7.36: https://www.slf4j.org, MIT
-    jnanoid 2.0.0: https://github.com/aventrix/jnanoid, MIT 
+    jnanoid 2.0.0: https://github.com/aventrix/jnanoid, MIT
+
+========================================================================
+UPL licenses
+========================================================================
+
+The following components are provided under the UPL License. See project link for details.
+The text of each license is also included at licenses/LICENSE-[project].txt.
+
+    truffle-api 22.3.1: http://www.graalvm.org/, UPL

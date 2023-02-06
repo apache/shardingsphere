@@ -66,34 +66,32 @@ message CreateSubscriptionRequest {
     string schema = 1;
     string name = 2;
   }
-  repeated TableName tableNames = 2;
-  string subscriptionName = 3;
-  SubscriptionMode subscriptionMode = 4;
-
+  repeated TableName table_names = 2;
+  string subscription_name = 3;
   enum SubscriptionMode {
     UNKNOWN = 0;
     INCREMENTAL = 1;
     FULL = 2;
   }
+  SubscriptionMode subscription_mode = 4;
+  bool incremental_global_orderly = 5;
 }
 
 message StartSubscriptionRequest {
   string database = 1;
-  string subscriptionName = 2;
+  string subscription_name = 2;
 }
 
 message StopSubscriptionRequest {
   string database = 1;
-  string subscriptionName = 2;
+  string subscription_name = 2;
 }
 
 message DropSubscriptionRequest {
   string database = 1;
-  string subscriptionName = 2;
+  string subscription_name = 2;
 }
 
 message AckRequest {
-  string database = 1;
-  string subscriptionName = 2;
   string ack_id = 3;
 }

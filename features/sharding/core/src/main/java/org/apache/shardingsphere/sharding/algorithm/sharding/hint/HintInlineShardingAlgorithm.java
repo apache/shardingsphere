@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.hint;
 
-import com.google.common.base.Preconditions;
 import groovy.lang.Closure;
 import groovy.util.Expando;
-import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -40,20 +40,16 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     
     private static final String HINT_INLINE_VALUE_PROPERTY_NAME = "value";
     
-    @Getter
-    private Properties props = new Properties();
-    
     private String algorithmExpression;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         algorithmExpression = getAlgorithmExpression(props);
     }
     
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY, DEFAULT_ALGORITHM_EXPRESSION);
-        Preconditions.checkNotNull(algorithmExpression, "Inline sharding algorithm expression can not be null.");
+        ShardingSpherePreconditions.checkNotNull(algorithmExpression, () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression can not be null."));
         return InlineExpressionParser.handlePlaceHolder(algorithmExpression.trim());
     }
     

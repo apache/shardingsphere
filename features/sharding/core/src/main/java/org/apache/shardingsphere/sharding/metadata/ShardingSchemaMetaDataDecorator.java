@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.metadata;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
@@ -28,10 +29,12 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Sch
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.InconsistentShardingTableMetaDataException;
+import org.apache.shardingsphere.sharding.metadata.reviser.ShardingColumnGeneratedReviser;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -67,7 +70,7 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
     }
     
     private TableMetaData createTableMetaData(final ShardingRule rule, final TableRule tableRule, final TableMetaData tableMetaData) {
-        Collection<ColumnMetaData> columnMetaDataList = getColumnMetaDataList(tableMetaData, tableRule);
+        Collection<ColumnMetaData> columnMetaDataList = new ColumnReviseEngine().revise(tableMetaData.getColumns(), Collections.singleton(new ShardingColumnGeneratedReviser(tableRule)));
         Collection<IndexMetaData> indexMetaDataList = getIndexMetaDataList(tableMetaData, tableRule);
         Collection<ConstraintMetaData> constraintMetaDataList = getConstraintMetaDataList(tableMetaData, rule, tableRule);
         return new TableMetaData(tableRule.getLogicTable(), columnMetaDataList, indexMetaDataList, constraintMetaDataList);
@@ -90,15 +93,6 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
         if (!violations.isEmpty()) {
             throw new InconsistentShardingTableMetaDataException(logicTableName, violations);
         }
-    }
-    
-    private Collection<ColumnMetaData> getColumnMetaDataList(final TableMetaData tableMetaData, final TableRule tableRule) {
-        Collection<ColumnMetaData> result = new LinkedList<>();
-        for (ColumnMetaData each : tableMetaData.getColumns()) {
-            boolean generated = each.getName().equalsIgnoreCase(tableRule.getGenerateKeyColumn().orElse(null));
-            result.add(new ColumnMetaData(each.getName(), each.getDataType(), each.isPrimaryKey(), generated, each.isCaseSensitive(), each.isVisible(), each.isUnsigned()));
-        }
-        return result;
     }
     
     private Collection<IndexMetaData> getIndexMetaDataList(final TableMetaData tableMetaData, final TableRule tableRule) {

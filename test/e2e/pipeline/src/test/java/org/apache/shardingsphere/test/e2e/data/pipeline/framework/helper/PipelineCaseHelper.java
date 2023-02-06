@@ -17,14 +17,21 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -33,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
 public final class PipelineCaseHelper {
     
     private static final SnowflakeKeyGenerateAlgorithm SNOWFLAKE_KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
@@ -67,16 +75,19 @@ public final class PipelineCaseHelper {
             LocalDateTime now = LocalDateTime.now();
             int randomInt = generateInt(-100, 100);
             int randomUnsignedInt = generateInt(0, 100);
+            String emojiText = "☠️x☺️x✋x☹️";
             if (databaseType instanceof MySQLDatabaseType) {
-                Object[] addObjs = {orderId, userId, generateString(6), randomInt, randomInt, randomInt,
+                Object[] addObjs = {orderId, userId, generateString(6) + "", randomInt, randomInt, randomInt,
                         randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(-100000000, 100000000),
                         BigDecimal.valueOf(generateDouble(1, 100)), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(), "1", "t", "e", "s", "t", generateString(2),
-                        generateString(1), generateString(1), "1", "2", generateJsonString(32)};
+                        emojiText, generateString(1), "1", "2", generateJsonString(32)};
                 orderData.add(addObjs);
             } else {
+                long currentTimeMillis = System.currentTimeMillis();
                 orderData.add(new Object[]{orderId, userId, generateString(6), randomInt,
-                        BigDecimal.valueOf(generateDouble(1, 100)), true, generateString(2), generateString(2), generateFloat(),
-                        generateDouble(0, 1000), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now()});
+                        BigDecimal.valueOf(generateDouble(1, 100)), true, "bytea".getBytes(), generateString(2), generateString(2), generateFloat(), generateDouble(0, 1000),
+                        generateJsonString(8), generateJsonString(12), emojiText, new Date(currentTimeMillis), new Time(currentTimeMillis), Timestamp.valueOf(LocalDateTime.now()),
+                        OffsetDateTime.now()});
             }
             orderItemData.add(new Object[]{orderItemKeyGenerate.generateKey(), orderId, userId, "SUCCESS"});
         }
@@ -101,5 +112,29 @@ public final class PipelineCaseHelper {
     
     private static double generateDouble(final double min, final double max) {
         return ThreadLocalRandom.current().nextDouble(min, max);
+    }
+    
+    /**
+     * Batch insert order records with general columns.
+     *
+     * @param tableName table name
+     * @param connection connection
+     * @param keyGenerateAlgorithm key generate algorithm
+     * @param recordCount record count
+     * @throws SQLException sql exception
+     */
+    public static void batchInsertOrderRecordsWithGeneralColumns(final Connection connection, final KeyGenerateAlgorithm keyGenerateAlgorithm, final String tableName,
+                                                                 final int recordCount) throws SQLException {
+        log.info("init data begin: {}", LocalDateTime.now());
+        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?,?,?)", tableName))) {
+            for (int i = 0; i < recordCount; i++) {
+                preparedStatement.setObject(1, keyGenerateAlgorithm.generateKey());
+                preparedStatement.setObject(2, ThreadLocalRandom.current().nextInt(0, 6));
+                preparedStatement.setObject(3, "OK");
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        }
+        log.info("init data end: {}", LocalDateTime.now());
     }
 }

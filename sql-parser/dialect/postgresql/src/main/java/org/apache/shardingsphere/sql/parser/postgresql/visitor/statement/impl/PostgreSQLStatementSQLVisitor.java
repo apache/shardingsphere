@@ -134,6 +134,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -205,8 +206,6 @@ import java.util.Properties;
 @Getter(AccessLevel.PROTECTED)
 public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementParserBaseVisitor<ASTNode> {
     
-    private int currentParameterIndex;
-    
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     public PostgreSQLStatementSQLVisitor(final Properties props) {
@@ -215,18 +214,14 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         if (null == ctx.DOLLAR_()) {
-            return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
+            return new ParameterMarkerValue(parameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
         }
-        int paramIndex = ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().intValue();
-        if (paramIndex > currentParameterIndex) {
-            currentParameterIndex = paramIndex;
-        }
-        return new ParameterMarkerValue(paramIndex - 1, ParameterMarkerType.DOLLAR);
+        return new ParameterMarkerValue(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue() - 1, ParameterMarkerType.DOLLAR);
     }
     
     @Override
     public final ASTNode visitNumberLiterals(final NumberLiteralsContext ctx) {
-        return new NumberLiteralValue(ctx.getText());
+        return new NumberLiteralValue(ctx.NUMBER_().getText());
     }
     
     @Override
@@ -298,6 +293,9 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     public ASTNode visitAExpr(final AExprContext ctx) {
         if (null != ctx.cExpr()) {
             return visit(ctx.cExpr());
+        }
+        if (null != ctx.TYPE_CAST_()) {
+            return new TypeCastExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText(), (ExpressionSegment) visit(ctx.aExpr(0)), ctx.typeName().getText());
         }
         if (null != ctx.BETWEEN()) {
             return createBetweenSegment(ctx);
@@ -451,6 +449,9 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     
     @Override
     public ASTNode visitFunctionExprCommonSubexpr(final FunctionExprCommonSubexprContext ctx) {
+        if (null != ctx.CAST()) {
+            return new TypeCastExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText(), (ExpressionSegment) visit(ctx.aExpr(0)), ctx.typeName().getText());
+        }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getText(), getOriginalText(ctx));
         Collection<ExpressionSegment> expressionSegments = getExpressionSegments(getTargetRuleContextFromParseTree(ctx, AExprContext.class));
         result.getParameters().addAll(expressionSegments);
@@ -493,6 +494,11 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             value = new NullLiteralValue(ctx.getText());
         } else {
             value = new OtherLiteralValue(ctx.getText());
+        }
+        if (null != ctx.constTypeName() || null != ctx.funcName() && null == ctx.LP_()) {
+            LiteralExpressionSegment expression = new LiteralExpressionSegment(ctx.STRING_().getSymbol().getStartIndex(), ctx.STRING_().getSymbol().getStopIndex(), value.getValue().toString());
+            String dataType = null != ctx.constTypeName() ? ctx.constTypeName().getText() : ctx.funcName().getText();
+            return new TypeCastExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText(), expression, dataType);
         }
         return SQLUtil.createLiteralExpression(value, ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText());
     }
@@ -552,17 +558,13 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.cExpr()) {
             return visit(ctx.cExpr());
         }
-        if (null != ctx.TYPE_CAST_() || null != ctx.qualOp()) {
+        if (null != ctx.TYPE_CAST_()) {
+            return new TypeCastExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.getText(), (ExpressionSegment) visit(ctx.bExpr(0)), ctx.typeName().getText());
+        }
+        if (null != ctx.qualOp()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.bExpr(0));
-            String operator;
-            ExpressionSegment right;
-            if (null == ctx.TYPE_CAST_()) {
-                operator = ctx.qualOp().getText();
-                right = (ExpressionSegment) visit(ctx.bExpr(1));
-            } else {
-                operator = ctx.TYPE_CAST_().getText();
-                right = new CommonExpressionSegment(ctx.typeName().start.getStartIndex(), ctx.typeName().stop.getStopIndex(), ctx.typeName().getText());
-            }
+            ExpressionSegment right = (ExpressionSegment) visit(ctx.bExpr(1));
+            String operator = ctx.qualOp().getText();
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }
@@ -689,7 +691,6 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.returningClause()) {
             result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -851,7 +852,6 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -870,7 +870,6 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
@@ -884,7 +883,6 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
         PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectNoParens());
-        result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }

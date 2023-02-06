@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,7 +33,7 @@ public final class MaskFirstNLastMMaskAlgorithmTest {
     @Before
     public void setUp() {
         maskAlgorithm = new MaskFirstNLastMMaskAlgorithm();
-        maskAlgorithm.init(createProperties("3", "5", "*"));
+        maskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
     }
     
     @Test
@@ -47,15 +47,17 @@ public final class MaskFirstNLastMMaskAlgorithmTest {
     }
     
     @Test(expected = MaskAlgorithmInitializationException.class)
-    public void assertInitWhenConfigWrongProps() {
-        maskAlgorithm.init(createProperties("", "3", "+"));
+    public void assertInitWhenFirstNIsEmpty() {
+        new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*")));
     }
     
-    private Properties createProperties(final String firstN, final String lastM, final String replaceChar) {
-        Properties result = new Properties();
-        result.setProperty("first-n", firstN);
-        result.setProperty("last-m", lastM);
-        result.setProperty("replace-char", replaceChar);
-        return result;
+    @Test(expected = MaskAlgorithmInitializationException.class)
+    public void assertInitWhenLastMIsEmpty() {
+        new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", ""), new Property("replace-char", "*")));
+    }
+    
+    @Test(expected = MaskAlgorithmInitializationException.class)
+    public void assertInitWhenReplaceCharIsEmpty() {
+        new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "")));
     }
 }

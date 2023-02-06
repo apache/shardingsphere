@@ -23,7 +23,7 @@ Attributes:
 
 ### Mask Data Masking Algorithm
 
-#### KEEP_FIRST_N_LAST_M Data Masking Algorithm
+#### Keep First N Last M Data Masking Algorithm
 
 Type: KEEP_FIRST_N_LAST_M
 
@@ -35,7 +35,7 @@ Attributes:
 | last-m       | int    | last m substring  |
 | replace-char | String | replace char      |
 
-#### KEEP_FROM_X_TO_Y Data Masking Algorithm
+#### Keep From X To Y Data Masking Algorithm
 
 Type: KEEP_FROM_X_TO_Y
 
@@ -47,7 +47,7 @@ Attributes:
 | to-y         | int    | end position (from 0)   |
 | replace-char | String | replace char            |
 
-#### MASK_FIRST_N_LAST_M Data Masking Algorithm
+#### Mask First N Last M Data Masking Algorithm
 
 Type: MASK_FIRST_N_LAST_M
 
@@ -59,7 +59,7 @@ Attributes:
 | last-m       | int    | last m substring |
 | replace-char | String | replace char  |
 
-#### MASK_FROM_X_TO_Y Data Masking Algorithm
+#### Mask From X To Y Data Masking Algorithm
 
 Type: MASK_FROM_X_TO_Y
 
@@ -71,7 +71,7 @@ Attributes:
 | to-y         | int    | end position (from 0)   |
 | replace-char | String | replace char            |
 
-#### MASK_BEFORE_SPECIAL_CHARS Data Masking Algorithm
+#### Mask Before Special Chars Data Masking Algorithm
 
 Type: MASK_BEFORE_SPECIAL_CHARS
 
@@ -82,7 +82,7 @@ Attributes:
 | special-chars       | String | Special chars (first appearance) |
 | replace-char | String | replace char                             |
 
-#### MASK_AFTER_SPECIAL_CHARS Data Masking Algorithm
+#### Mask After Special Chars Data Masking Algorithm
 
 Type: MASK_AFTER_SPECIAL_CHARS
 
@@ -95,7 +95,7 @@ Attributes:
 
 ### Replace Data Masking Algorithm
 
-#### PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE Data Masking Algorithm
+#### Personal Identity Number Random Replace Data Masking Algorithm
 
 Type: PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
 
@@ -105,15 +105,48 @@ Attributes:
 |-----------------------------|--------|-----------------------------------------------------------|
 | alpha-two-country-area-code | String | alpha two country area code (Optional, default value: CN) |
 
-#### TELEPHONE_RANDOM_REPLACE Data Masking Algorithm
+#### Military Identity Number Random Replace Data Masking Algorithm
+
+类型：MILITARY_IDENTITY_NUMBER_RANDOM_REPLACE
+
+可配置属性：
+
+| *Name*                        | *DataType* | *Description*                                              |
+|-------------------------------|------------|------------------------------------------------------------|
+| type-codes                    | String     | military identity number type codes (separate with comma)  |
+
+#### Telephone Random Replace Data Masking Algorithm
 
 Type: TELEPHONE_RANDOM_REPLACE
 
 Attributes:
 
+| *Name*          | *DataType* | *Description*                                          |
+|-----------------|--------|--------------------------------------------------------|
+| network-numbers | String | Network numbers (separate with comma, default value: 130,131,132,133,134,135,136,137,138,139,150,151,152,153,155,156,157,158,159,166,170,176,177,178,180,181,182,183,184,185,186,187,188,189,191,198,199) |
+
+#### Landline Number Random Replace Data Masking Algorithm
+
+Type: LANDLINE_NUMBER_RANDOM_REPLACE
+
+Attributes:
+
 | *Name*          | *DataType* | *Description*                         |
 |-----------------|--------|---------------------------------------|
-| network-numbers | String | Network numbers (separate with comma) |
+| landline-numbers | String | Landline numbers (separate with comma) |
+
+#### Generic table random replace algorithm.
+
+Type: GENERIC_TABLE_RANDOM_REPLACE
+
+Attributes:
+
+| *Name*                 | *DataType* | *Description*                                                                                                    |
+|------------------------|--------|------------------------------------------------------------------------------------------------------------------|
+| uppercase-letter-codes | String   | Uppercase letter codes (separate with comma, default value: A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z) |
+| lowercase-letter-codes | String   | Lowercase-letter codes (separate with comma, default value: a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z) |
+| digital-random-codes   | String   | Numbers (separate with comma, default value: 0,1,2,3,4,5,6,7,8,9)                                                |
+| special-codes          | String   | Special codes (separate with comma, default value: ~,!,@,#,$,%,^,&,*,:,&lt;,&gt;,&#166;)                         |
 
 ## Operating Procedure
 1. Configure maskAlgorithms in a mask rule.

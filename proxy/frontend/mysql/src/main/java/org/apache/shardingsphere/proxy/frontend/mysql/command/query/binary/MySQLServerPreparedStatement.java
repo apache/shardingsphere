@@ -40,6 +40,8 @@ public final class MySQLServerPreparedStatement implements ServerPreparedStateme
     
     private final SQLStatementContext<?> sqlStatementContext;
     
+    private final List<Integer> parameterColumnDefinitionFlags;
+    
     private final List<MySQLPreparedStatementParameterType> parameterTypes = new CopyOnWriteArrayList<>();
     
     private final Map<Integer, byte[]> longData = new ConcurrentHashMap<>();

@@ -38,6 +38,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +49,6 @@ import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -197,14 +198,6 @@ public final class ContextManagerTest {
         return new ShardingSphereSchema(Collections.singletonMap("foo_tbl", beforeChangedTable), Collections.singletonMap("foo_view", beforeChangedView));
     }
     
-    private ShardingSphereDatabase createOriginalDatabaseMetaData() {
-        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("bar_ds", new MockedDataSource()));
-        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
-        return new ShardingSphereDatabase("foo_db", new MySQLDatabaseType(), resourceMetaData, ruleMetaData, Collections.emptyMap());
-    }
-    
     private void assertAlteredDataSource(final MockedDataSource actual) {
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getPassword(), is("test"));
@@ -263,9 +256,7 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAlterProperties() {
-        Properties props = new Properties();
-        props.put("foo", "foo_value");
-        contextManager.alterProperties(props);
+        contextManager.alterProperties(PropertiesBuilder.build(new Property("foo", "foo_value")));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getProps().getProperty("foo"), is("foo_value"));
     }
     

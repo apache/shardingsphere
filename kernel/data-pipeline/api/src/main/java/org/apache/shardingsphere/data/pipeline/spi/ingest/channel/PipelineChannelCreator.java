@@ -19,12 +19,12 @@ package org.apache.shardingsphere.data.pipeline.spi.ingest.channel;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Pipeline channel creator.
  */
-public interface PipelineChannelCreator extends ShardingSphereAlgorithm {
+public interface PipelineChannelCreator extends TypedSPI {
     
     /**
      * Create pipeline channel.

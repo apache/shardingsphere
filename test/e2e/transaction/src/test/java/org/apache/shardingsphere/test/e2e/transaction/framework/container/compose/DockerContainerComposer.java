@@ -21,19 +21,19 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.StorageContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.proxy.ProxyClusterContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.transaction.framework.container.jdbc.ShardingSphereJDBCContainer;
-import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.AdapterContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.EnvironmentConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.transaction.framework.container.config.proxy.ProxyClusterContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.transaction.framework.container.jdbc.ShardingSphereJDBCContainer;
+import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
 
 import java.util.Objects;
 
@@ -60,9 +60,9 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(), testParam.getScenario(),
                 StorageContainerConfigurationFactory.newInstance(databaseType)));
-        if (AdapterContainerConstants.PROXY.equalsIgnoreCase(testParam.getAdapter())) {
+        if (AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
             jdbcContainer = null;
-            proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE, AdapterContainerConstants.PROXY,
+            proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(AdapterMode.CLUSTER, AdapterType.PROXY,
                     databaseType, storageContainer, testParam.getScenario(), ProxyClusterContainerConfigurationFactory.newInstance(testParam.getScenario(), databaseType));
             proxyContainer.dependsOn(governanceContainer, storageContainer);
             getContainers().registerContainer(proxyContainer);

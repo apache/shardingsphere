@@ -24,8 +24,8 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class YamlShardingAuditStrategyConfigurationSwapperTest {
@@ -48,11 +48,5 @@ public final class YamlShardingAuditStrategyConfigurationSwapperTest {
         assertThat(actual.getAuditorNames().size(), is(2));
         assertTrue(actual.getAuditorNames().containsAll(Arrays.asList("audit_algorithm1", "audit_algorithm2")));
         assertFalse(actual.isAllowHintDisable());
-    }
-    
-    @Test(expected = NullPointerException.class)
-    public void assertSwapToObjectWithNull() {
-        YamlShardingAuditStrategyConfiguration yamlShardingAuditStrategyConfig = new YamlShardingAuditStrategyConfiguration();
-        new YamlShardingAuditStrategyConfigurationSwapper().swapToObject(yamlShardingAuditStrategyConfig);
     }
 }

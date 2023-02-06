@@ -31,8 +31,7 @@ import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
@@ -86,13 +85,13 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     @Before
     public void setUp() {
-        seataTransactionManager.init(Collections.singletonMap("sharding_db.ds_0", TypedSPIRegistry.getRegisteredService(DatabaseType.class, "MySQL")),
+        seataTransactionManager.init(Collections.singletonMap("sharding_db.ds_0", TypedSPILoader.getService(DatabaseType.class, "MySQL")),
                 Collections.singletonMap(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource()), "Seata");
     }
     
     @After
     public void tearDown() {
-        ExecutorDataMap.getValue().clear();
+        SeataXIDContext.remove();
         RootContext.unbind();
         SeataTransactionHolder.clear();
         seataTransactionManager.close();

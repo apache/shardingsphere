@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -34,7 +34,7 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 @Setter
-public final class UpdatableScalingRALBackendHandler implements ProxyBackendHandler {
+public final class UpdatableScalingRALBackendHandler implements DistSQLBackendHandler {
     
     private final UpdatableScalingRALStatement sqlStatement;
     
@@ -44,7 +44,7 @@ public final class UpdatableScalingRALBackendHandler implements ProxyBackendHand
     @Override
     public ResponseHeader execute() throws SQLException {
         String databaseName = getDatabaseName(connectionSession);
-        TypedSPIRegistry.getRegisteredService(RALUpdater.class, sqlStatement.getClass().getCanonicalName()).executeUpdate(databaseName, sqlStatement);
+        TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass().getName()).executeUpdate(databaseName, sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
     
