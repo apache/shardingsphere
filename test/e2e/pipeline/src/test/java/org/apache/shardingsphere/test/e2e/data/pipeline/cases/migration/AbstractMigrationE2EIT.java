@@ -117,13 +117,6 @@ public abstract class AbstractMigrationE2EIT extends PipelineBaseE2EIT {
     }
     
     protected void addMigrationProcessConfig() throws SQLException {
-        if (PipelineEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
-            try {
-                proxyExecuteWithLog("DROP MIGRATION PROCESS CONFIGURATION '/'", 0);
-            } catch (final SQLException ex) {
-                log.warn("Drop migration process configuration failed, maybe it's not exist. error msg={}", ex.getMessage());
-            }
-        }
         proxyExecuteWithLog(migrationDistSQLCommand.getAlterMigrationRule(), 0);
     }
     

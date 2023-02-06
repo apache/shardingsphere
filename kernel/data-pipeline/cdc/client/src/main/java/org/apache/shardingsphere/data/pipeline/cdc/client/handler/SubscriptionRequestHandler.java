@@ -23,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
+import org.apache.shardingsphere.data.pipeline.cdc.client.importer.DataSourceImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.cdc.client.importer.ImporterFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckRequest;
@@ -51,7 +51,7 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
     
     public SubscriptionRequestHandler(final StartCDCClientParameter parameter) {
         this.parameter = parameter;
-        importer = ImporterFactory.getImporter(parameter.getDatabaseType(), parameter.getImportDataSourceParameter());
+        importer = new DataSourceImporter(parameter.getDatabaseType(), parameter.getImportDataSourceParameter());
     }
     
     @Override
