@@ -68,6 +68,8 @@ rules:
   loadBalancers:
     random:
       type: RANDOM
+      props:
+        transactionReadQueryStrategy: FIXED_PRIMARY
 ```
 
 ## Related References
