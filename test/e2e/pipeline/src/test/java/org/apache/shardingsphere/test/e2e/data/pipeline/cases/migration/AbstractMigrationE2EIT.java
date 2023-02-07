@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Getter
@@ -150,6 +151,7 @@ public abstract class AbstractMigrationE2EIT extends PipelineBaseE2EIT {
             resultList = queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
             if (resultList.isEmpty()) {
                 ThreadUtil.sleep(3, TimeUnit.SECONDS);
+                continue;
             }
             List<String> checkEndTimeList = resultList.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
             if (checkEndTimeList.size() == resultList.size()) {
@@ -159,8 +161,9 @@ public abstract class AbstractMigrationE2EIT extends PipelineBaseE2EIT {
             }
         }
         log.info("check job results: {}", resultList);
+        assertFalse(resultList.isEmpty());
         for (Map<String, Object> each : resultList) {
-            assertTrue("check result is false", Boolean.parseBoolean(each.get("result").toString()));
+            assertTrue(String.format("%s check result is false", each.get("tables")), Boolean.parseBoolean(each.get("result").toString()));
             assertThat("finished_percentage is not 100", each.get("finished_percentage").toString(), is("100"));
         }
     }
