@@ -73,8 +73,9 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = 0 == random.nextInt() % 2 ? null : "中文测试";
-        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), status, PipelineCaseHelper.generateJsonString(2)};
-        String insertSQL = String.format("INSERT INTO %s (order_id,user_id,status,t_json) VALUES (?, ?, ?, ?)", getTableNameWithSchema(orderTableName));
+        String jsonString = PipelineCaseHelper.generateJsonString(2);
+        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), status, jsonString, jsonString.getBytes()};
+        String insertSQL = String.format("INSERT INTO %s (order_id,user_id,status,t_json,t_jsonb) VALUES (?, ?, ?, ?, ?)", getTableNameWithSchema(orderTableName));
         log.info("insert order sql:{}", insertSQL);
         DataSourceExecuteUtil.execute(dataSource, insertSQL, orderInsertDate);
         return orderInsertDate[0];
@@ -90,8 +91,9 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     }
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
-        Object[] updateData = {"updated" + Instant.now().getEpochSecond(), primaryKey, PipelineCaseHelper.generateJsonString(4)};
-        String updateSql = String.format("UPDATE %s SET status = ?, t_json = ? WHERE order_id = ?", getTableNameWithSchema(orderTableName));
+        String jsonString = PipelineCaseHelper.generateJsonString(4);
+        Object[] updateData = {"updated" + Instant.now().getEpochSecond(), primaryKey, jsonString, jsonString.getBytes()};
+        String updateSql = String.format("UPDATE %s SET status = ?, t_json = ?, t_jsonb = ? WHERE order_id = ?", getTableNameWithSchema(orderTableName));
         DataSourceExecuteUtil.execute(dataSource, updateSql, updateData);
     }
     
