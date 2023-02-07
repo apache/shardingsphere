@@ -24,7 +24,7 @@ import java.util.List;
  */
 public interface TransactionReadQueryStrategyAware {
     
-    String TRANSACTION_READ_QUERY_STRATEGY = "transactionReadQueryStrategy";
+    String TRANSACTION_READ_QUERY_STRATEGY = "transaction-read-query-strategy";
     
     /**
      * Get data source name.

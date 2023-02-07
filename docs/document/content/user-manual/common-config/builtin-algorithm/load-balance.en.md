@@ -15,38 +15,38 @@ Moreover, considering the complexity of the business scenario, the built-in algo
 
 Type: ROUND_ROBIN
 
-Description: Within the transaction, read query are routed according to the configuration of the `transactionReadQueryStrategy` property, and outside the transaction, the round-robin strategy is used to route to the replica.
+Description: Within the transaction, read query are routed according to the configuration of the `transaction-read-query-strategy` property, and outside the transaction, the round-robin strategy is used to route to the replica.
 
 Attributes:
 
 | *Name*         | *DataType* | *Description*                                                                                                                                                                                                                                                                                     |
 | -------------- |------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| transactionReadQueryStrategy | String | Routing strategy for read query within a transaction, optional values: FIXED_PRIMARY (route to primary), FIXED_REPLICA (select a fixed replica according to the round-robin strategy), DYNAMIC_REPLICA (route to different replicas according to the round-robin strategy), default value: FIXED_PRIMARY. |
+| transaction-read-query-strategy | String | Routing strategy for read query within a transaction, optional values: FIXED_PRIMARY (route to primary), FIXED_REPLICA (select a fixed replica according to the round-robin strategy), DYNAMIC_REPLICA (route to different replicas according to the round-robin strategy), default value: FIXED_PRIMARY. |
 
 ### Random Load Balance Algorithm
 
 Type: RANDOM
 
-Description: Within the transaction, read query are routed according to the configuration of the `transactionReadQueryStrategy` property, and outside the transaction, the random strategy is used to route to the replica.
+Description: Within the transaction, read query are routed according to the configuration of the `transaction-read-query-strategy` property, and outside the transaction, the random strategy is used to route to the replica.
 
 Attributes:
 
 | *Name*         | *DataType* | *Description*                                                                                                                                                                                                                                                                                     |
 | -------------- |------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| transactionReadQueryStrategy | String | Routing strategy for read query within a transaction, optional values: FIXED_PRIMARY (route to primary), FIXED_REPLICA (select a fixed replica according to the random strategy), DYNAMIC_REPLICA (route to different replicas according to the random strategy), default value: FIXED_PRIMARY. |
+| transaction-read-query-strategy | String | Routing strategy for read query within a transaction, optional values: FIXED_PRIMARY (route to primary), FIXED_REPLICA (select a fixed replica according to the random strategy), DYNAMIC_REPLICA (route to different replicas according to the random strategy), default value: FIXED_PRIMARY. |
 
 ### Weight Load Balance Algorithm
 
 Type: WEIGHT
 
-Description: Within the transaction, read query are routed according to the configuration of the `transactionReadQueryStrategy` property, and outside the transaction, the weight strategy is used to route to the replica.
+Description: Within the transaction, read query are routed according to the configuration of the `transaction-read-query-strategy` property, and outside the transaction, the weight strategy is used to route to the replica.
 
 Attributes: 
 
 | *Name*         | *DataType* | *Description*                                                                                                                                                                                                                                                                                     |
 | -------------- |------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ${replica-name} | double     | Attribute name uses the name of the replica, and the parameter fills in the weight value corresponding to the replica. Weight parameter range min > 0, total <= Double.MAX_VALUE.                                                                                                                 |
-| transactionReadQueryStrategy | String | Routing strategy for read query within a transaction, optional values: FIXED_PRIMARY (route to primary), FIXED_REPLICA (select a fixed replica according to the weight strategy), DYNAMIC_REPLICA (route to different replicas according to the weight strategy), default value: FIXED_PRIMARY. |
+| transaction-read-query-strategy | String | Routing strategy for read query within a transaction, optional values: FIXED_PRIMARY (route to primary), FIXED_REPLICA (select a fixed replica according to the weight strategy), DYNAMIC_REPLICA (route to different replicas according to the weight strategy), default value: FIXED_PRIMARY. |
 
 ## Procedure
 
@@ -69,7 +69,7 @@ rules:
     random:
       type: RANDOM
       props:
-        transactionReadQueryStrategy: FIXED_PRIMARY
+        transaction-read-query-strategy: FIXED_PRIMARY
 ```
 
 ## Related References
