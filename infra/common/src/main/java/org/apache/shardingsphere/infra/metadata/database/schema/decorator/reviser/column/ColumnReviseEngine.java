@@ -17,38 +17,60 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Column revise engine.
+ * 
+ * @param <T> type of rule
  */
-public final class ColumnReviseEngine {
+@RequiredArgsConstructor
+public final class ColumnReviseEngine<T extends ShardingSphereRule> {
+    
+    private final T rule;
+    
+    private final DatabaseType databaseType;
+    
+    private final DataSource dataSource;
     
     /**
      * Revise column meta data.
      * 
+     * @param tableName table name
      * @param originalMetaDataList original column meta data list
-     * @param revisers column revisers
      * @return revised column meta data
      */
-    public Collection<ColumnMetaData> revise(final Collection<ColumnMetaData> originalMetaDataList, final Collection<ColumnReviser> revisers) {
-        return originalMetaDataList.stream().map(each -> revise(each, revisers)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-    
-    private Optional<ColumnMetaData> revise(final ColumnMetaData originalMetaData, final Collection<ColumnReviser> revisers) {
-        ColumnMetaData result = originalMetaData;
-        for (ColumnReviser each : revisers) {
-            Optional<ColumnMetaData> revisedMetaData = each.revise(result);
-            if (!revisedMetaData.isPresent()) {
-                return Optional.empty();
+    public Collection<ColumnMetaData> revise(final String tableName, final Collection<ColumnMetaData> originalMetaDataList) {
+        String type = rule.getClass().getSimpleName();
+        @SuppressWarnings("rawtypes")
+        Optional<ColumnNameReviser> nameReviser = TypedSPILoader.findService(ColumnNameReviser.class, type);
+        @SuppressWarnings("rawtypes")
+        Optional<ColumnDataTypeReviser> dataTypeReviser = TypedSPILoader.findService(ColumnDataTypeReviser.class, type);
+        @SuppressWarnings("rawtypes")
+        Optional<ColumnGeneratedReviser> generatedReviser = TypedSPILoader.findService(ColumnGeneratedReviser.class, type);
+        Collection<ColumnMetaData> result = new LinkedHashSet<>();
+        for (ColumnMetaData each : originalMetaDataList) {
+            @SuppressWarnings("unchecked")
+            Optional<String> name = nameReviser.isPresent() ? nameReviser.get().revise(each.getName(), tableName, rule) : Optional.of(each.getName());
+            if (!name.isPresent()) {
+                continue;
             }
-            result = revisedMetaData.get();
+            @SuppressWarnings("unchecked")
+            Optional<Integer> dataType = dataTypeReviser.isPresent() ? dataTypeReviser.get().revise(each.getName(), rule, databaseType, dataSource) : Optional.empty();
+            @SuppressWarnings("unchecked")
+            Optional<Boolean> generated = generatedReviser.map(optional -> optional.revise(each, rule));
+            result.add(new ColumnMetaData(name.get(),
+                    dataType.orElseGet(each::getDataType), each.isPrimaryKey(), generated.orElse(each.isGenerated()), each.isCaseSensitive(), each.isVisible(), each.isUnsigned()));
         }
-        return Optional.of(result);
+        return result;
     }
 }

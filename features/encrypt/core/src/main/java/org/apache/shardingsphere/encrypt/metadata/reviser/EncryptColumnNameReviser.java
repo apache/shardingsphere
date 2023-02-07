@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.metadata.reviser;
 
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnNameReviser;
 
@@ -26,34 +27,31 @@ import java.util.Optional;
 /**
  * Encrypt column name reviser.
  */
-public final class EncryptColumnNameReviser extends ColumnNameReviser {
-    
-    private final EncryptTable encryptTable;
-    
-    private final Collection<String> plainColumns;
-    
-    private final Collection<String> assistedQueryColumns;
-    
-    private final Collection<String> likeQueryColumns;
-    
-    public EncryptColumnNameReviser(final EncryptTable encryptTable) {
-        this.encryptTable = encryptTable;
-        plainColumns = encryptTable.getPlainColumns();
-        assistedQueryColumns = encryptTable.getAssistedQueryColumns();
-        likeQueryColumns = encryptTable.getLikeQueryColumns();
-    }
+public final class EncryptColumnNameReviser implements ColumnNameReviser<EncryptRule> {
     
     @Override
-    protected Optional<String> getColumnName(final String originalName) {
-        if (plainColumns.contains(originalName)) {
-            return Optional.of(encryptTable.getLogicColumnByPlainColumn(originalName));
+    public Optional<String> revise(final String originalName, final String tableName, final EncryptRule rule) {
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
+        if (!encryptTable.isPresent()) {
+            return Optional.of(originalName);
         }
-        if (encryptTable.isCipherColumn(originalName)) {
-            return Optional.of(encryptTable.getLogicColumnByCipherColumn(originalName));
+        Collection<String> plainColumns = encryptTable.get().getPlainColumns();
+        Collection<String> assistedQueryColumns = encryptTable.get().getAssistedQueryColumns();
+        Collection<String> likeQueryColumns = encryptTable.get().getLikeQueryColumns();
+        if (plainColumns.contains(originalName)) {
+            return Optional.of(encryptTable.get().getLogicColumnByPlainColumn(originalName));
+        }
+        if (encryptTable.get().isCipherColumn(originalName)) {
+            return Optional.of(encryptTable.get().getLogicColumnByCipherColumn(originalName));
         }
         if (!assistedQueryColumns.contains(originalName) && !likeQueryColumns.contains(originalName)) {
             return Optional.of(originalName);
         }
         return Optional.empty();
+    }
+    
+    @Override
+    public String getType() {
+        return EncryptRule.class.getSimpleName();
     }
 }

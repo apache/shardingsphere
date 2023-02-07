@@ -17,20 +17,28 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
+import javax.sql.DataSource;
 import java.util.Optional;
 
 /**
- * Column reviser.
+ * Column data type reviser.
+ * 
+ * @param <T> type of rule
  */
-public interface ColumnReviser {
+public interface ColumnDataTypeReviser<T extends ShardingSphereRule> extends TypedSPI {
     
     /**
-     * Revise column meta data.
+     * Revise column data type.
      * 
-     * @param originalMetaData original column meta data
-     * @return revised column meta data
+     * @param originalName original name
+     * @param rule rule
+     * @param databaseType database type
+     * @param dataSource data source
+     * @return revised data type
      */
-    Optional<ColumnMetaData> revise(ColumnMetaData originalMetaData);
+    Optional<Integer> revise(String originalName, T rule, DatabaseType databaseType, DataSource dataSource);
 }

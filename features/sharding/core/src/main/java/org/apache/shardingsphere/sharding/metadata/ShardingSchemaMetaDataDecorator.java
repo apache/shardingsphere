@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
@@ -26,12 +27,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Tab
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.InconsistentShardingTableMetaDataException;
-import org.apache.shardingsphere.sharding.metadata.reviser.ShardingColumnGeneratedReviser;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
 
+import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -49,7 +48,8 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
         boolean checkTableMetaDataEnabled = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             Collection<TableMetaData> tables = new LinkedList<>();
-            for (Entry<String, Collection<TableMetaData>> tableEntry : getLogicTableMetaDataMap(entry.getValue(), rule).entrySet()) {
+            for (Entry<String, Collection<TableMetaData>> tableEntry : getLogicTableMetaDataMap(entry.getValue(), rule,
+                    material.getStorageTypes().get(entry.getKey()), material.getDataSourceMap().get(entry.getKey())).entrySet()) {
                 if (checkTableMetaDataEnabled) {
                     checkUniformed(tableEntry.getKey(), tableEntry.getValue());
                 }
@@ -60,19 +60,17 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
         return result;
     }
     
-    private TableMetaData decorate(final TableMetaData tableMetaData, final ShardingRule rule) {
-        return rule.findTableRuleByActualTable(tableMetaData.getName()).map(optional -> createTableMetaData(rule, optional, tableMetaData)).orElse(tableMetaData);
+    private TableMetaData decorate(final TableMetaData tableMetaData, final ShardingRule rule, final DatabaseType databaseType, final DataSource dataSource) {
+        return rule.findTableRuleByActualTable(tableMetaData.getName())
+                .map(optional -> new TableMetaDataReviseEngine<>(rule, databaseType, dataSource).revise(tableMetaData)).orElse(tableMetaData);
     }
     
-    private TableMetaData createTableMetaData(final ShardingRule rule, final TableRule tableRule, final TableMetaData tableMetaData) {
-        return new TableMetaDataReviseEngine<>(rule).revise(tableMetaData, Collections.singleton(new ShardingColumnGeneratedReviser(tableRule)));
-    }
-    
-    private Map<String, Collection<TableMetaData>> getLogicTableMetaDataMap(final SchemaMetaData schemaMetaData, final ShardingRule rule) {
+    private Map<String, Collection<TableMetaData>> getLogicTableMetaDataMap(final SchemaMetaData schemaMetaData, final ShardingRule rule,
+                                                                            final DatabaseType databaseType, final DataSource dataSource) {
         Map<String, Collection<TableMetaData>> result = new LinkedHashMap<>();
         for (TableMetaData each : schemaMetaData.getTables()) {
             String logicTableName = rule.findLogicTableByActualTable(each.getName()).orElse(each.getName());
-            result.computeIfAbsent(logicTableName, key -> new LinkedList<>()).add(decorate(each, rule));
+            result.computeIfAbsent(logicTableName, key -> new LinkedList<>()).add(decorate(each, rule, databaseType, dataSource));
         }
         return result;
     }
