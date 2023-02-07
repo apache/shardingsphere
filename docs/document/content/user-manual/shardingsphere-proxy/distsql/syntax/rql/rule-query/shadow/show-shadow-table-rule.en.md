@@ -49,7 +49,7 @@ mysql> SHOW SHADOW TABLE RULES FROM shadow_db;
 | shadow_table | shadow_algorithm_name                                 |
 +--------------+-------------------------------------------------------+
 | t_order_item | shadow_rule_t_order_item_value_match                  |
-| t_order      | simple_hint_algorithm,shadow_rule_t_order_regex_match |
+| t_order      | sql_hint_algorithm,shadow_rule_t_order_regex_match |
 +--------------+-------------------------------------------------------+
 2 rows in set (0.00 sec)
 ```
@@ -66,7 +66,7 @@ mysql> SHOW SHADOW TABLE RULES;
 | shadow_table | shadow_algorithm_name                                 |
 +--------------+-------------------------------------------------------+
 | t_order_item | shadow_rule_t_order_item_value_match                  |
-| t_order      | simple_hint_algorithm,shadow_rule_t_order_regex_match |
+| t_order      | sql_hint_algorithm,shadow_rule_t_order_regex_match |
 +--------------+-------------------------------------------------------+
 2 rows in set (0.01 sec)
 ```
