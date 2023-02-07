@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -36,6 +38,10 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
     
     private final T rule;
     
+    private final DatabaseType databaseType;
+    
+    private final DataSource dataSource;
+    
     /**
      * Revise column meta data.
      * 
@@ -48,6 +54,8 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
         @SuppressWarnings("rawtypes")
         Optional<ColumnNameReviser> nameReviser = TypedSPILoader.findService(ColumnNameReviser.class, type);
         @SuppressWarnings("rawtypes")
+        Optional<ColumnDataTypeReviser> dataTypeReviser = TypedSPILoader.findService(ColumnDataTypeReviser.class, type);
+        @SuppressWarnings("rawtypes")
         Optional<ColumnGeneratedReviser> generatedReviser = TypedSPILoader.findService(ColumnGeneratedReviser.class, type);
         Collection<ColumnMetaData> result = new LinkedHashSet<>();
         for (ColumnMetaData each : originalMetaDataList) {
@@ -57,8 +65,11 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
                 continue;
             }
             @SuppressWarnings("unchecked")
-            boolean generated = generatedReviser.map(optional -> optional.revise(each, rule)).orElseGet(each::isGenerated);
-            result.add(new ColumnMetaData(name.get(), each.getDataType(), each.isPrimaryKey(), generated, each.isCaseSensitive(), each.isVisible(), each.isUnsigned()));
+            Optional<Integer> dataType = dataTypeReviser.isPresent() ? dataTypeReviser.get().revise(each.getName(), rule, databaseType, dataSource) : Optional.empty();
+            @SuppressWarnings("unchecked")
+            Optional<Boolean> generated = generatedReviser.map(optional -> optional.revise(each, rule));
+            result.add(new ColumnMetaData(name.get(),
+                    dataType.orElseGet(each::getDataType), each.isPrimaryKey(), generated.orElse(each.isGenerated()), each.isCaseSensitive(), each.isVisible(), each.isUnsigned()));
         }
         return result;
     }

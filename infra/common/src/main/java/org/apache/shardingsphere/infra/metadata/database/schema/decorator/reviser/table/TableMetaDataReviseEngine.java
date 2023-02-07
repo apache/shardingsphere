@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+
+import javax.sql.DataSource;
 
 /**
  * Table meta data revise engine.
@@ -35,6 +38,10 @@ public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
     
     private final T rule;
     
+    private final DatabaseType databaseType;
+    
+    private final DataSource dataSource;
+    
     /**
      * Revise table meta data.
      * 
@@ -45,7 +52,7 @@ public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
     public TableMetaData revise(final TableMetaData originalMetaData) {
         String revisedTableName = TypedSPILoader.findService(TableNameReviser.class, rule.getClass().getSimpleName())
                 .map(optional -> optional.revise(originalMetaData.getName(), rule)).orElse(originalMetaData.getName());
-        return new TableMetaData(revisedTableName, new ColumnReviseEngine<>(rule).revise(originalMetaData.getName(), originalMetaData.getColumns()),
+        return new TableMetaData(revisedTableName, new ColumnReviseEngine<>(rule, databaseType, dataSource).revise(originalMetaData.getName(), originalMetaData.getColumns()),
                 new IndexReviseEngine<>().revise(revisedTableName, originalMetaData.getIndexes(), rule),
                 new ConstraintReviseEngine<>().revise(revisedTableName, originalMetaData.getConstrains(), rule));
     }
