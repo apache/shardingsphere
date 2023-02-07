@@ -18,38 +18,39 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Constraint revise engine.
+ * 
+ * @param <T> type of rule
  */
-public final class ConstraintReviseEngine {
+public final class ConstraintReviseEngine<T extends ShardingSphereRule> {
     
     /**
      * Revise constraint meta data.
      * 
      * @param tableName table name
      * @param originalMetaDataList original constraint meta data list
-     * @param revisers constraint revisers
+     * @param rule rule
      * @return revised constraint meta data
      */
-    public Collection<ConstraintMetaData> revise(final String tableName, final Collection<ConstraintMetaData> originalMetaDataList, final Collection<ConstraintReviser> revisers) {
-        return originalMetaDataList.stream().map(each -> revise(tableName, each, revisers)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-    
-    private Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final Collection<ConstraintReviser> revisers) {
-        ConstraintMetaData result = originalMetaData;
-        for (ConstraintReviser each : revisers) {
-            Optional<ConstraintMetaData> revisedMetaData = each.revise(tableName, result);
-            if (!revisedMetaData.isPresent()) {
-                return Optional.empty();
-            }
-            result = revisedMetaData.get();
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public Collection<ConstraintMetaData> revise(final String tableName, final Collection<ConstraintMetaData> originalMetaDataList, final T rule) {
+        Optional<ConstraintReviser> reviser = TypedSPILoader.findService(ConstraintReviser.class, rule.getClass().getSimpleName());
+        if (!reviser.isPresent()) {
+            return originalMetaDataList;
         }
-        return Optional.of(result);
+        Collection<ConstraintMetaData> result = new LinkedHashSet<>();
+        for (ConstraintMetaData each : originalMetaDataList) {
+            Optional<ConstraintMetaData> constraintMetaData = reviser.get().revise(tableName, each, rule);
+            constraintMetaData.ifPresent(result::add);
+        }
+        return result;
     }
 }

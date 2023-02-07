@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.Ru
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.single.constant.SingleOrder;
-import org.apache.shardingsphere.single.metadata.reviser.SingleConstraintReviser;
-import org.apache.shardingsphere.single.metadata.reviser.SingleIndexReviser;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
@@ -53,8 +51,7 @@ public final class SingleSchemaMetaDataDecorator implements RuleBasedSchemaMetaD
     }
     
     private TableMetaData decorate(final SingleRule rule, final TableMetaData tableMetaData) {
-        return new TableMetaDataReviseEngine<>(rule).revise(
-                tableMetaData, Collections.emptyList(), Collections.singleton(new SingleIndexReviser()), Collections.singleton(new SingleConstraintReviser()));
+        return new TableMetaDataReviseEngine<>(rule).revise(tableMetaData, Collections.emptyList());
     }
     
     @Override

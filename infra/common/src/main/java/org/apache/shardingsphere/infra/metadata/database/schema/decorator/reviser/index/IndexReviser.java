@@ -18,20 +18,25 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Optional;
 
 /**
  * Index reviser.
+ * 
+ * @param <T> type of rule
  */
-public interface IndexReviser {
+public interface IndexReviser<T extends ShardingSphereRule> extends TypedSPI {
     
     /**
      * Revise index meta data.
      * 
      * @param tableName table name
      * @param originalMetaData original index meta data
+     * @param rule rule
      * @return revised index meta data
      */
-    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData);
+    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData, T rule);
 }

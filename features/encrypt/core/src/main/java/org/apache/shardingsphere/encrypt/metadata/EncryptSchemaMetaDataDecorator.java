@@ -54,8 +54,7 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
     }
     
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
-        return encryptRule.findEncryptTable(tableName).map(optional -> new TableMetaDataReviseEngine<>(encryptRule)
-                .revise(tableMetaData, getColumnRevisers(optional), Collections.emptyList(), Collections.emptyList())).orElse(tableMetaData);
+        return encryptRule.findEncryptTable(tableName).map(optional -> new TableMetaDataReviseEngine<>(encryptRule).revise(tableMetaData, getColumnRevisers(optional))).orElse(tableMetaData);
     }
     
     private Collection<ColumnReviser> getColumnRevisers(final EncryptTable encryptTable) {

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.Optional;
@@ -28,14 +28,15 @@ import java.util.Optional;
 /**
  * Sharding index reviser.
  */
-@RequiredArgsConstructor
-public final class ShardingIndexReviser implements IndexReviser {
-    
-    private final TableRule tableRule;
+public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
     
     @Override
-    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData) {
-        for (DataNode each : tableRule.getActualDataNodes()) {
+    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final ShardingRule rule) {
+        Optional<TableRule> tableRule = rule.findTableRuleByActualTable(tableName);
+        if (!tableRule.isPresent()) {
+            return Optional.of(originalMetaData);
+        }
+        for (DataNode each : tableRule.get().getActualDataNodes()) {
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {
                 return Optional.of(new IndexMetaData(logicIndexName.get()));
@@ -47,5 +48,10 @@ public final class ShardingIndexReviser implements IndexReviser {
     private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
         String indexNameSuffix = "_" + actualTableName;
         return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
+    }
+    
+    @Override
+    public String getType() {
+        return ShardingRule.class.getSimpleName();
     }
 }

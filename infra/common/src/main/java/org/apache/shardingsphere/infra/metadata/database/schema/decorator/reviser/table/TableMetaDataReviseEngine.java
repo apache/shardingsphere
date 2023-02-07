@@ -21,9 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviseEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviseEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -45,17 +43,14 @@ public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
      * 
      * @param originalMetaData original table meta data
      * @param columnRevisers column revisers
-     * @param indexRevisers index revisers
-     * @param constraintRevisers constraint revisers
      * @return revised table meta data
      */
     @SuppressWarnings("unchecked")
-    public TableMetaData revise(final TableMetaData originalMetaData,
-                                final Collection<ColumnReviser> columnRevisers, final Collection<IndexReviser> indexRevisers, final Collection<ConstraintReviser> constraintRevisers) {
+    public TableMetaData revise(final TableMetaData originalMetaData, final Collection<ColumnReviser> columnRevisers) {
         String revisedTableName = TypedSPILoader.findService(TableNameReviser.class, rule.getClass().getSimpleName())
                 .map(optional -> optional.revise(originalMetaData.getName(), rule)).orElse(originalMetaData.getName());
         return new TableMetaData(revisedTableName, new ColumnReviseEngine().revise(originalMetaData.getColumns(), columnRevisers),
-                new IndexReviseEngine().revise(revisedTableName, originalMetaData.getIndexes(), indexRevisers),
-                new ConstraintReviseEngine().revise(revisedTableName, originalMetaData.getConstrains(), constraintRevisers));
+                new IndexReviseEngine<T>().revise(revisedTableName, originalMetaData.getIndexes(), rule),
+                new ConstraintReviseEngine<T>().revise(revisedTableName, originalMetaData.getConstrains(), rule));
     }
 }

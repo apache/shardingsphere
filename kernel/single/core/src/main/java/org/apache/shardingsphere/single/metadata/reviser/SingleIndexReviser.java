@@ -20,16 +20,22 @@ package org.apache.shardingsphere.single.metadata.reviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Optional;
 
 /**
  * Single index reviser.
  */
-public final class SingleIndexReviser implements IndexReviser {
+public final class SingleIndexReviser implements IndexReviser<SingleRule> {
     
     @Override
-    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData) {
+    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final SingleRule singleRule) {
         return Optional.of(new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(originalMetaData.getName(), tableName)));
+    }
+    
+    @Override
+    public String getType() {
+        return SingleRule.class.getSimpleName();
     }
 }

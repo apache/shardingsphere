@@ -18,20 +18,25 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Optional;
 
 /**
  * Constraint reviser.
+ * 
+ * @param <T> type of rule
  */
-public interface ConstraintReviser {
+public interface ConstraintReviser<T extends ShardingSphereRule> extends TypedSPI {
     
     /**
      * Revise constraint meta data.
      * 
      * @param tableName table name
      * @param originalMetaData original constraint meta data
+     * @param rule rule
      * @return revised constraint meta data
      */
-    Optional<ConstraintMetaData> revise(String tableName, ConstraintMetaData originalMetaData);
+    Optional<ConstraintMetaData> revise(String tableName, ConstraintMetaData originalMetaData, T rule);
 }
