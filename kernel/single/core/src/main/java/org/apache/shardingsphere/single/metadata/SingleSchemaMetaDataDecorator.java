@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.metadata;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
@@ -45,15 +45,16 @@ public final class SingleSchemaMetaDataDecorator implements RuleBasedSchemaMetaD
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             Collection<TableMetaData> tables = new LinkedList<>();
             for (TableMetaData each : entry.getValue().getTables()) {
-                tables.add(decorate(each));
+                tables.add(decorate(rule, each));
             }
             result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
         }
         return result;
     }
     
-    private TableMetaData decorate(final TableMetaData tableMetaData) {
-        return new TableReviseEngine().revise(tableMetaData, Collections.emptyList(), Collections.singleton(new SingleIndexReviser()), Collections.singleton(new SingleConstraintReviser()));
+    private TableMetaData decorate(final SingleRule rule, final TableMetaData tableMetaData) {
+        return new TableMetaDataReviseEngine<>(rule).revise(
+                tableMetaData, Collections.emptyList(), Collections.singleton(new SingleIndexReviser()), Collections.singleton(new SingleConstraintReviser()));
     }
     
     @Override

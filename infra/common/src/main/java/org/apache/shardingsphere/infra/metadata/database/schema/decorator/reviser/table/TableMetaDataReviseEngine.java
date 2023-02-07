@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviseEngine;
@@ -24,43 +25,35 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.revise
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 
 /**
- * Table revise engine.
+ * Table meta data revise engine.
+ *
+ * @param <T> type of rule
  */
-public final class TableReviseEngine {
+@RequiredArgsConstructor
+public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
     
-    /**
-     * Revise table meta data.
-     *
-     * @param originalMetaData original table meta data
-     * @param columnRevisers column revisers
-     * @param indexRevisers index revisers
-     * @param constraintRevisers constraint revisers
-     * @return revised table meta data
-     */
-    public TableMetaData revise(final TableMetaData originalMetaData,
-                                final Collection<ColumnReviser> columnRevisers, final Collection<IndexReviser> indexRevisers, final Collection<ConstraintReviser> constraintRevisers) {
-        return new TableMetaData(originalMetaData.getName(), new ColumnReviseEngine().revise(originalMetaData.getColumns(), columnRevisers),
-                new IndexReviseEngine().revise(originalMetaData.getName(), originalMetaData.getIndexes(), indexRevisers),
-                new ConstraintReviseEngine().revise(originalMetaData.getName(), originalMetaData.getConstrains(), constraintRevisers));
-    }
+    private final T rule;
     
     /**
      * Revise table meta data.
      * 
      * @param originalMetaData original table meta data
-     * @param tableNameReviser table name reviser
      * @param columnRevisers column revisers
      * @param indexRevisers index revisers
      * @param constraintRevisers constraint revisers
      * @return revised table meta data
      */
-    public TableMetaData revise(final TableMetaData originalMetaData, final TableNameReviser tableNameReviser,
+    @SuppressWarnings("unchecked")
+    public TableMetaData revise(final TableMetaData originalMetaData,
                                 final Collection<ColumnReviser> columnRevisers, final Collection<IndexReviser> indexRevisers, final Collection<ConstraintReviser> constraintRevisers) {
-        String revisedTableName = tableNameReviser.revise(originalMetaData.getName());
+        String revisedTableName = TypedSPILoader.findService(TableNameReviser.class, rule.getClass().getSimpleName())
+                .map(optional -> optional.revise(originalMetaData.getName(), rule)).orElse(originalMetaData.getName());
         return new TableMetaData(revisedTableName, new ColumnReviseEngine().revise(originalMetaData.getColumns(), columnRevisers),
                 new IndexReviseEngine().revise(revisedTableName, originalMetaData.getIndexes(), indexRevisers),
                 new ConstraintReviseEngine().revise(revisedTableName, originalMetaData.getConstrains(), constraintRevisers));
