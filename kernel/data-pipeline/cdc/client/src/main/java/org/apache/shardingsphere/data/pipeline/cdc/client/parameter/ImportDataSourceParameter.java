@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
+package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
 
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Weight aware.
+ * Import data source parameter.
  */
-// TODO should remove after merge TransactionWeightReadQueryLoadBalanceAlgorithm and WeightReadQueryLoadBalanceAlgorithm
-public interface WeightAware {
+@RequiredArgsConstructor
+@Getter
+public final class ImportDataSourceParameter {
     
-    /**
-     * Get data source names.
-     * 
-     * @return data source names
-     */
-    Collection<String> getDataSourceNames();
+    private final String jdbcUrl;
+    
+    private final String username;
+    
+    private final String password;
 }

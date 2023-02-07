@@ -90,7 +90,7 @@ public final class CDCImporterConnector implements ImporterConnector {
         this.jobShardingCount = jobShardingCount;
         tableNames.stream().filter(each -> each.contains(".")).forEach(each -> {
             String[] split = each.split("\\.");
-            tableNameSchemaMap.put(split[0], split[1]);
+            tableNameSchemaMap.put(split[1], split[0]);
         });
         this.dataRecordComparator = dataRecordComparator;
     }

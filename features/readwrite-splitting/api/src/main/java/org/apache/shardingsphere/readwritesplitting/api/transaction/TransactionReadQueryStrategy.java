@@ -15,26 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.importer;
+package org.apache.shardingsphere.readwritesplitting.api.transaction;
 
 /**
- * Importer factory.
+ * Transaction read query strategy.
  */
-public final class ImporterFactory {
-    
-    /**
-     * Get importer.
-     *
-     * @param databaseType database type
-     * @return importer
-     */
-    // TODO use SPI
-    public static Importer getImporter(final String databaseType) {
-        switch (databaseType) {
-            case "openGauss":
-                return new OpenGaussImporter();
-            default:
-                return null;
-        }
-    }
+public enum TransactionReadQueryStrategy {
+    FIXED_PRIMARY, FIXED_REPLICA, DYNAMIC_REPLICA
 }

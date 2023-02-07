@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder;
+package org.apache.shardingsphere.readwritesplitting.api.transaction;
+
+import java.util.List;
 
 /**
- * SQL builder factory.
+ * Transaction read query strategy aware.
  */
-public final class SQLBuilderFactory {
+public interface TransactionReadQueryStrategyAware {
+    
+    String TRANSACTION_READ_QUERY_STRATEGY = "transactionReadQueryStrategy";
     
     /**
-     * Get SQL builder.
-     *
-     * @param databaseType database type
-     * @return SQL builder
+     * Get data source name.
+     * 
+     * @param name name
+     * @param readDataSourceNames names of read data sources
+     * @return name of selected data source
      */
-    public static SQLBuilder getSQLBuilder(final String databaseType) {
-        switch (databaseType) {
-            case "openGauss":
-                return new OpenGaussSQLBuilder();
-            case "MySQL":
-                return new MySQLSQLBuilder();
-            case "PostgreSQL":
-                return new PostgreSQLSQLBuilder();
-            default:
-                throw new UnsupportedOperationException(String.format("Not supported %s now", databaseType));
-        }
-    }
+    String getDataSourceName(String name, List<String> readDataSourceNames);
 }
