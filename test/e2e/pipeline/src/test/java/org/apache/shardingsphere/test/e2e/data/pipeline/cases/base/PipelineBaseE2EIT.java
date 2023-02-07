@@ -191,7 +191,7 @@ public abstract class PipelineBaseE2EIT {
     
     private void createProxyDatabase(final Connection connection) throws SQLException {
         String sql = String.format("CREATE DATABASE %s", PROXY_DATABASE);
-        log.info("create proxy database {}", proxyDataSource);
+        log.info("create proxy database {}", PROXY_DATABASE);
         connection.createStatement().execute(sql);
         ThreadUtil.sleep(2, TimeUnit.SECONDS);
     }
