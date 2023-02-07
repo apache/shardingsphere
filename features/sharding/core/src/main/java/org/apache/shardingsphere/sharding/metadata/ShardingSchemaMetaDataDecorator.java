@@ -68,7 +68,7 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
     
     private TableMetaData createTableMetaData(final ShardingRule rule, final TableRule tableRule, final TableMetaData tableMetaData) {
         return new TableMetaDataReviseEngine<>(rule).revise(tableMetaData, Collections.singleton(new ShardingColumnGeneratedReviser(tableRule)),
-                new ShardingIndexReviser(tableRule), new ShardingConstraintReviser(rule, tableRule));
+                new ShardingIndexReviser(), new ShardingConstraintReviser());
     }
     
     private Map<String, Collection<TableMetaData>> getLogicTableMetaDataMap(final SchemaMetaData schemaMetaData, final ShardingRule rule) {

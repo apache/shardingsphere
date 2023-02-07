@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -26,8 +27,10 @@ import java.util.stream.Collectors;
 
 /**
  * Index revise engine.
+ * 
+ * @param <T> type of rule
  */
-public final class IndexReviseEngine {
+public final class IndexReviseEngine<T extends ShardingSphereRule> {
     
     /**
      * Revise index meta data.
@@ -35,12 +38,13 @@ public final class IndexReviseEngine {
      * @param tableName table name
      * @param originalMetaDataList original index meta data list
      * @param reviser index reviser
+     * @param rule rule
      * @return revised index meta data
      */
-    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList, final IndexReviser reviser) {
+    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList, final IndexReviser<T> reviser, final T rule) {
         if (null == reviser) {
             return originalMetaDataList;
         }
-        return originalMetaDataList.stream().map(each -> reviser.revise(tableName, each)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new));
+        return originalMetaDataList.stream().map(each -> reviser.revise(tableName, each, rule)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
