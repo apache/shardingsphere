@@ -24,7 +24,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Logger configuration for YAML.
+ * Appender configuration for YAML.
  */
 @Getter
 @Setter

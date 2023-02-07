@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
- * ShardingSphere Appender.
+ * ShardingSphere appender.
  */
 @Getter
 @RequiredArgsConstructor
