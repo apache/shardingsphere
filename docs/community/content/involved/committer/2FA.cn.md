@@ -7,7 +7,7 @@ chapter = true
 ## 双因素认证（2FA）
 
 双因子验证（2FA）是指结合密码以及实物（信用卡、SMS 手机、令牌或指纹等生物标志）两种条件对用户进行认证的方法。
-为保证提交者账户的安全，我们需要您在 GitHub 上启用 2FA 来验证登录用户、并贡献代码。
+为保证提交者账户的安全，我们需要您在 GitHub 上启用 2FA 来验证登录用户，并贡献代码。
 
 具体内容可参考 [2FA](https://help.github.com/articles/requiring-two-factor-authentication-in-your-organization/)。
 

@@ -18,7 +18,7 @@ Apache CLA 全称 Apache Contributor License Agreement，签署 ICLA 的目的�
 
 ![](https://shardingsphere.apache.org/blog/img/icla2.png)
 
-**3. 打开 PDF，ICLA 需要填写的是两个部分，均需要全英文填写。**
+**3. 打开 PDF、ICLA 需要填写的是两个部分，均需要全英文填写。**
 
 > 注意事项: 
 > - 姓名需要填写拼音，姓与名之间空一格，首字母均为大写，名在前姓氏在后。

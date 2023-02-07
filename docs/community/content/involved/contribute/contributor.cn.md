@@ -9,8 +9,8 @@ chapter = true
 ## 提交 issue
 
  - 在提交 issue 之前，请经过充分的搜索，确定该 issue 不是通过简单的检索即可以解决的问题。
- - 查看 [issue 列表](https://github.com/apache/shardingsphere/issues)，确定该 issue 不是一个重复的问题。
- - [新建](https://github.com/apache/shardingsphere/issues/new/choose)一个 issue 并选择您的 issue 类型。
+ - 查看 [issue 列表](https://github.com/apache/shardingsphere/issues)， 确定该 issue 不是一个重复的问题。
+ - [新建](https://github.com/apache/shardingsphere/issues/new/choose)， 一个 issue 并选择您的 issue 类型。
  - 使用一个清晰并有描述性的标题来定义 issue。
  - 根据模板填写必要信息。
  - 在提交 issue 之后，对该 issue 分配合适的标签。如：bug，enhancement，discussion 等。

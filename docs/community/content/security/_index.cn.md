@@ -27,9 +27,9 @@ ShardingSphere 集群模式依赖 ZooKeeper 等中间件，且信任用户提供
 对于 ShardingSphere 子项目的安全建议：
 由于 ShardingSphere-UI 已不再维护，ShardingSphere 社区将**不再接受任何与 ShardingSphere-UI 相关的安全问题报告**。
 
-ElasticJob 依赖 ZooKeeper，且信任用户提供的 ZooKeeper。对于 ZooKeeper 等中间件的安全防护，用户需要自行保障。因此，ShardingSphere 社区**不接受 ZooKeeper 被攻击导致 ElasticJob 被利用的安全问题报告**。
+Elastic-Job 依赖 ZooKeeper，且信任用户提供的 ZooKeeper。对于 ZooKeeper 等中间件的安全防护，用户需要自行保障。因此，ShardingSphere 社区**不接受 ZooKeeper 被攻击导致 Elastic-Job 被利用的安全问题报告**。
 
-ElasticJob-UI 旨在为用户提供一个便捷的作业管控平台。该平台向开发、运维人员提供服务，并非直接为互联网用户提供服务，建议用户仅在内网部署，并避免用户密码泄漏。ShardingSphere 社区**不接受任何以攻击者已知用户密码为前提的安全问题报告**。
+ElasticJob-UI 旨在为用户提供一个便捷的作业管控平台。该平台向开发和运维人员提供服务，并非直接为互联网用户提供服务，建议用户仅在内网部署，并避免用户密码泄漏。ShardingSphere 社区**不接受任何以攻击者已知用户密码为前提的安全问题报告**。
 
 在提交安全问题报告之前，请参考 ShardingSphere 及子项目过去已发布的 CVE，避免重复提交。
 
@@ -39,6 +39,6 @@ ShardingSphere:
 ShardingSphere-UI:
 [CVE-2021-26558](https://www.cve.org/CVERecord?id=CVE-2021-26558)
 
-ElasticJob-UI
+ElasticJob-UI:
 [CVE-2022-22733](https://www.cve.org/CVERecord?id=CVE-2022-22733)
 [CVE-2022-31764](https://www.cve.org/CVERecord?id=CVE-2022-31764)

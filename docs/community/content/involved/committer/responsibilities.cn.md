@@ -27,8 +27,8 @@ chapter = true
 
  - 判断是否是长期 issue，如是，则标记为 pending；
  - 判断 issue 类型，如：bug，enhancement，discussion 等；
- - 标记 Milestone。
+ - 标记 Milestone；
 
-3. Committer 提交的 PR，需要根据 PR 类型和当前发布的周期标注 Label 和 Milestone。
+3. Committer 提交的 PR，需要根据 PR 类型和当前发布的周期标注 Label 和 Milestone；
 
 4. Committer review PR 时，可以进行 squash and merge to master 的操作，如果有问题可以加上 change request 或者 @ 相关人员协助处理。

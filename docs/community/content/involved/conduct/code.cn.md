@@ -21,7 +21,7 @@ chapter = true
  - 确保遵守编码规范。
  - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Dmaven.javadoc.skip -Dmaven.jacoco.skip -e`。
  - 确保覆盖率不低于 master 分支。
- - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
+ - 应尽量将设计精细化拆分，做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 通过 Spotless 统一代码风格，执行 `mvn spotless:apply` 格式化代码。
  - 如果您使用 IDEA，可导入推荐的 `src/resources/code-style-idea.xml`。
  
@@ -39,11 +39,11 @@ chapter = true
    - 三位以内字符的类和方法名称缩写的示例：SQL92Lexer、XMLTransfer、MySQLAdminExecutorCreator；
    - 三位以上字符的类和方法名称缩写的示例：JdbcUrlAppender、YamlAgentConfigurationSwapper；
    - 变量应使用小驼峰形式：mysqlAuthenticationMethod、sqlStatement、mysqlConfig。
- - 除了直接返回方法入参，返回变量使用 `result` 命名；循环中使用 `each` 命名循环变量；map 中使用 `entry` 代替 `each`。
- - 捕获的异常名称命名为 `ex` ；捕获异常且不做任何事情，异常名称命名为 `ignored`。
+ - 除了直接返回方法入参，返回变量使用 `result` 命名，循环中使用 `each` 命名循环变量，map 中使用 `entry` 代替 `each`。
+ - 捕获的异常名称命名为 `ex` ，捕获异常且不做任何事情，异常名称命名为 `ignored`。
  - 配置文件使用 `Spinal Case` 命名（一种使用 `-` 分割单词的特殊 `Snake Case`）。
  - 需要注释解释的代码尽量提成小方法，用方法名称解释。
- - `equals` 和 `==` 条件表达式中，常量在左，变量在右；大于小于等条件表达式中，变量在左，常量在右。
+ - `equals` 和 `==` 条件表达式中，常量在左，变量在右，大于小于等条件表达式中，变量在左，常量在右。
  - 除了构造器入参与全局变量名称相同的赋值语句外，避免使用 `this` 修饰符。
  - 除了用于继承的抽象类之外，尽量将类设计为 `final`。
  - 嵌套循环尽量提成方法。
@@ -52,11 +52,11 @@ chapter = true
  - 类和方法的访问权限控制为最小。
  - 方法所用到的私有方法应紧跟该方法，如果有多个私有方法，书写私有方法应与私有方法在原方法的出现顺序相同。
  - 方法入参和返回值不允许为 `null`。
- - 优先使用 lombok 代替构造器，getter, setter 方法和 log 变量。
+ - 优先使用 lombok 代替构造器，getter,setter 方法和 log 变量。
  - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
  - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
  - 日志与注释一律使用英文。
- - 注释只能包含 javadoc，todo 和 fixme。
+ - 注释只能包含 javadoc,todo 和 fixme。
  - 公开的类和方法必须有 javadoc，对用户的 API 和 SPI 的 javadoc 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 javadoc。
  - 优先使用三目运算符代替 if else 的返回和赋值语句。
  - 禁止嵌套使用三目运算符。
@@ -67,11 +67,11 @@ chapter = true
 ## 单元测试规范
 
  - 测试代码和生产代码需遵守相同代码规范。
- - 单元测试需遵循 AIR（Automatic, Independent, Repeatable）设计理念。
+ - 单元测试需遵循 AIR（Automatic,Independent,Repeatable）设计理念。
    - 自动化（Automatic）：单元测试应全自动执行，而非交互式。禁止人工检查输出结果，不允许使用 `System.out`，`log` 等，必须使用断言进行验证。
    - 独立性（Independent）：禁止单元测试用例间的互相调用，禁止依赖执行的先后次序。每个单元测试均可独立运行。
    - 可重复执行（Repeatable）：单元测试不能受到外界环境的影响，可以重复执行。
- - 单元测试需遵循 BCDE（Border, Correct, Design, Error）设计原则。
+ - 单元测试需遵循 BCDE（Border,Correct,Design,Error）设计原则。
    - 边界值测试（Border）：通过循环边界、特殊数值、数据顺序等边界的输入，得到预期结果。
    - 正确性测试（Correct）：通过正确的输入，得到预期结果。
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。

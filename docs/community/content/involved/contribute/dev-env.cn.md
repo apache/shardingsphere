@@ -80,5 +80,5 @@ git config --global core.longpaths true
 
 ### CheckStyle 插件配置
 
-1. 添加配置文件 ：使用 `src/resources/checkstyle.xml`；
-2. 选择 Checkstyle 版本 ：使用 `8.8`。
+1. 添加配置文件：使用 `src/resources/checkstyle.xml`；
+2. 选择 Checkstyle 版本：使用 `8.8`。
