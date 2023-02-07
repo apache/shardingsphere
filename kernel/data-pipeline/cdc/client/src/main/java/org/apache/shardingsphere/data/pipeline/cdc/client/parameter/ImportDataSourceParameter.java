@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.importer;
+package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Importer factory.
+ * Import data source parameter.
  */
-public final class ImporterFactory {
+@RequiredArgsConstructor
+@Getter
+public final class ImportDataSourceParameter {
     
-    /**
-     * Get importer.
-     *
-     * @param databaseType database type
-     * @return importer
-     */
-    // TODO use SPI
-    public static Importer getImporter(final String databaseType) {
-        switch (databaseType) {
-            case "openGauss":
-                return new OpenGaussImporter();
-            default:
-                return null;
-        }
-    }
+    private final String jdbcUrl;
+    
+    private final String username;
+    
+    private final String password;
 }

@@ -74,7 +74,6 @@ import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -175,7 +174,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         JobDataNodeLine dataNodeLine = jobConfig.getJobShardingDataNodes().get(jobShardingItem);
         Map<ActualTableName, LogicTableName> tableNameMap = new LinkedHashMap<>();
         dataNodeLine.getEntries().forEach(each -> each.getDataNodes().forEach(node -> tableNameMap.put(new ActualTableName(node.getTableName()), new LogicTableName(each.getLogicTableName()))));
-        TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(Collections.emptyMap());
+        TableNameSchemaNameMapping tableNameSchemaNameMapping = getTableNameSchemaNameMapping(jobConfig.getTableNames());
         String dataSourceName = dataNodeLine.getEntries().iterator().next().getDataNodes().iterator().next().getDataSourceName();
         StandardPipelineDataSourceConfiguration actualDataSourceConfiguration = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
         DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig, dataSourceName, actualDataSourceConfiguration, tableNameMap, tableNameSchemaNameMapping);
@@ -183,6 +182,17 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         CDCTaskConfiguration result = new CDCTaskConfiguration(dumperConfig, importerConfig);
         log.debug("buildTaskConfiguration, result={}", result);
         return result;
+    }
+    
+    private TableNameSchemaNameMapping getTableNameSchemaNameMapping(final List<String> tableNames) {
+        Map<LogicTableName, String> tableNameSchemaMap = new LinkedHashMap<>();
+        for (String each : tableNames) {
+            String[] split = each.split("\\.");
+            if (split.length > 1) {
+                tableNameSchemaMap.put(new LogicTableName(split[1]), split[0]);
+            }
+        }
+        return new TableNameSchemaNameMapping(tableNameSchemaMap);
     }
     
     private static DumperConfiguration buildDumperConfiguration(final CDCJobConfiguration jobConfig, final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSourceConfig,

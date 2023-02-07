@@ -18,17 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.cdc.client.importer;
 
 import com.google.protobuf.Any;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.ProtocolStringList;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.ImportDataSourceParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder.SQLBuilder;
 import org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder.SQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.AnyValueConvert;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -36,36 +33,31 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
- * OpenGauss importer.
+ * Data source importer.
  */
-@RequiredArgsConstructor
 @Slf4j
-public final class OpenGaussImporter implements Importer {
-    
-    private final SQLBuilder sqlBuilder = SQLBuilderFactory.getSQLBuilder("openGauss");
+public final class DataSourceImporter implements Importer {
     
     private final Connection connection;
     
-    public OpenGaussImporter() {
-        Properties properties = new Properties();
-        try (InputStream inputStream = OpenGaussImporter.class.getClassLoader().getResourceAsStream("env/opengauss.properties")) {
-            properties.load(inputStream);
-            String url = properties.getProperty("url");
-            String port = properties.getProperty("port");
-            String database = properties.getProperty("database");
-            String username = properties.getProperty("username");
-            String password = properties.getProperty("password");
-            connection = DriverManager.getConnection(String.format("jdbc:opengauss://%s:%s/%s", url, port, database), username, password);
-        } catch (final IOException | SQLException ex) {
+    private final SQLBuilder sqlBuilder;
+    
+    public DataSourceImporter(final String databaseType, final ImportDataSourceParameter dataSourceParam) {
+        String jdbcUrl = Optional.ofNullable(dataSourceParam.getJdbcUrl()).orElseThrow(() -> new IllegalArgumentException("jdbcUrl is null"));
+        String username = Optional.ofNullable(dataSourceParam.getUsername()).orElseThrow(() -> new IllegalArgumentException("username is null"));
+        String password = Optional.ofNullable(dataSourceParam.getPassword()).orElseThrow(() -> new IllegalArgumentException("password is null"));
+        try {
+            connection = DriverManager.getConnection(jdbcUrl, username, password);
+        } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
+        sqlBuilder = SQLBuilderFactory.getSQLBuilder(databaseType);
     }
     
     @Override
-    public void write(final Record record) throws SQLException, InvalidProtocolBufferException {
+    public void write(final Record record) throws Exception {
         Optional<String> sqlOptional = buildSQL(record);
         if (!sqlOptional.isPresent()) {
             log.error("build sql failed, record {}", record);
@@ -120,7 +112,7 @@ public final class OpenGaussImporter implements Importer {
     }
     
     @Override
-    public void close() throws SQLException {
+    public void close() throws Exception {
         connection.close();
     }
 }

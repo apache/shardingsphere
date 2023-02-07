@@ -65,7 +65,7 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
         ClientConnectionContext connectionContext = ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).get();
         switch (connectionContext.getStatus()) {
             case CONNECTED:
-                setLogindRequest(ctx, response, connectionContext);
+                setLoginRequest(ctx, response, connectionContext);
                 break;
             case NOT_LOGGED_IN:
                 sendSubscriptionEvent(ctx, response, connectionContext);
@@ -75,7 +75,7 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
         }
     }
     
-    private void setLogindRequest(final ChannelHandlerContext ctx, final CDCResponse response, final ClientConnectionContext connectionContext) {
+    private void setLoginRequest(final ChannelHandlerContext ctx, final CDCResponse response, final ClientConnectionContext connectionContext) {
         ServerGreetingResult serverGreetingResult = response.getServerGreetingResult();
         log.info("Server greeting result, server version: {}, protocol version: {}", serverGreetingResult.getServerVersion(), serverGreetingResult.getProtocolVersion());
         String encryptPassword = Hashing.sha256().hashBytes(password.getBytes()).toString().toUpperCase();
