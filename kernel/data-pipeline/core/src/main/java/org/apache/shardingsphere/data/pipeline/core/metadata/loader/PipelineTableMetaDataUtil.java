@@ -55,10 +55,11 @@ public final class PipelineTableMetaDataUtil {
         if (1 == primaryKeys.size()) {
             return tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
         }
-        Collection<PipelineIndexMetaData> uniqueIndexes = tableMetaData.getUniqueIndexes();
-        if (uniqueIndexes.isEmpty() && primaryKeys.isEmpty()) {
+        if (primaryKeys.isEmpty()) {
             return null;
         }
+        Collection<PipelineIndexMetaData> uniqueIndexes = tableMetaData.getUniqueIndexes();
+        ShardingSpherePreconditions.checkState(!uniqueIndexes.isEmpty(), () -> new SplitPipelineJobByRangeException(tableName, "no primary key or unique index"));
         if (1 == uniqueIndexes.size() && 1 == uniqueIndexes.iterator().next().getColumns().size()) {
             PipelineColumnMetaData column = uniqueIndexes.iterator().next().getColumns().get(0);
             if (!column.isNullable()) {
