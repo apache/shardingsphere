@@ -54,6 +54,7 @@ public final class LoggingRule implements GlobalRule {
     public LoggingRule(final LoggingRuleConfiguration ruleConfig, final ConfigurationProperties props) {
         syncLoggingConfig(ruleConfig, props);
         configuration = ruleConfig;
+        // TODO skip this while instance type is JDBC
         refreshLogger(ruleConfig);
     }
     
