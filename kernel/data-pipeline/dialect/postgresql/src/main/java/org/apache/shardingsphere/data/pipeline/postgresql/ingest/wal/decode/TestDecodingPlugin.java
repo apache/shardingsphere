@@ -191,6 +191,9 @@ public final class TestDecodingPlugin implements DecodingPlugin {
                 }
             case "bytea":
                 return decodeHex(readNextString(data).substring(2));
+            case "json":
+            case "jsonb":
+                return readNextJson(data);
             default:
                 return readNextString(data);
         }
@@ -208,26 +211,60 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         return eventType.toString();
     }
     
-    private String readNextString(final ByteBuffer data) {
-        StringBuilder result = new StringBuilder();
+    private String readNextJson(final ByteBuffer data) {
         data.get();
+        int offset = 0;
+        int startPosition = data.position();
+        while (data.hasRemaining()) {
+            char c = (char) data.get();
+            if ('}' != c) {
+                offset++;
+                continue;
+            }
+            char c2 = (char) data.get();
+            if ('\'' != c2) {
+                offset++;
+                continue;
+            }
+            char c3 = (char) data.get();
+            if (' ' == c3) {
+                offset++;
+                return getStringSegment(data, startPosition, offset).replace("''", "'");
+            }
+            offset++;
+        }
+        return null;
+    }
+    
+    private String getStringSegment(final ByteBuffer data, final int startPosition, final int offset) {
+        byte[] result = new byte[offset];
+        for (int i = 0; i < offset; i++) {
+            result[i] = data.get(startPosition + i);
+        }
+        return new String(result);
+    }
+    
+    private String readNextString(final ByteBuffer data) {
+        data.get();
+        int startPosition = data.position();
+        int offset = 0;
         while (data.hasRemaining()) {
             char c = (char) data.get();
             if ('\'' == c) {
                 if (!data.hasRemaining()) {
-                    return result.toString();
+                    return getStringSegment(data, startPosition, offset);
                 }
                 char c2 = (char) data.get();
                 if (' ' == c2) {
-                    return result.toString();
+                    return getStringSegment(data, startPosition, offset);
                 }
                 if ('\'' != c2) {
                     throw new IngestException("Read character varying data unexpected exception");
                 }
             }
-            result.append(c);
+            offset++;
         }
-        return result.toString();
+        return getStringSegment(data, startPosition, offset);
     }
     
     private byte[] decodeHex(final String hexString) {
