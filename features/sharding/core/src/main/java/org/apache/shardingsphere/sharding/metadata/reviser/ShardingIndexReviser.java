@@ -49,4 +49,9 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
         String indexNameSuffix = "_" + actualTableName;
         return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
     }
+    
+    @Override
+    public String getType() {
+        return ShardingRule.class.getSimpleName();
+    }
 }

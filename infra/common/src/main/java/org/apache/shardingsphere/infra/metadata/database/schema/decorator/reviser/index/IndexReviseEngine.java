@@ -19,11 +19,11 @@ package org.apache.shardingsphere.infra.metadata.database.schema.decorator.revis
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Index revise engine.
@@ -37,14 +37,20 @@ public final class IndexReviseEngine<T extends ShardingSphereRule> {
      * 
      * @param tableName table name
      * @param originalMetaDataList original index meta data list
-     * @param reviser index reviser
      * @param rule rule
      * @return revised index meta data
      */
-    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList, final IndexReviser<T> reviser, final T rule) {
-        if (null == reviser) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList, final T rule) {
+        Optional<IndexReviser> reviser = TypedSPILoader.findService(IndexReviser.class, rule.getClass().getSimpleName());
+        if (!reviser.isPresent()) {
             return originalMetaDataList;
         }
-        return originalMetaDataList.stream().map(each -> reviser.revise(tableName, each, rule)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new));
+        Collection<IndexMetaData> result = new LinkedHashSet<>();
+        for (IndexMetaData each : originalMetaDataList) {
+            Optional<IndexMetaData> indexMetaData = reviser.get().revise(tableName, each, rule);
+            indexMetaData.ifPresent(result::add);
+        }
+        return result;
     }
 }
