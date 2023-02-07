@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowMigrationRuleResultSet
+org.apache.shardingsphere.sharding.metadata.reviser.ShardingTableNameReviser

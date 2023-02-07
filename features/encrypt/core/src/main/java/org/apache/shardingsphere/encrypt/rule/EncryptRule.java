@@ -28,8 +28,6 @@ import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLikeQueryEncr
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -309,21 +307,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
             }
         }
         return Optional.empty();
-    }
-    
-    /**
-     * Set schema meta data.
-     *
-     * @param databaseName database name
-     * @param schemas schema map
-     */
-    public void setSchemaMetaData(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
-        for (StandardEncryptAlgorithm<?, ?> each : standardEncryptors.values()) {
-            if (each instanceof SchemaMetaDataAware) {
-                ((SchemaMetaDataAware) each).setDatabaseName(databaseName);
-                ((SchemaMetaDataAware) each).setSchemas(schemas);
-            }
-        }
     }
     
     @Override

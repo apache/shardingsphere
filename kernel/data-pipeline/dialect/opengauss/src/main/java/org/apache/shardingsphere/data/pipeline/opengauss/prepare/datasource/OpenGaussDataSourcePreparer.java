@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 
 import com.google.common.base.Splitter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.shaded.com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration.CreateTableEntry;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 
 import java.sql.Connection;
@@ -31,7 +33,21 @@ import java.util.stream.Collectors;
 /**
  * Data source preparer for openGauss.
  */
+@Slf4j
 public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePreparer {
+    
+    private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
+    
+    @Override
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) {
+        try {
+            super.prepareTargetSchemas(param);
+        } catch (final SQLException ex) {
+            // openGauss CREATE SCHEMA doesn't support IF NOT EXISTS
+            // TODO Use actual data source to create schema, check whether schema exists or not
+            log.warn("create schema failed", ex);
+        }
+    }
     
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
@@ -43,6 +59,20 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
                     executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(sql));
                 }
             }
+        }
+    }
+    
+    @Override
+    protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
+        try {
+            super.executeTargetTableSQL(targetConnection, sql);
+        } catch (final SQLException ex) {
+            for (String ignoreMessage : IGNORE_EXCEPTION_MESSAGE) {
+                if (ex.getMessage().contains(ignoreMessage)) {
+                    return;
+                }
+            }
+            throw ex;
         }
     }
     

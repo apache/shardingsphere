@@ -19,44 +19,30 @@ package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show migration check algorithms.
+ * Show migration check algorithms executor.
  */
-public final class ShowMigrationCheckAlgorithmsResultSet implements DatabaseDistSQLResultSet {
-    
-    private Iterator<Collection<Object>> data;
+public final class ShowMigrationCheckAlgorithmsExecutor implements QueryableRALExecutor<ShowMigrationCheckAlgorithmsStatement> {
     
     @Override
-    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationCheckAlgorithmsStatement sqlStatement) {
         InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION");
-        data = jobAPI.listDataConsistencyCheckAlgorithms().stream().map(
-                each -> (Collection<Object>) Arrays.<Object>asList(each.getType(), String.join(",", each.getSupportedDatabaseTypes()), each.getDescription())).collect(Collectors.toList()).iterator();
+        return jobAPI.listDataConsistencyCheckAlgorithms().stream().map(
+                each -> new LocalDataQueryResultRow(each.getType(), String.join(",", each.getSupportedDatabaseTypes()), each.getDescription())).collect(Collectors.toList());
     }
     
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("type", "supported_database_types", "description");
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return data.next();
     }
     
     @Override

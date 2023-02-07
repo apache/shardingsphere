@@ -36,7 +36,7 @@ public final class SQLHintShadowAlgorithmTest {
     
     @Before
     public void init() {
-        shadowAlgorithm = (SQLHintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SQL_HINT", new Properties());    
+        shadowAlgorithm = (SQLHintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SQL_HINT", new Properties());
     }
     
     @Test
