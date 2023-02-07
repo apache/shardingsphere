@@ -20,10 +20,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
@@ -63,31 +63,31 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
     }
     
     private String getConfigurationValue(final ShardingSphereMetaData metaData, final String variableName) {
-        if (LoggingConstants.SQL_SHOW_VARIABLE_NAME.equalsIgnoreCase(key) || LoggingConstants.SQL_SIMPLE_VARIABLE_NAME.equalsIgnoreCase(key)) {
-            return getLoggingPropsValue(contextManager, key);
+        if (LoggingConstants.SQL_SHOW_VARIABLE_NAME.equalsIgnoreCase(variableName) || LoggingConstants.SQL_SIMPLE_VARIABLE_NAME.equalsIgnoreCase(variableName)) {
+            return getLoggingPropsValue(metaData, variableName);
         }
         return metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString();
     }
     
-    private String getLoggingPropsValue(final ContextManager contextManager, final String key) {
-        Optional<ShardingSphereLogger> sqlLogger = getSQLLogger(contextManager);
+    private String getLoggingPropsValue(final ShardingSphereMetaData metaData, final String key) {
+        Optional<ShardingSphereLogger> sqlLogger = getSQLLogger(metaData);
         if (sqlLogger.isPresent()) {
             Properties props = sqlLogger.get().getProps();
             switch (key) {
                 case LoggingConstants.SQL_SHOW_VARIABLE_NAME:
                     return props.getOrDefault(LoggingConstants.SQL_LOG_ENABLE,
-                            contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString()).toString();
+                            metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString()).toString();
                 case LoggingConstants.SQL_SIMPLE_VARIABLE_NAME:
                     return props.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE,
-                            contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString()).toString();
+                            metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString()).toString();
                 default:
             }
         }
-        return contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString();
+        return metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString();
     }
     
-    private Optional<ShardingSphereLogger> getSQLLogger(final ContextManager contextManager) {
-        return contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(LoggingRule.class).getConfiguration().getLoggers().stream()
+    private Optional<ShardingSphereLogger> getSQLLogger(final ShardingSphereMetaData metaData) {
+        return metaData.getGlobalRuleMetaData().getSingleRule(LoggingRule.class).getConfiguration().getLoggers().stream()
                 .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
     }
     
