@@ -18,18 +18,14 @@
 package org.apache.shardingsphere.encrypt.metadata;
 
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
-import org.apache.shardingsphere.encrypt.metadata.reviser.EncryptColumnNameReviser;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -54,11 +50,7 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
     }
     
     private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule) {
-        return encryptRule.findEncryptTable(tableName).map(optional -> new TableMetaDataReviseEngine<>(encryptRule).revise(tableMetaData, getColumnRevisers(optional))).orElse(tableMetaData);
-    }
-    
-    private Collection<ColumnReviser> getColumnRevisers(final EncryptTable encryptTable) {
-        return Collections.singleton(new EncryptColumnNameReviser(encryptTable));
+        return encryptRule.findEncryptTable(tableName).map(optional -> new TableMetaDataReviseEngine<>(encryptRule).revise(tableMetaData)).orElse(tableMetaData);
     }
     
     @Override

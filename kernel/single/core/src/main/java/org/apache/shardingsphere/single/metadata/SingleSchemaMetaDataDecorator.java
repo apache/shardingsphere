@@ -26,7 +26,6 @@ import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -51,7 +50,7 @@ public final class SingleSchemaMetaDataDecorator implements RuleBasedSchemaMetaD
     }
     
     private TableMetaData decorate(final SingleRule rule, final TableMetaData tableMetaData) {
-        return new TableMetaDataReviseEngine<>(rule).revise(tableMetaData, Collections.emptyList());
+        return new TableMetaDataReviseEngine<>(rule).revise(tableMetaData);
     }
     
     @Override
