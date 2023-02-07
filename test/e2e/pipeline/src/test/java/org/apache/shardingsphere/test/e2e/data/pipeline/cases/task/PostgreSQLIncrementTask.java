@@ -73,8 +73,9 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = 0 == random.nextInt() % 2 ? null : "中文测试";
-        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), status};
-        String insertSQL = String.format("INSERT INTO %s (order_id,user_id,status) VALUES (?, ?, ?)", getTableNameWithSchema(orderTableName));
+        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), status, PipelineCaseHelper.generateJsonString(4, true),
+                PipelineCaseHelper.generateJsonString(4, false)};
+        String insertSQL = String.format("INSERT INTO %s (order_id,user_id,status,t_json,t_jsonb) VALUES (?, ?, ?, ?, ?)", getTableNameWithSchema(orderTableName));
         log.info("insert order sql:{}", insertSQL);
         DataSourceExecuteUtil.execute(dataSource, insertSQL, orderInsertDate);
         return orderInsertDate[0];
@@ -84,15 +85,15 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
         Object[] orderInsertItemDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), PipelineCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
-        String insertSql = "INSERT INTO %s(item_id,order_id,user_id,status) VALUES(?,?,?,?)";
-        DataSourceExecuteUtil.execute(dataSource, String.format(insertSql, getTableNameWithSchema("t_order_item")), orderInsertItemDate);
+        String insertSql = String.format("INSERT INTO %s(item_id,order_id,user_id,status) VALUES(?,?,?,?)", getTableNameWithSchema("t_order_item"));
+        DataSourceExecuteUtil.execute(dataSource, insertSql, orderInsertItemDate);
         return orderInsertItemDate[0];
     }
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
-        Object[] updateData = {"updated" + Instant.now().getEpochSecond(), primaryKey};
-        String updateSql = String.format("UPDATE %s SET status = ? WHERE order_id = ?", getTableNameWithSchema(orderTableName));
-        DataSourceExecuteUtil.execute(dataSource, String.format(updateSql, getTableNameWithSchema("t_order_item")), updateData);
+        Object[] updateData = {"updated" + Instant.now().getEpochSecond(), PipelineCaseHelper.generateJsonString(4, true), PipelineCaseHelper.generateJsonString(4, false), primaryKey};
+        String updateSql = String.format("UPDATE %s SET status = ?, t_json = ?, t_jsonb = ? WHERE order_id = ?", getTableNameWithSchema(orderTableName));
+        DataSourceExecuteUtil.execute(dataSource, updateSql, updateData);
     }
     
     private String getTableNameWithSchema(final String tableName) {
