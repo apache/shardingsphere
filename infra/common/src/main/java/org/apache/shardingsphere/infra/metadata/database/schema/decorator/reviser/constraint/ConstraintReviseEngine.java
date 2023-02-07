@@ -34,22 +34,13 @@ public final class ConstraintReviseEngine {
      * 
      * @param tableName table name
      * @param originalMetaDataList original constraint meta data list
-     * @param revisers constraint revisers
+     * @param reviser constraint reviser
      * @return revised constraint meta data
      */
-    public Collection<ConstraintMetaData> revise(final String tableName, final Collection<ConstraintMetaData> originalMetaDataList, final Collection<ConstraintReviser> revisers) {
-        return originalMetaDataList.stream().map(each -> revise(tableName, each, revisers)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-    
-    private Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final Collection<ConstraintReviser> revisers) {
-        ConstraintMetaData result = originalMetaData;
-        for (ConstraintReviser each : revisers) {
-            Optional<ConstraintMetaData> revisedMetaData = each.revise(tableName, result);
-            if (!revisedMetaData.isPresent()) {
-                return Optional.empty();
-            }
-            result = revisedMetaData.get();
+    public Collection<ConstraintMetaData> revise(final String tableName, final Collection<ConstraintMetaData> originalMetaDataList, final ConstraintReviser reviser) {
+        if (null == reviser) {
+            return originalMetaDataList;
         }
-        return Optional.of(result);
+        return originalMetaDataList.stream().map(each -> reviser.revise(tableName, each)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

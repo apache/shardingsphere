@@ -53,8 +53,7 @@ public final class SingleSchemaMetaDataDecorator implements RuleBasedSchemaMetaD
     }
     
     private TableMetaData decorate(final SingleRule rule, final TableMetaData tableMetaData) {
-        return new TableMetaDataReviseEngine<>(rule).revise(
-                tableMetaData, Collections.emptyList(), Collections.singleton(new SingleIndexReviser()), Collections.singleton(new SingleConstraintReviser()));
+        return new TableMetaDataReviseEngine<>(rule).revise(tableMetaData, Collections.emptyList(), new SingleIndexReviser(), new SingleConstraintReviser());
     }
     
     @Override

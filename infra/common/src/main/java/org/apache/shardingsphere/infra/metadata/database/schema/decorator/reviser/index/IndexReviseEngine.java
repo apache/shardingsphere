@@ -34,22 +34,13 @@ public final class IndexReviseEngine {
      * 
      * @param tableName table name
      * @param originalMetaDataList original index meta data list
-     * @param revisers index revisers
+     * @param reviser index reviser
      * @return revised index meta data
      */
-    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList, final Collection<IndexReviser> revisers) {
-        return originalMetaDataList.stream().map(each -> revise(tableName, each, revisers)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-    
-    private Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<IndexReviser> revisers) {
-        IndexMetaData result = originalMetaData;
-        for (IndexReviser each : revisers) {
-            Optional<IndexMetaData> revisedMetaData = each.revise(tableName, result);
-            if (!revisedMetaData.isPresent()) {
-                return Optional.empty();
-            }
-            result = revisedMetaData.get();
+    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList, final IndexReviser reviser) {
+        if (null == reviser) {
+            return originalMetaDataList;
         }
-        return Optional.of(result);
+        return originalMetaDataList.stream().map(each -> reviser.revise(tableName, each)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
