@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -112,7 +111,8 @@ public final class PipelineCaseHelper {
     public static String generateJsonString(final int strLength, final boolean useUnicodeCharacter) {
         String value;
         if (useUnicodeCharacter && strLength > 1) {
-            value = Strings.repeat("中", strLength / 2);
+            // TODO need support unicode
+            value = generateString(strLength);
         } else {
             value = generateString(strLength);
         }
