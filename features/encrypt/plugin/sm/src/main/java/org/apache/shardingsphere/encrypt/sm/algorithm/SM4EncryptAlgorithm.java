@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -63,9 +62,6 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private static final Set<String> PADDINGS = new HashSet<>(Arrays.asList("PKCS5Padding", "PKCS7Padding"));
     
-    @Getter
-    private Properties props;
-    
     private byte[] sm4Key;
     
     private byte[] sm4Iv;
@@ -74,7 +70,6 @@ public final class SM4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         String sm4Mode = createSm4Mode(props);
         String sm4Padding = createSm4Padding(props);
         sm4ModePadding = "SM4/" + sm4Mode + "/" + sm4Padding;

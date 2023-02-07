@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.cosid.algorithm.keygen;
 
-import lombok.Getter;
 import me.ahoo.cosid.converter.Radix62IdConverter;
 import me.ahoo.cosid.snowflake.ClockSyncSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
@@ -44,7 +43,6 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     
     public static final String EPOCH_KEY = "epoch";
     
-    @Getter
     private Properties props;
     
     private SnowflakeId snowflakeId;

@@ -38,12 +38,18 @@ public final class EncryptTable {
     private final Boolean queryWithCipherColumn;
     
     public EncryptTable(final EncryptTableRuleConfiguration config) {
-        columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getLikeQueryColumn(),
-                    each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName(), each.getQueryWithCipherColumn()));
-        }
+        columns = createEncryptColumns(config);
         queryWithCipherColumn = config.getQueryWithCipherColumn();
+    }
+    
+    private Map<String, EncryptColumn> createEncryptColumns(final EncryptTableRuleConfiguration config) {
+        Map<String, EncryptColumn> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (EncryptColumnRuleConfiguration each : config.getColumns()) {
+            EncryptColumn encryptColumn = new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(),
+                    each.getLikeQueryColumn(), each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName(), each.getQueryWithCipherColumn());
+            result.put(each.getLogicColumn(), encryptColumn);
+        }
+        return result;
     }
     
     /**

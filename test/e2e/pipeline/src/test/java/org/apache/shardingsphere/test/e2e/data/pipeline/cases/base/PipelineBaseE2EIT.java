@@ -128,6 +128,9 @@ public abstract class PipelineBaseE2EIT {
     }
     
     protected void initEnvironment(final DatabaseType databaseType, final JobType jobType) throws SQLException {
+        sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
+        proxyDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(containerComposer.getProxyJdbcUrl(PROXY_DATABASE)),
+                ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
         String defaultDatabaseName = "";
         if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             defaultDatabaseName = "postgres";
@@ -139,8 +142,6 @@ public abstract class PipelineBaseE2EIT {
             createProxyDatabase(connection);
         }
         cleanUpDataSource();
-        sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
-        proxyDataSource = StorageContainerUtil.generateDataSource(containerComposer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
     private void cleanUpProxyDatabase(final Connection connection) {
@@ -149,6 +150,7 @@ public abstract class PipelineBaseE2EIT {
         }
         try {
             connection.createStatement().execute(String.format("DROP DATABASE %s", PROXY_DATABASE));
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
         } catch (final SQLException ex) {
             log.warn("Drop proxy database failed, maybe it's not exist. error msg={}", ex.getMessage());
         }
@@ -188,7 +190,10 @@ public abstract class PipelineBaseE2EIT {
     }
     
     private void createProxyDatabase(final Connection connection) throws SQLException {
-        connection.createStatement().execute(String.format("CREATE DATABASE %s", PROXY_DATABASE));
+        String sql = String.format("CREATE DATABASE %s", PROXY_DATABASE);
+        log.info("create proxy database {}", PROXY_DATABASE);
+        connection.createStatement().execute(sql);
+        ThreadUtil.sleep(2, TimeUnit.SECONDS);
     }
     
     protected void addResource(final String distSQL) throws SQLException {

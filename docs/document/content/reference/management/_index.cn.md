@@ -8,7 +8,7 @@ weight = 3
 
 在定义的命名空间下，`rules` 、`props` 和 `metadata` 节点以 YAML 格式存储配置，可通过修改节点来实现对于配置的动态管理。
 `nodes` 存储数据库访问对象运行节点，用于区分不同数据库访问实例。
-`sys_data` 存储系统表和数据。
+`sys_data` 存储系统表中的数据记录。
 
 ```
 namespace

@@ -49,7 +49,7 @@ public final class AddShardingExecutor extends AbstractHintExecutor {
     private void executeShow() throws SQLException {
         log.info("show ...");
         ResultSet resultSet = statement.executeQuery(SHOW_STATUS);
-        log.info(new Gson().toJson(getResultData(resultSet)));;
+        log.info(new Gson().toJson(getResultData(resultSet)));
     }
     
     private void executeAdd() throws SQLException {

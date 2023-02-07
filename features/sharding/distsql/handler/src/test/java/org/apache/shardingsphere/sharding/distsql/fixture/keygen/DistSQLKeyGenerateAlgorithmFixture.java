@@ -17,20 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.fixture.keygen;
 
-import lombok.Getter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
-
-@Getter
 public final class DistSQLKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
-    
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
     
     @Override
     public Comparable<?> generateKey() {

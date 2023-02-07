@@ -107,7 +107,12 @@ public enum PostgreSQLCharacterSets {
      * @return corresponding {@link Charset}
      */
     public static Charset findCharacterSet(final String charsetName) {
-        PostgreSQLCharacterSets result = CHARACTER_SETS_MAP.get(charsetName.toUpperCase());
-        return null != result && null != result.charset ? result.charset : Charset.forName(charsetName);
+        String formattedCharsetName = formatValue(charsetName);
+        PostgreSQLCharacterSets result = CHARACTER_SETS_MAP.get(formattedCharsetName.toUpperCase());
+        return null != result && null != result.charset ? result.charset : Charset.forName(formattedCharsetName);
+    }
+    
+    private static String formatValue(final String value) {
+        return value.startsWith("'") && value.endsWith("'") || value.startsWith("\"") && value.endsWith("\"") ? value.substring(1, value.length() - 1) : value.trim();
     }
 }

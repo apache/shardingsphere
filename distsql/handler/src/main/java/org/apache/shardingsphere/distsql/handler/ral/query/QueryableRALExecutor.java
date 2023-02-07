@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.distsql.handler.ral.query;
 
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Queryable RAL executor.
  */
 @SingletonSPI
-public interface QueryableRALExecutor extends TypedSPI {
+public interface QueryableRALExecutor<T extends QueryableRALStatement> extends TypedSPI {
     
     /**
      * Get column names.
@@ -34,4 +37,14 @@ public interface QueryableRALExecutor extends TypedSPI {
      * @return column names
      */
     Collection<String> getColumnNames();
+    
+    /**
+     * Get query result rows.
+     *
+     * @param sqlStatement SQL statement
+     * @return query result rows
+     */
+    default Collection<LocalDataQueryResultRow> getRows(T sqlStatement) {
+        return Collections.emptyList();
+    }
 }

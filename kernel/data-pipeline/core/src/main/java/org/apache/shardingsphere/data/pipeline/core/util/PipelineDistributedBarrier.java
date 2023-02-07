@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.util;
 
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +38,10 @@ import java.util.concurrent.TimeUnit;
  * Pipeline distributed barrier.
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineDistributedBarrier {
+    
+    private static final PipelineDistributedBarrier INSTANCE = new PipelineDistributedBarrier();
     
     private static final LazyInitializer<ClusterPersistRepository> REPOSITORY_LAZY_INITIALIZER = new LazyInitializer<ClusterPersistRepository>() {
         
@@ -47,6 +52,15 @@ public final class PipelineDistributedBarrier {
     };
     
     private final Map<String, InnerCountDownLatchHolder> countDownLatchHolders = new ConcurrentHashMap<>();
+    
+    /**
+     * Get instance.
+     *
+     * @return instance
+     */
+    public static PipelineDistributedBarrier getInstance() {
+        return INSTANCE;
+    }
     
     @SneakyThrows(ConcurrentException.class)
     private static ClusterPersistRepository getRepository() {

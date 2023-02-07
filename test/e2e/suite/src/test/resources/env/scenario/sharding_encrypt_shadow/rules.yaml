@@ -83,7 +83,7 @@ rules:
           - user-id-update-match-algorithm
           - user-id-delete-match-algorithm
           - user-id-select-match-algorithm
-          - simple-hint-algorithm
+          - sql-hint-algorithm
     shadowAlgorithms:
       user-id-insert-match-algorithm:
         type: VALUE_MATCH
@@ -109,8 +109,8 @@ rules:
           operation: select
           column: user_id
           value: 0
-      simple-hint-algorithm:
-        type: SIMPLE_HINT
+      sql-hint-algorithm:
+        type: SQL_HINT
         props:
           foo: bar
 

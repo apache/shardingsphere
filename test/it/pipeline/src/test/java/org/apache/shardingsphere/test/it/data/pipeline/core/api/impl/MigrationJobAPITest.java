@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
@@ -48,6 +49,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -69,6 +71,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MigrationJobAPITest {
@@ -111,10 +115,14 @@ public final class MigrationJobAPITest {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         assertFalse(getJobConfigurationPOJO(jobId.get()).isDisabled());
-        jobAPI.stop(jobId.get());
-        assertTrue(getJobConfigurationPOJO(jobId.get()).isDisabled());
-        jobAPI.startDisabledJob(jobId.get());
-        assertFalse(getJobConfigurationPOJO(jobId.get()).isDisabled());
+        PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
+        try (MockedStatic<PipelineDistributedBarrier> distributedBarrierMock = mockStatic(PipelineDistributedBarrier.class)) {
+            distributedBarrierMock.when(PipelineDistributedBarrier::getInstance).thenReturn(mockBarrier);
+            jobAPI.stop(jobId.get());
+            assertTrue(getJobConfigurationPOJO(jobId.get()).isDisabled());
+            jobAPI.startDisabledJob(jobId.get());
+            assertFalse(getJobConfigurationPOJO(jobId.get()).isDisabled());
+        }
     }
     
     @Test
@@ -123,7 +131,11 @@ public final class MigrationJobAPITest {
         assertTrue(jobId.isPresent());
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
-        jobAPI.rollback(jobId.get());
+        PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
+        try (MockedStatic<PipelineDistributedBarrier> distributedBarrierMock = mockStatic(PipelineDistributedBarrier.class)) {
+            distributedBarrierMock.when(PipelineDistributedBarrier::getInstance).thenReturn(mockBarrier);
+            jobAPI.rollback(jobId.get());
+        }
         assertNull(getJobConfigurationPOJO(jobId.get()));
     }
     
@@ -133,7 +145,11 @@ public final class MigrationJobAPITest {
         assertTrue(jobId.isPresent());
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
-        jobAPI.commit(jobId.get());
+        PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
+        try (MockedStatic<PipelineDistributedBarrier> distributedBarrierMock = mockStatic(PipelineDistributedBarrier.class)) {
+            distributedBarrierMock.when(PipelineDistributedBarrier::getInstance).thenReturn(mockBarrier);
+            jobAPI.commit(jobId.get());
+        }
         assertNull(getJobConfigurationPOJO(jobId.get()));
     }
     

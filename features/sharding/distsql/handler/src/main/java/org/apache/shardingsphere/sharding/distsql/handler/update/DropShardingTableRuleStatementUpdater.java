@@ -119,10 +119,18 @@ public final class DropShardingTableRuleStatementUpdater extends AbstractDropSha
                 && null == currentRuleConfig.getDefaultDatabaseShardingStrategy() && null == currentRuleConfig.getDefaultTableShardingStrategy();
     }
     
+    private void dropShardingTable(final ShardingRuleConfiguration currentRuleConfig, final String tableName) {
+        currentRuleConfig.getTables().removeAll(currentRuleConfig.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
+        currentRuleConfig.getAutoTables().removeAll(currentRuleConfig.getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
+    }
+    
     private void dropUnusedKeyGenerator(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedKeyGenerators = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
                 .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet());
-        inUsedKeyGenerators.addAll(currentRuleConfig.getAutoTables().stream().map(each -> each.getKeyGenerateStrategy().getKeyGeneratorName()).collect(Collectors.toSet()));
+        inUsedKeyGenerators.addAll(currentRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
+                .map(each -> each.getKeyGenerateStrategy().getKeyGeneratorName()).collect(Collectors.toSet()));
+        inUsedKeyGenerators.addAll(currentRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
+                .map(each -> each.getKeyGenerateStrategy().getKeyGeneratorName()).collect(Collectors.toSet()));
         if (null != currentRuleConfig.getDefaultKeyGenerateStrategy()) {
             inUsedKeyGenerators.add(currentRuleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         }
@@ -133,17 +141,15 @@ public final class DropShardingTableRuleStatementUpdater extends AbstractDropSha
     private void dropUnusedAuditor(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAuditors = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getAuditStrategy).filter(Objects::nonNull)
                 .flatMap(each -> each.getAuditorNames().stream()).collect(Collectors.toSet());
-        inUsedAuditors.addAll(currentRuleConfig.getAutoTables().stream().flatMap(each -> each.getAuditStrategy().getAuditorNames().stream()).collect(Collectors.toSet()));
+        inUsedAuditors.addAll(currentRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getAuditStrategy()))
+                .flatMap(each -> each.getAuditStrategy().getAuditorNames().stream()).collect(Collectors.toSet()));
+        inUsedAuditors.addAll(currentRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getAuditStrategy()))
+                .flatMap(each -> each.getAuditStrategy().getAuditorNames().stream()).collect(Collectors.toSet()));
         if (null != currentRuleConfig.getDefaultAuditStrategy()) {
             inUsedAuditors.addAll(currentRuleConfig.getDefaultAuditStrategy().getAuditorNames());
         }
         Collection<String> unusedAuditors = currentRuleConfig.getAuditors().keySet().stream().filter(each -> !inUsedAuditors.contains(each)).collect(Collectors.toSet());
         unusedAuditors.forEach(each -> currentRuleConfig.getAuditors().remove(each));
-    }
-    
-    private void dropShardingTable(final ShardingRuleConfiguration currentRuleConfig, final String tableName) {
-        currentRuleConfig.getTables().removeAll(currentRuleConfig.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
-        currentRuleConfig.getAutoTables().removeAll(currentRuleConfig.getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()));
     }
     
     @Override

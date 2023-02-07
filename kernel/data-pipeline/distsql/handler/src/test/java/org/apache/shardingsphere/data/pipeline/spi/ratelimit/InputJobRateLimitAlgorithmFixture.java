@@ -17,27 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
 
-import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 
-import java.util.Properties;
-
-@Getter
 public final class InputJobRateLimitAlgorithmFixture implements JobRateLimitAlgorithm {
     
-    private Properties props;
-    
     @Override
-    public void init(final Properties props) {
-        this.props = props;
+    public void intercept(final JobOperationType type, final Number data) {
     }
     
     @Override
     public String getType() {
         return "FIXTURE_INPUT";
-    }
-    
-    @Override
-    public void intercept(final JobOperationType type, final Number data) {
     }
 }

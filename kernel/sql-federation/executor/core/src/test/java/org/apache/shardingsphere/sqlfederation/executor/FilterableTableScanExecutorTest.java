@@ -57,7 +57,7 @@ public final class FilterableTableScanExecutorTest {
         when(schemaData.getTableData().get("test")).thenReturn(tableData);
         ShardingSphereTable shardingSphereTable = mock(ShardingSphereTable.class);
         when(shardingSphereTable.getName()).thenReturn("test");
-        Enumerable<Object[]> enumerable = new FilterableTableScanExecutor(null, null, null, optimizerContext, null, executorContext, shardingSphereData, null)
+        Enumerable<Object[]> enumerable = new FilterableTableScanExecutor(null, null, null, optimizerContext, null, executorContext, shardingSphereData)
                 .execute(shardingSphereTable, mock(ScanNodeExecutorContext.class));
         Enumerator<Object[]> actual = enumerable.enumerator();
         actual.moveNext();

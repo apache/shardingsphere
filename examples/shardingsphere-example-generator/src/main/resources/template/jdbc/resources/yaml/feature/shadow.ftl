@@ -25,8 +25,8 @@
         - shadow_group
       shadowAlgorithmNames:
         - user_id_insert_match_algorithm
-        - simple_hint_algorithm
-  defaultShadowAlgorithmName: simple-hint-algorithm
+        - sql_hint_algorithm
+  defaultShadowAlgorithmName: sql-hint-algorithm
   shadowAlgorithms:
     user_id_insert_match_algorithm:
       type: VALUE_MATCH
@@ -34,8 +34,8 @@
         operation: insert
         column: order_type
         value: 1
-    simple-hint-algorithm:
-      type: SIMPLE_HINT
+    sql-hint-algorithm:
+      type: SQL_HINT
       props:
         shadow: true
         foo: bar

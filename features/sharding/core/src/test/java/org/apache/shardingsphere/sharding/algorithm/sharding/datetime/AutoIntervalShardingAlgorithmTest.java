@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -47,8 +46,8 @@ public final class AutoIntervalShardingAlgorithmTest {
     
     @Before
     public void setup() {
-        shardingAlgorithm = createAutoIntervalShardingAlgorithm(PropertiesBuilder.build(
-                new Property("datetime-lower", "2020-01-01 00:00:00"), new Property("datetime-upper", "2020-01-01 00:00:16"), new Property("sharding-seconds", "4")));
+        shardingAlgorithm = (AutoIntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "AUTO_INTERVAL",
+                PropertiesBuilder.build(new Property("datetime-lower", "2020-01-01 00:00:00"), new Property("datetime-upper", "2020-01-01 00:00:16"), new Property("sharding-seconds", "4")));
     }
     
     @Test
@@ -111,14 +110,14 @@ public final class AutoIntervalShardingAlgorithmTest {
     public void assertGetAutoTablesAmount() {
         Properties props = PropertiesBuilder.build(
                 new Property("datetime-lower", "2020-01-01 00:00:00"), new Property("datetime-upper", "2021-01-01 00:00:00"), new Property("sharding-seconds", "86400"));
-        assertThat(createAutoIntervalShardingAlgorithm(props).getAutoTablesAmount(), is(368));
+        assertThat(((AutoIntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "AUTO_INTERVAL", props)).getAutoTablesAmount(), is(368));
     }
     
     @Test
     public void assertRangeDoShardingWithGreaterTenTables() {
         Properties props = PropertiesBuilder.build(
                 new Property("datetime-lower", "2020-01-01 00:00:00"), new Property("datetime-upper", "2020-01-01 00:00:30"), new Property("sharding-seconds", "1"));
-        AutoIntervalShardingAlgorithm shardingAlgorithm = createAutoIntervalShardingAlgorithm(props);
+        AutoIntervalShardingAlgorithm shardingAlgorithm = (AutoIntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "AUTO_INTERVAL", props);
         List<String> availableTargetNames = new LinkedList<>();
         for (int i = 0; i < 32; i++) {
             availableTargetNames.add("t_order_" + i);
@@ -132,7 +131,7 @@ public final class AutoIntervalShardingAlgorithmTest {
     public void assertRangeDoShardingInValueWithMilliseconds() {
         Properties props = PropertiesBuilder.build(
                 new Property("datetime-lower", "2020-01-01 00:00:00"), new Property("datetime-upper", "2020-01-01 00:00:30"), new Property("sharding-seconds", "1"));
-        AutoIntervalShardingAlgorithm shardingAlgorithm = createAutoIntervalShardingAlgorithm(props);
+        AutoIntervalShardingAlgorithm shardingAlgorithm = (AutoIntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "AUTO_INTERVAL", props);
         List<String> availableTargetNames = new LinkedList<>();
         for (int i = 0; i < 32; i++) {
             availableTargetNames.add("t_order_" + i);
@@ -149,9 +148,5 @@ public final class AutoIntervalShardingAlgorithmTest {
         Collection<String> actualWithThreeMilliseconds = shardingAlgorithm.doSharding(availableTargetNames,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2020-01-01 00:00:11.123", "2020-01-01 00:00:21.123")));
         assertThat(actualWithThreeMilliseconds.size(), is(11));
-    }
-    
-    private AutoIntervalShardingAlgorithm createAutoIntervalShardingAlgorithm(final Properties props) {
-        return ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("AUTO_INTERVAL", props), ShardingAlgorithm.class);
     }
 }

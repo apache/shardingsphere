@@ -33,13 +33,12 @@ Type：REGEX_MATCH
 
 ### Hint-based shadow algorithm
 
-#### Simple Hint matching shadow algorithm
+#### SQL HINT shadow algorithm
 
-Type：SIMPLE_HINT
-
-| *Attribute Name* | *Data Type* | *Description* |
-| ---------------- | ----------- | ------------- |
-| foo              | String      | bar           |
+Type：SQL_HINT
+```sql
+/* SHARDINGSPHERE_HINT: SHADOW=true */
+```
 
 ## Configuration sample
 

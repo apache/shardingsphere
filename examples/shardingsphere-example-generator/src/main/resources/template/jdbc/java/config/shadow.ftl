@@ -18,7 +18,7 @@
     private RuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
-        result.setDefaultShadowAlgorithmName("simple-hint-algorithm");
+        result.setDefaultShadowAlgorithmName("sql-hint-algorithm");
         result.setDataSources(createShadowDataSources());
         result.setTables(createShadowTables());
         return result;
@@ -39,7 +39,7 @@
         result.add("order-type-insert-match-algorithm");
         result.add("order-type-delete-match-algorithm");
         result.add("order-type-select-match-algorithm");
-        result.add("simple-hint-algorithm");
+        result.add("sql-hint-algorithm");
         return result;
     }
     
@@ -75,6 +75,6 @@
         Properties noteAlgorithmProps = new Properties();
         noteAlgorithmProps.setProperty("shadow", "true");
         noteAlgorithmProps.setProperty("foo", "bar");
-        result.put("simple-hint-algorithm", new AlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
+        result.put("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", noteAlgorithmProps));
         return result;
     }
