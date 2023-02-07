@@ -197,9 +197,13 @@ public abstract class PipelineBaseE2EIT {
     }
     
     protected String appendExtraParam(final String jdbcUrl) {
-        return DatabaseTypeUtil.isMySQL(getDatabaseType())
-                ? new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())))
-                : jdbcUrl;
+        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
+            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
+        }
+        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType()) || DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified")));
+        }
+        return jdbcUrl;
     }
     
     protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
@@ -351,6 +355,7 @@ public abstract class PipelineBaseE2EIT {
         proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
         String countSQL = Strings.isNullOrEmpty(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
         Map<String, Object> actual = queryForListWithLog(countSQL).get(0);
+        log.info("actual count {}", actual.get("count"));
         assertTrue("actual count " + actual.get("count"), Integer.parseInt(actual.get("count").toString()) > tableInitRows);
     }
 }

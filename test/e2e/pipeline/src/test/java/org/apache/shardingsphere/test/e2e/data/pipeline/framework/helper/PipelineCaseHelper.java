@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -28,12 +29,12 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGen
 
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.Year;
 import java.util.ArrayList;
@@ -80,14 +81,13 @@ public final class PipelineCaseHelper {
                 Object[] addObjs = {orderId, userId, generateString(6) + "", randomInt, randomInt, randomInt,
                         randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(-100000000, 100000000),
                         BigDecimal.valueOf(generateDouble(1, 100)), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(), "1", "t", "e", "s", "t", generateString(2),
-                        emojiText, generateString(1), "1", "2", generateJsonString(32)};
+                        emojiText, generateString(1), "1", "2", generateJsonString(32, false)};
                 orderData.add(addObjs);
             } else {
-                long currentTimeMillis = System.currentTimeMillis();
                 orderData.add(new Object[]{orderId, userId, generateString(6), randomInt,
                         BigDecimal.valueOf(generateDouble(1, 100)), true, "bytea".getBytes(), generateString(2), generateString(2), generateFloat(), generateDouble(0, 1000),
-                        generateJsonString(8), generateJsonString(12), emojiText, new Date(currentTimeMillis), new Time(currentTimeMillis), Timestamp.valueOf(LocalDateTime.now()),
-                        OffsetDateTime.now()});
+                        generateJsonString(8, false), generateJsonString(12, true), emojiText, LocalDate.now(),
+                        LocalTime.now(), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now()});
             }
             orderItemData.add(new Object[]{orderItemKeyGenerate.generateKey(), orderId, userId, "SUCCESS"});
         }
@@ -105,11 +105,18 @@ public final class PipelineCaseHelper {
     /**
      * Generate json string.
      *
+     * @param useUnicodeCharacter use unicode character
      * @param strLength string length
      * @return json string
      */
-    public static String generateJsonString(final int strLength) {
-        return String.format("{\"test\":\"%s\"}", generateString(strLength));
+    public static String generateJsonString(final int strLength, final boolean useUnicodeCharacter) {
+        String value;
+        if (useUnicodeCharacter && strLength > 1) {
+            value = Strings.repeat("中", strLength / 2);
+        } else {
+            value = generateString(strLength);
+        }
+        return String.format("{\"test\":\"%s\"}", value);
     }
     
     private static float generateFloat() {
