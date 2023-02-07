@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder;
+package org.apache.shardingsphere.sharding.metadata.reviser;
+
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableNameReviser;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 
 /**
- * SQL builder factory.
+ * Sharding table name reviser.
  */
-public final class SQLBuilderFactory {
+public final class ShardingTableNameReviser implements TableNameReviser<ShardingRule> {
     
-    /**
-     * Get SQL builder.
-     *
-     * @param databaseType database type
-     * @return SQL builder
-     */
-    public static SQLBuilder getSQLBuilder(final String databaseType) {
-        switch (databaseType) {
-            case "openGauss":
-                return new OpenGaussSQLBuilder();
-            case "MySQL":
-                return new MySQLSQLBuilder();
-            case "PostgreSQL":
-                return new PostgreSQLSQLBuilder();
-            default:
-                throw new UnsupportedOperationException(String.format("Not supported %s now", databaseType));
-        }
+    @Override
+    public String revise(final String originalName, final ShardingRule rule) {
+        return rule.findTableRuleByActualTable(originalName).map(TableRule::getLogicTable).orElse(originalName);
+    }
+    
+    @Override
+    public String getType() {
+        return ShardingRule.class.getSimpleName();
     }
 }

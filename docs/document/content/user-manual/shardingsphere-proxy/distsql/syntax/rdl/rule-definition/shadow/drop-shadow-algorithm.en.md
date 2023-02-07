@@ -40,19 +40,19 @@ databaseName ::=
 - Drop mutiple shadow algorithm for specified database
 
 ```sql
-DROP SHADOW ALGORITHM shadow_rule_t_order_simple_hint_0, shadow_rule_t_order_item_simple_hint_0 FROM shadow_db;
+DROP SHADOW ALGORITHM shadow_rule_t_order_sql_hint_0, shadow_rule_t_order_item_sql_hint_0 FROM shadow_db;
 ```
 
 - Drop single shadow algorithm for current database
 
 ```sql
-DROP SHADOW ALGORITHM shadow_rule_t_order_simple_hint_0;
+DROP SHADOW ALGORITHM shadow_rule_t_order_sql_hint_0;
 ```
 
 - Drop shadow algorithm with `ifExists` clause
 
 ```sql
-DROP SHADOW ALGORITHM IF EXISTS shadow_rule_t_order_simple_hint_0;
+DROP SHADOW ALGORITHM IF EXISTS shadow_rule_t_order_sql_hint_0;
 ```
 
 ### Reserved word

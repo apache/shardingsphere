@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table;
+
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
- * SQL builder factory.
+ * Table name reviser.
+ * 
+ * @param <T> type of rule
  */
-public final class SQLBuilderFactory {
+public interface TableNameReviser<T extends ShardingSphereRule> extends TypedSPI {
     
     /**
-     * Get SQL builder.
-     *
-     * @param databaseType database type
-     * @return SQL builder
+     * Revise table meta data.
+     * 
+     * @param originalName original table name
+     * @param rule rule
+     * @return revised table name
      */
-    public static SQLBuilder getSQLBuilder(final String databaseType) {
-        switch (databaseType) {
-            case "openGauss":
-                return new OpenGaussSQLBuilder();
-            case "MySQL":
-                return new MySQLSQLBuilder();
-            case "PostgreSQL":
-                return new PostgreSQLSQLBuilder();
-            default:
-                throw new UnsupportedOperationException(String.format("Not supported %s now", databaseType));
-        }
-    }
+    String revise(String originalName, T rule);
 }

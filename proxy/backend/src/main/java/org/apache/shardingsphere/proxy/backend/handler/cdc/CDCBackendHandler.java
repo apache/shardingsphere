@@ -87,8 +87,9 @@ public final class CDCBackendHandler {
             return CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, "Not find sharding rule");
         }
         Map<String, List<DataNode>> actualDataNodesMap = new HashMap<>();
-        for (String each : tableNames) {
-            actualDataNodesMap.put(each, getActualDataNodes(shardingRule.get(), each));
+        // TODO need support case-insensitive later
+        for (TableName each : createSubscription.getTableNamesList()) {
+            actualDataNodesMap.put(each.getName(), getActualDataNodes(shardingRule.get(), each.getName()));
         }
         CreateSubscriptionJobParameter parameter = new CreateSubscriptionJobParameter(createSubscription.getDatabase(), tableNames, createSubscription.getSubscriptionName(),
                 createSubscription.getSubscriptionMode().name(), actualDataNodesMap, createSubscription.getIncrementalGlobalOrderly());

@@ -18,29 +18,26 @@
 package org.apache.shardingsphere.sharding.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.exception.metadata.InconsistentShardingTableMetaDataException;
 import org.apache.shardingsphere.sharding.metadata.reviser.ShardingColumnGeneratedReviser;
+import org.apache.shardingsphere.sharding.metadata.reviser.ShardingConstraintReviser;
+import org.apache.shardingsphere.sharding.metadata.reviser.ShardingIndexReviser;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -70,18 +67,15 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
     }
     
     private TableMetaData createTableMetaData(final ShardingRule rule, final TableRule tableRule, final TableMetaData tableMetaData) {
-        Collection<ColumnMetaData> columnMetaDataList = new ColumnReviseEngine().revise(tableMetaData.getColumns(), Collections.singleton(new ShardingColumnGeneratedReviser(tableRule)));
-        Collection<IndexMetaData> indexMetaDataList = getIndexMetaDataList(tableMetaData, tableRule);
-        Collection<ConstraintMetaData> constraintMetaDataList = getConstraintMetaDataList(tableMetaData, rule, tableRule);
-        return new TableMetaData(tableRule.getLogicTable(), columnMetaDataList, indexMetaDataList, constraintMetaDataList);
+        return new TableMetaDataReviseEngine<>(rule).revise(tableMetaData, Collections.singleton(new ShardingColumnGeneratedReviser(tableRule)),
+                Collections.singleton(new ShardingIndexReviser(tableRule)), Collections.singleton(new ShardingConstraintReviser(rule, tableRule)));
     }
     
     private Map<String, Collection<TableMetaData>> getLogicTableMetaDataMap(final SchemaMetaData schemaMetaData, final ShardingRule rule) {
         Map<String, Collection<TableMetaData>> result = new LinkedHashMap<>();
         for (TableMetaData each : schemaMetaData.getTables()) {
             String logicTableName = rule.findLogicTableByActualTable(each.getName()).orElse(each.getName());
-            Collection<TableMetaData> tableMetaDataList = result.computeIfAbsent(logicTableName, key -> new LinkedList<>());
-            tableMetaDataList.add(decorate(each, rule));
+            result.computeIfAbsent(logicTableName, key -> new LinkedList<>()).add(decorate(each, rule));
         }
         return result;
     }
@@ -90,36 +84,7 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
         TableMetaData sample = tableMetaDataList.iterator().next();
         Collection<TableMetaDataViolation> violations = tableMetaDataList.stream()
                 .filter(each -> !sample.equals(each)).map(each -> new TableMetaDataViolation(each.getName(), each)).collect(Collectors.toList());
-        if (!violations.isEmpty()) {
-            throw new InconsistentShardingTableMetaDataException(logicTableName, violations);
-        }
-    }
-    
-    private Collection<IndexMetaData> getIndexMetaDataList(final TableMetaData tableMetaData, final TableRule tableRule) {
-        Collection<IndexMetaData> result = new HashSet<>();
-        for (IndexMetaData each : tableMetaData.getIndexes()) {
-            for (DataNode dataNode : tableRule.getActualDataNodes()) {
-                getLogicIndex(each.getName(), dataNode.getTableName()).ifPresent(optional -> result.add(new IndexMetaData(optional)));
-            }
-        }
-        return result;
-    }
-    
-    private Collection<ConstraintMetaData> getConstraintMetaDataList(final TableMetaData tableMetaData, final ShardingRule shardingRule, final TableRule tableRule) {
-        Collection<ConstraintMetaData> result = new HashSet<>();
-        for (ConstraintMetaData each : tableMetaData.getConstrains()) {
-            for (DataNode dataNode : tableRule.getActualDataNodes()) {
-                String referencedTableName = each.getReferencedTableName();
-                getLogicIndex(each.getName(), dataNode.getTableName()).ifPresent(optional -> result.add(
-                        new ConstraintMetaData(optional, shardingRule.findLogicTableByActualTable(referencedTableName).orElse(referencedTableName))));
-            }
-        }
-        return result;
-    }
-    
-    private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
-        String indexNameSuffix = "_" + actualTableName;
-        return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
+        ShardingSpherePreconditions.checkState(violations.isEmpty(), () -> new InconsistentShardingTableMetaDataException(logicTableName, violations));
     }
     
     @Override

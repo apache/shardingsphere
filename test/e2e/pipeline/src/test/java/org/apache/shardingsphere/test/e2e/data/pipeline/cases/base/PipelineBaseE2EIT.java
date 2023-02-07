@@ -150,6 +150,7 @@ public abstract class PipelineBaseE2EIT {
         }
         try {
             connection.createStatement().execute(String.format("DROP DATABASE %s", PROXY_DATABASE));
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
         } catch (final SQLException ex) {
             log.warn("Drop proxy database failed, maybe it's not exist. error msg={}", ex.getMessage());
         }
@@ -189,7 +190,10 @@ public abstract class PipelineBaseE2EIT {
     }
     
     private void createProxyDatabase(final Connection connection) throws SQLException {
-        connection.createStatement().execute(String.format("CREATE DATABASE %s", PROXY_DATABASE));
+        String sql = String.format("CREATE DATABASE %s", PROXY_DATABASE);
+        log.info("create proxy database {}", PROXY_DATABASE);
+        connection.createStatement().execute(sql);
+        ThreadUtil.sleep(2, TimeUnit.SECONDS);
     }
     
     protected void addResource(final String distSQL) throws SQLException {

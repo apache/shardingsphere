@@ -15,8 +15,4 @@
 # limitations under the License.
 #
 
-url=127.0.0.1
-port=5432
-database=cdc_db
-username=gaussdb
-password=Root@123
+org.apache.shardingsphere.sharding.metadata.reviser.ShardingTableNameReviser

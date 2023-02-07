@@ -41,7 +41,7 @@ value ::=
 
 ### Supplement
 
-- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SIMPLE_HINT`;
+- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SQL_HINT`;
 - `ifNotExists` clause is used for avoid `Duplicate default shadow algorithm` error.
 
 ### Example
@@ -49,13 +49,13 @@ value ::=
 - Create default shadow algorithm
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"));
+CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SQL_HINT");
 ```
 
 - Create default shadow algorithm with `ifNotExist` clause
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM IF NOT EXISTS TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"));
+CREATE DEFAULT SHADOW ALGORITHM IF NOT EXISTS TYPE(NAME="SQL_HINT");
 ```
 
 ### Reserved word
