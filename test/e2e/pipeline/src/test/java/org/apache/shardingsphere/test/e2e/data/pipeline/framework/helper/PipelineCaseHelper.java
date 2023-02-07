@@ -105,16 +105,16 @@ public final class PipelineCaseHelper {
      * Generate json string.
      *
      * @param useUnicodeCharacter use unicode character
-     * @param strLength string length
+     * @param length length
      * @return json string
      */
-    public static String generateJsonString(final int strLength, final boolean useUnicodeCharacter) {
+    public static String generateJsonString(final int length, final boolean useUnicodeCharacter) {
         String value;
-        if (useUnicodeCharacter && strLength > 1) {
+        if (useUnicodeCharacter && length > 1) {
             // TODO need support unicode
-            value = generateString(strLength);
+            value = generateString(length);
         } else {
-            value = generateString(strLength);
+            value = generateString(length);
         }
         return String.format("{\"test\":\"%s\"}", value);
     }
