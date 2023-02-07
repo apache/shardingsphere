@@ -13,38 +13,38 @@ ShardingSphere 内置提供了多种负载均衡算法，具体包括了轮询�
 
 类型：ROUND_ROBIN
 
-说明：事务内，读请求根据 `transactionReadQueryStrategy` 属性的配置进行路由。事务外，采用轮询策略路由到 replica。
+说明：事务内，读请求根据 `transaction-read-query-strategy` 属性的配置进行路由。事务外，采用轮询策略路由到 replica。
 
 可配置属性：
 
 | *属性名称*      | *数据类型* | *说明*                                                                                                                                      |
 | -------------- |--------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| transactionReadQueryStrategy | String | 事务内读请求路由策略，可选值：FIXED_PRIMARY(路由到 primary)、FIXED_REPLICA(根据轮询策略选择一个固定的 replica)、DYNAMIC_REPLICA(根据轮询策略路由到不同的 replica)，默认值：FIXED_PRIMARY。 |
+| transaction-read-query-strategy | String | 事务内读请求路由策略，可选值：FIXED_PRIMARY(路由到 primary)、FIXED_REPLICA(根据轮询策略选择一个固定的 replica)、DYNAMIC_REPLICA(根据轮询策略路由到不同的 replica)，默认值：FIXED_PRIMARY。 |
 
 ### 随机负载均衡算法
 
 类型：RANDOM
 
-说明：事务内，读请求根据 `transactionReadQueryStrategy` 属性的配置进行路由。事务外，采用随机策略路由到 replica。
+说明：事务内，读请求根据 `transaction-read-query-strategy` 属性的配置进行路由。事务外，采用随机策略路由到 replica。
 
 可配置属性：
 
 | *属性名称*      | *数据类型* | *说明*                                                                                                                                    |
 | -------------- |--------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| transactionReadQueryStrategy | String | 事务内读请求路由策略，可选值：FIXED_PRIMARY(路由到 primary)、FIXED_REPLICA(根据随机策略选择一个固定的 replica)、DYNAMIC_REPLICA(根据随机策略路由到不同的 replica)，默认值：FIXED_PRIMARY。 |
+| transaction-read-query-strategy | String | 事务内读请求路由策略，可选值：FIXED_PRIMARY(路由到 primary)、FIXED_REPLICA(根据随机策略选择一个固定的 replica)、DYNAMIC_REPLICA(根据随机策略路由到不同的 replica)，默认值：FIXED_PRIMARY。 |
 
 ### 权重负载均衡算法
 
 类型：WEIGHT
 
-说明：事务内，读请求根据 `transactionReadQueryStrategy` 属性的配置进行路由。事务外，采用权重策略路由到 replica。
+说明：事务内，读请求根据 `transaction-read-query-strategy` 属性的配置进行路由。事务外，采用权重策略路由到 replica。
 
 可配置属性：
 
 | *属性名称*      | *数据类型* | *说明*                                                                                                                                    |
 | -------------- |--------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | ${replica-name} | double | 属性名使用读库名称，参数填写读库对应的权重值。权重参数范围最小值 > 0，合计 <= Double.MAX_VALUE。                                                                            |
-| transactionReadQueryStrategy | String | 事务内读请求路由策略，可选值：FIXED_PRIMARY(路由到 primary)、FIXED_REPLICA(根据权重策略选择一个固定的 replica)、DYNAMIC_REPLICA(根据权重策略路由到不同的 replica)，默认值：FIXED_PRIMARY。 |
+| transaction-read-query-strategy | String | 事务内读请求路由策略，可选值：FIXED_PRIMARY(路由到 primary)、FIXED_REPLICA(根据权重策略选择一个固定的 replica)、DYNAMIC_REPLICA(根据权重策略路由到不同的 replica)，默认值：FIXED_PRIMARY。 |
 
 ## 操作步骤
 
@@ -67,7 +67,7 @@ rules:
     random:
       type: RANDOM
       props:
-        transactionReadQueryStrategy: FIXED_PRIMARY
+        transaction-read-query-strategy: FIXED_PRIMARY
 ```
 
 ## 相关参考

@@ -34,9 +34,9 @@ public class TransactionReadQueryStrategyUtil {
      * @param name read query logic data source name
      * @param writeDataSourceName name of write data source
      * @param readDataSourceNames names of read data sources
-     * @param context context
+     * @param context transaction context
      * @param readQueryStrategy read query strategy in transaction
-     * @param readQueryStrategyAware Transaction read query strategy aware
+     * @param readQueryStrategyAware transaction read query strategy aware
      * @return name of selected data source
      */
     public static String routeInTransaction(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context,
