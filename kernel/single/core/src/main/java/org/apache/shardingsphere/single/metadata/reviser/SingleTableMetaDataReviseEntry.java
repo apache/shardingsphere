@@ -28,12 +28,12 @@ import java.util.Optional;
 public final class SingleTableMetaDataReviseEntry implements TableMetaDataReviseEntry<SingleRule> {
     
     @Override
-    public Optional<SingleIndexReviser> getIndexReviser() {
+    public Optional<SingleIndexReviser> getIndexReviser(final SingleRule rule, final String tableName) {
         return Optional.of(new SingleIndexReviser());
     }
     
     @Override
-    public Optional<SingleConstraintReviser> getConstraintReviser() {
+    public Optional<SingleConstraintReviser> getConstraintReviser(final SingleRule rule, final String tableName) {
         return Optional.of(new SingleConstraintReviser());
     }
     

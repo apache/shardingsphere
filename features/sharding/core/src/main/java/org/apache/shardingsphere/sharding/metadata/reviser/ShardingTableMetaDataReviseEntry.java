@@ -38,13 +38,13 @@ public final class ShardingTableMetaDataReviseEntry implements TableMetaDataRevi
     }
     
     @Override
-    public Optional<ShardingIndexReviser> getIndexReviser() {
-        return Optional.of(new ShardingIndexReviser());
+    public Optional<ShardingIndexReviser> getIndexReviser(final ShardingRule rule, final String tableName) {
+        return rule.findTableRuleByActualTable(tableName).map(ShardingIndexReviser::new);
     }
     
     @Override
-    public Optional<ShardingConstraintReviser> getConstraintReviser() {
-        return Optional.of(new ShardingConstraintReviser());
+    public Optional<ShardingConstraintReviser> getConstraintReviser(final ShardingRule rule, final String tableName) {
+        return rule.findTableRuleByActualTable(tableName).map(ShardingConstraintReviser::new);
     }
     
     @Override

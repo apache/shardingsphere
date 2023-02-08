@@ -76,18 +76,22 @@ public interface TableMetaDataReviseEntry<T extends ShardingSphereRule> extends 
     /**
      * Get index reviser.
      *
+     * @param rule rule
+     * @param tableName table name
      * @return index reviser
      */
-    default Optional<? extends IndexReviser<T>> getIndexReviser() {
+    default Optional<? extends IndexReviser<T>> getIndexReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
     
     /**
      * Get constraint reviser.
      *
+     * @param rule rule
+     * @param tableName table name
      * @return constraint reviser
      */
-    default Optional<? extends ConstraintReviser<T>> getConstraintReviser() {
+    default Optional<? extends ConstraintReviser<T>> getConstraintReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
 }

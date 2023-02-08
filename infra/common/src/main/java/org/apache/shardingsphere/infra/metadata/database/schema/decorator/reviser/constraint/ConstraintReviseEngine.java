@@ -47,7 +47,7 @@ public final class ConstraintReviseEngine<T extends ShardingSphereRule> {
      * @return revised constraint meta data
      */
     public Collection<ConstraintMetaData> revise(final String tableName, final Collection<ConstraintMetaData> originalMetaDataList) {
-        Optional<? extends ConstraintReviser<T>> reviser = reviseEntry.getConstraintReviser();
+        Optional<? extends ConstraintReviser<T>> reviser = reviseEntry.getConstraintReviser(rule, tableName);
         return reviser.isPresent()
                 ? originalMetaDataList.stream()
                         .map(each -> reviser.get().revise(tableName, each, rule)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new))
