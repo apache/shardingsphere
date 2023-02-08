@@ -54,7 +54,7 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
     public Collection<ColumnMetaData> revise(final String tableName, final Collection<ColumnMetaData> originalMetaDataList) {
         Optional<? extends ColumnNameReviser<T>> nameReviser = reviseEntry.getColumnNameReviser(rule, tableName);
         Optional<? extends ColumnDataTypeReviser<T>> dataTypeReviser = reviseEntry.getColumnDataTypeReviser();
-        Optional<? extends ColumnGeneratedReviser<T>> generatedReviser = reviseEntry.getColumnGeneratedReviser();
+        Optional<? extends ColumnGeneratedReviser<T>> generatedReviser = reviseEntry.getColumnGeneratedReviser(rule, tableName);
         Collection<ColumnMetaData> result = new LinkedHashSet<>();
         for (ColumnMetaData each : originalMetaDataList) {
             Optional<String> name = nameReviser.isPresent() ? nameReviser.get().revise(each.getName(), tableName, rule) : Optional.of(each.getName());

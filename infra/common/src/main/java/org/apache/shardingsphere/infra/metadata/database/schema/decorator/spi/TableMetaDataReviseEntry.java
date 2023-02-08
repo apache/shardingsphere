@@ -67,9 +67,11 @@ public interface TableMetaDataReviseEntry<T extends ShardingSphereRule> extends 
     /**
      * Get column generated reviser.
      *
+     * @param rule rule
+     * @param tableName table name
      * @return column generated reviser
      */
-    default Optional<? extends ColumnGeneratedReviser<T>> getColumnGeneratedReviser() {
+    default Optional<? extends ColumnGeneratedReviser<T>> getColumnGeneratedReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
     

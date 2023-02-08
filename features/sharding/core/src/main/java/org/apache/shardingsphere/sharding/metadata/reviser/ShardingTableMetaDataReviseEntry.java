@@ -33,8 +33,8 @@ public final class ShardingTableMetaDataReviseEntry implements TableMetaDataRevi
     }
     
     @Override
-    public Optional<ShardingColumnGeneratedReviser> getColumnGeneratedReviser() {
-        return Optional.of(new ShardingColumnGeneratedReviser());
+    public Optional<ShardingColumnGeneratedReviser> getColumnGeneratedReviser(final ShardingRule rule, final String tableName) {
+        return rule.findTableRuleByActualTable(tableName).map(ShardingColumnGeneratedReviser::new);
     }
     
     @Override
