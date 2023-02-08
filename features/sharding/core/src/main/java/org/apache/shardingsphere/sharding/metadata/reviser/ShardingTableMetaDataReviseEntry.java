@@ -17,18 +17,33 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnGeneratedReviser;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.TableMetaDataReviseEntry;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
+import java.util.Optional;
+
 /**
- * Sharding column generated reviser.
+ * Sharding table meta data revise entry.
  */
-public final class ShardingColumnGeneratedReviser implements ColumnGeneratedReviser<ShardingRule> {
+public final class ShardingTableMetaDataReviseEntry implements TableMetaDataReviseEntry<ShardingRule> {
     
     @Override
-    public boolean revise(final ColumnMetaData originalMetaData, final ShardingRule rule) {
-        return rule.findTableRuleByActualTable(originalMetaData.getName())
-                .map(optional -> originalMetaData.getName().equalsIgnoreCase(optional.getGenerateKeyColumn().orElse(null))).orElseGet(originalMetaData::isGenerated);
+    public Optional<ShardingTableNameReviser> getTableNameReviser() {
+        return Optional.of(new ShardingTableNameReviser());
+    }
+    
+    @Override
+    public Optional<ShardingColumnGeneratedReviser> getColumnGeneratedReviser() {
+        return Optional.of(new ShardingColumnGeneratedReviser());
+    }
+    
+    @Override
+    public Optional<ShardingIndexReviser> getIndexReviser() {
+        return Optional.of(new ShardingIndexReviser());
+    }
+    
+    @Override
+    public Optional<ShardingConstraintReviser> getConstraintReviser() {
+        return Optional.of(new ShardingConstraintReviser());
     }
 }

@@ -49,9 +49,4 @@ public final class EncryptColumnNameReviser implements ColumnNameReviser<Encrypt
         }
         return Optional.empty();
     }
-    
-    @Override
-    public String getType() {
-        return EncryptRule.class.getSimpleName();
-    }
 }

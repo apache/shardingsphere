@@ -33,9 +33,4 @@ public final class SingleConstraintReviser implements ConstraintReviser<SingleRu
     public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final SingleRule rule) {
         return Optional.of(new ConstraintMetaData(IndexMetaDataUtil.getLogicIndexName(originalMetaData.getName(), tableName), originalMetaData.getReferencedTableName()));
     }
-    
-    @Override
-    public String getType() {
-        return SingleRule.class.getSimpleName();
-    }
 }

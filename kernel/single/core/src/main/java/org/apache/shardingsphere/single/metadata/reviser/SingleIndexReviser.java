@@ -33,9 +33,4 @@ public final class SingleIndexReviser implements IndexReviser<SingleRule> {
     public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final SingleRule singleRule) {
         return Optional.of(new IndexMetaData(IndexMetaDataUtil.getLogicIndexName(originalMetaData.getName(), tableName)));
     }
-    
-    @Override
-    public String getType() {
-        return SingleRule.class.getSimpleName();
-    }
 }
