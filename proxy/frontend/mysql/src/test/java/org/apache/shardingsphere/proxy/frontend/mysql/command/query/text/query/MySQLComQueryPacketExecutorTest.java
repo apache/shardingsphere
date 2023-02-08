@@ -138,7 +138,6 @@ public final class MySQLComQueryPacketExecutorTest {
         }
     }
     
-    
     @Test
     public void assertNext() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor actual = new MySQLComQueryPacketExecutor(packet, connectionSession);
