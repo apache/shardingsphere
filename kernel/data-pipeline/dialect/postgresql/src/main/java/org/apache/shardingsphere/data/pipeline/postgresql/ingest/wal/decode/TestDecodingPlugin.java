@@ -217,21 +217,18 @@ public final class TestDecodingPlugin implements DecodingPlugin {
         int startPosition = data.position();
         while (data.hasRemaining()) {
             char c = (char) data.get();
+            offset++;
             if ('}' != c) {
-                offset++;
                 continue;
             }
             char c2 = (char) data.get();
             if ('\'' != c2) {
-                offset++;
                 continue;
             }
             char c3 = (char) data.get();
             if (' ' == c3) {
-                offset++;
                 return getStringSegment(data, startPosition, offset).replace("''", "'");
             }
-            offset++;
         }
         return null;
     }
