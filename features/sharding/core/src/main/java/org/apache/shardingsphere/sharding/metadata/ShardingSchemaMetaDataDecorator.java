@@ -47,9 +47,10 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap.size(), 1);
         boolean checkTableMetaDataEnabled = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
+            DatabaseType databaseType = material.getStorageTypes().get(entry.getKey());
+            DataSource dataSource = material.getDataSourceMap().get(entry.getKey());
             Collection<TableMetaData> tables = new LinkedList<>();
-            for (Entry<String, Collection<TableMetaData>> tableEntry : getLogicTableMetaDataMap(entry.getValue(), rule,
-                    material.getStorageTypes().get(entry.getKey()), material.getDataSourceMap().get(entry.getKey())).entrySet()) {
+            for (Entry<String, Collection<TableMetaData>> tableEntry : getLogicTableMetaDataMap(entry.getValue(), rule, databaseType, dataSource).entrySet()) {
                 if (checkTableMetaDataEnabled) {
                     checkUniformed(tableEntry.getKey(), tableEntry.getValue());
                 }
@@ -60,17 +61,13 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
         return result;
     }
     
-    private TableMetaData decorate(final TableMetaData tableMetaData, final ShardingRule rule, final DatabaseType databaseType, final DataSource dataSource) {
-        return rule.findTableRuleByActualTable(tableMetaData.getName())
-                .map(optional -> new TableMetaDataReviseEngine<>(rule, databaseType, dataSource).revise(tableMetaData)).orElse(tableMetaData);
-    }
-    
     private Map<String, Collection<TableMetaData>> getLogicTableMetaDataMap(final SchemaMetaData schemaMetaData, final ShardingRule rule,
                                                                             final DatabaseType databaseType, final DataSource dataSource) {
         Map<String, Collection<TableMetaData>> result = new LinkedHashMap<>();
+        TableMetaDataReviseEngine<ShardingRule> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, databaseType, dataSource);
         for (TableMetaData each : schemaMetaData.getTables()) {
             String logicTableName = rule.findLogicTableByActualTable(each.getName()).orElse(each.getName());
-            result.computeIfAbsent(logicTableName, key -> new LinkedList<>()).add(decorate(each, rule, databaseType, dataSource));
+            result.computeIfAbsent(logicTableName, key -> new LinkedList<>()).add(tableMetaDataReviseEngine.revise(each));
         }
         return result;
     }

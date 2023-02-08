@@ -29,9 +29,9 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Schema meta data decorator for single.
@@ -40,19 +40,15 @@ public final class SingleSchemaMetaDataDecorator implements RuleBasedSchemaMetaD
     
     @Override
     public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final SingleRule rule, final GenericSchemaBuilderMaterial material) {
-        Map<String, SchemaMetaData> result = new LinkedHashMap<>();
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap.size(), 1);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
-            Collection<TableMetaData> tables = new LinkedList<>();
-            for (TableMetaData each : entry.getValue().getTables()) {
-                tables.add(decorate(rule, each, material.getStorageTypes().get(entry.getKey()), material.getDataSourceMap().get(entry.getKey())));
-            }
+            DatabaseType databaseType = material.getStorageTypes().get(entry.getKey());
+            DataSource dataSource = material.getDataSourceMap().get(entry.getKey());
+            TableMetaDataReviseEngine<SingleRule> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, databaseType, dataSource);
+            Collection<TableMetaData> tables = entry.getValue().getTables().stream().map(tableMetaDataReviseEngine::revise).collect(Collectors.toList());
             result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
         }
         return result;
-    }
-    
-    private TableMetaData decorate(final SingleRule rule, final TableMetaData tableMetaData, final DatabaseType databaseType, final DataSource dataSource) {
-        return new TableMetaDataReviseEngine<>(rule, databaseType, dataSource).revise(tableMetaData);
     }
     
     @Override
