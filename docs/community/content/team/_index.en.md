@@ -476,7 +476,7 @@ chapter = true
             <b>Everly Precia Suresh</b>
         </td>
         <td>
-            <b>苗立尧</b>
+            <b>Liyao Miao</b>
         </td>
     </tr>
 </table>
