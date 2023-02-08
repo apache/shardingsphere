@@ -65,7 +65,7 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
                 continue;
             }
             @SuppressWarnings("unchecked")
-            Optional<Integer> dataType = dataTypeReviser.isPresent() ? dataTypeReviser.get().revise(each.getName(), rule, databaseType, dataSource) : Optional.empty();
+            Optional<Integer> dataType = dataTypeReviser.isPresent() ? dataTypeReviser.get().revise(each.getName(), tableName, rule, databaseType, dataSource) : Optional.empty();
             @SuppressWarnings("unchecked")
             Optional<Boolean> generated = generatedReviser.map(optional -> optional.revise(each, rule));
             result.add(new ColumnMetaData(name.get(),
