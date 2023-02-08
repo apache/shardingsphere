@@ -324,6 +324,9 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         if (null == ctx) {
             return null;
         }
+        if ("none".equalsIgnoreCase(getIdentifierValue(ctx.strategyType()))) {
+            return new ShardingStrategySegment(getIdentifierValue(ctx.strategyType()), null, null);
+        }
         AlgorithmSegment algorithmSegment = null != ctx.shardingAlgorithm().algorithmDefinition() ? (AlgorithmSegment) visitAlgorithmDefinition(ctx.shardingAlgorithm().algorithmDefinition()) : null;
         return new ShardingStrategySegment(getIdentifierValue(ctx.strategyType()), buildShardingColumn(ctx.shardingColumnDefinition()), algorithmSegment);
     }
