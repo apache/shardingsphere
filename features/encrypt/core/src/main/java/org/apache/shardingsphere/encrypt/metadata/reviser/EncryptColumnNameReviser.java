@@ -29,29 +29,32 @@ import java.util.Optional;
  */
 public final class EncryptColumnNameReviser implements ColumnNameReviser<EncryptRule> {
     
+    private final EncryptTable encryptTable;
+    
+    private final Collection<String> plainColumns;
+    
+    private final Collection<String> assistedQueryColumns;
+    
+    private final Collection<String> likeQueryColumns;
+    
+    public EncryptColumnNameReviser(final EncryptTable encryptTable) {
+        this.encryptTable = encryptTable;
+        plainColumns = encryptTable.getPlainColumns();
+        assistedQueryColumns = encryptTable.getAssistedQueryColumns();
+        likeQueryColumns = encryptTable.getLikeQueryColumns();
+    }
+    
     @Override
     public Optional<String> revise(final String originalName, final String tableName, final EncryptRule rule) {
-        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
-        if (!encryptTable.isPresent()) {
-            return Optional.of(originalName);
-        }
-        Collection<String> plainColumns = encryptTable.get().getPlainColumns();
-        Collection<String> assistedQueryColumns = encryptTable.get().getAssistedQueryColumns();
-        Collection<String> likeQueryColumns = encryptTable.get().getLikeQueryColumns();
         if (plainColumns.contains(originalName)) {
-            return Optional.of(encryptTable.get().getLogicColumnByPlainColumn(originalName));
+            return Optional.of(encryptTable.getLogicColumnByPlainColumn(originalName));
         }
-        if (encryptTable.get().isCipherColumn(originalName)) {
-            return Optional.of(encryptTable.get().getLogicColumnByCipherColumn(originalName));
+        if (encryptTable.isCipherColumn(originalName)) {
+            return Optional.of(encryptTable.getLogicColumnByCipherColumn(originalName));
         }
         if (!assistedQueryColumns.contains(originalName) && !likeQueryColumns.contains(originalName)) {
             return Optional.of(originalName);
         }
         return Optional.empty();
-    }
-    
-    @Override
-    public String getType() {
-        return EncryptRule.class.getSimpleName();
     }
 }

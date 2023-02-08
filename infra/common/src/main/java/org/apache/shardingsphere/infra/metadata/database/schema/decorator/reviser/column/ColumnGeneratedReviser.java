@@ -19,16 +19,13 @@ package org.apache.shardingsphere.infra.metadata.database.schema.decorator.revis
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Column generated reviser.
  * 
  * @param <T> type of rule
  */
-@SingletonSPI
-public interface ColumnGeneratedReviser<T extends ShardingSphereRule> extends TypedSPI {
+public interface ColumnGeneratedReviser<T extends ShardingSphereRule> {
     
     /**
      * Revise generated column.

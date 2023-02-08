@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
+package org.apache.shardingsphere.encrypt.metadata.reviser;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.TableMetaDataReviseEntry;
 
-import javax.sql.DataSource;
 import java.util.Optional;
 
 /**
- * Column data type reviser.
- *
- * @param <T> type of rule
+ * Encrypt table meta data revise entry.
  */
-public interface ColumnDataTypeReviser<T extends ShardingSphereRule> {
+public final class EncryptTableMetaDataReviseEntry implements TableMetaDataReviseEntry<EncryptRule> {
     
-    /**
-     * Revise column data type.
-     *
-     * @param originalName original name
-     * @param tableName table name
-     * @param rule rule
-     * @param databaseType database type
-     * @param dataSource data source
-     * @return revised data type
-     */
-    Optional<Integer> revise(String originalName, String tableName, T rule, DatabaseType databaseType, DataSource dataSource);
+    @Override
+    public Optional<EncryptColumnNameReviser> getColumnNameReviser(final EncryptRule rule, final String tableName) {
+        return rule.findEncryptTable(tableName).map(EncryptColumnNameReviser::new);
+    }
+    
+    @Override
+    public String getType() {
+        return EncryptRule.class.getSimpleName();
+    }
 }

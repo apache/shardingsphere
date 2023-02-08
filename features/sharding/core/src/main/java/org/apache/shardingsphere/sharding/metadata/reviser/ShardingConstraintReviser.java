@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
@@ -28,15 +29,14 @@ import java.util.Optional;
 /**
  * Sharding constraint reviser.
  */
+@RequiredArgsConstructor
 public final class ShardingConstraintReviser implements ConstraintReviser<ShardingRule> {
+    
+    private final TableRule tableRule;
     
     @Override
     public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final ShardingRule rule) {
-        Optional<TableRule> tableRule = rule.findTableRuleByActualTable(tableName);
-        if (!tableRule.isPresent()) {
-            return Optional.of(originalMetaData);
-        }
-        for (DataNode each : tableRule.get().getActualDataNodes()) {
+        for (DataNode each : tableRule.getActualDataNodes()) {
             String referencedTableName = originalMetaData.getReferencedTableName();
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {
@@ -49,10 +49,5 @@ public final class ShardingConstraintReviser implements ConstraintReviser<Shardi
     private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
         String indexNameSuffix = "_" + actualTableName;
         return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
-    }
-    
-    @Override
-    public String getType() {
-        return ShardingRule.class.getSimpleName();
     }
 }

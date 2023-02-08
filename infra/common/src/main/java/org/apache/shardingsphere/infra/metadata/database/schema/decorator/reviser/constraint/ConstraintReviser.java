@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.metadata.database.schema.decorator.revis
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Optional;
 
@@ -29,8 +27,7 @@ import java.util.Optional;
  * 
  * @param <T> type of rule
  */
-@SingletonSPI
-public interface ConstraintReviser<T extends ShardingSphereRule> extends TypedSPI {
+public interface ConstraintReviser<T extends ShardingSphereRule> {
     
     /**
      * Revise constraint meta data.

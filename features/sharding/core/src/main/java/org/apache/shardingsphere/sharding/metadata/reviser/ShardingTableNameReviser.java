@@ -30,9 +30,4 @@ public final class ShardingTableNameReviser implements TableNameReviser<Sharding
     public String revise(final String originalName, final ShardingRule rule) {
         return rule.findTableRuleByActualTable(originalName).map(TableRule::getLogicTable).orElse(originalName);
     }
-    
-    @Override
-    public String getType() {
-        return ShardingRule.class.getSimpleName();
-    }
 }

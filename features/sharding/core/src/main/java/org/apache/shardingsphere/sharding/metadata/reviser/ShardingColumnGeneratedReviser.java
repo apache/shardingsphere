@@ -17,23 +17,22 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnGeneratedReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
 
 /**
  * Sharding column generated reviser.
  */
+@RequiredArgsConstructor
 public final class ShardingColumnGeneratedReviser implements ColumnGeneratedReviser<ShardingRule> {
+    
+    private final TableRule tableRule;
     
     @Override
     public boolean revise(final ColumnMetaData originalMetaData, final ShardingRule rule) {
-        return rule.findTableRuleByActualTable(originalMetaData.getName())
-                .map(optional -> originalMetaData.getName().equalsIgnoreCase(optional.getGenerateKeyColumn().orElse(null))).orElseGet(originalMetaData::isGenerated);
-    }
-    
-    @Override
-    public String getType() {
-        return ShardingRule.class.getSimpleName();
+        return originalMetaData.getName().equalsIgnoreCase(tableRule.getGenerateKeyColumn().orElse(null));
     }
 }

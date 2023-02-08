@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
+package org.apache.shardingsphere.single.metadata.reviser;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.TableMetaDataReviseEntry;
+import org.apache.shardingsphere.single.rule.SingleRule;
 
-import javax.sql.DataSource;
 import java.util.Optional;
 
 /**
- * Column data type reviser.
- *
- * @param <T> type of rule
+ * Single table meta data revise entry.
  */
-public interface ColumnDataTypeReviser<T extends ShardingSphereRule> {
+public final class SingleTableMetaDataReviseEntry implements TableMetaDataReviseEntry<SingleRule> {
     
-    /**
-     * Revise column data type.
-     *
-     * @param originalName original name
-     * @param tableName table name
-     * @param rule rule
-     * @param databaseType database type
-     * @param dataSource data source
-     * @return revised data type
-     */
-    Optional<Integer> revise(String originalName, String tableName, T rule, DatabaseType databaseType, DataSource dataSource);
+    @Override
+    public Optional<SingleIndexReviser> getIndexReviser(final SingleRule rule, final String tableName) {
+        return Optional.of(new SingleIndexReviser());
+    }
+    
+    @Override
+    public Optional<SingleConstraintReviser> getConstraintReviser(final SingleRule rule, final String tableName) {
+        return Optional.of(new SingleConstraintReviser());
+    }
+    
+    @Override
+    public String getType() {
+        return SingleRule.class.getSimpleName();
+    }
 }
