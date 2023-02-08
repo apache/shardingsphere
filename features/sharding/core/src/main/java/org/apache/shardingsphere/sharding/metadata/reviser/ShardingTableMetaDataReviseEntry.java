@@ -46,4 +46,9 @@ public final class ShardingTableMetaDataReviseEntry implements TableMetaDataRevi
     public Optional<ShardingConstraintReviser> getConstraintReviser() {
         return Optional.of(new ShardingConstraintReviser());
     }
+    
+    @Override
+    public String getType() {
+        return ShardingRule.class.getSimpleName();
+    }
 }

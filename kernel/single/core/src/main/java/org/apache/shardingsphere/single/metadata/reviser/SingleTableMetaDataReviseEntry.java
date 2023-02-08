@@ -36,4 +36,9 @@ public final class SingleTableMetaDataReviseEntry implements TableMetaDataRevise
     public Optional<SingleConstraintReviser> getConstraintReviser() {
         return Optional.of(new SingleConstraintReviser());
     }
+    
+    @Override
+    public String getType() {
+        return SingleRule.class.getSimpleName();
+    }
 }

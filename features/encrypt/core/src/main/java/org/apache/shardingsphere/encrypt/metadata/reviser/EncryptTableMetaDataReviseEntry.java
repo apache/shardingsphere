@@ -31,4 +31,9 @@ public final class EncryptTableMetaDataReviseEntry implements TableMetaDataRevis
     public Optional<EncryptColumnNameReviser> getColumnNameReviser() {
         return Optional.of(new EncryptColumnNameReviser());
     }
+    
+    @Override
+    public String getType() {
+        return EncryptRule.class.getSimpleName();
+    }
 }
