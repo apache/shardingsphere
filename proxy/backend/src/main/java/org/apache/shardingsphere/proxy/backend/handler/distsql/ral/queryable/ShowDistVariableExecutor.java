@@ -58,8 +58,8 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
                 : Collections.singletonList(new LocalDataQueryResultRow(variableName.toLowerCase(), getSpecialValue(connectionSession, variableName)));
     }
     
-    private boolean isConfigurationKey(final String key) {
-        return ConfigurationPropertyKey.getKeyNames().contains(key);
+    private boolean isConfigurationKey(final String variableName) {
+        return ConfigurationPropertyKey.getKeyNames().contains(variableName);
     }
     
     private String getConfigurationValue(final ShardingSphereMetaData metaData, final String variableName) {
@@ -69,21 +69,21 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
         return metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString();
     }
     
-    private String getLoggingPropsValue(final ShardingSphereMetaData metaData, final String key) {
+    private String getLoggingPropsValue(final ShardingSphereMetaData metaData, final String variableName) {
         Optional<ShardingSphereLogger> sqlLogger = getSQLLogger(metaData);
         if (sqlLogger.isPresent()) {
             Properties props = sqlLogger.get().getProps();
-            switch (key) {
+            switch (variableName) {
                 case LoggingConstants.SQL_SHOW_VARIABLE_NAME:
                     return props.getOrDefault(LoggingConstants.SQL_LOG_ENABLE,
-                            metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString()).toString();
+                            metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString()).toString();
                 case LoggingConstants.SQL_SIMPLE_VARIABLE_NAME:
                     return props.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE,
-                            metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString()).toString();
+                            metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString()).toString();
                 default:
             }
         }
-        return metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(key)).toString();
+        return metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString();
     }
     
     private Optional<ShardingSphereLogger> getSQLLogger(final ShardingSphereMetaData metaData) {

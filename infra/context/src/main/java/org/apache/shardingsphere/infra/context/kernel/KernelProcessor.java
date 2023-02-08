@@ -79,14 +79,8 @@ public final class KernelProcessor {
     private void logSQL(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props, final ExecutionContext executionContext) {
         Optional<ShardingSphereLogger> sqlLogger = getSQLLogger(globalRuleMetaData);
         if (sqlLogger.isPresent() && sqlLogger.get().getProps().containsKey(LoggingConstants.SQL_LOG_ENABLE)) {
-            Properties loggerProps = sqlLogger.get().getProps();
-            if (loggerProps.containsKey(LoggingConstants.SQL_LOG_ENABLE) && Boolean.parseBoolean(loggerProps.get(LoggingConstants.SQL_LOG_ENABLE).toString())) {
-                SQLLogger.logSQL(queryContext, loggerProps.containsKey(LoggingConstants.SQL_LOG_SIMPLE) && Boolean.parseBoolean(loggerProps.get(LoggingConstants.SQL_SIMPLE).toString()),
-                        executionContext);
-            }
-            return;
-        }
-        if (props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+            logSQL(queryContext, executionContext, sqlLogger.get());
+        } else if (props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(queryContext, props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }
     }
@@ -94,5 +88,13 @@ public final class KernelProcessor {
     private Optional<ShardingSphereLogger> getSQLLogger(final ShardingSphereRuleMetaData globalRuleMetaData) {
         return globalRuleMetaData.getSingleRule(LoggingRule.class).getConfiguration().getLoggers().stream()
                 .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
+    }
+    
+    private void logSQL(final QueryContext queryContext, final ExecutionContext executionContext, final ShardingSphereLogger sqlLogger) {
+        Properties loggerProps = sqlLogger.getProps();
+        if (loggerProps.containsKey(LoggingConstants.SQL_LOG_ENABLE) && Boolean.parseBoolean(loggerProps.get(LoggingConstants.SQL_LOG_ENABLE).toString())) {
+            SQLLogger.logSQL(queryContext, loggerProps.containsKey(LoggingConstants.SQL_LOG_SIMPLE) && Boolean.parseBoolean(loggerProps.get(LoggingConstants.SQL_SIMPLE).toString()),
+                    executionContext);
+        }
     }
 }
