@@ -58,9 +58,11 @@ public interface TableMetaDataReviseEntry<T extends ShardingSphereRule> extends 
     /**
      * Get column data type reviser.
      *
+     * @param rule rule
+     * @param tableName table name
      * @return column data type reviser
      */
-    default Optional<? extends ColumnDataTypeReviser<T>> getColumnDataTypeReviser() {
+    default Optional<? extends ColumnDataTypeReviser<T>> getColumnDataTypeReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
     
