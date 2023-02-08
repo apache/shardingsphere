@@ -69,8 +69,8 @@ public final class QueryableRALBackendHandler<T extends QueryableRALStatement> e
     @Override
     public ResponseHeader execute() {
         QueryableRALExecutor<T> executor = TypedSPILoader.getService(QueryableRALExecutor.class, getSqlStatement().getClass().getName());
-        queryHeaders = createQueryHeader(executor.getColumnNames());
         mergedResult = getMergedResult(executor);
+        queryHeaders = createQueryHeader(executor.getColumnNames());
         return new QueryResponseHeader(queryHeaders);
     }
     
