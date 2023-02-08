@@ -85,16 +85,16 @@ public final class KernelProcessor {
         }
     }
     
-    private Optional<ShardingSphereLogger> getSQLLogger(final ShardingSphereRuleMetaData globalRuleMetaData) {
-        return globalRuleMetaData.getSingleRule(LoggingRule.class).getConfiguration().getLoggers().stream()
-                .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
-    }
-    
     private void logSQL(final QueryContext queryContext, final ExecutionContext executionContext, final ShardingSphereLogger sqlLogger) {
         Properties loggerProps = sqlLogger.getProps();
         if (loggerProps.containsKey(LoggingConstants.SQL_LOG_ENABLE) && Boolean.parseBoolean(loggerProps.get(LoggingConstants.SQL_LOG_ENABLE).toString())) {
             SQLLogger.logSQL(queryContext, loggerProps.containsKey(LoggingConstants.SQL_LOG_SIMPLE) && Boolean.parseBoolean(loggerProps.get(LoggingConstants.SQL_SIMPLE).toString()),
                     executionContext);
         }
+    }
+    
+    private Optional<ShardingSphereLogger> getSQLLogger(final ShardingSphereRuleMetaData globalRuleMetaData) {
+        return globalRuleMetaData.getSingleRule(LoggingRule.class).getConfiguration().getLoggers().stream()
+                .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
     }
 }
