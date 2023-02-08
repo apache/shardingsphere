@@ -90,7 +90,8 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     }
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
-        Object[] updateData = {"中文''UPDATE" + Instant.now().getEpochSecond(), PipelineCaseHelper.generateJsonString(5, true), PipelineCaseHelper.generateJsonString(5, false), primaryKey};
+        // TODO openGauss incremental task parse single quote not correctly now
+        Object[] updateData = {"中文UPDATE" + Instant.now().getEpochSecond(), PipelineCaseHelper.generateJsonString(5, true), PipelineCaseHelper.generateJsonString(5, false), primaryKey};
         String updateSql = String.format("UPDATE %s SET status = ?, t_json = ?, t_jsonb = ? WHERE order_id = ?", getTableNameWithSchema(orderTableName));
         DataSourceExecuteUtil.execute(dataSource, updateSql, updateData);
     }
