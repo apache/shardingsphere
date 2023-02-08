@@ -34,10 +34,10 @@ public final class YamlAppendersConfigurationConverter {
     private static final YamlAppenderSwapper SWAPPER = new YamlAppenderSwapper();
     
     /**
-     * Convert to appenders YAML content.
+     * Convert to YAML appender configurations.
      *
      * @param appenders ShardingSphere appenders
-     * @return appenders YAML content
+     * @return YAML appenders content
      */
     public static Collection<YamlAppenderConfiguration> convertYamlAppenderConfigurations(final Collection<ShardingSphereAppender> appenders) {
         return appenders.stream().map(SWAPPER::swapToYamlConfiguration).collect(Collectors.toList());
@@ -46,7 +46,7 @@ public final class YamlAppendersConfigurationConverter {
     /**
      * Convert to ShardingSphere appenders.
      *
-     * @param appenders appenders YAML content
+     * @param appenders YAML appenders content
      * @return ShardingSphere appenders
      */
     public static Collection<ShardingSphereAppender> convertShardingSphereAppender(final Collection<YamlAppenderConfiguration> appenders) {

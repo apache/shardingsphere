@@ -34,10 +34,10 @@ public final class YamlLoggersConfigurationConverter {
     private static final YamlLoggerSwapper SWAPPER = new YamlLoggerSwapper();
     
     /**
-     * Convert to loggers YAML content.
+     * Convert to YAML logger configurations.
      *
      * @param loggers ShardingSphere loggers
-     * @return loggers YAML content
+     * @return YAML loggers content
      */
     public static Collection<YamlLoggerConfiguration> convertYamlLoggerConfigurations(final Collection<ShardingSphereLogger> loggers) {
         return loggers.stream().map(SWAPPER::swapToYamlConfiguration).collect(Collectors.toList());
@@ -46,7 +46,7 @@ public final class YamlLoggersConfigurationConverter {
     /**
      * Convert to ShardingSphere loggers.
      *
-     * @param loggers loggers YAML content
+     * @param loggers YAML loggers content
      * @return ShardingSphere loggers
      */
     public static Collection<ShardingSphereLogger> convertShardingSphereLogger(final Collection<YamlLoggerConfiguration> loggers) {
