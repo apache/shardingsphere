@@ -17,23 +17,27 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Optional;
 
 /**
  * Column name reviser.
+ * 
+ * @param <T> type of rule
  */
-public abstract class ColumnNameReviser implements ColumnReviser {
+@SingletonSPI
+public interface ColumnNameReviser<T extends ShardingSphereRule> extends TypedSPI {
     
-    @Override
-    public final Optional<ColumnMetaData> revise(final ColumnMetaData originalMetaData) {
-        return getColumnName(originalMetaData.getName()).map(optional -> createColumnMetaData(optional, originalMetaData));
-    }
-    
-    private ColumnMetaData createColumnMetaData(final String name, final ColumnMetaData metaData) {
-        return new ColumnMetaData(name, metaData.getDataType(), metaData.isPrimaryKey(), metaData.isGenerated(), metaData.isCaseSensitive(), metaData.isVisible(), metaData.isUnsigned());
-    }
-    
-    protected abstract Optional<String> getColumnName(String originalName);
+    /**
+     * Revise column name.
+     * 
+     * @param originalName original name
+     * @param tableName table name
+     * @param rule rule
+     * @return revised column name
+     */
+    Optional<String> revise(String originalName, String tableName, T rule);
 }

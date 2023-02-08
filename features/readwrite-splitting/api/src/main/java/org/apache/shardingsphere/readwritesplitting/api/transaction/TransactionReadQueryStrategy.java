@@ -15,20 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
-
-import java.util.Collection;
+package org.apache.shardingsphere.readwritesplitting.api.transaction;
 
 /**
- * Weight aware.
+ * Transaction read query strategy.
  */
-// TODO should remove after merge TransactionWeightReadQueryLoadBalanceAlgorithm and WeightReadQueryLoadBalanceAlgorithm
-public interface WeightAware {
-    
-    /**
-     * Get data source names.
-     * 
-     * @return data source names
-     */
-    Collection<String> getDataSourceNames();
+public enum TransactionReadQueryStrategy {
+    FIXED_PRIMARY, FIXED_REPLICA, DYNAMIC_REPLICA
 }

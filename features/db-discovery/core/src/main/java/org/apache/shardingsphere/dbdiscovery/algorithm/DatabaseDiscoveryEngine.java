@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.algorithm;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
@@ -25,8 +24,6 @@ import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.state.StateType;
-import org.apache.shardingsphere.mode.metadata.compute.event.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
@@ -74,7 +71,6 @@ public final class DatabaseDiscoveryEngine {
     public String changePrimaryDataSource(final String databaseName, final String groupName, final String originalPrimaryDataSourceName,
                                           final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         Optional<String> newPrimaryDataSourceName = findPrimaryDataSourceName(dataSourceMap);
-        postComputeNodeStatusChangedEvent(newPrimaryDataSourceName.orElse(""));
         newPrimaryDataSourceName.ifPresent(optional -> postPrimaryChangedEvent(databaseName, groupName, originalPrimaryDataSourceName, optional));
         Map<String, DataSource> replicaDataSourceMap = new HashMap<>(dataSourceMap);
         newPrimaryDataSourceName.ifPresent(replicaDataSourceMap::remove);
@@ -93,16 +89,6 @@ public final class DatabaseDiscoveryEngine {
             }
         }
         return Optional.empty();
-    }
-    
-    private void postComputeNodeStatusChangedEvent(final String newPrimaryDataSourceName) {
-        if (Strings.isNullOrEmpty(newPrimaryDataSourceName) && StateType.OK.equals(instanceContext.getInstance().getState().getCurrentState())) {
-            instanceContext.getEventBusContext().post(new ComputeNodeStatusChangedEvent(instanceContext.getInstance().getCurrentInstanceId(), StateType.READ_ONLY));
-            return;
-        }
-        if (!Strings.isNullOrEmpty(newPrimaryDataSourceName) && StateType.READ_ONLY.equals(instanceContext.getInstance().getState().getCurrentState())) {
-            instanceContext.getEventBusContext().post(new ComputeNodeStatusChangedEvent(instanceContext.getInstance().getCurrentInstanceId(), StateType.OK));
-        }
     }
     
     private void postPrimaryChangedEvent(final String databaseName, final String groupName, final String originalPrimaryDataSourceName, final String newPrimaryDataSourceName) {

@@ -18,22 +18,24 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Column generated reviser.
+ * 
+ * @param <T> type of rule
  */
-public abstract class ColumnGeneratedReviser implements ColumnReviser {
+@SingletonSPI
+public interface ColumnGeneratedReviser<T extends ShardingSphereRule> extends TypedSPI {
     
-    @Override
-    public final Optional<ColumnMetaData> revise(final ColumnMetaData originalMetaData) {
-        return Optional.of(createColumnMetaData(isGenerated(originalMetaData), originalMetaData));
-    }
-    
-    private ColumnMetaData createColumnMetaData(final boolean isGenerated, final ColumnMetaData metaData) {
-        return new ColumnMetaData(metaData.getName(), metaData.getDataType(), metaData.isPrimaryKey(), isGenerated, metaData.isCaseSensitive(), metaData.isVisible(), metaData.isUnsigned());
-    }
-    
-    protected abstract boolean isGenerated(ColumnMetaData originalMetaData);
+    /**
+     * Revise generated column.
+     * 
+     * @param originalMetaData original column meta data
+     * @param rule rule
+     * @return revised generated column
+     */
+    boolean revise(ColumnMetaData originalMetaData, T rule);
 }

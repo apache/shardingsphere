@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
@@ -29,20 +28,19 @@ import java.util.Optional;
 /**
  * Sharding constraint reviser.
  */
-@RequiredArgsConstructor
-public final class ShardingConstraintReviser implements ConstraintReviser {
-    
-    private final ShardingRule shardingRule;
-    
-    private final TableRule tableRule;
+public final class ShardingConstraintReviser implements ConstraintReviser<ShardingRule> {
     
     @Override
-    public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData) {
-        for (DataNode each : tableRule.getActualDataNodes()) {
+    public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final ShardingRule rule) {
+        Optional<TableRule> tableRule = rule.findTableRuleByActualTable(tableName);
+        if (!tableRule.isPresent()) {
+            return Optional.of(originalMetaData);
+        }
+        for (DataNode each : tableRule.get().getActualDataNodes()) {
             String referencedTableName = originalMetaData.getReferencedTableName();
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {
-                return Optional.of(new ConstraintMetaData(logicIndexName.get(), shardingRule.findLogicTableByActualTable(referencedTableName).orElse(referencedTableName)));
+                return Optional.of(new ConstraintMetaData(logicIndexName.get(), rule.findLogicTableByActualTable(referencedTableName).orElse(referencedTableName)));
             }
         }
         return Optional.empty();
@@ -51,5 +49,10 @@ public final class ShardingConstraintReviser implements ConstraintReviser {
     private Optional<String> getLogicIndex(final String actualIndexName, final String actualTableName) {
         String indexNameSuffix = "_" + actualTableName;
         return actualIndexName.endsWith(indexNameSuffix) ? Optional.of(actualIndexName.replace(indexNameSuffix, "")) : Optional.empty();
+    }
+    
+    @Override
+    public String getType() {
+        return ShardingRule.class.getSimpleName();
     }
 }

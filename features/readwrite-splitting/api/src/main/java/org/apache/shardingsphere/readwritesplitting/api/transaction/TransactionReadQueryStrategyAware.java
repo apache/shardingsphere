@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.resultset;
+package org.apache.shardingsphere.readwritesplitting.api.transaction;
 
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import java.util.List;
 
 /**
- * DistSQL result set for global rule.
+ * Transaction read query strategy aware.
  */
-public interface GlobalRuleDistSQLResultSet extends DistSQLResultSet {
+public interface TransactionReadQueryStrategyAware {
+    
+    String TRANSACTION_READ_QUERY_STRATEGY = "transaction-read-query-strategy";
     
     /**
-     * Initialize data.
-     *
-     * @param globalRuleMetaData global rule meta data
-     * @param sqlStatement SQL statement
+     * Get data source name.
+     * 
+     * @param name name
+     * @param readDataSourceNames names of read data sources
+     * @return name of selected data source
      */
-    void init(ShardingSphereRuleMetaData globalRuleMetaData, SQLStatement sqlStatement);
+    String getDataSourceName(String name, List<String> readDataSourceNames);
 }

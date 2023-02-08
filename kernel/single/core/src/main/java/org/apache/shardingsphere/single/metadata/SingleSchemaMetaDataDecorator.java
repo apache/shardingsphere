@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.single.metadata;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.single.constant.SingleOrder;
-import org.apache.shardingsphere.single.metadata.reviser.SingleConstraintReviser;
-import org.apache.shardingsphere.single.metadata.reviser.SingleIndexReviser;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
+import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -45,16 +44,15 @@ public final class SingleSchemaMetaDataDecorator implements RuleBasedSchemaMetaD
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             Collection<TableMetaData> tables = new LinkedList<>();
             for (TableMetaData each : entry.getValue().getTables()) {
-                tables.add(decorate(rule, each));
+                tables.add(decorate(rule, each, material.getStorageTypes().get(entry.getKey()), material.getDataSourceMap().get(entry.getKey())));
             }
             result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
         }
         return result;
     }
     
-    private TableMetaData decorate(final SingleRule rule, final TableMetaData tableMetaData) {
-        return new TableMetaDataReviseEngine<>(rule).revise(
-                tableMetaData, Collections.emptyList(), Collections.singleton(new SingleIndexReviser()), Collections.singleton(new SingleConstraintReviser()));
+    private TableMetaData decorate(final SingleRule rule, final TableMetaData tableMetaData, final DatabaseType databaseType, final DataSource dataSource) {
+        return new TableMetaDataReviseEngine<>(rule, databaseType, dataSource).revise(tableMetaData);
     }
     
     @Override

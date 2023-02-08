@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
  * 
  * @param <T> type of rule
  */
+@SingletonSPI
 public interface TableNameReviser<T extends ShardingSphereRule> extends TypedSPI {
     
     /**
