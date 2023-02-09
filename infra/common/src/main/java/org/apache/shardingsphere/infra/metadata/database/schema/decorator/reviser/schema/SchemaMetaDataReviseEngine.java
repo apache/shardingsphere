@@ -56,7 +56,7 @@ public final class SchemaMetaDataReviseEngine {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public SchemaMetaData revise(final SchemaMetaData originalMetaData) {
         SchemaMetaData result = originalMetaData;
-        for (Entry<ShardingSphereRule ,MetaDataReviseEntry> entry : OrderedSPILoader.getServices(MetaDataReviseEntry.class, rules).entrySet()) {
+        for (Entry<ShardingSphereRule, MetaDataReviseEntry> entry : OrderedSPILoader.getServices(MetaDataReviseEntry.class, rules).entrySet()) {
             result = revise(result, entry.getKey(), entry.getValue());
         }
         return result;
