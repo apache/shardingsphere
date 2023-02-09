@@ -36,7 +36,7 @@ public final class RequestsCountAdvice implements InstanceMethodAdvice {
             MetricCollectorType.COUNTER, "Total requests of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
+    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
         MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc();
     }
 }
