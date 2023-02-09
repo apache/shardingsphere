@@ -35,7 +35,6 @@ public final class LoggingRuleBuilder implements GlobalRuleBuilder<LoggingRuleCo
     @Override
     public LoggingRule build(final LoggingRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         LoggingUtils.syncLoggingConfig(ruleConfig, props);
-        // TODO skip this while instance type is JDBC
         LoggingUtils.refreshLogger(ruleConfig);
         return new LoggingRule(ruleConfig);
     }
