@@ -17,14 +17,11 @@
 
 package org.apache.shardingsphere.sharding.metadata;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.MetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
@@ -33,38 +30,32 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingSchemaMetaDataDecoratorTest {
-    
-    private static final String TABLE_NAME = "t_order";
+public final class ShardingMetaDataReviseEngineTest {
     
     @Test
-    public void assertDecorateWithKeyGenerateStrategy() {
-        ShardingRule shardingRule = mock(ShardingRule.class);
-        when(shardingRule.findLogicTableByActualTable(TABLE_NAME)).thenReturn(Optional.of(TABLE_NAME));
-        Collection<ShardingSphereRule> rules = Collections.singletonList(shardingRule);
-        ShardingSchemaMetaDataDecorator builder = (ShardingSchemaMetaDataDecorator) OrderedSPILoader.getServices(RuleBasedSchemaMetaDataDecorator.class, rules).get(shardingRule);
-        Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
-        tableMetaDataList.add(createTableMetaData());
-        GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);
-        when(material.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        Map<String, SchemaMetaData> actual = builder.decorate(Collections.singletonMap("sharding_db",
-                new SchemaMetaData("sharding_db", tableMetaDataList)), shardingRule, material);
-        Collection<ColumnMetaData> columns = actual.get("sharding_db").getTables().iterator().next().getColumns();
-        Iterator<ColumnMetaData> iterator = columns.iterator();
-        assertTrue(iterator.next().isGenerated());
-        assertFalse(iterator.next().isGenerated());
-        assertFalse(iterator.next().isGenerated());
-        assertFalse(iterator.next().isGenerated());
+    public void assertReviseWithKeyGenerateStrategy() {
+        Map<String, SchemaMetaData> actual = new MetaDataReviseEngine(Collections.singleton(mockShardingRule())).revise(Collections.singletonMap("sharding_db",
+                new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), mock(GenericSchemaBuilderMaterial.class, RETURNS_DEEP_STUBS));
+        Iterator<ColumnMetaData> columns = actual.get("sharding_db").getTables().iterator().next().getColumns().iterator();
+        assertTrue(columns.next().isGenerated());
+        assertFalse(columns.next().isGenerated());
+        assertFalse(columns.next().isGenerated());
+        assertFalse(columns.next().isGenerated());
+    }
+    
+    private ShardingRule mockShardingRule() {
+        ShardingRule result = mock(ShardingRule.class);
+        when(result.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_order"));
+        return result;
     }
     
     private TableMetaData createTableMetaData() {
@@ -72,6 +63,6 @@ public final class ShardingSchemaMetaDataDecoratorTest {
                 new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false),
                 new ColumnMetaData("pwd_plain", Types.VARCHAR, false, false, true, true, false),
                 new ColumnMetaData("product_id", Types.INTEGER, false, false, true, true, false));
-        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
+        return new TableMetaData("t_order", columns, Collections.emptyList(), Collections.emptyList());
     }
 }

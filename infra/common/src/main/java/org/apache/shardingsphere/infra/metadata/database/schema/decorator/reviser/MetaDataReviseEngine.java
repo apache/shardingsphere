@@ -15,44 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.metadata;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser;
 
-import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.schema.SchemaMetaDataReviseEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Schema meta data decorator for encrypt.
+ * Meta data revise engine.
  */
-public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMetaDataDecorator<EncryptRule> {
+@RequiredArgsConstructor
+public final class MetaDataReviseEngine {
     
-    @Override
-    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final EncryptRule rule, final GenericSchemaBuilderMaterial material) {
+    private final Collection<ShardingSphereRule> rules;
+    
+    /**
+     * Revise meta data.
+     * 
+     * @param schemaMetaDataMap schema meta data map
+     * @param material generic schema builder material
+     * @return revised meta data
+     */
+    public Map<String, SchemaMetaData> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap.size(), 1);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             DatabaseType databaseType = material.getStorageTypes().get(entry.getKey());
             DataSource dataSource = material.getDataSourceMap().get(entry.getKey());
-            result.put(entry.getKey(), new SchemaMetaDataReviseEngine<>(rule, material.getProps(), databaseType, dataSource).revise(entry.getValue()));
+            result.put(entry.getKey(), new SchemaMetaDataReviseEngine(rules, material.getProps(), databaseType, dataSource).revise(entry.getValue()));
         }
         return result;
-    }
-    
-    @Override
-    public int getOrder() {
-        return EncryptOrder.ORDER;
-    }
-    
-    @Override
-    public Class<EncryptRule> getTypeClass() {
-        return EncryptRule.class;
     }
 }

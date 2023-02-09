@@ -27,7 +27,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.revise
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.schema.SchemaTableAggregationReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableNameReviser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
 
 import java.util.Optional;
 
@@ -36,7 +37,8 @@ import java.util.Optional;
  * 
  * @param <T> type of rule
  */
-public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends TypedSPI {
+@SingletonSPI
+public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Get schema table aggregation reviser.

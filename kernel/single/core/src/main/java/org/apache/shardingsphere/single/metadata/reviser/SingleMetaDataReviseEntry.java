@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.metadata.reviser;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
+import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Optional;
@@ -38,7 +39,12 @@ public final class SingleMetaDataReviseEntry implements MetaDataReviseEntry<Sing
     }
     
     @Override
-    public String getType() {
-        return SingleRule.class.getSimpleName();
+    public int getOrder() {
+        return SingleOrder.ORDER;
+    }
+    
+    @Override
+    public Class<SingleRule> getTypeClass() {
+        return SingleRule.class;
     }
 }

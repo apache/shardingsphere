@@ -25,21 +25,21 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.Me
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Schema meta data revise engine.
- *
- * @param <T> type of rule
  */
 @RequiredArgsConstructor
-public final class SchemaMetaDataReviseEngine<T extends ShardingSphereRule> {
+public final class SchemaMetaDataReviseEngine {
     
-    private final T rule;
+    private final Collection<ShardingSphereRule> rules;
     
     private final ConfigurationProperties props;
     
@@ -49,20 +49,22 @@ public final class SchemaMetaDataReviseEngine<T extends ShardingSphereRule> {
     
     /**
      * Revise schema meta data.
-     *
+     * 
      * @param originalMetaData original schema meta data
-     * @return revised schema data
+     * @return revised schema meta data
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public SchemaMetaData revise(final SchemaMetaData originalMetaData) {
-        @SuppressWarnings("rawtypes")
-        Optional<MetaDataReviseEntry> reviseEntry = TypedSPILoader.findService(MetaDataReviseEntry.class, rule.getClass().getSimpleName());
-        if (!reviseEntry.isPresent()) {
-            return originalMetaData;
+        SchemaMetaData result = originalMetaData;
+        for (Entry<ShardingSphereRule, MetaDataReviseEntry> entry : OrderedSPILoader.getServices(MetaDataReviseEntry.class, rules).entrySet()) {
+            result = revise(result, entry.getKey(), entry.getValue());
         }
-        @SuppressWarnings("rawtypes")
-        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, databaseType, dataSource, reviseEntry.get());
-        Optional<? extends SchemaTableAggregationReviser<T>> aggregationReviser = reviseEntry.get().getSchemaTableAggregationReviser(rule, props);
+        return result;
+    }
+    
+    private <T extends ShardingSphereRule> SchemaMetaData revise(final SchemaMetaData originalMetaData, final T rule, final MetaDataReviseEntry<T> reviseEntry) {
+        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, databaseType, dataSource, reviseEntry);
+        Optional<? extends SchemaTableAggregationReviser<T>> aggregationReviser = reviseEntry.getSchemaTableAggregationReviser(rule, props);
         if (!aggregationReviser.isPresent()) {
             return new SchemaMetaData(originalMetaData.getName(), originalMetaData.getTables().stream().map(tableMetaDataReviseEngine::revise).collect(Collectors.toList()));
         }

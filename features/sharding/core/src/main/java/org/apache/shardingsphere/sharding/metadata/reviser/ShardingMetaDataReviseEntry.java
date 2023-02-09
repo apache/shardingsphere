@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.metadata.reviser;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.schema.SchemaTableAggregationReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
+import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Optional;
@@ -55,7 +56,12 @@ public final class ShardingMetaDataReviseEntry implements MetaDataReviseEntry<Sh
     }
     
     @Override
-    public String getType() {
-        return ShardingRule.class.getSimpleName();
+    public int getOrder() {
+        return ShardingOrder.ORDER;
+    }
+    
+    @Override
+    public Class<ShardingRule> getTypeClass() {
+        return ShardingRule.class;
     }
 }
