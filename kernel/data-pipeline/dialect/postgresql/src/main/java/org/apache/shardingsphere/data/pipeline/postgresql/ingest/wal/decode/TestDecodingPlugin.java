@@ -247,24 +247,27 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private String readNextString(final ByteBuffer data) {
+        int offset = 0;
         data.get();
         int startPosition = data.position();
-        int offset = 0;
         while (data.hasRemaining()) {
             char c = (char) data.get();
+            offset++;
             if ('\'' == c) {
                 if (!data.hasRemaining()) {
-                    return readStringSegment(data, startPosition, offset);
+                    offset--;
+                    return readStringSegment(data, startPosition, offset).replace("''", "'");
                 }
                 char c2 = (char) data.get();
-                if (' ' == c2) {
-                    return readStringSegment(data, startPosition, offset);
+                if ('\'' == c2) {
+                    offset++;
+                    continue;
                 }
-                if ('\'' != c2) {
-                    throw new IngestException("Read character varying data unexpected exception");
+                if (' ' == c2) {
+                    offset--;
+                    return readStringSegment(data, startPosition, offset).replace("''", "'");
                 }
             }
-            offset++;
         }
         return readStringSegment(data, startPosition, offset);
     }

@@ -46,12 +46,12 @@ public final class TestDecodingPluginTest {
     
     @Test
     public void assertDecodeWriteRowEvent() {
-        ByteBuffer data = ByteBuffer.wrap(("table public.test: INSERT: data[character varying]:'1 2 3''' t_json_empty[json]:'{}' t_json[json]:'{\"test\":\"中中{中中}' 中\"}'"
+        ByteBuffer data = ByteBuffer.wrap(("table public.test: INSERT: data[character varying]:' 1 2 3'' 😊中' t_json_empty[json]:'{}' t_json[json]:'{\"test\":\"中中{中中}' 中\"}'"
                 + " t_jsonb[jsonb]:'{\"test\":\"😊Emoji中\"}'").getBytes());
         WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
-        assertThat(actual.getAfterRow().get(0), is("1 2 3'"));
+        assertThat(actual.getAfterRow().get(0), is(" 1 2 3' 😊中"));
         assertThat(actual.getAfterRow().get(1), is("{}"));
         assertThat(actual.getAfterRow().get(2), is("{\"test\":\"中中{中中}' 中\"}"));
         assertThat(actual.getAfterRow().get(3), is("{\"test\":\"😊Emoji中\"}"));
@@ -59,11 +59,11 @@ public final class TestDecodingPluginTest {
     
     @Test
     public void assertDecodeUpdateRowEvent() {
-        ByteBuffer data = ByteBuffer.wrap("table public.test: UPDATE: data[character varying]:'1 2 3''' t_json_empty[json]:'{}' t_json[json]:'{\"test\":\"中中{中中}' 中\"}'".getBytes());
+        ByteBuffer data = ByteBuffer.wrap("table public.test: UPDATE: unicode[character varying]:' 1 2 3'' 😊中 ' t_json_empty[json]:'{}' t_json[json]:'{\"test\":\"中中{中中}' 中\"}'".getBytes());
         UpdateRowEvent actual = (UpdateRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
-        assertThat(actual.getAfterRow().get(0), is("1 2 3'"));
+        assertThat(actual.getAfterRow().get(0), is(" 1 2 3' 😊中 "));
         assertThat(actual.getAfterRow().get(1), is("{}"));
         assertThat(actual.getAfterRow().get(2), is("{\"test\":\"中中{中中}' 中\"}"));
     }
