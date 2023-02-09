@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
-import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.apache.shardingsphere.logging.rule.LoggingRule;
+import org.apache.shardingsphere.logging.utils.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -85,7 +83,7 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
     
     private void syncSQLShowToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
         if (LoggingConstants.SQL_SHOW.equalsIgnoreCase(propertyKey.getKey())) {
-            getSQLLogger(metaDataContexts).ifPresent(option -> {
+            LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_ENABLE, value);
                 metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
             });
@@ -94,17 +92,11 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
     
     private void syncSQLSimpleToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
         if (LoggingConstants.SQL_SIMPLE.equalsIgnoreCase(propertyKey.getKey())) {
-            getSQLLogger(metaDataContexts).ifPresent(option -> {
+            LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, value);
                 metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
             });
         }
-    }
-    
-    private Optional<ShardingSphereLogger> getSQLLogger(final MetaDataContexts metaDataContexts) {
-        LoggingRule loggingRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(LoggingRule.class);
-        return loggingRule.getConfiguration().getLoggers().stream()
-                .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
     }
     
     private void handleVariables() {

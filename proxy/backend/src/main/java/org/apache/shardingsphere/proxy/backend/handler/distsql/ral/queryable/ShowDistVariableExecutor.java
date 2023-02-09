@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.apache.shardingsphere.logging.rule.LoggingRule;
+import org.apache.shardingsphere.logging.utils.LoggingUtils;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
@@ -70,7 +70,7 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
     }
     
     private String getLoggingPropsValue(final ShardingSphereMetaData metaData, final String variableName) {
-        Optional<ShardingSphereLogger> sqlLogger = getSQLLogger(metaData);
+        Optional<ShardingSphereLogger> sqlLogger = LoggingUtils.getSQLLogger(metaData.getGlobalRuleMetaData());
         if (sqlLogger.isPresent()) {
             Properties props = sqlLogger.get().getProps();
             switch (variableName) {
@@ -84,11 +84,6 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
             }
         }
         return metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString();
-    }
-    
-    private Optional<ShardingSphereLogger> getSQLLogger(final ShardingSphereMetaData metaData) {
-        return metaData.getGlobalRuleMetaData().getSingleRule(LoggingRule.class).getConfiguration().getLoggers().stream()
-                .filter(each -> LoggingConstants.SQL_LOG_TOPIC.equalsIgnoreCase(each.getLoggerName())).findFirst();
     }
     
     private String getSpecialValue(final ConnectionSession connectionSession, final String variableName) {
