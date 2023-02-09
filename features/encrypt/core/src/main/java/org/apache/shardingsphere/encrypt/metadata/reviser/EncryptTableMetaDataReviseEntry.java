@@ -28,6 +28,11 @@ import java.util.Optional;
 public final class EncryptTableMetaDataReviseEntry implements TableMetaDataReviseEntry<EncryptRule> {
     
     @Override
+    public Optional<EncryptColumnExistedReviser> getColumnExistedReviser(final EncryptRule rule, final String tableName) {
+        return rule.findEncryptTable(tableName).map(EncryptColumnExistedReviser::new);
+    }
+    
+    @Override
     public Optional<EncryptColumnNameReviser> getColumnNameReviser(final EncryptRule rule, final String tableName) {
         return rule.findEncryptTable(tableName).map(EncryptColumnNameReviser::new);
     }

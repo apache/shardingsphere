@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnDataTypeReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnExistedReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnGeneratedReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnNameReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviser;
@@ -41,6 +42,17 @@ public interface TableMetaDataReviseEntry<T extends ShardingSphereRule> extends 
      * @return table name reviser
      */
     default Optional<? extends TableNameReviser<T>> getTableNameReviser() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get column existed reviser.
+     *
+     * @param rule rule
+     * @param tableName table name
+     * @return column existed reviser
+     */
+    default Optional<? extends ColumnExistedReviser<T>> getColumnExistedReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
     

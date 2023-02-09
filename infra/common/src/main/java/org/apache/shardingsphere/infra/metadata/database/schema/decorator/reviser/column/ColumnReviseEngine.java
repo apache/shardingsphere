@@ -52,19 +52,19 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
      * @return revised column meta data
      */
     public Collection<ColumnMetaData> revise(final String tableName, final Collection<ColumnMetaData> originalMetaDataList) {
+        Optional<? extends ColumnExistedReviser<T>> existedReviser = reviseEntry.getColumnExistedReviser(rule, tableName);
         Optional<? extends ColumnNameReviser<T>> nameReviser = reviseEntry.getColumnNameReviser(rule, tableName);
         Optional<? extends ColumnDataTypeReviser<T>> dataTypeReviser = reviseEntry.getColumnDataTypeReviser(rule, tableName);
         Optional<? extends ColumnGeneratedReviser<T>> generatedReviser = reviseEntry.getColumnGeneratedReviser(rule, tableName);
         Collection<ColumnMetaData> result = new LinkedHashSet<>();
         for (ColumnMetaData each : originalMetaDataList) {
-            Optional<String> name = nameReviser.isPresent() ? nameReviser.get().revise(each.getName(), tableName, rule) : Optional.of(each.getName());
-            if (!name.isPresent()) {
+            if (existedReviser.isPresent() && !existedReviser.get().isExisted(each.getName(), rule)) {
                 continue;
             }
-            Optional<Integer> dataType = dataTypeReviser.isPresent() ? dataTypeReviser.get().revise(each.getName(), tableName, rule, databaseType, dataSource) : Optional.empty();
-            Optional<Boolean> generated = generatedReviser.map(optional -> optional.revise(each, rule));
-            result.add(new ColumnMetaData(name.get(),
-                    dataType.orElseGet(each::getDataType), each.isPrimaryKey(), generated.orElse(each.isGenerated()), each.isCaseSensitive(), each.isVisible(), each.isUnsigned()));
+            String name = nameReviser.isPresent() ? nameReviser.get().revise(each.getName(), tableName, rule) : each.getName();
+            int dataType = dataTypeReviser.map(optional -> optional.revise(each.getName(), tableName, rule, databaseType, dataSource).orElseGet(each::getDataType)).orElseGet(each::getDataType);
+            boolean generated = generatedReviser.map(optional -> optional.revise(each, rule)).orElseGet(each::isGenerated);
+            result.add(new ColumnMetaData(name, dataType, each.isPrimaryKey(), generated, each.isCaseSensitive(), each.isVisible(), each.isUnsigned()));
         }
         return result;
     }

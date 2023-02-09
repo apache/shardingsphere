@@ -33,7 +33,7 @@ public interface ColumnDataTypeReviser<T extends ShardingSphereRule> {
     /**
      * Revise column data type.
      *
-     * @param originalName original name
+     * @param originalName original column name
      * @param tableName table name
      * @param rule rule
      * @param databaseType database type
