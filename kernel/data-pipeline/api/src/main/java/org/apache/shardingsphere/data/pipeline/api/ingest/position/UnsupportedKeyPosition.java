@@ -15,19 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.data;
-
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
 /**
- * Unsupported pipeline job unique key data type exception.
+ * Unsupported key position.
  */
-public final class UnsupportedPipelineJobUniqueKeyDataTypeException extends PipelineSQLException {
+public final class UnsupportedKeyPosition extends PrimaryKeyPosition<Void> implements IngestPosition<UnsupportedKeyPosition> {
     
-    private static final long serialVersionUID = -1605633809724671592L;
+    @Override
+    public Void getBeginValue() {
+        return null;
+    }
     
-    public UnsupportedPipelineJobUniqueKeyDataTypeException(final int uniqueKeyDataType) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 32, String.format("Unsupported data type `%s` of unique key for pipeline job.", uniqueKeyDataType));
+    @Override
+    public Void getEndValue() {
+        return null;
+    }
+    
+    @Override
+    protected Void convert(final String value) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    protected char getType() {
+        return 'u';
+    }
+    
+    @Override
+    public int compareTo(final UnsupportedKeyPosition position) {
+        return 0;
     }
 }

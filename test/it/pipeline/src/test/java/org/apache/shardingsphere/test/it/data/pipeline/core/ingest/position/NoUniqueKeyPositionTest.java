@@ -15,35 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.ingest.position;
+package org.apache.shardingsphere.test.it.data.pipeline.core.ingest.position;
 
-/**
- * No unique key position.
- */
-public final class NoUniqueKeyPosition extends PrimaryKeyPosition<Void> implements IngestPosition<NoUniqueKeyPosition> {
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.NoUniqueKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPositionFactory;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
+
+public final class NoUniqueKeyPositionTest {
     
-    @Override
-    public Void getBeginValue() {
-        return null;
+    @Test
+    public void assertInit() {
+        NoUniqueKeyPosition position = (NoUniqueKeyPosition) PrimaryKeyPositionFactory.newInstance("n,,");
+        assertNull(position.getBeginValue());
+        assertNull(position.getEndValue());
     }
     
-    @Override
-    public Void getEndValue() {
-        return null;
-    }
-    
-    @Override
-    protected Void convert(final String value) {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    protected char getType() {
-        return 'n';
-    }
-    
-    @Override
-    public int compareTo(final NoUniqueKeyPosition position) {
-        return 0;
+    @Test
+    public void assertToString() {
+        assertThat(new NoUniqueKeyPosition().toString(), is("n,,"));
     }
 }
