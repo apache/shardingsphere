@@ -62,15 +62,10 @@
 #logging:
 #  loggers:
 #  - loggerName: ShardingSphere-SQL
-#    additivity: false
+#    additivity: true
 #    level: INFO
-#    appenderName: sqlConsole
 #    props:
-#      enable: true
-#  appenders:
-#  - appenderClass: ch.qos.logback.core.ConsoleAppender
-#    appenderName: sqlConsole
-#    pattern: '[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n'
+#      enable: false
 #
 #props:
 #  system-log-level: INFO
@@ -79,7 +74,7 @@
 #  proxy-frontend-flush-threshold: 128  # The default value is 128.
 #  proxy-hint-enabled: false
 #  # sql-show is the same as props in logger ShardingSphere-SQL, and its priority is lower than logging rule
-#  sql-show: true
+#  sql-show: false
 #  check-table-metadata-enabled: false
 #    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
 #    # The default value is -1, which means set the minimum value for different JDBC drivers.
