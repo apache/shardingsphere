@@ -68,6 +68,7 @@ public final class MetaDataContexts implements AutoCloseable {
         Optional<ShardingSphereData> loadedShardingSphereData = Optional.ofNullable(persistService.getShardingSphereDataPersistService())
                 .flatMap(shardingSphereDataPersistService -> shardingSphereDataPersistService.load(metaData));
         loadedShardingSphereData.ifPresent(optional -> useLoadedToReplaceInit(result, optional));
+        // TODO skip this while instance type is JDBC
         refreshRootLogger(metaData.getProps().getProps());
         return result;
     }
