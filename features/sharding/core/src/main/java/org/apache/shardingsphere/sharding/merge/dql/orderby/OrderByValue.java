@@ -110,7 +110,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
         List<Comparable<?>> result = new ArrayList<>(orderByItems.size());
         for (OrderByItem each : orderByItems) {
             Object value = queryResult.getValue(each.getIndex(), Object.class);
-            ShardingSpherePreconditions.checkState(null == value || value instanceof Comparable, () -> new NotImplementComparableValueException("Order by"));
+            ShardingSpherePreconditions.checkState(null == value || value instanceof Comparable, () -> new NotImplementComparableValueException("Order by", value));
             result.add((Comparable<?>) value);
         }
         return result;
