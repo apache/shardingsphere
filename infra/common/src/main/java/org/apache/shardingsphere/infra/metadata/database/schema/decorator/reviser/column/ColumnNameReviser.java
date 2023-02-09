@@ -17,22 +17,16 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
 /**
  * Column name reviser.
- * 
- * @param <T> type of rule
  */
-public interface ColumnNameReviser<T extends ShardingSphereRule> {
+public interface ColumnNameReviser {
     
     /**
      * Revise column name.
      * 
      * @param originalName original column name
-     * @param tableName table name
-     * @param rule rule
      * @return revised column name
      */
-    String revise(String originalName, String tableName, T rule);
+    String revise(String originalName);
 }

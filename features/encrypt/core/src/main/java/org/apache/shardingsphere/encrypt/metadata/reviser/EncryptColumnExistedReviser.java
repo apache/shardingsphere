@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.metadata.reviser;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnExistedReviser;
 
@@ -26,7 +25,7 @@ import java.util.Collection;
 /**
  * Encrypt column existed reviser.
  */
-public final class EncryptColumnExistedReviser implements ColumnExistedReviser<EncryptRule> {
+public final class EncryptColumnExistedReviser implements ColumnExistedReviser {
     
     private final EncryptTable encryptTable;
     
@@ -44,7 +43,7 @@ public final class EncryptColumnExistedReviser implements ColumnExistedReviser<E
     }
     
     @Override
-    public boolean isExisted(final String originalName, final EncryptRule rule) {
+    public boolean isExisted(final String originalName) {
         return plainColumns.contains(originalName) || encryptTable.isCipherColumn(originalName) || !assistedQueryColumns.contains(originalName) && !likeQueryColumns.contains(originalName);
     }
 }
