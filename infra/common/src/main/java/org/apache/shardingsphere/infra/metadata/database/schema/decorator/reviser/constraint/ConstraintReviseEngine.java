@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.TableMetaDataReviseEntry;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -37,7 +37,7 @@ public final class ConstraintReviseEngine<T extends ShardingSphereRule> {
     
     private final T rule;
     
-    private final TableMetaDataReviseEntry<T> reviseEntry;
+    private final MetaDataReviseEntry<T> reviseEntry;
     
     /**
      * Revise constraint meta data.

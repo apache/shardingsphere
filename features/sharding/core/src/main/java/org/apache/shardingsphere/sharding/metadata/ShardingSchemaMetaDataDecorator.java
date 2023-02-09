@@ -17,25 +17,18 @@
 
 package org.apache.shardingsphere.sharding.metadata;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableMetaDataReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.schema.SchemaMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
-import org.apache.shardingsphere.sharding.exception.metadata.InconsistentShardingTableMetaDataException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Schema meta data decorator for sharding.
@@ -45,38 +38,12 @@ public final class ShardingSchemaMetaDataDecorator implements RuleBasedSchemaMet
     @Override
     public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final ShardingRule rule, final GenericSchemaBuilderMaterial material) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap.size(), 1);
-        boolean checkTableMetaDataEnabled = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             DatabaseType databaseType = material.getStorageTypes().get(entry.getKey());
             DataSource dataSource = material.getDataSourceMap().get(entry.getKey());
-            Collection<TableMetaData> tables = new LinkedList<>();
-            for (Entry<String, Collection<TableMetaData>> tableEntry : getLogicTableMetaDataMap(entry.getValue(), rule, databaseType, dataSource).entrySet()) {
-                if (checkTableMetaDataEnabled) {
-                    checkUniformed(tableEntry.getKey(), tableEntry.getValue());
-                }
-                tables.add(tableEntry.getValue().iterator().next());
-            }
-            result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
+            result.put(entry.getKey(), new SchemaMetaDataReviseEngine<>(rule, material.getProps(), databaseType, dataSource).revise(entry.getValue()));
         }
         return result;
-    }
-    
-    private Map<String, Collection<TableMetaData>> getLogicTableMetaDataMap(final SchemaMetaData schemaMetaData, final ShardingRule rule,
-                                                                            final DatabaseType databaseType, final DataSource dataSource) {
-        Map<String, Collection<TableMetaData>> result = new LinkedHashMap<>();
-        TableMetaDataReviseEngine<ShardingRule> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, databaseType, dataSource);
-        for (TableMetaData each : schemaMetaData.getTables()) {
-            String logicTableName = rule.findLogicTableByActualTable(each.getName()).orElse(each.getName());
-            result.computeIfAbsent(logicTableName, key -> new LinkedList<>()).add(tableMetaDataReviseEngine.revise(each));
-        }
-        return result;
-    }
-    
-    private void checkUniformed(final String logicTableName, final Collection<TableMetaData> tableMetaDataList) {
-        TableMetaData sample = tableMetaDataList.iterator().next();
-        Collection<TableMetaDataViolation> violations = tableMetaDataList.stream()
-                .filter(each -> !sample.equals(each)).map(each -> new TableMetaDataViolation(each.getName(), each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(violations.isEmpty(), () -> new InconsistentShardingTableMetaDataException(logicTableName, violations));
     }
     
     @Override

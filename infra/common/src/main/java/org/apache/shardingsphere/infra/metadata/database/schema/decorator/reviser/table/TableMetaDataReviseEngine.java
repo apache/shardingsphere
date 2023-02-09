@@ -22,10 +22,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviseEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.TableMetaDataReviseEntry;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.util.Optional;
@@ -44,20 +43,15 @@ public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
     
     private final DataSource dataSource;
     
+    private final MetaDataReviseEntry<T> reviseEntry;
+    
     /**
      * Revise table meta data.
      *
      * @param originalMetaData original table meta data
      * @return revised table meta data
      */
-    @SuppressWarnings("unchecked")
     public TableMetaData revise(final TableMetaData originalMetaData) {
-        @SuppressWarnings("rawtypes")
-        Optional<TableMetaDataReviseEntry> reviseEntry = TypedSPILoader.findService(TableMetaDataReviseEntry.class, rule.getClass().getSimpleName());
-        return reviseEntry.map(optional -> revise(originalMetaData, optional)).orElse(originalMetaData);
-    }
-    
-    private TableMetaData revise(final TableMetaData originalMetaData, final TableMetaDataReviseEntry<T> reviseEntry) {
         Optional<? extends TableNameReviser<T>> tableNameReviser = reviseEntry.getTableNameReviser();
         String revisedTableName = tableNameReviser.map(optional -> optional.revise(originalMetaData.getName(), rule)).orElse(originalMetaData.getName());
         return new TableMetaData(revisedTableName, new ColumnReviseEngine<>(rule, databaseType, dataSource, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getColumns()),

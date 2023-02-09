@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.metadata.reviser.EncryptTableMetaDataReviseEntry
+org.apache.shardingsphere.sharding.metadata.reviser.ShardingMetaDataReviseEntry

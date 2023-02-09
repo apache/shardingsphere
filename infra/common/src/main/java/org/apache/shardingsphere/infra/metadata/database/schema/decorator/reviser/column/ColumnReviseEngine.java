@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.decorator.revis
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.TableMetaDataReviseEntry;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -42,7 +42,7 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
     
     private final DataSource dataSource;
     
-    private final TableMetaDataReviseEntry<T> reviseEntry;
+    private final MetaDataReviseEntry<T> reviseEntry;
     
     /**
      * Revise column meta data.

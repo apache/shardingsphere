@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.single.metadata.reviser;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.TableMetaDataReviseEntry;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Optional;
 
 /**
- * Single table meta data revise entry.
+ * Single meta data revise entry.
  */
-public final class SingleTableMetaDataReviseEntry implements TableMetaDataReviseEntry<SingleRule> {
+public final class SingleMetaDataReviseEntry implements MetaDataReviseEntry<SingleRule> {
     
     @Override
     public Optional<SingleIndexReviser> getIndexReviser(final SingleRule rule, final String tableName) {
