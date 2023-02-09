@@ -20,19 +20,18 @@ package org.apache.shardingsphere.infra.metadata.database.schema.decorator.revis
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Column name reviser.
+ * Column existed reviser.
  * 
  * @param <T> type of rule
  */
-public interface ColumnNameReviser<T extends ShardingSphereRule> {
+public interface ColumnExistedReviser<T extends ShardingSphereRule> {
     
     /**
-     * Revise column name.
+     * Judge whether column existed.
      * 
      * @param originalName original column name
-     * @param tableName table name
      * @param rule rule
-     * @return revised column name
+     * @return column existed or not
      */
-    String revise(String originalName, String tableName, T rule);
+    boolean isExisted(String originalName, T rule);
 }
