@@ -106,7 +106,7 @@ public class LoggingUtils {
     }
     
     /**
-     * Refresh logger context with logging rule
+     * Refresh logger context with logging rule.
      *
      * @param loggingRuleConfiguration logging global rule configuration
      */
