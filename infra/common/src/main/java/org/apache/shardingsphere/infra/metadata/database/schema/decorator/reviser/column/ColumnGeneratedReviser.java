@@ -18,21 +18,17 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
  * Column generated reviser.
- * 
- * @param <T> type of rule
  */
-public interface ColumnGeneratedReviser<T extends ShardingSphereRule> {
+public interface ColumnGeneratedReviser {
     
     /**
      * Revise generated column.
      * 
      * @param originalMetaData original column meta data
-     * @param rule rule
      * @return revised generated column
      */
-    boolean revise(ColumnMetaData originalMetaData, T rule);
+    boolean revise(ColumnMetaData originalMetaData);
 }

@@ -52,18 +52,18 @@ public final class ColumnReviseEngine<T extends ShardingSphereRule> {
      * @return revised column meta data
      */
     public Collection<ColumnMetaData> revise(final String tableName, final Collection<ColumnMetaData> originalMetaDataList) {
-        Optional<? extends ColumnExistedReviser<T>> existedReviser = reviseEntry.getColumnExistedReviser(rule, tableName);
-        Optional<? extends ColumnNameReviser<T>> nameReviser = reviseEntry.getColumnNameReviser(rule, tableName);
-        Optional<? extends ColumnDataTypeReviser<T>> dataTypeReviser = reviseEntry.getColumnDataTypeReviser(rule, tableName);
-        Optional<? extends ColumnGeneratedReviser<T>> generatedReviser = reviseEntry.getColumnGeneratedReviser(rule, tableName);
+        Optional<? extends ColumnExistedReviser> existedReviser = reviseEntry.getColumnExistedReviser(rule, tableName);
+        Optional<? extends ColumnNameReviser> nameReviser = reviseEntry.getColumnNameReviser(rule, tableName);
+        Optional<? extends ColumnDataTypeReviser> dataTypeReviser = reviseEntry.getColumnDataTypeReviser(rule, tableName);
+        Optional<? extends ColumnGeneratedReviser> generatedReviser = reviseEntry.getColumnGeneratedReviser(rule, tableName);
         Collection<ColumnMetaData> result = new LinkedHashSet<>();
         for (ColumnMetaData each : originalMetaDataList) {
-            if (existedReviser.isPresent() && !existedReviser.get().isExisted(each.getName(), rule)) {
+            if (existedReviser.isPresent() && !existedReviser.get().isExisted(each.getName())) {
                 continue;
             }
-            String name = nameReviser.isPresent() ? nameReviser.get().revise(each.getName(), tableName, rule) : each.getName();
-            int dataType = dataTypeReviser.map(optional -> optional.revise(each.getName(), tableName, rule, databaseType, dataSource).orElseGet(each::getDataType)).orElseGet(each::getDataType);
-            boolean generated = generatedReviser.map(optional -> optional.revise(each, rule)).orElseGet(each::isGenerated);
+            String name = nameReviser.isPresent() ? nameReviser.get().revise(each.getName()) : each.getName();
+            int dataType = dataTypeReviser.map(optional -> optional.revise(each.getName(), databaseType, dataSource).orElseGet(each::getDataType)).orElseGet(each::getDataType);
+            boolean generated = generatedReviser.map(optional -> optional.revise(each)).orElseGet(each::isGenerated);
             result.add(new ColumnMetaData(name, dataType, each.isPrimaryKey(), generated, each.isCaseSensitive(), each.isVisible(), each.isUnsigned()));
         }
         return result;

@@ -17,21 +17,16 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
 /**
  * Column existed reviser.
- * 
- * @param <T> type of rule
  */
-public interface ColumnExistedReviser<T extends ShardingSphereRule> {
+public interface ColumnExistedReviser {
     
     /**
      * Judge whether column existed.
      * 
      * @param originalName original column name
-     * @param rule rule
      * @return column existed or not
      */
-    boolean isExisted(String originalName, T rule);
+    boolean isExisted(String originalName);
 }

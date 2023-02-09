@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.metadata.reviser;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnNameReviser;
 
@@ -26,7 +25,7 @@ import java.util.Collection;
 /**
  * Encrypt column name reviser.
  */
-public final class EncryptColumnNameReviser implements ColumnNameReviser<EncryptRule> {
+public final class EncryptColumnNameReviser implements ColumnNameReviser {
     
     private final EncryptTable encryptTable;
     
@@ -38,7 +37,7 @@ public final class EncryptColumnNameReviser implements ColumnNameReviser<Encrypt
     }
     
     @Override
-    public String revise(final String originalName, final String tableName, final EncryptRule rule) {
+    public String revise(final String originalName) {
         if (plainColumns.contains(originalName)) {
             return encryptTable.getLogicColumnByPlainColumn(originalName);
         }

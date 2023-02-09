@@ -65,7 +65,7 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Typed
      * @param tableName table name
      * @return column existed reviser
      */
-    default Optional<? extends ColumnExistedReviser<T>> getColumnExistedReviser(final T rule, final String tableName) {
+    default Optional<? extends ColumnExistedReviser> getColumnExistedReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
     
@@ -76,7 +76,7 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Typed
      * @param tableName table name
      * @return column name reviser
      */
-    default Optional<? extends ColumnNameReviser<T>> getColumnNameReviser(final T rule, final String tableName) {
+    default Optional<? extends ColumnNameReviser> getColumnNameReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
     
@@ -87,7 +87,7 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Typed
      * @param tableName table name
      * @return column data type reviser
      */
-    default Optional<? extends ColumnDataTypeReviser<T>> getColumnDataTypeReviser(final T rule, final String tableName) {
+    default Optional<? extends ColumnDataTypeReviser> getColumnDataTypeReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
     
@@ -98,7 +98,7 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Typed
      * @param tableName table name
      * @return column generated reviser
      */
-    default Optional<? extends ColumnGeneratedReviser<T>> getColumnGeneratedReviser(final T rule, final String tableName) {
+    default Optional<? extends ColumnGeneratedReviser> getColumnGeneratedReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
     
