@@ -77,7 +77,7 @@ public final class GenericSchemaBuilder {
         if (!isProtocolTypeSameWithStorageType(material)) {
             result = translate(result, material);
         }
-        return decorate(result, material);
+        return revise(result, material);
     }
     
     private static boolean isProtocolTypeSameWithStorageType(final GenericSchemaBuilderMaterial material) {
@@ -114,7 +114,7 @@ public final class GenericSchemaBuilder {
         return result;
     }
     
-    private static Map<String, ShardingSphereSchema> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
+    private static Map<String, ShardingSphereSchema> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap);
         result.putAll(new MetaDataReviseEngine(material.getRules().stream().filter(each -> each instanceof TableContainedRule).collect(Collectors.toList())).revise(result, material));
         return convertToSchemaMap(result, material);
