@@ -58,9 +58,9 @@ public final class DataConsistencyCalculateParameter {
     private final PipelineColumnMetaData uniqueKey;
     
     /**
-     * Previous calculated result will be transferred to next call.
+     * Calculation context.
      */
-    private volatile Object previousCalculatedResult;
+    private volatile AutoCloseable calculationContext;
     
     private final Object tableCheckPosition;
 }

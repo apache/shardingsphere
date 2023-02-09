@@ -130,7 +130,7 @@ public interface PipelineSQLBuilder extends TypedSPI {
     String buildCountSQL(String schemaName, String tableName);
     
     /**
-     * Build query SQL.
+     * Build query all ordering SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
@@ -138,7 +138,7 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @param firstQuery first query
      * @return query SQL
      */
-    String buildChunkedQuerySQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
+    String buildQueryAllOrderingSQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
     
     /**
      * Build check empty SQL.
