@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -14,6 +15,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 <integration-test-cases>
     <test-case sql="SHOW STORAGE UNITS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="show_storage_units.xml" />
@@ -21,9 +23,9 @@
     
     <!--TODO Support dynamic input of scenario names-->
     <!--FIXME db scenario have a problem. #18964-->
-<!--    <test-case sql="SHOW DATABASE RESOURCES FROM ?" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">-->
-<!--        <assertion expected-data-file="show_storage_units.xml" />-->
-<!--    </test-case>-->
+    <!--    <test-case sql="SHOW DATABASE RESOURCES FROM ?" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">-->
+    <!--        <assertion expected-data-file="show_storage_units.xml" />-->
+    <!--    </test-case>-->
     
     <test-case sql="SHOW SHARDING TABLE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
         <assertion expected-data-file="show_sharding_table_rules.xml" />
@@ -101,10 +103,6 @@
         <assertion expected-data-file="show_single_tables.xml" />
     </test-case>
     
-    <test-case sql="COUNT SINGLE TABLE" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
-        <assertion expected-data-file="count_single_table.xml" />
-    </test-case>
-    
     <test-case sql="SHOW READWRITE_SPLITTING RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="show_readwrite_splitting_rules.xml" />
     </test-case>
@@ -132,29 +130,5 @@
     
     <test-case sql="SHOW DB_DISCOVERY HEARTBEATS" scenario-types="sharding_governance">
         <assertion expected-data-file="show_discovery_heartbeats.xml" />
-    </test-case>
-    
-    <test-case sql="COUNT SHARDING RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-file="count_sharding_rule.xml" />
-    </test-case>
-    
-    <test-case sql="COUNT READWRITE_SPLITTING RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-file="count_readwrite_splitting_rule.xml" />
-    </test-case>
-    
-    <test-case sql="COUNT DB_DISCOVERY RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-file="count_database_discovery_rule.xml" />
-    </test-case>
-    
-    <test-case sql="COUNT ENCRYPT RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-file="count_encrypt_rule.xml" />
-    </test-case>
-    
-    <test-case sql="COUNT SHADOW RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-file="count_shadow_rule.xml" />
-    </test-case>
-    
-    <test-case sql="COUNT MASK RULE;" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding">
-        <assertion expected-data-file="count_mask_rule.xml" />
     </test-case>
 </integration-test-cases>
