@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.single.metadata.reviser;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.single.constant.SingleOrder;
+import org.apache.shardingsphere.single.metadata.reviser.constraint.SingleConstraintReviser;
+import org.apache.shardingsphere.single.metadata.reviser.index.SingleIndexReviser;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Optional;
