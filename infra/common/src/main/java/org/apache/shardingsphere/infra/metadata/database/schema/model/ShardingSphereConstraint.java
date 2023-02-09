@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.column;
+package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-
-import javax.sql.DataSource;
-import java.util.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Column data type reviser.
+ * ShardingSphere constraint.
  */
-public interface ColumnDataTypeReviser {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class ShardingSphereConstraint {
     
-    /**
-     * Revise column data type.
-     *
-     * @param originalName original column name
-     * @param databaseType database type
-     * @param dataSource data source
-     * @return revised data type
-     */
-    Optional<Integer> revise(String originalName, DatabaseType databaseType, DataSource dataSource);
+    private final String name;
+    
+    private final String referencedTableName;
 }

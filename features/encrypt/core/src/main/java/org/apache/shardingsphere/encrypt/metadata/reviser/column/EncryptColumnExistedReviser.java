@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.metadata.reviser.column;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.column.ColumnExistedReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnExistedReviser;
 
 import java.util.Collection;
 

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata.reviser.schema;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.schema.SchemaTableAggregationReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaTableAggregationReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.metadata.InconsistentShardingTableMetaDataException;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata.reviser.column;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.column.ColumnGeneratedReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnGeneratedReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 

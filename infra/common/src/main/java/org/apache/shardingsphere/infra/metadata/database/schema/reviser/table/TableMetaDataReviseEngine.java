@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.table;
+package org.apache.shardingsphere.infra.metadata.database.schema.reviser.table;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.column.ColumnReviseEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.constraint.ConstraintReviseEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.index.IndexReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;

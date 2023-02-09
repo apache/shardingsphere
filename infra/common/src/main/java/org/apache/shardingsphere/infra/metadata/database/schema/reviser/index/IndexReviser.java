@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.constraint;
+package org.apache.shardingsphere.infra.metadata.database.schema.reviser.index;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Optional;
 
 /**
- * Constraint reviser.
+ * Index reviser.
  * 
  * @param <T> type of rule
  */
-public interface ConstraintReviser<T extends ShardingSphereRule> {
+public interface IndexReviser<T extends ShardingSphereRule> {
     
     /**
-     * Revise constraint meta data.
+     * Revise index meta data.
      * 
      * @param tableName table name
-     * @param originalMetaData original constraint meta data
+     * @param originalMetaData original index meta data
      * @param rule rule
-     * @return revised constraint meta data
+     * @return revised index meta data
      */
-    Optional<ConstraintMetaData> revise(String tableName, ConstraintMetaData originalMetaData, T rule);
+    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData, T rule);
 }
