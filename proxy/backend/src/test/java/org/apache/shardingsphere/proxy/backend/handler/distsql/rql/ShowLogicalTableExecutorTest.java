@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowLogicalTa
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.model.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.ShowLogicalTableExecutor;
 import org.junit.Before;
 import org.junit.Test;

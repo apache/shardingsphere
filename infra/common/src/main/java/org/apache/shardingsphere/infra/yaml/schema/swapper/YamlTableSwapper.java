@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereConstraint;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.model.ShardingSphereConstraint;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereConstraint;
