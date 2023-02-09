@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sharding.metadata;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.MetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.MetaDataReviseEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
@@ -32,10 +33,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,8 +44,10 @@ public final class ShardingMetaDataReviseEngineTest {
     
     @Test
     public void assertReviseWithKeyGenerateStrategy() {
+        GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);
+        when(material.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         Map<String, SchemaMetaData> actual = new MetaDataReviseEngine(Collections.singleton(mockShardingRule())).revise(Collections.singletonMap("sharding_db",
-                new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), mock(GenericSchemaBuilderMaterial.class, RETURNS_DEEP_STUBS));
+                new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), material);
         Iterator<ColumnMetaData> columns = actual.get("sharding_db").getTables().iterator().next().getColumns().iterator();
         assertTrue(columns.next().isGenerated());
         assertFalse(columns.next().isGenerated());
