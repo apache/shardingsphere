@@ -43,11 +43,10 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Order
     /**
      * Get schema table aggregation reviser.
      * 
-     * @param rule rule
      * @param props configuration properties
      * @return schema table aggregation reviser
      */
-    default Optional<? extends SchemaTableAggregationReviser<T>> getSchemaTableAggregationReviser(final T rule, final ConfigurationProperties props) {
+    default Optional<? extends SchemaTableAggregationReviser<T>> getSchemaTableAggregationReviser(final ConfigurationProperties props) {
         return Optional.empty();
     }
     

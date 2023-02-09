@@ -64,7 +64,7 @@ public final class SchemaMetaDataReviseEngine {
     
     private <T extends ShardingSphereRule> SchemaMetaData revise(final SchemaMetaData originalMetaData, final T rule, final MetaDataReviseEntry<T> reviseEntry) {
         TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, databaseType, dataSource, reviseEntry);
-        Optional<? extends SchemaTableAggregationReviser<T>> aggregationReviser = reviseEntry.getSchemaTableAggregationReviser(rule, props);
+        Optional<? extends SchemaTableAggregationReviser<T>> aggregationReviser = reviseEntry.getSchemaTableAggregationReviser(props);
         if (!aggregationReviser.isPresent()) {
             return new SchemaMetaData(originalMetaData.getName(), originalMetaData.getTables().stream().map(tableMetaDataReviseEngine::revise).collect(Collectors.toList()));
         }
