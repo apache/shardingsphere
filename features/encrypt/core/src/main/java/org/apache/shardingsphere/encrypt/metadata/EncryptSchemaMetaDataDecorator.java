@@ -29,9 +29,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Tab
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Schema meta data decorator for encrypt.
@@ -42,17 +42,13 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
     public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final EncryptRule rule, final GenericSchemaBuilderMaterial material) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap.size(), 1);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
-            Collection<TableMetaData> tables = new LinkedList<>();
-            for (TableMetaData each : entry.getValue().getTables()) {
-                tables.add(decorate(each.getName(), each, rule, material.getStorageTypes().get(entry.getKey()), material.getDataSourceMap().get(entry.getKey())));
-            }
+            DatabaseType databaseType = material.getStorageTypes().get(entry.getKey());
+            DataSource dataSource = material.getDataSourceMap().get(entry.getKey());
+            TableMetaDataReviseEngine<EncryptRule> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, databaseType, dataSource);
+            Collection<TableMetaData> tables = entry.getValue().getTables().stream().map(tableMetaDataReviseEngine::revise).collect(Collectors.toList());
             result.put(entry.getKey(), new SchemaMetaData(entry.getKey(), tables));
         }
         return result;
-    }
-    
-    private TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final EncryptRule encryptRule, final DatabaseType databaseType, final DataSource dataSource) {
-        return encryptRule.findEncryptTable(tableName).map(optional -> new TableMetaDataReviseEngine<>(encryptRule, databaseType, dataSource).revise(tableMetaData)).orElse(tableMetaData);
     }
     
     @Override
