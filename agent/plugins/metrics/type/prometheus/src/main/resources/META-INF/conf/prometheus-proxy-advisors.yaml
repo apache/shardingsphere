@@ -19,7 +19,7 @@ advisors:
   - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.ExecuteLatencyHistogramAdvice
     pointcuts:
-      - name: run
+      - name: doExecuteCommand
         type: method
   - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.ExecuteErrorsCountAdvice

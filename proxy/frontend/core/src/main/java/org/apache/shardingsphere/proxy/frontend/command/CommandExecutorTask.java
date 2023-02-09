@@ -106,6 +106,10 @@ public final class CommandExecutorTask implements Runnable {
         CommandPacketType type = commandExecuteEngine.getCommandPacketType(payload);
         CommandPacket commandPacket = commandExecuteEngine.getCommandPacket(payload, type, connectionSession);
         CommandExecutor commandExecutor = commandExecuteEngine.getCommandExecutor(type, commandPacket, connectionSession);
+        return doExecuteCommand(context, commandExecuteEngine, commandExecutor);
+    }
+    
+    private boolean doExecuteCommand(final ChannelHandlerContext context, final CommandExecuteEngine commandExecuteEngine, final CommandExecutor commandExecutor) throws SQLException {
         try {
             Collection<DatabasePacket<?>> responsePackets = commandExecutor.execute();
             if (responsePackets.isEmpty()) {
