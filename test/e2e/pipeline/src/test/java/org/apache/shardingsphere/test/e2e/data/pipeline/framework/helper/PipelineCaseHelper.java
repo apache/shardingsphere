@@ -113,7 +113,7 @@ public final class PipelineCaseHelper {
         String value;
         if (useUnicodeCharacter) {
             // TODO openGauss incremental task parse single quote not correctly now
-            value = Strings.repeat("中", length);
+            value = Strings.repeat("{中 } ABC", length);
         } else {
             value = generateString(length);
         }
