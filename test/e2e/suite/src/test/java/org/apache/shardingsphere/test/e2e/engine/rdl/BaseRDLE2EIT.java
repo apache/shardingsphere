@@ -25,8 +25,11 @@ import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.After;
 import org.junit.Before;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
+import org.testcontainers.shaded.org.awaitility.Durations;
 
 import java.sql.Connection;
+import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -60,17 +63,16 @@ public abstract class BaseRDLE2EIT extends SingleE2EIT {
                 executeDestroySQLs(connection);
             }
         }
-        sleep();
     }
     
-    private void executeInitSQLs(final Connection connection) throws SQLException {
+    private void executeInitSQLs(final Connection connection) throws SQLException, InterruptedException {
         if (null == getAssertion().getInitialSQL() || null == getAssertion().getInitialSQL().getSql()) {
             return;
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
-                preparedStatement.executeUpdate();
-                sleep();
+                TimeUnit.MILLISECONDS.sleep(100L);
+                Awaitility.await().atMost(Durations.TWO_SECONDS).until(() -> executeUpdate(preparedStatement));
             }
         }
     }
@@ -81,22 +83,41 @@ public abstract class BaseRDLE2EIT extends SingleE2EIT {
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
-                preparedStatement.executeUpdate();
-                sleep();
+                Awaitility.await().atMost(Durations.TWO_SECONDS).until(() -> executeUpdate(preparedStatement));
             }
         }
     }
     
-    protected void sleep() {
+    protected final boolean executeUpdate(final PreparedStatement preparedStatement) {
         try {
-            TimeUnit.SECONDS.sleep(2);
-        } catch (final InterruptedException ignored) {
+            preparedStatement.executeUpdate();
+            return true;
+        } catch (final SQLException ex) {
+            return false;
+        }
+    }
+    
+    protected final boolean executeSQL(final Statement statement, final String sql) {
+        try {
+            statement.execute(sql);
+            return true;
+        } catch (final SQLException ex) {
+            return false;
         }
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
-        assertMetaData(resultSet.getMetaData(), getExpectedColumns());
-        assertRows(resultSet, getDataSet().getRows());
+        Awaitility.await().atMost(Durations.TEN_SECONDS).until(() -> waitForAssertSuccess(resultSet));
+    }
+    
+    private boolean waitForAssertSuccess(final ResultSet resultSet) {
+        try {
+            assertMetaData(resultSet.getMetaData(), getExpectedColumns());
+            assertRows(resultSet, getDataSet().getRows());
+            return true;
+        } catch (final SQLException ex) {
+            return false;
+        }
     }
     
     private Collection<DataSetColumn> getExpectedColumns() {

@@ -24,12 +24,13 @@ import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrate
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
+import org.testcontainers.shaded.org.awaitility.Durations;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.Collection;
 
 import static org.junit.Assert.assertNotNull;
@@ -47,19 +48,18 @@ public final class GeneralRDLE2EIT extends BaseRDLE2EIT {
     }
     
     @Test
-    public void assertExecute() throws SQLException, ParseException {
+    public void assertExecute() throws SQLException {
         assertNotNull("Assertion SQL is required", getAssertion().getAssertionSQL());
         try (Connection connection = getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(statement);
-                sleep();
                 assertResultSet(statement);
             }
         }
     }
     
-    private void executeSQLCase(final Statement statement) throws SQLException, ParseException {
-        statement.execute(getSQL());
+    private void executeSQLCase(final Statement statement) {
+        Awaitility.await().atMost(Durations.TWO_SECONDS).until(() -> executeSQL(statement, getSQL()));
     }
     
     private void assertResultSet(final Statement statement) throws SQLException {
