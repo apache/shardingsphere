@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.encrypt.metadata.reviser;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.TableMetaDataReviseEntry;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
 
 import java.util.Optional;
 
 /**
- * Encrypt table meta data revise entry.
+ * Encrypt meta data revise entry.
  */
-public final class EncryptTableMetaDataReviseEntry implements TableMetaDataReviseEntry<EncryptRule> {
+public final class EncryptMetaDataReviseEntry implements MetaDataReviseEntry<EncryptRule> {
     
     @Override
     public Optional<EncryptColumnExistedReviser> getColumnExistedReviser(final EncryptRule rule, final String tableName) {

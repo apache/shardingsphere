@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnDataTypeReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnExistedReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnGeneratedReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnNameReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.constraint.ConstraintReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.schema.SchemaTableAggregationReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.table.TableNameReviser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
@@ -30,11 +32,22 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import java.util.Optional;
 
 /**
- * Table name revise entry.
+ * Meta data revise entry.
  * 
  * @param <T> type of rule
  */
-public interface TableMetaDataReviseEntry<T extends ShardingSphereRule> extends TypedSPI {
+public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends TypedSPI {
+    
+    /**
+     * Get schema table aggregation reviser.
+     * 
+     * @param rule rule
+     * @param props configuration properties
+     * @return schema table aggregation reviser
+     */
+    default Optional<? extends SchemaTableAggregationReviser<T>> getSchemaTableAggregationReviser(final T rule, final ConfigurationProperties props) {
+        return Optional.empty();
+    }
     
     /**
      * Get table name reviser.

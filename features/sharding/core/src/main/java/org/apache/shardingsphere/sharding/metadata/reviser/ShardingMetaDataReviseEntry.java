@@ -17,15 +17,22 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.TableMetaDataReviseEntry;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.schema.SchemaTableAggregationReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Optional;
 
 /**
- * Sharding table meta data revise entry.
+ * Sharding meta data revise entry.
  */
-public final class ShardingTableMetaDataReviseEntry implements TableMetaDataReviseEntry<ShardingRule> {
+public final class ShardingMetaDataReviseEntry implements MetaDataReviseEntry<ShardingRule> {
+    
+    @Override
+    public Optional<? extends SchemaTableAggregationReviser<ShardingRule>> getSchemaTableAggregationReviser(final ShardingRule rule, final ConfigurationProperties props) {
+        return MetaDataReviseEntry.super.getSchemaTableAggregationReviser(rule, props);
+    }
     
     @Override
     public Optional<ShardingTableNameReviser> getTableNameReviser() {
