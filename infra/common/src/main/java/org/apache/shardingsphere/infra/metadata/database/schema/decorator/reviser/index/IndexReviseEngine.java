@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -26,30 +29,28 @@ import java.util.stream.Collectors;
 
 /**
  * Index revise engine.
+ * 
+ * @param <T> type of rule
  */
-public final class IndexReviseEngine {
+@RequiredArgsConstructor
+public final class IndexReviseEngine<T extends ShardingSphereRule> {
+    
+    private final T rule;
+    
+    private final MetaDataReviseEntry<T> reviseEntry;
     
     /**
      * Revise index meta data.
      * 
      * @param tableName table name
      * @param originalMetaDataList original index meta data list
-     * @param revisers index revisers
      * @return revised index meta data
      */
-    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList, final Collection<IndexReviser> revisers) {
-        return originalMetaDataList.stream().map(each -> revise(tableName, each, revisers)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-    
-    private Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final Collection<IndexReviser> revisers) {
-        IndexMetaData result = originalMetaData;
-        for (IndexReviser each : revisers) {
-            Optional<IndexMetaData> revisedMetaData = each.revise(tableName, result);
-            if (!revisedMetaData.isPresent()) {
-                return Optional.empty();
-            }
-            result = revisedMetaData.get();
-        }
-        return Optional.of(result);
+    public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList) {
+        Optional<? extends IndexReviser<T>> reviser = reviseEntry.getIndexReviser(rule, tableName);
+        return reviser.isPresent()
+                ? originalMetaDataList.stream()
+                        .map(each -> reviser.get().revise(tableName, each, rule)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new))
+                : originalMetaDataList;
     }
 }

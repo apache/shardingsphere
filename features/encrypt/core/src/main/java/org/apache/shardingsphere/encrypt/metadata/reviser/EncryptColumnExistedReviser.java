@@ -19,32 +19,32 @@ package org.apache.shardingsphere.encrypt.metadata.reviser;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnNameReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column.ColumnExistedReviser;
 
 import java.util.Collection;
 
 /**
- * Encrypt column name reviser.
+ * Encrypt column existed reviser.
  */
-public final class EncryptColumnNameReviser implements ColumnNameReviser<EncryptRule> {
+public final class EncryptColumnExistedReviser implements ColumnExistedReviser<EncryptRule> {
     
     private final EncryptTable encryptTable;
     
     private final Collection<String> plainColumns;
     
-    public EncryptColumnNameReviser(final EncryptTable encryptTable) {
+    private final Collection<String> assistedQueryColumns;
+    
+    private final Collection<String> likeQueryColumns;
+    
+    public EncryptColumnExistedReviser(final EncryptTable encryptTable) {
         this.encryptTable = encryptTable;
         plainColumns = encryptTable.getPlainColumns();
+        assistedQueryColumns = encryptTable.getAssistedQueryColumns();
+        likeQueryColumns = encryptTable.getLikeQueryColumns();
     }
     
     @Override
-    public String revise(final String originalName, final String tableName, final EncryptRule rule) {
-        if (plainColumns.contains(originalName)) {
-            return encryptTable.getLogicColumnByPlainColumn(originalName);
-        }
-        if (encryptTable.isCipherColumn(originalName)) {
-            return encryptTable.getLogicColumnByCipherColumn(originalName);
-        }
-        return originalName;
+    public boolean isExisted(final String originalName, final EncryptRule rule) {
+        return plainColumns.contains(originalName) || encryptTable.isCipherColumn(originalName) || !assistedQueryColumns.contains(originalName) && !likeQueryColumns.contains(originalName);
     }
 }
