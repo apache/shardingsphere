@@ -36,8 +36,8 @@ import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessC
 import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineReadConfiguration;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;

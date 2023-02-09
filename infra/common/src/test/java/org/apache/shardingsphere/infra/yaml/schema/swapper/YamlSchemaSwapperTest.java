@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereSchema;

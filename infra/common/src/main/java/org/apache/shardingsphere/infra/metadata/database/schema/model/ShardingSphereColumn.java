@@ -15,27 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.index;
+package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import java.util.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 /**
- * Index reviser.
- * 
- * @param <T> type of rule
+ * ShardingSphere column.
  */
-public interface IndexReviser<T extends ShardingSphereRule> {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class ShardingSphereColumn {
     
-    /**
-     * Revise index meta data.
-     * 
-     * @param tableName table name
-     * @param originalMetaData original index meta data
-     * @param rule rule
-     * @return revised index meta data
-     */
-    Optional<IndexMetaData> revise(String tableName, IndexMetaData originalMetaData, T rule);
+    private final String name;
+    
+    private final int dataType;
+    
+    private final boolean primaryKey;
+    
+    private final boolean generated;
+    
+    private final boolean caseSensitive;
+    
+    private final boolean visible;
+    
+    private final boolean unsigned;
 }

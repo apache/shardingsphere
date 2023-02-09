@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.metadata.reviser.constraint;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.constraint.ConstraintReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;

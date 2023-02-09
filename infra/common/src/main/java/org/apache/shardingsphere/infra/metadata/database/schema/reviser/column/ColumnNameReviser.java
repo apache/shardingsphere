@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.reviser.model;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+package org.apache.shardingsphere.infra.metadata.database.schema.reviser.column;
 
 /**
- * ShardingSphere index.
+ * Column name reviser.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class ShardingSphereIndex {
+public interface ColumnNameReviser {
     
-    private final String name;
+    /**
+     * Revise column name.
+     * 
+     * @param originalName original column name
+     * @return revised column name
+     */
+    String revise(String originalName);
 }

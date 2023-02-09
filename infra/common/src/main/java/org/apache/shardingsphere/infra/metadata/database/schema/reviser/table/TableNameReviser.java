@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.column;
+package org.apache.shardingsphere.infra.metadata.database.schema.reviser.table;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Column generated reviser.
+ * Table name reviser.
+ * 
+ * @param <T> type of rule
  */
-public interface ColumnGeneratedReviser {
+public interface TableNameReviser<T extends ShardingSphereRule> {
     
     /**
-     * Revise generated column.
+     * Revise table meta data.
      * 
-     * @param originalMetaData original column meta data
-     * @return revised generated column
+     * @param originalName original table name
+     * @param rule rule
+     * @return revised table name
      */
-    boolean revise(ColumnMetaData originalMetaData);
+    String revise(String originalName, T rule);
 }

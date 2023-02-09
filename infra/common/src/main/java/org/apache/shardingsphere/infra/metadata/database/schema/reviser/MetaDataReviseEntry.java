@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.column.ColumnDataTypeReviser;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.column.ColumnExistedReviser;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.column.ColumnGeneratedReviser;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.column.ColumnNameReviser;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.constraint.ConstraintReviser;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.index.IndexReviser;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.schema.SchemaTableAggregationReviser;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.table.TableNameReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnDataTypeReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnExistedReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnGeneratedReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnNameReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaTableAggregationReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.table.TableNameReviser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;

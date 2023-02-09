@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.reviser.model;
+package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
 import lombok.Getter;
 

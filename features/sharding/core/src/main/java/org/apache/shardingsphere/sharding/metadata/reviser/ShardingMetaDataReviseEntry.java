@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.metadata.reviser;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.schema.SchemaTableAggregationReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaTableAggregationReviser;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.metadata.reviser.column.ShardingColumnGeneratedReviser;
 import org.apache.shardingsphere.sharding.metadata.reviser.constraint.ShardingConstraintReviser;

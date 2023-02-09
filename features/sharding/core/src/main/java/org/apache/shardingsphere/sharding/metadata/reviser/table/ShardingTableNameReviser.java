@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser.table;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.engine.table.TableNameReviser;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.table.TableNameReviser;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
