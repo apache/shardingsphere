@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
 import com.google.common.base.Strings;
-import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
@@ -171,12 +170,12 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildChunkedQuerySQL(final String schemaName, final @NonNull String tableName, final @NonNull String uniqueKey, final boolean firstQuery) {
+    public String buildQueryAllOrderingSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
         return firstQuery
-                ? String.format("SELECT * FROM %s ORDER BY %s ASC LIMIT ?", qualifiedTableName, quotedUniqueKey)
-                : String.format("SELECT * FROM %s WHERE %s>? ORDER BY %s ASC LIMIT ?", qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
+                ? String.format("SELECT * FROM %s ORDER BY %s ASC", qualifiedTableName, quotedUniqueKey)
+                : String.format("SELECT * FROM %s WHERE %s>? ORDER BY %s ASC", qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
     }
     
     @Override
