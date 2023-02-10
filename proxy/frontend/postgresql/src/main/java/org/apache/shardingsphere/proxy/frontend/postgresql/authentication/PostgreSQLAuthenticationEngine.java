@@ -106,6 +106,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         context.write(new PostgreSQLParameterStatusPacket("client_encoding", clientEncoding));
         context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
         context.write(new PostgreSQLParameterStatusPacket("integer_datetimes", "on"));
+        context.write(new PostgreSQLParameterStatusPacket("standard_conforming_strings", "on"));
         context.writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase());
     }

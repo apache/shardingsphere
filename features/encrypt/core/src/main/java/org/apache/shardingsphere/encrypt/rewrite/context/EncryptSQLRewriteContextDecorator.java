@@ -51,7 +51,6 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
             return;
         }
         Collection<EncryptCondition> encryptConditions = createEncryptConditions(encryptRule, sqlRewriteContext);
-        encryptRule.setSchemaMetaData(sqlRewriteContext.getDatabaseName(), sqlRewriteContext.getSchemas());
         if (!sqlRewriteContext.getParameters().isEmpty()) {
             Collection<ParameterRewriter> parameterRewriters = new EncryptParameterRewriterBuilder(encryptRule,
                     sqlRewriteContext.getDatabaseName(), sqlRewriteContext.getSchemas(), sqlStatementContext, encryptConditions).getParameterRewriters();

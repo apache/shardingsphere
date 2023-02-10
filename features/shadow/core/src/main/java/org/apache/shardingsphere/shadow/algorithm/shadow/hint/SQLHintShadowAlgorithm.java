@@ -39,6 +39,6 @@ public final class SQLHintShadowAlgorithm implements HintShadowAlgorithm<String>
     
     @Override
     public String getType() {
-        return "SIMPLE_HINT";
+        return "SQL_HINT";
     }
 }

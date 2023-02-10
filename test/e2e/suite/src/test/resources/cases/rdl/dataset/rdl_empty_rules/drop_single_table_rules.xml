@@ -22,6 +22,6 @@
     </metadata>
     <row values="t_country| ds_2" />
     <row values="t_product_category| ds_2" />
-    <row values="t_user| ds_0" />
+    <row values="t_user| readwrite_ds" />
 </dataset>
 

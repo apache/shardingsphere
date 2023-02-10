@@ -177,7 +177,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY004     | 20021       | Found different types for sharding value \`%s\`.                                                                                 |
 | HY004     | 20022       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\`.                                                                  |
 | 44000     | 20023       | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                                  |
-| 44000     | 20024       | %s value must implements Comparable.                                                                                             |
+| 44000     | 20024       | %s value \`%s\` must implements Comparable.                                                                                      |
 | 0A000     | 20040       | Can not support operation \`%s\` with sharding table \`%s\`.                                                                     |
 | 44000     | 20041       | Can not update sharding value for table \`%s\`.                                                                                  |
 | 0A000     | 20042       | The CREATE VIEW statement contains unsupported query statement.                                                                  |

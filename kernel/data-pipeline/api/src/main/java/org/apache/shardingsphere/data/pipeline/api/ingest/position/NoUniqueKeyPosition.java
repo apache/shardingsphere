@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
-import lombok.RequiredArgsConstructor;
-
 /**
  * No unique key position.
  */
-@RequiredArgsConstructor
 public final class NoUniqueKeyPosition extends PrimaryKeyPosition<Void> implements IngestPosition<NoUniqueKeyPosition> {
     
     @Override

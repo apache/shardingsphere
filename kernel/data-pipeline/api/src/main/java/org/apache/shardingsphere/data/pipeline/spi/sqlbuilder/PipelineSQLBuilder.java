@@ -47,10 +47,9 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @param tableName table name
      * @param uniqueKey unique key
      * @param uniqueKeyDataType unique key data type
-     * @param firstQuery whether it's the first time query
      * @return divisible inventory dump SQL
      */
-    String buildDivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
+    String buildDivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType);
     
     /**
      * Build indivisible inventory dump first SQL.
@@ -59,10 +58,9 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @param tableName table name
      * @param uniqueKey unique key
      * @param uniqueKeyDataType unique key data type
-     * @param firstQuery whether it's the first time query
      * @return indivisible inventory dump SQL
      */
-    String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
+    String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType);
     
     /**
      * Build inventory dump all SQL.
@@ -130,7 +128,7 @@ public interface PipelineSQLBuilder extends TypedSPI {
     String buildCountSQL(String schemaName, String tableName);
     
     /**
-     * Build query SQL.
+     * Build query all ordering SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
@@ -138,7 +136,7 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @param firstQuery first query
      * @return query SQL
      */
-    String buildChunkedQuerySQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
+    String buildQueryAllOrderingSQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
     
     /**
      * Build check empty SQL.

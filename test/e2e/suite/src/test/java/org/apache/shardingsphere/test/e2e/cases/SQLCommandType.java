@@ -53,14 +53,14 @@ public enum SQLCommandType {
      *
      * <p>Such as {@code INSERT}, {@code UPDATE}, {@code DELETE}.</p>
      */
-    DML(DMLStatement.class, "dml-integration-test-cases", false, Arrays.asList("jdbc", "proxy")),
+    DML(DMLStatement.class, "dml-integration", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Data Definition Language.
      *
      * <p>Such as {@code CREATE}, {@code ALTER}, {@code DROP}, {@code TRUNCATE}.</p>
      */
-    DDL(DDLStatement.class, "ddl-integration-test-cases", false, Arrays.asList("jdbc", "proxy")),
+    DDL(DDLStatement.class, "ddl-integration", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Transaction Control Language.
@@ -77,17 +77,17 @@ public enum SQLCommandType {
     /**
      * Database control Language.
      */
-    DCL(DCLStatement.class, "dcl-integration-test-cases", false, Arrays.asList("jdbc", "proxy")),
+    DCL(DCLStatement.class, "dcl-integration", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Resource & Rule Administration Language.
      */
-    RAL(RALStatement.class, "ral-integration-test-cases", true, Collections.singletonList("proxy")),
+    RAL(RALStatement.class, "ral-integration", true, Collections.singletonList("proxy")),
     
     /**
      * Resource & Rule Definition Language.
      */
-    RDL(RDLStatement.class, "rdl-integration-test-cases", true, Collections.singletonList("proxy")),
+    RDL(RDLStatement.class, "rdl-integration", true, Collections.singletonList("proxy")),
     
     /**
      * Resource & Rule Query Language.

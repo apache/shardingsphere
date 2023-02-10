@@ -65,7 +65,7 @@ value ::=
 - `shadowAlgorithm` can act on multiple `shadowTableRule` at the same time;
 - If `algorithmName` is not specified, it will be automatically generated according to `ruleName`, `tableName`
   and `shadowAlgorithmType`;
-- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SIMPLE_HINT`.
+- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SQL_HINT`.
 
 ### Example
 
@@ -75,7 +75,7 @@ value ::=
 ALTER SHADOW RULE shadow_rule(
   SOURCE=demo_ds,
   SHADOW=demo_ds_shadow,
-  t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))), 
+  t_order(TYPE(NAME="SQL_HINT")), 
   t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1')))
 );
 ```

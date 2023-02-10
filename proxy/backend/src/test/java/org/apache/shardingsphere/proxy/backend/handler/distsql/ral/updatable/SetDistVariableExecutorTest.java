@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.LoggerLevel;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.mode.manager.standalone.StandaloneModeContextMa
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
@@ -78,12 +80,7 @@ public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithConfigurationKey() throws SQLException {
-        StandaloneModeContextManager standaloneModeContextManager = new StandaloneModeContextManager();
-        ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()),
-                new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class),
-                        new ModeConfiguration("Standalone", null), standaloneModeContextManager, mock(LockContext.class), new EventBusContext()));
-        standaloneModeContextManager.setContextManagerAware(contextManager);
-        ProxyContext.init(contextManager);
+        ContextManager contextManager = mockContextManager();
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
         SetDistVariableHandler handler = new SetDistVariableHandler();
         handler.init(statement, connectionSession);
@@ -91,5 +88,36 @@ public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
         assertThat(actualValue.toString(), is("1024"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
+    }
+    
+    @Test
+    public void assertExecuteWithSystemLogLevel() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debug");
+        SetDistVariableHandler handler = new SetDistVariableHandler();
+        handler.init(statement, connectionSession);
+        handler.execute();
+        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("system-log-level");
+        assertThat(actualValue.toString(), is("DEBUG"));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.DEBUG));
+    }
+    
+    @Test(expected = InvalidValueException.class)
+    public void assertExecuteWithWrongSystemLogLevel() throws SQLException {
+        mockContextManager();
+        SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");
+        SetDistVariableHandler handler = new SetDistVariableHandler();
+        handler.init(statement, connectionSession);
+        handler.execute();
+    }
+    
+    private ContextManager mockContextManager() {
+        StandaloneModeContextManager standaloneModeContextManager = new StandaloneModeContextManager();
+        ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()),
+                new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class),
+                        new ModeConfiguration("Standalone", null), standaloneModeContextManager, mock(LockContext.class), new EventBusContext()));
+        standaloneModeContextManager.setContextManagerAware(contextManager);
+        ProxyContext.init(contextManager);
+        return contextManager;
     }
 }

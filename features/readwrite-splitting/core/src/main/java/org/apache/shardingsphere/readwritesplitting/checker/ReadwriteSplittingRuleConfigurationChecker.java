@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceCon
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightAware;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
@@ -131,11 +131,11 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
             }
             ReadQueryLoadBalanceAlgorithm loadBalancer = loadBalancers.get(each.getLoadBalancerName());
             ShardingSpherePreconditions.checkNotNull(loadBalancer, () -> new LoadBalancerAlgorithmNotFoundException(databaseName));
-            if (loadBalancer instanceof WeightAware) {
-                ShardingSpherePreconditions.checkState(!((WeightAware) loadBalancer).getDataSourceNames().isEmpty(), () -> new MissingRequiredReadDatabaseWeightException(loadBalancer.getType(),
-                        String.format("Read data source weight config are required in database `%s`", databaseName)));
+            if (loadBalancer instanceof WeightReadQueryLoadBalanceAlgorithm) {
+                ShardingSpherePreconditions.checkState(!((WeightReadQueryLoadBalanceAlgorithm) loadBalancer).getDataSourceNames().isEmpty(),
+                        () -> new MissingRequiredReadDatabaseWeightException(loadBalancer.getType(), String.format("Read data source weight config are required in database `%s`", databaseName)));
                 Collection<String> dataSourceNames = getDataSourceNames(each, rules);
-                ((WeightAware) loadBalancer).getDataSourceNames().forEach(dataSourceName -> ShardingSpherePreconditions.checkState(dataSourceNames.contains(dataSourceName),
+                ((WeightReadQueryLoadBalanceAlgorithm) loadBalancer).getDataSourceNames().forEach(dataSourceName -> ShardingSpherePreconditions.checkState(dataSourceNames.contains(dataSourceName),
                         () -> new InvalidWeightLoadBalancerConfigurationException(databaseName)));
             }
         }

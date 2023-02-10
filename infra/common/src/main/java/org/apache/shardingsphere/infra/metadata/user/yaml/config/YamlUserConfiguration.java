@@ -32,8 +32,6 @@ public final class YamlUserConfiguration implements YamlConfiguration {
     
     private String password;
     
-    private String auth;
-    
     @Override
     public String toString() {
         return user.contains("@") ? user + ":" + password : user + "@%:" + password;

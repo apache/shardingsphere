@@ -100,6 +100,9 @@ public final class ProxyConfigurationLoader {
         if (null != serverConfiguration.getCdc()) {
             serverConfiguration.getRules().add(serverConfiguration.getCdc());
         }
+        if (null != serverConfiguration.getLogging()) {
+            serverConfiguration.getRules().add(serverConfiguration.getLogging());
+        }
         return serverConfiguration;
     }
     
