@@ -66,7 +66,7 @@ public final class DiscoveryRuleBuilder {
     }
     
     private boolean assertResult(final Statement statement, final String assertionSQL) {
-        try (ResultSet resultSet = statement.executeQuery(assertionSQL)){
+        try (ResultSet resultSet = statement.executeQuery(assertionSQL)) {
             return true;
         } catch (final SQLException ex) {
             return false;
@@ -89,7 +89,7 @@ public final class DiscoveryRuleBuilder {
     }
     
     private boolean assertResult0(final Statement statement, final String assertionSQL) {
-        try (ResultSet resultSet = statement.executeQuery(assertionSQL)){
+        try (ResultSet resultSet = statement.executeQuery(assertionSQL)) {
             return resultSet.next();
         } catch (final SQLException ex) {
             return false;
