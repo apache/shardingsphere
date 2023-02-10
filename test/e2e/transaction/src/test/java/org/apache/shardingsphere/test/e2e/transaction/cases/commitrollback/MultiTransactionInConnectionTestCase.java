@@ -51,5 +51,4 @@ public final class MultiTransactionInConnectionTestCase extends BaseTransactionT
             assertAccountRowCount(connection, 8);
         }
     }
-    
 }
