@@ -20,12 +20,13 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.primary
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
-import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -42,13 +43,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 
+/**
+ * E2E IT for different types of indexes, includes:
+ * 1) no unique key.
+ * 2) special type single column unique key.
+ */
 @RunWith(Parameterized.class)
 @Slf4j
-public final class NoUniqueKeyMigrationE2EIT extends AbstractMigrationE2EIT {
+public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private final PipelineTestParameter testParam;
     
-    public NoUniqueKeyMigrationE2EIT(final PipelineTestParameter testParam) {
+    public IndexesMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
         this.testParam = testParam;
     }
@@ -60,7 +66,7 @@ public final class NoUniqueKeyMigrationE2EIT extends AbstractMigrationE2EIT {
             return result;
         }
         for (String version : PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType())) {
-            result.add(new PipelineTestParameter(new MySQLDatabaseType(), version, "env/scenario/primary_key/none_primary_key/mysql.xml"));
+            result.add(new PipelineTestParameter(new MySQLDatabaseType(), version, "env/common/none.xml"));
         }
         return result;
     }
@@ -71,12 +77,38 @@ public final class NoUniqueKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     @Test
-    public void assertTextPrimaryMigrationSuccess() throws SQLException, InterruptedException {
-        log.info("assertTextPrimaryMigrationSuccess testParam:{}", testParam);
+    public void assertNoUniqueKeyMigrationSuccess() throws SQLException, InterruptedException {
+        String sql;
+        String consistencyCheckAlgorithmType;
+        if (getDatabaseType() instanceof MySQLDatabaseType) {
+            sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+            // DATA_MATCH doesn't supported, could not order by records
+            consistencyCheckAlgorithmType = "CRC32_MATCH";
+        } else {
+            return;
+        }
+        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
+    }
+    
+    @Test
+    public void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess() throws SQLException, InterruptedException {
+        String sql;
+        String consistencyCheckAlgorithmType;
+        if (getDatabaseType() instanceof MySQLDatabaseType) {
+            sql = "CREATE TABLE `%s` (`order_id` VARBINARY(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+            // DATA_MATCH doesn't supported: Order by value must implements Comparable
+            consistencyCheckAlgorithmType = "CRC32_MATCH";
+        } else {
+            return;
+        }
+        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
+    }
+    
+    private void assertMigrationSuccess(final String sqlPattern, final String consistencyCheckAlgorithmType) throws SQLException, InterruptedException {
         initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
-        createSourceOrderTable();
+        createSourceOrderTable(sqlPattern);
         try (Connection connection = getSourceDataSource().getConnection()) {
-            AutoIncrementKeyGenerateAlgorithm generateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
+            KeyGenerateAlgorithm generateAlgorithm = new UUIDKeyGenerateAlgorithm();
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, generateAlgorithm, getSourceTableOrderName(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
         }
         addMigrationProcessConfig();
@@ -86,12 +118,16 @@ public final class NoUniqueKeyMigrationE2EIT extends AbstractMigrationE2EIT {
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         String jobId = listJobId().get(0);
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        assertCheckMigrationSuccess(jobId, consistencyCheckAlgorithmType);
+        commitMigrationByJobId(jobId);
         proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
         assertTargetAndSourceCountAreSame();
-        commitMigrationByJobId(jobId);
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
-        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
+    }
+    
+    private void createSourceOrderTable(final String sqlPattern) throws SQLException {
+        sourceExecuteWithLog(String.format(sqlPattern, getSourceTableOrderName()));
     }
     
     private void assertTargetAndSourceCountAreSame() {

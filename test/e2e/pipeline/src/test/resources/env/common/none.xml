@@ -14,12 +14,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+<!-- TODO remove it later -->
 <command>
-    <create-table-order>
-        CREATE TABLE `%s` (
-        `order_id` INT NOT NULL,
-        `user_id` INT NOT NULL,
-        `status` varchar(255) NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    </create-table-order>
 </command>

@@ -81,7 +81,14 @@ public class PipelineWatcher extends TestWatcher {
     }
     
     @Override
+    protected void starting(final Description description) {
+        log.info("starting: {}", description);
+        containerComposer.start();
+    }
+    
+    @Override
     protected void finished(final Description description) {
+        log.info("finished: {}", description);
         containerComposer.close();
     }
 }
