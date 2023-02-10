@@ -29,8 +29,8 @@ import org.apache.shardingsphere.test.e2e.discovery.env.DiscoveryE2ETestEnvironm
 import org.apache.shardingsphere.test.e2e.discovery.framework.container.compose.BaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.discovery.framework.container.compose.DockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.discovery.framework.parameter.DiscoveryTestParameter;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
-import org.testcontainers.shaded.org.awaitility.Durations;
+import org.awaitility.Awaitility;
+import org.awaitility.Durations;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

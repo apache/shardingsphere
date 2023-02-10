@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.discovery.build;
 
 import org.apache.shardingsphere.test.e2e.discovery.cases.base.BaseDiscoveryE2EIT;
 import org.apache.shardingsphere.test.e2e.discovery.command.DiscoveryDistSQLCommand;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
-import org.testcontainers.shaded.org.awaitility.Durations;
+import org.awaitility.Awaitility;
+import org.awaitility.Durations;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
