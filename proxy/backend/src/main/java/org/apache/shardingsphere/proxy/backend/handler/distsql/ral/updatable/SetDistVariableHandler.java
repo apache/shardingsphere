@@ -73,9 +73,8 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.getInstanceContext().getModeContextManager().alterProperties(props);
         refreshRootLogger(props);
-        // TODO Resolve log dependency issue
-//        syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value);
-//        syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value);
+        syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value);
+        syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value);
     }
     
     private Object getValue(final ConfigurationPropertyKey propertyKey, final String value) {
