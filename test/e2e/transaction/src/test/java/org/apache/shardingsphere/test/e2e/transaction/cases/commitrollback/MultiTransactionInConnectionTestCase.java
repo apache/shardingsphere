@@ -40,13 +40,15 @@ public final class MultiTransactionInConnectionTestCase extends BaseTransactionT
     public void executeTest() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement("insert into account(id, balance, transaction_id) values(?, ?, ?)");
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 8; i++) {
+                connection.setAutoCommit(false);
                 statement.setLong(1, i);
                 statement.setFloat(1, i);
                 statement.setInt(1, i);
                 statement.execute();
+                connection.commit();
             }
-            assertAccountRowCount(connection, 3);
+            assertAccountRowCount(connection, 8);
         }
     }
     
