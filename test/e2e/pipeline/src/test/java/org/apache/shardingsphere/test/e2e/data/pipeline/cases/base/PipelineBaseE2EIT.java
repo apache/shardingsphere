@@ -355,7 +355,7 @@ public abstract class PipelineBaseE2EIT {
         assertTrue("The insert record must exist after the stop", recordExist);
     }
     
-    protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) throws SQLException {
+    protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) {
         String countSQL = Strings.isNullOrEmpty(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
         Map<String, Object> actual = queryForListWithLog(countSQL).get(0);
         log.info("actual count {}", actual.get("count"));
