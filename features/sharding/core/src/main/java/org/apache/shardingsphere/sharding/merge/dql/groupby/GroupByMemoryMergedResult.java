@@ -106,7 +106,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     
     private Comparable<?> getAggregationValue(final QueryResult queryResult, final AggregationProjection aggregationProjection) throws SQLException {
         Object result = queryResult.getValue(aggregationProjection.getIndex(), Object.class);
-        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Aggregation"));
+        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Aggregation", result));
         return (Comparable<?>) result;
     }
     

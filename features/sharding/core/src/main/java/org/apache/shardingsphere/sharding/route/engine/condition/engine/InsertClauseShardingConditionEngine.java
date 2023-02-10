@@ -139,7 +139,7 @@ public final class InsertClauseShardingConditionEngine {
         Object result = expressionSegment instanceof ParameterMarkerExpressionSegment
                 ? params.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex())
                 : ((LiteralExpressionSegment) expressionSegment).getLiterals();
-        ShardingSpherePreconditions.checkState(result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding"));
+        ShardingSpherePreconditions.checkState(result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding", result));
         return (Comparable) result;
     }
     

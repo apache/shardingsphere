@@ -115,7 +115,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     
     private Comparable<?> getAggregationValue(final AggregationProjection aggregationProjection) throws SQLException {
         Object result = getCurrentQueryResult().getValue(aggregationProjection.getIndex(), Object.class);
-        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Aggregation"));
+        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Aggregation", result));
         return (Comparable<?>) result;
     }
     
