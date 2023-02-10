@@ -72,9 +72,8 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        String status = 0 == random.nextInt() % 2 ? null : "中文测试";
-        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), status, PipelineCaseHelper.generateJsonString(4, true),
-                PipelineCaseHelper.generateJsonString(4, false)};
+        Object[] orderInsertDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), random.nextInt(0, 6), "'中文'" + System.currentTimeMillis(), PipelineCaseHelper.generateJsonString(5, true),
+                PipelineCaseHelper.generateJsonString(10, false)};
         String insertSQL = String.format("INSERT INTO %s (order_id,user_id,status,t_json,t_jsonb) VALUES (?, ?, ?, ?, ?)", getTableNameWithSchema(orderTableName));
         log.info("insert order sql:{}", insertSQL);
         DataSourceExecuteUtil.execute(dataSource, insertSQL, orderInsertDate);
@@ -91,7 +90,8 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     }
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {
-        Object[] updateData = {"updated" + Instant.now().getEpochSecond(), PipelineCaseHelper.generateJsonString(4, true), PipelineCaseHelper.generateJsonString(4, false), primaryKey};
+        // TODO openGauss incremental task parse single quote not correctly now
+        Object[] updateData = {"中文UPDATE" + Instant.now().getEpochSecond(), PipelineCaseHelper.generateJsonString(5, true), PipelineCaseHelper.generateJsonString(5, false), primaryKey};
         String updateSql = String.format("UPDATE %s SET status = ?, t_json = ?, t_jsonb = ? WHERE order_id = ?", getTableNameWithSchema(orderTableName));
         DataSourceExecuteUtil.execute(dataSource, updateSql, updateData);
     }
