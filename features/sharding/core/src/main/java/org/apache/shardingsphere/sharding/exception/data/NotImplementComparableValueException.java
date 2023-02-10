@@ -27,7 +27,7 @@ public final class NotImplementComparableValueException extends ShardingSQLExcep
     
     private static final long serialVersionUID = 1442602803378775261L;
     
-    public NotImplementComparableValueException(final String segmentType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 24, "%s value must implements Comparable.", segmentType);
+    public NotImplementComparableValueException(final String segmentType, final Object value) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 24, "%s value `%s` must implements Comparable.", segmentType, value);
     }
 }

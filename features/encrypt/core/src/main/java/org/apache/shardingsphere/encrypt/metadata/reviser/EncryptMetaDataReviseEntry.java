@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.metadata.reviser;
 
+import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
+import org.apache.shardingsphere.encrypt.metadata.reviser.column.EncryptColumnExistedReviser;
+import org.apache.shardingsphere.encrypt.metadata.reviser.column.EncryptColumnNameReviser;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 
 import java.util.Optional;
 
@@ -38,7 +41,12 @@ public final class EncryptMetaDataReviseEntry implements MetaDataReviseEntry<Enc
     }
     
     @Override
-    public String getType() {
-        return EncryptRule.class.getSimpleName();
+    public int getOrder() {
+        return EncryptOrder.ORDER;
+    }
+    
+    @Override
+    public Class<EncryptRule> getTypeClass() {
+        return EncryptRule.class;
     }
 }
