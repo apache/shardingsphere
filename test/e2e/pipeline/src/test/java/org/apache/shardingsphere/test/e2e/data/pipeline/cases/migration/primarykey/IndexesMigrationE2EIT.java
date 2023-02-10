@@ -20,12 +20,13 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.primary
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
-import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -77,14 +78,22 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @Test
     public void assertNoUniqueKeyMigrationSuccess() throws SQLException, InterruptedException {
-        assertMigrationSuccess("CREATE TABLE `%s` (`order_id` INT NOT NULL, `user_id` INT NOT NULL, `status` varchar(255) NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", false);
+        String sql;
+        String consistencyCheckAlgorithmType;
+        if (getDatabaseType() instanceof MySQLDatabaseType) {
+            sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+            consistencyCheckAlgorithmType = "CRC32_MATCH";
+        } else {
+            return;
+        }
+        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
     }
     
-    private void assertMigrationSuccess(final String sqlPattern, final boolean needConsistencyCheck) throws SQLException, InterruptedException {
+    private void assertMigrationSuccess(final String sqlPattern, final String consistencyCheckAlgorithmType) throws SQLException, InterruptedException {
         initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         createSourceOrderTable(sqlPattern);
         try (Connection connection = getSourceDataSource().getConnection()) {
-            AutoIncrementKeyGenerateAlgorithm generateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
+            KeyGenerateAlgorithm generateAlgorithm = new UUIDKeyGenerateAlgorithm();
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, generateAlgorithm, getSourceTableOrderName(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
         }
         addMigrationProcessConfig();
@@ -94,9 +103,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         String jobId = listJobId().get(0);
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        if (needConsistencyCheck) {
-            assertCheckMigrationSuccess(jobId, "DATA_MATCH");
-        }
+        assertCheckMigrationSuccess(jobId, consistencyCheckAlgorithmType);
         commitMigrationByJobId(jobId);
         proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
         assertTargetAndSourceCountAreSame();
