@@ -50,6 +50,9 @@ public final class YamlShardingAutoTableRuleConfigurationSwapper implements Yaml
         if (null != data.getKeyGenerateStrategy()) {
             result.setKeyGenerateStrategy(keyGenerateStrategySwapper.swapToYamlConfiguration(data.getKeyGenerateStrategy()));
         }
+        if (null != data.getAuditStrategy()) {
+            result.setAuditStrategy(auditStrategySwapper.swapToYamlConfiguration(data.getAuditStrategy()));
+        }
         return result;
     }
     

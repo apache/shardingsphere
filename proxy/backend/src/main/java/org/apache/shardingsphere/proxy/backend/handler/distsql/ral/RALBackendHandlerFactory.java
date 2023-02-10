@@ -20,15 +20,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.handler.resultset.DatabaseDistSQLResultSet;
-import org.apache.shardingsphere.distsql.handler.resultset.DistSQLResultSet;
-import org.apache.shardingsphere.distsql.handler.resultset.GlobalRuleDistSQLResultSet;
 import org.apache.shardingsphere.distsql.handler.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableGlobalRuleRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ApplyDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardDistSQLStatement;
@@ -45,7 +40,6 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.query.QueryableScalingRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update.UpdatableScalingRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterReadwriteSplittingStorageUnitStatusStatementHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ApplyDistSQLHandler;
@@ -94,23 +88,14 @@ public final class RALBackendHandlerFactory {
      * @return created instance
      */
     public static ProxyBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
-        // TODO delete other if branches after replacing all query handlers with QueryableRALBackendHandler
         if (TypedSPILoader.contains(QueryableRALExecutor.class, sqlStatement.getClass().getName())) {
             return new QueryableRALBackendHandler<>(sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof HintRALStatement) {
             return new HintRALBackendHandler((HintRALStatement) sqlStatement, connectionSession);
         }
-        if (sqlStatement instanceof QueryableScalingRALStatement) {
-            return new QueryableScalingRALBackendHandler((QueryableScalingRALStatement) sqlStatement,
-                    (DatabaseDistSQLResultSet) TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getName()));
-        }
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
             return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement, connectionSession);
-        }
-        if (sqlStatement instanceof QueryableGlobalRuleRALStatement) {
-            return new QueryableGlobalRuleRALBackendHandler(sqlStatement,
-                    (GlobalRuleDistSQLResultSet) TypedSPILoader.getService(DistSQLResultSet.class, sqlStatement.getClass().getName()));
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
             return new UpdatableGlobalRuleRALBackendHandler(sqlStatement, TypedSPILoader.getService(GlobalRuleRALUpdater.class, sqlStatement.getClass().getName()));

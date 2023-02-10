@@ -15,10 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
+
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Scaling RAL statement.
+ * Column existed reviser.
+ * 
+ * @param <T> type of rule
  */
-public abstract class ScalingRALStatement extends RALStatement {
+public interface ColumnExistedReviser<T extends ShardingSphereRule> {
+    
+    /**
+     * Judge whether column existed.
+     * 
+     * @param originalName original column name
+     * @param rule rule
+     * @return column existed or not
+     */
+    boolean isExisted(String originalName, T rule);
 }

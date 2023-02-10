@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.index.IndexReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.Optional;
@@ -29,12 +30,12 @@ import java.util.Optional;
  * Sharding index reviser.
  */
 @RequiredArgsConstructor
-public final class ShardingIndexReviser implements IndexReviser {
+public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
     
     private final TableRule tableRule;
     
     @Override
-    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData) {
+    public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final ShardingRule rule) {
         for (DataNode each : tableRule.getActualDataNodes()) {
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {

@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.datasource;
+package org.apache.shardingsphere.encrypt.metadata.reviser;
 
-import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
 
-import java.util.Properties;
+import java.util.Optional;
 
 /**
- * PostgreSQL JDBC query properties extension.
+ * Encrypt meta data revise entry.
  */
-public final class PostgreSQLJdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
-    
-    private final Properties queryProps = new Properties();
+public final class EncryptMetaDataReviseEntry implements MetaDataReviseEntry<EncryptRule> {
     
     @Override
-    public Properties extendQueryProperties() {
-        queryProps.setProperty("stringtype", "unspecified");
-        return queryProps;
+    public Optional<EncryptColumnExistedReviser> getColumnExistedReviser(final EncryptRule rule, final String tableName) {
+        return rule.findEncryptTable(tableName).map(EncryptColumnExistedReviser::new);
+    }
+    
+    @Override
+    public Optional<EncryptColumnNameReviser> getColumnNameReviser(final EncryptRule rule, final String tableName) {
+        return rule.findEncryptTable(tableName).map(EncryptColumnNameReviser::new);
     }
     
     @Override
     public String getType() {
-        return "PostgreSQL";
+        return EncryptRule.class.getSimpleName();
     }
 }

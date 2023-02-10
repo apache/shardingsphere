@@ -15,10 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.schema;
+
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import java.util.Collection;
 
 /**
- * Queryable RAL statement for global rule.
+ * Schema table aggregation reviser.
+ * 
+ * @param <T> type of rule
  */
-public abstract class QueryableGlobalRuleRALStatement extends QueryableRALStatement {
+public interface SchemaTableAggregationReviser<T extends ShardingSphereRule> {
+    
+    /**
+     * Add table meta data.
+     * 
+     * @param metaData table meta data
+     */
+    void add(TableMetaData metaData);
+    
+    /**
+     * Aggregate table meta data list.
+     * 
+     * @param rule rule
+     * @return aggregated meta data list
+     */
+    Collection<TableMetaData> aggregate(T rule);
 }

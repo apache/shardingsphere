@@ -30,19 +30,17 @@ import java.util.Optional;
  * Sharding constraint reviser.
  */
 @RequiredArgsConstructor
-public final class ShardingConstraintReviser implements ConstraintReviser {
-    
-    private final ShardingRule shardingRule;
+public final class ShardingConstraintReviser implements ConstraintReviser<ShardingRule> {
     
     private final TableRule tableRule;
     
     @Override
-    public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData) {
+    public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final ShardingRule rule) {
         for (DataNode each : tableRule.getActualDataNodes()) {
             String referencedTableName = originalMetaData.getReferencedTableName();
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {
-                return Optional.of(new ConstraintMetaData(logicIndexName.get(), shardingRule.findLogicTableByActualTable(referencedTableName).orElse(referencedTableName)));
+                return Optional.of(new ConstraintMetaData(logicIndexName.get(), rule.findLogicTableByActualTable(referencedTableName).orElse(referencedTableName)));
             }
         }
         return Optional.empty();

@@ -15,21 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.resultset;
+package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
 
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import javax.sql.DataSource;
+import java.util.Optional;
 
 /**
- * DistSQL result set for global rule.
+ * Column data type reviser.
+ *
+ * @param <T> type of rule
  */
-public interface GlobalRuleDistSQLResultSet extends DistSQLResultSet {
+public interface ColumnDataTypeReviser<T extends ShardingSphereRule> {
     
     /**
-     * Initialize data.
+     * Revise column data type.
      *
-     * @param globalRuleMetaData global rule meta data
-     * @param sqlStatement SQL statement
+     * @param originalName original column name
+     * @param tableName table name
+     * @param rule rule
+     * @param databaseType database type
+     * @param dataSource data source
+     * @return revised data type
      */
-    void init(ShardingSphereRuleMetaData globalRuleMetaData, SQLStatement sqlStatement);
+    Optional<Integer> revise(String originalName, String tableName, T rule, DatabaseType databaseType, DataSource dataSource);
 }

@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.decorator.reviser.column;
+package org.apache.shardingsphere.single.metadata.reviser;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.MetaDataReviseEntry;
+import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.Optional;
 
 /**
- * Column reviser.
+ * Single meta data revise entry.
  */
-public interface ColumnReviser {
+public final class SingleMetaDataReviseEntry implements MetaDataReviseEntry<SingleRule> {
     
-    /**
-     * Revise column meta data.
-     * 
-     * @param originalMetaData original column meta data
-     * @return revised column meta data
-     */
-    Optional<ColumnMetaData> revise(ColumnMetaData originalMetaData);
+    @Override
+    public Optional<SingleIndexReviser> getIndexReviser(final SingleRule rule, final String tableName) {
+        return Optional.of(new SingleIndexReviser());
+    }
+    
+    @Override
+    public Optional<SingleConstraintReviser> getConstraintReviser(final SingleRule rule, final String tableName) {
+        return Optional.of(new SingleConstraintReviser());
+    }
+    
+    @Override
+    public String getType() {
+        return SingleRule.class.getSimpleName();
+    }
 }
