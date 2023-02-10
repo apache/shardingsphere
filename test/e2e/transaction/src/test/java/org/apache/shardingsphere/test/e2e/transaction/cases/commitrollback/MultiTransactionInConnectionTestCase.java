@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -30,7 +29,7 @@ import java.sql.SQLException;
 /**
  * Multiple transactions within a connection integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
+@TransactionTestCase
 public final class MultiTransactionInConnectionTestCase extends BaseTransactionTestCase {
     
     public MultiTransactionInConnectionTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
@@ -44,8 +43,8 @@ public final class MultiTransactionInConnectionTestCase extends BaseTransactionT
             for (int i = 0; i < 8; i++) {
                 connection.setAutoCommit(false);
                 statement.setLong(1, i);
-                statement.setFloat(1, i);
-                statement.setInt(1, i);
+                statement.setFloat(2, i);
+                statement.setInt(3, i);
                 statement.execute();
                 connection.commit();
             }
