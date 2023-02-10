@@ -52,7 +52,7 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
     public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final ConnectionMode connectionMode, final StatementOption option,
                                            final DatabaseType databaseType) throws SQLException {
         Statement result = cachedStatements.get(new CacheKey(executionUnit, connectionMode));
-        if (null == result) {
+        if (null == result || result.isClosed() || result.getConnection().isClosed()) {
             String sql = executionUnit.getSqlUnit().getSql();
             if (option.isReturnGeneratedKeys()) {
                 result = null == option.getColumns() || 0 == option.getColumns().length
