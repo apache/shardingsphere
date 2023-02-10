@@ -66,13 +66,20 @@ public final class CDCJobPreparer {
         boolean needUpdateJobStatus = !jobItemProgress.isPresent() || JobStatus.PREPARING.equals(jobItemContext.getStatus()) || JobStatus.RUNNING.equals(jobItemContext.getStatus())
                 || JobStatus.PREPARING_FAILURE.equals(jobItemContext.getStatus());
         if (needUpdateJobStatus) {
-            jobItemContext.setStatus(JobStatus.PREPARE_SUCCESS);
+            updateJobItemStatus(JobStatus.PREPARING, jobItemContext);
         }
         initIncrementalTasks(jobItemContext);
         CDCJobConfiguration jobConfig = jobItemContext.getJobConfig();
         if (SubscriptionMode.FULL.name().equals(jobConfig.getSubscriptionMode())) {
             initInventoryTasks(jobItemContext);
         }
+        if (needUpdateJobStatus) {
+            updateJobItemStatus(JobStatus.PREPARE_SUCCESS, jobItemContext);
+        }
+    }
+    
+    private void updateJobItemStatus(final JobStatus jobStatus, final CDCJobItemContext jobItemContext) {
+        jobItemContext.setStatus(jobStatus);
         jobAPI.persistJobItemProgress(jobItemContext);
     }
     

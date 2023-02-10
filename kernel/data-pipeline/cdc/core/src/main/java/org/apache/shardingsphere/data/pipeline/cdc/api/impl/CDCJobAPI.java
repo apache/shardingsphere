@@ -62,6 +62,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.prepare.PipelineJobPreparerUtils;
 import org.apache.shardingsphere.data.pipeline.core.sharding.ShardingColumnsExtractor;
@@ -142,9 +143,6 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     private void initIncrementalPosition(final CDCJobConfiguration jobConfig) {
-        if (SubscriptionMode.FULL.name().equals(jobConfig.getSubscriptionMode())) {
-            return;
-        }
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         String jobId = jobConfig.getJobId();
         try {
@@ -164,9 +162,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
                 PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, i, YamlEngine.marshal(getJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress)));
             }
         } catch (final SQLException ex) {
-            log.error("Get incremental position failed", ex);
-            //
-            throw new RuntimeException(String.format("Get %s incremental position failed", jobConfig.getDatabase()));
+            throw new PrepareJobWithGetBinlogPositionException(jobConfig.getJobId(), ex);
         } finally {
             dataSourceManager.close();
         }
@@ -237,11 +233,11 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         Map<ActualTableName, LogicTableName> tableNameMap = new LinkedHashMap<>();
         dataNodeLine.getEntries().forEach(each -> each.getDataNodes().forEach(node -> tableNameMap.put(new ActualTableName(node.getTableName()), new LogicTableName(each.getLogicTableName()))));
         String dataSourceName = dataNodeLine.getEntries().iterator().next().getDataNodes().iterator().next().getDataSourceName();
-        StandardPipelineDataSourceConfiguration actualDataSourceConfiguration = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
+        StandardPipelineDataSourceConfiguration actualDataSourceConfig = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
         DumperConfiguration result = new DumperConfiguration();
         result.setJobId(jobConfig.getJobId());
         result.setDataSourceName(dataSourceName);
-        result.setDataSourceConfig(actualDataSourceConfiguration);
+        result.setDataSourceConfig(actualDataSourceConfig);
         result.setTableNameMap(tableNameMap);
         result.setTableNameSchemaNameMapping(tableNameSchemaNameMapping);
         result.setDecodeWithTX(jobConfig.isDecodeWithTX());
