@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -67,7 +66,6 @@ public final class KernelProcessorTest {
     private Collection<ShardingSphereRule> mockShardingSphereRule() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         result.add(mock(SQLTranslatorRule.class));
-        result.add(mock(LoggingRule.class, RETURNS_DEEP_STUBS));
         return result;
     }
 }

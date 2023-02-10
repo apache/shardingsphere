@@ -30,12 +30,6 @@ import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
-import org.apache.shardingsphere.logging.constant.LoggingConstants;
-import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.apache.shardingsphere.logging.utils.LoggingUtils;
-
-import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Kernel processor.
@@ -77,19 +71,8 @@ public final class KernelProcessor {
     }
     
     private void logSQL(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props, final ExecutionContext executionContext) {
-        Optional<ShardingSphereLogger> sqlLogger = LoggingUtils.getSQLLogger(globalRuleMetaData);
-        if (sqlLogger.isPresent() && sqlLogger.get().getProps().containsKey(LoggingConstants.SQL_LOG_ENABLE)) {
-            logSQL(queryContext, executionContext, sqlLogger.get());
-        } else if (props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+        if (props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(queryContext, props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
-        }
-    }
-    
-    private void logSQL(final QueryContext queryContext, final ExecutionContext executionContext, final ShardingSphereLogger sqlLogger) {
-        Properties loggerProps = sqlLogger.getProps();
-        if (loggerProps.containsKey(LoggingConstants.SQL_LOG_ENABLE) && Boolean.parseBoolean(loggerProps.get(LoggingConstants.SQL_LOG_ENABLE).toString())) {
-            SQLLogger.logSQL(queryContext, loggerProps.containsKey(LoggingConstants.SQL_LOG_SIMPLE) && Boolean.parseBoolean(loggerProps.get(LoggingConstants.SQL_SIMPLE).toString()),
-                    executionContext);
         }
     }
 }
