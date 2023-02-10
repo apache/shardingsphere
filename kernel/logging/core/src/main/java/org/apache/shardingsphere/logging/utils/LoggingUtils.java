@@ -58,7 +58,7 @@ public class LoggingUtils {
      * @return ShardingSphere-SQL logger
      */
     public static Optional<ShardingSphereLogger> getSQLLogger(final ShardingSphereRuleMetaData globalRuleMetaData) {
-        return getSQLLogger(globalRuleMetaData.getSingleRule(LoggingRule.class).getConfiguration());
+        return globalRuleMetaData.findSingleRule(LoggingRule.class).isPresent() ? getSQLLogger(globalRuleMetaData.getSingleRule(LoggingRule.class).getConfiguration()) : Optional.empty();
     }
     
     /**
