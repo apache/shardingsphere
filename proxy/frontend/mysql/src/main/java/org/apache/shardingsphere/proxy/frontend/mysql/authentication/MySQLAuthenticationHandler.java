@@ -64,7 +64,6 @@ public final class MySQLAuthenticationHandler {
      * @return authenticator
      */
     public MySQLAuthenticator getAuthenticator(final Grantee grantee) {
-        // TODO get authenticator by grantee
         return new MySQLNativePasswordAuthenticator(authPluginData);
     }
 }
