@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.discovery.command;
+package org.apache.shardingsphere.test.e2e.discovery.pojo;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.discovery.pojo.DistSQLCommandPOJO;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -29,21 +28,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Setter
 @XmlRootElement(name = "command")
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class DiscoveryDistSQLCommand {
+public final class DistSQLCommandPOJO {
     
-    @XmlElement(name = "create-database")
+    @XmlElement(name = "execute-sql")
     @Getter
-    private DistSQLCommandPOJO createDatabase;
+    private String executeSQL;
     
-    @XmlElement(name = "register-storage-unit")
+    @XmlElement(name = "assertion-sql")
     @Getter
-    private DistSQLCommandPOJO registerStorageUnits;
-    
-    @XmlElement(name = "create-discovery-rule")
-    @Getter
-    private DistSQLCommandPOJO createDiscoveryRule;
-    
-    @XmlElement(name = "create-readwrite-splitting-rule")
-    @Getter
-    private DistSQLCommandPOJO createReadwriteSplittingRule;
+    private String assertionSQL;
 }
