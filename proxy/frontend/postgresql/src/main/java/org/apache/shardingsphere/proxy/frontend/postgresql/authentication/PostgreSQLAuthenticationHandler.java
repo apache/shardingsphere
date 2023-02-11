@@ -66,7 +66,6 @@ public final class PostgreSQLAuthenticationHandler {
      * @return authenticator
      */
     public PostgreSQLAuthenticator getAuthenticator(final Grantee grantee) {
-        // TODO get authenticator by grantee
         return new PostgreSQLMD5PasswordAuthenticator();
     }
 }
