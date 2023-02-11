@@ -148,10 +148,10 @@ public abstract class PipelineBaseE2EIT {
             return;
         }
         try {
-            connection.createStatement().execute(String.format("DROP DATABASE %s", PROXY_DATABASE));
+            connection.createStatement().execute(String.format("DROP DATABASE IF EXISTS %s", PROXY_DATABASE));
             ThreadUtil.sleep(2, TimeUnit.SECONDS);
         } catch (final SQLException ex) {
-            log.warn("Drop proxy database failed, maybe it's not exist. error msg={}", ex.getMessage());
+            log.warn("Drop proxy database failed, error={}", ex.getMessage());
         }
     }
     

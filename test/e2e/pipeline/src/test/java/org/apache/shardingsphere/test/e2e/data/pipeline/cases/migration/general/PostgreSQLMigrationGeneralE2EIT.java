@@ -80,8 +80,8 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         log.info("assertMigrationSuccess testParam:{}", testParam);
         initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         addMigrationProcessConfig();
-        createSourceSchema(PipelineBaseE2EIT.SCHEMA_NAME);
         createSourceOrderTable();
+        createSourceSchema(PipelineBaseE2EIT.SCHEMA_NAME);
         createSourceOrderItemTable();
         createSourceTableIndexList(PipelineBaseE2EIT.SCHEMA_NAME);
         createSourceCommentOnList(PipelineBaseE2EIT.SCHEMA_NAME);
