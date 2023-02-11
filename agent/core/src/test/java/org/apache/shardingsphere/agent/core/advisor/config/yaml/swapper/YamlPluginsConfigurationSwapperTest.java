@@ -39,9 +39,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 
 public final class YamlPluginsConfigurationSwapperTest {
-
+    
     private static final String CONFIG_PATH = "/conf/agent.yaml";
-
+    
     @Test
     public void assertSwap() throws IOException {
         YamlAgentConfiguration yamlAgentConfiguration = getAgentConfiguration();
@@ -52,19 +52,20 @@ public final class YamlPluginsConfigurationSwapperTest {
         assertMetricsPluginConfiguration(pluginConfigurationMap.get("MetricsFixture"));
         assertTracingPluginConfiguration(pluginConfigurationMap.get("TracingFixture"));
     }
-
+    
     private YamlAgentConfiguration getAgentConfiguration() throws UnsupportedEncodingException, FileNotFoundException {
         FileInputStream fileInputStream = new FileInputStream(new File(getResourceURL(), CONFIG_PATH));
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
         return new Yaml().loadAs(inputStreamReader, YamlAgentConfiguration.class);
     }
-
+    
     private String getResourceURL() throws UnsupportedEncodingException {
         return URLDecoder.decode(
                 Objects.requireNonNull(YamlPluginsConfigurationSwapper.class.getClassLoader().getResource(""))
-                        .getFile(), "UTF8");
+                        .getFile(),
+                "UTF8");
     }
-
+    
     private void assertLogFixturePluginConfiguration(final PluginConfiguration pluginConfiguration) {
         assertNull(pluginConfiguration.getHost());
         assertThat(pluginConfiguration.getPort(), is(0));
@@ -72,7 +73,7 @@ public final class YamlPluginsConfigurationSwapperTest {
         assertThat(pluginConfiguration.getProps().size(), is(1));
         assertThat(pluginConfiguration.getProps().getProperty("logging_key"), is("logging_value"));
     }
-
+    
     private void assertMetricsPluginConfiguration(final PluginConfiguration pluginConfiguration) {
         assertThat(pluginConfiguration.getHost(), is("metrics.host"));
         assertThat(pluginConfiguration.getPort(), is(1));
@@ -80,7 +81,7 @@ public final class YamlPluginsConfigurationSwapperTest {
         assertThat(pluginConfiguration.getProps().size(), is(1));
         assertThat(pluginConfiguration.getProps().getProperty("metrics_key"), is("metrics_value"));
     }
-
+    
     private void assertTracingPluginConfiguration(final PluginConfiguration pluginConfiguration) {
         assertThat(pluginConfiguration.getHost(), is("tracing.host"));
         assertThat(pluginConfiguration.getPort(), is(2));

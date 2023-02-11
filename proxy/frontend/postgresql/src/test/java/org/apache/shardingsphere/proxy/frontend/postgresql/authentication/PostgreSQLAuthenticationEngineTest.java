@@ -59,7 +59,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -129,14 +128,9 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         assertLogin("wrong" + password);
     }
     
-    @Test
-    public void assertGetIdentifierPacket() throws ReflectiveOperationException {
-        assertThat(Plugins.getMemberAccessor().invoke(PostgreSQLAuthenticationEngine.class.getDeclaredMethod("getIdentifierPacket", String.class), new PostgreSQLAuthenticationEngine(), username),
-                instanceOf(PostgreSQLMD5PasswordAuthenticationPacket.class));
-    }
-    
     @SneakyThrows(ReflectiveOperationException.class)
     private void assertLogin(final String inputPassword) {
+        mockInitProxyContext();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
         payload.writeInt4(64);
         payload.writeInt4(196608);
@@ -164,6 +158,12 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         ProxyContext.init(contextManager);
         actual = engine.authenticate(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
+    }
+    
+    private void mockInitProxyContext() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
+        ProxyContext.init(contextManager);
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {

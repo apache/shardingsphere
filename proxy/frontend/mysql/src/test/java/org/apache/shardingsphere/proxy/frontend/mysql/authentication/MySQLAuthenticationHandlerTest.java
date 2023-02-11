@@ -121,7 +121,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertGetAuthenticator() {
-        MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator(new Grantee("root", ""));
+        MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator(mock(AuthorityRule.class), new Grantee("root", ""));
         assertThat(authenticator, instanceOf(MySQLNativePasswordAuthenticator.class));
         assertThat(authenticator.getAuthenticationMethodName(), is(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName()));
     }

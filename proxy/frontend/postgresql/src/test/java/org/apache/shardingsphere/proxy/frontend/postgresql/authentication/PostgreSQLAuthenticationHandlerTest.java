@@ -112,7 +112,7 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
     
     @Test
     public void assertGetAuthenticator() {
-        PostgreSQLAuthenticator authenticator = new PostgreSQLAuthenticationHandler().getAuthenticator(new Grantee(username, ""));
+        PostgreSQLAuthenticator authenticator = new PostgreSQLAuthenticationHandler().getAuthenticator(mock(AuthorityRule.class), new Grantee(username, ""));
         assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
         assertThat(authenticator.getAuthenticationMethodName(), is(PostgreSQLAuthenticationMethod.MD5.getMethodName()));
     }

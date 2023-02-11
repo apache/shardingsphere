@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
@@ -112,7 +114,8 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     }
     
     private PostgreSQLIdentifierPacket getIdentifierPacket(final String username) {
-        PostgreSQLAuthenticator authenticator = authenticationHandler.getAuthenticator(new Grantee(username, ""));
+        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        PostgreSQLAuthenticator authenticator = authenticationHandler.getAuthenticator(rule, new Grantee(username, ""));
         if (PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.getAuthenticationMethodName())) {
             return new PostgreSQLPasswordAuthenticationPacket();
         }
