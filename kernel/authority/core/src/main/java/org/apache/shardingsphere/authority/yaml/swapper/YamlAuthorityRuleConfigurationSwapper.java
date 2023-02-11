@@ -41,6 +41,10 @@ public final class YamlAuthorityRuleConfigurationSwapper implements YamlRuleConf
         YamlAuthorityRuleConfiguration result = new YamlAuthorityRuleConfiguration();
         result.setPrivilege(algorithmSwapper.swapToYamlConfiguration(data.getProvider()));
         result.setUsers(YamlUsersConfigurationConverter.convertToYamlUserConfiguration(data.getUsers()));
+        result.setDefaultAuthenticator(data.getDefaultAuthenticator());
+        if (!data.getAuthenticators().isEmpty()) {
+            data.getAuthenticators().forEach((key, value) -> result.getAuthenticators().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
+        }
         return result;
     }
     
@@ -51,7 +55,9 @@ public final class YamlAuthorityRuleConfigurationSwapper implements YamlRuleConf
         if (null == provider) {
             provider = new DefaultAuthorityRuleConfigurationBuilder().build().getProvider();
         }
-        return new AuthorityRuleConfiguration(users, provider);
+        AuthorityRuleConfiguration result = new AuthorityRuleConfiguration(users, provider, yamlConfig.getDefaultAuthenticator());
+        yamlConfig.getAuthenticators().forEach((key, value) -> result.getAuthenticators().put(key, algorithmSwapper.swapToObject(value)));
+        return result;
     }
     
     @Override

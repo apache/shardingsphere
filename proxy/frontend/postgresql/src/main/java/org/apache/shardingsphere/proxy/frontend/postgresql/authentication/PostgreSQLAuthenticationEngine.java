@@ -118,9 +118,8 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     
     private PostgreSQLIdentifierPacket getIdentifierPacket(final String username) {
         AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        Grantee grantee = new Grantee(username, "");
-        Optional<ShardingSphereUser> user = rule.findUser(grantee);
-        Optional<PostgreSQLAuthenticator> authenticator = user.map(optional -> authenticationHandler.getAuthenticator(rule, optional, grantee));
+        Optional<ShardingSphereUser> user = rule.findUser(new Grantee(username, ""));
+        Optional<PostgreSQLAuthenticator> authenticator = user.map(optional -> authenticationHandler.getAuthenticator(rule, optional));
         if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.get().getAuthenticationMethodName())) {
             return new PostgreSQLPasswordAuthenticationPacket();
         }

@@ -35,7 +35,6 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
@@ -105,9 +104,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             return AuthenticationResultBuilder.continued();
         }
         AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        String username = packet.getUsername();
-        String hostname = getHostAddress(context);
-        MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator(rule, new ShardingSphereUser(username, "", hostname), new Grantee(username, hostname));
+        MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator(rule, new ShardingSphereUser(packet.getUsername(), "", getHostAddress(context)));
         if (isClientPluginAuth(packet) && !authenticator.getAuthenticationMethodName().equals(packet.getAuthPluginName())) {
             connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
             context.writeAndFlush(new MySQLAuthSwitchRequestPacket(authenticator.getAuthenticationMethodName(), authenticationHandler.getAuthPluginData()));

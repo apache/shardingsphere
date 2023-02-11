@@ -55,7 +55,7 @@ public final class PostgreSQLAuthenticationHandler {
         Grantee grantee = new Grantee(username, "%");
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
-        ShardingSpherePreconditions.checkState(getAuthenticator(rule, user.get(), grantee).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
+        ShardingSpherePreconditions.checkState(getAuthenticator(rule, user.get()).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
                 () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));
@@ -66,24 +66,24 @@ public final class PostgreSQLAuthenticationHandler {
      *
      * @param rule authority rule
      * @param user user
-     * @param grantee username
      * @return authenticator
      */
-    public PostgreSQLAuthenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user, final Grantee grantee) {
+    public PostgreSQLAuthenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
+        PostgreSQLAuthenticationMethod authenticationMethod;
         try {
-            PostgreSQLAuthenticationMethod authenticationMethod = PostgreSQLAuthenticationMethod.valueOf(null == user.getAuthenticationMethodName() ? "" : user.getAuthenticationMethodName());
-            switch (authenticationMethod) {
-                case MD5:
-                    return new PostgreSQLMD5PasswordAuthenticator();
-                case PASSWORD:
-                    return new PostgreSQLPasswordAuthenticator();
-                case SCRAM_SHA256:
-                    // TODO add SCRAM_SHA256 Authenticator
-                default:
-                    return new PostgreSQLMD5PasswordAuthenticator();
-            }
+            authenticationMethod = PostgreSQLAuthenticationMethod.valueOf(rule.getAuthenticatorType(user).toUpperCase());
         } catch (final IllegalArgumentException ignored) {
             return new PostgreSQLMD5PasswordAuthenticator();
+        }
+        switch (authenticationMethod) {
+            case MD5:
+                return new PostgreSQLMD5PasswordAuthenticator();
+            case PASSWORD:
+                return new PostgreSQLPasswordAuthenticator();
+            case SCRAM_SHA256:
+                // TODO add SCRAM_SHA256 Authenticator
+            default:
+                return new PostgreSQLMD5PasswordAuthenticator();
         }
     }
 }
