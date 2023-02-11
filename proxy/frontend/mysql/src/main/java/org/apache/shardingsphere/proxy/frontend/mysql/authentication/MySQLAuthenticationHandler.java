@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 import lombok.Getter;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -51,7 +52,7 @@ public final class MySQLAuthenticationHandler {
         AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, hostname);
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
-        if (!user.isPresent() || !getAuthenticator(rule, grantee).authenticate(user.get(), authenticationResponse)) {
+        if (!user.isPresent() || !getAuthenticator(rule, user.get(), grantee).authenticate(user.get(), authenticationResponse)) {
             return Optional.of(MySQLVendorError.ER_ACCESS_DENIED_ERROR);
         }
         return null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName) ? Optional.empty() : Optional.of(MySQLVendorError.ER_DBACCESS_DENIED_ERROR);
@@ -61,11 +62,26 @@ public final class MySQLAuthenticationHandler {
      * Get authenticator.
      *
      * @param rule authority rule
+     * @param user user
      * @param grantee grantee
      * @return authenticator
      */
-    public MySQLAuthenticator getAuthenticator(final AuthorityRule rule, final Grantee grantee) {
-        // TODO use authority rule and grantee to determine authentication method
-        return new MySQLNativePasswordAuthenticator(authPluginData);
+    public MySQLAuthenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user, final Grantee grantee) {
+        try {
+            MySQLAuthenticationMethod authenticationMethod = MySQLAuthenticationMethod.valueOf(null == user.getAuthenticationMethodName() ? "" : user.getAuthenticationMethodName());
+            switch (authenticationMethod) {
+                case SECURE_PASSWORD_AUTHENTICATION:
+                    return new MySQLNativePasswordAuthenticator(authPluginData);
+                case OLD_PASSWORD_AUTHENTICATION:
+                case CLEAR_TEXT_AUTHENTICATION:
+                case WINDOWS_NATIVE_AUTHENTICATION:
+                case SHA256:
+                    // TODO add SCRAM_SHA256 Authenticator
+                default:
+                    return new MySQLNativePasswordAuthenticator(authPluginData);
+            }
+        } catch (final IllegalArgumentException ignored) {
+            return new MySQLNativePasswordAuthenticator(authPluginData);
+        }
     }
 }

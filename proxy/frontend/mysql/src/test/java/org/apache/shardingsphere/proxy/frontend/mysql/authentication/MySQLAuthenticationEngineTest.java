@@ -105,7 +105,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         when(payload.readInt1()).thenReturn(1);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
         when(payload.readStringNul()).thenReturn("root");
-        when(authenticationHandler.getAuthenticator(any(), any())).thenReturn(new MySQLNativePasswordAuthenticator(mock(MySQLAuthPluginData.class)));
+        when(authenticationHandler.getAuthenticator(any(), any(), any())).thenReturn(new MySQLNativePasswordAuthenticator(mock(MySQLAuthPluginData.class)));
         authenticationEngine.authenticate(channelHandlerContext, payload);
         assertThat(getConnectionPhase(), is(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH));
     }
