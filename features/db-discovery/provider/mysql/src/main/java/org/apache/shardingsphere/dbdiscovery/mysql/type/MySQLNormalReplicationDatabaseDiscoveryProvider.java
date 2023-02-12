@@ -72,7 +72,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProvider implements Da
         for (Future<Boolean> each : futures) {
             checkPrimaryInstances(databaseName, each.get(), primaryInstances);
         }
-        ShardingSpherePreconditions.checkState(primaryInstances.isEmpty(), () -> new PrimaryDataSourceNotFoundException(databaseName));
+        ShardingSpherePreconditions.checkState(!primaryInstances.isEmpty(), () -> new PrimaryDataSourceNotFoundException(databaseName));
     }
     
     @Override
