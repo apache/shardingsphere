@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
  */
 public final class PrimaryDataSourceNotFoundException extends DBDiscoveryProviderException {
     
-    private static final long serialVersionUID = -7715117257616134436L;
+    private static final long serialVersionUID = -4646464806520242027L;
     
     public PrimaryDataSourceNotFoundException(final String databaseName) {
         super(XOpenSQLState.DUPLICATE, 91, "Primary data source not found in database `%s`.", databaseName);
