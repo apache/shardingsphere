@@ -28,6 +28,6 @@ public final class PrimaryDataSourceNotFoundException extends DBDiscoveryProvide
     private static final long serialVersionUID = -4646464806520242027L;
     
     public PrimaryDataSourceNotFoundException(final String databaseName) {
-        super(XOpenSQLState.DUPLICATE, 91, "Primary data source not found in database `%s`.", databaseName);
+        super(XOpenSQLState.NOT_FOUND, 91, "Primary data source not found in database `%s`.", databaseName);
     }
 }
