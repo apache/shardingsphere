@@ -55,7 +55,7 @@ public final class AuthorityRule implements GlobalRule {
     public AuthorityRule(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
         users = ruleConfig.getUsers();
-        provider = TypedSPILoader.getService(AuthorityProvider.class, ruleConfig.getProvider().getType(), ruleConfig.getProvider().getProps());
+        provider = TypedSPILoader.getService(AuthorityProvider.class, ruleConfig.getAuthorityProvider().getType(), ruleConfig.getAuthorityProvider().getProps());
         authorityRegistry = provider.buildAuthorityRegistry(databases, ruleConfig.getUsers());
         authenticatorConfig.putAll(ruleConfig.getAuthenticators());
         defaultAuthenticator = ruleConfig.getDefaultAuthenticator();

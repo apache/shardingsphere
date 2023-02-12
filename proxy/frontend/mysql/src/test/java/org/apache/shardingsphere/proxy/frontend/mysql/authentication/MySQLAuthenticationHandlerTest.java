@@ -152,7 +152,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     }
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user, final boolean isNeedSuper) throws ReflectiveOperationException {
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null);
         AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(ConfigurationProperties.class));
         if (!isNeedSuper) {
             AuthorityRegistry authorityRegistry = mock(AuthorityRegistry.class);

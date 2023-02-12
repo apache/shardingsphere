@@ -161,7 +161,7 @@ public final class ConfigurationChangedSubscriberTest {
     }
     
     private Collection<RuleConfiguration> getChangedGlobalRuleConfigurations() {
-        RuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(getShardingSphereUsers(), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
+        RuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(getShardingSphereUsers(), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null);
         return Collections.singleton(authorityRuleConfig);
     }
     

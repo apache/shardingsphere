@@ -39,14 +39,14 @@ public final class AuthorityCheckerTest {
     @Test
     public void assertCheckIsAuthorizedDatabase() {
         Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null);
         assertTrue(new AuthorityChecker(new AuthorityRule(ruleConfig, Collections.emptyMap()), new Grantee("root", "localhost")).isAuthorized("db0"));
     }
     
     @Test
     public void assertCheckPrivileges() {
         Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
-        AuthorityRule rule = new AuthorityRule(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties())), Collections.emptyMap());
+        AuthorityRule rule = new AuthorityRule(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null), Collections.emptyMap());
         AuthorityChecker authorityChecker = new AuthorityChecker(rule, new Grantee("root", "localhost"));
         authorityChecker.checkPrivileges(null, mock(SelectStatement.class));
         authorityChecker.checkPrivileges(null, mock(InsertStatement.class));
