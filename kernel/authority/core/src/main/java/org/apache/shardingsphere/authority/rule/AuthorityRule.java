@@ -22,7 +22,6 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.AuthorityProvider;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,23 +40,26 @@ public final class AuthorityRule implements GlobalRule {
     @Getter
     private final AuthorityRuleConfiguration configuration;
     
-    private final Collection<ShardingSphereUser> users;
-    
     private final AuthorityProvider provider;
     
     private volatile AuthorityRegistry authorityRegistry;
     
-    private final Map<String, AlgorithmConfiguration> authenticatorConfig = new LinkedHashMap<>();
-    
-    private final String defaultAuthenticator;
-    
     public AuthorityRule(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
-        users = ruleConfig.getUsers();
         provider = TypedSPILoader.getService(AuthorityProvider.class, ruleConfig.getAuthorityProvider().getType(), ruleConfig.getAuthorityProvider().getProps());
         authorityRegistry = provider.buildAuthorityRegistry(databases, ruleConfig.getUsers());
-        authenticatorConfig.putAll(ruleConfig.getAuthenticators());
-        defaultAuthenticator = ruleConfig.getDefaultAuthenticator();
+    }
+    
+    /**
+     * Get authenticator type.
+     *
+     * @param user user
+     * @return authenticator type
+     */
+    public String getAuthenticatorType(final ShardingSphereUser user) {
+        return configuration.getAuthenticators().containsKey(user.getAuthenticationMethodName())
+                ? configuration.getAuthenticators().get(user.getAuthenticationMethodName()).getType()
+                : Optional.ofNullable(configuration.getDefaultAuthenticator()).orElse("");
     }
     
     /**
@@ -68,7 +69,7 @@ public final class AuthorityRule implements GlobalRule {
      * @return user
      */
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
-        return users.stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
+        return configuration.getUsers().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
     }
     
     /**
@@ -89,18 +90,6 @@ public final class AuthorityRule implements GlobalRule {
      */
     public synchronized void refresh(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
         authorityRegistry = provider.buildAuthorityRegistry(databases, users);
-    }
-    
-    /**
-     * Get authenticator type.
-     * 
-     * @param user user
-     * @return authenticator type
-     */
-    public String getAuthenticatorType(final ShardingSphereUser user) {
-        return authenticatorConfig.containsKey(user.getAuthenticationMethodName())
-                ? authenticatorConfig.get(user.getAuthenticationMethodName()).getType()
-                : Optional.ofNullable(defaultAuthenticator).orElse("");
     }
     
     @Override
