@@ -24,5 +24,5 @@ import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
  * 
  * @see <a href="https://www.postgresql.org/docs/14/auth-password.html">Password Authentication</a>
  */
-public interface PostgreSQLAuthenticator extends Authenticator<Object[]> {
+public interface PostgreSQLAuthenticator extends Authenticator {
 }

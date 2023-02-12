@@ -22,5 +22,5 @@ import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 /**
  * MySQL authenticator.
  */
-public interface MySQLAuthenticator extends Authenticator<Object[]> {
+public interface MySQLAuthenticator extends Authenticator {
 }
