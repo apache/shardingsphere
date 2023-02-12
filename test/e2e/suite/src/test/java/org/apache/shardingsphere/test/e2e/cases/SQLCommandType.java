@@ -72,7 +72,7 @@ public enum SQLCommandType {
     /**
      * Database administrator Language.
      */
-    DAL(DALStatement.class, "dal-integration", true, Collections.singletonList("proxy")),
+    DAL(DALStatement.class, "dal-integration", true, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Database control Language.

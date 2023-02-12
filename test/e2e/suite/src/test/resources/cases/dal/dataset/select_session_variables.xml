@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,8 +15,10 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
-    <test-case sql="SHOW DATABASES" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" adapters="proxy">
-        <assertion expected-data-file="show_databases.xml" />
-    </test-case>
-</integration-test-cases>
+<dataset>
+    <metadata>
+        <column name="@order_id" />
+        <column name="@item_id" />
+    </metadata>
+    <row values="1, 2" />
+</dataset>
