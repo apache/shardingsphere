@@ -29,7 +29,8 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 public final class MySQLClearPasswordAuthenticator implements MySQLAuthenticator {
     
     @Override
-    public boolean authenticate(final ShardingSphereUser user, final byte[] authResponse) {
+    public boolean authenticate(final ShardingSphereUser user, final Object[] args) {
+        byte[] authResponse = (byte[]) args[0];
         byte[] password = new byte[authResponse.length - 1];
         System.arraycopy(authResponse, 0, password, 0, authResponse.length - 1);
         return Strings.isNullOrEmpty(user.getPassword()) || user.getPassword().equals(new String(password));

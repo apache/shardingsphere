@@ -27,7 +27,6 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
@@ -105,7 +104,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         when(payload.readInt1()).thenReturn(1);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
         when(payload.readStringNul()).thenReturn("root");
-        when(authenticationHandler.getAuthenticator(any(), any())).thenReturn(new MySQLNativePasswordAuthenticator(mock(MySQLAuthPluginData.class)));
+        when(authenticationHandler.getAuthenticator(any(), any())).thenReturn(new MySQLNativePasswordAuthenticator());
         authenticationEngine.authenticate(channelHandlerContext, payload);
         assertThat(getConnectionPhase(), is(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH));
     }
