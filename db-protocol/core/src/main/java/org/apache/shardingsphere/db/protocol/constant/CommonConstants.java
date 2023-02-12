@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol;
+package org.apache.shardingsphere.db.protocol.constant;
 
 import io.netty.util.AttributeKey;
 import lombok.AccessLevel;

@@ -59,6 +59,6 @@ public final class MySQLNativePasswordAuthenticator implements MySQLAuthenticato
     
     @Override
     public String getAuthenticationMethodName() {
-        return MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName();
+        return MySQLAuthenticationMethod.NATIVE.getMethodName();
     }
 }

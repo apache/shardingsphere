@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.authentication;
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussProtocolVersion;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;

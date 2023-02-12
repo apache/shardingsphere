@@ -74,7 +74,7 @@ public final class MySQLNegotiateHandlerTest {
     @Test
     public void assertChannelReadHandshakeInitPacket() throws ReflectiveOperationException {
         MySQLHandshakePacket handshakePacket = new MySQLHandshakePacket(0, new MySQLAuthPluginData(new byte[8], new byte[12]));
-        handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION);
+        handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, handshakePacket);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLHandshakeResponse41Packet.class));
         ServerInfo serverInfo = (ServerInfo) Plugins.getMemberAccessor().get(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler);

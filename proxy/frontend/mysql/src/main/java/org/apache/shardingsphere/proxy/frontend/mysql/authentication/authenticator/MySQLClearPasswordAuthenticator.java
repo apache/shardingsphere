@@ -38,6 +38,6 @@ public final class MySQLClearPasswordAuthenticator implements MySQLAuthenticator
     
     @Override
     public String getAuthenticationMethodName() {
-        return MySQLAuthenticationMethod.CLEAR_TEXT_AUTHENTICATION.getMethodName();
+        return MySQLAuthenticationMethod.CLEAR_TEXT.getMethodName();
     }
 }

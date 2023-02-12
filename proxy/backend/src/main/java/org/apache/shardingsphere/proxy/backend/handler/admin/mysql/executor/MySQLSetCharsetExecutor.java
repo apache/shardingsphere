@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
-import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.MySQLSessionVariableHandler;

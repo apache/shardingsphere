@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.constant;
+package org.apache.shardingsphere.db.protocol.constant;
 
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class MySQLAuthenticationMethodTest {
+/**
+ * Authentication method.
+ */
+public interface AuthenticationMethod {
     
-    @Test
-    public void assertGetMethodName() {
-        assertThat(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName(), is("mysql_native_password"));
-    }
+    /**
+     * Get authentication method name.
+     * 
+     * @return authentication method name
+     */
+    String getMethodName();
 }
