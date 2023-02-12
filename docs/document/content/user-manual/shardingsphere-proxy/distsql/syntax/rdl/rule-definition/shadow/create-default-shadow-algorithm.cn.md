@@ -41,7 +41,7 @@ value ::=
 
 ### 补充说明
 
-- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`；
+- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SQL_HINT`；
 - `ifNotExists` 子句用于避免出现 `Duplicate default shadow algorithm` 错误。
 
 ### 示例
@@ -49,13 +49,13 @@ value ::=
 - 创建默认影子库压测算法
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"));
+CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SQL_HINT");
 ```
 
 - 使用 `ifNotExists` 子句创建默认影子库压测算法
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM IF NOT EXISTS TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"));
+CREATE DEFAULT SHADOW ALGORITHM IF NOT EXISTS TYPE(NAME="SQL_HINT");
 ```
 
 ### 保留字

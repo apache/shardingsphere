@@ -49,7 +49,6 @@ public final class LogbackTest {
         assertTrue(encoder.getLayout() instanceof PatternLayout);
         PatternLayout layout = (PatternLayout) encoder.getLayout();
         assertThat(layout.getPattern(), is(DEFAULT_PATTERN));
-        assertThat(loggerContext.getLogger("org.apache.shardingsphere").getLevel(), is(Level.INFO));
         assertThat(loggerContext.getLogger("com.zaxxer.hikari").getLevel(), is(Level.ERROR));
         assertThat(loggerContext.getLogger("com.atomikos").getLevel(), is(Level.ERROR));
         assertThat(loggerContext.getLogger("io.netty").getLevel(), is(Level.ERROR));

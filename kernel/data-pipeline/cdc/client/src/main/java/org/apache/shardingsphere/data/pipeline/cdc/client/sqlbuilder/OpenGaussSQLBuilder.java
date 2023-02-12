@@ -58,9 +58,18 @@ public final class OpenGaussSQLBuilder extends AbstractSQLBuilder {
     @Override
     public String buildInsertSQL(final Record record) {
         String insertSql = super.buildInsertSQL(record);
-        if (!record.getTableMetaData().getUniqueKeyNamesList().isEmpty()) {
-            return insertSql + " ON DUPLICATE KEY UPDATE NOTHING";
+        List<String> uniqueKeyNamesList = record.getTableMetaData().getUniqueKeyNamesList();
+        if (uniqueKeyNamesList.isEmpty()) {
+            return insertSql;
         }
-        return insertSql;
+        StringBuilder updateValue = new StringBuilder();
+        for (String each : record.getAfterMap().keySet()) {
+            if (uniqueKeyNamesList.contains(each)) {
+                continue;
+            }
+            updateValue.append(quote(each)).append("=EXCLUDED.").append(quote(each)).append(",");
+        }
+        updateValue.setLength(updateValue.length() - 1);
+        return insertSql + " ON DUPLICATE KEY UPDATE " + updateValue;
     }
 }

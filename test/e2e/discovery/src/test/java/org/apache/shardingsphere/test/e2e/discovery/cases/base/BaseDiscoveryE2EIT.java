@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.discovery.build.DiscoveryRuleBuilder;
 import org.apache.shardingsphere.test.e2e.discovery.cases.DatabaseClusterEnvironment;
@@ -30,6 +29,8 @@ import org.apache.shardingsphere.test.e2e.discovery.env.DiscoveryE2ETestEnvironm
 import org.apache.shardingsphere.test.e2e.discovery.framework.container.compose.BaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.discovery.framework.container.compose.DockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.discovery.framework.parameter.DiscoveryTestParameter;
+import org.awaitility.Awaitility;
+import org.awaitility.Durations;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -39,11 +40,9 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotEquals;
 
 @Getter(AccessLevel.PROTECTED)
 @Slf4j
@@ -84,8 +83,7 @@ public abstract class BaseDiscoveryE2EIT {
     public void assertClosePrimaryDataSource(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
         String oldPrimaryDataSourceName = getPrimaryDataSourceName();
         closeDataSource(mgrEnvironment.getDataSources().get(oldPrimaryDataSourceName));
-        String newPrimaryDataSourceName = getPrimaryDataSourceName();
-        assertPrimaryDataSourceChanged(oldPrimaryDataSourceName, newPrimaryDataSourceName);
+        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> !oldPrimaryDataSourceName.equals(getPrimaryDataSourceName()));
         mgrEnvironment.getDataSources().remove(oldPrimaryDataSourceName);
     }
     
@@ -122,11 +120,6 @@ public abstract class BaseDiscoveryE2EIT {
                 Statement statement = connection.createStatement()) {
             statement.execute("SHUTDOWN");
         }
-        ThreadUtil.sleep(35, TimeUnit.SECONDS);
-    }
-    
-    private void assertPrimaryDataSourceChanged(final String oldPrimaryDataSourceName, final String newPrimaryDataSourceName) {
-        assertNotEquals(oldPrimaryDataSourceName, newPrimaryDataSourceName);
     }
     
     /**
@@ -138,8 +131,8 @@ public abstract class BaseDiscoveryE2EIT {
         mgrEnvironment.getDataSources().remove(getPrimaryDataSourceName());
         String closedRoutingDataSourceName = getCloseReplicationDataSourceName(mgrEnvironment);
         mgrEnvironment.getDataSources().remove(closedRoutingDataSourceName);
-        String routeDataSourceName = getRouteDataSourceName();
-        assertRouteDataSourceName(routeDataSourceName, Objects.requireNonNull(mgrEnvironment.getDataSources().entrySet().stream().findFirst().orElse(null)).getKey());
+        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() ->
+                getRouteDataSourceName().equals(Objects.requireNonNull(mgrEnvironment.getDataSources().entrySet().stream().findFirst().orElse(null)).getKey()));
     }
     
     private String getCloseReplicationDataSourceName(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
@@ -164,11 +157,6 @@ public abstract class BaseDiscoveryE2EIT {
         }
     }
     
-    private void assertRouteDataSourceName(final String actualRouteDataSourceName, final String expectedRouteDataSourceName) {
-        Preconditions.checkState(StringUtils.isNotBlank(actualRouteDataSourceName) && StringUtils.isNotBlank(expectedRouteDataSourceName));
-        assertThat(actualRouteDataSourceName, is(expectedRouteDataSourceName));
-    }
-    
     /**
      * Assert close all replication data source.
      * @param mgrEnvironment mgr environment
@@ -176,6 +164,6 @@ public abstract class BaseDiscoveryE2EIT {
      */
     public void assertCloseAllReplicationDataSource(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
         closeDataSource(Objects.requireNonNull(mgrEnvironment.getDataSources().values().stream().findFirst().orElse(null)));
-        assertRouteDataSourceName(getRouteDataSourceName(), getPrimaryDataSourceName());
+        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> getRouteDataSourceName().equals(getPrimaryDataSourceName()));
     }
 }

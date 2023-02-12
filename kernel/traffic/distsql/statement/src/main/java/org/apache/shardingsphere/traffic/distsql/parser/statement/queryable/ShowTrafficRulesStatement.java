@@ -19,14 +19,14 @@ package org.apache.shardingsphere.traffic.distsql.parser.statement.queryable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableGlobalRuleRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
  * Show traffic rules statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowTrafficRulesStatement extends QueryableGlobalRuleRALStatement {
+public final class ShowTrafficRulesStatement extends QueryableRALStatement {
     
     private final String ruleName;
 }

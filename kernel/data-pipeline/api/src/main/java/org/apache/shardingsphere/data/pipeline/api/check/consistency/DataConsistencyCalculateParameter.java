@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.check.consistency;
 
-import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -59,20 +58,9 @@ public final class DataConsistencyCalculateParameter {
     private final PipelineColumnMetaData uniqueKey;
     
     /**
-     * Used for range query.
+     * Calculation context.
      */
-    private volatile Range<? extends Comparable<?>> uniqueKeyValueRange;
-    
-    /**
-     * Used for multiple records query.
-     * If it's configured, then it could be translated to SQL like "uniqueKey IN (value1,value2,value3)".
-     */
-    private volatile Collection<Object> uniqueKeyValues;
-    
-    /**
-     * Previous calculated result will be transferred to next call.
-     */
-    private volatile Object previousCalculatedResult;
+    private volatile AutoCloseable calculationContext;
     
     private final Object tableCheckPosition;
 }

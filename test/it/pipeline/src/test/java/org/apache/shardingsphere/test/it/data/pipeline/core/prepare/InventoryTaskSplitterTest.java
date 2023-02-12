@@ -24,7 +24,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByRangeException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter;
@@ -122,15 +121,16 @@ public final class InventoryTaskSplitterTest {
         assertThat(actual.size(), is(1));
     }
     
-    @Test(expected = SplitPipelineJobByRangeException.class)
-    public void assertSplitInventoryDataWithIllegalKeyDataType() throws SQLException, ReflectiveOperationException {
+    @Test
+    public void assertSplitInventoryDataWithMultipleColumnsKey() throws SQLException, ReflectiveOperationException {
         initUnionPrimaryEnvironment(taskConfig.getDumperConfig());
         InventoryDumperConfiguration dumperConfig = (InventoryDumperConfiguration) Plugins.getMemberAccessor()
                 .get(InventoryTaskSplitter.class.getDeclaredField("dumperConfig"), inventoryTaskSplitter);
         assertNotNull(dumperConfig);
         dumperConfig.setUniqueKey("order_id,user_id");
         dumperConfig.setUniqueKeyDataType(Integer.MIN_VALUE);
-        inventoryTaskSplitter.splitInventoryData(jobItemContext);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
+        assertThat(actual.size(), is(1));
     }
     
     @Test

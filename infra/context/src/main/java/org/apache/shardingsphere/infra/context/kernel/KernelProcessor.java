@@ -51,7 +51,7 @@ public final class KernelProcessor {
         RouteContext routeContext = route(queryContext, database, globalRuleMetaData, props, connectionContext);
         SQLRewriteResult rewriteResult = rewrite(queryContext, database, globalRuleMetaData, props, routeContext, connectionContext);
         ExecutionContext result = createExecutionContext(queryContext, database, routeContext, rewriteResult);
-        logSQL(queryContext, props, result);
+        logSQL(queryContext, globalRuleMetaData, props, result);
         return result;
     }
     
@@ -70,7 +70,7 @@ public final class KernelProcessor {
         return new ExecutionContext(queryContext, ExecutionContextBuilder.build(database, rewriteResult, queryContext.getSqlStatementContext()), routeContext);
     }
     
-    private void logSQL(final QueryContext queryContext, final ConfigurationProperties props, final ExecutionContext executionContext) {
+    private void logSQL(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props, final ExecutionContext executionContext) {
         if (props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
             SQLLogger.logSQL(queryContext, props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SIMPLE), executionContext);
         }

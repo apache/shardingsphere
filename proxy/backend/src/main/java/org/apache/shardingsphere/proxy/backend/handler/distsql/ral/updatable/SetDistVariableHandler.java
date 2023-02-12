@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
+import org.apache.shardingsphere.logging.constant.LoggingConstants;
+import org.apache.shardingsphere.logging.utils.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -31,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALB
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
@@ -66,6 +72,9 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         props.putAll(metaDataContexts.getMetaData().getProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.getInstanceContext().getModeContextManager().alterProperties(props);
+        refreshRootLogger(props);
+        syncSQLShowToLoggingRule(propertyKey, metaDataContexts, value);
+        syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value);
     }
     
     private Object getValue(final ConfigurationPropertyKey propertyKey, final String value) {
@@ -74,6 +83,34 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
             return Enum.class.isAssignableFrom(propertyKey.getType()) ? propertyValue.toString() : propertyValue;
         } catch (final TypedPropertyValueException ex) {
             throw new InvalidValueException(value);
+        }
+    }
+    
+    private void refreshRootLogger(final Properties props) {
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
+        renewRootLoggerLevel(rootLogger, props);
+    }
+    
+    private void renewRootLoggerLevel(final Logger rootLogger, final Properties props) {
+        rootLogger.setLevel(Level.valueOf(props.getOrDefault(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getKey(), ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getDefaultValue()).toString()));
+    }
+    
+    private void syncSQLShowToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
+        if (LoggingConstants.SQL_SHOW.equalsIgnoreCase(propertyKey.getKey())) {
+            LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
+                option.getProps().setProperty(LoggingConstants.SQL_LOG_ENABLE, value);
+                metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
+            });
+        }
+    }
+    
+    private void syncSQLSimpleToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
+        if (LoggingConstants.SQL_SIMPLE.equalsIgnoreCase(propertyKey.getKey())) {
+            LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
+                option.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, value);
+                metaDataContexts.getPersistService().getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations());
+            });
         }
     }
     

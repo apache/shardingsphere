@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
@@ -38,12 +39,16 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
+
+import java.util.Optional;
 
 /**
  * Authentication engine for PostgreSQL.
@@ -106,13 +111,16 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         context.write(new PostgreSQLParameterStatusPacket("client_encoding", clientEncoding));
         context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
         context.write(new PostgreSQLParameterStatusPacket("integer_datetimes", "on"));
+        context.write(new PostgreSQLParameterStatusPacket("standard_conforming_strings", "on"));
         context.writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase());
     }
     
     private PostgreSQLIdentifierPacket getIdentifierPacket(final String username) {
-        PostgreSQLAuthenticator authenticator = authenticationHandler.getAuthenticator(new Grantee(username, ""));
-        if (PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.getAuthenticationMethodName())) {
+        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        Optional<ShardingSphereUser> user = rule.findUser(new Grantee(username, ""));
+        Optional<PostgreSQLAuthenticator> authenticator = user.map(optional -> authenticationHandler.getAuthenticator(rule, optional));
+        if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.get().getAuthenticationMethodName())) {
             return new PostgreSQLPasswordAuthenticationPacket();
         }
         md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
