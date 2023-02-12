@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.model;
 import java.util.Collection;
 
 /**
- * ShardingSphere Privileges.
+ * ShardingSphere privileges.
  */
 public interface ShardingSpherePrivileges {
     

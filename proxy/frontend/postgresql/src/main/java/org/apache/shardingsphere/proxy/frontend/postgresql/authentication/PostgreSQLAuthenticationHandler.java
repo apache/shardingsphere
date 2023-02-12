@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLMD5PasswordAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLPasswordAuthenticator;
 
 import java.util.Optional;
 
@@ -53,7 +55,7 @@ public final class PostgreSQLAuthenticationHandler {
         Grantee grantee = new Grantee(username, "%");
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
-        ShardingSpherePreconditions.checkState(getAuthenticator(rule, grantee).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
+        ShardingSpherePreconditions.checkState(getAuthenticator(rule, user.get()).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
                 () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));
@@ -63,11 +65,25 @@ public final class PostgreSQLAuthenticationHandler {
      * Get authenticator.
      *
      * @param rule authority rule
-     * @param grantee username
+     * @param user user
      * @return authenticator
      */
-    public PostgreSQLAuthenticator getAuthenticator(final AuthorityRule rule, final Grantee grantee) {
-        // TODO use authority rule and grantee to determine authentication method
-        return new PostgreSQLMD5PasswordAuthenticator();
+    public PostgreSQLAuthenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
+        PostgreSQLAuthenticationMethod authenticationMethod;
+        try {
+            authenticationMethod = PostgreSQLAuthenticationMethod.valueOf(rule.getAuthenticatorType(user).toUpperCase());
+        } catch (final IllegalArgumentException ignored) {
+            return new PostgreSQLMD5PasswordAuthenticator();
+        }
+        switch (authenticationMethod) {
+            case MD5:
+                return new PostgreSQLMD5PasswordAuthenticator();
+            case PASSWORD:
+                return new PostgreSQLPasswordAuthenticator();
+            case SCRAM_SHA256:
+                // TODO add SCRAM_SHA256 Authenticator
+            default:
+                return new PostgreSQLMD5PasswordAuthenticator();
+        }
     }
 }

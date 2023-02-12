@@ -39,6 +39,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
@@ -46,6 +47,8 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationRes
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
+
+import java.util.Optional;
 
 /**
  * Authentication engine for PostgreSQL.
@@ -115,8 +118,9 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     
     private PostgreSQLIdentifierPacket getIdentifierPacket(final String username) {
         AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        PostgreSQLAuthenticator authenticator = authenticationHandler.getAuthenticator(rule, new Grantee(username, ""));
-        if (PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.getAuthenticationMethodName())) {
+        Optional<ShardingSphereUser> user = rule.findUser(new Grantee(username, ""));
+        Optional<PostgreSQLAuthenticator> authenticator = user.map(optional -> authenticationHandler.getAuthenticator(rule, optional));
+        if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.get().getAuthenticationMethodName())) {
             return new PostgreSQLPasswordAuthenticationPacket();
         }
         md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);

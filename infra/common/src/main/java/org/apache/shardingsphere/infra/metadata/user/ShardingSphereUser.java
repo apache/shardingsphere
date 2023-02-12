@@ -34,7 +34,7 @@ public final class ShardingSphereUser {
     private final String authenticationMethodName;
     
     public ShardingSphereUser(final String username, final String password, final String hostname) {
-        this(username, password, hostname, null);
+        this(username, password, hostname, "");
     }
     
     public ShardingSphereUser(final String username, final String password, final String hostname, final String authenticationMethodName) {
