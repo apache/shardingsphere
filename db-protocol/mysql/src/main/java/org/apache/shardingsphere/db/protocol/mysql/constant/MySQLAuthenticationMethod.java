@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 
 /**
- * MySQL client/server protocol authentication method.
+ * Authentication method for MySQL.
  *
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_authentication_methods.html">Authentication Method</a>
  */

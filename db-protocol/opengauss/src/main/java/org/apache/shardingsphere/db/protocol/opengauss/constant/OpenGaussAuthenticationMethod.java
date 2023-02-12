@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.constant;
+package org.apache.shardingsphere.db.protocol.opengauss.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 
 /**
- * Authentication method for PostgreSQL.
- *
- * @see <a href="https://www.postgresql.org/docs/14/auth-password.html">Password Authentication</a>
+ * Authentication method for openGauss.
  */
 @RequiredArgsConstructor
 @Getter
-public enum PostgreSQLAuthenticationMethod implements AuthenticationMethod {
-    
-    MD5("md5"),
-    
-    PASSWORD("password"),
+public enum OpenGaussAuthenticationMethod implements AuthenticationMethod {
     
     SCRAM_SHA256("scram-sha-256");
     
