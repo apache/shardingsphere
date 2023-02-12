@@ -98,10 +98,10 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     /**
      * Set authentication plugin name.
      *
-     * @param mysqlAuthenticationMethod MySQL authentication method
+     * @param authenticationMethod MySQL authentication method
      */
-    public void setAuthPluginName(final MySQLAuthenticationMethod mysqlAuthenticationMethod) {
-        authPluginName = mysqlAuthenticationMethod.getMethodName();
+    public void setAuthPluginName(final MySQLAuthenticationMethod authenticationMethod) {
+        authPluginName = authenticationMethod.getMethodName();
         capabilityFlagsUpper |= MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16;
     }
     

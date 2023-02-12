@@ -53,7 +53,7 @@ public final class MySQLAuthenticationHandler {
         AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, hostname);
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
-        if (!user.isPresent() || !getAuthenticator(rule, user.get()).authenticate(user.get(), authenticationResponse)) {
+        if (!user.isPresent() || !getAuthenticator(rule, user.get()).authenticate(user.get(), new Object[]{authenticationResponse, authPluginData})) {
             return Optional.of(MySQLVendorError.ER_ACCESS_DENIED_ERROR);
         }
         return null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName) ? Optional.empty() : Optional.of(MySQLVendorError.ER_DBACCESS_DENIED_ERROR);
@@ -71,11 +71,11 @@ public final class MySQLAuthenticationHandler {
         try {
             authenticationMethod = MySQLAuthenticationMethod.valueOf(rule.getAuthenticatorType(user).toUpperCase());
         } catch (final IllegalArgumentException ignored) {
-            return new MySQLNativePasswordAuthenticator(authPluginData);
+            return new MySQLNativePasswordAuthenticator();
         }
         switch (authenticationMethod) {
             case SECURE_PASSWORD_AUTHENTICATION:
-                return new MySQLNativePasswordAuthenticator(authPluginData);
+                return new MySQLNativePasswordAuthenticator();
             case CLEAR_TEXT_AUTHENTICATION:
                 return new MySQLClearPasswordAuthenticator();
             // TODO add other Authenticator
@@ -83,7 +83,7 @@ public final class MySQLAuthenticationHandler {
             case WINDOWS_NATIVE_AUTHENTICATION:
             case SHA256:
             default:
-                return new MySQLNativePasswordAuthenticator(authPluginData);
+                return new MySQLNativePasswordAuthenticator();
         }
     }
 }
