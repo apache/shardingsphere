@@ -47,10 +47,22 @@ public final class GeneralDALE2EIT extends BaseDALE2EIT {
     @Test
     public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            try (
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(getSQL())) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(getSQL());
+                assertExecuteResult(statement);
+            }
+        }
+    }
+    
+    private void assertExecuteResult(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.getResultSet()) {
+            if (null == getAssertion().getAssertionSQL()) {
                 assertResultSet(resultSet);
+            } else {
+                statement.execute(getAssertion().getAssertionSQL().getSql());
+                try (ResultSet assertionSQLResultSet = statement.getResultSet()) {
+                    assertResultSet(assertionSQLResultSet);
+                }
             }
         }
     }

@@ -515,6 +515,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
+            if (resultSets.isEmpty()) {
+                return currentResultSet;
+            }
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
             Map<String, Integer> columnLabelAndIndexMap = null != this.columnLabelAndIndexMap ? this.columnLabelAndIndexMap
                     : (this.columnLabelAndIndexMap = ShardingSphereResultSetUtil.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData()));
@@ -526,7 +529,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private List<ResultSet> getResultSets() throws SQLException {
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (Statement each : statements) {
-            result.add(each.getResultSet());
+            if (null != each.getResultSet()) {
+                result.add(each.getResultSet());
+            }
         }
         return result;
     }
