@@ -33,9 +33,9 @@ import java.util.Arrays;
 public final class MySQLNativePasswordAuthenticator implements MySQLAuthenticator {
     
     @Override
-    public boolean authenticate(final ShardingSphereUser user, final Object[] args) {
-        byte[] authResponse = (byte[]) args[0];
-        MySQLAuthPluginData authPluginData = (MySQLAuthPluginData) args[1];
+    public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
+        byte[] authResponse = (byte[]) authInfo[0];
+        MySQLAuthPluginData authPluginData = (MySQLAuthPluginData) authInfo[1];
         return Strings.isNullOrEmpty(user.getPassword()) || Arrays.equals(getAuthCipherBytes(user.getPassword(), authPluginData.getAuthenticationPluginData()), authResponse);
     }
     
