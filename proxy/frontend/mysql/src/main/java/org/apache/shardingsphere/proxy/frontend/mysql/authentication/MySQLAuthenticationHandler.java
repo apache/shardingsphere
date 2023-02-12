@@ -74,13 +74,13 @@ public final class MySQLAuthenticationHandler {
             return new MySQLNativePasswordAuthenticator();
         }
         switch (authenticationMethod) {
-            case SECURE_PASSWORD_AUTHENTICATION:
+            case NATIVE:
                 return new MySQLNativePasswordAuthenticator();
-            case CLEAR_TEXT_AUTHENTICATION:
+            case CLEAR_TEXT:
                 return new MySQLClearPasswordAuthenticator();
             // TODO add other Authenticator
-            case OLD_PASSWORD_AUTHENTICATION:
-            case WINDOWS_NATIVE_AUTHENTICATION:
+            case OLD_PASSWORD:
+            case WINDOWS_NATIVE:
             case SHA256:
             default:
                 return new MySQLNativePasswordAuthenticator();

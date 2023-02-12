@@ -59,7 +59,7 @@ public final class MySQLHandshakeResponse41PacketTest {
     public void assertNewWithPayloadWithAuthPluginName() {
         when(payload.readInt1()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId());
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue(), 1000);
-        when(payload.readStringNul()).thenReturn("root", MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName());
+        when(payload.readStringNul()).thenReturn("root", MySQLAuthenticationMethod.NATIVE.getMethodName());
         when(payload.readStringNulByBytes()).thenReturn(new byte[]{1});
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(payload);
         assertThat(actual.getMaxPacketSize(), is(1000));
@@ -68,7 +68,7 @@ public final class MySQLHandshakeResponse41PacketTest {
         assertThat(actual.getAuthResponse(), is(new byte[]{1}));
         assertThat(actual.getCapabilityFlags(), is(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue()));
         assertNull(actual.getDatabase());
-        assertThat(actual.getAuthPluginName(), is(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName()));
+        assertThat(actual.getAuthPluginName(), is(MySQLAuthenticationMethod.NATIVE.getMethodName()));
         verify(payload).skipReserved(23);
     }
     
@@ -125,7 +125,7 @@ public final class MySQLHandshakeResponse41PacketTest {
     public void assertWriteWithAuthPluginName() {
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLServerInfo.DEFAULT_CHARSET.getId(), "root");
         actual.setAuthResponse(new byte[]{1});
-        actual.setAuthPluginName(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION);
+        actual.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
         actual.write(payload);
         verify(payload).writeInt4(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
         verify(payload).writeInt4(100);
@@ -133,7 +133,7 @@ public final class MySQLHandshakeResponse41PacketTest {
         verify(payload).writeReserved(23);
         verify(payload).writeStringNul("root");
         verify(payload).writeStringNul(new String(new byte[]{1}));
-        verify(payload).writeStringNul(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName());
+        verify(payload).writeStringNul(MySQLAuthenticationMethod.NATIVE.getMethodName());
     }
     
     @Test
