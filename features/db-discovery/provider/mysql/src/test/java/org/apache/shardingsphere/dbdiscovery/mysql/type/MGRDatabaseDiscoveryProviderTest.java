@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public final class MGRDatabaseDiscoveryProviderTest {
     
     @Test
-    public void assertCheckEnvironmentPrimaryDataSource() throws SQLException {
+    public void assertCheckEnvironment() throws SQLException {
         DatabaseDiscoveryProvider actual = TypedSPILoader.getService(DatabaseDiscoveryProvider.class, "MySQL.MGR", PropertiesBuilder.build(new Property("group-name", "foo_group")));
         actual.checkEnvironment("foo_db", Collections.singletonList(mockEnvironmentAvailableDataSource()));
     }
