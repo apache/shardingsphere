@@ -151,11 +151,12 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         ShardingSphereUser user = new ShardingSphereUser("root", "", "127.0.0.1");
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));
         setMetaDataContexts(rule);
-        try (@SuppressWarnings("unused")
-             MockedConstruction<AuthenticatorFactory> mockedAuthenticatorFactory = mockConstruction(AuthenticatorFactory.class,
-                (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(mock(Authenticator.class)));
-             @SuppressWarnings("unused")
-             MockedConstruction<MySQLErrPacket> mockedErrPacket = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))
+        try (
+                @SuppressWarnings("unused")
+                MockedConstruction<AuthenticatorFactory> mockedAuthenticatorFactory = mockConstruction(AuthenticatorFactory.class,
+                        (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(mock(Authenticator.class)));
+                 @SuppressWarnings("unused")
+                 MockedConstruction<MySQLErrPacket> mockedErrPacket = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))
         ) {
                 authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
                 verify(context).writeAndFlush(any(MySQLErrPacket.class));
