@@ -156,9 +156,9 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
                         (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(mock(Authenticator.class))); 
                 MockedConstruction<MySQLErrPacket> mockedErrPacket = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))
         ) {
-                authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
-                verify(context).writeAndFlush(any(MySQLErrPacket.class));
-                verify(context).close();
+            authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
+            verify(context).writeAndFlush(any(MySQLErrPacket.class));
+            verify(context).close();
         }
     }
     
