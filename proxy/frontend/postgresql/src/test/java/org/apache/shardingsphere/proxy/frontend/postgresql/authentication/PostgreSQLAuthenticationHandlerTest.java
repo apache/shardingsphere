@@ -42,8 +42,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLMD5PasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
@@ -114,7 +114,7 @@ public final class PostgreSQLAuthenticationHandlerTest extends ProxyContextResto
         ShardingSphereUser user = new ShardingSphereUser(username, "", "");
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(user)).thenReturn("");
-        PostgreSQLAuthenticator authenticator = new PostgreSQLAuthenticationHandler().getAuthenticator(rule, user);
+        Authenticator authenticator = new PostgreSQLAuthenticationHandler().getAuthenticator(rule, user);
         assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
         assertThat(authenticator.getAuthenticationMethodName(), is(PostgreSQLAuthenticationMethod.MD5.getMethodName()));
     }

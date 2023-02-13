@@ -40,8 +40,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
+import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 
 import java.net.InetSocketAddress;
@@ -104,7 +104,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             return AuthenticationResultBuilder.continued();
         }
         AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator(rule, new ShardingSphereUser(packet.getUsername(), "", getHostAddress(context)));
+        Authenticator authenticator = authenticationHandler.getAuthenticator(rule, new ShardingSphereUser(packet.getUsername(), "", getHostAddress(context)));
         if (isClientPluginAuth(packet) && !authenticator.getAuthenticationMethodName().equals(packet.getAuthPluginName())) {
             connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
             context.writeAndFlush(new MySQLAuthSwitchRequestPacket(authenticator.getAuthenticationMethodName(), authenticationHandler.getAuthPluginData()));

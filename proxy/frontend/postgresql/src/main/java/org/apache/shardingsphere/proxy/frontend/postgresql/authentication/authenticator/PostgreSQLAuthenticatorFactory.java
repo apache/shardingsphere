@@ -17,69 +17,29 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
-
-import java.util.Arrays;
-import java.util.Optional;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 
 /**
  * Authenticator factory for PostgreSQL.
  */
 @RequiredArgsConstructor
-public enum PostgreSQLAuthenticatorFactory {
+@Getter
+public enum PostgreSQLAuthenticatorFactory implements AuthenticatorFactory {
     
-    MD5(PostgreSQLAuthenticationMethod.MD5, PostgreSQLMD5PasswordAuthenticator.class, true),
+    MD5(PostgreSQLMD5PasswordAuthenticator.class, true),
     
-    PASSWORD(PostgreSQLAuthenticationMethod.PASSWORD, PostgreSQLPasswordAuthenticator.class),
+    PASSWORD(PostgreSQLPasswordAuthenticator.class),
     
     // TODO impl SCRAM_SHA256 Authenticator
-    SCRAM_SHA256(PostgreSQLAuthenticationMethod.SCRAM_SHA256, PostgreSQLMD5PasswordAuthenticator.class);
-    
-    private final PostgreSQLAuthenticationMethod authenticationMethod;
+    SCRAM_SHA256(PostgreSQLMD5PasswordAuthenticator.class);
     
     private final Class<? extends PostgreSQLAuthenticator> authenticatorClass;
     
     private final boolean isDefault;
     
-    PostgreSQLAuthenticatorFactory(final PostgreSQLAuthenticationMethod authenticationMethod, final Class<? extends PostgreSQLAuthenticator> authenticatorClass) {
-        this(authenticationMethod, authenticatorClass, false);
-    }
-    
-    /**
-     * Create authenticator.
-     * 
-     * @param authenticationMethod authentication method
-     * @param rule authority rule
-     * @return created authenticator
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static PostgreSQLAuthenticator createAuthenticator(final String authenticationMethod, final AuthorityRule rule) {
-        PostgreSQLAuthenticatorFactory factory = findAuthenticatorFactory(getAuthenticator(authenticationMethod));
-        try {
-            return factory.authenticatorClass.getConstructor().newInstance();
-        } catch (final NoSuchMethodException ignored) {
-            return factory.authenticatorClass.getConstructor(AuthorityRule.class).newInstance(rule);
-        }
-    }
-    
-    private static PostgreSQLAuthenticationMethod getAuthenticator(final String authenticationMethod) {
-        try {
-            return PostgreSQLAuthenticationMethod.valueOf(authenticationMethod.toUpperCase());
-        } catch (final IllegalArgumentException ignored) {
-            return getDefaultAuthenticatorFactory().authenticationMethod;
-        }
-    }
-    
-    private static PostgreSQLAuthenticatorFactory findAuthenticatorFactory(final PostgreSQLAuthenticationMethod authenticationMethod) {
-        Optional<PostgreSQLAuthenticatorFactory> matchedFactory = Arrays.stream(PostgreSQLAuthenticatorFactory.values()).filter(each -> each.authenticationMethod == authenticationMethod).findAny();
-        return matchedFactory.orElseGet(PostgreSQLAuthenticatorFactory::getDefaultAuthenticatorFactory);
-    }
-    
-    private static PostgreSQLAuthenticatorFactory getDefaultAuthenticatorFactory() {
-        Optional<PostgreSQLAuthenticatorFactory> defaultFactory = Arrays.stream(PostgreSQLAuthenticatorFactory.values()).filter(each -> each.isDefault).findAny();
-        return defaultFactory.orElseThrow(IllegalArgumentException::new);
+    PostgreSQLAuthenticatorFactory(final Class<? extends PostgreSQLAuthenticator> authenticatorClass) {
+        this(authenticatorClass, false);
     }
 }

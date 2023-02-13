@@ -17,20 +17,14 @@
 
 package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactoryEngine;
 
 /**
- * Authenticator factory for openGauss.
+ * Authenticator factory engine for openGauss.
  */
-@RequiredArgsConstructor
-@Getter
-public enum OpenGaussAuthenticatorFactory implements AuthenticatorFactory {
+public final class OpenGaussAuthenticatorFactoryEngine extends AuthenticatorFactoryEngine<OpenGaussAuthenticatorFactory> {
     
-    SCRAM_SHA256(OpenGaussSCRAMSha256PasswordAuthenticator.class, true);
-    
-    private final Class<? extends OpenGaussAuthenticator> authenticatorClass;
-    
-    private final boolean isDefault;
+    public OpenGaussAuthenticatorFactoryEngine() {
+        super(OpenGaussAuthenticatorFactory.class);
+    }
 }
