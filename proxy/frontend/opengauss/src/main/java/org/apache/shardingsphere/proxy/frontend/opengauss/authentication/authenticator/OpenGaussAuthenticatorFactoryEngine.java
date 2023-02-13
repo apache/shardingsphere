@@ -22,9 +22,9 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFact
 /**
  * Authenticator factory engine for openGauss.
  */
-public final class OpenGaussAuthenticatorFactoryEngine extends AuthenticatorFactoryEngine<OpenGaussAuthenticatorFactory> {
+public final class OpenGaussAuthenticatorFactoryEngine extends AuthenticatorFactoryEngine<OpenGaussAuthenticatorType> {
     
     public OpenGaussAuthenticatorFactoryEngine() {
-        super(OpenGaussAuthenticatorFactory.class);
+        super(OpenGaussAuthenticatorType.class);
     }
 }

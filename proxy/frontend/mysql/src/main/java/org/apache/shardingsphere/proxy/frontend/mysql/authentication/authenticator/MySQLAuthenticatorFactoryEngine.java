@@ -22,9 +22,9 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFact
 /**
  * Authenticator factory engine for MySQL.
  */
-public final class MySQLAuthenticatorFactoryEngine extends AuthenticatorFactoryEngine<MySQLAuthenticatorFactory> {
+public final class MySQLAuthenticatorFactoryEngine extends AuthenticatorFactoryEngine<MySQLAuthenticatorType> {
     
     public MySQLAuthenticatorFactoryEngine() {
-        super(MySQLAuthenticatorFactory.class);
+        super(MySQLAuthenticatorType.class);
     }
 }

@@ -15,22 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorType;
 
 /**
- * Authenticator factory for openGauss.
+ * Authenticator type for PostgreSQL.
  */
 @RequiredArgsConstructor
 @Getter
-public enum OpenGaussAuthenticatorFactory implements AuthenticatorFactory {
+public enum PostgreSQLAuthenticatorType implements AuthenticatorType {
     
-    SCRAM_SHA256(OpenGaussSCRAMSha256PasswordAuthenticator.class, true);
+    MD5(PostgreSQLMD5PasswordAuthenticator.class, true),
     
-    private final Class<? extends OpenGaussAuthenticator> authenticatorClass;
+    PASSWORD(PostgreSQLPasswordAuthenticator.class),
+    
+    // TODO impl SCRAM_SHA256 Authenticator
+    SCRAM_SHA256(PostgreSQLMD5PasswordAuthenticator.class);
+    
+    private final Class<? extends PostgreSQLAuthenticator> authenticatorClass;
     
     private final boolean isDefault;
+    
+    PostgreSQLAuthenticatorType(final Class<? extends PostgreSQLAuthenticator> authenticatorClass) {
+        this(authenticatorClass, false);
+    }
 }

@@ -15,16 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
-
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactoryEngine;
+package org.apache.shardingsphere.proxy.frontend.authentication;
 
 /**
- * Authenticator factory engine for PostgreSQL.
+ * Authenticator type.
  */
-public final class PostgreSQLAuthenticatorFactoryEngine extends AuthenticatorFactoryEngine<PostgreSQLAuthenticatorType> {
+public interface AuthenticatorType {
     
-    public PostgreSQLAuthenticatorFactoryEngine() {
-        super(PostgreSQLAuthenticatorType.class);
-    }
+    /**
+     * Get authenticator class.
+     * 
+     * @return authenticator class
+     */
+    Class<? extends Authenticator> getAuthenticatorClass();
+    
+    /**
+     * Is default.
+     * 
+     * @return is default
+     */
+    boolean isDefault();
 }

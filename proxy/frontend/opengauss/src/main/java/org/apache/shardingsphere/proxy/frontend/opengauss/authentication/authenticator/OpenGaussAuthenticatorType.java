@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.authentication;
+package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorType;
 
 /**
- * Authenticator factory.
+ * Authenticator type for openGauss.
  */
-public interface AuthenticatorFactory {
+@RequiredArgsConstructor
+@Getter
+public enum OpenGaussAuthenticatorType implements AuthenticatorType {
     
-    /**
-     * Get authenticator class.
-     * 
-     * @return authenticator class
-     */
-    Class<? extends Authenticator> getAuthenticatorClass();
+    SCRAM_SHA256(OpenGaussSCRAMSha256PasswordAuthenticator.class, true);
     
-    /**
-     * Is default.
-     * 
-     * @return is default
-     */
-    boolean isDefault();
+    private final Class<? extends OpenGaussAuthenticator> authenticatorClass;
+    
+    private final boolean isDefault;
 }

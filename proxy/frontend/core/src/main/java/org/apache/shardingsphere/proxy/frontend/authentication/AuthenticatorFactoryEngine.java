@@ -28,7 +28,7 @@ import java.util.Optional;
  * Authenticator factory engine.
  */
 @RequiredArgsConstructor
-public abstract class AuthenticatorFactoryEngine<E extends Enum<E> & AuthenticatorFactory> {
+public abstract class AuthenticatorFactoryEngine<E extends Enum<E> & AuthenticatorType> {
     
     private final Class<E> enumClass;
     
@@ -63,7 +63,7 @@ public abstract class AuthenticatorFactoryEngine<E extends Enum<E> & Authenticat
     }
     
     private E getDefaultAuthenticatorFactory() {
-        Optional<E> defaultFactory = Arrays.stream(enumClass.getEnumConstants()).filter(AuthenticatorFactory::isDefault).findAny();
+        Optional<E> defaultFactory = Arrays.stream(enumClass.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny();
         return defaultFactory.orElseThrow(IllegalArgumentException::new);
     }
 }

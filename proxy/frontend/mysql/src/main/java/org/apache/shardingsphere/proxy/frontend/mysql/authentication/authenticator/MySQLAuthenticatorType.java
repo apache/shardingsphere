@@ -19,14 +19,14 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authentica
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorType;
 
 /**
- * Authenticator factory for MySQL.
+ * Authenticator type for MySQL.
  */
 @RequiredArgsConstructor
 @Getter
-public enum MySQLAuthenticatorFactory implements AuthenticatorFactory {
+public enum MySQLAuthenticatorType implements AuthenticatorType {
     
     // TODO impl OLD_PASSWORD Authenticator
     OLD_PASSWORD(MySQLNativePasswordAuthenticator.class),
@@ -45,7 +45,7 @@ public enum MySQLAuthenticatorFactory implements AuthenticatorFactory {
     
     private final boolean isDefault;
     
-    MySQLAuthenticatorFactory(final Class<? extends MySQLAuthenticator> authenticatorClass) {
+    MySQLAuthenticatorType(final Class<? extends MySQLAuthenticator> authenticatorClass) {
         this(authenticatorClass, false);
     }
 }
