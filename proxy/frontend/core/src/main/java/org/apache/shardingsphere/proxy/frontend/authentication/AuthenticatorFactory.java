@@ -22,7 +22,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 /**
  * Authenticator factory.
@@ -41,29 +40,19 @@ public abstract class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public Authenticator newInstance(final String authenticationMethod, final AuthorityRule rule) {
-        E factory = findAuthenticatorFactory(getAuthenticator(authenticationMethod));
+        E authenticatorType = getAuthenticatorType(authenticationMethod);
         try {
-            return factory.getAuthenticatorClass().getConstructor().newInstance();
+            return authenticatorType.getAuthenticatorClass().getConstructor().newInstance();
         } catch (final NoSuchMethodException ignored) {
-            return factory.getAuthenticatorClass().getConstructor(AuthorityRule.class).newInstance(rule);
+            return authenticatorType.getAuthenticatorClass().getConstructor(AuthorityRule.class).newInstance(rule);
         }
     }
     
-    private E getAuthenticator(final String authenticationMethod) {
+    private E getAuthenticatorType(final String authenticationMethod) {
         try {
             return E.valueOf(enumClass, authenticationMethod.toUpperCase());
         } catch (final IllegalArgumentException ignored) {
-            return getDefaultAuthenticatorFactory();
+            return Arrays.stream(enumClass.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny().orElseThrow(IllegalArgumentException::new);
         }
-    }
-    
-    private E findAuthenticatorFactory(final E authenticationMethod) {
-        Optional<E> matchedFactory = Arrays.stream(enumClass.getEnumConstants()).filter(each -> each == authenticationMethod).findAny();
-        return matchedFactory.orElseGet(this::getDefaultAuthenticatorFactory);
-    }
-    
-    private E getDefaultAuthenticatorFactory() {
-        Optional<E> defaultFactory = Arrays.stream(enumClass.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny();
-        return defaultFactory.orElseThrow(IllegalArgumentException::new);
     }
 }
