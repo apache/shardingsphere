@@ -233,6 +233,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 20382       | \`%s\` is not in MGR replication group member in database \`%s\`. |
 | 44000     | 20383       | Group name in MGR is not same with configured one \`%s\` in database \`%s\`. |
 | 42S01     | 20390       | MySQL Duplicate primary data source in database \`%s\`. |
+| 42S02     | 20391       | Primary data source not found in database \`%s\`. |
 
 ### SQL Dialect Translator
 

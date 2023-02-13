@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.replica.DuplicatePrimaryDataSourceException;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.replica.PrimaryDataSourceNotFoundException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -34,7 +35,6 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.TreeSet;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -65,17 +65,14 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProvider implements Da
     public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
         ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
         Collection<Future<Boolean>> futures = new LinkedList<>();
-        Set<Boolean> primaryInstances = new TreeSet<>();
+        Collection<Boolean> primaryInstances = new TreeSet<>();
         for (DataSource each : dataSources) {
-            futures.add(executorService.submit(() -> queryPrimaryInstance(each, primaryInstances)));
+            futures.add(executorService.submit(() -> isPrimaryInstance(each)));
         }
         for (Future<Boolean> each : futures) {
-            ShardingSpherePreconditions.checkState(each.get(), () -> new DuplicatePrimaryDataSourceException(databaseName));
+            checkPrimaryInstances(databaseName, each.get(), primaryInstances);
         }
-    }
-    
-    private synchronized boolean queryPrimaryInstance(final DataSource dataSource, final Collection<Boolean> primaryInstances) throws SQLException {
-        return isPrimaryInstance(dataSource) && primaryInstances.add(Boolean.TRUE);
+        ShardingSpherePreconditions.checkState(!primaryInstances.isEmpty(), () -> new PrimaryDataSourceNotFoundException(databaseName));
     }
     
     @Override
@@ -108,6 +105,13 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProvider implements Da
                 ResultSet resultSet = statement.executeQuery(SHOW_VARIABLES_READ_ONLY)) {
             return resultSet.next() && resultSet.getString("Value").equals("OFF");
         }
+    }
+    
+    private void checkPrimaryInstances(final String databaseName, final boolean isPrimaryInstance, final Collection<Boolean> primaryInstances) {
+        if (!isPrimaryInstance) {
+            return;
+        }
+        ShardingSpherePreconditions.checkState(primaryInstances.add(Boolean.TRUE), () -> new DuplicatePrimaryDataSourceException(databaseName));
     }
     
     @Override
