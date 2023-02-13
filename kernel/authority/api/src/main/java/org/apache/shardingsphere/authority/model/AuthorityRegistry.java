@@ -27,7 +27,7 @@ import java.util.Optional;
 public interface AuthorityRegistry {
     
     /**
-     * Find Privileges.
+     * Find privileges.
      *
      * @param grantee grantee
      * @return found privileges

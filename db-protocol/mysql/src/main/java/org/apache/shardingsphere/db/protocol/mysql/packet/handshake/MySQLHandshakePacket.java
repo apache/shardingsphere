@@ -60,7 +60,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         statusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
         capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
         this.authPluginData = authPluginData;
-        authPluginName = MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName();
+        authPluginName = MySQLAuthenticationMethod.NATIVE.getMethodName();
     }
     
     public MySQLHandshakePacket(final MySQLPacketPayload payload) {
@@ -98,10 +98,10 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     /**
      * Set authentication plugin name.
      *
-     * @param mysqlAuthenticationMethod MySQL authentication method
+     * @param authenticationMethod MySQL authentication method
      */
-    public void setAuthPluginName(final MySQLAuthenticationMethod mysqlAuthenticationMethod) {
-        authPluginName = mysqlAuthenticationMethod.getMethodName();
+    public void setAuthPluginName(final MySQLAuthenticationMethod authenticationMethod) {
+        authPluginName = authenticationMethod.getMethodName();
         capabilityFlagsUpper |= MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16;
     }
     

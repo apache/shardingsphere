@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -110,9 +111,9 @@ public final class PipelineCaseHelper {
      */
     public static String generateJsonString(final int length, final boolean useUnicodeCharacter) {
         String value;
-        if (useUnicodeCharacter && length > 1) {
-            // TODO need support unicode
-            value = generateString(length);
+        if (useUnicodeCharacter) {
+            // TODO openGauss incremental task parse single quote not correctly now
+            value = Strings.repeat("{中 } ABC", length);
         } else {
             value = generateString(length);
         }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.cdc.context.job;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
@@ -46,7 +45,6 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * CDC job item context.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CDCJobItemContext implements InventoryIncrementalJobItemContext {
     
@@ -93,6 +91,20 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
             return new StandardPipelineTableMetaDataLoader(sourceDataSourceLazyInitializer.get());
         }
     };
+    
+    public CDCJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem, final InventoryIncrementalJobItemProgress initProgress, final CDCProcessContext jobProcessContext,
+                             final CDCTaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager, final ImporterConnector importerConnector) {
+        this.jobConfig = jobConfig;
+        this.shardingItem = shardingItem;
+        this.initProgress = initProgress;
+        this.jobProcessContext = jobProcessContext;
+        this.taskConfig = taskConfig;
+        this.dataSourceManager = dataSourceManager;
+        this.importerConnector = importerConnector;
+        if (null != initProgress) {
+            status = initProgress.getStatus();
+        }
+    }
     
     @Override
     public String getJobId() {

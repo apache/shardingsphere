@@ -31,6 +31,7 @@ public final class PipelineTestParameter {
     
     private final String storageContainerImage;
     
+    // TODO It's not scenario. Remove it later
     private final String scenario;
     
     private final int storageContainerCount;

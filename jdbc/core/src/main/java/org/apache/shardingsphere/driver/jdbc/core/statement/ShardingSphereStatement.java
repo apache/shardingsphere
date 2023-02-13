@@ -610,6 +610,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
+            if (resultSets.isEmpty()) {
+                return currentResultSet;
+            }
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
             currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, executionContext);
         }
@@ -619,7 +622,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private List<ResultSet> getResultSets() throws SQLException {
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (Statement each : statements) {
-            result.add(each.getResultSet());
+            if (null != each.getResultSet()) {
+                result.add(each.getResultSet());
+            }
         }
         return result;
     }

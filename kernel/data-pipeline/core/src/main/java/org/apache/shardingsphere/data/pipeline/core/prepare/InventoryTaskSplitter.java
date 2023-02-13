@@ -36,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByRangeException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJobByUniqueKeyException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -156,12 +155,9 @@ public final class InventoryTaskSplitter {
         }
         int uniqueKeyDataType = dumperConfig.getUniqueKeyDataType();
         if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
-            return getPositionByIntegerPrimaryKeyRange(jobItemContext, dataSource, dumperConfig);
+            return getPositionByIntegerUniqueKeyRange(jobItemContext, dataSource, dumperConfig);
         }
-        if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
-            return getPositionByStringPrimaryKeyRange(jobItemContext, dataSource, dumperConfig);
-        }
-        throw new SplitPipelineJobByRangeException(dumperConfig.getActualTableName(), "primary key is not integer or string type");
+        return getPositionByStringUniqueKeyRange(jobItemContext, dataSource, dumperConfig);
     }
     
     private Collection<IngestPosition<?>> getPositionWithoutUniqueKey(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
@@ -189,8 +185,8 @@ public final class InventoryTaskSplitter {
         }
     }
     
-    private Collection<IngestPosition<?>> getPositionByIntegerPrimaryKeyRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
-                                                                              final InventoryDumperConfiguration dumperConfig) {
+    private Collection<IngestPosition<?>> getPositionByIntegerUniqueKeyRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
+                                                                             final InventoryDumperConfiguration dumperConfig) {
         Collection<IngestPosition<?>> result = new LinkedList<>();
         PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String sql = TypedSPILoader.getService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType())
@@ -229,8 +225,8 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Collection<IngestPosition<?>> getPositionByStringPrimaryKeyRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
-                                                                             final InventoryDumperConfiguration dumperConfig) {
+    private Collection<IngestPosition<?>> getPositionByStringUniqueKeyRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
+                                                                            final InventoryDumperConfiguration dumperConfig) {
         long tableRecordsCount = getTableRecordsCount(jobItemContext, dataSource, dumperConfig);
         jobItemContext.updateInventoryRecordsCount(tableRecordsCount);
         Collection<IngestPosition<?>> result = new LinkedList<>();

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.yaml.config.YamlCDCRuleConfig
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguration;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
@@ -53,6 +54,8 @@ public final class YamlProxyServerConfiguration implements YamlConfiguration {
     private YamlTrafficRuleConfiguration traffic;
     
     private YamlCDCRuleConfiguration cdc;
+    
+    private YamlLoggingRuleConfiguration logging;
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     

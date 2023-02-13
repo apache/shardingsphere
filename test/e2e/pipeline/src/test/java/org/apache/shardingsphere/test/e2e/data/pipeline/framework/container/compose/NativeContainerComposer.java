@@ -47,11 +47,6 @@ public final class NativeContainerComposer extends BaseContainerComposer {
         this.databaseType = databaseType;
     }
     
-    @Override
-    public void start() {
-        // do nothing
-    }
-    
     @SneakyThrows(SQLException.class)
     @Override
     public void cleanUpDatabase(final String databaseName) {

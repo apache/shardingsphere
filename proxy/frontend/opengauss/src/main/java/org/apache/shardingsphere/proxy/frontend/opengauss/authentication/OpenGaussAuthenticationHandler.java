@@ -32,8 +32,8 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticator;
-import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussSCRAMSha256PasswordAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticatorType;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
@@ -137,18 +137,14 @@ public final class OpenGaussAuthenticationHandler {
     public static void loginWithSCRAMSha256Password(final String username, final String databaseName, final String salt, final String nonce, final int serverIteration,
                                                     final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
         ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, "%");
-        Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
+        Optional<ShardingSphereUser> user = rule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
-        ShardingSpherePreconditions.checkState(getAuthenticator(grantee).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration}),
+        ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user.get())
+                .authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration}),
                 () -> new InvalidPasswordException(username));
-        ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName),
+        ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));
-    }
-    
-    private static OpenGaussAuthenticator getAuthenticator(final Grantee grantee) {
-        // TODO get authenticator by username and hostname
-        return new OpenGaussSCRAMSha256PasswordAuthenticator();
     }
 }

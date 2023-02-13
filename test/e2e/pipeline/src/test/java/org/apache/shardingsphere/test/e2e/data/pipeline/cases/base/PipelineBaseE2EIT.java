@@ -114,7 +114,6 @@ public abstract class PipelineBaseE2EIT {
         containerComposer = ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER
                 ? new DockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage(), testParam.getStorageContainerCount())
                 : new NativeContainerComposer(testParam.getDatabaseType());
-        containerComposer.start();
         if (ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
             username = storageContainer.getUsername();
@@ -149,10 +148,10 @@ public abstract class PipelineBaseE2EIT {
             return;
         }
         try {
-            connection.createStatement().execute(String.format("DROP DATABASE %s", PROXY_DATABASE));
+            connection.createStatement().execute(String.format("DROP DATABASE IF EXISTS %s", PROXY_DATABASE));
             ThreadUtil.sleep(2, TimeUnit.SECONDS);
         } catch (final SQLException ex) {
-            log.warn("Drop proxy database failed, maybe it's not exist. error msg={}", ex.getMessage());
+            log.warn("Drop proxy database failed, error={}", ex.getMessage());
         }
     }
     
@@ -356,8 +355,7 @@ public abstract class PipelineBaseE2EIT {
         assertTrue("The insert record must exist after the stop", recordExist);
     }
     
-    protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) throws SQLException {
-        proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
+    protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) {
         String countSQL = Strings.isNullOrEmpty(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
         Map<String, Object> actual = queryForListWithLog(countSQL).get(0);
         log.info("actual count {}", actual.get("count"));

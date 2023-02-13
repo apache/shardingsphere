@@ -39,8 +39,12 @@ public final class YamlAuthorityRuleConfigurationSwapper implements YamlRuleConf
     @Override
     public YamlAuthorityRuleConfiguration swapToYamlConfiguration(final AuthorityRuleConfiguration data) {
         YamlAuthorityRuleConfiguration result = new YamlAuthorityRuleConfiguration();
-        result.setPrivilege(algorithmSwapper.swapToYamlConfiguration(data.getProvider()));
+        result.setPrivilege(algorithmSwapper.swapToYamlConfiguration(data.getAuthorityProvider()));
         result.setUsers(YamlUsersConfigurationConverter.convertToYamlUserConfiguration(data.getUsers()));
+        result.setDefaultAuthenticator(data.getDefaultAuthenticator());
+        if (!data.getAuthenticators().isEmpty()) {
+            data.getAuthenticators().forEach((key, value) -> result.getAuthenticators().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
+        }
         return result;
     }
     
@@ -49,9 +53,11 @@ public final class YamlAuthorityRuleConfigurationSwapper implements YamlRuleConf
         Collection<ShardingSphereUser> users = YamlUsersConfigurationConverter.convertToShardingSphereUser(yamlConfig.getUsers());
         AlgorithmConfiguration provider = algorithmSwapper.swapToObject(yamlConfig.getPrivilege());
         if (null == provider) {
-            provider = new DefaultAuthorityRuleConfigurationBuilder().build().getProvider();
+            provider = new DefaultAuthorityRuleConfigurationBuilder().build().getAuthorityProvider();
         }
-        return new AuthorityRuleConfiguration(users, provider);
+        AuthorityRuleConfiguration result = new AuthorityRuleConfiguration(users, provider, yamlConfig.getDefaultAuthenticator());
+        yamlConfig.getAuthenticators().forEach((key, value) -> result.getAuthenticators().put(key, algorithmSwapper.swapToObject(value)));
+        return result;
     }
     
     @Override

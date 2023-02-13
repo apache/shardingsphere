@@ -148,6 +148,18 @@ Attributes:
 | digital-random-codes   | String   | Numbers (separate with comma, default value: 0,1,2,3,4,5,6,7,8,9)                                                |
 | special-codes          | String   | Special codes (separate with comma, default value: ~,!,@,#,$,%,^,&,*,:,&lt;,&gt;,&#166;)                         |
 
+#### Unified credit code random replace algorithm
+
+Type: UNIFIED_CREDIT_CODE_RANDOM_REPLACE
+
+Attributes:
+
+| *Name*          | *DataType* | *Description*                         |
+|-----------------|----------|-------------|
+| registration-department-codes | String   | Registration department code (separate with comma) |
+| category-codes | String   | Category code (separate with comma) |
+| administrative-division-codes | String  |   Administrative division code (separate with comma) |
+
 ## Operating Procedure
 1. Configure maskAlgorithms in a mask rule.
 2. Use relevant algorithm types in maskAlgorithms.

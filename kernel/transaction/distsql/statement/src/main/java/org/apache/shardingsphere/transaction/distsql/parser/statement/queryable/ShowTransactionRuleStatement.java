@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.transaction.distsql.parser.statement.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableGlobalRuleRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
  * Show transaction rule statement.
  */
-public final class ShowTransactionRuleStatement extends QueryableGlobalRuleRALStatement {
+public final class ShowTransactionRuleStatement extends QueryableRALStatement {
 }

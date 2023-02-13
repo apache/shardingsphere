@@ -22,7 +22,7 @@ import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 
 import java.util.LinkedHashMap;

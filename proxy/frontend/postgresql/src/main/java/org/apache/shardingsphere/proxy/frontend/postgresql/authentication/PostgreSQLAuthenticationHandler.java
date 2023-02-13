@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLMD5PasswordAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticatorType;
 
 import java.util.Optional;
 
@@ -49,24 +49,14 @@ public final class PostgreSQLAuthenticationHandler {
      */
     public void login(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
         ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, "%");
-        Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
+        Optional<ShardingSphereUser> user = rule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
-        ShardingSpherePreconditions.checkState(getAuthenticator(grantee).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
+        ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(user.get())
+                .authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
                 () -> new InvalidPasswordException(username));
-        ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(authorityRule, grantee).isAuthorized(databaseName),
+        ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));
-    }
-    
-    /**
-     * Get authenticator.
-     *
-     * @param grantee username
-     * @return authenticator
-     */
-    public PostgreSQLAuthenticator getAuthenticator(final Grantee grantee) {
-        // TODO get authenticator by grantee
-        return new PostgreSQLMD5PasswordAuthenticator();
     }
 }

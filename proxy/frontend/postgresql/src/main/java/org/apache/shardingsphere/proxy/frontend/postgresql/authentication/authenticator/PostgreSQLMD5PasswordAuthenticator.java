@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
@@ -28,13 +27,12 @@ import java.security.MessageDigest;
 /**
  * MD5 password authenticator for PostgreSQL.
  */
-@RequiredArgsConstructor
 public final class PostgreSQLMD5PasswordAuthenticator implements PostgreSQLAuthenticator {
     
     @Override
-    public boolean authenticate(final ShardingSphereUser user, final Object[] args) {
-        String md5Digest = (String) args[0];
-        byte[] md5Salt = (byte[]) args[1];
+    public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
+        String md5Digest = (String) authInfo[0];
+        byte[] md5Salt = (byte[]) authInfo[1];
         String expectedMd5Digest = md5Encode(user.getGrantee().getUsername(), user.getPassword(), md5Salt);
         return expectedMd5Digest.equals(md5Digest);
     }

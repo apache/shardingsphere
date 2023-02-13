@@ -30,7 +30,7 @@ public class LogbackConfiguration extends BasicConfigurator {
     
     public static final String DEFAULT_PATTERN = "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n";
     
-    public static final String SHARDINGSPHERE_LOGGER_NAME = "org.apache.shardingsphere";
+    public static final String SHARDINGSPHERE_SQL_LOGGER_NAME = "ShardingSphere-SQL";
     
     public static final String HIKARI_LOGGER_NAME = "com.zaxxer.hikari";
     
@@ -44,10 +44,6 @@ public class LogbackConfiguration extends BasicConfigurator {
         Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(Level.INFO);
         rootLogger.addAppender(consoleAppender);
-        Logger logger = loggerContext.getLogger(SHARDINGSPHERE_LOGGER_NAME);
-        logger.setLevel(Level.INFO);
-        logger.setAdditive(false);
-        logger.addAppender(consoleAppender);
         initBasicLogger(loggerContext);
     }
     
@@ -78,6 +74,7 @@ public class LogbackConfiguration extends BasicConfigurator {
     }
     
     private void initBasicLogger(final LoggerContext loggerContext) {
+        loggerContext.getLogger(SHARDINGSPHERE_SQL_LOGGER_NAME).setLevel(Level.INFO);
         loggerContext.getLogger(HIKARI_LOGGER_NAME).setLevel(Level.ERROR);
         loggerContext.getLogger(ATOMIKOS_LOGGER_NAME).setLevel(Level.ERROR);
         loggerContext.getLogger(NETTY_LOGGER_NAME).setLevel(Level.ERROR);

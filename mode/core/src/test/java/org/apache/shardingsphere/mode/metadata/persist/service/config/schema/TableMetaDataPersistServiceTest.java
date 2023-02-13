@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.service.config.schema;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.metadata.persist.service.schema.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.junit.Test;

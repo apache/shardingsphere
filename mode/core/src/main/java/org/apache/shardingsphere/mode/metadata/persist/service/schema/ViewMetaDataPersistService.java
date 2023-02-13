@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata.persist.service.schema;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlViewSwapper;

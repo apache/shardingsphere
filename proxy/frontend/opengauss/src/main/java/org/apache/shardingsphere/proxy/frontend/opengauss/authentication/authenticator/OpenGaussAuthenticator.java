@@ -22,5 +22,5 @@ import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 /**
  * OpenGauss authenticator.
  */
-public interface OpenGaussAuthenticator extends Authenticator<Object[]> {
+public interface OpenGaussAuthenticator extends Authenticator {
 }

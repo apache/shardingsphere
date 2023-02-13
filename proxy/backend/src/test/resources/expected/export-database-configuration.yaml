@@ -35,6 +35,8 @@ rules:
     standard:
       shardingAlgorithmName: ds_inline
       shardingColumn: order_id
+  defaultTableStrategy:
+    none: ''
   keyGenerators:
     snowflake:
       type: SNOWFLAKE

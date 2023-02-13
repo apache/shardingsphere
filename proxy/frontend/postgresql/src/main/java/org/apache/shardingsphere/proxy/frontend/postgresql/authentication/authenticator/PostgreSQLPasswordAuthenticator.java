@@ -18,19 +18,17 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
 
 import com.google.common.base.Strings;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 /**
  * Password authenticator for PostgreSQL.
  */
-@RequiredArgsConstructor
 public final class PostgreSQLPasswordAuthenticator implements PostgreSQLAuthenticator {
     
     @Override
-    public boolean authenticate(final ShardingSphereUser user, final Object[] args) {
-        String password = (String) args[0];
+    public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
+        String password = (String) authInfo[0];
         return Strings.isNullOrEmpty(user.getPassword()) || user.getPassword().equals(password);
     }
     

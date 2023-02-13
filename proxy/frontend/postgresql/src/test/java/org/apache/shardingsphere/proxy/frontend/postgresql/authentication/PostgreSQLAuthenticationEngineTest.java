@@ -26,7 +26,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authentication.PostgreSQLMD5PasswordAuthenticationPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -59,7 +59,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -129,14 +128,9 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         assertLogin("wrong" + password);
     }
     
-    @Test
-    public void assertGetIdentifierPacket() throws ReflectiveOperationException {
-        assertThat(Plugins.getMemberAccessor().invoke(PostgreSQLAuthenticationEngine.class.getDeclaredMethod("getIdentifierPacket", String.class), new PostgreSQLAuthenticationEngine(), username),
-                instanceOf(PostgreSQLMD5PasswordAuthenticationPacket.class));
-    }
-    
     @SneakyThrows(ReflectiveOperationException.class)
     private void assertLogin(final String inputPassword) {
+        mockInitProxyContext();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
         payload.writeInt4(64);
         payload.writeInt4(196608);
@@ -166,6 +160,12 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
     }
     
+    private void mockInitProxyContext() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
+        ProxyContext.init(contextManager);
+    }
+    
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {
         return new UnpooledHeapByteBuf(UnpooledByteBufAllocator.DEFAULT, initialCapacity, maxCapacity);
     }
@@ -176,7 +176,7 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
     }
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null);
         AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap(), mock(ConfigurationProperties.class));
         return new ShardingSphereRuleMetaData(Collections.singleton(rule));
     }

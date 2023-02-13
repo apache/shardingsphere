@@ -19,7 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase;
@@ -34,13 +35,15 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
+import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticatorType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 
 import java.net.InetSocketAddress;
@@ -102,7 +105,8 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             context.close();
             return AuthenticationResultBuilder.continued();
         }
-        MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator(new Grantee(packet.getUsername(), getHostAddress(context)));
+        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        Authenticator authenticator = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(new ShardingSphereUser(packet.getUsername(), "", getHostAddress(context)));
         if (isClientPluginAuth(packet) && !authenticator.getAuthenticationMethodName().equals(packet.getAuthPluginName())) {
             connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
             context.writeAndFlush(new MySQLAuthSwitchRequestPacket(authenticator.getAuthenticationMethodName(), authenticationHandler.getAuthPluginData()));

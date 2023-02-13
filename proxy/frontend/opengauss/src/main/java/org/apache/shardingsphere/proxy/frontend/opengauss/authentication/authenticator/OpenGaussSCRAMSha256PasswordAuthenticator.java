@@ -47,11 +47,11 @@ public final class OpenGaussSCRAMSha256PasswordAuthenticator implements OpenGaus
     private static final String CLIENT_KEY = "Client Key";
     
     @Override
-    public boolean authenticate(final ShardingSphereUser user, final Object[] args) {
-        String h3HexString = (String) args[0];
-        String salt = (String) args[1];
-        String nonce = (String) args[2];
-        int serverIteration = (int) args[3];
+    public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
+        String h3HexString = (String) authInfo[0];
+        String salt = (String) authInfo[1];
+        String nonce = (String) authInfo[2];
+        int serverIteration = (int) authInfo[3];
         byte[] serverStoredKey = calculatedStoredKey(user.getPassword(), salt, serverIteration);
         byte[] h3 = hexStringToBytes(h3HexString);
         byte[] h2 = calculateH2(user.getPassword(), salt, nonce, serverIteration);

@@ -29,12 +29,12 @@ import java.util.Optional;
 public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
-    public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
+    public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType) {
         return "";
     }
     
     @Override
-    public String buildIndivisibleInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
+    public String buildIndivisibleInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType) {
         return "";
     }
     
@@ -69,7 +69,7 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildChunkedQuerySQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
+    public String buildQueryAllOrderingSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
         return "";
     }
     

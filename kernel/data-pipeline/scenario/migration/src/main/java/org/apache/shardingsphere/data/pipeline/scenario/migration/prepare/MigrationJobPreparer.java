@@ -110,6 +110,7 @@ public final class MigrationJobPreparer {
                     prepareAndCheckTarget(jobItemContext);
                     // TODO Loop insert zookeeper performance is not good
                     for (int i = 0; i <= jobItemContext.getJobConfig().getJobShardingCount(); i++) {
+                        jobItemContext.setStatus(JobStatus.PREPARE_SUCCESS);
                         jobAPI.updateJobItemStatus(jobConfig.getJobId(), i, JobStatus.PREPARE_SUCCESS);
                     }
                 }

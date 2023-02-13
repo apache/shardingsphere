@@ -78,7 +78,6 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
         public DataConsistencyCalculatedResult next() {
             calculateIfNecessary();
             Optional<DataConsistencyCalculatedResult> nextResult = this.nextResult;
-            param.setPreviousCalculatedResult(nextResult.orElse(null));
             this.nextResult = null;
             return nextResult.orElse(null);
         }

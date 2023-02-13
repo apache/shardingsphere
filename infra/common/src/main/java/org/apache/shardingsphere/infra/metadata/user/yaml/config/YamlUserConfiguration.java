@@ -32,7 +32,7 @@ public final class YamlUserConfiguration implements YamlConfiguration {
     
     private String password;
     
-    private String auth;
+    private String authenticationMethodName;
     
     @Override
     public String toString() {
