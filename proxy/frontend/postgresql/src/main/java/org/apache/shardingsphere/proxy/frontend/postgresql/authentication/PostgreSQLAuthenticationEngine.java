@@ -46,7 +46,9 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEng
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticatorType;
 
 import java.util.Optional;
 
@@ -119,7 +121,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     private PostgreSQLIdentifierPacket getIdentifierPacket(final String username) {
         AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Optional<ShardingSphereUser> user = rule.findUser(new Grantee(username, ""));
-        Optional<Authenticator> authenticator = user.map(optional -> authenticationHandler.getAuthenticator(rule, optional));
+        Optional<Authenticator> authenticator = user.map(optional -> new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(optional));
         if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.get().getAuthenticationMethodName())) {
             return new PostgreSQLPasswordAuthenticationPacket();
         }

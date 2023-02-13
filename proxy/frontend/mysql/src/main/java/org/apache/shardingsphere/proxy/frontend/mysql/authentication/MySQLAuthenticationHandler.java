@@ -25,7 +25,6 @@ import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticatorType;
 
@@ -52,20 +51,10 @@ public final class MySQLAuthenticationHandler {
         AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Grantee grantee = new Grantee(username, hostname);
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
-        if (!user.isPresent() || !getAuthenticator(rule, user.get()).authenticate(user.get(), new Object[]{authenticationResponse, authPluginData})) {
+        if (!user.isPresent()
+                || !new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(user.get()).authenticate(user.get(), new Object[]{authenticationResponse, authPluginData})) {
             return Optional.of(MySQLVendorError.ER_ACCESS_DENIED_ERROR);
         }
         return null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName) ? Optional.empty() : Optional.of(MySQLVendorError.ER_DBACCESS_DENIED_ERROR);
-    }
-    
-    /**
-     * Get authenticator.
-     *
-     * @param rule authority rule
-     * @param user user
-     * @return authenticator
-     */
-    public Authenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
-        return new AuthenticatorFactory<MySQLAuthenticatorType>().newInstance(MySQLAuthenticatorType.class, rule.getAuthenticatorType(user), rule);
     }
 }
