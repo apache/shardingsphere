@@ -31,15 +31,16 @@ public final class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {
     
     private final Class<E> authenticatorTypeClass;
     
+    private final AuthorityRule rule;
+    
     /**
      * Create new instance of authenticator.
      * 
      * @param authenticationMethod authentication method
-     * @param rule authority rule
      * @return new instance of authenticator
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public Authenticator newInstance(final String authenticationMethod, final AuthorityRule rule) {
+    public Authenticator newInstance(final String authenticationMethod) {
         E authenticatorType = getAuthenticatorType(authenticationMethod);
         try {
             return authenticatorType.getAuthenticatorClass().getConstructor().newInstance();
