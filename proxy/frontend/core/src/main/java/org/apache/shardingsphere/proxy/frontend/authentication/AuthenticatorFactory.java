@@ -25,22 +25,22 @@ import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * Authenticator factory engine.
+ * Authenticator factory.
  */
 @RequiredArgsConstructor
-public abstract class AuthenticatorFactoryEngine<E extends Enum<E> & AuthenticatorType> {
+public abstract class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {
     
     private final Class<E> enumClass;
     
     /**
-     * Create authenticator.
+     * Create new instance of authenticator.
      * 
      * @param authenticationMethod authentication method
      * @param rule authority rule
-     * @return created authenticator
+     * @return new instance of authenticator
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public Authenticator createAuthenticator(final String authenticationMethod, final AuthorityRule rule) {
+    public Authenticator newInstance(final String authenticationMethod, final AuthorityRule rule) {
         E factory = findAuthenticatorFactory(getAuthenticator(authenticationMethod));
         try {
             return factory.getAuthenticatorClass().getConstructor().newInstance();

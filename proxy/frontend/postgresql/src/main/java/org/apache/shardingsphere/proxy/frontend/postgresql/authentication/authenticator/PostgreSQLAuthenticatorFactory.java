@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
 
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactoryEngine;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 
 /**
- * Authenticator factory engine for PostgreSQL.
+ * Authenticator factory for PostgreSQL.
  */
-public final class PostgreSQLAuthenticatorFactoryEngine extends AuthenticatorFactoryEngine<PostgreSQLAuthenticatorType> {
+public final class PostgreSQLAuthenticatorFactory extends AuthenticatorFactory<PostgreSQLAuthenticatorType> {
     
-    public PostgreSQLAuthenticatorFactoryEngine() {
+    public PostgreSQLAuthenticatorFactory() {
         super(PostgreSQLAuthenticatorType.class);
     }
 }

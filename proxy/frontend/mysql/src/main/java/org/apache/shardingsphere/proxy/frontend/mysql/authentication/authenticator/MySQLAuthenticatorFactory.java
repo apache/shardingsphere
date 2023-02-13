@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator;
+package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator;
 
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactoryEngine;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 
 /**
- * Authenticator factory engine for openGauss.
+ * Authenticator factory for MySQL.
  */
-public final class OpenGaussAuthenticatorFactoryEngine extends AuthenticatorFactoryEngine<OpenGaussAuthenticatorType> {
+public final class MySQLAuthenticatorFactory extends AuthenticatorFactory<MySQLAuthenticatorType> {
     
-    public OpenGaussAuthenticatorFactoryEngine() {
-        super(OpenGaussAuthenticatorType.class);
+    public MySQLAuthenticatorFactory() {
+        super(MySQLAuthenticatorType.class);
     }
 }
