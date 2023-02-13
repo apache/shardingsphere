@@ -33,7 +33,8 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
-import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticatorType;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
@@ -148,6 +149,6 @@ public final class OpenGaussAuthenticationHandler {
     }
     
     private static Authenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
-        return new OpenGaussAuthenticatorFactory().newInstance(rule.getAuthenticatorType(user), rule);
+        return new AuthenticatorFactory<OpenGaussAuthenticatorType>().newInstance(OpenGaussAuthenticatorType.class, rule.getAuthenticatorType(user), rule);
     }
 }
