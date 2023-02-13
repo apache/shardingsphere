@@ -46,7 +46,7 @@ public enum SQLCommandType {
      * 
      * <p>Such as {@code SELECT}.</p>
      */
-    DQL(SelectStatement.class, "dql-integration-test-cases", false, Arrays.asList("jdbc", "proxy")),
+    DQL(SelectStatement.class, "dql-integration", false, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Data Manipulation Language.
@@ -67,7 +67,7 @@ public enum SQLCommandType {
      *
      * <p>Such as {@code SET}, {@code COMMIT}, {@code ROLLBACK}, {@code SAVEPOIINT}, {@code BEGIN}.</p>
      */
-    TCL(TCLStatement.class, "tcl-integration-test-cases", true, Arrays.asList("jdbc", "proxy")),
+    TCL(TCLStatement.class, "tcl-integration", true, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Database administrator Language.
@@ -92,7 +92,7 @@ public enum SQLCommandType {
     /**
      * Resource & Rule Query Language.
      */
-    RQL(RQLStatement.class, "rql-integration-test-cases", true, Collections.singletonList("proxy"));
+    RQL(RQLStatement.class, "rql-integration", true, Collections.singletonList("proxy"));
     
     private final Class<? extends SQLStatement> sqlStatementClass;
     
