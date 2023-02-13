@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.check.consist
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.PipelineDataConsistencyChecker;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -42,8 +41,6 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -58,16 +55,12 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     
-    private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
-    
     private final ConsistencyCheckJobItemProgressContext progressContext;
     
     public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final InventoryIncrementalProcessContext processContext,
                                            final ConsistencyCheckJobItemProgressContext progressContext) {
         this.jobConfig = jobConfig;
         readRateLimitAlgorithm = null == processContext ? null : processContext.getReadRateLimitAlgorithm();
-        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(
-                TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), new HashSet<>(Arrays.asList(jobConfig.getSourceTableName(), jobConfig.getTargetTableName()))));
         this.progressContext = progressContext;
     }
     
@@ -75,8 +68,8 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     public Map<String, DataConsistencyCheckResult> check(final DataConsistencyCalculateAlgorithm calculateAlgorithm) {
         verifyPipelineDatabaseType(calculateAlgorithm, jobConfig.getSource());
         verifyPipelineDatabaseType(calculateAlgorithm, jobConfig.getTarget());
-        SchemaTableName sourceTable = new SchemaTableName(new SchemaName(tableNameSchemaNameMapping.getSchemaName(jobConfig.getSourceTableName())), new TableName(jobConfig.getSourceTableName()));
-        SchemaTableName targetTable = new SchemaTableName(new SchemaName(tableNameSchemaNameMapping.getSchemaName(jobConfig.getTargetTableName())), new TableName(jobConfig.getTargetTableName()));
+        SchemaTableName sourceTable = new SchemaTableName(new SchemaName(jobConfig.getSourceSchemaName()), new TableName(jobConfig.getSourceTableName()));
+        SchemaTableName targetTable = new SchemaTableName(new SchemaName(jobConfig.getSourceSchemaName()), new TableName(jobConfig.getTargetTableName()));
         progressContext.getTableNames().add(jobConfig.getSourceTableName());
         Map<String, DataConsistencyCheckResult> result = new LinkedHashMap<>();
         try (
