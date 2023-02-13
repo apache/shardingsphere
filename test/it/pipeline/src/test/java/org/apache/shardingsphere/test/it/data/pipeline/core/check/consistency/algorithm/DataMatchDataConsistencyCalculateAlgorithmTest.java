@@ -123,6 +123,6 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     private DataConsistencyCalculateParameter generateParameter(final PipelineDataSourceWrapper dataSource, final String logicTableName, final Object dataCheckPosition) {
         PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "integer", false, true, true);
         return new DataConsistencyCalculateParameter(dataSource, null, logicTableName, Collections.emptyList(),
-                "MySQL", "MySQL", uniqueKey, dataCheckPosition);
+                "H2", "H2", uniqueKey, dataCheckPosition);
     }
 }
