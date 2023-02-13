@@ -129,11 +129,11 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     @Test
     public void assertAuthenticateFailedWithAbsentUser() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        ChannelHandlerContext context = mockChannelHandlerContext();
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
         when(rule.findUser(new Grantee("root", "127.0.0.1"))).thenReturn(Optional.empty());
         setMetaDataContexts(rule);
+        ChannelHandlerContext context = mockChannelHandlerContext();
         try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))) {
             authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
             verify(context).writeAndFlush(any(MySQLErrPacket.class));
@@ -145,12 +145,12 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     @Test
     public void assertAuthenticateFailedWithUnAuthenticatedUser() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        ChannelHandlerContext context = mockChannelHandlerContext();
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
         ShardingSphereUser user = new ShardingSphereUser("root", "", "127.0.0.1");
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));
         setMetaDataContexts(rule);
+        ChannelHandlerContext context = mockChannelHandlerContext();
         try (
                 MockedConstruction<AuthenticatorFactory> mockedAuthenticatorFactory = mockConstruction(AuthenticatorFactory.class,
                         (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(mock(Authenticator.class))); 
@@ -170,12 +170,12 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     @Test
     public void assertAuthenticateFailedWithDatabaseAccessDenied() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        ChannelHandlerContext context = mockChannelHandlerContext();
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
         ShardingSphereUser user = new ShardingSphereUser("root", "", "127.0.0.1");
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));
         setMetaDataContexts(rule);
+        ChannelHandlerContext context = mockChannelHandlerContext();
         try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertDatabaseAccessDeniedErrorPacket(mockContext.arguments()))) {
             authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
             verify(context).writeAndFlush(any(MySQLErrPacket.class));
@@ -190,11 +190,11 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     
     @Test
     public void assertAuthenticateFailedWithInvalidDatabase() {
-        ChannelHandlerContext context = mockChannelHandlerContext();
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
         setMetaDataContexts(rule);
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
+        ChannelHandlerContext context = mockChannelHandlerContext();
         try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertInvalidDatabaseErrorPacket(mockContext.arguments()))) {
             authenticationEngine.authenticate(context, getPayload("root", "invalid_db", authResponse));
             verify(context).writeAndFlush(any(MySQLErrPacket.class));
@@ -210,12 +210,12 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     @Test
     public void assertAuthenticateSuccess() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        ChannelHandlerContext context = mockChannelHandlerContext();
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
         ShardingSphereUser user = new ShardingSphereUser("root", "", "127.0.0.1");
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));
         setMetaDataContexts(rule);
+        ChannelHandlerContext context = mockChannelHandlerContext();
         authenticationEngine.authenticate(context, getPayload("root", null, authResponse));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));
     }
