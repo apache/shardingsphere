@@ -141,7 +141,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         }
     }
     
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "unused"})
     @Test
     public void assertAuthenticateFailedWithUnAuthenticatedUser() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
@@ -152,11 +152,9 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));
         setMetaDataContexts(rule);
         try (
-                @SuppressWarnings("unused")
                 MockedConstruction<AuthenticatorFactory> mockedAuthenticatorFactory = mockConstruction(AuthenticatorFactory.class,
-                        (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(mock(Authenticator.class)));
-                 @SuppressWarnings("unused")
-                 MockedConstruction<MySQLErrPacket> mockedErrPacket = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))
+                        (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(mock(Authenticator.class))); 
+                MockedConstruction<MySQLErrPacket> mockedErrPacket = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))
         ) {
                 authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
                 verify(context).writeAndFlush(any(MySQLErrPacket.class));
