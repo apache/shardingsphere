@@ -21,6 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 /**
  * Internal typed property key of configuration.
  */
@@ -40,4 +44,13 @@ public enum InternalConfigurationPropertyKey implements TypedPropertyKey {
     private final Class<?> type;
     
     private final boolean rebootRequired;
+    
+    /**
+     * Get internal property key names.
+     *
+     * @return collection of internal key names
+     */
+    public static Collection<String> getKeyNames() {
+        return Arrays.stream(values()).map(InternalConfigurationPropertyKey::name).collect(Collectors.toList());
+    }
 }
