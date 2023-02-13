@@ -17,14 +17,29 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
 
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorType;
 
 /**
- * Authenticator factory for PostgreSQL.
+ * Authenticator type for PostgreSQL.
  */
-public final class PostgreSQLAuthenticatorFactory extends AuthenticatorFactory<PostgreSQLAuthenticatorType> {
+@RequiredArgsConstructor
+@Getter
+public enum PostgreSQLAuthenticatorType implements AuthenticatorType {
     
-    public PostgreSQLAuthenticatorFactory() {
-        super(PostgreSQLAuthenticatorType.class);
+    MD5(PostgreSQLMD5PasswordAuthenticator.class, true),
+    
+    PASSWORD(PostgreSQLPasswordAuthenticator.class),
+    
+    // TODO impl SCRAM_SHA256 Authenticator
+    SCRAM_SHA256(PostgreSQLMD5PasswordAuthenticator.class);
+    
+    private final Class<? extends PostgreSQLAuthenticator> authenticatorClass;
+    
+    private final boolean isDefault;
+    
+    PostgreSQLAuthenticatorType(final Class<? extends PostgreSQLAuthenticator> authenticatorClass) {
+        this(authenticatorClass, false);
     }
 }

@@ -36,8 +36,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
-import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
@@ -123,7 +123,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
         ShardingSphereUser user = new ShardingSphereUser("root", "", "");
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(user)).thenReturn("");
-        MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator(rule, user);
+        Authenticator authenticator = authenticationHandler.getAuthenticator(rule, user);
         assertThat(authenticator, instanceOf(MySQLNativePasswordAuthenticator.class));
         assertThat(authenticator.getAuthenticationMethodName(), is(MySQLAuthenticationMethod.NATIVE.getMethodName()));
     }

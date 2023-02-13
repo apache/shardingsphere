@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticatorFactory;
 
 import javax.crypto.Mac;
@@ -147,7 +147,7 @@ public final class OpenGaussAuthenticationHandler {
                 () -> new PrivilegeNotGrantedException(username, databaseName));
     }
     
-    private static OpenGaussAuthenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
-        return OpenGaussAuthenticatorFactory.createAuthenticator(rule.getAuthenticatorType(user), rule);
+    private static Authenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
+        return new OpenGaussAuthenticatorFactory().newInstance(rule.getAuthenticatorType(user), rule);
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticatorFactory;
 
 import java.util.Optional;
@@ -64,7 +64,7 @@ public final class MySQLAuthenticationHandler {
      * @param user user
      * @return authenticator
      */
-    public MySQLAuthenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
-        return MySQLAuthenticatorFactory.createAuthenticator(rule.getAuthenticatorType(user), rule);
+    public Authenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
+        return new MySQLAuthenticatorFactory().newInstance(rule.getAuthenticatorType(user), rule);
     }
 }
