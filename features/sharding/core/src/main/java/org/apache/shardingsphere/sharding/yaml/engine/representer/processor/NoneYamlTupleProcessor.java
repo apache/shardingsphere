@@ -37,11 +37,11 @@ public final class NoneYamlTupleProcessor implements ShardingSphereYamlTupleProc
     
     @Override
     public NodeTuple process(final NodeTuple nodeTuple) {
-        return (isNullNode(nodeTuple.getValueNode()) || isEmptyMappingNode(nodeTuple.getValueNode())) ? null : processNoneTuple(nodeTuple);
+        return (isNullNode(nodeTuple.getKeyNode(), nodeTuple.getValueNode()) || isEmptyMappingNode(nodeTuple.getValueNode())) ? processNoneTuple(nodeTuple) : null;
     }
     
-    private boolean isNullNode(final Node valueNode) {
-        return Tag.NULL.equals(valueNode.getTag());
+    private boolean isNullNode(final Node keyNode, final Node valueNode) {
+        return !"none".equalsIgnoreCase(((ScalarNode) keyNode).getValue()) && Tag.NULL.equals(valueNode.getTag());
     }
     
     private boolean isEmptyMappingNode(final Node valueNode) {
