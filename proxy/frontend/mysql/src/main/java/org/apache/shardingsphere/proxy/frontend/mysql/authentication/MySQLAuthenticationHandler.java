@@ -20,15 +20,13 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 import lombok.Getter;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
-import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLClearPasswordAuthenticator;
-import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticatorFactory;
 
 import java.util.Optional;
 
@@ -67,23 +65,6 @@ public final class MySQLAuthenticationHandler {
      * @return authenticator
      */
     public MySQLAuthenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
-        MySQLAuthenticationMethod authenticationMethod;
-        try {
-            authenticationMethod = MySQLAuthenticationMethod.valueOf(rule.getAuthenticatorType(user).toUpperCase());
-        } catch (final IllegalArgumentException ignored) {
-            return new MySQLNativePasswordAuthenticator();
-        }
-        switch (authenticationMethod) {
-            case NATIVE:
-                return new MySQLNativePasswordAuthenticator();
-            case CLEAR_TEXT:
-                return new MySQLClearPasswordAuthenticator();
-            // TODO add other Authenticator
-            case OLD_PASSWORD:
-            case WINDOWS_NATIVE:
-            case SHA256:
-            default:
-                return new MySQLNativePasswordAuthenticator();
-        }
+        return MySQLAuthenticatorFactory.createAuthenticator(rule.getAuthenticatorType(user), rule);
     }
 }
