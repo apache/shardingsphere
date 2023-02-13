@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.authentication;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Arrays;
 
@@ -36,12 +37,12 @@ public final class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {
     /**
      * Create new instance of authenticator.
      * 
-     * @param authenticationMethod authentication method
+     * @param user user
      * @return new instance of authenticator
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public Authenticator newInstance(final String authenticationMethod) {
-        E authenticatorType = getAuthenticatorType(authenticationMethod);
+    public Authenticator newInstance(final ShardingSphereUser user) {
+        E authenticatorType = getAuthenticatorType(rule.getAuthenticatorType(user));
         try {
             return authenticatorType.getAuthenticatorClass().getConstructor().newInstance();
         } catch (final NoSuchMethodException ignored) {

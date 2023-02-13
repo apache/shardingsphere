@@ -68,6 +68,6 @@ public final class PostgreSQLAuthenticationHandler {
      * @return authenticator
      */
     public Authenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
-        return new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(rule.getAuthenticatorType(user));
+        return new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(user);
     }
 }

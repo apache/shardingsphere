@@ -149,6 +149,6 @@ public final class OpenGaussAuthenticationHandler {
     }
     
     private static Authenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
-        return new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(rule.getAuthenticatorType(user));
+        return new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user);
     }
 }

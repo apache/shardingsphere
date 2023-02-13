@@ -66,6 +66,6 @@ public final class MySQLAuthenticationHandler {
      * @return authenticator
      */
     public Authenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
-        return new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(rule.getAuthenticatorType(user));
+        return new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(user);
     }
 }
