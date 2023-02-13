@@ -30,7 +30,8 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
-import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticatorType;
 
 import java.util.Optional;
 
@@ -67,6 +68,6 @@ public final class PostgreSQLAuthenticationHandler {
      * @return authenticator
      */
     public Authenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
-        return new PostgreSQLAuthenticatorFactory().newInstance(rule.getAuthenticatorType(user), rule);
+        return new AuthenticatorFactory<PostgreSQLAuthenticatorType>().newInstance(PostgreSQLAuthenticatorType.class, rule.getAuthenticatorType(user), rule);
     }
 }

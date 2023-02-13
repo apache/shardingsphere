@@ -17,53 +17,39 @@
 
 package org.apache.shardingsphere.proxy.frontend.authentication;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 /**
  * Authenticator factory.
  */
-@RequiredArgsConstructor
-public abstract class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {
-    
-    private final Class<E> enumClass;
+public final class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {
     
     /**
      * Create new instance of authenticator.
      * 
+     * @param authenticatorTypeClass authenticator type class
      * @param authenticationMethod authentication method
      * @param rule authority rule
      * @return new instance of authenticator
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public Authenticator newInstance(final String authenticationMethod, final AuthorityRule rule) {
-        E factory = findAuthenticatorFactory(getAuthenticator(authenticationMethod));
+    public Authenticator newInstance(final Class<E> authenticatorTypeClass, final String authenticationMethod, final AuthorityRule rule) {
+        E authenticatorType = getAuthenticatorType(authenticatorTypeClass, authenticationMethod);
         try {
-            return factory.getAuthenticatorClass().getConstructor().newInstance();
+            return authenticatorType.getAuthenticatorClass().getConstructor().newInstance();
         } catch (final NoSuchMethodException ignored) {
-            return factory.getAuthenticatorClass().getConstructor(AuthorityRule.class).newInstance(rule);
+            return authenticatorType.getAuthenticatorClass().getConstructor(AuthorityRule.class).newInstance(rule);
         }
     }
     
-    private E getAuthenticator(final String authenticationMethod) {
+    private E getAuthenticatorType(final Class<E> authenticatorTypeClass, final String authenticationMethod) {
         try {
-            return E.valueOf(enumClass, authenticationMethod.toUpperCase());
+            return E.valueOf(authenticatorTypeClass, authenticationMethod.toUpperCase());
         } catch (final IllegalArgumentException ignored) {
-            return getDefaultAuthenticatorFactory();
+            return Arrays.stream(authenticatorTypeClass.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny().orElseThrow(IllegalArgumentException::new);
         }
-    }
-    
-    private E findAuthenticatorFactory(final E authenticationMethod) {
-        Optional<E> matchedFactory = Arrays.stream(enumClass.getEnumConstants()).filter(each -> each == authenticationMethod).findAny();
-        return matchedFactory.orElseGet(this::getDefaultAuthenticatorFactory);
-    }
-    
-    private E getDefaultAuthenticatorFactory() {
-        Optional<E> defaultFactory = Arrays.stream(enumClass.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny();
-        return defaultFactory.orElseThrow(IllegalArgumentException::new);
     }
 }
