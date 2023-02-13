@@ -23,7 +23,6 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -36,9 +35,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
-import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLNativePasswordAuthenticator;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -49,7 +46,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -116,16 +112,6 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertGetAuthPluginData() {
         assertThat(authenticationHandler.getAuthPluginData().getAuthenticationPluginData(), is(Bytes.concat(part1, part2)));
-    }
-    
-    @Test
-    public void assertGetAuthenticator() {
-        ShardingSphereUser user = new ShardingSphereUser("root", "", "");
-        AuthorityRule rule = mock(AuthorityRule.class);
-        when(rule.getAuthenticatorType(user)).thenReturn("");
-        Authenticator authenticator = authenticationHandler.getAuthenticator(rule, user);
-        assertThat(authenticator, instanceOf(MySQLNativePasswordAuthenticator.class));
-        assertThat(authenticator.getAuthenticationMethodName(), is(MySQLAuthenticationMethod.NATIVE.getMethodName()));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
