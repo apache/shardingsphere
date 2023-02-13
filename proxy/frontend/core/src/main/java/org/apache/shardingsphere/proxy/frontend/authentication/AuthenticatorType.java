@@ -30,9 +30,9 @@ public interface AuthenticatorType {
     Class<? extends Authenticator> getAuthenticatorClass();
     
     /**
-     * Is default.
+     * Is default authenticator.
      * 
-     * @return is default
+     * @return is default authenticator
      */
     boolean isDefault();
 }
