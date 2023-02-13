@@ -148,10 +148,6 @@ public final class MigrationJobPreparer {
     
     private void initInventoryTasks(final MigrationJobItemContext jobItemContext) {
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
-        Optional.ofNullable(jobItemContext.getJobConfig().getUniqueKeyColumn()).ifPresent(uniqueKeyColumn -> {
-            inventoryDumperConfig.setUniqueKey(uniqueKeyColumn.getName());
-            inventoryDumperConfig.setUniqueKeyDataType(uniqueKeyColumn.getDataType());
-        });
         InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), inventoryDumperConfig, jobItemContext.getTaskConfig().getImporterConfig());
         jobItemContext.getInventoryTasks().addAll(inventoryTaskSplitter.splitInventoryData(jobItemContext));
     }
