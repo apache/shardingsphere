@@ -54,7 +54,7 @@ public final class PostgreSQLAuthenticationHandler {
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
         ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(user.get())
-                        .authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
+                .authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
                 () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));
