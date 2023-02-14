@@ -153,9 +153,8 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         ChannelHandlerContext context = mockChannelHandlerContext();
         try (
                 MockedConstruction<AuthenticatorFactory> mockedAuthenticatorFactory = mockConstruction(AuthenticatorFactory.class,
-                        (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(mock(Authenticator.class))); 
-                MockedConstruction<MySQLErrPacket> mockedErrPacket = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))
-        ) {
+                        (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(mock(Authenticator.class)));
+                MockedConstruction<MySQLErrPacket> mockedErrPacket = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))) {
             authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
             verify(context).writeAndFlush(any(MySQLErrPacket.class));
             verify(context).close();
@@ -164,7 +163,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     
     private void assertAuthenticationErrorPacket(final List<?> arguments) {
         assertThat(arguments.get(0), is(MySQLVendorError.ER_ACCESS_DENIED_ERROR));
-        assertThat(arguments.get(1), is(new String[] {"root", "127.0.0.1", "YES"}));
+        assertThat(arguments.get(1), is(new String[]{"root", "127.0.0.1", "YES"}));
     }
     
     @Test
@@ -185,7 +184,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     
     private void assertDatabaseAccessDeniedErrorPacket(final List<?> arguments) {
         assertThat(arguments.get(0), is(MySQLVendorError.ER_DBACCESS_DENIED_ERROR));
-        assertThat(arguments.get(1), is(new String[] {"root", "127.0.0.1", "sharding_db"}));
+        assertThat(arguments.get(1), is(new String[]{"root", "127.0.0.1", "sharding_db"}));
     }
     
     @Test
@@ -204,7 +203,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     
     private void assertInvalidDatabaseErrorPacket(final List<?> arguments) {
         assertThat(arguments.get(0), is(MySQLVendorError.ER_BAD_DB_ERROR));
-        assertThat(arguments.get(1), is(new String[] {"invalid_db"}));
+        assertThat(arguments.get(1), is(new String[]{"invalid_db"}));
     }
     
     @Test

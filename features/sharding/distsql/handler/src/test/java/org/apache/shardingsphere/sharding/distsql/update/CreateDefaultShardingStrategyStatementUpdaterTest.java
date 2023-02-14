@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredR
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateDefaultShardingStrategyStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefaultShardingStrategyStatement;
@@ -148,6 +149,32 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
         StandardShardingStrategyConfiguration defaultDatabaseShardingStrategy = (StandardShardingStrategyConfiguration) currentRuleConfig.getDefaultDatabaseShardingStrategy();
         assertThat(defaultDatabaseShardingStrategy.getShardingAlgorithmName(), is("default_database_inline"));
         assertThat(defaultDatabaseShardingStrategy.getShardingColumn(), is("user_id"));
+    }
+    
+    @Test
+    public void assertCreateDefaultTableShardingStrategyWithNoneShardingStrategyType() {
+        CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "none", null, null);
+        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
+        currentRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "orderAlgorithm"));
+        currentRuleConfig.getShardingAlgorithms().put("order_id_algorithm", null);
+        updater.checkSQLStatement(database, statement, currentRuleConfig);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        NoneShardingStrategyConfiguration defaultTableShardingStrategy = (NoneShardingStrategyConfiguration) currentRuleConfig.getDefaultTableShardingStrategy();
+        assertThat(defaultTableShardingStrategy.getType(), is(""));
+        assertThat(defaultTableShardingStrategy.getShardingAlgorithmName(), is(""));
+    }
+    
+    @Test
+    public void assertCreateDefaultDatabaseShardingStrategyWithNoneShardingStrategyType() {
+        CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "DATABASE", "none", null, null);
+        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
+        updater.checkSQLStatement(database, statement, currentRuleConfig);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        NoneShardingStrategyConfiguration defaultDatabaseShardingStrategy = (NoneShardingStrategyConfiguration) currentRuleConfig.getDefaultDatabaseShardingStrategy();
+        assertThat(defaultDatabaseShardingStrategy.getType(), is(""));
+        assertThat(defaultDatabaseShardingStrategy.getShardingAlgorithmName(), is(""));
     }
     
     private AlgorithmSegment getAutoCreativeAlgorithmSegment(final String name, final Properties props) {
