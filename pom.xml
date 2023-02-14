@@ -84,7 +84,7 @@
         <javax.transaction.version>1.1</javax.transaction.version>
         
         <zookeeper.version>3.8.1</zookeeper.version>
-        <curator.version>5.3.0</curator.version>
+        <curator.version>5.4.0</curator.version>
         <jetcd.version>0.7.5</jetcd.version>
         
         <elasticjob.version>3.0.2</elasticjob.version>
