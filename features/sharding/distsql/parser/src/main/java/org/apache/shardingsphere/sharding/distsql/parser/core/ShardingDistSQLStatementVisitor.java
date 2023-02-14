@@ -190,11 +190,14 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitCreateDefaultShardingStrategy(final CreateDefaultShardingStrategyContext ctx) {
         ShardingStrategyContext shardingStrategyContext = ctx.shardingStrategy();
+        String strategyType = getIdentifierValue(shardingStrategyContext.strategyType());
+        if ("none".equalsIgnoreCase(strategyType)) {
+            return new CreateDefaultShardingStrategyStatement(null != ctx.ifNotExists(), new IdentifierValue(ctx.type.getText()).getValue(), "none", null, null);
+        }
         AlgorithmSegment algorithmSegment = null != shardingStrategyContext.shardingAlgorithm().algorithmDefinition()
                 ? (AlgorithmSegment) visitAlgorithmDefinition(shardingStrategyContext.shardingAlgorithm().algorithmDefinition())
                 : null;
         String defaultType = new IdentifierValue(ctx.type.getText()).getValue();
-        String strategyType = getIdentifierValue(shardingStrategyContext.strategyType());
         String shardingColumn = buildShardingColumn(ctx.shardingStrategy().shardingColumnDefinition());
         return new CreateDefaultShardingStrategyStatement(null != ctx.ifNotExists(), defaultType, strategyType, shardingColumn, algorithmSegment);
     }
@@ -321,14 +324,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitShardingStrategy(final ShardingStrategyContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        if ("none".equalsIgnoreCase(getIdentifierValue(ctx.strategyType()))) {
-            return new ShardingStrategySegment(getIdentifierValue(ctx.strategyType()), null, null);
+        String strategyType = getIdentifierValue(ctx.strategyType());
+        if ("none".equalsIgnoreCase(strategyType)) {
+            return new ShardingStrategySegment(strategyType, null, null);
         }
         AlgorithmSegment algorithmSegment = null != ctx.shardingAlgorithm().algorithmDefinition() ? (AlgorithmSegment) visitAlgorithmDefinition(ctx.shardingAlgorithm().algorithmDefinition()) : null;
-        return new ShardingStrategySegment(getIdentifierValue(ctx.strategyType()), buildShardingColumn(ctx.shardingColumnDefinition()), algorithmSegment);
+        return new ShardingStrategySegment(strategyType, buildShardingColumn(ctx.shardingColumnDefinition()), algorithmSegment);
     }
     
     private Collection<String> getResources(final StorageUnitsContext ctx) {
