@@ -17,6 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,35 +31,38 @@ import java.sql.SQLException;
 /**
  * JDBC stream query util.
  */
+@Slf4j
 public final class JDBCStreamQueryUtil {
     
     /**
-     * Generate MySQL stream query prepared statement.
+     * Generate stream query prepared statement.
      *
      * @param connection connection
+     * @param databaseType database type
      * @param sql sql
      * @return stream query prepared statement
      * @throws SQLException SQL exception
      */
-    public static PreparedStatement generateMySQLStreamQueryPreparedStatement(final Connection connection, final String sql) throws SQLException {
+    public static PreparedStatement generateStreamQueryPreparedStatement(final DatabaseType databaseType, final Connection connection, final String sql) throws SQLException {
+        if (databaseType instanceof MySQLDatabaseType) {
+            return generateMySQLStreamQueryPreparedStatement(connection, sql);
+        }
+        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+            return generatePostgreSQLStreamQueryPreparedStatement(connection, sql);
+        }
+        log.warn("not support {} streaming query now, pay attention to memory usage", databaseType.getType());
+        return connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+    }
+    
+    private static PreparedStatement generateMySQLStreamQueryPreparedStatement(final Connection connection, final String sql) throws SQLException {
         PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         result.setFetchSize(Integer.MIN_VALUE);
         return result;
     }
     
-    /**
-     * Generate PostgreSQL stream query prepared statement.
-     *
-     * @param connection connection
-     * @param sql sql
-     * @param fetchSize fetch size
-     * @return stream query prepared statement
-     * @throws SQLException SQL exception
-     */
-    public static PreparedStatement generatePostgreSQLStreamQueryPreparedStatement(final Connection connection, final String sql, final int fetchSize) throws SQLException {
+    private static PreparedStatement generatePostgreSQLStreamQueryPreparedStatement(final Connection connection, final String sql) throws SQLException {
         PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
         connection.setAutoCommit(false);
-        result.setFetchSize(fetchSize);
         return result;
     }
 }

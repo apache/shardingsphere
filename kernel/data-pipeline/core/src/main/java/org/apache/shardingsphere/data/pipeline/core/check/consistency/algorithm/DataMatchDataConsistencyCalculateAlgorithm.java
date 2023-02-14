@@ -36,8 +36,6 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueRead
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -159,14 +157,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     private void fulfillCalculationContext(final CalculationContext calculationContext, final DataConsistencyCalculateParameter param) throws SQLException {
         String sql = getQuerySQL(param);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType());
-        PreparedStatement preparedStatement;
-        if (databaseType instanceof MySQLDatabaseType) {
-            preparedStatement = setCurrentStatement(JDBCStreamQueryUtil.generateMySQLStreamQueryPreparedStatement(calculationContext.getConnection(), sql));
-        } else if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            preparedStatement = setCurrentStatement(JDBCStreamQueryUtil.generatePostgreSQLStreamQueryPreparedStatement(calculationContext.getConnection(), sql, chunkSize));
-        } else {
-            log.warn("not support {} streaming query now, pay attention to memory usage", databaseType.getType());
-            preparedStatement = setCurrentStatement(calculationContext.getConnection().prepareStatement(sql));
+        PreparedStatement preparedStatement = setCurrentStatement(JDBCStreamQueryUtil.generateStreamQueryPreparedStatement(databaseType, calculationContext.getConnection(), sql));
+        if (!(databaseType instanceof MySQLDatabaseType)) {
             preparedStatement.setFetchSize(chunkSize);
         }
         calculationContext.setPreparedStatement(preparedStatement);

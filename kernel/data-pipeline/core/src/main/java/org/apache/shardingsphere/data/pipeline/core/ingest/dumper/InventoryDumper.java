@@ -39,15 +39,12 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTable
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.core.util.CloseUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -128,19 +125,11 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         }
         int batchSize = dumperConfig.getBatchSize();
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
-        PreparedStatement preparedStatement = null;
-        try {
-            if (databaseType instanceof MySQLDatabaseType) {
-                preparedStatement = JDBCStreamQueryUtil.generateMySQLStreamQueryPreparedStatement(connection, sql);
-            } else if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-                preparedStatement = JDBCStreamQueryUtil.generatePostgreSQLStreamQueryPreparedStatement(connection, sql, batchSize);
-            } else {
-                log.warn("not support {} streaming query now, pay attention to memory usage", databaseType.getType());
-                preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        try (PreparedStatement preparedStatement = JDBCStreamQueryUtil.generateStreamQueryPreparedStatement(databaseType, connection, sql)) {
+            dumpStatement = preparedStatement;
+            if (!(databaseType instanceof MySQLDatabaseType)) {
                 preparedStatement.setFetchSize(batchSize);
             }
-            dumpStatement = preparedStatement;
-            preparedStatement.setFetchSize(batchSize);
             setParameters(preparedStatement, beginUniqueKeyValue);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -153,8 +142,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 }
                 dumpStatement = null;
             }
-        } finally {
-            CloseUtil.closeQuietly(preparedStatement);
         }
     }
     
