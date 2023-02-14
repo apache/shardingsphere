@@ -41,15 +41,24 @@ public interface PipelineSQLBuilder extends TypedSPI {
     }
     
     /**
-     * Build divisible inventory dump first SQL.
+     * Build divisible inventory dump SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key
-     * @param uniqueKeyDataType unique key data type
      * @return divisible inventory dump SQL
      */
-    String buildDivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType);
+    String buildDivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey);
+    
+    /**
+     * Build divisible inventory dump SQL without end value.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param uniqueKey unique key
+     * @return divisible inventory dump SQL without end value
+     */
+    String buildDivisibleInventoryDumpSQLNoEnd(String schemaName, String tableName, String uniqueKey);
     
     /**
      * Build indivisible inventory dump first SQL.
@@ -57,19 +66,18 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key
-     * @param uniqueKeyDataType unique key data type
      * @return indivisible inventory dump SQL
      */
-    String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType);
+    String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey);
     
     /**
-     * Build inventory dump all SQL.
+     * Build no unique key inventory dump SQL.
      *
      * @param schemaName schema name
      * @param tableName tableName
      * @return inventory dump all SQL
      */
-    String buildInventoryDumpAllSQL(String schemaName, String tableName);
+    String buildNoUniqueKeyInventoryDumpSQL(String schemaName, String tableName);
     
     /**
      * Build insert SQL.
@@ -152,10 +160,10 @@ public interface PipelineSQLBuilder extends TypedSPI {
      *
      * @param schemaName schema name
      * @param tableName table name
-     * @param primaryKey primary key
+     * @param uniqueKey unique key
      * @return split SQL
      */
-    String buildSplitByPrimaryKeyRangeSQL(String schemaName, String tableName, String primaryKey);
+    String buildSplitByPrimaryKeyRangeSQL(String schemaName, String tableName, String uniqueKey);
     
     /**
      * Build CRC32 SQL.

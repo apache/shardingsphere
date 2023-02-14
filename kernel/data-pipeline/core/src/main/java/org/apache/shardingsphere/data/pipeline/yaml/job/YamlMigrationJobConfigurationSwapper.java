@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.yaml.job;
 
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaDataSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
@@ -29,8 +28,6 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 public final class YamlMigrationJobConfigurationSwapper implements YamlConfigurationSwapper<YamlMigrationJobConfiguration, MigrationJobConfiguration> {
     
     private final YamlPipelineDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
-    
-    private final YamlPipelineColumnMetaDataSwapper pipelineColumnMetaDataSwapper = new YamlPipelineColumnMetaDataSwapper();
     
     @Override
     public YamlMigrationJobConfiguration swapToYamlConfiguration(final MigrationJobConfiguration data) {
@@ -47,7 +44,6 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
         result.setTarget(dataSourceConfigSwapper.swapToYamlConfiguration(data.getTarget()));
         result.setTablesFirstDataNodes(data.getTablesFirstDataNodes());
         result.setJobShardingDataNodes(data.getJobShardingDataNodes());
-        result.setUniqueKeyColumn(pipelineColumnMetaDataSwapper.swapToYamlConfiguration(data.getUniqueKeyColumn()));
         result.setConcurrency(data.getConcurrency());
         result.setRetryTimes(data.getRetryTimes());
         return result;
@@ -60,7 +56,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
                 yamlConfig.getSourceDatabaseType(), yamlConfig.getTargetDatabaseType(),
                 yamlConfig.getSourceTableName(), yamlConfig.getTargetTableName(),
                 dataSourceConfigSwapper.swapToObject(yamlConfig.getSource()), dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
-                yamlConfig.getTablesFirstDataNodes(), yamlConfig.getJobShardingDataNodes(), pipelineColumnMetaDataSwapper.swapToObject(yamlConfig.getUniqueKeyColumn()),
+                yamlConfig.getTablesFirstDataNodes(), yamlConfig.getJobShardingDataNodes(),
                 yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }
     

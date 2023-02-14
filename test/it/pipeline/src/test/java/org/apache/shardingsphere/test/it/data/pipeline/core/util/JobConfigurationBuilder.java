@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaData;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 /**
@@ -54,21 +53,8 @@ public final class JobConfigurationBuilder {
         result.setSource(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
-        result.setUniqueKeyColumn(createYamlPipelineColumnMetaData());
         TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(result);
         return new YamlMigrationJobConfigurationSwapper().swapToObject(result);
-    }
-    
-    private static YamlPipelineColumnMetaData createYamlPipelineColumnMetaData() {
-        YamlPipelineColumnMetaData result = new YamlPipelineColumnMetaData();
-        result.setOrdinalPosition(1);
-        result.setName("order_id");
-        result.setDataType(4);
-        result.setDataTypeName("");
-        result.setNullable(false);
-        result.setPrimaryKey(true);
-        result.setNullable(true);
-        return result;
     }
     
     private static String generateJobId(final YamlMigrationJobConfiguration yamlJobConfig) {

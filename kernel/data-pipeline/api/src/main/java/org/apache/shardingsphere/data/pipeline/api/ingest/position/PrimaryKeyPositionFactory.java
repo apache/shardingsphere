@@ -66,8 +66,9 @@ public final class PrimaryKeyPositionFactory {
             return new IntegerPrimaryKeyPosition(((Number) beginValue).longValue(), ((Number) endValue).longValue());
         }
         if (beginValue instanceof CharSequence) {
-            return new StringPrimaryKeyPosition(beginValue.toString(), endValue.toString());
+            return new StringPrimaryKeyPosition(beginValue.toString(), null != endValue ? endValue.toString() : null);
         }
+        // TODO support more types, e.g. byte[] (MySQL varbinary)
         return new UnsupportedKeyPosition();
     }
 }
