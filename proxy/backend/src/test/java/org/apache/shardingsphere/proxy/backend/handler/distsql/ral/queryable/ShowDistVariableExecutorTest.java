@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -103,6 +104,17 @@ public final class ShowDistVariableExecutorTest extends ProxyContextRestorer {
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("sql_show"));
         assertThat(row.getCell(2), is("true"));
+    }
+    
+    @Test
+    public void assertShowInternalPropsVariable() {
+        when(metaData.getInternalProps()).thenReturn(new InternalConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
+        ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("PROXY_META_DATA_COLLECTOR_ENABLED"));
+        assertThat(actual.size(), is(1));
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("proxy_meta_data_collector_enabled"));
+        assertThat(row.getCell(2), is("false"));
     }
     
     @Test(expected = UnsupportedVariableException.class)
