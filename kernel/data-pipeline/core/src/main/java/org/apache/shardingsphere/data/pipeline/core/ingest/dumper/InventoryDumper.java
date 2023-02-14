@@ -39,9 +39,12 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTable
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -121,9 +124,12 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             dumperConfig.getRateLimitAlgorithm().intercept(JobOperationType.SELECT, 1);
         }
         int batchSize = dumperConfig.getBatchSize();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+        DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
+        try (PreparedStatement preparedStatement = JDBCStreamQueryUtil.generateStreamQueryPreparedStatement(databaseType, connection, sql)) {
             dumpStatement = preparedStatement;
-            preparedStatement.setFetchSize(batchSize);
+            if (!(databaseType instanceof MySQLDatabaseType)) {
+                preparedStatement.setFetchSize(batchSize);
+            }
             setParameters(preparedStatement, beginUniqueKeyValue);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();

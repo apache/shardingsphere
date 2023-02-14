@@ -31,9 +31,11 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsis
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.util.CloseUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtil;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -154,9 +156,12 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     private void fulfillCalculationContext(final CalculationContext calculationContext, final DataConsistencyCalculateParameter param) throws SQLException {
         String sql = getQuerySQL(param);
-        PreparedStatement preparedStatement = setCurrentStatement(calculationContext.getConnection().prepareStatement(sql));
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType());
+        PreparedStatement preparedStatement = setCurrentStatement(JDBCStreamQueryUtil.generateStreamQueryPreparedStatement(databaseType, calculationContext.getConnection(), sql));
+        if (!(databaseType instanceof MySQLDatabaseType)) {
+            preparedStatement.setFetchSize(chunkSize);
+        }
         calculationContext.setPreparedStatement(preparedStatement);
-        preparedStatement.setFetchSize(chunkSize);
         Object tableCheckPosition = param.getTableCheckPosition();
         if (null != tableCheckPosition) {
             preparedStatement.setObject(1, tableCheckPosition);
