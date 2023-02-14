@@ -52,7 +52,7 @@ public final class AlterDefaultShardingStrategyStatementAssert {
                     actual.getShardingColumn(), is(expected.getStrategy().getShardingColumn()));
             assertThat(assertContext.getText(String.format("`%s`'s default sharding strategy segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getStrategyType(), is(expected.getStrategy().getStrategyType()));
-            if(!"none".equalsIgnoreCase(actual.getStrategyType())) {
+            if (!"none".equalsIgnoreCase(actual.getStrategyType())) {
                 assertThat(assertContext.getText(String.format("`%s`'s default sharding strategy segment assertion error: ", actual.getClass().getSimpleName())),
                         actual.getAlgorithmSegment().getName(), is(expected.getStrategy().getAlgorithmSegment().getName()));
             }

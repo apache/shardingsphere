@@ -55,7 +55,7 @@ public final class TableRuleAssert {
                     actual.getTableStrategySegment().getShardingColumn(), is(expected.getTableStrategy().getShardingColumn()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getTableStrategySegment().getType(), is(expected.getTableStrategy().getType()));
-            if(!"none".equalsIgnoreCase(actual.getTableStrategySegment().getType())) {
+            if (!"none".equalsIgnoreCase(actual.getTableStrategySegment().getType())) {
                 assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                         actual.getTableStrategySegment().getShardingAlgorithm().getName(), is(expected.getTableStrategy().getAlgorithmSegment().getName()));
             }
@@ -63,7 +63,7 @@ public final class TableRuleAssert {
                     actual.getDatabaseStrategySegment().getShardingColumn(), is(expected.getDataStrategy().getShardingColumn()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getDatabaseStrategySegment().getType(), is(expected.getDataStrategy().getType()));
-            if(!"none".equalsIgnoreCase(actual.getDatabaseStrategySegment().getType())) {
+            if (!"none".equalsIgnoreCase(actual.getDatabaseStrategySegment().getType())) {
                 assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                         actual.getDatabaseStrategySegment().getShardingAlgorithm().getName(), is(expected.getDataStrategy().getAlgorithmSegment().getName()));
             }
