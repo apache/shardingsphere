@@ -1,11 +1,11 @@
 +++
-title = "SHOW DB_DISCOVERY RULES"
+title = "SHOW DB_DISCOVERY RULE"
 weight = 2
 +++
 
 ### Description
 
-The `SHOW DB_DISCOVERY RULES` syntax is used to query specified database discovery rules for specified database.
+The `SHOW DB_DISCOVERY RULE` syntax is used to query specified database discovery rules for specified database.
 
 ### Syntax
 

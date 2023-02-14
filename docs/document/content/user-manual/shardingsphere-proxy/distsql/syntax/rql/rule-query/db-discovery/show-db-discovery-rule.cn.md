@@ -1,11 +1,11 @@
 +++
-title = "SHOW DB_DISCOVERY RULES"
+title = "SHOW DB_DISCOVERY RULE"
 weight = 2
 +++
 
 ### 描述
 
-`SHOW DB_DISCOVERY RULES` 语法用于查询指定逻辑库中的指定数据库发现规则。
+`SHOW DB_DISCOVERY RULE` 语法用于查询指定逻辑库中的指定数据库发现规则。
 
 ### 语法
 
