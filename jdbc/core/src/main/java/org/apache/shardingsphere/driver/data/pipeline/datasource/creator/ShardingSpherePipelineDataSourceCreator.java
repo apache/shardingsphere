@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.data.pipeline.datasource.creator;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
@@ -42,8 +41,6 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         enableRangeQueryForInline(shardingRuleConfig);
         rootConfig.setDatabaseName(null);
         rootConfig.setSchemaName(null);
-        // TODO set a large enough value, make sure when a jdbc streaming query parameter is take effect
-        rootConfig.getProps().put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
     }
     
