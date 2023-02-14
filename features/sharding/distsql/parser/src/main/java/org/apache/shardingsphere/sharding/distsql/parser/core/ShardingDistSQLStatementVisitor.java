@@ -226,6 +226,9 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitAlterDefaultShardingStrategy(final AlterDefaultShardingStrategyContext ctx) {
         String defaultType = new IdentifierValue(ctx.type.getText()).getValue();
         String strategyType = getIdentifierValue(ctx.shardingStrategy().strategyType());
+        if ("none".equalsIgnoreCase(strategyType)) {
+            return new AlterDefaultShardingStrategyStatement(defaultType, "none", null, null);
+        }
         String shardingColumn = buildShardingColumn(ctx.shardingStrategy().shardingColumnDefinition());
         AlgorithmSegment algorithmSegment = null == ctx.shardingStrategy().shardingAlgorithm().algorithmDefinition()
                 ? null
