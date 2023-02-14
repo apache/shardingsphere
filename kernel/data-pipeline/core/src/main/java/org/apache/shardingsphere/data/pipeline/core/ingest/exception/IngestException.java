@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.exception;
 /**
  * Ingest exception.
  */
+// TODO extends from PipelineSQLException
 public final class IngestException extends RuntimeException {
     
     private static final long serialVersionUID = 1L;

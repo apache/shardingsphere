@@ -20,7 +20,10 @@ package org.apache.shardingsphere.data.pipeline.api.config.ingest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+
+import java.util.List;
 
 /**
  * Inventory dumper configuration.
@@ -35,9 +38,7 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private String logicTableName;
     
-    private String uniqueKey;
-    
-    private Integer uniqueKeyDataType;
+    private List<PipelineColumnMetaData> uniqueKeyColumns;
     
     private Integer shardingItem;
     
@@ -50,5 +51,14 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
         setDataSourceConfig(dumperConfig.getDataSourceConfig());
         setTableNameMap(dumperConfig.getTableNameMap());
         setTableNameSchemaNameMapping(dumperConfig.getTableNameSchemaNameMapping());
+    }
+    
+    /**
+     * Has unique key or not.
+     *
+     * @return true when there's unique key, else false
+     */
+    public boolean hasUniqueKey() {
+        return null != uniqueKeyColumns && uniqueKeyColumns.size() > 0;
     }
 }
