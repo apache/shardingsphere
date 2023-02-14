@@ -113,7 +113,8 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             writeErrorPacket(context, new MySQLErrPacket(MySQLVendorError.ER_BAD_DB_ERROR, packet.getDatabase()));
             return AuthenticationResultBuilder.continued();
         }
-        Authenticator authenticator = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(new ShardingSphereUser(packet.getUsername(), "", getHostAddress(context)));
+        ShardingSphereUser user = rule.findUser(new Grantee(packet.getUsername(), getHostAddress(context))).orElseGet(() -> new ShardingSphereUser(packet.getUsername(), "", getHostAddress(context)));
+        Authenticator authenticator = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(user);
         if (isClientPluginAuth(packet) && !authenticator.getAuthenticationMethodName().equals(packet.getAuthPluginName())) {
             connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
             context.writeAndFlush(new MySQLAuthSwitchRequestPacket(authenticator.getAuthenticationMethodName(), authPluginData));
