@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.resultset;
+package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator;
 
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorType;
 
 /**
- * DistSQL result set for database.
+ * Authenticator type for openGauss.
  */
-public interface DatabaseDistSQLResultSet extends DistSQLResultSet {
+@RequiredArgsConstructor
+@Getter
+public enum OpenGaussAuthenticatorType implements AuthenticatorType {
     
-    /**
-     * Initialize data.
-     *
-     * @param database database
-     * @param sqlStatement SQL statement
-     */
-    void init(ShardingSphereDatabase database, SQLStatement sqlStatement);
+    SCRAM_SHA256(OpenGaussSCRAMSha256PasswordAuthenticator.class, true);
+    
+    private final Class<? extends OpenGaussAuthenticator> authenticatorClass;
+    
+    private final boolean isDefault;
 }

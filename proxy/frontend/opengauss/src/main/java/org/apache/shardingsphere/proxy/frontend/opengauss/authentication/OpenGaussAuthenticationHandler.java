@@ -32,8 +32,8 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticator;
-import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticatorType;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
@@ -141,13 +141,10 @@ public final class OpenGaussAuthenticationHandler {
         Grantee grantee = new Grantee(username, "%");
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
-        ShardingSpherePreconditions.checkState(getAuthenticator(rule, user.get()).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration}),
+        ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user.get())
+                .authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration}),
                 () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));
-    }
-    
-    private static OpenGaussAuthenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
-        return OpenGaussAuthenticatorFactory.createAuthenticator(rule.getAuthenticatorType(user), rule);
     }
 }

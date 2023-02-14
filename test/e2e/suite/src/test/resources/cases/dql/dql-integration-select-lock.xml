@@ -16,21 +16,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra</artifactId>
-        <version>5.3.2-SNAPSHOT</version>
-    </parent>
-    
-    <artifactId>shardingsphere-infra-util-groovy</artifactId>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy</artifactId>
-        </dependency>
-    </dependencies>
-</project>
+<integration-test-cases>
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? FOR UPDATE" lock-clause="true" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="10:int" expected-data-source-name="write_dataset" />
+    </test-case>
+</integration-test-cases>

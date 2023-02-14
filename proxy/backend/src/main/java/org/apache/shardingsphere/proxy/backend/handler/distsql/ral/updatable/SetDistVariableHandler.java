@@ -23,6 +23,8 @@ import ch.qos.logback.classic.LoggerContext;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
@@ -48,8 +50,8 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
     @Override
     protected void update(final ContextManager contextManager) {
         Enum<?> enumType = getEnumType(getSqlStatement().getName());
-        if (enumType instanceof ConfigurationPropertyKey) {
-            handleConfigurationProperty((ConfigurationPropertyKey) enumType, getSqlStatement().getValue());
+        if (enumType instanceof TypedPropertyKey) {
+            handleConfigurationProperty((TypedPropertyKey) enumType, getSqlStatement().getValue());
         } else if (enumType instanceof VariableEnum) {
             handleVariables();
         } else {
@@ -61,15 +63,20 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         try {
             return ConfigurationPropertyKey.valueOf(name.toUpperCase());
         } catch (final IllegalArgumentException ex) {
-            return VariableEnum.getValueOf(name);
+            try {
+                return InternalConfigurationPropertyKey.valueOf(name.toUpperCase());
+            } catch (final IllegalArgumentException exception) {
+                return VariableEnum.getValueOf(name);
+            }
         }
     }
     
-    private void handleConfigurationProperty(final ConfigurationPropertyKey propertyKey, final String value) {
+    private void handleConfigurationProperty(final TypedPropertyKey propertyKey, final String value) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         Properties props = new Properties();
         props.putAll(metaDataContexts.getMetaData().getProps().getProps());
+        props.putAll(metaDataContexts.getMetaData().getInternalProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.getInstanceContext().getModeContextManager().alterProperties(props);
         refreshRootLogger(props);
@@ -77,7 +84,7 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         syncSQLSimpleToLoggingRule(propertyKey, metaDataContexts, value);
     }
     
-    private Object getValue(final ConfigurationPropertyKey propertyKey, final String value) {
+    private Object getValue(final TypedPropertyKey propertyKey, final String value) {
         try {
             Object propertyValue = new TypedPropertyValue(propertyKey, value).getValue();
             return Enum.class.isAssignableFrom(propertyKey.getType()) ? propertyValue.toString() : propertyValue;
@@ -96,7 +103,7 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         rootLogger.setLevel(Level.valueOf(props.getOrDefault(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getKey(), ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getDefaultValue()).toString()));
     }
     
-    private void syncSQLShowToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
+    private void syncSQLShowToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
         if (LoggingConstants.SQL_SHOW.equalsIgnoreCase(propertyKey.getKey())) {
             LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_ENABLE, value);
@@ -105,7 +112,7 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         }
     }
     
-    private void syncSQLSimpleToLoggingRule(final ConfigurationPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
+    private void syncSQLSimpleToLoggingRule(final TypedPropertyKey propertyKey, final MetaDataContexts metaDataContexts, final String value) {
         if (LoggingConstants.SQL_SIMPLE.equalsIgnoreCase(propertyKey.getKey())) {
             LoggingUtils.getSQLLogger(metaDataContexts.getMetaData().getGlobalRuleMetaData()).ifPresent(option -> {
                 option.getProps().setProperty(LoggingConstants.SQL_LOG_SIMPLE, value);

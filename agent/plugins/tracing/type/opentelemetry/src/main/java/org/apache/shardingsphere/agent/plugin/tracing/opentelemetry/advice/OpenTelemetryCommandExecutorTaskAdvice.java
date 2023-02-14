@@ -50,5 +50,6 @@ public final class OpenTelemetryCommandExecutorTaskAdvice extends TracingCommand
     @Override
     protected void recordException(final Span rootSpan, final TargetAdviceObject target, final Throwable throwable) {
         rootSpan.setStatus(StatusCode.ERROR).recordException(throwable);
+        finishRootSpan(rootSpan, target);
     }
 }

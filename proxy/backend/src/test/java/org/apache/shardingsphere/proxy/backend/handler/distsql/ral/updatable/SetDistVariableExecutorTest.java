@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistV
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.LoggerLevel;
+import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -88,6 +89,18 @@ public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
         assertThat(actualValue.toString(), is("1024"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
+    }
+    
+    @Test
+    public void assertExecuteWithInternalConfigurationKey() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
+        SetDistVariableHandler handler = new SetDistVariableHandler();
+        handler.init(statement, connectionSession);
+        handler.execute();
+        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getInternalProps().getProps().get("proxy-meta-data-collector-enabled");
+        assertThat(actualValue.toString(), is("false"));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getInternalProps().getValue(InternalConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED), is(false));
     }
     
     @Test

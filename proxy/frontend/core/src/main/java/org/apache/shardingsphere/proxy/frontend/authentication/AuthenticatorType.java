@@ -15,35 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.resultset;
-
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-
-import java.util.Collection;
+package org.apache.shardingsphere.proxy.frontend.authentication;
 
 /**
- * DistSQL result set.
+ * Authenticator type.
  */
-public interface DistSQLResultSet extends TypedSPI {
+public interface AuthenticatorType {
     
     /**
-     * Get result set column names.
-     *
-     * @return result set column names
+     * Get authenticator class.
+     * 
+     * @return authenticator class
      */
-    Collection<String> getColumnNames();
+    Class<? extends Authenticator> getAuthenticatorClass();
     
     /**
-     * Go to next data.
-     *
-     * @return true if next data exist
+     * Is default authenticator.
+     * 
+     * @return is default authenticator
      */
-    boolean next();
-    
-    /**
-     * Get row data.
-     *
-     * @return row data
-     */
-    Collection<Object> getRowData();
+    boolean isDefault();
 }
