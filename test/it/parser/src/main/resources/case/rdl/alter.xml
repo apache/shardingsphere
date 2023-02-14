@@ -154,9 +154,9 @@
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-with-complex-table-strategy-and-standard-database-strategy">
         <rule name="t_order_item">
             <data-node>ds_${0..1}.t_order_item_${0..1}</data-node>
-            <table-strategy type="complex" sharding-column="order_id">
+            <table-strategy type="complex" sharding-column="user_id,order_id">
                 <algorithm-segment algorithm-name="complex_inline">
-                    <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}_${order_id % 2}" />
                 </algorithm-segment>
             </table-strategy>
             <database-strategy type="standard" sharding-column="user_id">
@@ -299,9 +299,9 @@
     </alter-default-sharding-strategy>
     
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-table-strategy-with-complex-strategy-type">
-        <strategy default-type="TABLE" strategy-type="complex" sharding-column="user_id">
+        <strategy default-type="TABLE" strategy-type="complex" sharding-column="user_id,order_id">
             <algorithm-segment algorithm-name="COMPLEX_INLINE">
-                <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                <property key="algorithm-expression" value="t_order_${user_id % 2}_${order_id % 2}" />
             </algorithm-segment>
         </strategy>
     </alter-default-sharding-strategy>
@@ -319,9 +319,9 @@
     </alter-default-sharding-strategy>
     
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-database-strategy-with-complex-strategy-type">
-        <strategy default-type="DATABASE" strategy-type="complex" sharding-column="user_id">
+        <strategy default-type="DATABASE" strategy-type="complex" sharding-column="user_id,order_id">
             <algorithm-segment algorithm-name="COMPLEX_INLINE">
-                <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                <property key="algorithm-expression" value="t_order_${user_id % 2}_${order_id % 2}" />
             </algorithm-segment>
         </strategy>
     </alter-default-sharding-strategy>
