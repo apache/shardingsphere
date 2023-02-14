@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authentica
 import com.google.common.base.Strings;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
-import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthenticationPluginData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public final class MySQLNativePasswordAuthenticator implements MySQLAuthenticato
     @Override
     public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
         byte[] authResponse = (byte[]) authInfo[0];
-        MySQLAuthPluginData authPluginData = (MySQLAuthPluginData) authInfo[1];
+        MySQLAuthenticationPluginData authPluginData = (MySQLAuthenticationPluginData) authInfo[1];
         return Strings.isNullOrEmpty(user.getPassword()) || Arrays.equals(getAuthCipherBytes(user.getPassword(), authPluginData.getAuthenticationPluginData()), authResponse);
     }
     

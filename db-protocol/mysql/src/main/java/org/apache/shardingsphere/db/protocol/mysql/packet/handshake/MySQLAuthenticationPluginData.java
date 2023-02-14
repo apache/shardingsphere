@@ -31,13 +31,13 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLAuthPluginData {
+public final class MySQLAuthenticationPluginData {
     
-    private final byte[] authPluginDataPart1;
+    private final byte[] authenticationPluginDataPart1;
     
-    private final byte[] authPluginDataPart2;
+    private final byte[] authenticationPluginDataPart2;
     
-    public MySQLAuthPluginData() {
+    public MySQLAuthenticationPluginData() {
         this(MySQLRandomGenerator.getINSTANCE().generateRandomBytes(8), MySQLRandomGenerator.getINSTANCE().generateRandomBytes(12));
     }
     
@@ -47,6 +47,6 @@ public final class MySQLAuthPluginData {
      * @return authentication plugin data
      */
     public byte[] getAuthenticationPluginData() {
-        return Bytes.concat(authPluginDataPart1, authPluginDataPart2);
+        return Bytes.concat(authenticationPluginDataPart1, authenticationPluginDataPart2);
     }
 }

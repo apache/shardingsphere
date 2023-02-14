@@ -23,23 +23,23 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLAuthPluginDataTest {
+public final class MySQLAuthenticationPluginDataTest {
     
     @Test
     public void assertGetAuthPluginData() {
         byte[] actualPart1 = {106, 105, 55, 122, 117, 98, 115, 109};
         byte[] actualPart2 = {68, 102, 53, 122, 65, 49, 84, 79, 85, 115, 116, 113};
-        MySQLAuthPluginData actual = new MySQLAuthPluginData(actualPart1, actualPart2);
-        assertThat(actual.getAuthPluginDataPart1(), is(actualPart1));
-        assertThat(actual.getAuthPluginDataPart2(), is(actualPart2));
+        MySQLAuthenticationPluginData actual = new MySQLAuthenticationPluginData(actualPart1, actualPart2);
+        assertThat(actual.getAuthenticationPluginDataPart1(), is(actualPart1));
+        assertThat(actual.getAuthenticationPluginDataPart2(), is(actualPart2));
         assertThat(actual.getAuthenticationPluginData(), is(Bytes.concat(actualPart1, actualPart2)));
     }
     
     @Test
     public void assertGetAuthPluginDataWithoutArguments() {
-        MySQLAuthPluginData actual = new MySQLAuthPluginData();
-        assertThat(actual.getAuthPluginDataPart1().length, is(8));
-        assertThat(actual.getAuthPluginDataPart2().length, is(12));
+        MySQLAuthenticationPluginData actual = new MySQLAuthenticationPluginData();
+        assertThat(actual.getAuthenticationPluginDataPart1().length, is(8));
+        assertThat(actual.getAuthenticationPluginDataPart2().length, is(12));
         assertThat(actual.getAuthenticationPluginData().length, is(20));
     }
 }

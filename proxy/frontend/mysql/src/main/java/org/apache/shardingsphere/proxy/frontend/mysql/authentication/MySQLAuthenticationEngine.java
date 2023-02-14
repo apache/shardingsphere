@@ -29,7 +29,7 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthenticationPluginData;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchRequestPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchResponsePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
@@ -58,9 +58,7 @@ import java.util.Optional;
  */
 public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     
-    private static final int DEFAULT_STATUS_FLAG = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue();
-    
-    private final MySQLAuthPluginData authPluginData = new MySQLAuthPluginData();
+    private final MySQLAuthenticationPluginData authPluginData = new MySQLAuthenticationPluginData();
     
     private MySQLConnectionPhase connectionPhase = MySQLConnectionPhase.INITIAL_HANDSHAKE;
     
@@ -81,53 +79,60 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     public AuthenticationResult authenticate(final ChannelHandlerContext context, final PacketPayload payload) {
         AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         if (MySQLConnectionPhase.AUTH_PHASE_FAST_PATH == connectionPhase) {
-            currentAuthResult = authPhaseFastPath(context, payload, rule);
+            currentAuthResult = authenticatePhaseFastPath(context, payload, rule);
             if (!currentAuthResult.isFinished()) {
                 return currentAuthResult;
             }
         } else if (MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH == connectionPhase) {
-            authenticationMethodMismatch((MySQLPacketPayload) payload);
+            authenticateMismatchedMethod((MySQLPacketPayload) payload);
         }
         Grantee grantee = new Grantee(currentAuthResult.getUsername(), getHostAddress(context));
         if (!login(rule, grantee, authResponse)) {
             writeErrorPacket(context,
-                    new MySQLErrPacket(MySQLVendorError.ER_ACCESS_DENIED_ERROR, currentAuthResult.getUsername(), getHostAddress(context), 0 == authResponse.length ? "NO" : "YES"));
+                    new MySQLErrPacket(MySQLVendorError.ER_ACCESS_DENIED_ERROR, currentAuthResult.getUsername(), grantee.getHostname(), 0 == authResponse.length ? "NO" : "YES"));
             return AuthenticationResultBuilder.continued();
         }
         if (!authorizeDatabase(rule, grantee, currentAuthResult.getDatabase())) {
             writeErrorPacket(context,
-                    new MySQLErrPacket(MySQLVendorError.ER_DBACCESS_DENIED_ERROR, currentAuthResult.getUsername(), getHostAddress(context), currentAuthResult.getDatabase()));
+                    new MySQLErrPacket(MySQLVendorError.ER_DBACCESS_DENIED_ERROR, currentAuthResult.getUsername(), grantee.getHostname(), currentAuthResult.getDatabase()));
             return AuthenticationResultBuilder.continued();
         }
         writeOKPacket(context);
         return AuthenticationResultBuilder.finished(grantee.getUsername(), grantee.getHostname(), currentAuthResult.getDatabase());
     }
     
-    private AuthenticationResult authPhaseFastPath(final ChannelHandlerContext context, final PacketPayload payload, final AuthorityRule rule) {
-        MySQLHandshakeResponse41Packet packet = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
-        authResponse = packet.getAuthResponse();
-        MySQLCharacterSet characterSet = MySQLCharacterSet.findById(packet.getCharacterSet());
-        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(characterSet.getCharset());
-        context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(characterSet);
-        if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxyContext.getInstance().databaseExists(packet.getDatabase())) {
-            writeErrorPacket(context, new MySQLErrPacket(MySQLVendorError.ER_BAD_DB_ERROR, packet.getDatabase()));
+    private AuthenticationResult authenticatePhaseFastPath(final ChannelHandlerContext context, final PacketPayload payload, final AuthorityRule rule) {
+        MySQLHandshakeResponse41Packet handshakeResponsePacket = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
+        String database = handshakeResponsePacket.getDatabase();
+        authResponse = handshakeResponsePacket.getAuthResponse();
+        setCharacterSet(context, handshakeResponsePacket);
+        if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().databaseExists(database)) {
+            writeErrorPacket(context, new MySQLErrPacket(MySQLVendorError.ER_BAD_DB_ERROR, database));
             return AuthenticationResultBuilder.continued();
         }
-        ShardingSphereUser user = rule.findUser(new Grantee(packet.getUsername(), getHostAddress(context))).orElseGet(() -> new ShardingSphereUser(packet.getUsername(), "", getHostAddress(context)));
+        String username = handshakeResponsePacket.getUsername();
+        String hostname = getHostAddress(context);
+        ShardingSphereUser user = rule.findUser(new Grantee(username, hostname)).orElseGet(() -> new ShardingSphereUser(username, "", hostname));
         Authenticator authenticator = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(user);
-        if (isClientPluginAuth(packet) && !authenticator.getAuthenticationMethodName().equals(packet.getAuthPluginName())) {
+        if (isClientPluginAuthenticate(handshakeResponsePacket) && !authenticator.getAuthenticationMethodName().equals(handshakeResponsePacket.getAuthPluginName())) {
             connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
             context.writeAndFlush(new MySQLAuthSwitchRequestPacket(authenticator.getAuthenticationMethodName(), authPluginData));
-            return AuthenticationResultBuilder.continued(packet.getUsername(), getHostAddress(context), packet.getDatabase());
+            return AuthenticationResultBuilder.continued(username, hostname, database);
         }
-        return AuthenticationResultBuilder.finished(packet.getUsername(), getHostAddress(context), packet.getDatabase());
+        return AuthenticationResultBuilder.finished(username, hostname, database);
     }
     
-    private boolean isClientPluginAuth(final MySQLHandshakeResponse41Packet packet) {
+    private void setCharacterSet(final ChannelHandlerContext context, final MySQLHandshakeResponse41Packet handshakeResponsePacket) {
+        MySQLCharacterSet characterSet = MySQLCharacterSet.findById(handshakeResponsePacket.getCharacterSet());
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(characterSet.getCharset());
+        context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(characterSet);
+    }
+    
+    private boolean isClientPluginAuthenticate(final MySQLHandshakeResponse41Packet packet) {
         return 0 != (packet.getCapabilityFlags() & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
     }
     
-    private void authenticationMethodMismatch(final MySQLPacketPayload payload) {
+    private void authenticateMismatchedMethod(final MySQLPacketPayload payload) {
         authResponse = new MySQLAuthSwitchResponsePacket(payload).getAuthPluginResponse();
     }
     
@@ -152,6 +157,6 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     }
     
     private void writeOKPacket(final ChannelHandlerContext context) {
-        context.writeAndFlush(new MySQLOKPacket(DEFAULT_STATUS_FLAG));
+        context.writeAndFlush(new MySQLOKPacket(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
 }
