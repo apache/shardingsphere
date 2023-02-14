@@ -305,7 +305,7 @@ public final class ShardingTableRuleStatementChecker {
     private static void checkStrategy(final String databaseName, final Collection<TableRuleSegment> rules) {
         rules.forEach(each -> {
             Optional<ShardingStrategySegment> databaseStrategySegment = Optional.ofNullable(each.getDatabaseStrategySegment());
-            if (databaseStrategySegment.isPresent()) {
+            if (databaseStrategySegment.isPresent() && !databaseStrategySegment.get().getType().equalsIgnoreCase("none")) {
                 AlgorithmSegment databaseShardingAlgorithm = databaseStrategySegment.get().getShardingAlgorithm();
                 if (null != databaseShardingAlgorithm) {
                     ShardingAlgorithm shardingAlgorithm = TypedSPILoader.getService(ShardingAlgorithm.class, databaseShardingAlgorithm.getName(), databaseShardingAlgorithm.getProps());
@@ -318,7 +318,7 @@ public final class ShardingTableRuleStatementChecker {
                                 null == databaseShardingAlgorithm ? null : databaseShardingAlgorithm.getName()));
             }
             Optional<ShardingStrategySegment> tableStrategySegment = Optional.ofNullable(each.getTableStrategySegment());
-            if (tableStrategySegment.isPresent()) {
+            if (tableStrategySegment.isPresent() && !tableStrategySegment.get().getType().equalsIgnoreCase("none")) {
                 AlgorithmSegment tableShardingAlgorithm = tableStrategySegment.get().getShardingAlgorithm();
                 if (null != tableShardingAlgorithm) {
                     ShardingAlgorithm shardingAlgorithm = TypedSPILoader.getService(ShardingAlgorithm.class, tableShardingAlgorithm.getName(), tableShardingAlgorithm.getProps());
