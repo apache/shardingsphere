@@ -78,7 +78,7 @@ mysql> SHOW DB_DISCOVERY RULES;
 1 row in set (0.03 sec)
 ```
 
-- Query specified database discovery rules for specified database.
+- Query specified database discovery rule for specified database.
 
 ```sql
 SHOW DB_DISCOVERY RULE group_0 FROM discovery_db;
@@ -95,7 +95,7 @@ mysql> SHOW DB_DISCOVERY RULE group_0 FROM discovery_db;
 
 ```
 
-- Query specified database discovery rules for current database.
+- Query specified database discovery rule for current database.
 
 ```sql
 SHOW DB_DISCOVERY RULE group_0;

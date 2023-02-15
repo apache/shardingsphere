@@ -1,12 +1,12 @@
 +++
-title = "SHOW SHARDING TABLE REGERENCE RULES"
+title = "SHOW SHARDING TABLE REFERENCE RULE"
 weight = 14
 
 +++
 
 ### 描述
 
-`SHOW SHARDING BINDING TABLE RULES` 语法用于查询指定逻辑库中具有关联关系的分片表
+`SHOW SHARDING BINDING TABLE RULE` 语法用于查询指定逻辑库中指定分片表关联规则
 
 ### 语法
 
@@ -14,7 +14,10 @@ weight = 14
 {{% tab name="语法" %}}
 ```sql
 ShowShardingBindingTableRules::=
-  'SHOW' 'SHARDING' 'TABLE' 'REFERENCE' 'RULES' ('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'TABLE' 'REFERENCE' ('RULE' ruleName | 'RULES') ('FROM' databaseName)?
+
+ruleName ::=
+    identifier
 
 databaseName ::=
   identifier
@@ -72,9 +75,41 @@ mysql> SHOW SHARDING TABLE REFERENCE RULES;
 2 rows in set (0.00 sec)
 ```
 
+- 查询指定逻辑库中的指定分片表关联规则
+
+```sql
+SHOW SHARDING TABLE REFERENCE RULE ref_0 FROM sharding_db;
+```
+
+```sql
+mysql> SHOW SHARDING TABLE REFERENCE RULE ref_0 FROM sharding_db;
++-------+--------------------------+
+| name  | sharding_table_reference |
++-------+--------------------------+
+| ref_0 | t_a,t_b                  |
++-------+--------------------------+
+1 row in set (0.00 sec)
+```
+
+- 查询当前逻辑库中的分片表关联规则
+
+```sql
+SHOW SHARDING TABLE REFERENCE RULE ref_0;
+```
+
+```sql
+mysql> SHOW SHARDING TABLE REFERENCE RULE ref_0;
++-------+--------------------------+
+| name  | sharding_table_reference |
++-------+--------------------------+
+| ref_0 | t_a,t_b                  |
++-------+--------------------------+
+1 row in set (0.00 sec)
+```
+
 ### 保留字
 
-`SHOW`、`SHARDING`、`BINDING`、`TABLE`、`RULES`、`FROM`
+`SHOW`、`SHARDING`、`TABLE`、`REFERENCE`、`RULE`、`RULES`、`FROM`
 
 ### 相关链接
 

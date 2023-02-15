@@ -1,11 +1,11 @@
 +++
-title = "SHOW SHARDING TABLE REFERENCE RULES"
+title = "SHOW SHARDING TABLE REFERENCE RULE"
 weight = 14
 +++
 
 ### Description
 
-`SHOW SHARDING TABLE REFERENCE RULES` syntax is used to query sharding tables with reference relationships in the specified logical database.
+`SHOW SHARDING TABLE REFERENCE RULE` syntax is used to query specified sharding table reference rule in the specified logical database.
 
 ### Syntax
 
@@ -13,7 +13,10 @@ weight = 14
 {{% tab name="Grammar" %}}
 ```sql
 ShowShardingBindingTableRules::=
-  'SHOW' 'SHARDING' 'TABLE' 'REFERENCE' 'RULES' ('FROM' databaseName)?
+  'SHOW' 'SHARDING' 'TABLE' 'REFERENCE' ('RULE' ruleName | 'RULES') ('FROM' databaseName)?
+
+ruleName ::=
+    identifier
 
 databaseName ::=
   identifier
@@ -71,9 +74,41 @@ mysql> SHOW SHARDING TABLE REFERENCE RULES;
 2 rows in set (0.00 sec)
 ```
 
+- Query specified sharding table reference rule for the specified logical database
+
+```sql
+SHOW SHARDING TABLE REFERENCE RULE ref_0 FROM sharding_db;
+```
+
+```sql
+mysql> SHOW SHARDING TABLE REFERENCE RULE FROM sharding_db;
++-------+--------------------------+
+| name  | sharding_table_reference |
++-------+--------------------------+
+| ref_0 | t_a,t_b                  |
++-------+--------------------------+
+1 row in set (0.00 sec)
+```
+
+- Query specified sharding table reference rule for the current logical database
+
+```sql
+SHOW SHARDING TABLE REFERENCE RULE ref_0;
+```
+
+```sql
+mysql> SHOW SHARDING TABLE REFERENCE RULE ref_0;
++-------+--------------------------+
+| name  | sharding_table_reference |
++-------+--------------------------+
+| ref_0 | t_a,t_b                  |
++-------+--------------------------+
+1 row in set (0.00 sec)
+```
+
 ### Reserved word
 
-`SHOW`, `SHARDING`, `TABLE`, `REFERENCE`, `RULES`, `FROM`
+`SHOW`, `SHARDING`, `TABLE`, `REFERENCE`, `RULE`, `RULES`, `FROM`
 
 ### Related links
 

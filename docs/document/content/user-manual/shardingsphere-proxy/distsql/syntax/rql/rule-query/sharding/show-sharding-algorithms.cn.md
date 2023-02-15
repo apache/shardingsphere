@@ -52,7 +52,7 @@ mysql> SHOW SHARDING ALGORITHMS FROM sharding_db;
 | t_order_inline          | INLINE | algorithm-expression=t_order_${order_id % 2}        |
 | t_order_item_inline     | INLINE | algorithm-expression=t_order_item_${order_id % 2}   |
 +-------------------------+--------+-----------------------------------------------------+
-2 row in set (0.01 sec)
+2 rows in set (0.01 sec)
 ```
 
 - 查询当前逻辑库的分片算法
@@ -69,7 +69,7 @@ mysql> SHOW SHARDING ALGORITHMS;
 | t_order_inline          | INLINE | algorithm-expression=t_order_${order_id % 2}        |
 | t_order_item_inline     | INLINE | algorithm-expression=t_order_item_${order_id % 2}   |
 +-------------------------+--------+-----------------------------------------------------+
-2 row in set (0.01 sec)
+2 rows in set (0.01 sec)
 ```
 
 ### 保留字
