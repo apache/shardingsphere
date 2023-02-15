@@ -24,6 +24,6 @@
         <column name="sharding_algorithm_type" />
         <column name="sharding_algorithm_props" />
     </metadata>
-    <row values="TABLE| NONE| | | | " />
-    <row values="DATABASE| NONE| | | | " />
+    <row values="TABLE| | | | | " />
+    <row values="DATABASE| | | | | " />
 </dataset>
