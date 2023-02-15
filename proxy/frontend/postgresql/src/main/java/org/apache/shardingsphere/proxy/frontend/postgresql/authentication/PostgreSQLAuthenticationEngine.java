@@ -91,7 +91,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         return startupMessageReceived ? processPasswordMessage(context, (PostgreSQLPacketPayload) payload, rule) : processStartupMessage(context, (PostgreSQLPacketPayload) payload, rule);
     }
     
-    private AuthenticationResult processPasswordMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, AuthorityRule rule) {
+    private AuthenticationResult processPasswordMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, final AuthorityRule rule) {
         char messageType = (char) payload.readInt1();
         ShardingSpherePreconditions.checkState(PostgreSQLMessagePacketType.PASSWORD_MESSAGE.getValue() == messageType,
                 () -> new ProtocolViolationException("password", Character.toString(messageType)));
