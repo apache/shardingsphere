@@ -87,7 +87,7 @@ mysql> SHOW SHARDING TABLE REFERENCE RULE FROM sharding_db;
 +-------+--------------------------+
 | ref_0 | t_a,t_b                  |
 +-------+--------------------------+
-2 rows in set (0.00 sec)
+1 row in set (0.00 sec)
 ```
 
 - Query specified sharding table reference rule for the current logical database
@@ -103,7 +103,7 @@ mysql> SHOW SHARDING TABLE REFERENCE RULE ref_0;
 +-------+--------------------------+
 | ref_0 | t_a,t_b                  |
 +-------+--------------------------+
-2 rows in set (0.00 sec)
+1 row in set (0.00 sec)
 ```
 
 ### Reserved word

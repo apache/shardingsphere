@@ -88,7 +88,7 @@ mysql> SHOW SHARDING TABLE REFERENCE RULE ref_0 FROM sharding_db;
 +-------+--------------------------+
 | ref_0 | t_a,t_b                  |
 +-------+--------------------------+
-2 rows in set (0.00 sec)
+1 row in set (0.00 sec)
 ```
 
 - 查询当前逻辑库中的分片表关联规则
@@ -104,7 +104,7 @@ mysql> SHOW SHARDING TABLE REFERENCE RULE ref_0;
 +-------+--------------------------+
 | ref_0 | t_a,t_b                  |
 +-------+--------------------------+
-2 rows in set (0.00 sec)
+1 row in set (0.00 sec)
 ```
 
 ### 保留字
