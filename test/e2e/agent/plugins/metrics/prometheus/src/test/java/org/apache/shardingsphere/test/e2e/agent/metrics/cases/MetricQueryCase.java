@@ -15,51 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.metrics.result;
+package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.agent.common.result.JsonConfiguration;
+import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-import java.util.Map;
-
-/**
- * Metrics query result.
- */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class MetricsQueryResult implements JsonConfiguration {
+public final class MetricQueryCase {
     
-    private String status;
+    private final String metricName;
     
-    private QueryData data;
+    private final String query;
     
-    private String errorType;
+    private final int value;
     
-    private String error;
+    private final boolean shouldAssertValue;
     
-    /**
-     * Query data.
-     */
-    @Getter
-    @Setter
-    public static final class QueryData {
-        
-        private String resultType;
-        
-        private List<QueryDataResult> result;
+    public MetricQueryCase(final String metricName, final String query) {
+        this(metricName, query, 1, false);
     }
     
-    /**
-     * Query data result.
-     */
-    @Getter
-    @Setter
-    public static final class QueryDataResult {
-        
-        private Map<String, String> metric;
-        
-        private List<String> value;
+    public MetricQueryCase(final String metricName, final String query, final int value) {
+        this(metricName, query, value, true);
     }
 }

@@ -15,41 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.metrics.result;
+package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.agent.common.result.JsonConfiguration;
+import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-import java.util.Map;
-
-/**
- * Metrics meta data result.
- */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class MetricsMetaDataResult implements JsonConfiguration {
+public class MetricMetadataCase {
     
-    private String status;
+    private final String metricName;
     
-    private Map<String, List<Metric>> data;
-    
-    private String errorType;
-    
-    private String error;
-    
-    /**
-     * Metric.
-     */
-    @Getter
-    @Setter
-    public static final class Metric {
-        
-        private String type;
-        
-        private String help;
-        
-        private String unit;
-    }
+    private final String metricType;
 }

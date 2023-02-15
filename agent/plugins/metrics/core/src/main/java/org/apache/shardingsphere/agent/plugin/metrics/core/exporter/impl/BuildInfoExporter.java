@@ -22,6 +22,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeM
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,13 +40,7 @@ public final class BuildInfoExporter implements MetricsExporter {
     public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
-        addJDKBuildInfo(result, getClass().getPackage());
+        result.addMetric(Arrays.asList("ShardingSphere", ShardingSphereVersion.VERSION), 1d);
         return Optional.of(result);
-    }
-    
-    private void addJDKBuildInfo(final GaugeMetricFamilyMetricsCollector collector, final Package pkg) {
-        String name = "ShardingSphere";
-        String version = null == pkg.getImplementationVersion() ? "unknown" : pkg.getImplementationVersion();
-        collector.addMetric(Arrays.asList(name, version), 1d);
     }
 }
