@@ -100,32 +100,6 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         return startupMessageReceived ? processPasswordMessage(context, (PostgreSQLPacketPayload) payload) : processStartupMessage(context, (PostgreSQLPacketPayload) payload);
     }
     
-    private AuthenticationResult processStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
-        startupMessageReceived = true;
-        PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
-        clientEncoding = comStartupPacket.getClientEncoding();
-        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.findCharacterSet(clientEncoding));
-        String user = comStartupPacket.getUser();
-        if (Strings.isNullOrEmpty(user)) {
-            throw new EmptyUsernameException();
-        }
-        serverIteration = comStartupPacket.getVersion() == OpenGaussProtocolVersion.PROTOCOL_351.getVersion() ? PROTOCOL_351_SERVER_ITERATOR : PROTOCOL_350_SERVER_ITERATOR;
-        String serverSignature = calculateServerSignature(comStartupPacket.getVersion(), user);
-        context.writeAndFlush(new OpenGaussAuthenticationSCRAMSha256Packet(
-                comStartupPacket.getVersion(), saltHexString.getBytes(), nonceHexString.getBytes(), serverSignature.getBytes(), serverIteration));
-        currentAuthResult = AuthenticationResultBuilder.continued(user, "", comStartupPacket.getDatabase());
-        return currentAuthResult;
-    }
-    
-    private String calculateServerSignature(final int version, final String username) {
-        if (version >= OpenGaussProtocolVersion.PROTOCOL_350.getVersion()) {
-            return "";
-        }
-        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        String password = authorityRule.findUser(new Grantee(username, "%")).map(ShardingSphereUser::getPassword).orElse("");
-        return OpenGaussAuthenticationHandler.calculateServerSignature(password, saltHexString, nonceHexString, serverIteration);
-    }
-    
     private AuthenticationResult processPasswordMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
         char messageType = (char) payload.readInt1();
         if (PostgreSQLMessagePacketType.PASSWORD_MESSAGE.getValue() != messageType) {
@@ -141,5 +115,31 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         context.write(new PostgreSQLParameterStatusPacket("integer_datetimes", "on"));
         context.writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase());
+    }
+    
+    private AuthenticationResult processStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
+        startupMessageReceived = true;
+        PostgreSQLComStartupPacket startupPacket = new PostgreSQLComStartupPacket(payload);
+        clientEncoding = startupPacket.getClientEncoding();
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.findCharacterSet(clientEncoding));
+        String username = startupPacket.getUsername();
+        if (Strings.isNullOrEmpty(username)) {
+            throw new EmptyUsernameException();
+        }
+        serverIteration = startupPacket.getVersion() == OpenGaussProtocolVersion.PROTOCOL_351.getVersion() ? PROTOCOL_351_SERVER_ITERATOR : PROTOCOL_350_SERVER_ITERATOR;
+        String serverSignature = calculateServerSignature(startupPacket.getVersion(), username);
+        context.writeAndFlush(new OpenGaussAuthenticationSCRAMSha256Packet(
+                startupPacket.getVersion(), saltHexString.getBytes(), nonceHexString.getBytes(), serverSignature.getBytes(), serverIteration));
+        currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase());
+        return currentAuthResult;
+    }
+    
+    private String calculateServerSignature(final int version, final String username) {
+        if (version >= OpenGaussProtocolVersion.PROTOCOL_350.getVersion()) {
+            return "";
+        }
+        AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        String password = authorityRule.findUser(new Grantee(username, "%")).map(ShardingSphereUser::getPassword).orElse("");
+        return OpenGaussAuthenticationHandler.calculateServerSignature(password, saltHexString, nonceHexString, serverIteration);
     }
 }
