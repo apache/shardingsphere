@@ -32,6 +32,7 @@ import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsQueryResul
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -64,7 +65,8 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
                 ? metricCase.getMetricName().replace("_total", "")
                 : metricCase.getMetricName();
         try {
-            MetricsMetaDataResult metricsMetaDataResult = OkHttpUtils.getInstance().get(String.format("%s?metric=%s", metaDataURL, metricName), MetricsMetaDataResult.class);
+            String httpUrl = String.format("%s?metric=%s", metaDataURL, URLEncoder.encode(metricName, "UTF-8"));
+            MetricsMetaDataResult metricsMetaDataResult = OkHttpUtils.getInstance().get(httpUrl, MetricsMetaDataResult.class);
             MetadataAssert.assertIs(metricsMetaDataResult, metricCase);
         } catch (final IOException ex) {
             log.info("Access prometheus HTTP RESTful API error: ", ex);
@@ -73,7 +75,8 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
     private void assertQuery(final String queryRangeURL, final MetricQueryCase metricCase) {
         try {
-            MetricsQueryResult metricsQueryResult = OkHttpUtils.getInstance().get(String.format("%s?query=%s", queryRangeURL, metricCase.getQuery()), MetricsQueryResult.class);
+            String httpUrl = String.format("%s?query=%s", queryRangeURL, URLEncoder.encode(metricCase.getQuery(), "UTF-8"));
+            MetricsQueryResult metricsQueryResult = OkHttpUtils.getInstance().get(httpUrl, MetricsQueryResult.class);
             QueryAssert.assertIs(metricsQueryResult, metricCase);
         } catch (final IOException ex) {
             log.info("Access prometheus HTTP RESTful API error: ", ex);

@@ -39,16 +39,27 @@ public final class MetricQueryCasePool {
         Collection<MetricQueryCase> result = new LinkedHashSet<>();
         result.add(new MetricQueryCase("proxy_commit_transactions_total", "proxy_commit_transactions_total{}"));
         result.add(new MetricQueryCase("proxy_rollback_transactions_total", "proxy_rollback_transactions_total{}"));
-        result.add(new MetricQueryCase("proxy_execute_errors_total", "proxy_execute_errors_total{}"));
-        result.add(new MetricQueryCase("proxy_current_connections", "proxy_current_connections"));
+        result.add(new MetricQueryCase("proxy_current_connections", "proxy_current_connections{}"));
         result.add(new MetricQueryCase("proxy_requests_total", "proxy_requests_total{}"));
-        result.add(new MetricQueryCase("routed_result_total", "routed_result_total{}"));
+        result.add(new MetricQueryCase("routed_result_total", "routed_result_total{object='data_source', name='ds_0'}"));
+        result.add(new MetricQueryCase("routed_result_total", "routed_result_total{object='data_source', name='ds_1'}"));
+        result.add(new MetricQueryCase("routed_result_total", "routed_result_total{object='table', name='t_order_0'}"));
+        result.add(new MetricQueryCase("routed_result_total", "routed_result_total{object='table', name='t_order_1'}"));
         result.add(new MetricQueryCase("proxy_execute_latency_millis_bucket", "proxy_execute_latency_millis_bucket{}"));
-        result.add(new MetricQueryCase("routed_sql_total", "routed_sql_total{}"));
-        result.add(new MetricQueryCase("parsed_sql_total", "parsed_sql_total{}"));
+        result.add(new MetricQueryCase("routed_sql_total", "routed_sql_total{type='INSERT'}"));
+        result.add(new MetricQueryCase("routed_sql_total", "routed_sql_total{type='SELECT'}"));
+        result.add(new MetricQueryCase("routed_sql_total", "routed_sql_total{type='UPDATE'}"));
+        result.add(new MetricQueryCase("routed_sql_total", "routed_sql_total{type='DELETE'}"));
+        result.add(new MetricQueryCase("parsed_sql_total", "parsed_sql_total{type='INSERT'}"));
+        result.add(new MetricQueryCase("parsed_sql_total", "parsed_sql_total{type='SELECT'}"));
+        result.add(new MetricQueryCase("parsed_sql_total", "parsed_sql_total{type='UPDATE'}"));
+        result.add(new MetricQueryCase("parsed_sql_total", "parsed_sql_total{type='DELETE'}"));
+        result.add(new MetricQueryCase("parsed_sql_total", "parsed_sql_total{type='TCL'}"));
         result.add(new MetricQueryCase("proxy_state", "proxy_state{}", 0));
         result.add(new MetricQueryCase("build_info", String.format("build_info{name='ShardingSphere', version='%s'}", ShardingSphereVersion.VERSION)));
-        result.add(new MetricQueryCase("proxy_meta_data_info", "proxy_meta_data_info{}"));
+        result.add(new MetricQueryCase("proxy_meta_data_info", "proxy_meta_data_info{name='schema_count'}"));
+        result.add(new MetricQueryCase("proxy_meta_data_info", "proxy_meta_data_info{name='database_count'}"));
+        result.add(new MetricQueryCase("proxy_execute_errors_total", "proxy_execute_errors_total{}"));
         return result;
     }
 }
