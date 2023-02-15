@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
+import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show sharding table reference rules statement.
  */
+@Getter
 public final class ShowShardingTableReferenceRulesStatement extends ShowRulesStatement {
     
-    public ShowShardingTableReferenceRulesStatement(final DatabaseSegment database) {
+    private final String ruleName;
+    
+    public ShowShardingTableReferenceRulesStatement(final String ruleName, final DatabaseSegment database) {
         super(database);
+        this.ruleName = ruleName;
     }
 }

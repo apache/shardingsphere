@@ -44,13 +44,11 @@ public final class ShowShardingTableReferenceRuleExecutor implements RQLExecutor
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (final ShardingTableReferenceRuleConfiguration referenceRule : ((ShardingRuleConfiguration) rule.get().getConfiguration()).getBindingTableGroups()) {
-            result.add(new LocalDataQueryResultRow(referenceRule.getName(), referenceRule.getReference()));
+            if (null == sqlStatement.getRuleName() || referenceRule.getName().equalsIgnoreCase(sqlStatement.getRuleName())) {
+                result.add(new LocalDataQueryResultRow(referenceRule.getName(), referenceRule.getReference()));
+            }
         }
         return result;
-    }
-    
-    private Collection<ShardingTableReferenceRuleConfiguration> buildData(final ShardingRuleConfiguration ruleConfig) {
-        return ruleConfig.getBindingTableGroups();
     }
     
     @Override
