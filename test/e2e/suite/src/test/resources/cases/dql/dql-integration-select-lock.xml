@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -14,15 +15,9 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<command>
-    <create-table-order>
-        CREATE TABLE `%s` (
-        `order_id` varchar(255) NOT NULL,
-        `user_id` INT NOT NULL,
-        `status` varchar(255) NULL,
-        `t_unsigned_int` int UNSIGNED NULL,
-        CONSTRAINT unique_id UNIQUE (order_id),
-        INDEX ( `user_id` )
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    </create-table-order>
-</command>
+
+<integration-test-cases>
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? FOR UPDATE" lock-clause="true" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="10:int" expected-data-source-name="write_dataset" />
+    </test-case>
+</integration-test-cases>

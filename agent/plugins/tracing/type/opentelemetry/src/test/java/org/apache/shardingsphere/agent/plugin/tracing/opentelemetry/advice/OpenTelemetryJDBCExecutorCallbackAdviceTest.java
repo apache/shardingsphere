@@ -83,7 +83,6 @@ public final class OpenTelemetryJDBCExecutorCallbackAdviceTest extends AbstractJ
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, "OpenTelemetry");
         advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException(), "OpenTelemetry");
-        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null, "OpenTelemetry");
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);

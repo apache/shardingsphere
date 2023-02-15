@@ -77,7 +77,6 @@ public final class OpenTracingSQLParserEngineAdviceTest extends AbstractJDBCExec
     public void assertExceptionHandle() {
         ADVICE.beforeMethod(getTargetObject(), parserMethod, new Object[]{"select 1"}, "OpenTracing");
         ADVICE.onThrowing(getTargetObject(), parserMethod, new Object[]{}, new IOException(), "OpenTracing");
-        ADVICE.afterMethod(getTargetObject(), parserMethod, new Object[]{}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

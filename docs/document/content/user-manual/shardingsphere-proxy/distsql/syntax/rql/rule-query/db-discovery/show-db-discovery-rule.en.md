@@ -1,11 +1,11 @@
 +++
-title = "SHOW DB_DISCOVERY RULES"
+title = "SHOW DB_DISCOVERY RULE"
 weight = 2
 +++
 
 ### Description
 
-The `SHOW DB_DISCOVERY RULES` syntax is used to query database discovery rules for specified database.
+The `SHOW DB_DISCOVERY RULE` syntax is used to query specified database discovery rules for specified database.
 
 ### Syntax
 
@@ -13,7 +13,10 @@ The `SHOW DB_DISCOVERY RULES` syntax is used to query database discovery rules f
 {{% tab name="Grammar" %}}
 ```sql
 ShowDatabaseDiscoveryRule::=
-  'SHOW' 'DB_DISCOVERY' 'RULES' ('FROM' databaseName)?
+  'SHOW' 'DB_DISCOVERY' ('RULE' ruleName | 'RULES') ('FROM' databaseName)?
+
+ruleName ::=
+  identifier
 
 databaseName ::=
   identifier
@@ -75,9 +78,42 @@ mysql> SHOW DB_DISCOVERY RULES;
 1 row in set (0.03 sec)
 ```
 
+- Query specified database discovery rule for specified database.
+
+```sql
+SHOW DB_DISCOVERY RULE group_0 FROM discovery_db;
+```
+
+```sql
+mysql> SHOW DB_DISCOVERY RULE group_0 FROM discovery_db;
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+| group_name | data_source_names | primary_data_source_name | discovery_type                                                                                    | discovery_heartbeat                                             |
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+| group_0    | ds_0,ds_1,ds_2    | ds_0                     | {name=group_0_MySQL.MGR, type=MySQL.MGR, props={group-name=558edd3c-02ec-11ea-9bb3-080027e39bd2}} | {name=group_0_heartbeat, props={keep-alive-cron=0/5 * * * * ?}} |
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+1 row in set (0.01 sec)
+
+```
+
+- Query specified database discovery rule for current database.
+
+```sql
+SHOW DB_DISCOVERY RULE group_0;
+```
+
+```sql
+mysql> SHOW DB_DISCOVERY RULE group_0;
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+| group_name | data_source_names | primary_data_source_name | discovery_type                                                                                    | discovery_heartbeat                                             |
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+| group_0    | ds_0,ds_1,ds_2    | ds_0                     | {name=group_0_MySQL.MGR, type=MySQL.MGR, props={group-name=558edd3c-02ec-11ea-9bb3-080027e39bd2}} | {name=group_0_heartbeat, props={keep-alive-cron=0/5 * * * * ?}} |
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+1 row in set (0.03 sec)
+```
+
 ### Reserved word
 
-`SHOW`, `DB_DISCOVERY`, `RULES`, `FROM`
+`SHOW`, `DB_DISCOVERY`, `RULE`, `RULES`, `FROM`
 
 ### Related links
 

@@ -27,8 +27,9 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.SplitPipelineJ
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Pipeline table meta data util.
@@ -37,34 +38,30 @@ import java.util.Optional;
 public final class PipelineTableMetaDataUtil {
     
     /**
-     * Get unique key column.
+     * Get unique key columns.
      *
      * @param schemaName schema name
      * @param tableName table name
      * @param metaDataLoader meta data loader
-     * @return pipeline column meta data
+     * @return pipeline columns meta data
      */
-    public static Optional<PipelineColumnMetaData> getUniqueKeyColumn(final String schemaName, final String tableName, final PipelineTableMetaDataLoader metaDataLoader) {
-        PipelineTableMetaData pipelineTableMetaData = metaDataLoader.getTableMetaData(schemaName, tableName);
-        return Optional.ofNullable(getAnAppropriateUniqueKeyColumn(pipelineTableMetaData, tableName));
-    }
-    
-    private static PipelineColumnMetaData getAnAppropriateUniqueKeyColumn(final PipelineTableMetaData tableMetaData, final String tableName) {
+    public static List<PipelineColumnMetaData> getUniqueKeyColumns(final String schemaName, final String tableName, final PipelineTableMetaDataLoader metaDataLoader) {
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, tableName);
         ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new SplitPipelineJobByRangeException(tableName, "Can not get table meta data"));
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
-        if (1 == primaryKeys.size()) {
-            return tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
+        if (primaryKeys.size() > 0) {
+            return primaryKeys.stream().map(tableMetaData::getColumnMetaData).collect(Collectors.toList());
         }
         Collection<PipelineIndexMetaData> uniqueIndexes = tableMetaData.getUniqueIndexes();
-        if (uniqueIndexes.isEmpty() && primaryKeys.isEmpty()) {
-            return null;
+        if (uniqueIndexes.isEmpty()) {
+            return new LinkedList<>();
         }
-        if (1 == uniqueIndexes.size() && 1 == uniqueIndexes.iterator().next().getColumns().size()) {
-            PipelineColumnMetaData column = uniqueIndexes.iterator().next().getColumns().get(0);
-            if (!column.isNullable()) {
-                return column;
+        for (PipelineIndexMetaData each : uniqueIndexes) {
+            if (each.getColumns().stream().anyMatch(PipelineColumnMetaData::isNullable)) {
+                continue;
             }
+            return each.getColumns();
         }
-        throw new SplitPipelineJobByRangeException(tableName, "table contains multiple unique index or unique index contains nullable/multiple column(s)");
+        return new LinkedList<>();
     }
 }

@@ -17,27 +17,32 @@
 
 package org.apache.shardingsphere.proxy.frontend.authentication;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Arrays;
 
 /**
  * Authenticator factory.
  */
+@RequiredArgsConstructor
 public final class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {
+    
+    private final Class<E> authenticatorTypeClass;
+    
+    private final AuthorityRule rule;
     
     /**
      * Create new instance of authenticator.
      * 
-     * @param authenticatorTypeClass authenticator type class
-     * @param authenticationMethod authentication method
-     * @param rule authority rule
+     * @param user user
      * @return new instance of authenticator
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public Authenticator newInstance(final Class<E> authenticatorTypeClass, final String authenticationMethod, final AuthorityRule rule) {
-        E authenticatorType = getAuthenticatorType(authenticatorTypeClass, authenticationMethod);
+    public Authenticator newInstance(final ShardingSphereUser user) {
+        E authenticatorType = getAuthenticatorType(rule.getAuthenticatorType(user));
         try {
             return authenticatorType.getAuthenticatorClass().getConstructor().newInstance();
         } catch (final NoSuchMethodException ignored) {
@@ -45,7 +50,7 @@ public final class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {
         }
     }
     
-    private E getAuthenticatorType(final Class<E> authenticatorTypeClass, final String authenticationMethod) {
+    private E getAuthenticatorType(final String authenticationMethod) {
         try {
             return E.valueOf(authenticatorTypeClass, authenticationMethod.toUpperCase());
         } catch (final IllegalArgumentException ignored) {

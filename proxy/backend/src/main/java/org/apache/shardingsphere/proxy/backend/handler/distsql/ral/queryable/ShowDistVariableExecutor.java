@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
@@ -53,9 +54,12 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
     }
     
     private Collection<LocalDataQueryResultRow> buildSpecifiedRow(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final String variableName) {
-        return isConfigurationKey(variableName)
-                ? Collections.singletonList(new LocalDataQueryResultRow(variableName.toLowerCase(), getConfigurationValue(metaData, variableName)))
-                : Collections.singletonList(new LocalDataQueryResultRow(variableName.toLowerCase(), getSpecialValue(connectionSession, variableName)));
+        if (isConfigurationKey(variableName)) {
+            return Collections.singletonList(new LocalDataQueryResultRow(variableName.toLowerCase(), getConfigurationValue(metaData, variableName)));
+        } else if (isInternalConfigurationKey(variableName)) {
+            return Collections.singletonList(new LocalDataQueryResultRow(variableName.toLowerCase(), getInternalConfigurationValue(metaData, variableName)));
+        }
+        return Collections.singletonList(new LocalDataQueryResultRow(variableName.toLowerCase(), getSpecialValue(connectionSession, variableName)));
     }
     
     private boolean isConfigurationKey(final String variableName) {
@@ -84,6 +88,14 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
             }
         }
         return metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString();
+    }
+    
+    private boolean isInternalConfigurationKey(final String variableName) {
+        return InternalConfigurationPropertyKey.getKeyNames().contains(variableName);
+    }
+    
+    private String getInternalConfigurationValue(final ShardingSphereMetaData metaData, final String variableName) {
+        return metaData.getInternalProps().getValue(InternalConfigurationPropertyKey.valueOf(variableName)).toString();
     }
     
     private String getSpecialValue(final ConnectionSession connectionSession, final String variableName) {

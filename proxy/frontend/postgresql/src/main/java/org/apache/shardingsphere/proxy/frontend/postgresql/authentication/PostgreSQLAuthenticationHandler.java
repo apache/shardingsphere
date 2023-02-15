@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticatorType;
 
@@ -54,20 +53,10 @@ public final class PostgreSQLAuthenticationHandler {
         Grantee grantee = new Grantee(username, "%");
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
-        ShardingSpherePreconditions.checkState(getAuthenticator(rule, user.get()).authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
+        ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(user.get())
+                .authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), md5Salt}),
                 () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));
-    }
-    
-    /**
-     * Get authenticator.
-     *
-     * @param rule authority rule
-     * @param user user
-     * @return authenticator
-     */
-    public Authenticator getAuthenticator(final AuthorityRule rule, final ShardingSphereUser user) {
-        return new AuthenticatorFactory<PostgreSQLAuthenticatorType>().newInstance(PostgreSQLAuthenticatorType.class, rule.getAuthenticatorType(user), rule);
     }
 }

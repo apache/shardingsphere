@@ -91,6 +91,32 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     @Test
+    public void assertMultiPrimaryKeyMigrationSuccess() throws SQLException, InterruptedException {
+        String sql;
+        String consistencyCheckAlgorithmType;
+        if (getDatabaseType() instanceof MySQLDatabaseType) {
+            sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`,`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+            consistencyCheckAlgorithmType = "CRC32_MATCH";
+        } else {
+            return;
+        }
+        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
+    }
+    
+    @Test
+    public void assertMultiUniqueKeyMigrationSuccess() throws SQLException, InterruptedException {
+        String sql;
+        String consistencyCheckAlgorithmType;
+        if (getDatabaseType() instanceof MySQLDatabaseType) {
+            sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), UNIQUE KEY (`order_id`,`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+            consistencyCheckAlgorithmType = "DATA_MATCH";
+        } else {
+            return;
+        }
+        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
+    }
+    
+    @Test
     public void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess() throws SQLException, InterruptedException {
         String sql;
         String consistencyCheckAlgorithmType;
