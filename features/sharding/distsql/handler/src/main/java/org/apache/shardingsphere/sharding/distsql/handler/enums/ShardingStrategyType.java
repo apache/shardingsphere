@@ -96,7 +96,7 @@ public enum ShardingStrategyType {
         
         @Override
         public boolean isValid(final String shardingColumn) {
-            return true;
+            return null == shardingColumn;
         }
     },
     COMPLEX {
