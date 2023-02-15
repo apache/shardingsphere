@@ -24,7 +24,13 @@ import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
  */
 public final class ShardingSphereDriverURLManager {
     
-    public static byte[] getContent(String url) {
+    /**
+     * Get config content from url.
+     * 
+     * @param url the driver url
+     * @return the config content
+     */
+    public static byte[] getContent(final String url) {
         for (ShardingsphereDriverURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingsphereDriverURLProvider.class)) {
             if (each.accept(url)) {
                 return each.getContent(url);
