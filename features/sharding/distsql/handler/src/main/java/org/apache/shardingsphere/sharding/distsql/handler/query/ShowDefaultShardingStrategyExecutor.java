@@ -31,10 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -45,41 +42,30 @@ public final class ShowDefaultShardingStrategyExecutor implements RQLExecutor<Sh
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowDefaultShardingStrategyStatement sqlStatement) {
         Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        if (!shardingRule.isPresent()) {
-            return Collections.emptyList();
-        }
-        Iterator<Entry<String, LinkedList<Object>>> data = buildData(shardingRule.get()).entrySet().iterator();
+        return shardingRule.map(this::buildData).orElse(Collections.emptyList());
+    }
+    
+    private Collection<LocalDataQueryResultRow> buildData(final ShardingRule rule) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        while (data.hasNext()) {
-            Entry<String, LinkedList<Object>> entry = data.next();
-            entry.getValue().addFirst(entry.getKey());
-            result.add(new LocalDataQueryResultRow(entry.getValue()));
-        }
-        return result;
-    }
-    
-    private Map<String, LinkedList<Object>> buildData(final ShardingRule rule) {
-        Map<String, LinkedList<Object>> result = new LinkedHashMap<>(2, 1);
         ShardingRuleConfiguration ruleConfig = (ShardingRuleConfiguration) rule.getConfiguration();
-        result.put("TABLE", buildDataItem(ruleConfig, ruleConfig.getDefaultTableShardingStrategy()));
-        result.put("DATABASE", buildDataItem(ruleConfig, ruleConfig.getDefaultDatabaseShardingStrategy()));
+        result.add(buildDataItem("TABLE", ruleConfig, ruleConfig.getDefaultTableShardingStrategy()));
+        result.add(buildDataItem("DATABASE", ruleConfig, ruleConfig.getDefaultDatabaseShardingStrategy()));
         return result;
     }
     
-    private LinkedList<Object> buildDataItem(final ShardingRuleConfiguration ruleConfig, final ShardingStrategyConfiguration strategyConfig) {
+    private LocalDataQueryResultRow buildDataItem(final String defaultType, final ShardingRuleConfiguration ruleConfig, final ShardingStrategyConfiguration strategyConfig) {
         if (null == strategyConfig) {
-            return new LinkedList<>(Arrays.asList("NONE", "", "", "", ""));
+            return new LocalDataQueryResultRow(defaultType, "", "", "", "", "");
         }
         ShardingStrategyType strategyType = ShardingStrategyType.getValueOf(strategyConfig);
         if (strategyType == ShardingStrategyType.NONE) {
-            return new LinkedList<>(Arrays.asList("NONE", "", "", "", ""));
+            return new LocalDataQueryResultRow(defaultType, "NONE", "", "", "", "");
         }
-        LinkedList<Object> result = new LinkedList<>(Collections.singleton(strategyType.name()));
-        result.addAll(strategyType.getConfigurationContents(strategyConfig));
         AlgorithmConfiguration algorithmConfig = ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName());
-        result.add(algorithmConfig.getType());
-        result.add(algorithmConfig.getProps().toString());
-        return result;
+        Iterator<String> iterator = strategyType.getConfigurationContents(strategyConfig).iterator();
+        String shardingColumn = iterator.next();
+        String algorithmName = iterator.next();
+        return new LocalDataQueryResultRow(defaultType, strategyType.toString(), shardingColumn, algorithmName, algorithmConfig.getType(), algorithmConfig.getProps().toString());
     }
     
     @Override
