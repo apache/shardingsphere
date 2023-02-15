@@ -1,11 +1,11 @@
 +++
-title = "SHOW READWRITE_SPLITTING RULES"
+title = "SHOW READWRITE_SPLITTING RULE"
 weight = 2
 +++
 
 ### 描述
 
-`SHOW READWRITE_SPLITTING RULES` 语法用于查询指定逻辑库中的读写分离规则。
+`SHOW READWRITE_SPLITTING RULE` 语法用于查询指定逻辑库中的指定读写分离规则。
 
 ### 语法
 
@@ -13,7 +13,10 @@ weight = 2
 {{% tab name="语法" %}}
 ```sql
 ShowReadWriteSplittingRule::=
-  'SHOW' 'READWRITE_SPLITTING' 'RULES' ('FROM' databaseName)?
+  'SHOW' 'READWRITE_SPLITTING' ('RULE' ruleName | 'RULES') ('FROM' databaseName)?
+
+ruleName ::=
+  identifier  
 
 databaseName ::=
   identifier
@@ -75,9 +78,41 @@ mysql> SHOW READWRITE_SPLITTING RULES;
 1 row in set (0.01 sec)
 ```
 
+- 查询指定逻辑库中的指定读写分离规则
+
+```sql
+SHOW READWRITE_SPLITTING RULE ms_group_0 FROM readwrite_splitting_db;
+```
+
+```sql
+mysql> SHOW READWRITE_SPLITTING RULE ms_group_0 FROM readwrite_splitting_db;
++------------+-----------------------------+---------------------------------+------------------------+------------------------+--------------------+---------------------+
+| name       | auto_aware_data_source_name | write_data_source_query_enabled | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
++------------+-----------------------------+---------------------------------+------------------------+------------------------+--------------------+---------------------+
+| ms_group_0 |                             |                                 | resource_1             | ds_0,ds_1              | random             |                     |
++------------+-----------------------------+---------------------------------+------------------------+------------------------+--------------------+---------------------+
+1 row in set (0.01 sec)
+```
+
+- 查询当前逻辑库中的指定读写分离规则
+
+```sql
+SHOW READWRITE_SPLITTING RULE ms_group_0;
+```
+
+```sql
+mysql> SHOW READWRITE_SPLITTING RULE ms_group_0;
++------------+-----------------------------+---------------------------------+------------------------+------------------------+--------------------+---------------------+
+| name       | auto_aware_data_source_name | write_data_source_query_enabled | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
++------------+-----------------------------+---------------------------------+------------------------+------------------------+--------------------+---------------------+
+| ms_group_0 |                             |                                 | resource_1             | ds_0,ds_1              | random             |                     |
++------------+-----------------------------+---------------------------------+------------------------+------------------------+--------------------+---------------------+
+1 row in set (0.01 sec)
+```
+
 ### 保留字
 
-`SHOW`、`READWRITE_SPLITTING`、`RULES`、`FROM`
+`SHOW`、`READWRITE_SPLITTING`、`RULE`、`RULES`、`FROM`
 
 ### 相关链接
 
