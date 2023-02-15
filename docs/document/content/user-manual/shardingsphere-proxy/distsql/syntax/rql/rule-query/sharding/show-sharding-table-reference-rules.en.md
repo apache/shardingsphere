@@ -81,7 +81,7 @@ SHOW SHARDING TABLE REFERENCE RULE ref_0 FROM sharding_db;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE REFERENCE RULES FROM sharding_db;
+mysql> SHOW SHARDING TABLE REFERENCE RULE FROM sharding_db;
 +-------+--------------------------+
 | name  | sharding_table_reference |
 +-------+--------------------------+
@@ -97,7 +97,7 @@ SHOW SHARDING TABLE REFERENCE RULE ref_0;
 ```
 
 ```sql
-mysql> SHOW SHARDING TABLE REFERENCE RULES;
+mysql> SHOW SHARDING TABLE REFERENCE RULE ref_0;
 +-------+--------------------------+
 | name  | sharding_table_reference |
 +-------+--------------------------+
