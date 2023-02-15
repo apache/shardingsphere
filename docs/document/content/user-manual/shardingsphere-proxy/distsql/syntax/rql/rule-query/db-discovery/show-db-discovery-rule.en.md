@@ -113,7 +113,7 @@ mysql> SHOW DB_DISCOVERY RULE group_0;
 
 ### Reserved word
 
-`SHOW`, `DB_DISCOVERY`, `RULES`, `FROM`
+`SHOW`, `DB_DISCOVERY`, `RULE`, `RULES`, `FROM`
 
 ### Related links
 
