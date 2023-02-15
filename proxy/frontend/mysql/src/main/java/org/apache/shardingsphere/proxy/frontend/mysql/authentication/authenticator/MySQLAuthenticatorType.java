@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authentica
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorType;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.impl.MySQLClearPasswordAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.impl.MySQLNativePasswordAuthenticator;
 
 /**
  * Authenticator type for MySQL.
