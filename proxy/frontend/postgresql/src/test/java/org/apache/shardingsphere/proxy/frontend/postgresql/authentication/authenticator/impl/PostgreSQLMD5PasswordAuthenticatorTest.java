@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;

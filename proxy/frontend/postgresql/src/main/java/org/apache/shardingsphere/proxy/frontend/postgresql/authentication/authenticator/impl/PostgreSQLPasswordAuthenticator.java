@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
 
 /**
- * Clear password authenticator for MySQL.
- * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/clear-text-authentication.html">Clear Text Authentication</a>
+ * Password authenticator for PostgreSQL.
  */
-public final class MySQLClearPasswordAuthenticator implements MySQLAuthenticator {
+public final class PostgreSQLPasswordAuthenticator implements PostgreSQLAuthenticator {
     
     @Override
     public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
-        byte[] authResponse = (byte[]) authInfo[0];
-        byte[] password = new byte[authResponse.length - 1];
-        System.arraycopy(authResponse, 0, password, 0, authResponse.length - 1);
-        return Strings.isNullOrEmpty(user.getPassword()) || user.getPassword().equals(new String(password));
+        String password = (String) authInfo[0];
+        return Strings.isNullOrEmpty(user.getPassword()) || user.getPassword().equals(password);
     }
     
     @Override
     public String getAuthenticationMethodName() {
-        return MySQLAuthenticationMethod.CLEAR_TEXT.getMethodName();
+        return PostgreSQLAuthenticationMethod.PASSWORD.getMethodName();
     }
 }
