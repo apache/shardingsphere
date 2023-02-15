@@ -60,6 +60,12 @@ services:
 
 4. 如果需要构建 Docker Image， 确保 `docker-ce` 已安装。
 
+5. 首先需要在项目的根目录下，执行如下命令以为所有子模块采集 Standard 形态的 GraalVM 可达性元数据。
+
+```shell
+./mvnw -PgenerateStandardMetadata -DskipNativeTests -B -T1C clean test
+```
+
 ## 操作步骤
 
 1. 获取 Apache ShardingSphere Git Source
@@ -74,7 +80,7 @@ services:
 - 在 Git Source 同级目录下执行如下命令, 直接完成 Native Image 的构建。
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
+./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
 ```
 
 - 情形二：需要使用存在 SPI 实现的 JAR 或 GPL V2 等 LICENSE 的第三方依赖的 JAR。
@@ -101,7 +107,7 @@ services:
 - 通过命令行构建 GraalVM Native Image。
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
+./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
 ```
 
 3. 通过命令行启动 Native Image, 需要带上 4 个参数。
@@ -116,7 +122,7 @@ services:
 4. 如果需要构建 Docker Image, 在添加存在 SPI 实现的依赖或第三方依赖后, 在命令行执行如下命令。
 
 ```shell
-./mvnw -am -pl distribution/proxy-native -B -Pnative,docker.native -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
+./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native,docker.native -DskipTests clean package
 ```
 
 - 假设存在包含`server.yaml` 的 `conf` 文件夹为 `./custom/conf`，可通过如下的 `docker-compose.yml` 文件启动 GraalVM Native
@@ -178,5 +184,5 @@ services:
 3. 通过命令行构建 GraalVM Native Image。
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
+./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
 ```

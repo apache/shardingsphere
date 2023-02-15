@@ -222,7 +222,7 @@ The text of each license is the standard Apache 2.0 license.
     avatica-core 1.22.0: https://calcite.apache.org/avatica, Apache 2.0
     avatica-metrics 1.22.0: https://calcite.apache.org/avatica, Apache 2.0
     auto-service-annotations 1.0: https://github.com/google/auto/tree/master/service, Apache 2.0
-    caffeine 3.1.2: https://github.com/ben-manes/caffeine, Apache 2.0
+    caffeine 2.9.3: https://github.com/ben-manes/caffeine, Apache 2.0
     calcite-core 1.32.0: https://calcite.apache.org, Apache 2.0
     calcite-linq4j 1.32.0: https://calcite.apache.org, Apache 2.0
     commons-codec 1.15: https://github.com/apache/commons-codec, Apache 2.0
@@ -251,7 +251,7 @@ The text of each license is the standard Apache 2.0 license.
     grpc-stub 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.9.1: https://github.com/google/gson, Apache 2.0
     guava 30.0-jre: https://github.com/google/guava, Apache 2.0
-    HikariCP 5.0.1: https://github.com/brettwooldridge/HikariCP, Apache 2.0
+    HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
     httpclient5 5.1.3: https://hc.apache.org/httpcomponents-client-5.1.x, Apache 2.0
     httpcore5-h2 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
     httpcore5 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0

@@ -36,12 +36,12 @@ public final class EspressoInlineExpressionParser {
     private final Value espressoInlineExpressionParser;
     
     static {
-        // https://github.com/oracle/graal/issues/4555 not yet closed
+        // TODO https://github.com/oracle/graal/issues/4555 not yet closed
         String javaHome = System.getenv("JAVA_HOME");
         if (null == javaHome) {
             throw new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!");
         }
-        URL resource = Thread.currentThread().getContextClassLoader().getResource("espresso-need-libs");
+        URL resource = EspressoInlineExpressionParser.class.getClassLoader().getResource("espresso-need-libs");
         assert null != resource;
         String dir = resource.getPath();
         String javaClasspath = String.join(":", dir + "/groovy.jar", dir + "/guava.jar", dir + "/shardingsphere-infra-util-groovy.jar");
