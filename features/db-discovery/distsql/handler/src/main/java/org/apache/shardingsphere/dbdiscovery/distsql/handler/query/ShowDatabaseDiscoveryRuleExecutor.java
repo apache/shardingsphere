@@ -70,9 +70,7 @@ public final class ShowDatabaseDiscoveryRuleExecutor implements RQLExecutor<Show
             heartbeatMap.putAll(convertToMap(discoveryHeartbeats.get(dataSourceRuleConfig.getDiscoveryHeartbeatName())));
             String groupName = dataSourceRuleConfig.getGroupName();
             String primaryDataSourceName = null == primaryDataSources.get(groupName) ? "" : primaryDataSources.get(groupName);
-            if (null == sqlStatement.getRuleName()) {
-                result.add(new LocalDataQueryResultRow(groupName, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, typeMap, heartbeatMap));
-            } else if (sqlStatement.getRuleName().equalsIgnoreCase(groupName)) {
+            if (null == sqlStatement.getRuleName() || sqlStatement.getRuleName().equalsIgnoreCase(groupName)) {
                 result.add(new LocalDataQueryResultRow(groupName, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, typeMap, heartbeatMap));
             }
         }
