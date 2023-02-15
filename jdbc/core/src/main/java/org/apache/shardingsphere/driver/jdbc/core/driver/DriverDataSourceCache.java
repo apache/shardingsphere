@@ -48,7 +48,7 @@ public final class DriverDataSourceCache {
     @SuppressWarnings("unchecked")
     private static <T extends Throwable> DataSource createDataSource(final String url) throws T {
         try {
-            return YamlShardingSphereDataSourceFactory.createDataSource(new ShardingSphereDriverURL(url).toConfigurationBytes());
+            return YamlShardingSphereDataSourceFactory.createDataSource(ShardingSphereDriverURLManager.getContent(url));
         } catch (final IOException ex) {
             throw (T) new SQLException(ex);
         } catch (final SQLException ex) {
