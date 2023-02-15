@@ -68,9 +68,7 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         ((ReadwriteSplittingRuleConfiguration) rule.getConfiguration()).getDataSources().forEach(each -> {
             LocalDataQueryResultRow dataItem = buildDataItem(each, getLoadBalancers((ReadwriteSplittingRuleConfiguration) rule.getConfiguration()));
-            if (null == sqlStatement.getRuleName()) {
-                result.add(dataItem);
-            } else if (sqlStatement.getRuleName().equalsIgnoreCase(each.getName())) {
+            if (null == sqlStatement.getRuleName() || sqlStatement.getRuleName().equalsIgnoreCase(each.getName())) {
                 result.add(dataItem);
             }
         });
