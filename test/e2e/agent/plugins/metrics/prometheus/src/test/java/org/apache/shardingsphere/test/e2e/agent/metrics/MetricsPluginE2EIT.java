@@ -65,19 +65,17 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
                 ? metricCase.getMetricName().replace("_total", "")
                 : metricCase.getMetricName();
         try {
-            String httpUrl = String.format("%s?metric=%s", metaDataURL, URLEncoder.encode(metricName, "UTF-8"));
-            MetricsMetaDataResult metricsMetaDataResult = OkHttpUtils.getInstance().get(httpUrl, MetricsMetaDataResult.class);
-            MetadataAssert.assertIs(metricsMetaDataResult, metricCase);
+            String metaDataURLWithParam = String.join("", metaDataURL, "?metric=", URLEncoder.encode(metricName, "UTF-8"));
+            MetadataAssert.assertIs(OkHttpUtils.getInstance().get(metaDataURLWithParam, MetricsMetaDataResult.class), metricCase);
         } catch (final IOException ex) {
             log.info("Access prometheus HTTP RESTful API error: ", ex);
         }
     }
     
-    private void assertQuery(final String queryRangeURL, final MetricQueryCase metricCase) {
+    private void assertQuery(final String queryURL, final MetricQueryCase metricCase) {
         try {
-            String httpUrl = String.format("%s?query=%s", queryRangeURL, URLEncoder.encode(metricCase.getQuery(), "UTF-8"));
-            MetricsQueryResult metricsQueryResult = OkHttpUtils.getInstance().get(httpUrl, MetricsQueryResult.class);
-            QueryAssert.assertIs(metricsQueryResult, metricCase);
+            String queryURLWithParam = String.join("", queryURL, "?query=", URLEncoder.encode(metricCase.getQuery(), "UTF-8"));
+            QueryAssert.assertIs(OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class), metricCase);
         } catch (final IOException ex) {
             log.info("Access prometheus HTTP RESTful API error: ", ex);
         }
