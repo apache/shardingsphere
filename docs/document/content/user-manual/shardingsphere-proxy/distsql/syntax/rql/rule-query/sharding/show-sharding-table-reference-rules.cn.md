@@ -1,5 +1,5 @@
 +++
-title = "SHOW SHARDING TABLE REGERENCE RULE"
+title = "SHOW SHARDING TABLE REFERENCE RULE"
 weight = 14
 
 +++

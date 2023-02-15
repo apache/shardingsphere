@@ -74,7 +74,7 @@ mysql> SHOW SHARDING TABLE REFERENCE RULES;
 2 rows in set (0.00 sec)
 ```
 
-- Query specified sharding table reference rules for the specified logical database
+- Query specified sharding table reference rule for the specified logical database
 
 ```sql
 SHOW SHARDING TABLE REFERENCE RULE ref_0 FROM sharding_db;
@@ -90,7 +90,7 @@ mysql> SHOW SHARDING TABLE REFERENCE RULES FROM sharding_db;
 2 rows in set (0.00 sec)
 ```
 
-- Query specified sharding table reference rules for the current logical database
+- Query specified sharding table reference rule for the current logical database
 
 ```sql
 SHOW SHARDING TABLE REFERENCE RULE ref_0;

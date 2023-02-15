@@ -78,7 +78,7 @@ mysql> SHOW READWRITE_SPLITTING RULES;
 1 row in set (0.01 sec)
 ```
 
-- Query specified readwrite splitting rules for specified database.
+- Query specified readwrite splitting rule for specified database.
 
 ```sql
 SHOW READWRITE_SPLITTING RULE ms_group_0 FROM readwrite_splitting_db;
@@ -94,7 +94,7 @@ mysql> SHOW READWRITE_SPLITTING RULE ms_group_0 FROM readwrite_splitting_db;
 1 row in set (0.01 sec)
 ```
 
-- Query specified readwrite splitting rules for current database.
+- Query specified readwrite splitting rule for current database.
 
 ```sql
 SHOW READWRITE_SPLITTING RULE ms_group_0;
