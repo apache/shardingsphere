@@ -88,6 +88,21 @@ public final class MockMessageHandler extends ChannelDuplexHandler {
             response.setBody(HeartbeatMessage.PONG);
         } else if (requestBody instanceof MergedWarpMessage) {
             setMergeResultMessage(request, response);
+        } else if (requestBody instanceof GlobalBeginRequest) {
+            GlobalBeginResponse globalBeginResponse = new GlobalBeginResponse();
+            globalBeginResponse.setXid(XID.generateXID(id.incrementAndGet()));
+            globalBeginResponse.setResultCode(ResultCode.Success);
+            response.setBody(globalBeginResponse);
+        } else if (requestBody instanceof GlobalCommitRequest) {
+            GlobalCommitResponse globalCommitResponse = new GlobalCommitResponse();
+            globalCommitResponse.setResultCode(ResultCode.Success);
+            globalCommitResponse.setGlobalStatus(GlobalStatus.Committing);
+            response.setBody(globalCommitResponse);
+        } else if (requestBody instanceof GlobalRollbackRequest) {
+            GlobalRollbackResponse globalRollbackResponse = new GlobalRollbackResponse();
+            globalRollbackResponse.setResultCode(ResultCode.Success);
+            globalRollbackResponse.setGlobalStatus(GlobalStatus.Rollbacked);
+            response.setBody(globalRollbackResponse);
         }
         if (requestBody != HeartbeatMessage.PING) {
             requestQueue.offer(requestBody);
