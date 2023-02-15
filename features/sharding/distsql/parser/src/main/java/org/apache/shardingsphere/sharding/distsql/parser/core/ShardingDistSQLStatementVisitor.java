@@ -378,7 +378,8 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitShowShardingTableReferenceRules(final ShowShardingTableReferenceRulesContext ctx) {
-        return new ShowShardingTableReferenceRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowShardingTableReferenceRulesStatement(null == ctx.ruleName() ? null : getIdentifierValue(ctx.ruleName()),
+                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override

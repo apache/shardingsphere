@@ -175,12 +175,12 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
     public BigDecimal getBigDecimal(final String columnLabel) throws SQLException {
         return getBigDecimal(findColumn(columnLabel));
     }
-
+    
     @Override
     public Statement getStatement() throws SQLException {
         return resultSet.getStatement();
     }
-
+    
     @Override
     public String getString(final int columnIndex) throws SQLException {
         checkClosed();
@@ -209,7 +209,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         checkColumnIndex(columnIndex);
         return (boolean) ResultSetUtil.convertValue(currentDatabaseMetaDataObject.getObject(columnIndex), boolean.class);
     }
-
+    
     @Override
     public boolean getBoolean(final String columnLabel) throws SQLException {
         return getBoolean(findColumn(columnLabel));
