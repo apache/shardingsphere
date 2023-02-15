@@ -27,24 +27,24 @@ message CDCRequest {
   enum Type {
     UNKNOWN = 0;
     LOGIN = 1;
-    CREATE_SUBSCRIPTION = 2;
-    START_SUBSCRIPTION = 3;
-    ACK = 4;
-    STOP_SUBSCRIPTION = 5;
-    DROP_SUBSCRIPTION = 6;
+    STREAM_DATA = 2;
+    START_STREAMING = 3;
+    ACK_STREAMING = 4;
+    STOP_STREAMING = 5;
+    DROP_STREAMING = 6;
   }
   Type type = 3;
-  oneof request {
-    LoginRequest login = 4;
-    CreateSubscriptionRequest create_subscription = 5;
-    StartSubscriptionRequest start_subscription = 6;
-    AckRequest ack_request = 7;
-    StopSubscriptionRequest stop_subscription = 8;
-    DropSubscriptionRequest drop_subscription = 9;
+  oneof request_body {
+    LoginRequestBody login_request_body = 4;
+    StreamDataRequestBody stream_data_request_body = 5;
+    StartStreamingRequestBody start_streaming_request_body =6;
+    AckStreamingRequestBody ack_streaming_request_body = 7;
+    StopStreamingRequestBody stop_streaming_request_body = 8;
+    DropStreamingRequestBody drop_streaming_request_body = 9;
   }
 }
 
-message LoginRequest {
+message LoginRequestBody {
   enum LoginType {
     UNKNOWN = 0;
     BASIC = 1;
@@ -60,7 +60,7 @@ message LoginRequest {
   }
 }
 
-message CreateSubscriptionRequest {
+message StreamDataRequestBody {
   string database = 1;
   message TableName {
     string schema = 1;
@@ -77,21 +77,21 @@ message CreateSubscriptionRequest {
   bool incremental_global_orderly = 5;
 }
 
-message StartSubscriptionRequest {
+message StartStreamingRequestBody {
   string database = 1;
   string subscription_name = 2;
 }
 
-message StopSubscriptionRequest {
+message StopStreamingRequestBody {
   string database = 1;
   string subscription_name = 2;
 }
 
-message DropSubscriptionRequest {
+message DropStreamingRequestBody {
   string database = 1;
   string subscription_name = 2;
 }
 
-message AckRequest {
+message AckStreamingRequestBody {
   string ack_id = 3;
 }

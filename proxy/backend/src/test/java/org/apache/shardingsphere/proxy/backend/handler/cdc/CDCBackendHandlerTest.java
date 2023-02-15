@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.cdc;
 
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
@@ -85,7 +85,7 @@ public final class CDCBackendHandlerTest {
     
     @Test
     public void assertCreateSubscriptionFailed() {
-        CDCRequest request = CDCRequest.newBuilder().setRequestId("1").setCreateSubscription(CreateSubscriptionRequest.newBuilder().setDatabase("none")).build();
+        CDCRequest request = CDCRequest.newBuilder().setRequestId("1").setStreamDataRequestBody(StreamDataRequestBody.newBuilder().setDatabase("none")).build();
         CDCResponse actualResponse = handler.createSubscription(request);
         assertThat(actualResponse.getStatus(), is(Status.FAILED));
     }
@@ -95,7 +95,7 @@ public final class CDCBackendHandlerTest {
     @Test
     public void assertCreateSubscriptionSucceed() {
         String requestId = "1";
-        CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setCreateSubscription(CreateSubscriptionRequest.newBuilder().setDatabase("sharding_db")).build();
+        CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setStreamDataRequestBody(StreamDataRequestBody.newBuilder().setDatabase("sharding_db")).build();
         CDCResponse actualResponse = handler.createSubscription(request);
         assertThat(actualResponse.getStatus(), is(Status.SUCCEED));
         assertThat(actualResponse.getRequestId(), is(requestId));

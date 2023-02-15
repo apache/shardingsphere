@@ -28,9 +28,9 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscripti
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest.BasicBody;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest.LoginType;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody.BasicBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody.LoginType;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
@@ -79,9 +79,10 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
         ServerGreetingResult serverGreetingResult = response.getServerGreetingResult();
         log.info("Server greeting result, server version: {}, protocol version: {}", serverGreetingResult.getServerVersion(), serverGreetingResult.getProtocolVersion());
         String encryptPassword = Hashing.sha256().hashBytes(password.getBytes()).toString().toUpperCase();
-        LoginRequest loginRequest = LoginRequest.newBuilder().setType(LoginType.BASIC).setBasicBody(BasicBody.newBuilder().setUsername(username).setPassword(encryptPassword).build()).build();
+        LoginRequestBody loginRequestBody = LoginRequestBody.newBuilder().setType(LoginType.BASIC).setBasicBody(BasicBody.newBuilder().setUsername(username).setPassword(encryptPassword).build())
+                .build();
         String loginRequestId = RequestIdUtil.generateRequestId();
-        CDCRequest data = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId(loginRequestId).setLogin(loginRequest).build();
+        CDCRequest data = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId(loginRequestId).setLoginRequestBody(loginRequestBody).build();
         ctx.writeAndFlush(data);
         connectionContext.setStatus(ClientConnectionStatus.NOT_LOGGED_IN);
     }

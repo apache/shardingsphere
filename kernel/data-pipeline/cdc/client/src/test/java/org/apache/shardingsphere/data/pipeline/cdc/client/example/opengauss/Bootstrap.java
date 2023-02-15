@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.example.opengauss;
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.ImportDataSourceParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.TableName;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SubscriptionMode;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.TableName;
 
 import java.util.Collections;
 

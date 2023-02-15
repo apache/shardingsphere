@@ -33,7 +33,7 @@ message CDCResponse {
   Status status = 2;
   oneof response {
     ServerGreetingResult server_greeting_result = 3;
-    CreateSubscriptionResult create_subscription_result = 4;
+    CreateCDCResult create_CDC_result = 4;
     DataRecordResult data_record_result = 5;
   }
 
@@ -46,7 +46,7 @@ message ServerGreetingResult {
   string protocol_version = 2;
 }
 
-message CreateSubscriptionResult {
+message CreateCDCResult {
   string subscription_name = 1;
   bool existing = 2;
 }
