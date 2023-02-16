@@ -42,7 +42,7 @@ loadBalancers:
 ## 影子算法
 
 ```yaml
-loadBalancers:
+shadowAlgorithms:
   # shadowAlgorithmName 由用户指定，需要和影子库规则中的 shadowAlgorithmNames 属性一致
   <shadowAlgorithmName>:
     # type 和 props，请参考影子库内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/builtin-algorithm/shadow/
