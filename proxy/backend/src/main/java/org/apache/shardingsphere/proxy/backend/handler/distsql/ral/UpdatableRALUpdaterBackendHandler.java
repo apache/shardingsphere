@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -30,25 +29,22 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import java.sql.SQLException;
 
 /**
- * Updatable scaling RAL backend handler factory.
+ * Updatable RAL backend handler.
+ * TODO replace UpdatableRALBackendHandler after its refactoring is complete
+ * 
  */
 @RequiredArgsConstructor
 @Setter
-public final class UpdatableScalingRALBackendHandler implements DistSQLBackendHandler {
+public final class UpdatableRALUpdaterBackendHandler<T extends UpdatableRALStatement> extends RALBackendHandler<T> {
     
-    private final UpdatableScalingRALStatement sqlStatement;
+    private final UpdatableRALStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() throws SQLException {
-        String databaseName = getDatabaseName(connectionSession);
-        TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass().getName()).executeUpdate(databaseName, sqlStatement);
+        TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass().getName()).executeUpdate(connectionSession.getDatabaseName(), sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    private String getDatabaseName(final ConnectionSession connectionSession) {
-        return connectionSession.getDatabaseName();
     }
 }

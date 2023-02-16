@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.update;
+package org.apache.shardingsphere.distsql.handler.ral.update;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.sql.SQLException;
+
 /**
- * RAL updater for global rule.
+ * RAL updater.
+ * 
+ * @param <T> type of updatable RAL statement
  */
 @SingletonSPI
-public interface GlobalRuleRALUpdater extends TypedSPI {
+public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
     
     /**
      * Execute update.
      *
-     * @param metaData meta data
-     * @param sqlStatement SQL statement
+     * @param databaseName database name
+     * @param sqlStatement updatable RAL statement
+     * @throws SQLException SQL exception
      */
-    void executeUpdate(ShardingSphereMetaData metaData, SQLStatement sqlStatement);
+    void executeUpdate(String databaseName, T sqlStatement) throws SQLException;
 }
