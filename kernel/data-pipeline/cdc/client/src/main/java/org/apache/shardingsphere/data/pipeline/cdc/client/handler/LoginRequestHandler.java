@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
-import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
+import org.apache.shardingsphere.data.pipeline.cdc.client.event.StreamDataEvent;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
@@ -68,7 +68,7 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
                 setLoginRequest(ctx, response, connectionContext);
                 break;
             case NOT_LOGGED_IN:
-                sendSubscriptionEvent(ctx, response, connectionContext);
+                sendStreamDataEvent(ctx, response, connectionContext);
                 break;
             default:
                 ctx.fireChannelRead(msg);
@@ -87,11 +87,11 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
         connectionContext.setStatus(ClientConnectionStatus.NOT_LOGGED_IN);
     }
     
-    private void sendSubscriptionEvent(final ChannelHandlerContext ctx, final CDCResponse response, final ClientConnectionContext connectionContext) {
+    private void sendStreamDataEvent(final ChannelHandlerContext ctx, final CDCResponse response, final ClientConnectionContext connectionContext) {
         if (response.getStatus() == Status.SUCCEED) {
             log.info("login success, username {}", username);
             connectionContext.setStatus(ClientConnectionStatus.LOGGING_IN);
-            ctx.fireUserEventTriggered(new CreateSubscriptionEvent());
+            ctx.fireUserEventTriggered(new StreamDataEvent());
         } else {
             log.error("login failed, username {}", username);
         }

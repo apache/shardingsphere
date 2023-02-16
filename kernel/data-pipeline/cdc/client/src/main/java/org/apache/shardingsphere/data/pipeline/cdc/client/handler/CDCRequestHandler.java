@@ -22,7 +22,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
-import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
+import org.apache.shardingsphere.data.pipeline.cdc.client.event.StreamDataEvent;
 import org.apache.shardingsphere.data.pipeline.cdc.client.importer.DataSourceImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Builder;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
@@ -41,7 +42,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataR
 import java.util.List;
 
 /**
- * Subscription request handler.
+ * CDC request handler.
  */
 @Slf4j
 public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
@@ -57,10 +58,10 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
-        if (evt instanceof CreateSubscriptionEvent) {
+        if (evt instanceof StreamDataEvent) {
             StreamDataRequestBody streamDataRequestBody = StreamDataRequestBody.newBuilder().setDatabase(parameter.getDatabase()).setFull(parameter.isFull())
                     .addAllSourceSchemaTables(parameter.getSchemaTables()).build();
-            CDCRequest request = CDCRequest.newBuilder().setStreamDataRequestBody(streamDataRequestBody).setRequestId(RequestIdUtil.generateRequestId()).build();
+            CDCRequest request = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setType(Type.STREAM_DATA).setStreamDataRequestBody(streamDataRequestBody).build();
             ctx.writeAndFlush(request);
         }
     }
@@ -84,7 +85,7 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     // TODO not remove the method, may be used again in the future
     private void sendStartStreamingDataRequest(final ChannelHandlerContext ctx, final String streamId, final ClientConnectionContext connectionContext) {
         StartStreamingRequestBody startStreamingRequest = StartStreamingRequestBody.newBuilder().setStreamingId(streamId).build();
-        Builder builder = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setStartStreamingRequestBody(startStreamingRequest);
+        Builder builder = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setType(Type.START_STREAMING).setStartStreamingRequestBody(startStreamingRequest);
         ctx.writeAndFlush(builder.build());
         connectionContext.setStatus(ClientConnectionStatus.STREAMING);
     }
@@ -100,7 +101,7 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
                 throw new RuntimeException(ex);
             }
         }
-        ctx.channel().writeAndFlush(CDCRequest.newBuilder().setAckStreamingRequestBody(AckStreamingRequestBody.newBuilder().setAckId(result.getAckId()).build()).build());
+        ctx.channel().writeAndFlush(CDCRequest.newBuilder().setType(Type.ACK_STREAMING).setAckStreamingRequestBody(AckStreamingRequestBody.newBuilder().setAckId(result.getAckId()).build()).build());
     }
     
     @Override

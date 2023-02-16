@@ -25,15 +25,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Create subscription job parameter.
+ * Create stream data parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateStreamingJobParameter {
+public final class CreateStreamDataParameter {
     
     private final String database;
     
-    private final List<String> subscribeTableNames;
+    private final List<String> tableNames;
     
     private final boolean full;
     

@@ -26,5 +26,5 @@ public enum CDCConnectionStatus {
     
     LOGGED_IN,
     
-    SUBSCRIBED
+    DATA_STREAMING
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.client.event;
 
 /**
- * Create subscription event.
+ * Stream data event.
  */
-public final class CreateSubscriptionEvent {
+public final class StreamDataEvent {
 }

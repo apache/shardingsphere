@@ -45,7 +45,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
-import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateStreamingJobParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateStreamDataParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
@@ -108,10 +108,10 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
      * @param param create CDC job param
      * @return job id
      */
-    public String createJob(final CreateStreamingJobParameter param) {
+    public String createJob(final CreateStreamDataParameter param) {
         YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
         yamlJobConfig.setDatabase(param.getDatabase());
-        yamlJobConfig.setTableNames(param.getSubscribeTableNames());
+        yamlJobConfig.setTableNames(param.getTableNames());
         yamlJobConfig.setFull(param.isFull());
         yamlJobConfig.setDecodeWithTX(param.isDecodeWithTX());
         ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getDatabase());

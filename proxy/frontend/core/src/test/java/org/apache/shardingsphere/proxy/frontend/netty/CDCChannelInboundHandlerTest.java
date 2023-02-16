@@ -83,7 +83,8 @@ public final class CDCChannelInboundHandlerTest {
     
     @Test
     public void assertLoginRequestFailed() {
-        CDCRequest actualRequest = CDCRequest.newBuilder().setLoginRequestBody(LoginRequestBody.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root2").build()).build()).build();
+        CDCRequest actualRequest = CDCRequest.newBuilder().setType(Type.LOGIN).setLoginRequestBody(LoginRequestBody.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root2").build())
+                .build()).build();
         channel.writeInbound(actualRequest);
         CDCResponse expectedGreetingResult = channel.readOutbound();
         assertTrue(expectedGreetingResult.hasServerGreetingResult());
