@@ -96,7 +96,7 @@ ShardingSphere driver URL provider
 
 ### Implementation classes
 
-| *Configuration Type*                    | *Description*                          | *Fully-qualified class name* |
-|-----------------------------------------|----------------------------------------| ---------------------------- |
-| jdbc:shardingsphere:classpath:<path>    | The classpath driver URL provider.     | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.ClasspathDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/ClasspathDriverURLProvider.java) |
-| jdbc:shardingsphere:absolutepath:<path> | The absolute path driver URL provider. | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.AbsolutePathDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/AbsolutePathDriverURLProvider.java) |
+| *Configuration Type*                    | *Description*                         | *Fully-qualified class name* |
+|-----------------------------------------|---------------------------------------| ---------------------------- |
+| jdbc:shardingsphere:classpath:<path>    | The classpath driver URL provider     | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.ClasspathDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/ClasspathDriverURLProvider.java) |
+| jdbc:shardingsphere:absolutepath:<path> | The absolute path driver URL provider | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.AbsolutePathDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/AbsolutePathDriverURLProvider.java) |
