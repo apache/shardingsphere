@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authentication;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -25,9 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 
 /**
  * Password authentication (backend) packet for PostgreSQL.
- *
  */
-@RequiredArgsConstructor
 public final class PostgreSQLPasswordAuthenticationPacket implements PostgreSQLIdentifierPacket {
     
     private static final int AUTH_REQ_PASSWORD = 3;

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authen
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorType;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.impl.OpenGaussSCRAMSha256PasswordAuthenticator;
 
 /**
  * Authenticator type for openGauss.

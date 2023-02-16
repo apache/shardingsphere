@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
@@ -36,10 +37,15 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authent
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.PrivilegeNotGrantedException;
+import org.apache.shardingsphere.dialect.postgresql.exception.authority.UnknownUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
@@ -69,8 +75,6 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     
     private AuthenticationResult currentAuthResult;
     
-    private final PostgreSQLAuthenticationHandler authenticationHandler = new PostgreSQLAuthenticationHandler();
-    
     @Override
     public int handshake(final ChannelHandlerContext context) {
         return ConnectionIdGenerator.getInstance().nextId();
@@ -83,30 +87,16 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
             return AuthenticationResultBuilder.continued();
         }
         payload.getByteBuf().resetReaderIndex();
-        return startupMessageReceived ? processPasswordMessage(context, (PostgreSQLPacketPayload) payload) : processStartupMessage(context, (PostgreSQLPacketPayload) payload);
+        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        return startupMessageReceived ? processPasswordMessage(context, (PostgreSQLPacketPayload) payload, rule) : processStartupMessage(context, (PostgreSQLPacketPayload) payload, rule);
     }
     
-    private AuthenticationResult processStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
-        startupMessageReceived = true;
-        PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
-        clientEncoding = comStartupPacket.getClientEncoding();
-        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.findCharacterSet(clientEncoding));
-        String user = comStartupPacket.getUser();
-        if (Strings.isNullOrEmpty(user)) {
-            throw new EmptyUsernameException();
-        }
-        context.writeAndFlush(getIdentifierPacket(user));
-        currentAuthResult = AuthenticationResultBuilder.continued(user, "", comStartupPacket.getDatabase());
-        return currentAuthResult;
-    }
-    
-    private AuthenticationResult processPasswordMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
+    private AuthenticationResult processPasswordMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, final AuthorityRule rule) {
         char messageType = (char) payload.readInt1();
-        if (PostgreSQLMessagePacketType.PASSWORD_MESSAGE.getValue() != messageType) {
-            throw new ProtocolViolationException("password", Character.toString(messageType));
-        }
+        ShardingSpherePreconditions.checkState(PostgreSQLMessagePacketType.PASSWORD_MESSAGE.getValue() == messageType,
+                () -> new ProtocolViolationException("password", Character.toString(messageType)));
         PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
-        authenticationHandler.login(currentAuthResult.getUsername(), currentAuthResult.getDatabase(), md5Salt, passwordMessagePacket);
+        login(currentAuthResult.getDatabase(), currentAuthResult.getUsername(), md5Salt, passwordMessagePacket.getDigest(), rule);
         // TODO implement PostgreSQLServerInfo like MySQLServerInfo
         context.write(new PostgreSQLAuthenticationOKPacket());
         context.write(new PostgreSQLParameterStatusPacket("server_version", PostgreSQLServerInfo.getServerVersion()));
@@ -118,8 +108,31 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase());
     }
     
-    private PostgreSQLIdentifierPacket getIdentifierPacket(final String username) {
-        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+    private void login(final String databaseName, final String username, final byte[] md5Salt, final String digest, final AuthorityRule rule) {
+        ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
+        Grantee grantee = new Grantee(username, "%");
+        Optional<ShardingSphereUser> user = rule.findUser(grantee);
+        ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
+        ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(user.get()).authenticate(user.get(), new Object[]{digest, md5Salt}),
+                () -> new InvalidPasswordException(username));
+        ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
+    }
+    
+    private AuthenticationResult processStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, final AuthorityRule rule) {
+        startupMessageReceived = true;
+        PostgreSQLComStartupPacket startupPacket = new PostgreSQLComStartupPacket(payload);
+        clientEncoding = startupPacket.getClientEncoding();
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.findCharacterSet(clientEncoding));
+        String username = startupPacket.getUsername();
+        if (Strings.isNullOrEmpty(username)) {
+            throw new EmptyUsernameException();
+        }
+        context.writeAndFlush(getIdentifierPacket(username, rule));
+        currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase());
+        return currentAuthResult;
+    }
+    
+    private PostgreSQLIdentifierPacket getIdentifierPacket(final String username, final AuthorityRule rule) {
         Optional<ShardingSphereUser> user = rule.findUser(new Grantee(username, ""));
         Optional<Authenticator> authenticator = user.map(optional -> new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(optional));
         if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.get().getAuthenticationMethodName())) {

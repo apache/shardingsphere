@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl;
 
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,26 +26,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public final class MySQLClearPasswordAuthenticatorTest extends ProxyContextRestorer {
+public final class PostgreSQLPasswordAuthenticatorTest {
+    
+    private final PostgreSQLPasswordAuthenticator authenticator = new PostgreSQLPasswordAuthenticator();
+    
+    private final String username = "root";
+    
+    private final String password = "password";
     
     @Test
-    public void assertAuthenticationMethodName() {
-        assertThat(new MySQLClearPasswordAuthenticator().getAuthenticationMethodName(), is("mysql_clear_password"));
+    public void assertGetAuthenticationMethodName() {
+        assertThat(authenticator.getAuthenticationMethodName(), is(PostgreSQLAuthenticationMethod.PASSWORD.getMethodName()));
     }
     
     @Test
     public void assertAuthenticate() {
-        ShardingSphereUser user = new ShardingSphereUser("foo", "password", "%");
-        byte[] password = "password".getBytes();
-        byte[] authInfo = new byte[password.length + 1];
-        System.arraycopy(password, 0, authInfo, 0, password.length);
-        assertTrue(new MySQLClearPasswordAuthenticator().authenticate(user, new Object[]{authInfo}));
-    }
-    
-    @Test
-    public void assertAuthenticateFailed() {
-        ShardingSphereUser user = new ShardingSphereUser("foo", "password", "%");
-        byte[] password = "wrong".getBytes();
-        assertFalse(new MySQLClearPasswordAuthenticator().authenticate(user, new Object[]{password}));
+        ShardingSphereUser user = new ShardingSphereUser(username, password, "");
+        assertTrue(authenticator.authenticate(user, new Object[]{password, null}));
+        assertFalse(authenticator.authenticate(user, new Object[]{"wrong", null}));
     }
 }
