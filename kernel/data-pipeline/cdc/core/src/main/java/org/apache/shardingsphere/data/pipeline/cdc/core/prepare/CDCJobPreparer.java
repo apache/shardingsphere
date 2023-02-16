@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
@@ -70,7 +69,7 @@ public final class CDCJobPreparer {
         }
         initIncrementalTasks(jobItemContext);
         CDCJobConfiguration jobConfig = jobItemContext.getJobConfig();
-        if (SubscriptionMode.FULL.name().equals(jobConfig.getSubscriptionMode())) {
+        if (jobConfig.isFull()) {
             initInventoryTasks(jobItemContext);
         }
         if (needUpdateJobStatus) {

@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.schema.pojo;
+package org.apache.shardingsphere.driver.jdbc.core.driver;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.driver.jdbc.exception.syntax.DriverURLProviderNotFoundException;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 /**
- * ShardingSphere view meta data for YAML.
+ * ShardingSphere driver URL manager.
  */
-@Getter
-@Setter
-public final class YamlShardingSphereView implements YamlConfiguration {
+public final class ShardingSphereDriverURLManager {
     
-    private String name;
-    
-    private String viewDefinition;
+    /**
+     * Get config content from url.
+     * 
+     * @param url the driver url
+     * @return the config content
+     */
+    public static byte[] getContent(final String url) {
+        for (ShardingsphereDriverURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingsphereDriverURLProvider.class)) {
+            if (each.accept(url)) {
+                return each.getContent(url);
+            }
+        }
+        throw new DriverURLProviderNotFoundException(url);
+    }
 }

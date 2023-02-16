@@ -15,26 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.schema.pojo;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.Map;
+package org.apache.shardingsphere.data.pipeline.cdc.client.event;
 
 /**
- * ShardingSphere table meta data for YAML.
+ * Stream data event.
  */
-@Getter
-@Setter
-public final class YamlShardingSphereTable implements YamlConfiguration {
-    
-    private String name;
-    
-    private Map<String, YamlShardingSphereColumn> columns;
-    
-    private Map<String, YamlShardingSphereIndex> indexes;
-    
-    private Map<String, YamlShardingSphereConstraint> constraints;
+public final class StreamDataEvent {
 }

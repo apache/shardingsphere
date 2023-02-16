@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.cdc;
 
+import io.netty.channel.Channel;
+import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
@@ -35,7 +38,6 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 
@@ -84,20 +86,9 @@ public final class CDCBackendHandlerTest {
     }
     
     @Test
-    public void assertCreateSubscriptionFailed() {
-        CDCRequest request = CDCRequest.newBuilder().setRequestId("1").setCreateSubscription(CreateSubscriptionRequest.newBuilder().setDatabase("none")).build();
-        CDCResponse actualResponse = handler.createSubscription(request);
+    public void assertStreamDataRequestFailed() {
+        CDCRequest request = CDCRequest.newBuilder().setRequestId("1").setType(Type.STREAM_DATA).setStreamDataRequestBody(StreamDataRequestBody.newBuilder().setDatabase("none")).build();
+        CDCResponse actualResponse = handler.streamData(request.getRequestId(), request.getStreamDataRequestBody(), mock(CDCConnectionContext.class), mock(Channel.class));
         assertThat(actualResponse.getStatus(), is(Status.FAILED));
-    }
-    
-    // TODO ignore for now, it need more mock, since SPI is removed. It's better to put it in E2E test
-    @Ignore
-    @Test
-    public void assertCreateSubscriptionSucceed() {
-        String requestId = "1";
-        CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setCreateSubscription(CreateSubscriptionRequest.newBuilder().setDatabase("sharding_db")).build();
-        CDCResponse actualResponse = handler.createSubscription(request);
-        assertThat(actualResponse.getStatus(), is(Status.SUCCEED));
-        assertThat(actualResponse.getRequestId(), is(requestId));
     }
 }

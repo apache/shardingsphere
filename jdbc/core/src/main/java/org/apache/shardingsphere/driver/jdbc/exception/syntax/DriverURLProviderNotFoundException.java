@@ -15,31 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
+package org.apache.shardingsphere.driver.jdbc.exception.syntax;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-
-import java.util.List;
-import java.util.Map;
+import org.apache.shardingsphere.infra.exception.SyntaxSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Create subscription job parameter.
+ * Driver URL provider not found exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateSubscriptionJobParameter {
+public final class DriverURLProviderNotFoundException extends SyntaxSQLException {
     
-    private final String database;
+    private static final long serialVersionUID = 1017115393560838384L;
     
-    private final List<String> subscribeTableNames;
-    
-    private final String subscriptionName;
-    
-    private final String subscriptionMode;
-    
-    private final Map<String, List<DataNode>> dataNodesMap;
-    
-    private final boolean decodeWithTX;
+    public DriverURLProviderNotFoundException(final String url) {
+        super(XOpenSQLState.NOT_FOUND, 12, "Can not find driver url provider for `%s`.", url);
+    }
 }

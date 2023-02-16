@@ -28,7 +28,5 @@ public enum ClientConnectionStatus {
     
     LOGGING_IN,
     
-    CREATING_SUBSCRIPTION,
-    
-    SUBSCRIBING
+    STREAMING
 }

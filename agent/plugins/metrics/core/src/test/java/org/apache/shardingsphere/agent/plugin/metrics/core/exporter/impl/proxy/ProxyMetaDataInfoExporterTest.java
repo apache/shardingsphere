@@ -23,12 +23,20 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeM
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.After;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -55,12 +63,26 @@ public final class ProxyMetaDataInfoExporterTest extends ProxyContextRestorer {
     
     @Test
     public void assertExportWithContextManager() {
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
+        when(resourceMetaData.getDataSources()).thenReturn(mockDataSources());
+        ShardingSphereDatabase shardingSphereDatabase = mock(ShardingSphereDatabase.class);
+        when(shardingSphereDatabase.getResourceMetaData()).thenReturn(resourceMetaData);
+        Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>();
+        databases.put("sharding_db", shardingSphereDatabase);
+        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
+        when(shardingSphereMetaData.getDatabases()).thenReturn(databases);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), shardingSphereMetaData);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.emptyMap());
-        // TODO mock schema_count and database_count
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyMetaDataInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
-        assertThat(collector.get().toString(), is("schema_count=0, database_count=0"));
+        assertThat(collector.get().toString(), is("database_count=1, storage_unit_count=1"));
+    }
+    
+    private Map<String, DataSource> mockDataSources() {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        result.put("ds_0", mock(DataSource.class));
+        return result;
     }
 }

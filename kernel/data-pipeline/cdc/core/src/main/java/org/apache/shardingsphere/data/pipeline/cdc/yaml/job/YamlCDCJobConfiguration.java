@@ -35,11 +35,9 @@ public final class YamlCDCJobConfiguration implements YamlPipelineJobConfigurati
     
     private String database;
     
-    private List<String> tableNames;
+    private List<String> schemaTableNames;
     
-    private String subscriptionName;
-    
-    private String subscriptionMode;
+    private boolean full;
     
     private String sourceDatabaseType;
     

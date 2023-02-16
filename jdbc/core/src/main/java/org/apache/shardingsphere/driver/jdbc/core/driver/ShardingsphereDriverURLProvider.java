@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.schema.pojo;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.Map;
+package org.apache.shardingsphere.driver.jdbc.core.driver;
 
 /**
- * ShardingSphere table meta data for YAML.
+ * Shardingsphere driver URL provider.
  */
-@Getter
-@Setter
-public final class YamlShardingSphereTable implements YamlConfiguration {
+public interface ShardingsphereDriverURLProvider {
     
-    private String name;
+    /**
+     * Check if the url is suitable for this provider.
+     * 
+     * @param url the driver url
+     * @return true if the url is suitable for this provider or false
+     */
+    boolean accept(String url);
     
-    private Map<String, YamlShardingSphereColumn> columns;
-    
-    private Map<String, YamlShardingSphereIndex> indexes;
-    
-    private Map<String, YamlShardingSphereConstraint> constraints;
+    /**
+     * Get config content from url.
+     * 
+     * @param url the driver url 
+     * @return the config content
+     */
+    byte[] getContent(String url);
 }
