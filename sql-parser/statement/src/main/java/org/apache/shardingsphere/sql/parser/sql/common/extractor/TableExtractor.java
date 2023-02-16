@@ -74,6 +74,11 @@ public final class TableExtractor {
      * @param selectStatement select statement
      */
     public void extractTablesFromSelect(final SelectStatement selectStatement) {
+        if (selectStatement.getCombine().isPresent()) {
+            CombineSegment combineSegment = selectStatement.getCombine().get();
+            extractTablesFromSelect(combineSegment.getLeft());
+            extractTablesFromSelect(combineSegment.getRight());
+        }
         if (null != selectStatement.getFrom() && !selectStatement.getCombine().isPresent()) {
             extractTablesFromTableSegment(selectStatement.getFrom());
         }
@@ -91,11 +96,6 @@ public final class TableExtractor {
         }
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
         lockSegment.ifPresent(this::extractTablesFromLock);
-        if (selectStatement.getCombine().isPresent()) {
-            CombineSegment combineSegment = selectStatement.getCombine().get();
-            extractTablesFromSelect(combineSegment.getLeft());
-            extractTablesFromSelect(combineSegment.getRight());
-        }
     }
     
     private void extractTablesFromTableSegment(final TableSegment tableSegment) {
