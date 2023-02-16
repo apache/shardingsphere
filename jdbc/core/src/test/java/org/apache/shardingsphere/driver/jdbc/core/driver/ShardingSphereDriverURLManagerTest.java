@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
+import org.apache.shardingsphere.driver.jdbc.exception.syntax.DriverURLProviderNotFoundException;
 import org.junit.Test;
 
 import java.util.Objects;
@@ -28,7 +29,7 @@ public final class ShardingSphereDriverURLManagerTest {
     
     private final int fooDriverConfigLength = 995;
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = DriverURLProviderNotFoundException.class)
     public void assertNewConstructorWithEmptyURL() {
         ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:");
     }
