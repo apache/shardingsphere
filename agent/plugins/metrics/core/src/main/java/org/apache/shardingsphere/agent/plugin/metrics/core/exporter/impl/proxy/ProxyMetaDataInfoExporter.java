@@ -23,17 +23,10 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeM
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
-import javax.sql.DataSource;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
 
 /**
@@ -43,7 +36,7 @@ import java.util.Optional;
 public final class ProxyMetaDataInfoExporter implements MetricsExporter {
     
     private final MetricConfiguration config = new MetricConfiguration("proxy_meta_data_info",
-            MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-Proxy. schema_count is logic number of databases; database_count is actual number of databases",
+            MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-Proxy. database_count is logic number of databases; storage_unit_count is number of storage units",
             Collections.singletonList("name"), Collections.emptyMap());
     
     @Override
@@ -54,41 +47,12 @@ public final class ProxyMetaDataInfoExporter implements MetricsExporter {
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        result.addMetric(Collections.singletonList("schema_count"), metaDataContexts.getMetaData().getDatabases().size());
-        result.addMetric(Collections.singletonList("database_count"), getDatabaseNames(metaDataContexts).size());
+        result.addMetric(Collections.singletonList("database_count"), metaDataContexts.getMetaData().getDatabases().size());
+        result.addMetric(Collections.singletonList("storage_unit_count"), getStorageUnitCount(metaDataContexts));
         return Optional.of(result);
     }
     
-    private Collection<String> getDatabaseNames(final MetaDataContexts metaDataContexts) {
-        Collection<String> result = new HashSet<>();
-        for (ShardingSphereDatabase each : metaDataContexts.getMetaData().getDatabases().values()) {
-            result.addAll(getDatabaseNames(each));
-        }
-        return result;
-    }
-    
-    private Collection<String> getDatabaseNames(final ShardingSphereDatabase database) {
-        Collection<String> result = new HashSet<>();
-        for (DataSource each : database.getResourceMetaData().getDataSources().values()) {
-            getDatabaseName(each).ifPresent(result::add);
-        }
-        return result;
-    }
-    
-    private Optional<String> getDatabaseName(final DataSource dataSource) {
-        Object jdbcUrl = DataSourcePropertiesCreator.create(dataSource).getAllStandardProperties().get("url");
-        if (null == jdbcUrl) {
-            log.info("Can not get JDBC URL.");
-            return Optional.empty();
-        }
-        try {
-            URI uri = new URI(jdbcUrl.toString().substring(5));
-            if (null != uri.getPath()) {
-                return Optional.of(uri.getPath());
-            }
-        } catch (final URISyntaxException | NullPointerException ignored) {
-            log.info("Unsupported JDBC URL by URI: {}.", jdbcUrl);
-        }
-        return Optional.empty();
+    private int getStorageUnitCount(final MetaDataContexts metaDataContexts) {
+        return metaDataContexts.getMetaData().getDatabases().values().stream().map(each -> each.getResourceMetaData().getDataSources().size()).reduce(0, Integer::sum);
     }
 }
