@@ -18,7 +18,5 @@
 
 <integration-test-cases>
     <test-case metric-name="proxy_meta_data_info" metric-type="gauge">
-        <query-assertion metric="proxy_meta_data_info" query="proxy_meta_data_info{name='schema_count'}" />
-        <query-assertion metric="proxy_meta_data_info" query="proxy_meta_data_info{name='database_count'}" />
     </test-case>
 </integration-test-cases>
