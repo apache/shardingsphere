@@ -15,56 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver;
+package org.apache.shardingsphere.driver.jdbc.core.driver.spi;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingsphereDriverURLProvider;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Objects;
 
 /**
- * ShardingSphere driver URL.
+ * Classpath driver URL provider.
  */
-public final class ShardingSphereDriverURL {
+public final class ClasspathDriverURLProvider implements ShardingsphereDriverURLProvider {
     
     private static final String CLASSPATH_TYPE = "classpath:";
     
-    private final String file;
-    
-    private final boolean inClasspath;
-    
-    public ShardingSphereDriverURL(final String url) {
-        String configuredFile = url.substring("jdbc:shardingsphere:".length(), url.contains("?") ? url.indexOf("?") : url.length());
-        if (configuredFile.startsWith(CLASSPATH_TYPE)) {
-            file = configuredFile.substring(CLASSPATH_TYPE.length());
-            inClasspath = true;
-        } else {
-            file = configuredFile;
-            inClasspath = false;
-        }
-        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere driver URL.");
+    @Override
+    public boolean accept(final String url) {
+        return StringUtils.isNotBlank(url) && url.contains(CLASSPATH_TYPE);
     }
     
-    /**
-     * Generate to configuration bytes.
-     *
-     * @return generated configuration bytes
-     */
+    @Override
     @SneakyThrows(IOException.class)
-    public byte[] toConfigurationBytes() {
-        try (InputStream stream = inClasspath ? getResourceAsStream(file) : Files.newInputStream(new File(file).toPath())) {
+    public byte[] getContent(final String url) {
+        String configuredFile = url.substring("jdbc:shardingsphere:".length(), url.contains("?") ? url.indexOf("?") : url.length());
+        String file = configuredFile.substring(CLASSPATH_TYPE.length());
+        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere driver URL.");
+        try (InputStream stream = getResourceAsStream(file)) {
             Objects.requireNonNull(stream, String.format("Can not find configuration file `%s`.", file));
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
             StringBuilder builder = new StringBuilder();
             String line;
-            while ((line = reader.readLine()) != null) {
+            while (null != (line = reader.readLine())) {
                 if (!line.startsWith("#")) {
                     builder.append(line).append('\n');
                 }
