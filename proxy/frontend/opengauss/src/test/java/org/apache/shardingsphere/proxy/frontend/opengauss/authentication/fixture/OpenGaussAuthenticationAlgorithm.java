@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.fixtur
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationHexData;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.impl.OpenGaussSCRAMSha256PasswordAuthenticator;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -32,18 +33,16 @@ public final class OpenGaussAuthenticationAlgorithm {
     /**
      * Generate client digest.
      * 
+     * @param packet password
      * @param password password
-     * @param random64code random 64 code (salt)
-     * @param token token (nonce)
-     * @param serverIteration server iteration
      * @return client digest
      */
-    public static byte[] doRFC5802Algorithm(final String password, final String random64code, final String token, final int serverIteration) {
-        byte[] k = generateKFromPBKDF2(password, random64code, serverIteration);
-        byte[] clientKey = getKeyFromHmac(k, "Client Key".getBytes(StandardCharsets.UTF_8));
+    public static byte[] doRFC5802Algorithm(final OpenGaussAuthenticationSCRAMSha256Packet packet, final String password) {
+        byte[] k = generateKFromPBKDF2(packet, password);
+        byte[] clientKey = getKeyFromHmac(packet, k, "Client Key".getBytes(StandardCharsets.UTF_8));
         byte[] storedKey = sha256(clientKey);
-        byte[] tokenBytes = hexStringToBytes(token);
-        byte[] hmacResult = getKeyFromHmac(storedKey, tokenBytes);
+        byte[] tokenBytes = toHexBytes(packet, getAuthHexData(packet).getNonce());
+        byte[] hmacResult = getKeyFromHmac(packet, storedKey, tokenBytes);
         byte[] h = xor(hmacResult, clientKey);
         byte[] result = new byte[h.length * 2];
         bytesToHex(h, result, 0, h.length);
@@ -51,15 +50,19 @@ public final class OpenGaussAuthenticationAlgorithm {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static byte[] generateKFromPBKDF2(final String password, final String saltString, final int serverIteration) {
-        return (byte[]) Plugins.getMemberAccessor().invoke(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredMethod("generateKFromPBKDF2", String.class, String.class, int.class),
-                OpenGaussAuthenticationSCRAMSha256Packet.class, password, saltString, serverIteration);
+    private static OpenGaussAuthenticationHexData getAuthHexData(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
+        return (OpenGaussAuthenticationHexData) Plugins.getMemberAccessor().get(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("authHexData"), packet);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static byte[] getKeyFromHmac(final byte[] key, final byte[] data) {
+    private static byte[] generateKFromPBKDF2(final OpenGaussAuthenticationSCRAMSha256Packet packet, final String password) {
+        return (byte[]) Plugins.getMemberAccessor().invoke(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredMethod("generateKFromPBKDF2", String.class), packet, password);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private static byte[] getKeyFromHmac(final OpenGaussAuthenticationSCRAMSha256Packet packet, final byte[] key, final byte[] data) {
         return (byte[]) Plugins.getMemberAccessor().invoke(
-                OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredMethod("getKeyFromHmac", byte[].class, byte[].class), OpenGaussAuthenticationSCRAMSha256Packet.class, key, data);
+                OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredMethod("getKeyFromHmac", byte[].class, byte[].class), packet, key, data);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -69,9 +72,8 @@ public final class OpenGaussAuthenticationAlgorithm {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static byte[] hexStringToBytes(final String rawHexString) {
-        return (byte[]) Plugins.getMemberAccessor().invoke(
-                OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredMethod("hexStringToBytes", String.class), OpenGaussAuthenticationSCRAMSha256Packet.class, rawHexString);
+    private static byte[] toHexBytes(final OpenGaussAuthenticationSCRAMSha256Packet packet, final String rawHexString) {
+        return (byte[]) Plugins.getMemberAccessor().invoke(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredMethod("toHexBytes", String.class), packet, rawHexString);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

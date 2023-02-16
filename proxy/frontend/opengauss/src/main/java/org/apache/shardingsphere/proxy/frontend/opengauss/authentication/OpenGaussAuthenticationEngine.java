@@ -132,7 +132,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(username), EmptyUsernameException::new);
         serverIteration = startupPacket.getVersion() == OpenGaussProtocolVersion.PROTOCOL_350.getVersion() ? PROTOCOL_350_SERVER_ITERATOR : PROTOCOL_351_SERVER_ITERATOR;
         String password = rule.findUser(new Grantee(username, "%")).map(ShardingSphereUser::getPassword).orElse("");
-        context.writeAndFlush(new OpenGaussAuthenticationSCRAMSha256Packet(password, authHexData, startupPacket.getVersion(), serverIteration));
+        context.writeAndFlush(new OpenGaussAuthenticationSCRAMSha256Packet(startupPacket.getVersion(), serverIteration, authHexData, password));
         currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase());
         return currentAuthResult;
     }
