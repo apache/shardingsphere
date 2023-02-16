@@ -15,19 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
+package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardDistSQLStatement;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Discard DistSQL statement handler.
+ * Metric query assertion.
  */
-public final class DiscardDistSQLHandler extends UpdatableRALBackendHandler<DiscardDistSQLStatement> {
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class MetricQueryAssertion {
     
-    @Override
-    protected void update(final ContextManager contextManager) {
-        // TODO Meta data support required
-    }
+    @XmlAttribute(name = "metric")
+    private String metric;
+    
+    @XmlAttribute(name = "query")
+    private String query;
+    
+    @XmlAttribute(name = "value")
+    private int value;
+    
+    @XmlAttribute(name = "shouldAssertValue")
+    private boolean shouldAssertValue;
 }

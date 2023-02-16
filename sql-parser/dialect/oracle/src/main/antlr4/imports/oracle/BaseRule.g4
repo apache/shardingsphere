@@ -1664,7 +1664,7 @@ xmlRootFunction
     ;
 
 xmlSerializeFunction
-    : XMLSERIALIZE LP_ (DOCUMENT | CONTENT) expr (AS dataType)? (ENCODING STRING_)? (VERSION stringLiterals)? (NO IDENT | IDENT (SIZE EQ_ INTEGER_)?)? ((HIDE | SHOW) DEFAULT)? RP_
+    : XMLSERIALIZE LP_ (DOCUMENT | CONTENT) expr (AS dataType)? (ENCODING STRING_)? (VERSION stringLiterals)? (NO INDENT | INDENT (SIZE EQ_ INTEGER_)?)? ((HIDE | SHOW) DEFAULTS)? RP_
     ;
 
 xmlTableFunction

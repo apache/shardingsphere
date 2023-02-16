@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import lombok.Getter;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Apply DistSQL statement.
+ * Integration test cases.
  */
-public final class ApplyDistSQLStatement extends UpdatableRALStatement {
+@Getter
+@XmlRootElement(name = "integration-test-cases")
+public final class IntegrationTestCases {
+    
+    @XmlElement(name = "test-case")
+    private final Collection<MetricTestCase> testCases = new LinkedList<>();
 }

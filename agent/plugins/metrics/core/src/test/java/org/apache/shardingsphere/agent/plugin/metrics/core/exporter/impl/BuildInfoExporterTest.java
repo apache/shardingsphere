@@ -22,6 +22,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeM
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.junit.After;
 import org.junit.Test;
 
@@ -45,6 +46,7 @@ public final class BuildInfoExporterTest {
     public void assertExport() {
         Optional<GaugeMetricFamilyMetricsCollector> collector = new BuildInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
-        assertThat(collector.get().toString(), containsString("ShardingSphere=1, "));
+        assertThat(collector.get().toString(), containsString("ShardingSphere=1"));
+        assertThat(collector.get().toString(), containsString(String.format("%s=1", ShardingSphereVersion.VERSION)));
     }
 }
