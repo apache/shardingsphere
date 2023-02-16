@@ -67,18 +67,18 @@ public final class CDCBackendHandler {
      * Stream data.
      *
      * @param requestId request id
-     * @param streamDataRequestBody stream data request body
+     * @param requestBody stream data request body
      * @param connectionContext connection context
      * @param channel channel
      * @return CDC response
      */
-    public CDCResponse streamData(final String requestId, final StreamDataRequestBody streamDataRequestBody, final CDCConnectionContext connectionContext, final Channel channel) {
-        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(streamDataRequestBody.getDatabase());
+    public CDCResponse streamData(final String requestId, final StreamDataRequestBody requestBody, final CDCConnectionContext connectionContext, final Channel channel) {
+        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(requestBody.getDatabase());
         if (null == database) {
-            return CDCResponseGenerator.failed(requestId, CDCResponseErrorCode.SERVER_ERROR, String.format("%s database is not exists", streamDataRequestBody.getDatabase()));
+            return CDCResponseGenerator.failed(requestId, CDCResponseErrorCode.SERVER_ERROR, String.format("%s database is not exists", requestBody.getDatabase()));
         }
         List<String> schemaTableNames = new LinkedList<>();
-        for (SchemaTable each : streamDataRequestBody.getSourceSchemaTablesList()) {
+        for (SchemaTable each : requestBody.getSourceSchemaTablesList()) {
             schemaTableNames.add(Strings.isNullOrEmpty(each.getSchema()) ? each.getTable() : String.join(".", each.getSchema(), each.getTable()));
         }
         Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
@@ -87,11 +87,11 @@ public final class CDCBackendHandler {
         }
         Map<String, List<DataNode>> actualDataNodesMap = new HashMap<>();
         // TODO need support case-insensitive later
-        for (SchemaTable each : streamDataRequestBody.getSourceSchemaTablesList()) {
+        for (SchemaTable each : requestBody.getSourceSchemaTablesList()) {
             actualDataNodesMap.put(each.getTable(), getActualDataNodes(shardingRule.get(), each.getTable()));
         }
         boolean decodeWithTx = database.getProtocolType() instanceof OpenGaussDatabaseType;
-        StreamDataParameter parameter = new StreamDataParameter(streamDataRequestBody.getDatabase(), schemaTableNames, streamDataRequestBody.getFull(), actualDataNodesMap, decodeWithTx);
+        StreamDataParameter parameter = new StreamDataParameter(requestBody.getDatabase(), schemaTableNames, requestBody.getFull(), actualDataNodesMap, decodeWithTx);
         String jobId = jobAPI.createJob(parameter);
         connectionContext.setJobId(jobId);
         startStreaming(requestId, jobId, connectionContext, channel);
@@ -175,9 +175,9 @@ public final class CDCBackendHandler {
     /**
      * Process ack.
      *
-     * @param ackRequest ack request
+     * @param requestBody request body
      */
-    public void processAck(final AckStreamingRequestBody ackRequest) {
-        CDCAckHolder.getInstance().ack(ackRequest.getAckId());
+    public void processAck(final AckStreamingRequestBody requestBody) {
+        CDCAckHolder.getInstance().ack(requestBody.getAckId());
     }
 }

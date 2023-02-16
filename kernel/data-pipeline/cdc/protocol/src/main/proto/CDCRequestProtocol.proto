@@ -71,17 +71,17 @@ message StreamDataRequestBody {
 }
 
 message AckStreamingRequestBody {
-  string ack_id = 3;
+  string ack_id = 1;
 }
 
 message StopStreamingRequestBody {
-  string streaming_id = 2;
+  string streaming_id = 1;
 }
 
 message StartStreamingRequestBody {
-  string streaming_id = 2;
+  string streaming_id = 1;
 }
 
 message DropStreamingRequestBody {
-  string streaming_id = 2;
+  string streaming_id = 1;
 }
