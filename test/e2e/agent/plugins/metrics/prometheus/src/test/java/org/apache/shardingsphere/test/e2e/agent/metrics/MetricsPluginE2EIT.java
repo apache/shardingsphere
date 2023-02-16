@@ -79,7 +79,6 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
                 : metricCase.getMetricName();
         try {
             String metaDataURLWithParam = String.join("", metaDataURL, "?metric=", URLEncoder.encode(metricName, "UTF-8"));
-            log.info("metaDataURLWithParam:{}", metaDataURLWithParam);
             MetricMetadataAssert.assertIs(OkHttpUtils.getInstance().get(metaDataURLWithParam, MetricsMetaDataResult.class), metricCase);
         } catch (final IOException ex) {
             log.info("Access prometheus HTTP RESTful API error: ", ex);
@@ -90,7 +89,6 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
         for (MetricQueryAssertion each : metricCase.getQueryAssertions()) {
             try {
                 String queryURLWithParam = String.join("", queryURL, "?query=", URLEncoder.encode(each.getQuery(), "UTF-8"));
-                log.info("metaDataURLWithParam:{}", queryURLWithParam);
                 MetricQueryAssert.assertIs(OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class), each);
             } catch (final IOException ex) {
                 log.info("Access prometheus HTTP RESTful API error: ", ex);
