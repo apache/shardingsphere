@@ -25,7 +25,6 @@
         <version>5.3.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-plugins-metrics-prometheus</artifactId>
-    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <properties>
@@ -64,11 +63,6 @@
             <artifactId>HikariCP</artifactId>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
     
     <build>
@@ -90,9 +84,9 @@
     
     <profiles>
         <profile>
-            <id>it.env.metrics</id>
+            <id>it.env.prometheus</id>
             <properties>
-                <it.env>metrics</it.env>
+                <it.env>prometheus</it.env>
             </properties>
             <build>
                 <plugins>

@@ -15,51 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.metrics.result;
+package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.agent.common.result.JsonConfiguration;
 
-import java.util.List;
-import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Metrics query result.
+ * Metric query assertion.
  */
 @Getter
 @Setter
-public final class MetricsQueryResult implements JsonConfiguration {
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class MetricQueryAssertion {
     
-    private String status;
+    @XmlAttribute(name = "metric")
+    private String metric;
     
-    private QueryData data;
+    @XmlAttribute(name = "query")
+    private String query;
     
-    private String errorType;
+    @XmlAttribute(name = "value")
+    private int value;
     
-    private String error;
-    
-    /**
-     * Query data.
-     */
-    @Getter
-    @Setter
-    public static final class QueryData {
-        
-        private String resultType;
-        
-        private List<QueryDataResult> result;
-    }
-    
-    /**
-     * Query data result.
-     */
-    @Getter
-    @Setter
-    public static final class QueryDataResult {
-        
-        private Map<String, String> metric;
-        
-        private List<String> value;
-    }
+    @XmlAttribute(name = "shouldAssertValue")
+    private boolean shouldAssertValue;
 }

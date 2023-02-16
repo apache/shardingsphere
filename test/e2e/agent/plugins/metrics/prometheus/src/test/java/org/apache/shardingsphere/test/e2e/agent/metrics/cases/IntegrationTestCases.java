@@ -15,41 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.metrics.result;
+package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.e2e.agent.common.result.JsonConfiguration;
 
-import java.util.List;
-import java.util.Map;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Metrics meta data result.
+ * Integration test cases.
  */
 @Getter
-@Setter
-public final class MetricsMetaDataResult implements JsonConfiguration {
+@XmlRootElement(name = "integration-test-cases")
+public final class IntegrationTestCases {
     
-    private String status;
-    
-    private Map<String, List<Metric>> data;
-    
-    private String errorType;
-    
-    private String error;
-    
-    /**
-     * Metric.
-     */
-    @Getter
-    @Setter
-    public static final class Metric {
-        
-        private String type;
-        
-        private String help;
-        
-        private String unit;
-    }
+    @XmlElement(name = "test-case")
+    private final Collection<MetricTestCase> testCases = new LinkedList<>();
 }
