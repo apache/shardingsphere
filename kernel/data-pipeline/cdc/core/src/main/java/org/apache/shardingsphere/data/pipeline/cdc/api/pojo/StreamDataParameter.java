@@ -15,10 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.event;
+package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * Create subscription event.
+ * Stream data parameter.
  */
-public final class CreateSubscriptionEvent {
+@RequiredArgsConstructor
+@Getter
+public final class StreamDataParameter {
+    
+    private final String database;
+    
+    private final List<String> schemaTableNames;
+    
+    private final boolean full;
+    
+    private final Map<String, List<DataNode>> dataNodesMap;
+    
+    private final boolean decodeWithTX;
 }

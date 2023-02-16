@@ -22,44 +22,46 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
-import org.apache.shardingsphere.data.pipeline.cdc.client.event.CreateSubscriptionEvent;
+import org.apache.shardingsphere.data.pipeline.cdc.client.event.StreamDataEvent;
 import org.apache.shardingsphere.data.pipeline.cdc.client.importer.DataSourceImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Builder;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartSubscriptionRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreamingRequestBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
 
 import java.util.List;
 
 /**
- * Subscription request handler.
+ * CDC request handler.
  */
 @Slf4j
-public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapter {
+public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     private final StartCDCClientParameter parameter;
     
     private final Importer importer;
     
-    public SubscriptionRequestHandler(final StartCDCClientParameter parameter) {
+    public CDCRequestHandler(final StartCDCClientParameter parameter) {
         this.parameter = parameter;
         importer = new DataSourceImporter(parameter.getDatabaseType(), parameter.getImportDataSourceParameter());
     }
     
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
-        if (evt instanceof CreateSubscriptionEvent) {
-            CreateSubscriptionRequest createSubscriptionRequest = CreateSubscriptionRequest.newBuilder().setDatabase(parameter.getDatabase()).setSubscriptionMode(parameter.getSubscriptionMode())
-                    .setSubscriptionName(parameter.getSubscriptionName()).addAllTableNames(parameter.getSubscribeTables()).setIncrementalGlobalOrderly(parameter.isIncrementalGlobalOrderly()).build();
-            CDCRequest request = CDCRequest.newBuilder().setCreateSubscription(createSubscriptionRequest).setRequestId(RequestIdUtil.generateRequestId()).build();
+        if (evt instanceof StreamDataEvent) {
+            StreamDataRequestBody streamDataRequestBody = StreamDataRequestBody.newBuilder().setDatabase(parameter.getDatabase()).setFull(parameter.isFull())
+                    .addAllSourceSchemaTables(parameter.getSchemaTables()).build();
+            CDCRequest request = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setType(Type.STREAM_DATA).setStreamDataRequestBody(streamDataRequestBody).build();
             ctx.writeAndFlush(request);
         }
     }
@@ -71,33 +73,24 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
             log.error("received error response {}", msg);
         }
         ClientConnectionContext connectionContext = ctx.channel().attr(ClientConnectionContext.CONTEXT_KEY).get();
-        if (connectionContext.getStatus() == ClientConnectionStatus.LOGGING_IN) {
-            if (!response.hasCreateSubscriptionResult()) {
-                log.error("not find the create subscription result");
-                return;
-            }
-            sendCreateSubscriptionRequest(ctx, response, connectionContext);
-        } else if (connectionContext.getStatus() == ClientConnectionStatus.CREATING_SUBSCRIPTION) {
-            startSubscription(response, connectionContext);
-        } else {
-            subscribeDataRecords(ctx, response.getDataRecordResult());
+        if (response.hasStreamDataResult()) {
+            StreamDataResult streamDataResult = response.getStreamDataResult();
+            connectionContext.setStreamingId(streamDataResult.getStreamingId());
+            connectionContext.setStatus(ClientConnectionStatus.STREAMING);
+        } else if (response.hasDataRecordResult()) {
+            processDataRecords(ctx, response.getDataRecordResult());
         }
     }
     
-    private void sendCreateSubscriptionRequest(final ChannelHandlerContext ctx, final CDCResponse response, final ClientConnectionContext connectionContext) {
-        log.info("create subscription succeed, subscription name {}, exist {}", response.getCreateSubscriptionResult().getSubscriptionName(), response.getCreateSubscriptionResult().getExisting());
-        StartSubscriptionRequest startSubscriptionRequest = StartSubscriptionRequest.newBuilder().setDatabase(parameter.getDatabase()).setSubscriptionName(parameter.getSubscriptionName()).build();
-        Builder builder = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setStartSubscription(startSubscriptionRequest);
+    // TODO not remove the method, may be used again in the future
+    private void sendStartStreamingDataRequest(final ChannelHandlerContext ctx, final String streamingId, final ClientConnectionContext connectionContext) {
+        StartStreamingRequestBody startStreamingRequest = StartStreamingRequestBody.newBuilder().setStreamingId(streamingId).build();
+        Builder builder = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setType(Type.START_STREAMING).setStartStreamingRequestBody(startStreamingRequest);
         ctx.writeAndFlush(builder.build());
-        connectionContext.setStatus(ClientConnectionStatus.CREATING_SUBSCRIPTION);
+        connectionContext.setStatus(ClientConnectionStatus.STREAMING);
     }
     
-    private void startSubscription(final CDCResponse response, final ClientConnectionContext connectionContext) {
-        log.info("start subscription succeed, subscription name {}", response.getCreateSubscriptionResult().getSubscriptionName());
-        connectionContext.setStatus(ClientConnectionStatus.SUBSCRIBING);
-    }
-    
-    private void subscribeDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {
+    private void processDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {
         List<Record> recordsList = result.getRecordsList();
         for (Record each : recordsList) {
             try {
@@ -108,8 +101,7 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
                 throw new RuntimeException(ex);
             }
         }
-        // TODO data needs to be processed, such as writing to a database
-        ctx.channel().writeAndFlush(CDCRequest.newBuilder().setAckRequest(AckRequest.newBuilder().setAckId(result.getAckId()).build()).build());
+        ctx.channel().writeAndFlush(CDCRequest.newBuilder().setType(Type.ACK_STREAMING).setAckStreamingRequestBody(AckStreamingRequestBody.newBuilder().setAckId(result.getAckId()).build()).build());
     }
     
     @Override
@@ -120,7 +112,7 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
     
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-        log.error("subscription handler error", cause);
+        log.error("handler data streaming error", cause);
         // TODO passing error messages to the caller
     }
 }

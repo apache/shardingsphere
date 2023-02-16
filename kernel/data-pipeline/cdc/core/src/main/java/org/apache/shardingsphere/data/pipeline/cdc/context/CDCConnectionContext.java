@@ -31,6 +31,8 @@ public final class CDCConnectionContext {
     
     private volatile CDCConnectionStatus status;
     
+    private volatile String database;
+    
     private volatile String jobId;
     
     private volatile ShardingSphereUser currentUser;

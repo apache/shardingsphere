@@ -33,10 +33,9 @@ message CDCResponse {
   Status status = 2;
   oneof response {
     ServerGreetingResult server_greeting_result = 3;
-    CreateSubscriptionResult create_subscription_result = 4;
+    StreamDataResult stream_data_result = 4;
     DataRecordResult data_record_result = 5;
   }
-
   optional string error_code = 14;
   optional string error_message = 15;
 }
@@ -46,9 +45,8 @@ message ServerGreetingResult {
   string protocol_version = 2;
 }
 
-message CreateSubscriptionResult {
-  string subscription_name = 1;
-  bool existing = 2;
+message StreamDataResult {
+  string streaming_id = 1;
 }
 
 message NullValue {
