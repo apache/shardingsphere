@@ -66,9 +66,8 @@ message StreamDataRequestBody {
     string schema = 1;
     string table = 2;
   }
-  repeated string source_schemas = 2;
-  repeated SchemaTable source_schema_tables = 3;
-  bool full = 4;
+  repeated SchemaTable source_schema_tables = 2;
+  bool full = 3;
 }
 
 message AckStreamingRequestBody {

@@ -77,9 +77,9 @@ public final class CDCBackendHandler {
         if (null == database) {
             return CDCResponseGenerator.failed(requestId, CDCResponseErrorCode.SERVER_ERROR, String.format("%s database is not exists", streamDataRequestBody.getDatabase()));
         }
-        List<String> tableNames = new LinkedList<>();
+        List<String> schemaTableNames = new LinkedList<>();
         for (SchemaTable each : streamDataRequestBody.getSourceSchemaTablesList()) {
-            tableNames.add(Strings.isNullOrEmpty(each.getSchema()) ? each.getTable() : String.join(".", each.getSchema(), each.getTable()));
+            schemaTableNames.add(Strings.isNullOrEmpty(each.getSchema()) ? each.getTable() : String.join(".", each.getSchema(), each.getTable()));
         }
         Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         if (!shardingRule.isPresent()) {
@@ -91,7 +91,7 @@ public final class CDCBackendHandler {
             actualDataNodesMap.put(each.getTable(), getActualDataNodes(shardingRule.get(), each.getTable()));
         }
         boolean decodeWithTx = database.getProtocolType() instanceof OpenGaussDatabaseType;
-        StreamDataParameter parameter = new StreamDataParameter(streamDataRequestBody.getDatabase(), tableNames, streamDataRequestBody.getFull(), actualDataNodesMap, decodeWithTx);
+        StreamDataParameter parameter = new StreamDataParameter(streamDataRequestBody.getDatabase(), schemaTableNames, streamDataRequestBody.getFull(), actualDataNodesMap, decodeWithTx);
         String jobId = jobAPI.createJob(parameter);
         connectionContext.setJobId(jobId);
         startStreaming(requestId, jobId, connectionContext, channel);
