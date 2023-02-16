@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationHexData;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
@@ -61,18 +62,40 @@ public final class OpenGaussAuthenticationHandler {
     private static final String SERVER_KEY = "Server Key";
     
     /**
+     * Login with SCRAM SHA-256 password.
+     *
+     * @param username username
+     * @param databaseName database name
+     * @param authHexData authentication hex data
+     * @param serverIteration server iteration
+     * @param passwordMessagePacket password message packet
+     */
+    public static void loginWithSCRAMSha256Password(final String username, final String databaseName, final OpenGaussAuthenticationHexData authHexData, final int serverIteration,
+                                                    final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
+        ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
+        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        Grantee grantee = new Grantee(username, "%");
+        Optional<ShardingSphereUser> user = rule.findUser(grantee);
+        ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
+        ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user.get())
+                .authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), authHexData.getSalt(), authHexData.getNonce(), serverIteration}),
+                () -> new InvalidPasswordException(username));
+        ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName),
+                () -> new PrivilegeNotGrantedException(username, databaseName));
+    }
+    
+    /**
      * Calculate server signature.
      *
      * @param password password
-     * @param salt salt in hex string
-     * @param nonce nonce in hex string
+     * @param authHexData authentication hex data
      * @param serverIteration server iteration
      * @return server signature
      */
-    public static String calculateServerSignature(final String password, final String salt, final String nonce, final int serverIteration) {
-        byte[] k = generateKFromPBKDF2(password, salt, serverIteration);
+    public static String calculateServerSignature(final String password, final OpenGaussAuthenticationHexData authHexData, final int serverIteration) {
+        byte[] k = generateKFromPBKDF2(password, authHexData.getSalt(), serverIteration);
         byte[] serverKey = getKeyFromHmac(k, SERVER_KEY.getBytes(StandardCharsets.UTF_8));
-        byte[] result = getKeyFromHmac(serverKey, hexStringToBytes(nonce));
+        byte[] result = getKeyFromHmac(serverKey, hexStringToBytes(authHexData.getNonce()));
         return bytesToHexString(result);
     }
     
@@ -122,29 +145,5 @@ public final class OpenGaussAuthenticationHandler {
             result.append(hex);
         }
         return result.toString();
-    }
-    
-    /**
-     * Login with SCRAM SHA-256 password.
-     *
-     * @param username username
-     * @param databaseName database name
-     * @param salt salt in hex string
-     * @param nonce nonce in hex string
-     * @param serverIteration server iteration
-     * @param passwordMessagePacket password message packet
-     */
-    public static void loginWithSCRAMSha256Password(final String username, final String databaseName, final String salt, final String nonce, final int serverIteration,
-                                                    final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
-        ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
-        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
-        Grantee grantee = new Grantee(username, "%");
-        Optional<ShardingSphereUser> user = rule.findUser(grantee);
-        ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
-        ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user.get())
-                .authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), salt, nonce, serverIteration}),
-                () -> new InvalidPasswordException(username));
-        ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName),
-                () -> new PrivilegeNotGrantedException(username, databaseName));
     }
 }

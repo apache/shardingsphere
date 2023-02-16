@@ -29,54 +29,49 @@ import static org.mockito.Mockito.verify;
 
 public final class OpenGaussAuthenticationSCRAMSha256PacketTest {
     
-    private static final byte[] RANDOM_64_CODE = new byte[64];
+    private final OpenGaussAuthenticationHexData authHexData = new OpenGaussAuthenticationHexData();
     
-    private static final byte[] TOKEN = new byte[8];
-    
-    private static final byte[] SERVER_SIGNATURE = new byte[64];
+    private final byte[] serverSignature = new byte[64];
     
     @Test
     public void assertWriteProtocol300Packet() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
-        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(
-                OpenGaussProtocolVersion.PROTOCOL_350.getVersion(), RANDOM_64_CODE, TOKEN, SERVER_SIGNATURE, 2048);
+        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(authHexData, OpenGaussProtocolVersion.PROTOCOL_350.getVersion() - 1, serverSignature, 2048);
         packet.write(payload);
         verify(payload).writeInt4(10);
         verify(payload).writeInt4(2);
-        verify(payload).writeBytes(RANDOM_64_CODE);
-        verify(payload).writeBytes(TOKEN);
-        verify(payload).writeBytes(SERVER_SIGNATURE);
+        verify(payload).writeBytes(authHexData.getSalt().getBytes());
+        verify(payload).writeBytes(authHexData.getNonce().getBytes());
+        verify(payload).writeBytes(serverSignature);
     }
     
     @Test
     public void assertWriteProtocol350Packet() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
-        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(
-                OpenGaussProtocolVersion.PROTOCOL_350.getVersion(), RANDOM_64_CODE, TOKEN, SERVER_SIGNATURE, 2048);
+        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(authHexData, OpenGaussProtocolVersion.PROTOCOL_350.getVersion(), serverSignature, 2048);
         packet.write(payload);
         verify(payload).writeInt4(10);
         verify(payload).writeInt4(2);
-        verify(payload).writeBytes(RANDOM_64_CODE);
-        verify(payload).writeBytes(TOKEN);
+        verify(payload).writeBytes(authHexData.getSalt().getBytes());
+        verify(payload).writeBytes(authHexData.getNonce().getBytes());
     }
     
     @Test
     public void assertWriteProtocol351Packet() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
-        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(
-                OpenGaussProtocolVersion.PROTOCOL_351.getVersion(), RANDOM_64_CODE, TOKEN, SERVER_SIGNATURE, 10000);
+        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(authHexData, OpenGaussProtocolVersion.PROTOCOL_351.getVersion(), serverSignature, 10000);
         packet.write(payload);
         verify(payload).writeInt4(10);
         verify(payload).writeInt4(2);
-        verify(payload).writeBytes(RANDOM_64_CODE);
-        verify(payload).writeBytes(TOKEN);
+        verify(payload).writeBytes(authHexData.getSalt().getBytes());
+        verify(payload).writeBytes(authHexData.getNonce().getBytes());
         verify(payload).writeInt4(10000);
     }
     
     @Test
     public void assertIdentifierTag() {
         OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(
-                OpenGaussProtocolVersion.PROTOCOL_351.getVersion(), RANDOM_64_CODE, TOKEN, SERVER_SIGNATURE, 10000);
+                new OpenGaussAuthenticationHexData(), OpenGaussProtocolVersion.PROTOCOL_351.getVersion(), serverSignature, 10000);
         assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
     }
 }
