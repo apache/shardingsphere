@@ -107,9 +107,9 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
      * Create CDC job config.
      *
      * @param param create CDC job param
-     * @return true if job is not exist, otherwise false
+     * @return job id
      */
-    public boolean createJob(final CreateSubscriptionJobParameter param) {
+    public String createJob(final CreateSubscriptionJobParameter param) {
         YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
         yamlJobConfig.setDatabase(param.getDatabase());
         yamlJobConfig.setTableNames(param.getSubscribeTableNames());
@@ -130,7 +130,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobConfig.getJobId());
         if (repositoryAPI.isExisted(jobConfigKey)) {
             log.warn("cdc job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
-            return false;
+            return jobConfig.getJobId();
         }
         repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobConfig.getJobId()), getJobClassName());
         JobConfigurationPOJO jobConfigPOJO = convertJobConfiguration(jobConfig);
@@ -139,7 +139,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         if (SubscriptionMode.INCREMENTAL.name().equals(param.getSubscriptionMode())) {
             initIncrementalPosition(jobConfig);
         }
-        return true;
+        return jobConfig.getJobId();
     }
     
     private void initIncrementalPosition(final CDCJobConfiguration jobConfig) {

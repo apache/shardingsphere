@@ -42,7 +42,6 @@ public final class Bootstrap {
         parameter.setDatabase("sharding_db");
         parameter.setSubscriptionMode(SubscriptionMode.FULL);
         parameter.setSubscriptionName("subscribe_sharding_db");
-        parameter.setIncrementalGlobalOrderly(true);
         parameter.setSubscribeTables(Collections.singletonList(TableName.newBuilder().setName("t_order").build()));
         parameter.setDatabaseType("openGauss");
         CDCClient cdcClient = new CDCClient(parameter);

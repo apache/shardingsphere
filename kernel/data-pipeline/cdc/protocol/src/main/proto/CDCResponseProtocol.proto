@@ -48,7 +48,6 @@ message ServerGreetingResult {
 
 message CreateCDCResult {
   string subscription_name = 1;
-  bool existing = 2;
 }
 
 message NullValue {

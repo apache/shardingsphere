@@ -43,13 +43,13 @@ import java.util.List;
  * Subscription request handler.
  */
 @Slf4j
-public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapter {
+public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     private final StartCDCClientParameter parameter;
     
     private final Importer importer;
     
-    public SubscriptionRequestHandler(final StartCDCClientParameter parameter) {
+    public CDCRequestHandler(final StartCDCClientParameter parameter) {
         this.parameter = parameter;
         importer = new DataSourceImporter(parameter.getDatabaseType(), parameter.getImportDataSourceParameter());
     }
@@ -58,7 +58,7 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
     public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
         if (evt instanceof CreateSubscriptionEvent) {
             StreamDataRequestBody streamDataRequestBody = StreamDataRequestBody.newBuilder().setDatabase(parameter.getDatabase()).setSubscriptionMode(parameter.getSubscriptionMode())
-                    .setSubscriptionName(parameter.getSubscriptionName()).addAllTableNames(parameter.getSubscribeTables()).setIncrementalGlobalOrderly(parameter.isIncrementalGlobalOrderly()).build();
+                    .setSubscriptionName(parameter.getSubscriptionName()).addAllTableNames(parameter.getSubscribeTables()).build();
             CDCRequest request = CDCRequest.newBuilder().setStreamDataRequestBody(streamDataRequestBody).setRequestId(RequestIdUtil.generateRequestId()).build();
             ctx.writeAndFlush(request);
         }
@@ -76,8 +76,8 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
                 log.error("not find the create subscription result");
                 return;
             }
-            // TODO remove later
-            sendCreateSubscriptionRequest(ctx, response, connectionContext);
+            // TODO No longer necessary, remove later
+            sendStartStreamingDataRequest(ctx, response, connectionContext);
         } else if (connectionContext.getStatus() == ClientConnectionStatus.CREATING_SUBSCRIPTION) {
             startSubscription(response, connectionContext);
         } else {
@@ -85,9 +85,9 @@ public final class SubscriptionRequestHandler extends ChannelInboundHandlerAdapt
         }
     }
     
-    private void sendCreateSubscriptionRequest(final ChannelHandlerContext ctx, final CDCResponse response, final ClientConnectionContext connectionContext) {
-        log.info("create subscription succeed, subscription name {}, exist {}", response.getCreateCDCResult().getSubscriptionName(), response.getCreateCDCResult().getExisting());
-        StartStreamingRequestBody startStreamingRequest = StartStreamingRequestBody.newBuilder().setDatabase(parameter.getDatabase()).setSubscriptionName(parameter.getSubscriptionName()).build();
+    private void sendStartStreamingDataRequest(final ChannelHandlerContext ctx, final CDCResponse response, final ClientConnectionContext connectionContext) {
+        log.info("stream subscription succeed, subscription name {}, exist {}", response.getCreateCDCResult().getSubscriptionName(), response.getCreateCDCResult().getExisting());
+        StartStreamingRequestBody startStreamingRequest = StartStreamingRequestBody.newBuilder().setSubscriptionName(parameter.getSubscriptionName()).build();
         Builder builder = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setStartStreamingRequestBody(startStreamingRequest);
         ctx.writeAndFlush(builder.build());
         connectionContext.setStatus(ClientConnectionStatus.CREATING_SUBSCRIPTION);

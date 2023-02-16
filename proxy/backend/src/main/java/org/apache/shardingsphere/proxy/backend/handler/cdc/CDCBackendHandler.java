@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector.CDCImporterConnector;
 import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJob;
-import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJobId;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.DataRecordComparatorGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
@@ -45,6 +44,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -69,10 +69,11 @@ public final class CDCBackendHandler {
     /**
      * Create subscription.
      *
+     * @param connectionContext connection context
      * @param request CDC request
      * @return CDC response
      */
-    public CDCResponse createSubscription(final CDCRequest request) {
+    public CDCResponse streamData(final CDCRequest request, final CDCConnectionContext connectionContext) {
         StreamDataRequestBody streamDataRequestBody = request.getStreamDataRequestBody();
         ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(streamDataRequestBody.getDatabase());
         if (null == database) {
@@ -91,21 +92,30 @@ public final class CDCBackendHandler {
         for (TableName each : streamDataRequestBody.getTableNamesList()) {
             actualDataNodesMap.put(each.getName(), getActualDataNodes(shardingRule.get(), each.getName()));
         }
+        boolean decodeWithTx = database.getProtocolType() instanceof OpenGaussDatabaseType;
         CreateSubscriptionJobParameter parameter = new CreateSubscriptionJobParameter(streamDataRequestBody.getDatabase(), tableNames, streamDataRequestBody.getSubscriptionName(),
-                streamDataRequestBody.getSubscriptionMode().name(), actualDataNodesMap, streamDataRequestBody.getIncrementalGlobalOrderly());
-        if (jobAPI.createJob(parameter)) {
-            return CDCResponseGenerator.succeedBuilder(request.getRequestId()).setCreateCDCResult(CreateCDCResult.newBuilder()
-                    .setSubscriptionName(streamDataRequestBody.getSubscriptionName()).setExisting(false).build()).build();
-        } else {
-            return CDCResponseGenerator.succeedBuilder(request.getRequestId()).setCreateCDCResult(CreateCDCResult.newBuilder()
-                    .setSubscriptionName(streamDataRequestBody.getSubscriptionName()).setExisting(true).build()).build();
-        }
+                streamDataRequestBody.getSubscriptionMode().name(), actualDataNodesMap, decodeWithTx);
+        String jobId = jobAPI.createJob(parameter);
+        connectionContext.setJobId(jobId);
+        return CDCResponseGenerator.succeedBuilder(request.getRequestId()).setCreateCDCResult(CreateCDCResult.newBuilder()
+                .setSubscriptionName(jobId).build()).build();
     }
     
     private List<DataNode> getActualDataNodes(final ShardingRule shardingRule, final String logicTableName) {
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         // TODO support virtual data source name
         return tableRule.getActualDataNodes();
+    }
+    
+    /**
+     * Get database by job id.
+     *
+     * @param jobId job id
+     * @return database
+     */
+    public String getDatabaseByJobId(final String jobId) {
+        CDCJobConfiguration jobConfig = (CDCJobConfiguration) jobAPI.getJobConfiguration(jobId);
+        return jobConfig.getDatabase();
     }
     
     /**
@@ -118,7 +128,7 @@ public final class CDCBackendHandler {
      */
     public CDCResponse startStreaming(final CDCRequest request, final Channel channel, final CDCConnectionContext connectionContext) {
         StartStreamingRequestBody startStreamingRequestBody = request.getStartStreamingRequestBody();
-        String jobId = jobAPI.marshalJobId(new CDCJobId(startStreamingRequestBody.getDatabase(), startStreamingRequestBody.getSubscriptionName()));
+        String jobId = startStreamingRequestBody.getSubscriptionName();
         CDCJobConfiguration cdcJobConfig = (CDCJobConfiguration) jobAPI.getJobConfiguration(jobId);
         if (null == cdcJobConfig) {
             return CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, String.format("the %s job config doesn't exist",

@@ -74,21 +74,17 @@ message StreamDataRequestBody {
     FULL = 2;
   }
   SubscriptionMode subscription_mode = 4;
-  bool incremental_global_orderly = 5;
 }
 
 message StartStreamingRequestBody {
-  string database = 1;
   string subscription_name = 2;
 }
 
 message StopStreamingRequestBody {
-  string database = 1;
   string subscription_name = 2;
 }
 
 message DropStreamingRequestBody {
-  string database = 1;
   string subscription_name = 2;
 }
 
