@@ -137,10 +137,10 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Judge contains table from table metadata or not.
+     * Judge contains table from table meta data or not.
      *
      * @param tableName table name
-     * @return contains table from table metadata or not
+     * @return contains table from table meta data or not
      */
     public boolean containsTable(final String tableName) {
         return tables.containsKey(tableName.toLowerCase());
@@ -169,10 +169,10 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Judge contains view from table metadata or not.
+     * Judge contains view from table meta data or not.
      *
      * @param viewName view name
-     * @return contains view from table metadata or not
+     * @return contains view from table meta data or not
      */
     public boolean containsView(final String viewName) {
         return views.containsKey(viewName.toLowerCase());

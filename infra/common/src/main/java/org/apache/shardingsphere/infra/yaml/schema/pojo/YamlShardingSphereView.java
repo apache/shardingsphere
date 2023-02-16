@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * ShardingSphere view metadata for YAML.
+ * ShardingSphere view meta data for YAML.
  */
 @Getter
 @Setter

@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Database metadata query executor, used to query the schemata database.
+ * Database meta data query executor, used to query the schemata database.
  */
 public final class SelectDatabaseExecutor extends DefaultDatabaseMetaDataExecutor {
     

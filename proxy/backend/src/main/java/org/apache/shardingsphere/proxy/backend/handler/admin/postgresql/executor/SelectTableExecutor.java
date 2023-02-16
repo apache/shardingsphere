@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Database metadata query executor, used to query table.
+ * Database meta data query executor, used to query table.
  */
 public final class SelectTableExecutor extends DefaultDatabaseMetaDataExecutor {
     

@@ -136,7 +136,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     }
     
     /**
-     * Default database metadata executor, execute sql directly in the database to obtain the result source data.
+     * Default database meta data executor, execute sql directly in the database to obtain the result source data.
      */
     @RequiredArgsConstructor
     @Slf4j
