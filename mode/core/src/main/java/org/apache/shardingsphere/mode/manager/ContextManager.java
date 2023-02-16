@@ -443,7 +443,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Reload database metadata from governance center.
+     * Reload database meta data from governance center.
      *
      * @param databaseName to be reloaded database name
      */
