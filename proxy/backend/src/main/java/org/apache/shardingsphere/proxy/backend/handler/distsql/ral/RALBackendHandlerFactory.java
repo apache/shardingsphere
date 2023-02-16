@@ -19,11 +19,13 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
-import org.apache.shardingsphere.distsql.handler.update.GlobalRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelComputeNodeStatement;
@@ -79,8 +81,12 @@ public final class RALBackendHandlerFactory {
      * @return created instance
      */
     public static ProxyBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
-        if (TypedSPILoader.contains(QueryableRALExecutor.class, sqlStatement.getClass().getName())) {
+        if (sqlStatement instanceof QueryableRALStatement) {
             return new QueryableRALBackendHandler<>(sqlStatement, connectionSession);
+        }
+        // TODO remove other updatable RAL backend handlers after the refactoring of RALBackendHandler is complete
+        if (TypedSPILoader.contains(RALUpdater.class, sqlStatement.getClass().getName())) {
+            return new UpdatableRALUpdaterBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof HintRALStatement) {
             return new HintRALBackendHandler((HintRALStatement) sqlStatement, connectionSession);
