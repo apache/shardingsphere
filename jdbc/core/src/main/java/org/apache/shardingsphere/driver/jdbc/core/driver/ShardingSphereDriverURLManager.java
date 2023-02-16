@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
+import org.apache.shardingsphere.driver.jdbc.exception.syntax.DriverURLProviderNotFoundException;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 /**
@@ -36,7 +37,6 @@ public final class ShardingSphereDriverURLManager {
                 return each.getContent(url);
             }
         }
-        throw new IllegalArgumentException("No suitable driver url provider for " + url);
+        throw new DriverURLProviderNotFoundException("No suitable driver url provider for " + url);
     }
-    
 }

@@ -52,7 +52,7 @@ public final class ClasspathDriverURLProvider implements ShardingsphereDriverURL
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
             StringBuilder builder = new StringBuilder();
             String line;
-            while ((line = reader.readLine()) != null) {
+            while (null != (line = reader.readLine())) {
                 if (!line.startsWith("#")) {
                     builder.append(line).append('\n');
                 }
