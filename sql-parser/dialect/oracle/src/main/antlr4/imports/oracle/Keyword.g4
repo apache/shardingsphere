@@ -463,6 +463,10 @@ AVG
 DEFAULT
     : D E F A U L T
     ;
+    
+DEFAULTS
+    : D E F A U L T S
+    ;    
 
 CURRENT
     : C U R R E N T
@@ -740,8 +744,8 @@ ENCODING
     : E N C O D I N G
     ;
 
-IDENT
-    : I D E N T
+INDENT
+    : I N D E N T
     ;
 
 HIDE

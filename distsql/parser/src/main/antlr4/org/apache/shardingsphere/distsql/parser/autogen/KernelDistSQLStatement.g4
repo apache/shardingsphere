@@ -38,9 +38,6 @@ execute
     | unlabelComputeNode
     | countSingleTable
     | alterComputeNode
-    | prepareDistSQL
-    | applyDistSQL
-    | discardDistSQL
     | showLogicalTables
     | showSingleTable
     | showDefaultSingleTableStorageUnit

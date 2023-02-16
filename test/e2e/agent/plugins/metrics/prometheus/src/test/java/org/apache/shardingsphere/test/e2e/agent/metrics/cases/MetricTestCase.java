@@ -15,19 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
+package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.PrepareDistSQLStatement;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Prepare DistSQL statement handler.
+ * Metric test case.
  */
-public final class PrepareDistSQLHandler extends UpdatableRALBackendHandler<PrepareDistSQLStatement> {
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class MetricTestCase {
     
-    @Override
-    protected void update(final ContextManager contextManager) {
-        // TODO Meta data support required
-    }
+    @XmlAttribute(name = "metric-name")
+    private String metricName;
+    
+    @XmlAttribute(name = "metric-type")
+    private String metricType;
+    
+    @XmlElement(name = "query-assertion")
+    private Collection<MetricQueryAssertion> queryAssertions = new LinkedList<>();
 }

@@ -170,15 +170,3 @@ label
 intValue
     : INT_
     ;
-
-prepareDistSQL
-    : PREPARE DISTSQL
-    ;
-
-applyDistSQL
-    : APPLY DISTSQL
-    ;
-
-discardDistSQL
-    : DISCARD DISTSQL
-    ;

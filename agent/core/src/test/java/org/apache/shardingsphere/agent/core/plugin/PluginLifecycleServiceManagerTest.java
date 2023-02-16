@@ -39,7 +39,7 @@ import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.junit.Test;
 
 public final class PluginLifecycleServiceManagerTest {
-
+    
     @Test
     public void assertInitPluginLifecycleService() {
         Map<String, PluginConfiguration> pluginConfigs = new HashMap<>();
@@ -47,7 +47,7 @@ public final class PluginLifecycleServiceManagerTest {
         PluginLifecycleServiceManager.init(pluginConfigs, pluginJars, new MultipleParentClassLoader(new LinkedList<>()),
                 true);
     }
-
+    
     @Test
     public void assertInitPluginLifecycleServiceWithMap() {
         Map<String, PluginConfiguration> stringPluginConfigurationMap = new HashMap<>();
@@ -56,7 +56,7 @@ public final class PluginLifecycleServiceManagerTest {
         PluginLifecycleServiceManager.init(stringPluginConfigurationMap, pluginJars,
                 new MultipleParentClassLoader(new LinkedList<>()), true);
     }
-
+    
     @Test
     public void assertInitPluginLifecycleServiceWithMockHandler() throws MalformedURLException {
         Map<String, PluginConfiguration> pluginConfigs = new HashMap<>();
@@ -70,4 +70,3 @@ public final class PluginLifecycleServiceManagerTest {
         verify(urlStreamHandlerFactory).createURLStreamHandler((String) any());
     }
 }
-
