@@ -29,15 +29,13 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateSubscriptionJobParameter {
+public final class CreateStreamingJobParameter {
     
     private final String database;
     
     private final List<String> subscribeTableNames;
     
-    private final String subscriptionName;
-    
-    private final String subscriptionMode;
+    private final boolean full;
     
     private final Map<String, List<DataNode>> dataNodesMap;
     

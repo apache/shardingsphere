@@ -37,7 +37,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SubscriptionMode;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
@@ -172,8 +171,8 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             return;
         }
         StreamDataRequestBody streamDataRequestBody = request.getStreamDataRequestBody();
-        if (streamDataRequestBody.getTableNamesList().isEmpty() || streamDataRequestBody.getDatabase().isEmpty() || streamDataRequestBody.getSubscriptionName().isEmpty()
-                || streamDataRequestBody.getSubscriptionMode() == SubscriptionMode.UNKNOWN) {
+        // TODO need support the all tables at database or schema
+        if (streamDataRequestBody.getSourceSchemaTablesList().isEmpty() || streamDataRequestBody.getDatabase().isEmpty()) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal create subscription request parameter"));
             return;
         }
@@ -190,12 +189,12 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         }
         StartStreamingRequestBody startStreamingRequestBody = request.getStartStreamingRequestBody();
         // TODO improve after cdc exception refactor
-        if (startStreamingRequestBody.getSubscriptionName().isEmpty()) {
+        if (startStreamingRequestBody.getStreamingId().isEmpty()) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal start subscription request parameter"))
                     .addListener(ChannelFutureListener.CLOSE);
             return;
         }
-        String database = backendHandler.getDatabaseByJobId(startStreamingRequestBody.getSubscriptionName());
+        String database = backendHandler.getDatabaseByJobId(startStreamingRequestBody.getStreamingId());
         checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
         CDCResponse response = backendHandler.startStreaming(request, ctx.channel(), connectionContext);
         ctx.writeAndFlush(response);
@@ -203,7 +202,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     
     private void processStopStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
         StopStreamingRequestBody stopStreamingRequestBody = request.getStopStreamingRequestBody();
-        String database = backendHandler.getDatabaseByJobId(stopStreamingRequestBody.getSubscriptionName());
+        String database = backendHandler.getDatabaseByJobId(stopStreamingRequestBody.getStreamingId());
         checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
         backendHandler.stopSubscription(connectionContext.getJobId());
         connectionContext.setStatus(CDCConnectionStatus.LOGGED_IN);
@@ -213,7 +212,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     
     private void processDropStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
         DropStreamingRequestBody dropStreamingRequestBody = request.getDropStreamingRequestBody();
-        String database = backendHandler.getDatabaseByJobId(dropStreamingRequestBody.getSubscriptionName());
+        String database = backendHandler.getDatabaseByJobId(dropStreamingRequestBody.getStreamingId());
         checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
         try {
             backendHandler.dropSubscription(connectionContext.getJobId());

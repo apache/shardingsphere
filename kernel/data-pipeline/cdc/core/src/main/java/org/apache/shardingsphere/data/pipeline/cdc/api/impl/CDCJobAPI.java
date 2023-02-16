@@ -45,13 +45,12 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
-import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateStreamingJobParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJob;
 import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJobId;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SubscriptionMode;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
@@ -109,12 +108,11 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
      * @param param create CDC job param
      * @return job id
      */
-    public String createJob(final CreateSubscriptionJobParameter param) {
+    public String createJob(final CreateStreamingJobParameter param) {
         YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
         yamlJobConfig.setDatabase(param.getDatabase());
         yamlJobConfig.setTableNames(param.getSubscribeTableNames());
-        yamlJobConfig.setSubscriptionName(param.getSubscriptionName());
-        yamlJobConfig.setSubscriptionMode(param.getSubscriptionMode());
+        yamlJobConfig.setFull(param.isFull());
         yamlJobConfig.setDecodeWithTX(param.isDecodeWithTX());
         ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getDatabase());
         yamlJobConfig.setDataSourceConfiguration(pipelineDataSourceConfigSwapper.swapToYamlConfiguration(getDataSourceConfiguration(database)));
@@ -136,7 +134,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         JobConfigurationPOJO jobConfigPOJO = convertJobConfiguration(jobConfig);
         jobConfigPOJO.setDisabled(true);
         repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfigPOJO));
-        if (SubscriptionMode.INCREMENTAL.name().equals(param.getSubscriptionMode())) {
+        if (!param.isFull()) {
             initIncrementalPosition(jobConfig);
         }
         return jobConfig.getJobId();
@@ -195,14 +193,15 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     private String generateJobId(final YamlCDCJobConfiguration config) {
-        CDCJobId jobId = new CDCJobId(config.getDatabase(), config.getSubscriptionName());
+        // TODO generate parameter add sink type
+        CDCJobId jobId = new CDCJobId(config.getDatabase(), config.getTableNames(), config.isFull());
         return marshalJobId(jobId);
     }
     
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
         CDCJobId jobId = (CDCJobId) pipelineJobId;
-        String text = Joiner.on('|').join(jobId.getDatabaseName(), jobId.getSubscriptionName());
+        String text = Joiner.on('|').join(jobId.getDatabaseName(), jobId.getTableNames(), jobId.isFull());
         return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     

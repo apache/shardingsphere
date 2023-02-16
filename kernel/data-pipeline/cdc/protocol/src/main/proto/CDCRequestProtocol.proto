@@ -62,30 +62,25 @@ message LoginRequestBody {
 
 message StreamDataRequestBody {
   string database = 1;
-  message TableName {
+  message SchemaTable {
     string schema = 1;
-    string name = 2;
+    string table = 2;
   }
-  repeated TableName table_names = 2;
-  string subscription_name = 3;
-  enum SubscriptionMode {
-    UNKNOWN = 0;
-    INCREMENTAL = 1;
-    FULL = 2;
-  }
-  SubscriptionMode subscription_mode = 4;
+  repeated string source_schemas = 2;
+  repeated SchemaTable source_schema_tables = 3;
+  bool full = 4;
 }
 
 message StartStreamingRequestBody {
-  string subscription_name = 2;
+  string streaming_id = 2;
 }
 
 message StopStreamingRequestBody {
-  string subscription_name = 2;
+  string streaming_id = 2;
 }
 
 message DropStreamingRequestBody {
-  string subscription_name = 2;
+  string streaming_id = 2;
 }
 
 message AckStreamingRequestBody {

@@ -22,7 +22,7 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
-import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateSubscriptionJobParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateStreamingJobParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCConnectionStatus;
@@ -36,9 +36,9 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreaming
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.TableName;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CreateCDCResult;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
@@ -80,8 +80,8 @@ public final class CDCBackendHandler {
             return CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, String.format("%s database is not exists", streamDataRequestBody.getDatabase()));
         }
         List<String> tableNames = new LinkedList<>();
-        for (TableName each : streamDataRequestBody.getTableNamesList()) {
-            tableNames.add(Strings.isNullOrEmpty(each.getSchema()) ? each.getName() : String.join(".", each.getSchema(), each.getName()));
+        for (SchemaTable each : streamDataRequestBody.getSourceSchemaTablesList()) {
+            tableNames.add(Strings.isNullOrEmpty(each.getSchema()) ? each.getTable() : String.join(".", each.getSchema(), each.getTable()));
         }
         Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         if (!shardingRule.isPresent()) {
@@ -89,16 +89,15 @@ public final class CDCBackendHandler {
         }
         Map<String, List<DataNode>> actualDataNodesMap = new HashMap<>();
         // TODO need support case-insensitive later
-        for (TableName each : streamDataRequestBody.getTableNamesList()) {
-            actualDataNodesMap.put(each.getName(), getActualDataNodes(shardingRule.get(), each.getName()));
+        for (SchemaTable each : streamDataRequestBody.getSourceSchemaTablesList()) {
+            actualDataNodesMap.put(each.getTable(), getActualDataNodes(shardingRule.get(), each.getTable()));
         }
         boolean decodeWithTx = database.getProtocolType() instanceof OpenGaussDatabaseType;
-        CreateSubscriptionJobParameter parameter = new CreateSubscriptionJobParameter(streamDataRequestBody.getDatabase(), tableNames, streamDataRequestBody.getSubscriptionName(),
-                streamDataRequestBody.getSubscriptionMode().name(), actualDataNodesMap, decodeWithTx);
+        CreateStreamingJobParameter parameter = new CreateStreamingJobParameter(streamDataRequestBody.getDatabase(), tableNames, streamDataRequestBody.getFull(), actualDataNodesMap, decodeWithTx);
         String jobId = jobAPI.createJob(parameter);
         connectionContext.setJobId(jobId);
-        return CDCResponseGenerator.succeedBuilder(request.getRequestId()).setCreateCDCResult(CreateCDCResult.newBuilder()
-                .setSubscriptionName(jobId).build()).build();
+        return CDCResponseGenerator.succeedBuilder(request.getRequestId()).setStreamDataResult(StreamDataResult.newBuilder()
+                .setStreamingId(jobId).build()).build();
     }
     
     private List<DataNode> getActualDataNodes(final ShardingRule shardingRule, final String logicTableName) {
@@ -128,11 +127,11 @@ public final class CDCBackendHandler {
      */
     public CDCResponse startStreaming(final CDCRequest request, final Channel channel, final CDCConnectionContext connectionContext) {
         StartStreamingRequestBody startStreamingRequestBody = request.getStartStreamingRequestBody();
-        String jobId = startStreamingRequestBody.getSubscriptionName();
+        String jobId = startStreamingRequestBody.getStreamingId();
         CDCJobConfiguration cdcJobConfig = (CDCJobConfiguration) jobAPI.getJobConfiguration(jobId);
         if (null == cdcJobConfig) {
             return CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, String.format("the %s job config doesn't exist",
-                    startStreamingRequestBody.getSubscriptionName()));
+                    startStreamingRequestBody.getStreamingId()));
         }
         JobConfigurationPOJO jobConfigPOJO = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
         // TODO, ensure that there is only one consumer at a time, job config disable may not be updated when the program is forced to close

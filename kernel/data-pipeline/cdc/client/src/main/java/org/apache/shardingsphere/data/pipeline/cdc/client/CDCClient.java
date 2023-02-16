@@ -57,11 +57,8 @@ public final class CDCClient {
         if (null == parameter.getAddress() || parameter.getAddress().isEmpty()) {
             throw new IllegalArgumentException("The address parameter can't be null");
         }
-        if (null == parameter.getSubscriptionMode()) {
-            throw new IllegalArgumentException("The subscriptionMode parameter can't be null");
-        }
-        if (null == parameter.getSubscribeTables() || parameter.getSubscribeTables().isEmpty()) {
-            throw new IllegalArgumentException("The subscribeTables parameter can't be null");
+        if (null == parameter.getSchemaTables() || parameter.getSchemaTables().isEmpty()) {
+            throw new IllegalArgumentException("The schema tables parameter can't be null");
         }
     }
     

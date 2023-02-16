@@ -26,10 +26,12 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnect
  * Client connection context.
  */
 @Getter
+@Setter
 public final class ClientConnectionContext {
     
     public static final AttributeKey<ClientConnectionContext> CONTEXT_KEY = AttributeKey.valueOf("client.context");
     
-    @Setter
     private volatile ClientConnectionStatus status;
+    
+    private volatile String streamingId;
 }

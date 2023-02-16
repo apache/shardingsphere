@@ -28,8 +28,5 @@ public enum ClientConnectionStatus {
     
     LOGGING_IN,
     
-    // TODO this state is not required and needs to be removed
-    CREATING_SUBSCRIPTION,
-    
-    SUBSCRIBING
+    STREAMING
 }
