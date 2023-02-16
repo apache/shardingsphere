@@ -86,9 +86,8 @@ public final class OpenGaussSCRAMSha256PasswordAuthenticator implements OpenGaus
         if (null == rawHexString || rawHexString.isEmpty()) {
             return new byte[0];
         }
-        String hexString = rawHexString.toUpperCase(Locale.ENGLISH);
-        int length = hexString.length() / 2;
-        char[] hexChars = hexString.toCharArray();
+        int length = rawHexString.length() / 2;
+        char[] hexChars = rawHexString.toUpperCase(Locale.ENGLISH).toCharArray();
         byte[] result = new byte[length];
         for (int i = 0; i < length; i++) {
             int pos = i * 2;

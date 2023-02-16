@@ -33,7 +33,7 @@ public final class OpenGaussAuthenticationSCRAMSha256PacketTest {
     @Test
     public void assertWriteProtocol300Packet() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
-        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet("", authHexData, OpenGaussProtocolVersion.PROTOCOL_350.getVersion() - 1, 2048);
+        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(OpenGaussProtocolVersion.PROTOCOL_350.getVersion() - 1, 2048, authHexData, "");
         packet.write(payload);
         verify(payload).writeInt4(10);
         verify(payload).writeInt4(2);
@@ -45,7 +45,7 @@ public final class OpenGaussAuthenticationSCRAMSha256PacketTest {
     @Test
     public void assertWriteProtocol350Packet() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
-        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet("", authHexData, OpenGaussProtocolVersion.PROTOCOL_350.getVersion(), 2048);
+        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(OpenGaussProtocolVersion.PROTOCOL_350.getVersion(), 2048, authHexData, "");
         packet.write(payload);
         verify(payload).writeInt4(10);
         verify(payload).writeInt4(2);
@@ -57,7 +57,7 @@ public final class OpenGaussAuthenticationSCRAMSha256PacketTest {
     @Test
     public void assertWriteProtocol351Packet() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
-        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet("", authHexData, OpenGaussProtocolVersion.PROTOCOL_351.getVersion(), 10000);
+        OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(OpenGaussProtocolVersion.PROTOCOL_351.getVersion(), 10000, authHexData, "");
         packet.write(payload);
         verify(payload).writeInt4(10);
         verify(payload).writeInt4(2);

@@ -49,47 +49,40 @@ public final class OpenGaussAuthenticationSCRAMSha256Packet implements PostgreSQ
     
     private static final int PASSWORD_STORED_METHOD_SHA256 = 2;
     
-    private final byte[] random64Code;
-    
-    private final byte[] token;
-    
     private final int version;
-    
-    private final byte[] serverSignature;
     
     private final int serverIteration;
     
-    public OpenGaussAuthenticationSCRAMSha256Packet(final String password, final OpenGaussAuthenticationHexData authHexData, final int version, final int serverIteration) {
-        random64Code = authHexData.getSalt().getBytes();
-        token = authHexData.getNonce().getBytes();
+    private final OpenGaussAuthenticationHexData authHexData;
+    
+    private final String serverSignature;
+    
+    public OpenGaussAuthenticationSCRAMSha256Packet(final int version, final int serverIteration, final OpenGaussAuthenticationHexData authHexData, final String password) {
         this.version = version;
-        serverSignature = (version >= OpenGaussProtocolVersion.PROTOCOL_350.getVersion() ? "" : calculateServerSignature(password, authHexData, serverIteration)).getBytes();
         this.serverIteration = serverIteration;
+        this.authHexData = authHexData;
+        serverSignature = version >= OpenGaussProtocolVersion.PROTOCOL_350.getVersion() ? "" : generateServerSignature(password);
     }
     
-    private static String calculateServerSignature(final String password, final OpenGaussAuthenticationHexData authHexData, final int serverIteration) {
-        byte[] k = generateKFromPBKDF2(password, authHexData.getSalt(), serverIteration);
+    private String generateServerSignature(final String password) {
+        byte[] k = generateKFromPBKDF2(password);
         byte[] serverKey = getKeyFromHmac(k, SERVER_KEY.getBytes(StandardCharsets.UTF_8));
-        byte[] result = getKeyFromHmac(serverKey, hexStringToBytes(authHexData.getNonce()));
+        byte[] result = getKeyFromHmac(serverKey, toHexBytes(authHexData.getNonce()));
         return bytesToHexString(result);
     }
     
     @SneakyThrows({NoSuchAlgorithmException.class, InvalidKeySpecException.class})
-    private static byte[] generateKFromPBKDF2(final String password, final String saltString, final int serverIteration) {
+    private byte[] generateKFromPBKDF2(final String password) {
         char[] chars = password.toCharArray();
-        byte[] salt = hexStringToBytes(saltString);
+        byte[] salt = toHexBytes(authHexData.getSalt());
         PBEKeySpec spec = new PBEKeySpec(chars, salt, serverIteration, 32 * 8);
         SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_WITH_HMAC_SHA1_ALGORITHM);
         return skf.generateSecret(spec).getEncoded();
     }
     
-    private static byte[] hexStringToBytes(final String rawHexString) {
-        if (null == rawHexString || rawHexString.isEmpty()) {
-            return new byte[0];
-        }
-        String hexString = rawHexString.toUpperCase(Locale.ENGLISH);
+    private byte[] toHexBytes(final String hexString) {
         int length = hexString.length() / 2;
-        char[] hexChars = hexString.toCharArray();
+        char[] hexChars = hexString.toUpperCase(Locale.ENGLISH).toCharArray();
         byte[] result = new byte[length];
         for (int i = 0; i < length; i++) {
             int pos = i * 2;
@@ -98,19 +91,19 @@ public final class OpenGaussAuthenticationSCRAMSha256Packet implements PostgreSQ
         return result;
     }
     
-    private static byte charToByte(final char c) {
+    private byte charToByte(final char c) {
         return (byte) "0123456789ABCDEF".indexOf(c);
     }
     
     @SneakyThrows({NoSuchAlgorithmException.class, InvalidKeyException.class})
-    private static byte[] getKeyFromHmac(final byte[] key, final byte[] data) {
+    private byte[] getKeyFromHmac(final byte[] key, final byte[] data) {
         SecretKeySpec signingKey = new SecretKeySpec(key, HMAC_SHA256_ALGORITHM);
         Mac mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
         mac.init(signingKey);
         return mac.doFinal(data);
     }
     
-    private static String bytesToHexString(final byte[] src) {
+    private String bytesToHexString(final byte[] src) {
         StringBuilder result = new StringBuilder();
         for (byte each : src) {
             String hex = Integer.toHexString(each & 255);
@@ -126,10 +119,10 @@ public final class OpenGaussAuthenticationSCRAMSha256Packet implements PostgreSQ
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt4(AUTH_REQ_SHA256);
         payload.writeInt4(PASSWORD_STORED_METHOD_SHA256);
-        payload.writeBytes(random64Code);
-        payload.writeBytes(token);
+        payload.writeBytes(authHexData.getSalt().getBytes());
+        payload.writeBytes(authHexData.getNonce().getBytes());
         if (version < OpenGaussProtocolVersion.PROTOCOL_350.getVersion()) {
-            payload.writeBytes(serverSignature);
+            payload.writeBytes(serverSignature.getBytes());
         }
         if (OpenGaussProtocolVersion.PROTOCOL_351.getVersion() == version) {
             payload.writeInt4(serverIteration);
