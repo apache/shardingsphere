@@ -36,7 +36,7 @@ public final class ShardingSphereDriverURLManager {
                 return each.getContent(url);
             }
         }
-        throw new RuntimeException("No suitable URL Provider for" + url);
+        throw new IllegalArgumentException("No suitable driver url provider for " + url);
     }
     
 }
