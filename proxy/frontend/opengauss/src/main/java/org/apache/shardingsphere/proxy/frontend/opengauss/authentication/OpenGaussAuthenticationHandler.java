@@ -78,7 +78,7 @@ public final class OpenGaussAuthenticationHandler {
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
         ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user.get())
-                        .authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), authHexData.getSalt(), authHexData.getNonce(), serverIteration}),
+                .authenticate(user.get(), new Object[]{passwordMessagePacket.getDigest(), authHexData.getSalt(), authHexData.getNonce(), serverIteration}),
                 () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName),
                 () -> new PrivilegeNotGrantedException(username, databaseName));

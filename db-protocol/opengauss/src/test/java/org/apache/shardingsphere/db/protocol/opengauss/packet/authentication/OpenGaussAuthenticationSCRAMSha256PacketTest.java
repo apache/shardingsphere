@@ -44,7 +44,7 @@ public final class OpenGaussAuthenticationSCRAMSha256PacketTest {
         verify(payload).writeBytes(authHexData.getNonce().getBytes());
         verify(payload).writeBytes(serverSignature);
     }
-
+    
     @Test
     public void assertWriteProtocol350Packet() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
@@ -55,7 +55,7 @@ public final class OpenGaussAuthenticationSCRAMSha256PacketTest {
         verify(payload).writeBytes(authHexData.getSalt().getBytes());
         verify(payload).writeBytes(authHexData.getNonce().getBytes());
     }
-
+    
     @Test
     public void assertWriteProtocol351Packet() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
@@ -67,7 +67,7 @@ public final class OpenGaussAuthenticationSCRAMSha256PacketTest {
         verify(payload).writeBytes(authHexData.getNonce().getBytes());
         verify(payload).writeInt4(10000);
     }
-
+    
     @Test
     public void assertIdentifierTag() {
         OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(
