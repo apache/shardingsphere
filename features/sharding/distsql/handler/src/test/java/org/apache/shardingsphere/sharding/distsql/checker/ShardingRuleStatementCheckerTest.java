@@ -307,8 +307,8 @@ public final class ShardingRuleStatementCheckerTest {
         Properties props = new Properties();
         KeyGenerateStrategySegment keyGenerator = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", props));
         TableRuleSegment result = new TableRuleSegment("t_product_1", Collections.singletonList("ds_${0..1}.t_order${0..1}"), keyGenerator, null);
-        result.setTableStrategySegment(new ShardingStrategySegment("hint", "product_id", new AlgorithmSegment("CORE.HINT.FIXTURE", props)));
-        result.setDatabaseStrategySegment(new ShardingStrategySegment("hint", "product_id", new AlgorithmSegment("CORE.HINT.FIXTURE", props)));
+        result.setTableStrategySegment(new ShardingStrategySegment("hint", null, new AlgorithmSegment("CORE.HINT.FIXTURE", props)));
+        result.setDatabaseStrategySegment(new ShardingStrategySegment("hint", null, new AlgorithmSegment("CORE.HINT.FIXTURE", props)));
         return result;
     }
     
