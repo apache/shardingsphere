@@ -119,7 +119,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
         ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user.get())
-                        .authenticate(user.get(), new Object[]{digest, authHexData.getSalt(), authHexData.getNonce(), serverIteration}), () -> new InvalidPasswordException(username));
+                .authenticate(user.get(), new Object[]{digest, authHexData.getSalt(), authHexData.getNonce(), serverIteration}), () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
     }
     
