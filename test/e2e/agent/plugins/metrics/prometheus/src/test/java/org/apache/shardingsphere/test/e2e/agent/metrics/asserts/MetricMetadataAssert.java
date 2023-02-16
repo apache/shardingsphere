@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.metrics.asserts;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricMetadataCase;
+import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricTestCase;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsMetaDataResult;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsMetaDataResult.Metric;
 
@@ -30,10 +30,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 
 /**
- * Meta data assert.
+ * Metric meta data assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MetadataAssert {
+public final class MetricMetadataAssert {
     
     /**
      * Assert metric is correct with expected result.
@@ -41,7 +41,7 @@ public final class MetadataAssert {
      * @param actual assert result
      * @param expected expected metric
      */
-    public static void assertIs(final MetricsMetaDataResult actual, final MetricMetadataCase expected) {
+    public static void assertIs(final MetricsMetaDataResult actual, final MetricTestCase expected) {
         String metricName = "counter".equalsIgnoreCase(expected.getMetricType()) && expected.getMetricName().endsWith("_total")
                 ? expected.getMetricName().replace("_total", "")
                 : expected.getMetricName();

@@ -18,13 +18,19 @@
 package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.LinkedList;
+
+/**
+ * Integration test cases.
+ */
 @Getter
-public class MetricMetadataCase {
+@XmlRootElement(name = "integration-test-cases")
+public final class IntegrationTestCases {
     
-    private final String metricName;
-    
-    private final String metricType;
+    @XmlElement(name = "test-case")
+    private final Collection<MetricTestCase> testCases = new LinkedList<>();
 }

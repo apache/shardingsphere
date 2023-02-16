@@ -18,25 +18,29 @@
 package org.apache.shardingsphere.test.e2e.agent.metrics.cases;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@RequiredArgsConstructor
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+import java.util.LinkedList;
+
+/**
+ * Metric test case.
+ */
 @Getter
-public final class MetricQueryCase {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class MetricTestCase {
     
-    private final String metricName;
+    @XmlAttribute(name = "metric-name")
+    private String metricName;
     
-    private final String query;
+    @XmlAttribute(name = "metric-type")
+    private String metricType;
     
-    private final int value;
-    
-    private final boolean shouldAssertValue;
-    
-    public MetricQueryCase(final String metricName, final String query) {
-        this(metricName, query, 1, false);
-    }
-    
-    public MetricQueryCase(final String metricName, final String query, final int value) {
-        this(metricName, query, value, true);
-    }
+    @XmlElement(name = "query-assertion")
+    private Collection<MetricQueryAssertion> queryAssertions = new LinkedList<>();
 }

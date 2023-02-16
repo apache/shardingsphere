@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.metrics.asserts;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricQueryCase;
+import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricQueryAssertion;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsQueryResult;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsQueryResult.QueryDataResult;
 
@@ -31,18 +31,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 
 /**
- * Query assert.
+ * Metric query assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class QueryAssert {
+public final class MetricQueryAssert {
     
     /**
      * Assert metric is correct with expected result.
-     * 
+     *
      * @param actual assert result
      * @param expected expected metric
      */
-    public static void assertIs(final MetricsQueryResult actual, final MetricQueryCase expected) {
+    public static void assertIs(final MetricsQueryResult actual, final MetricQueryAssertion expected) {
         assertThat(String.format("The query `%s` is not success, error message is `%s`", expected.getQuery(), actual.getError()), actual.getStatus(), is("success"));
         assertFalse(String.format("The query `%s` is empty.", expected.getQuery()), actual.getData().getResult().isEmpty());
         Collection<QueryDataResult> results = actual.getData().getResult();
@@ -54,11 +54,11 @@ public final class QueryAssert {
         }
     }
     
-    private static void assertMetricName(final QueryDataResult actual, final MetricQueryCase expected) {
-        assertThat(actual.getMetric().get("__name__"), is(expected.getMetricName()));
+    private static void assertMetricName(final QueryDataResult actual, final MetricQueryAssertion expected) {
+        assertThat(actual.getMetric().get("__name__"), is(expected.getMetric()));
     }
     
-    private static void assertValue(final QueryDataResult actual, final MetricQueryCase expected) {
+    private static void assertValue(final QueryDataResult actual, final MetricQueryAssertion expected) {
         assertThat(actual.getValue(), notNullValue());
         assertThat(actual.getValue().size(), is(2));
         assertThat(String.format("The value of the `%s` is error", expected.getQuery()), Integer.valueOf(actual.getValue().get(1)), is(expected.getValue()));
