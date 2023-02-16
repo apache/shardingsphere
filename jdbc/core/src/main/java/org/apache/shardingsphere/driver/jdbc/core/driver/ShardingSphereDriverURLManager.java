@@ -37,6 +37,6 @@ public final class ShardingSphereDriverURLManager {
                 return each.getContent(url);
             }
         }
-        throw new DriverURLProviderNotFoundException("No suitable driver url provider for " + url);
+        throw new DriverURLProviderNotFoundException(url);
     }
 }
