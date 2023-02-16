@@ -52,7 +52,8 @@ public final class PluginLifecycleServiceManagerTest {
         URLStreamHandlerFactory urlStreamHandlerFactory = mock(URLStreamHandlerFactory.class);
         PluginLifecycleServiceManager.init(Collections.emptyMap(), Collections.emptyList(),
                 new PrivateMLet(new URL[]{Paths.get(System.getProperty("java.io.tmpdir"), "test.txt").toUri().toURL()},
-                        new MultipleParentClassLoader(Collections.emptyList()), urlStreamHandlerFactory, true), true);
+                        new MultipleParentClassLoader(Collections.emptyList()), urlStreamHandlerFactory, true),
+                true);
         verify(urlStreamHandlerFactory).createURLStreamHandler(anyString());
     }
 }

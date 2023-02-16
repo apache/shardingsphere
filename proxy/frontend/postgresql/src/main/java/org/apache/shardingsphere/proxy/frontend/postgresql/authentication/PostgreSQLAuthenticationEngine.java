@@ -124,17 +124,14 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         clientEncoding = startupPacket.getClientEncoding();
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.findCharacterSet(clientEncoding));
         String username = startupPacket.getUsername();
-        if (Strings.isNullOrEmpty(username)) {
-            throw new EmptyUsernameException();
-        }
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(username), EmptyUsernameException::new);
         context.writeAndFlush(getIdentifierPacket(username, rule));
         currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase());
         return currentAuthResult;
     }
     
     private PostgreSQLIdentifierPacket getIdentifierPacket(final String username, final AuthorityRule rule) {
-        Optional<ShardingSphereUser> user = rule.findUser(new Grantee(username, ""));
-        Optional<Authenticator> authenticator = user.map(optional -> new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(optional));
+        Optional<Authenticator> authenticator = rule.findUser(new Grantee(username, "")).map(optional -> new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(optional));
         if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.PASSWORD.getMethodName().equals(authenticator.get().getAuthenticationMethodName())) {
             return new PostgreSQLPasswordAuthenticationPacket();
         }
