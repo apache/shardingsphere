@@ -63,7 +63,6 @@ public final class ProxyMetaDataInfoExporterTest extends ProxyContextRestorer {
     
     @Test
     public void assertExportWithContextManager() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         when(resourceMetaData.getDataSources()).thenReturn(mockDataSources());
         ShardingSphereDatabase shardingSphereDatabase = mock(ShardingSphereDatabase.class);
@@ -73,6 +72,7 @@ public final class ProxyMetaDataInfoExporterTest extends ProxyContextRestorer {
         ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
         when(shardingSphereMetaData.getDatabases()).thenReturn(databases);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), shardingSphereMetaData);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyMetaDataInfoExporter().export("FIXTURE");
