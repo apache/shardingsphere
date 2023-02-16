@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.authentication;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussProtocolVersion;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
@@ -27,22 +26,29 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Authentication request SCRAM SHA-256 for openGauss.
  */
-@RequiredArgsConstructor
 public final class OpenGaussAuthenticationSCRAMSha256Packet implements PostgreSQLIdentifierPacket {
     
     private static final int AUTH_REQ_SHA256 = 10;
     
     private static final int PASSWORD_STORED_METHOD_SHA256 = 2;
     
-    private final int version;
-    
     private final byte[] random64Code;
     
     private final byte[] token;
     
+    private final int version;
+    
     private final byte[] serverSignature;
     
     private final int serverIteration;
+    
+    public OpenGaussAuthenticationSCRAMSha256Packet(final OpenGaussAuthenticationHexData authHexData, final int version, final byte[] serverSignature, final int serverIteration) {
+        random64Code = authHexData.getSalt().getBytes();
+        token = authHexData.getNonce().getBytes();
+        this.version = version;
+        this.serverSignature = serverSignature;
+        this.serverIteration = serverIteration;
+    }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {

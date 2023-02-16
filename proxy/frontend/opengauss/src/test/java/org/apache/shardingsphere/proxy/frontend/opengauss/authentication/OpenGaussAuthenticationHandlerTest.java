@@ -20,10 +20,10 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.authentication;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.buffer.UnpooledHeapByteBuf;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
+import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationHexData;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
@@ -67,9 +67,7 @@ public final class OpenGaussAuthenticationHandlerTest extends ProxyContextRestor
     
     private final String database = "schema_0";
     
-    private final String random64Code = RandomStringUtils.randomAlphanumeric(64);
-    
-    private final String token = RandomStringUtils.randomAlphanumeric(8);
+    private final OpenGaussAuthenticationHexData authHexData = new OpenGaussAuthenticationHexData();
     
     private final int serverIteration = 2048;
     
@@ -78,7 +76,7 @@ public final class OpenGaussAuthenticationHandlerTest extends ProxyContextRestor
     @Before
     public void init() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
-        String digest = encodeDigest(password, random64Code, token, serverIteration);
+        String digest = encodeDigest(password, serverIteration);
         payload.writeInt4(4 + digest.length() + 1);
         payload.writeStringNul(digest);
         passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
@@ -87,26 +85,26 @@ public final class OpenGaussAuthenticationHandlerTest extends ProxyContextRestor
     @Test
     public void assertLoginSuccess() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
-        OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, authHexData, serverIteration, passwordMessagePacket);
     }
     
     @Test(expected = UnknownUsernameException.class)
     public void assertLoginWithAbsentUser() {
         initProxyContext(new ShardingSphereUser("username", password, "%"));
-        OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, authHexData, serverIteration, passwordMessagePacket);
     }
     
     @Test(expected = InvalidPasswordException.class)
     public void assertLoginWithIncorrectPassword() {
         initProxyContext(new ShardingSphereUser(username, "password", "%"));
-        OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, authHexData, serverIteration, passwordMessagePacket);
     }
     
     @Test(expected = UnknownDatabaseException.class)
     public void assertLoginWithNonExistDatabase() {
         initProxyContext(new ShardingSphereUser(username, password, "%"));
         String database = "non_exist_database";
-        OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, random64Code, token, serverIteration, passwordMessagePacket);
+        OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(username, database, authHexData, serverIteration, passwordMessagePacket);
     }
     
     private void initProxyContext(final ShardingSphereUser user) {
@@ -145,7 +143,7 @@ public final class OpenGaussAuthenticationHandlerTest extends ProxyContextRestor
         return new ShardingSphereRuleMetaData(Collections.singleton(rule));
     }
     
-    private String encodeDigest(final String password, final String random64code, final String token, final int serverIteration) {
-        return new String(OpenGaussAuthenticationAlgorithm.doRFC5802Algorithm(password, random64code, token, serverIteration));
+    private String encodeDigest(final String password, final int serverIteration) {
+        return new String(OpenGaussAuthenticationAlgorithm.doRFC5802Algorithm(password, authHexData.getSalt(), authHexData.getNonce(), serverIteration));
     }
 }

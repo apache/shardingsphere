@@ -22,6 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussProtocolVersion;
+import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationHexData;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
@@ -44,10 +45,10 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationRes
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 /**
  * Authentication engine for openGauss.
+ * 
+ * @see <a href="https://opengauss.org/zh/blogs/blogs.html?post/douxin/sm3_for_opengauss/">SM3 for openGauss</a>
  */
 public final class OpenGaussAuthenticationEngine implements AuthenticationEngine {
     
@@ -59,9 +60,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
     
     private static final int PROTOCOL_350_SERVER_ITERATOR = 2048;
     
-    private final String saltHexString;
-    
-    private final String nonceHexString;
+    private final OpenGaussAuthenticationHexData authHexData = new OpenGaussAuthenticationHexData();
     
     private boolean startupMessageReceived;
     
@@ -70,20 +69,6 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
     private int serverIteration;
     
     private AuthenticationResult currentAuthResult;
-    
-    public OpenGaussAuthenticationEngine() {
-        saltHexString = generateRandomHexString(64);
-        nonceHexString = generateRandomHexString(8);
-    }
-    
-    private String generateRandomHexString(final int length) {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        StringBuilder result = new StringBuilder(length);
-        for (int i = 0; i < result.capacity(); i++) {
-            result.append(Integer.toString(random.nextInt(0x10), 0x10));
-        }
-        return result.toString();
-    }
     
     @Override
     public int handshake(final ChannelHandlerContext context) {
@@ -106,8 +91,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
             throw new ProtocolViolationException("password", Character.toString(messageType));
         }
         PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
-        OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(currentAuthResult.getUsername(), currentAuthResult.getDatabase(),
-                saltHexString, nonceHexString, serverIteration, passwordMessagePacket);
+        OpenGaussAuthenticationHandler.loginWithSCRAMSha256Password(currentAuthResult.getUsername(), currentAuthResult.getDatabase(), authHexData, serverIteration, passwordMessagePacket);
         context.write(new PostgreSQLAuthenticationOKPacket());
         context.write(new PostgreSQLParameterStatusPacket("server_version", PostgreSQLServerInfo.getServerVersion()));
         context.write(new PostgreSQLParameterStatusPacket("client_encoding", clientEncoding));
@@ -128,8 +112,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         }
         serverIteration = startupPacket.getVersion() == OpenGaussProtocolVersion.PROTOCOL_351.getVersion() ? PROTOCOL_351_SERVER_ITERATOR : PROTOCOL_350_SERVER_ITERATOR;
         String serverSignature = calculateServerSignature(startupPacket.getVersion(), username);
-        context.writeAndFlush(new OpenGaussAuthenticationSCRAMSha256Packet(
-                startupPacket.getVersion(), saltHexString.getBytes(), nonceHexString.getBytes(), serverSignature.getBytes(), serverIteration));
+        context.writeAndFlush(new OpenGaussAuthenticationSCRAMSha256Packet(authHexData, startupPacket.getVersion(), serverSignature.getBytes(), serverIteration));
         currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase());
         return currentAuthResult;
     }
@@ -140,6 +123,6 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         }
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         String password = authorityRule.findUser(new Grantee(username, "%")).map(ShardingSphereUser::getPassword).orElse("");
-        return OpenGaussAuthenticationHandler.calculateServerSignature(password, saltHexString, nonceHexString, serverIteration);
+        return OpenGaussAuthenticationHandler.calculateServerSignature(password, authHexData, serverIteration);
     }
 }
