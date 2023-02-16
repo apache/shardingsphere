@@ -115,17 +115,17 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             case STREAM_DATA:
                 processStreamDataRequest(ctx, request, connectionContext);
                 break;
-            case START_STREAMING:
-                processStartStreamingRequest(ctx, request, connectionContext);
+            case ACK_STREAMING:
+                processAckStreamingRequest(ctx, request);
                 break;
             case STOP_STREAMING:
                 processStopStreamingRequest(ctx, request, connectionContext);
                 break;
+            case START_STREAMING:
+                processStartStreamingRequest(ctx, request, connectionContext);
+                break;
             case DROP_STREAMING:
                 processDropStreamingRequest(ctx, request, connectionContext);
-                break;
-            case ACK_STREAMING:
-                processAckStreamingRequest(ctx, request);
                 break;
             default:
                 log.warn("can't handle this type of request {}", request);
@@ -168,19 +168,32 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Miss stream data request body"));
             return;
         }
-        StreamDataRequestBody streamDataRequestBody = request.getStreamDataRequestBody();
-        if (streamDataRequestBody.getDatabase().isEmpty()) {
+        StreamDataRequestBody requestBody = request.getStreamDataRequestBody();
+        if (requestBody.getDatabase().isEmpty()) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "database not allowed to be empty"));
             return;
         }
         // TODO need support the all tables at database or schema
-        if (streamDataRequestBody.getSourceSchemaTablesList().isEmpty()) {
+        if (requestBody.getSourceSchemaTablesList().isEmpty()) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal stream data request parameter"));
             return;
         }
-        checkPrivileges(connectionContext.getCurrentUser().getGrantee(), streamDataRequestBody.getDatabase());
-        CDCResponse response = backendHandler.streamData(request.getRequestId(), streamDataRequestBody, connectionContext, ctx.channel());
+        checkPrivileges(connectionContext.getCurrentUser().getGrantee(), requestBody.getDatabase());
+        CDCResponse response = backendHandler.streamData(request.getRequestId(), requestBody, connectionContext, ctx.channel());
         ctx.writeAndFlush(response);
+    }
+    
+    private void processAckStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request) {
+        if (!request.hasAckStreamingRequestBody()) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Miss ack request body")).addListener(ChannelFutureListener.CLOSE);
+            return;
+        }
+        AckStreamingRequestBody requestBody = request.getAckStreamingRequestBody();
+        if (requestBody.getAckId().isEmpty()) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal ack request parameter"));
+            return;
+        }
+        backendHandler.processAck(requestBody);
     }
     
     private void processStartStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
@@ -189,22 +202,22 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
                     .addListener(ChannelFutureListener.CLOSE);
             return;
         }
-        StartStreamingRequestBody startStreamingRequestBody = request.getStartStreamingRequestBody();
+        StartStreamingRequestBody requestBody = request.getStartStreamingRequestBody();
         // TODO improve after cdc exception refactor
-        if (startStreamingRequestBody.getStreamingId().isEmpty()) {
+        if (requestBody.getStreamingId().isEmpty()) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal start streaming request parameter"))
                     .addListener(ChannelFutureListener.CLOSE);
             return;
         }
-        String database = backendHandler.getDatabaseByJobId(startStreamingRequestBody.getStreamingId());
+        String database = backendHandler.getDatabaseByJobId(requestBody.getStreamingId());
         checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
-        CDCResponse response = backendHandler.startStreaming(request.getRequestId(), startStreamingRequestBody.getStreamingId(), connectionContext, ctx.channel());
+        CDCResponse response = backendHandler.startStreaming(request.getRequestId(), requestBody.getStreamingId(), connectionContext, ctx.channel());
         ctx.writeAndFlush(response);
     }
     
     private void processStopStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
-        StopStreamingRequestBody stopStreamingRequestBody = request.getStopStreamingRequestBody();
-        String database = backendHandler.getDatabaseByJobId(stopStreamingRequestBody.getStreamingId());
+        StopStreamingRequestBody requestBody = request.getStopStreamingRequestBody();
+        String database = backendHandler.getDatabaseByJobId(requestBody.getStreamingId());
         checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
         backendHandler.stopStreaming(connectionContext.getJobId());
         connectionContext.setStatus(CDCConnectionStatus.LOGGED_IN);
@@ -213,8 +226,8 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     }
     
     private void processDropStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
-        DropStreamingRequestBody dropStreamingRequestBody = request.getDropStreamingRequestBody();
-        String database = backendHandler.getDatabaseByJobId(dropStreamingRequestBody.getStreamingId());
+        DropStreamingRequestBody requestBody = request.getDropStreamingRequestBody();
+        String database = backendHandler.getDatabaseByJobId(requestBody.getStreamingId());
         checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
         try {
             backendHandler.dropStreaming(connectionContext.getJobId());
@@ -224,18 +237,5 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         } catch (final SQLException ex) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, ex.getMessage()));
         }
-    }
-    
-    private void processAckStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request) {
-        if (!request.hasAckStreamingRequestBody()) {
-            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Miss ack request body")).addListener(ChannelFutureListener.CLOSE);
-            return;
-        }
-        AckStreamingRequestBody ackStreamingRequestBody = request.getAckStreamingRequestBody();
-        if (ackStreamingRequestBody.getAckId().isEmpty()) {
-            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal ack request parameter"));
-            return;
-        }
-        backendHandler.processAck(ackStreamingRequestBody);
     }
 }

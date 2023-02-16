@@ -28,18 +28,18 @@ message CDCRequest {
     UNKNOWN = 0;
     LOGIN = 1;
     STREAM_DATA = 2;
-    START_STREAMING = 3;
-    ACK_STREAMING = 4;
-    STOP_STREAMING = 5;
+    ACK_STREAMING = 3;
+    STOP_STREAMING = 4;
+    START_STREAMING = 5;
     DROP_STREAMING = 6;
   }
   Type type = 3;
   oneof request_body {
     LoginRequestBody login_request_body = 4;
     StreamDataRequestBody stream_data_request_body = 5;
-    StartStreamingRequestBody start_streaming_request_body =6;
-    AckStreamingRequestBody ack_streaming_request_body = 7;
-    StopStreamingRequestBody stop_streaming_request_body = 8;
+    AckStreamingRequestBody ack_streaming_request_body = 6;
+    StopStreamingRequestBody stop_streaming_request_body = 7;
+    StartStreamingRequestBody start_streaming_request_body = 8;
     DropStreamingRequestBody drop_streaming_request_body = 9;
   }
 }
@@ -71,18 +71,18 @@ message StreamDataRequestBody {
   bool full = 4;
 }
 
-message StartStreamingRequestBody {
-  string streaming_id = 2;
+message AckStreamingRequestBody {
+  string ack_id = 3;
 }
 
 message StopStreamingRequestBody {
   string streaming_id = 2;
 }
 
-message DropStreamingRequestBody {
+message StartStreamingRequestBody {
   string streaming_id = 2;
 }
 
-message AckStreamingRequestBody {
-  string ack_id = 3;
+message DropStreamingRequestBody {
+  string streaming_id = 2;
 }

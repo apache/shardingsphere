@@ -45,7 +45,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
-import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateStreamDataParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.StreamDataParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
@@ -108,10 +108,10 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
      * @param param create CDC job param
      * @return job id
      */
-    public String createJob(final CreateStreamDataParameter param) {
+    public String createJob(final StreamDataParameter param) {
         YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
         yamlJobConfig.setDatabase(param.getDatabase());
-        yamlJobConfig.setTableNames(param.getTableNames());
+        yamlJobConfig.setSchemaTableNames(param.getSchemaTableNames());
         yamlJobConfig.setFull(param.isFull());
         yamlJobConfig.setDecodeWithTX(param.isDecodeWithTX());
         ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getDatabase());
@@ -148,7 +148,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
                 if (getJobItemProgress(jobId, i).isPresent()) {
                     continue;
                 }
-                TableNameSchemaNameMapping tableNameSchemaNameMapping = getTableNameSchemaNameMapping(jobConfig.getTableNames());
+                TableNameSchemaNameMapping tableNameSchemaNameMapping = getTableNameSchemaNameMapping(jobConfig.getSchemaTableNames());
                 DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig, i, tableNameSchemaNameMapping);
                 InventoryIncrementalJobItemProgress jobItemProgress = new InventoryIncrementalJobItemProgress();
                 jobItemProgress.setSourceDatabaseType(jobConfig.getSourceDatabaseType());
@@ -194,7 +194,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     private String generateJobId(final YamlCDCJobConfiguration config) {
         // TODO generate parameter add sink type
-        CDCJobId jobId = new CDCJobId(config.getDatabase(), config.getTableNames(), config.isFull());
+        CDCJobId jobId = new CDCJobId(config.getDatabase(), config.getSchemaTableNames(), config.isFull());
         return marshalJobId(jobId);
     }
     
@@ -208,9 +208,9 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     @Override
     public CDCTaskConfiguration buildTaskConfiguration(final PipelineJobConfiguration pipelineJobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
         CDCJobConfiguration jobConfig = (CDCJobConfiguration) pipelineJobConfig;
-        TableNameSchemaNameMapping tableNameSchemaNameMapping = getTableNameSchemaNameMapping(jobConfig.getTableNames());
+        TableNameSchemaNameMapping tableNameSchemaNameMapping = getTableNameSchemaNameMapping(jobConfig.getSchemaTableNames());
         DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig, jobShardingItem, tableNameSchemaNameMapping);
-        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, jobConfig.getTableNames(), tableNameSchemaNameMapping);
+        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, jobConfig.getSchemaTableNames(), tableNameSchemaNameMapping);
         CDCTaskConfiguration result = new CDCTaskConfiguration(dumperConfig, importerConfig);
         log.debug("buildTaskConfiguration, result={}", result);
         return result;

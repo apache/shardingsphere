@@ -83,8 +83,8 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     }
     
     // TODO not remove the method, may be used again in the future
-    private void sendStartStreamingDataRequest(final ChannelHandlerContext ctx, final String streamId, final ClientConnectionContext connectionContext) {
-        StartStreamingRequestBody startStreamingRequest = StartStreamingRequestBody.newBuilder().setStreamingId(streamId).build();
+    private void sendStartStreamingDataRequest(final ChannelHandlerContext ctx, final String streamingId, final ClientConnectionContext connectionContext) {
+        StartStreamingRequestBody startStreamingRequest = StartStreamingRequestBody.newBuilder().setStreamingId(streamingId).build();
         Builder builder = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setType(Type.START_STREAMING).setStartStreamingRequestBody(startStreamingRequest);
         ctx.writeAndFlush(builder.build());
         connectionContext.setStatus(ClientConnectionStatus.STREAMING);

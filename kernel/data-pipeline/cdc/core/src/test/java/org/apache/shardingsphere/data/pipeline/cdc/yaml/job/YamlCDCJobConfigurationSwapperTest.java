@@ -33,12 +33,12 @@ public final class YamlCDCJobConfigurationSwapperTest {
         YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
         yamlJobConfig.setJobId("j51017f973ac82cb1edea4f5238a258c25e89");
         yamlJobConfig.setDatabase("test_db");
-        yamlJobConfig.setTableNames(Arrays.asList("t_order", "t_order_item"));
+        yamlJobConfig.setSchemaTableNames(Arrays.asList("test.t_order", "t_order_item"));
         yamlJobConfig.setFull(true);
         CDCJobConfiguration actual = new YamlCDCJobConfigurationSwapper().swapToObject(yamlJobConfig);
         assertThat(actual.getJobId(), is("j51017f973ac82cb1edea4f5238a258c25e89"));
         assertThat(actual.getDatabase(), is("test_db"));
-        assertThat(actual.getTableNames(), is(Arrays.asList("t_order", "t_order_item")));
+        assertThat(actual.getSchemaTableNames(), is(Arrays.asList("test.t_order", "t_order_item")));
         assertTrue(actual.isFull());
     }
 }

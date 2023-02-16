@@ -25,15 +25,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Create stream data parameter.
+ * Stream data parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateStreamDataParameter {
+public final class StreamDataParameter {
     
     private final String database;
     
-    private final List<String> tableNames;
+    private final List<String> schemaTableNames;
     
     private final boolean full;
     

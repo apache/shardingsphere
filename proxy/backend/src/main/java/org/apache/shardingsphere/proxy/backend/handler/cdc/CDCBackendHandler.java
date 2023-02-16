@@ -22,10 +22,9 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
-import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.CreateStreamDataParameter;
+import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.StreamDataParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector.CDCImporterConnector;
@@ -92,7 +91,7 @@ public final class CDCBackendHandler {
             actualDataNodesMap.put(each.getTable(), getActualDataNodes(shardingRule.get(), each.getTable()));
         }
         boolean decodeWithTx = database.getProtocolType() instanceof OpenGaussDatabaseType;
-        CreateStreamDataParameter parameter = new CreateStreamDataParameter(streamDataRequestBody.getDatabase(), tableNames, streamDataRequestBody.getFull(), actualDataNodesMap, decodeWithTx);
+        StreamDataParameter parameter = new StreamDataParameter(streamDataRequestBody.getDatabase(), tableNames, streamDataRequestBody.getFull(), actualDataNodesMap, decodeWithTx);
         String jobId = jobAPI.createJob(parameter);
         connectionContext.setJobId(jobId);
         startStreaming(requestId, jobId, connectionContext, channel);
@@ -112,8 +111,7 @@ public final class CDCBackendHandler {
      * @return database
      */
     public String getDatabaseByJobId(final String jobId) {
-        CDCJobConfiguration jobConfig = (CDCJobConfiguration) jobAPI.getJobConfiguration(jobId);
-        return jobConfig.getDatabase();
+        return ((CDCJobConfiguration) jobAPI.getJobConfiguration(jobId)).getDatabase();
     }
     
     /**
@@ -139,12 +137,11 @@ public final class CDCBackendHandler {
         Comparator<DataRecord> dataRecordComparator = cdcJobConfig.isDecodeWithTX()
                 ? DataRecordComparatorGenerator.generatorIncrementalComparator(database.getProtocolType())
                 : null;
-        CDCJob job = new CDCJob(new CDCImporterConnector(channel, cdcJobConfig.getDatabase(), cdcJobConfig.getJobShardingCount(), cdcJobConfig.getTableNames(), dataRecordComparator));
+        CDCJob job = new CDCJob(new CDCImporterConnector(channel, cdcJobConfig.getDatabase(), cdcJobConfig.getJobShardingCount(), cdcJobConfig.getSchemaTableNames(), dataRecordComparator));
         PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
-        connectionContext.setStatus(CDCConnectionStatus.DATA_STREAMING);
         connectionContext.setJobId(jobId);
         return CDCResponseGenerator.succeedBuilder(requestId).build();
     }
