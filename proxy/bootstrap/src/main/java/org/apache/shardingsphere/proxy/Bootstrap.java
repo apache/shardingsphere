@@ -52,7 +52,7 @@ public final class Bootstrap {
         List<String> addresses = bootstrapArgs.getAddresses();
         new BootstrapInitializer().init(yamlConfig, port, bootstrapArgs.getForce());
         Integer cdcServerPort = (Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey());
-        if (null != cdcServerPort) {
+        if (null != cdcServerPort && cdcServerPort > 0) {
             new CDCServer(addresses, cdcServerPort).start();
         }
         new ShardingSphereProxy().start(port, addresses);

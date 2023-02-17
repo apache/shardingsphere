@@ -70,7 +70,8 @@ public final class ConfigurationPropertiesTest {
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS.getKey(), "20"),
                 new Property(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION.getKey(), "5.7.22"),
                 new Property(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getKey(), "3308"),
-                new Property(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG.getKey(), "1024"));
+                new Property(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG.getKey(), "1024"),
+                new Property(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey(), "0"));
     }
     
     @Test
@@ -93,5 +94,6 @@ public final class ConfigurationPropertiesTest {
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION), is("5.7.22"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT), is(3307));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG), is(1024));
+        assertThat(actual.getValue(ConfigurationPropertyKey.CDC_SERVER_PORT), is(0));
     }
 }
