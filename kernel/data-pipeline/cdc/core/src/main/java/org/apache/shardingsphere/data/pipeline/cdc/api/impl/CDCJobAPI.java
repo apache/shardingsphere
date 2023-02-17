@@ -127,7 +127,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobConfig.getJobId());
         if (repositoryAPI.isExisted(jobConfigKey)) {
-            log.warn("cdc job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
+            log.warn("CDC job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
             return jobConfig.getJobId();
         }
         repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobConfig.getJobId()), getJobClassName());

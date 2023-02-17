@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
 import org.junit.Test;
 
@@ -37,10 +37,10 @@ public final class CDCAckHolderTest {
     @Test
     public void assertBindAckIdWithPositionAndAck() {
         CDCAckHolder cdcAckHolder = CDCAckHolder.getInstance();
-        final Map<CDCImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
-        CDCImporter cdcImporter = mock(CDCImporter.class);
-        importerDataRecordMap.put(cdcImporter, new CDCAckPosition(new FinishedRecord(new FinishedPosition()), 0));
-        Optional<Map<String, Map<CDCImporter, CDCAckPosition>>> ackIdImporterMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdImporterMap");
+        final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
+        SocketSinkImporter socketSinkImporter = mock(SocketSinkImporter.class);
+        importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(new FinishedRecord(new FinishedPosition()), 0));
+        Optional<Map<String, Map<SocketSinkImporter, CDCAckPosition>>> ackIdImporterMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdImporterMap");
         assertTrue(ackIdImporterMap.isPresent());
         assertTrue(ackIdImporterMap.get().isEmpty());
         String ackId = cdcAckHolder.bindAckIdWithPosition(importerDataRecordMap);
@@ -52,12 +52,12 @@ public final class CDCAckHolderTest {
     @Test
     public void assertCleanUpTimeoutAckId() {
         CDCAckHolder cdcAckHolder = CDCAckHolder.getInstance();
-        final Map<CDCImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
-        CDCImporter cdcImporter = mock(CDCImporter.class);
-        importerDataRecordMap.put(cdcImporter, new CDCAckPosition(new FinishedRecord(new FinishedPosition()), 0, System.currentTimeMillis() - 60 * 1000 * 10));
+        final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
+        SocketSinkImporter socketSinkImporter = mock(SocketSinkImporter.class);
+        importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(new FinishedRecord(new FinishedPosition()), 0, System.currentTimeMillis() - 60 * 1000 * 10));
         cdcAckHolder.bindAckIdWithPosition(importerDataRecordMap);
-        cdcAckHolder.cleanUp(cdcImporter);
-        Optional<Map<String, Map<CDCImporter, CDCAckPosition>>> actualAckIdImporterMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdImporterMap");
+        cdcAckHolder.cleanUp(socketSinkImporter);
+        Optional<Map<String, Map<SocketSinkImporter, CDCAckPosition>>> actualAckIdImporterMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdImporterMap");
         assertTrue(actualAckIdImporterMap.isPresent());
         assertTrue(actualAckIdImporterMap.get().isEmpty());
     }

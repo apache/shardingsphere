@@ -17,27 +17,31 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
+import io.netty.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.cdc.core.connector.SocketSinkImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
-import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-/**
- * CDC importer creator.
- */
-public final class CDCImporterCreator implements ImporterCreator {
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+
+@RunWith(MockitoJUnitRunner.class)
+public final class SocketSinkImporterCreatorTest {
     
-    @Override
-    public Importer createImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
-                                   final PipelineJobProgressListener jobProgressListener, final ImporterType importerType) {
-        return new CDCImporter(importerConfig, importerConnector, channel, jobProgressListener, importerType);
-    }
+    @Mock
+    private ImporterConfiguration importerConfig;
     
-    @Override
-    public String getType() {
-        return "CDC";
+    @Test
+    public void assertCreateCDCImporter() {
+        SocketSinkImporterConnector importerConnector = new SocketSinkImporterConnector(mock(Channel.class), "test", 1, Collections.emptyList(), null);
+        assertThat(TypedSPILoader.getService(ImporterCreator.class, "Socket").createImporter(importerConfig, importerConnector, null, null, null), instanceOf(SocketSinkImporter.class));
     }
 }
