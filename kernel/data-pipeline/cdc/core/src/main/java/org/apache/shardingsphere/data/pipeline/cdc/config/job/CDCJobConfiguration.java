@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfigu
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -36,7 +37,7 @@ public final class CDCJobConfiguration implements PipelineJobConfiguration {
     
     private final String database;
     
-    private final List<String> schemaTableNames;
+    private final Collection<String> schemaTableNames;
     
     private final boolean full;
     

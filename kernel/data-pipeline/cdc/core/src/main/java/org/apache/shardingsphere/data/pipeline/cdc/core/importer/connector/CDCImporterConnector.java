@@ -38,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -84,11 +85,12 @@ public final class CDCImporterConnector implements ImporterConnector {
     
     private Thread incrementalImporterTask;
     
-    public CDCImporterConnector(final Channel channel, final String database, final int jobShardingCount, final List<String> tableNames, final Comparator<DataRecord> dataRecordComparator) {
+    public CDCImporterConnector(final Channel channel, final String database, final int jobShardingCount, final Collection<String> schemaTableNames,
+                                final Comparator<DataRecord> dataRecordComparator) {
         this.channel = channel;
         this.database = database;
         this.jobShardingCount = jobShardingCount;
-        tableNames.stream().filter(each -> each.contains(".")).forEach(each -> {
+        schemaTableNames.stream().filter(each -> each.contains(".")).forEach(each -> {
             String[] split = each.split("\\.");
             tableNameSchemaMap.put(split[1], split[0]);
         });

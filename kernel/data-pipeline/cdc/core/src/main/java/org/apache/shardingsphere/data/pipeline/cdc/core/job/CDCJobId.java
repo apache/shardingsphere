@@ -22,7 +22,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * CDC job id.
@@ -35,11 +35,11 @@ public final class CDCJobId extends AbstractPipelineJobId {
     
     private final String databaseName;
     
-    private final List<String> tableNames;
+    private final Collection<String> tableNames;
     
     private final boolean full;
     
-    public CDCJobId(final String databaseName, final List<String> tableNames, final boolean full) {
+    public CDCJobId(final String databaseName, final Collection<String> tableNames, final boolean full) {
         super(new CDCJobType(), CURRENT_VERSION);
         this.databaseName = databaseName;
         this.tableNames = tableNames;

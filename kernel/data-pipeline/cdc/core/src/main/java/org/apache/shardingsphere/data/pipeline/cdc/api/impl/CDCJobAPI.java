@@ -216,7 +216,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         return result;
     }
     
-    private TableNameSchemaNameMapping getTableNameSchemaNameMapping(final List<String> tableNames) {
+    private TableNameSchemaNameMapping getTableNameSchemaNameMapping(final Collection<String> tableNames) {
         Map<LogicTableName, String> tableNameSchemaMap = new LinkedHashMap<>();
         for (String each : tableNames) {
             String[] split = each.split("\\.");
@@ -243,7 +243,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         return result;
     }
     
-    private ImporterConfiguration buildImporterConfiguration(final CDCJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig, final List<String> logicalTableNames,
+    private ImporterConfiguration buildImporterConfiguration(final CDCJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig, final Collection<String> logicalTableNames,
                                                              final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
         PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getDataSourceConfig().getType(),
                 jobConfig.getDataSourceConfig().getParameter());
