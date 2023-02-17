@@ -40,13 +40,13 @@ public final class CDCAckHolderTest {
         final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
         SocketSinkImporter socketSinkImporter = mock(SocketSinkImporter.class);
         importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(new FinishedRecord(new FinishedPosition()), 0));
-        Optional<Map<String, Map<SocketSinkImporter, CDCAckPosition>>> ackIdImporterMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdImporterMap");
-        assertTrue(ackIdImporterMap.isPresent());
-        assertTrue(ackIdImporterMap.get().isEmpty());
+        Optional<Map<String, Map<SocketSinkImporter, CDCAckPosition>>> ackIdPositionMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdPositionMap");
+        assertTrue(ackIdPositionMap.isPresent());
+        assertTrue(ackIdPositionMap.get().isEmpty());
         String ackId = cdcAckHolder.bindAckIdWithPosition(importerDataRecordMap);
-        assertThat(ackIdImporterMap.get().size(), is(1));
+        assertThat(ackIdPositionMap.get().size(), is(1));
         cdcAckHolder.ack(ackId);
-        assertTrue(ackIdImporterMap.get().isEmpty());
+        assertTrue(ackIdPositionMap.get().isEmpty());
     }
     
     @Test
@@ -57,8 +57,8 @@ public final class CDCAckHolderTest {
         importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(new FinishedRecord(new FinishedPosition()), 0, System.currentTimeMillis() - 60 * 1000 * 10));
         cdcAckHolder.bindAckIdWithPosition(importerDataRecordMap);
         cdcAckHolder.cleanUp(socketSinkImporter);
-        Optional<Map<String, Map<SocketSinkImporter, CDCAckPosition>>> actualAckIdImporterMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdImporterMap");
-        assertTrue(actualAckIdImporterMap.isPresent());
-        assertTrue(actualAckIdImporterMap.get().isEmpty());
+        Optional<Map<String, Map<SocketSinkImporter, CDCAckPosition>>> ackIdPositionMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdPositionMap");
+        assertTrue(ackIdPositionMap.isPresent());
+        assertTrue(ackIdPositionMap.get().isEmpty());
     }
 }
