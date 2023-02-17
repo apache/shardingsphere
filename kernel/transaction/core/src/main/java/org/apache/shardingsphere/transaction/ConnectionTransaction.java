@@ -59,8 +59,8 @@ public final class ConnectionTransaction {
     /**
      * Whether in transaction.
      * 
+     * @param transactionConnectionContext transaction connection context
      * @return in transaction or not
-     * @param transactionConnectionContext
      */
     public boolean isInTransaction(final TransactionConnectionContext transactionConnectionContext) {
         return transactionConnectionContext.isInTransaction() && null != transactionManager && transactionManager.isInTransaction();
