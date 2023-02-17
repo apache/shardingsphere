@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
@@ -104,13 +105,13 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
     
     @Test
     public void assertGetConnectionsSucceed() throws SQLException {
-        List<Connection> actual = ProxyContext.getInstance().getBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 5, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = ProxyContext.getInstance().getBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 5, ConnectionMode.MEMORY_STRICTLY, new TransactionConnectionContext());
         assertThat(actual.size(), is(5));
     }
     
     @Test(expected = OverallConnectionNotEnoughException.class)
     public void assertGetConnectionsFailed() throws SQLException {
-        ProxyContext.getInstance().getBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY);
+        ProxyContext.getInstance().getBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY, new TransactionConnectionContext());
     }
     
     @Test
@@ -143,7 +144,7 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
         
         @Override
         public List<Connection> call() throws SQLException {
-            return ProxyContext.getInstance().getBackendDataSource().getConnections("schema", datasourceName, connectionSize, connectionMode);
+            return ProxyContext.getInstance().getBackendDataSource().getConnections("schema", datasourceName, connectionSize, connectionMode, new TransactionConnectionContext());
         }
     }
 }

@@ -62,6 +62,12 @@ public final class AtomikosTransactionManagerProvider implements XATransactionMa
         transactionManager.getTransaction().enlistResource(xaResource);
     }
     
+    @SneakyThrows(SystemException.class)
+    @Override
+    public String getTransactionId() {
+        return transactionManager.getTransaction().toString();
+    }
+    
     @Override
     public void close() {
         userTransactionService.shutdown(true);

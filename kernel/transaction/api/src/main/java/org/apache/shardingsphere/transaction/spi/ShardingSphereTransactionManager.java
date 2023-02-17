@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.spi;
 
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
@@ -58,10 +59,11 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
      *
      * @param databaseName database name
      * @param dataSourceName data source name
+     * @param transactionConnectionContext
      * @return connection
      * @throws SQLException SQL exception
      */
-    Connection getConnection(String databaseName, String dataSourceName) throws SQLException;
+    Connection getConnection(String databaseName, String dataSourceName, final TransactionConnectionContext transactionConnectionContext) throws SQLException;
     
     /**
      * Begin transaction.

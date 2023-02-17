@@ -116,10 +116,10 @@ public final class ShardingSphereConnectionTest {
         connection.getConnectionManager().getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
-        assertTrue(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertTrue(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(physicalConnection).setAutoCommit(false);
         connection.commit();
-        assertFalse(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertFalse(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(physicalConnection).commit();
     }
     
@@ -130,10 +130,10 @@ public final class ShardingSphereConnectionTest {
         final ConnectionManager connectionManager = mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
-        assertTrue(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertTrue(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(connectionTransaction).begin();
         connection.commit();
-        assertFalse(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertFalse(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(connectionManager).commit();
     }
     
@@ -155,10 +155,10 @@ public final class ShardingSphereConnectionTest {
         final ConnectionManager connectionManager = mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
-        assertTrue(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertTrue(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(connectionTransaction).begin();
         connection.rollback();
-        assertFalse(connection.getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertFalse(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(connectionManager).rollback();
     }
     

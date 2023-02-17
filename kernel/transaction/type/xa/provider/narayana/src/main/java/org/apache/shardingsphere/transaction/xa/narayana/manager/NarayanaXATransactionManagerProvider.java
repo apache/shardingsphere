@@ -21,6 +21,7 @@ import com.arjuna.ats.arjuna.objectstore.StoreManager;
 import com.arjuna.ats.arjuna.recovery.RecoveryManager;
 import com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
+import com.arjuna.ats.internal.jta.transaction.arjunacore.TransactionImple;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
 import com.arjuna.ats.jta.common.jtaPropertyManager;
 import com.arjuna.common.internal.util.propertyservice.BeanPopulator;
@@ -78,6 +79,12 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     @Override
     public void enlistResource(final SingleXAResource singleXAResource) {
         transactionManager.getTransaction().enlistResource(singleXAResource.getDelegate());
+    }
+    
+    @SneakyThrows(SystemException.class)
+    @Override
+    public String getTransactionId() {
+        return ((TransactionImple) transactionManager.getTransaction()).get_uid().toString();
     }
     
     @Override

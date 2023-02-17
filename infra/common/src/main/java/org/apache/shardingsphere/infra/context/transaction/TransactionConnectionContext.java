@@ -20,6 +20,10 @@ package org.apache.shardingsphere.infra.context.transaction;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Connection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Transaction connection context.
  */
@@ -29,11 +33,14 @@ public final class TransactionConnectionContext implements AutoCloseable {
     
     private volatile boolean inTransaction;
     
+    private volatile Map<String, Connection> enlistedTransactions = new ConcurrentHashMap<>();
+    
     private volatile String readWriteSplitReplicaRoute;
     
     @Override
     public void close() {
         inTransaction = false;
+        enlistedTransactions.clear();
         readWriteSplitReplicaRoute = null;
     }
 }

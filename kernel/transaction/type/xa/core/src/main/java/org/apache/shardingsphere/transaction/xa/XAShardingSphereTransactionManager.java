@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.xa;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -86,9 +87,9 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     }
     
     @Override
-    public Connection getConnection(final String databaseName, final String dataSourceName) throws SQLException {
+    public Connection getConnection(final String databaseName, final String dataSourceName, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
         try {
-            return cachedDataSources.get(databaseName + "." + dataSourceName).getConnection();
+            return cachedDataSources.get(databaseName + "." + dataSourceName).getConnection(transactionConnectionContext);
         } catch (final SystemException | RollbackException ex) {
             throw new SQLException(ex);
         }

@@ -47,6 +47,11 @@ public final class FixtureXATransactionManagerProvider implements XATransactionM
     }
     
     @Override
+    public String getTransactionId() {
+        return "";
+    }
+    
+    @Override
     public void close() {
     }
     

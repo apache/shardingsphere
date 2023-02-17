@@ -110,7 +110,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     @Test
     public void assertGetConnection() throws SQLException {
-        Connection actual = seataTransactionManager.getConnection("sharding_db", "ds_0");
+        Connection actual = seataTransactionManager.getConnection("sharding_db", "ds_0", );
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     

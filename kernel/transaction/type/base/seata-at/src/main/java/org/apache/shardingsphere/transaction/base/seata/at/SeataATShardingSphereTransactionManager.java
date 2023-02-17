@@ -28,6 +28,7 @@ import io.seata.tm.TMClient;
 import io.seata.tm.api.GlobalTransaction;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -91,7 +92,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     }
     
     @Override
-    public Connection getConnection(final String databaseName, final String dataSourceName) throws SQLException {
+    public Connection getConnection(final String databaseName, final String dataSourceName, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
         checkSeataATEnabled();
         return dataSourceMap.get(databaseName + "." + dataSourceName).getConnection();
     }

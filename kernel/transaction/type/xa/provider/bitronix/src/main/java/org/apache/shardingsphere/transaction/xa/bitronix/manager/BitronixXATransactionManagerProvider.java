@@ -61,6 +61,12 @@ public final class BitronixXATransactionManagerProvider implements XATransaction
     }
     
     @Override
+    public String getTransactionId() {
+        // TODO zc
+        return null;
+    }
+    
+    @Override
     public void close() {
         transactionManager.shutdown();
     }

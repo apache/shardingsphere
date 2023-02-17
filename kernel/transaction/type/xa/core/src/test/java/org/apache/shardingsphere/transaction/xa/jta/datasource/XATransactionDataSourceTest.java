@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
@@ -68,7 +69,7 @@ public final class XATransactionDataSourceTest {
     public void assertGetAtomikosConnection() throws SQLException, RollbackException, SystemException {
         DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
-        try (Connection ignored = transactionDataSource.getConnection()) {
+        try (Connection ignored = transactionDataSource.getConnection(new TransactionConnectionContext())) {
             verify(xaTransactionManagerProvider, times(0)).getTransactionManager();
         }
     }
@@ -77,11 +78,12 @@ public final class XATransactionDataSourceTest {
     public void assertGetHikariConnection() throws SQLException, RollbackException, SystemException {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
-        try (Connection ignored = transactionDataSource.getConnection()) {
+        TransactionConnectionContext transactionContext = new TransactionConnectionContext();
+        try (Connection ignored = transactionDataSource.getConnection(transactionContext)) {
             verify(transaction).enlistResource(any(SingleXAResource.class));
             verify(transaction).registerSynchronization(any(Synchronization.class));
         }
-        try (Connection ignored = transactionDataSource.getConnection()) {
+        try (Connection ignored = transactionDataSource.getConnection(transactionContext)) {
             verify(transaction).enlistResource(any(SingleXAResource.class));
             verify(transaction).registerSynchronization(any(Synchronization.class));
         }

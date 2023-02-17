@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.core.fixture;
 
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
@@ -42,7 +43,7 @@ public final class OtherShardingSphereTransactionManagerFixture implements Shard
     }
     
     @Override
-    public Connection getConnection(final String databaseName, final String dataSourceName) {
+    public Connection getConnection(final String databaseName, final String dataSourceName, final TransactionConnectionContext transactionConnectionContext) {
         return null;
     }
     

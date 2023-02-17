@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -36,7 +37,6 @@ import javax.transaction.Transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -47,8 +47,6 @@ import java.util.Set;
 public final class XATransactionDataSource implements AutoCloseable {
     
     private static final Set<String> CONTAINER_DATASOURCE_NAMES = new HashSet<>(Arrays.asList("AtomikosDataSourceBean", "BasicManagedDataSource"));
-    
-    private final ThreadLocal<Map<Transaction, Connection>> enlistedTransactions = ThreadLocal.withInitial(HashMap::new);
     
     private final DatabaseType databaseType;
     
@@ -78,31 +76,35 @@ public final class XATransactionDataSource implements AutoCloseable {
      * @throws SQLException SQL exception
      * @throws SystemException system exception
      * @throws RollbackException rollback exception
+     * @param transactionConnectionContext
      */
-    public Connection getConnection() throws SQLException, SystemException, RollbackException {
+    public Connection getConnection(final TransactionConnectionContext transactionConnectionContext) throws SQLException, SystemException, RollbackException {
         if (CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
             return dataSource.getConnection();
         }
-        Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
-        if (!enlistedTransactions.get().containsKey(transaction)) {
+         
+        String transactionId = xaTransactionManagerProvider.getTransactionId();
+        Map<String, Connection> enlistedTransactions = transactionConnectionContext.getEnlistedTransactions();
+        if (!enlistedTransactions.containsKey(transactionId)) {
             Connection connection = dataSource.getConnection();
             XAConnection xaConnection = TypedSPILoader.getService(XAConnectionWrapper.class, databaseType.getType()).wrap(xaDataSource, connection);
+            Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
             transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
             transaction.registerSynchronization(new Synchronization() {
                 
                 @Override
                 public void beforeCompletion() {
-                    enlistedTransactions.get().remove(transaction);
+                    enlistedTransactions.remove(transactionId);
                 }
                 
                 @Override
                 public void afterCompletion(final int status) {
-                    enlistedTransactions.get().clear();
+                    enlistedTransactions.clear();
                 }
             });
-            enlistedTransactions.get().put(transaction, connection);
+            enlistedTransactions.put(transactionId, connection);
         }
-        return enlistedTransactions.get().get(transaction);
+        return enlistedTransactions.get(transactionId);
     }
     
     @Override

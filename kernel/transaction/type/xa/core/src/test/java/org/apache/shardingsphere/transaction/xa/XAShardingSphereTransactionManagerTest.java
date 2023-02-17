@@ -20,6 +20,7 @@ package org.apache.shardingsphere.transaction.xa;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -81,9 +82,10 @@ public final class XAShardingSphereTransactionManagerTest {
     @Test
     public void assertGetConnection() throws SQLException {
         xaTransactionManager.begin();
-        Connection actual1 = xaTransactionManager.getConnection("sharding_db", "ds_0");
-        Connection actual2 = xaTransactionManager.getConnection("sharding_db", "ds_1");
-        Connection actual3 = xaTransactionManager.getConnection("sharding_db", "ds_2");
+        TransactionConnectionContext transactionContext = new TransactionConnectionContext();
+        Connection actual1 = xaTransactionManager.getConnection("sharding_db", "ds_0", transactionContext);
+        Connection actual2 = xaTransactionManager.getConnection("sharding_db", "ds_1", transactionContext);
+        Connection actual3 = xaTransactionManager.getConnection("sharding_db", "ds_2", transactionContext);
         assertThat(actual1, instanceOf(Connection.class));
         assertThat(actual2, instanceOf(Connection.class));
         assertThat(actual3, instanceOf(Connection.class));
@@ -95,7 +97,7 @@ public final class XAShardingSphereTransactionManagerTest {
         ThreadLocal<Map<Transaction, Connection>> transactions = getEnlistedTransactions(getCachedDataSources().get("sharding_db.ds_1"));
         xaTransactionManager.begin();
         assertTrue(transactions.get().isEmpty());
-        xaTransactionManager.getConnection("sharding_db", "ds_1");
+        xaTransactionManager.getConnection("sharding_db", "ds_1", new TransactionConnectionContext());
         assertThat(transactions.get().size(), is(1));
         executeNestedTransaction(transactions);
         assertThat(transactions.get().size(), is(1));
@@ -105,7 +107,7 @@ public final class XAShardingSphereTransactionManagerTest {
     
     private void executeNestedTransaction(final ThreadLocal<Map<Transaction, Connection>> transactions) throws SQLException {
         xaTransactionManager.begin();
-        xaTransactionManager.getConnection("sharding_db", "ds_1");
+        xaTransactionManager.getConnection("sharding_db", "ds_1", new TransactionConnectionContext());
         assertThat(transactions.get().size(), is(2));
         xaTransactionManager.commit(false);
         assertThat(transactions.get().size(), is(1));

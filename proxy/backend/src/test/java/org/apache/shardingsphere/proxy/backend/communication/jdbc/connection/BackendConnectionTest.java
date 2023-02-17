@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -145,7 +146,7 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
     @Test
     public void assertGetConnectionCacheIsEmpty() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), new TransactionConnectionContext())).thenReturn(MockConnectionUtil.mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(2));
         assertThat(backendConnection.getConnectionSize(), is(2));
@@ -166,7 +167,7 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
     public void assertGetConnectionSizeGreaterThanCache() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         MockConnectionUtil.setCachedConnections(backendConnection, "ds1", 10);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), new TransactionConnectionContext())).thenReturn(MockConnectionUtil.mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 12, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actualConnections.size(), is(12));
         assertThat(backendConnection.getConnectionSize(), is(12));
@@ -176,7 +177,7 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
     @Test
     public void assertGetConnectionWithConnectionPostProcessors() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtil.mockNewConnections(2));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), new TransactionConnectionContext())).thenReturn(MockConnectionUtil.mockNewConnections(2));
         setConnectionPostProcessors();
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
         verify(backendConnection.getConnectionPostProcessors().iterator().next(), times(2)).process(any());
@@ -248,7 +249,7 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
             mockedStatic.when(ProxyContext::getInstance).thenReturn(proxyContext);
             Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
             when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
-            when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class)))
+            when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class), new TransactionConnectionContext()))
                     .thenReturn(Collections.singletonList(connection));
             actualConnections = backendConnection.getConnections("", 1, ConnectionMode.CONNECTION_STRICTLY);
         }
@@ -267,7 +268,7 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
             connection = mock(Connection.class, RETURNS_DEEP_STUBS);
             when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
             when(connection.createStatement().execute("SET key=value")).thenThrow(expectedException);
-            when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class)))
+            when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class), new TransactionConnectionContext()))
                     .thenReturn(Collections.singletonList(connection));
             backendConnection.getConnections("", 1, ConnectionMode.CONNECTION_STRICTLY);
         } catch (final SQLException ex) {
@@ -280,7 +281,7 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
     public void assertGetConnectionsWithoutTransactions() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(false);
         List<Connection> connections = MockConnectionUtil.mockNewConnections(1);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(connections);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), new TransactionConnectionContext())).thenReturn(connections);
         List<Connection> fetchedConnections = backendConnection.getConnections("ds1", 1, null);
         assertThat(fetchedConnections.size(), is(1));
         assertTrue(fetchedConnections.contains(connections.get(0)));

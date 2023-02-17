@@ -93,7 +93,7 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getDatabaseName().toLowerCase(), dataSourceName, connectionSize, connectionMode);
+        List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getDatabaseName().toLowerCase(), dataSourceName, connectionSize, connectionMode, connectionSession.getConnectionContext().getTransactionConnectionContext());
         setSessionVariablesIfNecessary(result);
         for (Connection each : result) {
             replayTransactionOption(each);
