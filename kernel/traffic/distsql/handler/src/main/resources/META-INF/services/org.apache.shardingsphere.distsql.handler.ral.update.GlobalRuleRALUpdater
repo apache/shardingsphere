@@ -15,6 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.traffic.distsql.handler.update.CreateTrafficRuleStatementUpdater
 org.apache.shardingsphere.traffic.distsql.handler.update.AlterTrafficRuleStatementUpdater
-org.apache.shardingsphere.traffic.distsql.handler.update.DropTrafficRuleStatementUpdater

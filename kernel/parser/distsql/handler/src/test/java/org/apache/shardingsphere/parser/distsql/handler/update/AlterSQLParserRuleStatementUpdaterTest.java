@@ -17,18 +17,11 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.AlterSQLParserRuleStatement;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.junit.Test;
-
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,9 +33,7 @@ public final class AlterSQLParserRuleStatementUpdaterTest {
     public void assertExecute() {
         AlterSQLParserRuleStatementUpdater updater = new AlterSQLParserRuleStatementUpdater();
         AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(true, new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
-        ShardingSphereMetaData metaData = createMetaData();
-        updater.executeUpdate(metaData, sqlStatement);
-        SQLParserRule actual = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        SQLParserRuleConfiguration actual = updater.buildAlteredRuleConfiguration(getSQLParserRuleConfiguration(), sqlStatement);
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(1000));
         assertThat(actual.getSqlStatementCache().getMaximumSize(), is(1000L));
@@ -50,9 +41,7 @@ public final class AlterSQLParserRuleStatementUpdaterTest {
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(512L));
     }
     
-    private ShardingSphereMetaData createMetaData() {
-        SQLParserRule rule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(rule)));
-        return new ShardingSphereMetaData(Collections.emptyMap(), ruleMetaData, new ConfigurationProperties(new Properties()));
+    private SQLParserRuleConfiguration getSQLParserRuleConfiguration() {
+        return new DefaultSQLParserRuleConfigurationBuilder().build();
     }
 }
