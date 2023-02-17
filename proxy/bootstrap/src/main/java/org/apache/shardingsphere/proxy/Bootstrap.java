@@ -51,9 +51,9 @@ public final class Bootstrap {
         int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
         List<String> addresses = bootstrapArgs.getAddresses();
         new BootstrapInitializer().init(yamlConfig, port, bootstrapArgs.getForce());
-        boolean cdcEnabled = null != yamlConfig.getServerConfiguration().getCdc() && yamlConfig.getServerConfiguration().getCdc().isEnabled();
-        if (cdcEnabled) {
-            new CDCServer(addresses, yamlConfig.getServerConfiguration().getCdc().getPort()).start();
+        Integer cdcServerPort = (Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey());
+        if (null != cdcServerPort) {
+            new CDCServer(addresses, cdcServerPort).start();
         }
         new ShardingSphereProxy().start(port, addresses);
     }
