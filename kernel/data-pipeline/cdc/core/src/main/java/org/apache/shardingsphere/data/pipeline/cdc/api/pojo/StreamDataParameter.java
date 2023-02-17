@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +33,7 @@ public final class StreamDataParameter {
     
     private final String database;
     
-    private final Collection<String> schemaTableNames;
+    private final List<String> schemaTableNames;
     
     private final boolean full;
     

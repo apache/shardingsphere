@@ -57,6 +57,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -110,7 +111,7 @@ public final class CDCBackendHandler {
             actualDataNodesMap.put(each, getActualDataNodes(shardingRule.get(), each));
         }
         boolean decodeWithTx = database.getProtocolType() instanceof OpenGaussDatabaseType;
-        StreamDataParameter parameter = new StreamDataParameter(requestBody.getDatabase(), schemaTableNames, requestBody.getFull(), actualDataNodesMap, decodeWithTx);
+        StreamDataParameter parameter = new StreamDataParameter(requestBody.getDatabase(), new LinkedList<>(schemaTableNames), requestBody.getFull(), actualDataNodesMap, decodeWithTx);
         String jobId = jobAPI.createJob(parameter);
         connectionContext.setJobId(jobId);
         startStreaming(requestId, jobId, connectionContext, channel);
@@ -163,10 +164,7 @@ public final class CDCBackendHandler {
     private Collection<String> getTableNamesWithoutSchema(final ShardingSphereDatabase database, final List<SchemaTable> schemaTables) {
         Optional<SchemaTable> allTablesOptional = schemaTables.stream().filter(each -> each.getTable().equals("*")).findFirst();
         Set<String> allTableNames = new HashSet<>(database.getSchema(database.getName()).getAllTableNames());
-        if (allTablesOptional.isPresent()) {
-            return allTableNames;
-        }
-        return schemaTables.stream().map(SchemaTable::getTable).collect(Collectors.toSet());
+        return allTablesOptional.isPresent() ? allTableNames : schemaTables.stream().map(SchemaTable::getTable).collect(Collectors.toSet());
     }
     
     private List<DataNode> getActualDataNodes(final ShardingRule shardingRule, final String logicTableName) {

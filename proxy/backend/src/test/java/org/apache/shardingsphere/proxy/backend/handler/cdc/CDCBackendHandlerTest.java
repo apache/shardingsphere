@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -107,7 +107,7 @@ public final class CDCBackendHandlerTest {
         Map<String, ShardingSphereSchema> schemas = new HashMap<>();
         schemas.put("test", mockSchema());
         schemas.put("public", mockSchema());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(), null, null, schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new OpenGaussDatabaseType(), null, null, schemas);
         List<SchemaTable> schemaTables = Arrays.asList(SchemaTable.newBuilder().setSchema("public").setTable("t_order").build(),
                 SchemaTable.newBuilder().setSchema("test").setTable("*").build());
         Map<String, Collection<String>> expected = new HashMap<>();
@@ -143,7 +143,7 @@ public final class CDCBackendHandlerTest {
     public void assertGetSchemaTableMapWithoutSchema() throws NoSuchMethodException {
         Map<String, ShardingSphereSchema> schemas = new HashMap<>();
         schemas.put("sharding_db", mockSchema());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new PostgreSQLDatabaseType(), null, null, schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new MySQLDatabaseType(), null, null, schemas);
         List<SchemaTable> schemaTables = Collections.singletonList(SchemaTable.newBuilder().setTable("*").build());
         Collection<String> actualWildcardTable = getSchemaTableMapWithoutSchemaResult(database, schemaTables);
         Set<String> expectedWildcardTable = new HashSet<>(Arrays.asList("t_order", "t_order_item"));

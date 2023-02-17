@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -36,7 +35,7 @@ public final class YamlCDCJobConfiguration implements YamlPipelineJobConfigurati
     
     private String database;
     
-    private Collection<String> schemaTableNames;
+    private List<String> schemaTableNames;
     
     private boolean full;
     

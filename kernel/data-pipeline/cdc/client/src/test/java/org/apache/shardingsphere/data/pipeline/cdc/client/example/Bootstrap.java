@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.example.postgresql;
+package org.apache.shardingsphere.data.pipeline.cdc.client.example;
 
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.ImportDataSourceParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 public final class Bootstrap {
     
@@ -32,7 +32,7 @@ public final class Bootstrap {
      * @param args args
      */
     public static void main(final String[] args) {
-        ImportDataSourceParameter importDataSourceParam = new ImportDataSourceParameter("jdbc:postgresql://localhost:5432/cdc_db?stringtype=unspecified", "postgres", "postgres");
+        ImportDataSourceParameter importDataSourceParam = new ImportDataSourceParameter("jdbc:opengauss://localhost:5432/cdc_db?stringtype=unspecified", "gaussdb", "Root@123");
         StartCDCClientParameter parameter = new StartCDCClientParameter(importDataSourceParam);
         parameter.setAddress("127.0.0.1");
         parameter.setPort(33071);
@@ -40,8 +40,9 @@ public final class Bootstrap {
         parameter.setPassword("root");
         parameter.setDatabase("sharding_db");
         parameter.setFull(true);
-        parameter.setSchemaTables(Arrays.asList(SchemaTable.newBuilder().setTable("t_order").build(), SchemaTable.newBuilder().setSchema("test").setTable("*").build()));
-        parameter.setDatabaseType("PostgreSQL");
+        parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable("t_order").build()));
+        // support MySQL, PostgreSQL, openGauss
+        parameter.setDatabaseType("openGauss");
         CDCClient cdcClient = new CDCClient(parameter);
         cdcClient.start();
     }
