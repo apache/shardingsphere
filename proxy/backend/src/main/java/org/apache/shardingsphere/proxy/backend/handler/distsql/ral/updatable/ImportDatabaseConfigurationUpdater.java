@@ -25,6 +25,7 @@ import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRu
 import org.apache.shardingsphere.dbdiscovery.yaml.swapper.YamlDatabaseDiscoveryRuleConfigurationSwapper;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -43,14 +44,12 @@ import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.swapper.YamlMaskRuleConfigurationSwapper;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.DatabaseDiscoveryRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.EncryptRuleConfigurationImportChecker;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.MaskRuleConfigurationImportChecker;
@@ -81,9 +80,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Import database configuration handler.
+ * Import database configuration updater.
  */
-public final class ImportDatabaseConfigurationHandler extends UpdatableRALBackendHandler<ImportDatabaseConfigurationStatement> {
+public final class ImportDatabaseConfigurationUpdater implements RALUpdater<ImportDatabaseConfigurationStatement> {
     
     private final ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker = new ShardingRuleConfigurationImportChecker();
     
@@ -102,23 +101,23 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     private final DataSourcePropertiesValidateHandler validateHandler = new DataSourcePropertiesValidateHandler();
     
     @Override
-    protected void update(final ContextManager contextManager) throws SQLException {
-        File file = new File(getSqlStatement().getFilePath());
+    public void executeUpdate(final String databaseName, final ImportDatabaseConfigurationStatement sqlStatement) throws SQLException {
+        File file = new File(sqlStatement.getFilePath());
         YamlProxyDatabaseConfiguration yamlConfig;
         try {
             yamlConfig = YamlEngine.unmarshal(file, YamlProxyDatabaseConfiguration.class);
         } catch (final IOException ex) {
             throw new FileIOException(ex);
         }
-        String databaseName = yamlConfig.getDatabaseName();
-        checkDatabase(databaseName, file);
+        String yamlDatabaseName = yamlConfig.getDatabaseName();
+        checkDatabase(yamlDatabaseName, file);
         checkDataSource(yamlConfig.getDataSources(), file);
-        addDatabase(databaseName);
-        addResources(databaseName, yamlConfig.getDataSources());
+        addDatabase(yamlDatabaseName);
+        addResources(yamlDatabaseName, yamlConfig.getDataSources());
         try {
-            addRules(databaseName, yamlConfig.getRules());
+            addRules(yamlDatabaseName, yamlConfig.getRules());
         } catch (final DistSQLException ex) {
-            dropDatabase(databaseName);
+            dropDatabase(yamlDatabaseName);
             throw ex;
         }
     }
@@ -198,5 +197,10 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     
     private void dropDatabase(final String databaseName) {
         ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().dropDatabase(databaseName);
+    }
+    
+    @Override
+    public String getType() {
+        return ImportDatabaseConfigurationStatement.class.getName();
     }
 }
