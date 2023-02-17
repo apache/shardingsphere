@@ -104,6 +104,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -141,7 +142,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     private String getPassword(final PasswordContext ctx) {
-        return getIdentifierValue(ctx);
+        return null == ctx ? null : StringLiteralValue.getStandardEscapesStringLiteralValue(ctx.getText()).getValue();
     }
     
     @Override
