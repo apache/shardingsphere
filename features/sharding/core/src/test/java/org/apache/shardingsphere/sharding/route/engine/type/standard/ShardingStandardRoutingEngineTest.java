@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -45,7 +44,6 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     
     @After
     public void tearDown() {
-        HintManager.clear();
     }
     
     @Test
@@ -91,100 +89,6 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createErrorShardingConditions("t_order"),
                 mock(SQLStatementContext.class), new HintValueContext());
         standardRoutingEngine.route(createErrorShardingRule());
-    }
-    
-    @Test
-    public void assertRouteByHint() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_test"));
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_test",
-                new ShardingConditions(Collections.emptyList(), sqlStatementContext, mock(ShardingRule.class)), sqlStatementContext, new HintValueContext());
-        HintManager hintManager = HintManager.getInstance();
-        hintManager.addDatabaseShardingValue("t_hint_test", 1);
-        hintManager.addTableShardingValue("t_hint_test", 1);
-        RouteContext routeContext = standardRoutingEngine.route(createHintShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
-        assertThat(routeContext.getRouteUnits().size(), is(1));
-        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
-        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_test_1"));
-        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_hint_test"));
-    }
-    
-    @Test
-    public void assertRouteByMixedWithHintDataSource() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_ds_test"));
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test", createShardingConditions("t_hint_ds_test"),
-                sqlStatementContext, new HintValueContext());
-        HintManager hintManager = HintManager.getInstance();
-        hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
-        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
-        assertThat(routeContext.getRouteUnits().size(), is(1));
-        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
-        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_ds_test_1"));
-        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_hint_ds_test"));
-    }
-    
-    @Test
-    public void assertRouteByMixedWithHintDataSourceOnly() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_ds_test"));
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test",
-                new ShardingConditions(Collections.emptyList(), sqlStatementContext, mock(ShardingRule.class)), sqlStatementContext, new HintValueContext());
-        HintManager hintManager = HintManager.getInstance();
-        hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
-        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
-        assertThat(routeContext.getRouteUnits().size(), is(2));
-        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
-        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_ds_test_0"));
-        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_hint_ds_test"));
-        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds_1"));
-        assertThat(routeUnits.get(1).getTableMappers().size(), is(1));
-        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getActualName(), is("t_hint_ds_test_1"));
-        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getLogicName(), is("t_hint_ds_test"));
-    }
-    
-    @Test
-    public void assertRouteByMixedWithHintTable() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_table_test"));
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test", createShardingConditions("t_hint_table_test"),
-                sqlStatementContext, new HintValueContext());
-        HintManager hintManager = HintManager.getInstance();
-        hintManager.addTableShardingValue("t_hint_table_test", 1);
-        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
-        assertThat(routeContext.getRouteUnits().size(), is(1));
-        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
-        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_table_test_1"));
-        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_hint_table_test"));
-    }
-    
-    @Test
-    public void assertRouteByMixedWithHintTableOnly() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_table_test"));
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test",
-                new ShardingConditions(Collections.emptyList(), sqlStatementContext, mock(ShardingRule.class)), sqlStatementContext, new HintValueContext());
-        HintManager hintManager = HintManager.getInstance();
-        hintManager.addTableShardingValue("t_hint_table_test", 1);
-        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
-        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
-        assertThat(routeContext.getRouteUnits().size(), is(2));
-        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
-        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_hint_table_test_1"));
-        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_hint_table_test"));
-        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds_1"));
-        assertThat(routeUnits.get(1).getTableMappers().size(), is(1));
-        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getActualName(), is("t_hint_table_test_1"));
-        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getLogicName(), is("t_hint_table_test"));
     }
     
     @Test

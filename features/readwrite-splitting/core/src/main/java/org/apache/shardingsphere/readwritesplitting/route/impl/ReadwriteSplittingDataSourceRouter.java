@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
-import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -71,7 +70,7 @@ public final class ReadwriteSplittingDataSourceRouter {
     }
     
     private boolean isHintWriteRouteOnly(final SQLStatementContext<?> sqlStatementContext) {
-        return HintManager.isWriteRouteOnly() || (sqlStatementContext instanceof CommonSQLStatementContext && ((CommonSQLStatementContext<?>) sqlStatementContext).isHintWriteRouteOnly());
+        return sqlStatementContext instanceof CommonSQLStatementContext && ((CommonSQLStatementContext<?>) sqlStatementContext).isHintWriteRouteOnly();
     }
     
     private boolean isAllowWriteDataSourceQuery() {
