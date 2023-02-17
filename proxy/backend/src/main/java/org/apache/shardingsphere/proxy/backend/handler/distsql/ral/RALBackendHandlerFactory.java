@@ -28,7 +28,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRul
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelComputeNodeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
@@ -42,7 +41,6 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintRALB
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update.UpdatableScalingRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterReadwriteSplittingStorageUnitStatusStatementHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ImportDatabaseConfigurationHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.LabelComputeNodeHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.RefreshDatabaseMetaDataHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.RefreshTableMetaDataHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetDistVariableHandler;
@@ -63,7 +61,6 @@ public final class RALBackendHandlerFactory {
     private static final Map<Class<? extends RALStatement>, Class<? extends RALBackendHandler<?>>> HANDLERS = new HashMap<>();
     
     static {
-        HANDLERS.put(LabelComputeNodeStatement.class, LabelComputeNodeHandler.class);
         HANDLERS.put(UnlabelComputeNodeStatement.class, UnlabelComputeNodeHandler.class);
         HANDLERS.put(SetInstanceStatusStatement.class, SetInstanceStatusHandler.class);
         HANDLERS.put(SetDistVariableStatement.class, SetDistVariableHandler.class);
