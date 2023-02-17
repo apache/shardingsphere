@@ -57,4 +57,9 @@ public final class UnlabelComputeNodeUpdater implements RALUpdater<UnlabelComput
             }
         }
     }
+    
+    @Override
+    public String getType() {
+        return UnlabelComputeNodeStatement.class.getName();
+    }
 }
