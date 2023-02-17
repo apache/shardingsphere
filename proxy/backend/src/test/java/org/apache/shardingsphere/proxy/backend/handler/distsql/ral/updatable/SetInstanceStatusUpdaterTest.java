@@ -39,7 +39,7 @@ public final class SetInstanceStatusUpdaterTest extends ProxyContextRestorer {
         when(contextManager.getInstanceContext().isCluster()).thenReturn(false);
         ProxyContext.init(contextManager);
         SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "666"));
+        updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID"));
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
@@ -48,28 +48,28 @@ public final class SetInstanceStatusUpdaterTest extends ProxyContextRestorer {
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         ProxyContext.init(contextManager);
         SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "666"));
+        updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID"));
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertExecuteWithCurrentUsingInstance() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
-        when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("666");
+        when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("instanceID");
         ProxyContext.init(contextManager);
         SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "666"));
+        updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID"));
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertExecuteWithAlreadyDisableInstance() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
-        when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("777");
-        when(contextManager.getInstanceContext().getComputeNodeInstanceById("666").isPresent()).thenReturn(true);
-        when(contextManager.getInstanceContext().getComputeNodeInstanceById("666").get().getState().getCurrentState()).thenReturn(StateType.CIRCUIT_BREAK);
+        when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("currentInstance");
+        when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").isPresent()).thenReturn(true);
+        when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").get().getState().getCurrentState()).thenReturn(StateType.CIRCUIT_BREAK);
         ProxyContext.init(contextManager);
         SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "666"));
+        updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID"));
     }
 }
