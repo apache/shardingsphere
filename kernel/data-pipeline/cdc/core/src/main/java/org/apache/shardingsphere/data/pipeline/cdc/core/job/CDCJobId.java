@@ -35,14 +35,14 @@ public final class CDCJobId extends AbstractPipelineJobId {
     
     private final String databaseName;
     
-    private final List<String> tableNames;
+    private final List<String> schemaTableNames;
     
     private final boolean full;
     
-    public CDCJobId(final String databaseName, final List<String> tableNames, final boolean full) {
+    public CDCJobId(final String databaseName, final List<String> schemaTableNames, final boolean full) {
         super(new CDCJobType(), CURRENT_VERSION);
         this.databaseName = databaseName;
-        this.tableNames = tableNames;
+        this.schemaTableNames = schemaTableNames;
         this.full = full;
     }
 }

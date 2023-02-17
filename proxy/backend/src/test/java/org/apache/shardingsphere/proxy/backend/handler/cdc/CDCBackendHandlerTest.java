@@ -22,16 +22,21 @@ import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -41,8 +46,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -90,5 +100,62 @@ public final class CDCBackendHandlerTest {
         CDCRequest request = CDCRequest.newBuilder().setRequestId("1").setType(Type.STREAM_DATA).setStreamDataRequestBody(StreamDataRequestBody.newBuilder().setDatabase("none")).build();
         CDCResponse actualResponse = handler.streamData(request.getRequestId(), request.getStreamDataRequestBody(), mock(CDCConnectionContext.class), mock(Channel.class));
         assertThat(actualResponse.getStatus(), is(Status.FAILED));
+    }
+    
+    @Test
+    public void assertGetSchemaTableMapWithSchema() throws NoSuchMethodException {
+        Map<String, ShardingSphereSchema> schemas = new HashMap<>();
+        schemas.put("test", mockSchema());
+        schemas.put("public", mockSchema());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new OpenGaussDatabaseType(), null, null, schemas);
+        List<SchemaTable> schemaTables = Arrays.asList(SchemaTable.newBuilder().setSchema("public").setTable("t_order").build(),
+                SchemaTable.newBuilder().setSchema("test").setTable("*").build());
+        Map<String, Collection<String>> expected = new HashMap<>();
+        expected.put("test", new HashSet<>(Arrays.asList("t_order", "t_order_item")));
+        expected.put("public", new HashSet<>(Collections.singletonList("t_order")));
+        Map<String, String> actual = getSchemaTableMapWithSchemaResult(database, schemaTables);
+        assertThat(actual, is(expected));
+        schemaTables = Collections.singletonList(SchemaTable.newBuilder().setTable("t_order").build());
+        actual = getSchemaTableMapWithSchemaResult(database, schemaTables);
+        expected = Collections.singletonMap("", Collections.singleton("t_order"));
+        assertThat(actual, is(expected));
+        schemaTables = Collections.singletonList(SchemaTable.newBuilder().setSchema("*").setTable("t_order").build());
+        actual = getSchemaTableMapWithSchemaResult(database, schemaTables);
+        expected = new HashMap<>();
+        expected.put("test", new HashSet<>(Collections.singletonList("t_order")));
+        expected.put("public", new HashSet<>(Collections.singletonList("t_order")));
+        assertThat(actual, is(expected));
+    }
+    
+    private ShardingSphereSchema mockSchema() {
+        Map<String, ShardingSphereTable> tables = new HashMap<>();
+        tables.put("t_order", mock(ShardingSphereTable.class));
+        tables.put("t_order_item", mock(ShardingSphereTable.class));
+        return new ShardingSphereSchema(tables, Collections.emptyMap());
+    }
+    
+    private Map<String, String> getSchemaTableMapWithSchemaResult(final ShardingSphereDatabase database, final List<SchemaTable> schemaTables) throws NoSuchMethodException {
+        return ReflectionUtil.invokeMethod(handler.getClass().getDeclaredMethod("getSchemaTableMapWithSchema", ShardingSphereDatabase.class, List.class),
+                handler, database, schemaTables);
+    }
+    
+    @Test
+    public void assertGetSchemaTableMapWithoutSchema() throws NoSuchMethodException {
+        Map<String, ShardingSphereSchema> schemas = new HashMap<>();
+        schemas.put("sharding_db", mockSchema());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new MySQLDatabaseType(), null, null, schemas);
+        List<SchemaTable> schemaTables = Collections.singletonList(SchemaTable.newBuilder().setTable("*").build());
+        Collection<String> actualWildcardTable = getSchemaTableMapWithoutSchemaResult(database, schemaTables);
+        Set<String> expectedWildcardTable = new HashSet<>(Arrays.asList("t_order", "t_order_item"));
+        assertThat(actualWildcardTable, is(expectedWildcardTable));
+        schemaTables = Collections.singletonList(SchemaTable.newBuilder().setTable("t_order").build());
+        Collection<String> actualSingleTable = getSchemaTableMapWithoutSchemaResult(database, schemaTables);
+        Set<String> expectedSingleTable = new HashSet<>(Collections.singletonList("t_order"));
+        assertThat(actualSingleTable, is(expectedSingleTable));
+    }
+    
+    private Collection<String> getSchemaTableMapWithoutSchemaResult(final ShardingSphereDatabase database, final List<SchemaTable> schemaTables) throws NoSuchMethodException {
+        return ReflectionUtil.invokeMethod(handler.getClass().getDeclaredMethod("getTableNamesWithoutSchema", ShardingSphereDatabase.class, List.class),
+                handler, database, schemaTables);
     }
 }
