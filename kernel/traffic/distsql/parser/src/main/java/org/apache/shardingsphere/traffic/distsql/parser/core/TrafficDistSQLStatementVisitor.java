@@ -21,8 +21,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementParser.AlterTrafficRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementParser.CreateTrafficRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementParser.DropTrafficRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementParser.LabelDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementParser.LoadBalancerDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.TrafficDistSQLStatementParser.PropertiesDefinitionContext;
@@ -36,8 +34,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.AlterTrafficRuleStatement;
-import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.CreateTrafficRuleStatement;
-import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.DropTrafficRuleStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -48,11 +44,6 @@ import java.util.stream.Collectors;
  * SQL statement visitor for traffic DistSQL.
  */
 public final class TrafficDistSQLStatementVisitor extends TrafficDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
-    
-    @Override
-    public ASTNode visitCreateTrafficRule(final CreateTrafficRuleContext ctx) {
-        return new CreateTrafficRuleStatement(ctx.trafficRuleDefinition().stream().map(each -> (TrafficRuleSegment) visit(each)).collect(Collectors.toList()));
-    }
     
     @Override
     public ASTNode visitAlterTrafficRule(final AlterTrafficRuleContext ctx) {
@@ -89,12 +80,6 @@ public final class TrafficDistSQLStatementVisitor extends TrafficDistSQLStatemen
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
-    }
-    
-    @Override
-    public ASTNode visitDropTrafficRule(final DropTrafficRuleContext ctx) {
-        Collection<String> ruleNames = null == ctx.ruleName() ? null : ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
-        return new DropTrafficRuleStatement(null != ctx.ifExists(), ruleNames);
     }
     
     @Override
