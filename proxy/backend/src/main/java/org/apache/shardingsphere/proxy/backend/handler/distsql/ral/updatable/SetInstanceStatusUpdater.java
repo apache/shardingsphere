@@ -17,24 +17,26 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
+import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.compute.event.ComputeNodeStatusChangedEvent;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
- * Set instance status handler.
+ * Set instance status updater.
  */
-public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<SetInstanceStatusStatement> {
+public final class SetInstanceStatusUpdater implements RALUpdater<SetInstanceStatusStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager) {
+    public void executeUpdate(final String databaseName, final SetInstanceStatusStatement sqlStatement) {
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().isCluster(), () -> new UnsupportedSQLOperationException("Only allowed in cluster mode"));
-        String instanceId = getSqlStatement().getInstanceId();
-        boolean isDisable = "DISABLE".equals(getSqlStatement().getStatus());
+        String instanceId = sqlStatement.getInstanceId();
+        boolean isDisable = "DISABLE".equals(sqlStatement.getStatus());
         if (isDisable) {
             checkDisablingIsValid(contextManager, instanceId);
         } else {
@@ -55,5 +57,10 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
                 () -> new UnsupportedSQLOperationException(String.format("`%s` does not exist", instanceId)));
         ShardingSpherePreconditions.checkState(StateType.CIRCUIT_BREAK != contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId).get().getState().getCurrentState(),
                 () -> new UnsupportedSQLOperationException(String.format("`%s` compute node has been disabled", instanceId)));
+    }
+    
+    @Override
+    public String getType() {
+        return SetInstanceStatusStatement.class.getName();
     }
 }
