@@ -70,7 +70,7 @@ public final class OpenGaussMacCalculator {
      * @return MAC result
      */
     public static byte[] requestClientMac(final String password, final String salt, final int serverIteration) {
-        return sha256(getMacResult(generateSecretKey(password, salt, serverIteration), MacType.CLIENT.data.getBytes(StandardCharsets.UTF_8)));
+        return sha256(getMacResult(generateSecretKey(password, salt, serverIteration), MacType.CLIENT.data.getBytes()));
     }
     
     /**
