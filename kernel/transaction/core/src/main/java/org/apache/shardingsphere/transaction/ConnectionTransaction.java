@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -59,6 +60,16 @@ public final class ConnectionTransaction {
      * Whether in transaction.
      * 
      * @return in transaction or not
+     * @param transactionConnectionContext
+     */
+    public boolean isInTransaction(final TransactionConnectionContext transactionConnectionContext) {
+        return transactionConnectionContext.isInTransaction() && null != transactionManager && transactionManager.isInTransaction();
+    }
+    
+    /**
+     * Whether in transaction.
+     *
+     * @return in transaction or not
      */
     public boolean isInTransaction() {
         return null != transactionManager && transactionManager.isInTransaction();
@@ -87,11 +98,12 @@ public final class ConnectionTransaction {
      * Get connection in transaction.
      * 
      * @param dataSourceName data source name
+     * @param transactionConnectionContext transaction connection context
      * @return connection in transaction
      * @throws SQLException SQL exception
      */
-    public Optional<Connection> getConnection(final String dataSourceName) throws SQLException {
-        return isInTransaction() ? Optional.of(transactionManager.getConnection(this.databaseName, dataSourceName)) : Optional.empty();
+    public Optional<Connection> getConnection(final String dataSourceName, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
+        return isInTransaction(transactionConnectionContext) ? Optional.of(transactionManager.getConnection(this.databaseName, dataSourceName)) : Optional.empty();
     }
     
     /**
