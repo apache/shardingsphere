@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
@@ -38,6 +39,6 @@ public final class SocketSinkImporterCreator implements ImporterCreator {
     
     @Override
     public String getType() {
-        return "Socket";
+        return CDCSinkType.SOCKET.name();
     }
 }

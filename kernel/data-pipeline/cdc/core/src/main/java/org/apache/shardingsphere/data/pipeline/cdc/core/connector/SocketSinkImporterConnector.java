@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
@@ -171,7 +172,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
     }
     
     /**
-     * Send finished record event.
+     * Send incremental start event.
      *
      * @param socketSinkImporter socket sink importer
      * @param batchSize batch size
@@ -203,7 +204,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
     
     @Override
     public String getType() {
-        return "Socket";
+        return CDCSinkType.SOCKET.name();
     }
     
     @RequiredArgsConstructor

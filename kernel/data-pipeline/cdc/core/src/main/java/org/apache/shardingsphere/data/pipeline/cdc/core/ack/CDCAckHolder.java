@@ -33,7 +33,7 @@ public final class CDCAckHolder {
     
     private static final CDCAckHolder INSTANCE = new CDCAckHolder();
     
-    private final Map<String, Map<SocketSinkImporter, CDCAckPosition>> ackIdImporterMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<SocketSinkImporter, CDCAckPosition>> ackIdPositionMap = new ConcurrentHashMap<>();
     
     /**
      * the ack of CDC.
@@ -41,7 +41,7 @@ public final class CDCAckHolder {
      * @param ackId ack id
      */
     public void ack(final String ackId) {
-        Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = ackIdImporterMap.remove(ackId);
+        Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = ackIdPositionMap.remove(ackId);
         if (null != importerDataRecordMap) {
             importerDataRecordMap.forEach(SocketSinkImporter::ackWithLastDataRecord);
         }
@@ -56,7 +56,7 @@ public final class CDCAckHolder {
     public String bindAckIdWithPosition(final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap) {
         String result = generateAckId();
         // TODO it's might need to persist to registry center in cluster mode.
-        ackIdImporterMap.put(result, importerDataRecordMap);
+        ackIdPositionMap.put(result, importerDataRecordMap);
         return result;
     }
     
@@ -70,10 +70,10 @@ public final class CDCAckHolder {
      * @param socketSinkImporter CDC importer
      */
     public void cleanUp(final SocketSinkImporter socketSinkImporter) {
-        if (ackIdImporterMap.isEmpty()) {
+        if (ackIdPositionMap.isEmpty()) {
             return;
         }
-        ackIdImporterMap.entrySet().removeIf(entry -> entry.getValue().containsKey(socketSinkImporter));
+        ackIdPositionMap.entrySet().removeIf(entry -> entry.getValue().containsKey(socketSinkImporter));
     }
     
     /**
