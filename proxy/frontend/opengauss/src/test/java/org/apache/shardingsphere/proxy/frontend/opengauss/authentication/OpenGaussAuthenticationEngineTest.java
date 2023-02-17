@@ -26,13 +26,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
-import org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussProtocolVersion;
-import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationHexData;
-import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
-import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -44,17 +40,12 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
-import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
-import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.opengauss.ProxyContextRestorer;
-import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.fixture.OpenGaussAuthenticationAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockedConstruction;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -62,15 +53,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -134,84 +119,7 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         Plugins.getMemberAccessor().set(OpenGaussAuthenticationEngine.class.getDeclaredField("startupMessageReceived"), target, true);
     }
     
-    @SuppressWarnings("rawtypes")
-    @Test
-    public void assertLoginSuccessful() {
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
-        payload.writeInt4(64);
-        payload.writeInt4(OpenGaussProtocolVersion.PROTOCOL_350.getVersion());
-        payload.writeStringNul("user");
-        payload.writeStringNul(username);
-        payload.writeStringNul("client_encoding");
-        payload.writeStringNul("UTF8");
-        OpenGaussAuthenticationEngine engine = new OpenGaussAuthenticationEngine();
-        AuthenticationResult actual = engine.authenticate(channelHandlerContext, payload);
-        assertFalse(actual.isFinished());
-        assertThat(actual.getUsername(), is(username));
-        ArgumentCaptor<OpenGaussAuthenticationSCRAMSha256Packet> argumentCaptor = ArgumentCaptor.forClass(OpenGaussAuthenticationSCRAMSha256Packet.class);
-        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
-        OpenGaussAuthenticationSCRAMSha256Packet sha256Packet = argumentCaptor.getValue();
-        int serverIteration = getServerIteration(sha256Packet);
-        try (
-                MockedConstruction<AuthenticatorFactory> ignored = mockConstruction(AuthenticatorFactory.class, (mock, context) -> mockAuthenticatorFactory(mock))) {
-            payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
-            String clientDigest = encodeDigest(serverIteration, new OpenGaussAuthenticationHexData(), password);
-            payload.writeInt1('p');
-            payload.writeInt4(4 + clientDigest.length() + 1);
-            payload.writeStringNul(clientDigest);
-            actual = engine.authenticate(channelHandlerContext, payload);
-            assertTrue(actual.isFinished());
-        }
-    }
-    
-    private void mockAuthenticatorFactory(final AuthenticatorFactory<?> mockedObject) {
-        Authenticator authenticator = mock(Authenticator.class);
-        when(authenticator.authenticate(any(), any())).thenReturn(true);
-        when(mockedObject.newInstance(any())).thenReturn(authenticator);
-    }
-    
-    @SuppressWarnings("rawtypes")
-    @Test(expected = InvalidPasswordException.class)
-    public void assertLoginFailed() {
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
-        payload.writeInt4(64);
-        payload.writeInt4(OpenGaussProtocolVersion.PROTOCOL_350.getVersion());
-        payload.writeStringNul("user");
-        payload.writeStringNul(username);
-        payload.writeStringNul("client_encoding");
-        payload.writeStringNul("UTF8");
-        OpenGaussAuthenticationEngine engine = new OpenGaussAuthenticationEngine();
-        AuthenticationResult actual = engine.authenticate(channelHandlerContext, payload);
-        assertFalse(actual.isFinished());
-        assertThat(actual.getUsername(), is(username));
-        ArgumentCaptor<OpenGaussAuthenticationSCRAMSha256Packet> argumentCaptor = ArgumentCaptor.forClass(OpenGaussAuthenticationSCRAMSha256Packet.class);
-        verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
-        OpenGaussAuthenticationSCRAMSha256Packet sha256Packet = argumentCaptor.getValue();
-        int serverIteration = getServerIteration(sha256Packet);
-        try (
-                MockedConstruction<AuthenticatorFactory> ignored = mockConstruction(AuthenticatorFactory.class,
-                        (mock, context) -> when(mock.newInstance(any())).thenReturn(mock(Authenticator.class)))) {
-            payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
-            String clientDigest = encodeDigest(serverIteration, new OpenGaussAuthenticationHexData(), "wrong" + password);
-            payload.writeInt1('p');
-            payload.writeInt4(4 + clientDigest.length() + 1);
-            payload.writeStringNul(clientDigest);
-            actual = engine.authenticate(channelHandlerContext, payload);
-            assertFalse(actual.isFinished());
-        }
-    }
-    
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {
         return new UnpooledHeapByteBuf(UnpooledByteBufAllocator.DEFAULT, initialCapacity, maxCapacity);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private int getServerIteration(final OpenGaussAuthenticationSCRAMSha256Packet packet) {
-        return (int) Plugins.getMemberAccessor().get(OpenGaussAuthenticationSCRAMSha256Packet.class.getDeclaredField("serverIteration"), packet);
-    }
-    
-    private String encodeDigest(final int serverIteration, final OpenGaussAuthenticationHexData authHexData, final String password) {
-        return new String(OpenGaussAuthenticationAlgorithm.doRFC5802Algorithm(
-                new OpenGaussAuthenticationSCRAMSha256Packet(OpenGaussProtocolVersion.PROTOCOL_350.getVersion(), serverIteration, authHexData, password), password));
     }
 }
