@@ -48,10 +48,12 @@ import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.StreamDataParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJob;
 import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJobId;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfiguration.YamlSinkConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -87,6 +89,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -106,14 +109,20 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
      * Create CDC job config.
      *
      * @param param create CDC job param
+     * @param sinkType sink type
+     * @param sinkProps sink properties
      * @return job id
      */
-    public String createJob(final StreamDataParameter param) {
+    public String createJob(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps) {
         YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
         yamlJobConfig.setDatabase(param.getDatabase());
         yamlJobConfig.setSchemaTableNames(param.getSchemaTableNames());
         yamlJobConfig.setFull(param.isFull());
         yamlJobConfig.setDecodeWithTX(param.isDecodeWithTX());
+        YamlSinkConfiguration sinkConfig = new YamlSinkConfiguration();
+        sinkConfig.setSinkType(sinkType.name());
+        sinkConfig.setProps(sinkProps);
+        yamlJobConfig.setSinkConfig(sinkConfig);
         ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getDatabase());
         yamlJobConfig.setDataSourceConfiguration(pipelineDataSourceConfigSwapper.swapToYamlConfiguration(getDataSourceConfiguration(database)));
         List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtil.convertDataNodesToLines(param.getDataNodesMap());
@@ -127,7 +136,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobConfig.getJobId());
         if (repositoryAPI.isExisted(jobConfigKey)) {
-            log.warn("cdc job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
+            log.warn("CDC job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
             return jobConfig.getJobId();
         }
         repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobConfig.getJobId()), getJobClassName());

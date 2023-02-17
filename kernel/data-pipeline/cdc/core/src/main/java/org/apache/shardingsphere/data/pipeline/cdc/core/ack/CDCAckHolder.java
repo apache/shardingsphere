@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
 
 import java.util.Map;
 import java.util.UUID;
@@ -33,7 +33,7 @@ public final class CDCAckHolder {
     
     private static final CDCAckHolder INSTANCE = new CDCAckHolder();
     
-    private final Map<String, Map<CDCImporter, CDCAckPosition>> ackIdImporterMap = new ConcurrentHashMap<>();
+    private final Map<String, Map<SocketSinkImporter, CDCAckPosition>> ackIdPositionMap = new ConcurrentHashMap<>();
     
     /**
      * the ack of CDC.
@@ -41,9 +41,9 @@ public final class CDCAckHolder {
      * @param ackId ack id
      */
     public void ack(final String ackId) {
-        Map<CDCImporter, CDCAckPosition> importerDataRecordMap = ackIdImporterMap.remove(ackId);
+        Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = ackIdPositionMap.remove(ackId);
         if (null != importerDataRecordMap) {
-            importerDataRecordMap.forEach(CDCImporter::ackWithLastDataRecord);
+            importerDataRecordMap.forEach(SocketSinkImporter::ackWithLastDataRecord);
         }
     }
     
@@ -53,10 +53,10 @@ public final class CDCAckHolder {
      * @param importerDataRecordMap import data record map
      * @return ack id
      */
-    public String bindAckIdWithPosition(final Map<CDCImporter, CDCAckPosition> importerDataRecordMap) {
+    public String bindAckIdWithPosition(final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap) {
         String result = generateAckId();
         // TODO it's might need to persist to registry center in cluster mode.
-        ackIdImporterMap.put(result, importerDataRecordMap);
+        ackIdPositionMap.put(result, importerDataRecordMap);
         return result;
     }
     
@@ -67,13 +67,13 @@ public final class CDCAckHolder {
     /**
      * Clean up.
      *
-     * @param cdcImporter CDC importer
+     * @param socketSinkImporter CDC importer
      */
-    public void cleanUp(final CDCImporter cdcImporter) {
-        if (ackIdImporterMap.isEmpty()) {
+    public void cleanUp(final SocketSinkImporter socketSinkImporter) {
+        if (ackIdPositionMap.isEmpty()) {
             return;
         }
-        ackIdImporterMap.entrySet().removeIf(entry -> entry.getValue().containsKey(cdcImporter));
+        ackIdPositionMap.entrySet().removeIf(entry -> entry.getValue().containsKey(socketSinkImporter));
     }
     
     /**

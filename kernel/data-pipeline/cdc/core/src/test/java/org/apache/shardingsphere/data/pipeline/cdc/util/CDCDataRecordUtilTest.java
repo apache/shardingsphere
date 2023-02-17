@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.DataRecordComparatorGenerator;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.junit.Test;
@@ -41,21 +41,21 @@ public final class CDCDataRecordUtilTest {
     
     @Test
     public void assertFindMinimumDataRecordAndSavePosition() throws InterruptedException {
-        final Map<CDCImporter, BlockingQueue<Record>> actualIncrementalRecordMap = new HashMap<>();
+        final Map<SocketSinkImporter, BlockingQueue<Record>> actualIncrementalRecordMap = new HashMap<>();
         ArrayBlockingQueue<Record> queueFirst = new ArrayBlockingQueue<>(5);
         queueFirst.put(generateDataRecord(0));
         queueFirst.put(generateDataRecord(2));
         queueFirst.put(generateDataRecord(4));
-        CDCImporter mockCdcImporterFirst = mock(CDCImporter.class);
-        actualIncrementalRecordMap.put(mockCdcImporterFirst, queueFirst);
+        SocketSinkImporter mockSocketSinkImporterFirst = mock(SocketSinkImporter.class);
+        actualIncrementalRecordMap.put(mockSocketSinkImporterFirst, queueFirst);
         ArrayBlockingQueue<Record> queueSecond = new ArrayBlockingQueue<>(5);
         queueSecond.put(generateDataRecord(1));
         queueSecond.put(generateDataRecord(3));
         queueSecond.put(generateDataRecord(5));
-        CDCImporter mockCdcImporterSecond = mock(CDCImporter.class);
-        actualIncrementalRecordMap.put(mockCdcImporterSecond, queueSecond);
+        SocketSinkImporter mockSocketSinkImporterSecond = mock(SocketSinkImporter.class);
+        actualIncrementalRecordMap.put(mockSocketSinkImporterSecond, queueSecond);
         Comparator<DataRecord> dataRecordComparator = DataRecordComparatorGenerator.generatorIncrementalComparator(new OpenGaussDatabaseType());
-        final Map<CDCImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
+        final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
         for (long i = 0; i <= 5; i++) {
             DataRecord minimumDataRecord = CDCDataRecordUtil.findMinimumDataRecordAndSavePosition(actualIncrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
             assertThat(minimumDataRecord.getCsn(), is(i));
