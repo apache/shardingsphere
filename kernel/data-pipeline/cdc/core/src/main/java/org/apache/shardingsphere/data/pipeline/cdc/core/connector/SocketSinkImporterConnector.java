@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector;
+package org.apache.shardingsphere.data.pipeline.cdc.core.connector;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
@@ -26,9 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataRecordUtil;
@@ -54,10 +55,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * CDC importer connector.
+ * Socket sink importer connector.
  */
 @Slf4j
-public final class CDCImporterConnector implements ImporterConnector {
+public final class SocketSinkImporterConnector implements ImporterConnector {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
     
@@ -79,14 +80,14 @@ public final class CDCImporterConnector implements ImporterConnector {
     
     private final Map<String, String> tableNameSchemaMap = new HashMap<>();
     
-    private final Map<CDCImporter, BlockingQueue<Record>> incrementalRecordMap = new ConcurrentHashMap<>();
+    private final Map<SocketSinkImporter, BlockingQueue<Record>> incrementalRecordMap = new ConcurrentHashMap<>();
     
     private final AtomicInteger runningIncrementalTaskCount = new AtomicInteger(0);
     
     private Thread incrementalImporterTask;
     
-    public CDCImporterConnector(final Channel channel, final String database, final int jobShardingCount, final Collection<String> schemaTableNames,
-                                final Comparator<DataRecord> dataRecordComparator) {
+    public SocketSinkImporterConnector(final Channel channel, final String database, final int jobShardingCount, final Collection<String> schemaTableNames,
+                                       final Comparator<DataRecord> dataRecordComparator) {
         this.channel = channel;
         this.database = database;
         this.jobShardingCount = jobShardingCount;
@@ -106,29 +107,29 @@ public final class CDCImporterConnector implements ImporterConnector {
      * Write data record into channel.
      *
      * @param recordList data records
-     * @param cdcImporter cdc importer
+     * @param socketSinkImporter cdc importer
      * @param importerType importer type
      */
-    public void write(final List<Record> recordList, final CDCImporter cdcImporter, final ImporterType importerType) {
+    public void write(final List<Record> recordList, final SocketSinkImporter socketSinkImporter, final ImporterType importerType) {
         if (recordList.isEmpty()) {
             return;
         }
         if (ImporterType.INVENTORY == importerType || null == dataRecordComparator) {
-            Map<CDCImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
+            Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
             int dataRecordCount = (int) recordList.stream().filter(each -> each instanceof DataRecord).count();
             Record lastRecord = recordList.get(recordList.size() - 1);
             if (lastRecord instanceof FinishedRecord && 0 == dataRecordCount) {
-                cdcImporter.ackWithLastDataRecord(new CDCAckPosition(lastRecord, 0));
+                socketSinkImporter.ackWithLastDataRecord(new CDCAckPosition(lastRecord, 0));
                 return;
             }
-            importerDataRecordMap.put(cdcImporter, new CDCAckPosition(RecordUtil.getLastNormalRecord(recordList), dataRecordCount));
+            importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(RecordUtil.getLastNormalRecord(recordList), dataRecordCount));
             writeImmediately(recordList, importerDataRecordMap);
         } else if (ImporterType.INCREMENTAL == importerType) {
-            writeIntoQueue(recordList, cdcImporter);
+            writeIntoQueue(recordList, socketSinkImporter);
         }
     }
     
-    private void writeImmediately(final List<? extends Record> recordList, final Map<CDCImporter, CDCAckPosition> importerDataRecordMap) {
+    private void writeImmediately(final List<? extends Record> recordList, final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap) {
         while (!channel.isWritable() && channel.isActive()) {
             doAwait();
         }
@@ -159,8 +160,8 @@ public final class CDCImporterConnector implements ImporterConnector {
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void writeIntoQueue(final List<Record> dataRecords, final CDCImporter cdcImporter) {
-        BlockingQueue<Record> blockingQueue = incrementalRecordMap.get(cdcImporter);
+    private void writeIntoQueue(final List<Record> dataRecords, final SocketSinkImporter socketSinkImporter) {
+        BlockingQueue<Record> blockingQueue = incrementalRecordMap.get(socketSinkImporter);
         if (null == blockingQueue) {
             log.warn("not find the queue to write");
             return;
@@ -171,13 +172,13 @@ public final class CDCImporterConnector implements ImporterConnector {
     }
     
     /**
-     * Send finished record event.
+     * Send incremental start event.
      *
-     * @param cdcImporter cdc importer
+     * @param socketSinkImporter socket sink importer
      * @param batchSize batch size
      */
-    public void sendIncrementalStartEvent(final CDCImporter cdcImporter, final int batchSize) {
-        incrementalRecordMap.computeIfAbsent(cdcImporter, ignored -> new ArrayBlockingQueue<>(batchSize));
+    public void sendIncrementalStartEvent(final SocketSinkImporter socketSinkImporter, final int batchSize) {
+        incrementalRecordMap.computeIfAbsent(socketSinkImporter, ignored -> new ArrayBlockingQueue<>(batchSize));
         int count = runningIncrementalTaskCount.incrementAndGet();
         if (count < jobShardingCount || null == dataRecordComparator) {
             return;
@@ -190,20 +191,20 @@ public final class CDCImporterConnector implements ImporterConnector {
     }
     
     /**
-     * Clean CDC importer connector.
+     * Clean socket sink importer connector.
      *
-     * @param cdcImporter CDC importer
+     * @param socketSinkImporter CDC importer
      */
-    public void clean(final CDCImporter cdcImporter) {
-        incrementalRecordMap.remove(cdcImporter);
-        if (ImporterType.INCREMENTAL == cdcImporter.getImporterType()) {
+    public void clean(final SocketSinkImporter socketSinkImporter) {
+        incrementalRecordMap.remove(socketSinkImporter);
+        if (ImporterType.INCREMENTAL == socketSinkImporter.getImporterType()) {
             incrementalTaskRunning = false;
         }
     }
     
     @Override
     public String getType() {
-        return "CDC";
+        return CDCSinkType.SOCKET.name();
     }
     
     @RequiredArgsConstructor
@@ -214,7 +215,7 @@ public final class CDCImporterConnector implements ImporterConnector {
         @Override
         public void run() {
             while (incrementalTaskRunning) {
-                Map<CDCImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
+                Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
                 List<DataRecord> dataRecords = new LinkedList<>();
                 for (int i = 0; i < batchSize; i++) {
                     DataRecord minimumDataRecord = CDCDataRecordUtil.findMinimumDataRecordAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);

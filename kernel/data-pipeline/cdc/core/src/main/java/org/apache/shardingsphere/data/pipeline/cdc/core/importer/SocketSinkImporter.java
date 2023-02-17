@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.Pipelin
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.connector.CDCImporterConnector;
+import org.apache.shardingsphere.data.pipeline.cdc.core.connector.SocketSinkImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -43,17 +43,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * CDC importer.
+ * Socket sink importer.
  */
 @Slf4j
-public final class CDCImporter extends AbstractLifecycleExecutor implements Importer {
+public final class SocketSinkImporter extends AbstractLifecycleExecutor implements Importer {
     
     @Getter(AccessLevel.PROTECTED)
     private final ImporterConfiguration importerConfig;
     
     private final PipelineChannel channel;
     
-    private final CDCImporterConnector importerConnector;
+    private final SocketSinkImporterConnector importerConnector;
     
     private final PipelineJobProgressListener jobProgressListener;
     
@@ -62,12 +62,12 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
-    public CDCImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel, final PipelineJobProgressListener jobProgressListener,
-                       final ImporterType importerType) {
+    public SocketSinkImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
+                              final PipelineJobProgressListener jobProgressListener, final ImporterType importerType) {
         this.importerConfig = importerConfig;
         rateLimitAlgorithm = null == importerConfig ? null : importerConfig.getRateLimitAlgorithm();
         this.channel = channel;
-        this.importerConnector = (CDCImporterConnector) importerConnector;
+        this.importerConnector = (SocketSinkImporterConnector) importerConnector;
         this.jobProgressListener = jobProgressListener;
         this.importerType = importerType;
     }

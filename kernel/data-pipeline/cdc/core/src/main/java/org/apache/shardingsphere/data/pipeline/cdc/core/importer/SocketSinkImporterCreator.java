@@ -21,23 +21,24 @@ import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 /**
- * CDC importer creator.
+ * Socket sink importer creator.
  */
-public final class CDCImporterCreator implements ImporterCreator {
+public final class SocketSinkImporterCreator implements ImporterCreator {
     
     @Override
     public Importer createImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
                                    final PipelineJobProgressListener jobProgressListener, final ImporterType importerType) {
-        return new CDCImporter(importerConfig, importerConnector, channel, jobProgressListener, importerType);
+        return new SocketSinkImporter(importerConfig, importerConnector, channel, jobProgressListener, importerType);
     }
     
     @Override
     public String getType() {
-        return "CDC";
+        return CDCSinkType.SOCKET.name();
     }
 }
