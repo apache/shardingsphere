@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingR
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.After;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -41,10 +40,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngineTest {
-    
-    @After
-    public void tearDown() {
-    }
     
     @Test
     public void assertRouteByNonConditions() {

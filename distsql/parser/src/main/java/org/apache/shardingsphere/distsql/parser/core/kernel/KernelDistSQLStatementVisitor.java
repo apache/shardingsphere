@@ -24,7 +24,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterMigrationRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.BatchSizeContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ClearHintContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ConvertYamlConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CountSingleTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DatabaseNameContext;
@@ -71,7 +70,6 @@ import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedData
 import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.ReadOrWriteSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeInfoStatement;
@@ -260,11 +258,6 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitShowDistVariables(final ShowDistVariablesContext ctx) {
         return new ShowDistVariablesStatement();
-    }
-    
-    @Override
-    public ASTNode visitClearHint(final ClearHintContext ctx) {
-        return new ClearHintStatement();
     }
     
     @Override
