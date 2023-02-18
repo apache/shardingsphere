@@ -24,34 +24,13 @@
         <artifactId>shardingsphere-proxy-frontend</artifactId>
         <version>5.3.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-proxy-frontend-mysql</artifactId>
+    <artifactId>shardingsphere-proxy-frontend-type</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-frontend-spi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-frontend-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mysql-dialect-exception</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mysql-protocol</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-backend</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>mysql</module>
+        <module>postgresql</module>
+        <module>opengauss</module>
+    </modules>
 </project>
