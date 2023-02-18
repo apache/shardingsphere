@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane;
+package org.apache.shardingsphere.proxy.backend.communication.sane.postgresql;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.Optional;
 
-/**
- * Sane query result engine.
- */
-@SingletonSPI
-public interface SaneQueryResultEngine extends TypedSPI {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class PostgreSQLSaneQueryResultEngineTest {
     
-    /**
-     * Get sane query result.
-     *
-     * @param sqlStatement SQL statement
-     * @param ex SQL exception
-     * @return sane execute result
-     */
-    Optional<ExecuteResult> getSaneQueryResult(SQLStatement sqlStatement, SQLException ex);
+    @Test
+    public void assertGetSaneQueryResult() {
+        assertThat(new PostgreSQLSaneQueryResultEngine().getSaneQueryResult(null, null), is(Optional.empty()));
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(new PostgreSQLSaneQueryResultEngine().getType(), is("PostgreSQL"));
+    }
 }
