@@ -104,4 +104,4 @@ Please note that the discount is only available on the publisher’s website thr
 
 [Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
 
-[GitHub Issue](https://github.com/apache/shardingsphere/issues)s
+[GitHub Issues](https://github.com/apache/shardingsphere/issues)
