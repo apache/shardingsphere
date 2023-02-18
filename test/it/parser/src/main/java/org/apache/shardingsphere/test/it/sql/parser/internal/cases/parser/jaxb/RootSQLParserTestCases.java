@@ -298,9 +298,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ClearReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ClearShardingHintStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ConvertYamlConfigurationStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.CreateTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.DiscardDistSQLStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.DropTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ExportDatabaseConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ImportDatabaseConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.LabelComputeNodeStatementTestCase;
@@ -1273,9 +1271,6 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "show-traffic-rules")
     private final List<ShowTrafficRulesStatementTestCase> showTrafficRulesTestCases = new LinkedList<>();
     
-    @XmlElement(name = "create-traffic-rule")
-    private final List<CreateTrafficRuleStatementTestCase> createTrafficRulesTestCases = new LinkedList<>();
-    
     @XmlElement(name = "alter-traffic-rule")
     private final List<AlterTrafficRuleStatementTestCase> alterTrafficRulesTestCases = new LinkedList<>();
     
@@ -1287,9 +1282,6 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-xa-transaction-rule")
     private final List<AlterXATransactionRuleStatementTestCase> alterXATransactionRuleTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "drop-traffic-rule")
-    private final List<DropTrafficRuleStatementTestCase> dropTrafficRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "label-compute-node")
     private final List<LabelComputeNodeStatementTestCase> labelTestCases = new LinkedList<>();
