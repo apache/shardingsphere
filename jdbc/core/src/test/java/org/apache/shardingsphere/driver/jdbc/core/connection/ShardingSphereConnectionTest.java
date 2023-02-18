@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -127,8 +128,9 @@ public final class ShardingSphereConnectionTest {
     public void assertCommitWithDistributedTransaction() throws SQLException {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(DistributedTransactionOperationType.BEGIN);
-        final ConnectionManager connectionManager = mockConnectionManager(connectionTransaction);
+        ConnectionManager connectionManager = mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(false);
+        assertTrue(connectionManager.getConnectionContext().getTransactionConnectionContext().isInTransaction());
         assertFalse(connection.getAutoCommit());
         assertTrue(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
         verify(connectionTransaction).begin();
@@ -166,6 +168,7 @@ public final class ShardingSphereConnectionTest {
     private ConnectionManager mockConnectionManager(final ConnectionTransaction connectionTransaction) {
         ConnectionManager result = mock(ConnectionManager.class);
         when(result.getConnectionTransaction()).thenReturn(connectionTransaction);
+        when(result.getConnectionContext()).thenReturn(new ConnectionContext());
         Plugins.getMemberAccessor().set(connection.getClass().getDeclaredField("connectionManager"), connection, result);
         return result;
     }
