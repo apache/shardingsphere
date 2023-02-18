@@ -61,15 +61,11 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private volatile boolean closed;
     
-    @Getter
-    private final ConnectionContext connectionContext;
-    
     public ShardingSphereConnection(final String databaseName, final ContextManager contextManager, final JDBCContext jdbcContext) {
         this.databaseName = databaseName;
         this.contextManager = contextManager;
         this.jdbcContext = jdbcContext;
         connectionManager = new ConnectionManager(databaseName, contextManager);
-        connectionContext = new ConnectionContext(connectionManager::getDataSourceNamesOfCachedConnections);
     }
     
     /**
@@ -149,7 +145,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private void processLocalTransaction() throws SQLException {
         connectionManager.setAutoCommit(autoCommit);
         if (!autoCommit) {
-            connectionContext.getTransactionConnectionContext().setInTransaction(true);
+            getConnectionContext().getTransactionConnectionContext().setInTransaction(true);
         }
     }
     
@@ -174,9 +170,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             connectionManager.commit();
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
-            connectionContext.clearTransactionConnectionContext();
-            connectionContext.clearTrafficInstance();
-            connectionContext.clearCursorConnectionContext();
+            getConnectionContext().clearTransactionConnectionContext();
+            getConnectionContext().clearTrafficInstance();
+            getConnectionContext().clearCursorConnectionContext();
         }
     }
     
@@ -186,9 +182,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             connectionManager.rollback();
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
-            connectionContext.clearTransactionConnectionContext();
-            connectionContext.clearTrafficInstance();
-            connectionContext.clearCursorConnectionContext();
+            getConnectionContext().clearTransactionConnectionContext();
+            getConnectionContext().clearTrafficInstance();
+            getConnectionContext().clearCursorConnectionContext();
         }
     }
     
@@ -275,5 +271,9 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     public void close() throws SQLException {
         closed = true;
         connectionManager.close();
+    }
+    
+    private ConnectionContext getConnectionContext() {
+        return connectionManager.getConnectionContext();
     }
 }
