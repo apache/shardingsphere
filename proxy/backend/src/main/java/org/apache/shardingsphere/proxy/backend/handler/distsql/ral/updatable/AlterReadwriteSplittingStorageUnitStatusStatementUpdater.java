@@ -218,4 +218,9 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdater impl
     private void put(final Map<String, String> map, final String key, final String value) {
         map.put(key, map.containsKey(key) ? String.join(",", map.get(key), value) : value);
     }
+    
+    @Override
+    public String getType() {
+        return AlterReadwriteSplittingStorageUnitStatusStatement.class.getName();
+    }
 }
