@@ -18,14 +18,11 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLRandomGenerator;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -36,11 +33,6 @@ public final class PostgreSQLMD5PasswordAuthenticatorTest {
     private final String username = "root";
     
     private final String password = "password";
-    
-    @Test
-    public void assertGetAuthenticationMethodName() {
-        assertThat(authenticator.getAuthenticationMethodName(), is(PostgreSQLAuthenticationMethod.MD5.getMethodName()));
-    }
     
     @Test
     public void assertAuthenticate() {

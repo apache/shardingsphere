@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authe
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
@@ -47,7 +48,7 @@ public final class PostgreSQLMD5PasswordAuthenticator implements PostgreSQLAuthe
     }
     
     @Override
-    public String getAuthenticationMethodName() {
-        return PostgreSQLAuthenticationMethod.MD5.getMethodName();
+    public AuthenticationMethod getAuthenticationMethod() {
+        return PostgreSQLAuthenticationMethod.MD5;
     }
 }
