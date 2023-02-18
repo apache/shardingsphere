@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authentica
 
 import com.google.common.base.Strings;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthenticationPluginData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -59,7 +60,7 @@ public final class MySQLNativePasswordAuthenticator implements MySQLAuthenticato
     }
     
     @Override
-    public String getAuthenticationMethodName() {
-        return MySQLAuthenticationMethod.NATIVE.getMethodName();
+    public AuthenticationMethod getAuthenticationMethod() {
+        return MySQLAuthenticationMethod.NATIVE;
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.impl;
 
+import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussMacCalculator;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -41,7 +42,7 @@ public final class OpenGaussSCRAMSha256PasswordAuthenticator implements OpenGaus
     }
     
     @Override
-    public String getAuthenticationMethodName() {
-        return PostgreSQLAuthenticationMethod.SCRAM_SHA256.getMethodName();
+    public AuthenticationMethod getAuthenticationMethod() {
+        return PostgreSQLAuthenticationMethod.SCRAM_SHA256;
     }
 }

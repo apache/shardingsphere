@@ -17,32 +17,21 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl;
 
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class PostgreSQLPasswordAuthenticatorTest {
     
-    private final PostgreSQLPasswordAuthenticator authenticator = new PostgreSQLPasswordAuthenticator();
-    
-    private final String username = "root";
-    
-    private final String password = "password";
-    
     @Test
-    public void assertGetAuthenticationMethodName() {
-        assertThat(authenticator.getAuthenticationMethodName(), is(PostgreSQLAuthenticationMethod.PASSWORD.getMethodName()));
+    public void assertAuthenticateSuccess() {
+        assertTrue(new PostgreSQLPasswordAuthenticator().authenticate(new ShardingSphereUser("root", "password", ""), new Object[]{"password", null}));
     }
     
     @Test
-    public void assertAuthenticate() {
-        ShardingSphereUser user = new ShardingSphereUser(username, password, "");
-        assertTrue(authenticator.authenticate(user, new Object[]{password, null}));
-        assertFalse(authenticator.authenticate(user, new Object[]{"wrong", null}));
+    public void assertAuthenticateFailed() {
+        assertFalse(new PostgreSQLPasswordAuthenticator().authenticate(new ShardingSphereUser("root", "password", ""), new Object[]{"wrong", null}));
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.authentication;
 
+import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 /**
@@ -34,9 +35,9 @@ public interface Authenticator {
     boolean authenticate(ShardingSphereUser user, Object[] authInfo);
     
     /**
-     * Get the name of authentication method.
+     * Get authentication method.
      *
-     * @return name of authentication method
+     * @return authentication method
      */
-    String getAuthenticationMethodName();
+    AuthenticationMethod getAuthenticationMethod();
 }
