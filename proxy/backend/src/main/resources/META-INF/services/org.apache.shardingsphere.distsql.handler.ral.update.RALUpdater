@@ -20,3 +20,4 @@ org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.LabelCompu
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.UnlabelComputeNodeUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetInstanceStatusUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ImportDatabaseConfigurationUpdater
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterReadwriteSplittingStorageUnitStatusStatementUpdater
