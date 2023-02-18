@@ -1,4 +1,8 @@
-# Book Release: “A Definitive Guide to Apache ShardingSphere” is Published Internationally
++++
+title = "Book Release: “A Definitive Guide to Apache ShardingSphere” is Published Internationally"
+weight = 70
+chapter = true 
++++
 
 Recently, *A Definitive Guide to Apache ShardingSphere*, a technical book co-written by [Pan Juan](https://authors.packtpub.com/interview-with-trista-pan/), [Zhang Liang](https://authors.packtpub.com/interview-with-liang-jhang/), and [Yacine Si Tayeb](https://authors.packtpub.com/interview-with-yacine-si-tayeb/), core members of [Apache ShardingSphere](https://shardingsphere.apache.org/), was officially launched internationally.
 
