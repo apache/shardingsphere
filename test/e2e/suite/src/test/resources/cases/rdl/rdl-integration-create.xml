@@ -72,7 +72,6 @@
     <test-case sql="CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=ds_0,READ_STORAGE_UNITS(ds_1),TYPE(NAME='RANDOM'));" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="create_readwrite_splitting_rules.xml">
             <assertion-sql sql="SHOW READWRITE_SPLITTING RULES;" />
-            <destroy-sql sql="DROP READWRITE_SPLITTING RULE readwrite_ds;" />
         </assertion>
     </test-case>
     
