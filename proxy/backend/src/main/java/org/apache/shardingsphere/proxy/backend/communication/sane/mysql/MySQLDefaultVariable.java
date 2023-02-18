@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.mysql;
+package org.apache.shardingsphere.proxy.backend.communication.sane.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

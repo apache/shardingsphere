@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.mysql.MySQLSaneQueryResultEngine
-org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.postgresql.PostgreSQLSaneQueryResultEngine
-org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.opengauss.OpenGaussSaneQueryResultEngine
+org.apache.shardingsphere.proxy.backend.communication.sane.mysql.MySQLSaneQueryResultEngine
+org.apache.shardingsphere.proxy.backend.communication.sane.postgresql.PostgreSQLSaneQueryResultEngine
+org.apache.shardingsphere.proxy.backend.communication.sane.opengauss.OpenGaussSaneQueryResultEngine

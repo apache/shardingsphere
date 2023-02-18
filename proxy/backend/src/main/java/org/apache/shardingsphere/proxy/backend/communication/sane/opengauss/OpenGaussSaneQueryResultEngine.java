@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.postgresql;
+package org.apache.shardingsphere.proxy.backend.communication.sane.opengauss;
 
-import org.junit.Test;
+import org.apache.shardingsphere.proxy.backend.communication.sane.SaneQueryResultEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class PostgreSQLSaneQueryResultEngineTest {
+/**
+ * Sane query result engine for openGauss.
+ */
+public final class OpenGaussSaneQueryResultEngine implements SaneQueryResultEngine {
     
-    @Test
-    public void assertGetSaneQueryResult() {
-        assertThat(new PostgreSQLSaneQueryResultEngine().getSaneQueryResult(null, null), is(Optional.empty()));
+    @Override
+    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement, final SQLException ex) {
+        return Optional.empty();
     }
     
-    @Test
-    public void assertGetType() {
-        assertThat(new PostgreSQLSaneQueryResultEngine().getType(), is("PostgreSQL"));
+    @Override
+    public String getType() {
+        return "openGauss";
     }
 }

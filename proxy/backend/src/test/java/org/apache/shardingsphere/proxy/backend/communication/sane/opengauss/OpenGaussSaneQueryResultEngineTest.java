@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.opengauss;
+package org.apache.shardingsphere.proxy.backend.communication.sane.opengauss;
 
 import org.junit.Test;
 
