@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminUpdateBackendHandler;
@@ -212,7 +212,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
         when(proxyContext.getAllDatabaseNames()).thenReturn(new HashSet<>(Collections.singletonList("db")));
         when(proxyContext.getDatabase("db").containsDataSource()).thenReturn(true);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(DatabaseCommunicationEngine.class));
+        assertThat(actual, instanceOf(DatabaseConnector.class));
         sql = "select * from information_schema.schemata limit 1";
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(DatabaseAdminQueryBackendHandler.class));

@@ -43,7 +43,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRestorer {
+public final class DatabaseConnectorFactoryTest extends ProxyContextRestorer {
     
     @Before
     public void setUp() {
@@ -66,24 +66,23 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
     }
     
     @Test
-    public void assertNewDatabaseCommunicationEngineWithoutParameter() {
+    public void assertNewDatabaseConnectorWithoutParameter() {
         BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList());
-        DatabaseCommunicationEngine engine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(queryContext, backendConnection, false);
-        assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
+        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(queryContext, backendConnection, false);
+        assertThat(engine, instanceOf(DatabaseConnector.class));
     }
     
     @Test
-    public void assertNewDatabaseCommunicationEngineWithParameters() {
+    public void assertNewDatabaseConnectorWithParameters() {
         BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        assertThat(
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false),
-                instanceOf(DatabaseCommunicationEngine.class));
+        assertThat(DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false),
+                instanceOf(DatabaseConnector.class));
     }
 }

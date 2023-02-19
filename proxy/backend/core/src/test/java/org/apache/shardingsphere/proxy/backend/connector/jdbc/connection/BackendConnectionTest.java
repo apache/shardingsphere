@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -315,28 +315,28 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertAddDatabaseCommunicationEngine() {
-        ProxyBackendHandler expectedEngine = mock(DatabaseCommunicationEngine.class);
+    public void assertAddDatabaseConnector() {
+        ProxyBackendHandler expectedEngine = mock(DatabaseConnector.class);
         backendConnection.add(expectedEngine);
-        Collection<ProxyBackendHandler> actual = getDatabaseCommunicationEngines();
+        Collection<ProxyBackendHandler> actual = getDatabaseConnectors();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
     
     @Test
-    public void assertMarkDatabaseCommunicationEngineInUse() {
-        ProxyBackendHandler expectedEngine = mock(DatabaseCommunicationEngine.class);
+    public void assertMarkDatabaseConnectorInUse() {
+        ProxyBackendHandler expectedEngine = mock(DatabaseConnector.class);
         backendConnection.add(expectedEngine);
         backendConnection.markResourceInUse(expectedEngine);
-        Collection<ProxyBackendHandler> actual = getInUseDatabaseCommunicationEngines();
+        Collection<ProxyBackendHandler> actual = getInUseDatabaseConnectors();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
     
     @Test
-    public void assertUnmarkInUseDatabaseCommunicationEngine() {
-        ProxyBackendHandler engine = mock(DatabaseCommunicationEngine.class);
-        Collection<ProxyBackendHandler> actual = getInUseDatabaseCommunicationEngines();
+    public void assertUnmarkInUseDatabaseConnector() {
+        ProxyBackendHandler engine = mock(DatabaseConnector.class);
+        Collection<ProxyBackendHandler> actual = getInUseDatabaseConnectors();
         actual.add(engine);
         backendConnection.unmarkResourceInUse(engine);
         assertTrue(actual.isEmpty());
@@ -344,36 +344,36 @@ public final class BackendConnectionTest extends ProxyContextRestorer {
     
     @Test
     public void assertCloseHandlers() throws SQLException {
-        ProxyBackendHandler engine = mock(DatabaseCommunicationEngine.class);
-        ProxyBackendHandler inUseEngine = mock(DatabaseCommunicationEngine.class);
+        ProxyBackendHandler engine = mock(DatabaseConnector.class);
+        ProxyBackendHandler inUseEngine = mock(DatabaseConnector.class);
         SQLException expectedException = mock(SQLException.class);
         doThrow(expectedException).when(engine).close();
-        Collection<ProxyBackendHandler> databaseCommunicationEngines = getDatabaseCommunicationEngines();
-        Collection<ProxyBackendHandler> inUseDatabaseCommunicationEngines = getInUseDatabaseCommunicationEngines();
-        databaseCommunicationEngines.add(engine);
-        databaseCommunicationEngines.add(inUseEngine);
-        inUseDatabaseCommunicationEngines.add(inUseEngine);
+        Collection<ProxyBackendHandler> databaseConnectors = getDatabaseConnectors();
+        Collection<ProxyBackendHandler> inUseDatabaseConnectors = getInUseDatabaseConnectors();
+        databaseConnectors.add(engine);
+        databaseConnectors.add(inUseEngine);
+        inUseDatabaseConnectors.add(inUseEngine);
         Collection<SQLException> actual = backendConnection.closeHandlers(false);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedException));
-        assertThat(inUseDatabaseCommunicationEngines.size(), is(1));
-        assertThat(databaseCommunicationEngines.size(), is(1));
+        assertThat(inUseDatabaseConnectors.size(), is(1));
+        assertThat(databaseConnectors.size(), is(1));
         verify(engine).close();
         backendConnection.closeHandlers(true);
         verify(inUseEngine).close();
-        assertTrue(databaseCommunicationEngines.isEmpty());
-        assertTrue(inUseDatabaseCommunicationEngines.isEmpty());
+        assertTrue(databaseConnectors.isEmpty());
+        assertTrue(inUseDatabaseConnectors.isEmpty());
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Collection<ProxyBackendHandler> getDatabaseCommunicationEngines() {
+    private Collection<ProxyBackendHandler> getDatabaseConnectors() {
         return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(BackendConnection.class.getDeclaredField("backendHandlers"), backendConnection);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Collection<ProxyBackendHandler> getInUseDatabaseCommunicationEngines() {
+    private Collection<ProxyBackendHandler> getInUseDatabaseConnectors() {
         return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(BackendConnection.class.getDeclaredField("inUseBackendHandlers"), backendConnection);
     }
     

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -78,9 +78,9 @@ public final class DatabaseBackendHandlerFactoryTest extends ProxyContextRestore
         when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getBackendConnection()).thenReturn(mock(BackendConnection.class));
         when(connectionSession.getBackendConnection().getConnectionSession()).thenReturn(connectionSession);
-        try (MockedConstruction<DatabaseCommunicationEngine> unused = mockConstruction(DatabaseCommunicationEngine.class)) {
+        try (MockedConstruction<DatabaseConnector> unused = mockConstruction(DatabaseConnector.class)) {
             DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new QueryContext(context, sql, Collections.emptyList()), connectionSession, false);
-            assertThat(actual, instanceOf(DatabaseCommunicationEngine.class));
+            assertThat(actual, instanceOf(DatabaseConnector.class));
         }
     }
 }

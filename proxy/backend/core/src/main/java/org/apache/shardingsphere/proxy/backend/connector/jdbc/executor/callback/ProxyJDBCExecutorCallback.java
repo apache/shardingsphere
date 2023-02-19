@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -46,7 +46,7 @@ import java.util.Optional;
  */
 public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<ExecuteResult> {
     
-    private final DatabaseCommunicationEngine databaseCommunicationEngine;
+    private final DatabaseConnector databaseConnector;
     
     private final boolean isReturnGeneratedKeys;
     
@@ -55,10 +55,10 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     private boolean hasMetaData;
     
     public ProxyJDBCExecutorCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement,
-                                     final DatabaseCommunicationEngine databaseCommunicationEngine,
+                                     final DatabaseConnector databaseConnector,
                                      final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
         super(protocolType, storageTypes, sqlStatement, isExceptionThrown);
-        this.databaseCommunicationEngine = databaseCommunicationEngine;
+        this.databaseConnector = databaseConnector;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;
     }
@@ -73,10 +73,10 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     }
     
     private ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final boolean withMetaData, final DatabaseType storageType) throws SQLException {
-        databaseCommunicationEngine.add(statement);
+        databaseConnector.add(statement);
         if (execute(sql, statement, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();
-            databaseCommunicationEngine.add(resultSet);
+            databaseConnector.add(resultSet);
             return createQueryResult(resultSet, connectionMode, storageType);
         }
         return new UpdateResult(statement.getUpdateCount(), isReturnGeneratedKeys ? getGeneratedKey(statement) : 0L);
