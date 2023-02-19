@@ -38,12 +38,12 @@ advisors:
     pointcuts:
       - name: run
         type: method
-  - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager
+  - target: org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.CommitTransactionsCountAdvice
     pointcuts:
       - name: commit
         type: method
-  - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager
+  - target: org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.RollbackTransactionsCountAdvice
     pointcuts:
       - name: rollback
