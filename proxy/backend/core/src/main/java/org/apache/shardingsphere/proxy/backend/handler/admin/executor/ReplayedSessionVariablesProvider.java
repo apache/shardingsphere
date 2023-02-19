@@ -23,15 +23,15 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import java.util.Collection;
 
 /**
- * Declaring variables need to be replayed on connections.
+ * Provide session variables need to be replayed on session connected.
  */
 @SingletonSPI
-public interface ReplayRequiredSessionVariables extends TypedSPI {
+public interface ReplayedSessionVariablesProvider extends TypedSPI {
     
     /**
-     * Get variables need to be replayed on connections.
+     * Get need to be replayed session variables.
      *
-     * @return variables need to be replayed on connections
+     * @return variables
      */
-    Collection<String> getReplayRequiredVariables();
+    Collection<String> getVariables();
 }
