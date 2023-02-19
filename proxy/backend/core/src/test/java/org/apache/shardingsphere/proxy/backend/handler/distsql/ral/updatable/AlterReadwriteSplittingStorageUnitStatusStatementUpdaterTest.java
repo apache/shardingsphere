@@ -27,8 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
-import java.sql.SQLException;
-
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -36,7 +34,7 @@ import static org.mockito.Mockito.when;
 public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest extends ProxyContextRestorer {
     
     @Test(expected = UnsupportedSQLOperationException.class)
-    public void assertWithStandaloneMode() throws SQLException {
+    public void assertWithStandaloneMode() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ProxyContext.init(contextManager);
         AlterReadwriteSplittingStorageUnitStatusStatementUpdater updater = new AlterReadwriteSplittingStorageUnitStatusStatementUpdater();
@@ -44,7 +42,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest 
     }
     
     @Test(expected = UnknownDatabaseException.class)
-    public void assertWithUnknownDatabase() throws SQLException {
+    public void assertWithUnknownDatabase() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         ProxyContext.init(contextManager);
@@ -53,7 +51,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest 
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
-    public void assertWithNoReadwriteSplittingRule() throws SQLException {
+    public void assertWithNoReadwriteSplittingRule() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
