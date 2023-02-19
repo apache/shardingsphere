@@ -44,9 +44,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Properties;
 
 /**
- * Set dist variable statement handler.
+ * Set dist variable statement updater.
  */
-public final class SetDistVariableHandler implements ConnectionSessionRequiredRALUpdater<SetDistVariableStatement> {
+public final class SetDistVariableUpdater implements ConnectionSessionRequiredRALUpdater<SetDistVariableStatement> {
     
     @Override
     public void executeUpdate(final ConnectionSession connectionSession, final SetDistVariableStatement sqlStatement) {
