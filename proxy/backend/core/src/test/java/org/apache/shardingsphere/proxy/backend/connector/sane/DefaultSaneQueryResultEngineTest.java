@@ -40,7 +40,8 @@ public final class DefaultSaneQueryResultEngineTest {
     
     @Test
     public void assertGetSaneQueryResultForSelectStatement() {
-        Optional<ExecuteResult> actual = TypedSPILoader.getService(SaneQueryResultEngine.class, null).getSaneQueryResult(new SelectStatement() { }, null);
+        Optional<ExecuteResult> actual = TypedSPILoader.getService(SaneQueryResultEngine.class, null).getSaneQueryResult(new SelectStatement() {
+        }, null);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(RawMemoryQueryResult.class));
         RawMemoryQueryResult actualResult = (RawMemoryQueryResult) actual.get();
