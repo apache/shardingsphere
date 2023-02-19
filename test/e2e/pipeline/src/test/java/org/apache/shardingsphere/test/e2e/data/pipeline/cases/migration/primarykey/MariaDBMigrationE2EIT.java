@@ -41,16 +41,11 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-/**
- * E2E IT for different types of indexes, includes:
- * 1) no unique key.
- * 2) special type single column unique key.
- */
 @RunWith(Parameterized.class)
 @Slf4j
-public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
+public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
     
-    public IndexesMigrationE2EIT(final PipelineTestParameter testParam) {
+    public MariaDBMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
     }
     
@@ -64,6 +59,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         if (versions.isEmpty()) {
             return result;
         }
+        // TODO use MariaDBDatabaseType
         result.add(new PipelineTestParameter(new MySQLDatabaseType(), versions.get(0), "env/common/none.xml"));
         return result;
     }
@@ -74,61 +70,9 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     @Test
-    public void assertNoUniqueKeyMigrationSuccess() throws SQLException, InterruptedException {
-        String sql;
-        String consistencyCheckAlgorithmType;
-        if (getDatabaseType() instanceof MySQLDatabaseType) {
-            sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-            // DATA_MATCH doesn't supported, could not order by records
-            consistencyCheckAlgorithmType = "CRC32_MATCH";
-        } else {
-            return;
-        }
-        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
-    }
-    
-    @Test
-    public void assertMultiPrimaryKeyMigrationSuccess() throws SQLException, InterruptedException {
-        String sql;
-        String consistencyCheckAlgorithmType;
-        if (getDatabaseType() instanceof MySQLDatabaseType) {
-            sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`,`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-            consistencyCheckAlgorithmType = "CRC32_MATCH";
-        } else {
-            return;
-        }
-        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
-    }
-    
-    @Test
-    public void assertMultiUniqueKeyMigrationSuccess() throws SQLException, InterruptedException {
-        String sql;
-        String consistencyCheckAlgorithmType;
-        if (getDatabaseType() instanceof MySQLDatabaseType) {
-            sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), UNIQUE KEY (`order_id`,`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-            consistencyCheckAlgorithmType = "DATA_MATCH";
-        } else {
-            return;
-        }
-        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
-    }
-    
-    @Test
-    public void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess() throws SQLException, InterruptedException {
-        String sql;
-        String consistencyCheckAlgorithmType;
-        if (getDatabaseType() instanceof MySQLDatabaseType) {
-            sql = "CREATE TABLE `%s` (`order_id` VARBINARY(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-            // DATA_MATCH doesn't supported: Order by value must implements Comparable
-            consistencyCheckAlgorithmType = "CRC32_MATCH";
-        } else {
-            return;
-        }
-        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
-    }
-    
-    private void assertMigrationSuccess(final String sqlPattern, final String consistencyCheckAlgorithmType) throws SQLException, InterruptedException {
+    public void assertMigrationSuccess() throws SQLException, InterruptedException {
         initEnvironment(getDatabaseType(), new MigrationJobType());
+        String sqlPattern = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
         sourceExecuteWithLog(String.format(sqlPattern, getSourceTableOrderName()));
         try (Connection connection = getSourceDataSource().getConnection()) {
             KeyGenerateAlgorithm generateAlgorithm = new UUIDKeyGenerateAlgorithm();
@@ -144,7 +88,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         sourceExecuteWithLog("INSERT INTO t_order (order_id, user_id, status) VALUES ('a1', 1, 'OK')");
         assertProxyOrderRecordExist("t_order", "a1");
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        assertCheckMigrationSuccess(jobId, consistencyCheckAlgorithmType);
+        assertCheckMigrationSuccess(jobId, "CRC32_MATCH");
         commitMigrationByJobId(jobId);
         proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
         assertThat(getTargetTableRecordsCount(getSourceTableOrderName()), is(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT + 1));

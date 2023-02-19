@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.api.impl;
+package org.apache.shardingsphere.test.it.data.pipeline.scenario.consistencycheck.api.impl;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
@@ -63,7 +63,7 @@ public final class ConsistencyCheckJobAPITest {
     public void assertCreateJobConfig() {
         String migrationJobId = "j0101test";
         String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(migrationJobId, null, null));
-        ConsistencyCheckJobConfiguration jobConfig = (ConsistencyCheckJobConfiguration) checkJobAPI.getJobConfiguration(checkJobId);
+        ConsistencyCheckJobConfiguration jobConfig = checkJobAPI.getJobConfiguration(checkJobId);
         int expectedSequence = ConsistencyCheckSequence.MIN_SEQUENCE;
         String expectCheckJobId = "j0201" + migrationJobId + expectedSequence;
         assertThat(jobConfig.getJobId(), is(expectCheckJobId));

@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.api.impl;
+package org.apache.shardingsphere.test.it.data.pipeline.scenario.migration.api.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -39,6 +40,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.context.Migrat
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -79,12 +82,16 @@ public final class MigrationJobAPITest {
     
     private static MigrationJobAPI jobAPI;
     
+    private static DatabaseType databaseType;
+    
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
         jobAPI = new MigrationJobAPI();
+        String jdbcUrl = "jdbc:h2:mem:test_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
+        databaseType = DatabaseTypeEngine.getDatabaseType(jdbcUrl);
         Map<String, Object> props = new HashMap<>();
-        props.put("jdbcUrl", "jdbc:h2:mem:test_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("jdbcUrl", jdbcUrl);
         props.put("username", "root");
         props.put("password", "root");
         Map<String, DataSourceProperties> expect = new LinkedHashMap<>(1, 1);
@@ -279,12 +286,12 @@ public final class MigrationJobAPITest {
     private void initIntPrimaryEnvironment() throws SQLException {
         Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(new MigrationJobType());
         DataSourceProperties dataSourceProps = metaDataDataSource.get("ds_0");
-        DataSource dataSource = DataSourcePoolCreator.create(dataSourceProps);
         try (
+                PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(dataSourceProps), databaseType);
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS t_order");
-            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id int(10))");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
         }
     }
     
