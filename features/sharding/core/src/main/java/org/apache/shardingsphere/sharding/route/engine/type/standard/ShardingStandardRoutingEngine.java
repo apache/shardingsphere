@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -195,7 +196,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         if (isRoutingBySQLHint()) {
             return getDatabaseShardingValuesFromSQLHint();
         }
-        return Collections.emptyList();
+        return getShardingConditions(HintManager.isDatabaseShardingOnly() ? HintManager.getDatabaseShardingValues() : HintManager.getDatabaseShardingValues(logicTableName));
     }
     
     private List<ShardingConditionValue> getDatabaseShardingValuesFromSQLHint() {
@@ -213,7 +214,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         if (isRoutingBySQLHint()) {
             return getTableShardingValuesFromSQLHint();
         }
-        return Collections.emptyList();
+        return getShardingConditions(HintManager.getTableShardingValues(logicTableName));
     }
     
     private List<ShardingConditionValue> getTableShardingValuesFromSQLHint() {

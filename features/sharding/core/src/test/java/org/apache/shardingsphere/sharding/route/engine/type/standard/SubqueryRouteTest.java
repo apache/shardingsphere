@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -102,6 +103,16 @@ public final class SubqueryRouteTest extends AbstractSQLRouteTest {
     public void assertSubqueryForBinding() {
         String sql = "select count(*) from t_order where user_id = (select user_id from t_order_item where user_id =?) ";
         assertRoute(sql, Collections.singletonList(1));
+    }
+    
+    @Test
+    public void assertSubqueryWithHint() {
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.addDatabaseShardingValue("t_hint_test", 1);
+        hintManager.addTableShardingValue("t_hint_test", 1);
+        String sql = "select count(*) from t_hint_test where user_id = (select t_hint_test from t_hint_test where user_id in (?,?,?)) ";
+        assertRoute(sql, Arrays.asList(1, 3, 5));
+        hintManager.close();
     }
     
     @Test
