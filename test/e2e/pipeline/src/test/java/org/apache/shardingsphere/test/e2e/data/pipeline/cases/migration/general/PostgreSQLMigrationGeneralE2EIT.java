@@ -118,7 +118,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         startMigrationByJobId(jobId);
         // must refresh firstly, otherwise proxy can't get schema and table info
         proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
-        assertProxyOrderRecordExist(recordId, String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getTargetTableOrderName()));
+        assertProxyOrderRecordExist(String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getTargetTableOrderName()), recordId);
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }
     
