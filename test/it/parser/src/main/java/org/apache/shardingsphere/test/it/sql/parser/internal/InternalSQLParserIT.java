@@ -50,10 +50,13 @@ public abstract class InternalSQLParserIT {
     
     private final SQLCaseType sqlCaseType;
     
+    private final String visitorType;
+    
     public InternalSQLParserIT(final InternalSQLParserTestParameter testParam) {
         sqlCaseId = testParam.getSqlCaseId();
         databaseType = testParam.getDatabaseType();
         sqlCaseType = testParam.getSqlCaseType();
+        visitorType = testParam.getVisitorType();
     }
     
     protected static Collection<InternalSQLParserTestParameter> getTestParameters(final String... databaseTypes) {
@@ -73,14 +76,16 @@ public abstract class InternalSQLParserIT {
     @Test
     public final void assertSupportedSQL() {
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
-        SQLStatement actual = parseSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql);
+        Object actual = parseSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, visitorType, sql);
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES.get(sqlCaseId);
-        SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sql, expected.getParameters(), sqlCaseType), actual, expected);
+        if ("STATEMENT".equals(visitorType)) {
+            SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sql, expected.getParameters(), sqlCaseType), (SQLStatement) actual, expected);
+        }
     }
     
-    private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
+    private Object parseSQLStatement(final String databaseType, final String visitorType, final String sql) {
         return "ShardingSphere".equals(databaseType)
                 ? new DistSQLStatementParserEngine().parse(sql)
-                : new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
+                : new SQLVisitorEngine(databaseType, visitorType, true, new Properties()).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
     }
 }
