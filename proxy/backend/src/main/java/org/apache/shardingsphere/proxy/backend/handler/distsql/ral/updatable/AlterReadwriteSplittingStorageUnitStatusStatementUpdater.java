@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
@@ -51,35 +51,36 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Set readwrite-splitting storage unit status handler.
+ * Set readwrite-splitting storage unit status updater.
  */
-public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler extends UpdatableRALBackendHandler<AlterReadwriteSplittingStorageUnitStatusStatement> {
+public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdater implements RALUpdater<AlterReadwriteSplittingStorageUnitStatusStatement> {
     
     private static final String DISABLE = "DISABLE";
     
     @Override
-    protected void update(final ContextManager contextManager) {
-        String databaseName = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
-        String toBeUpdatedStorageUnit = getSqlStatement().getStorageUnitName();
+    public void executeUpdate(final String databaseName, final AlterReadwriteSplittingStorageUnitStatusStatement sqlStatement) {
+        String actualDatabaseName = sqlStatement.getDatabase().isPresent() ? sqlStatement.getDatabase().get().getIdentifier().getValue() : databaseName;
+        String toBeUpdatedStorageUnit = sqlStatement.getStorageUnitName();
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         checkModeAndPersistRepository(contextManager);
-        checkDatabaseName(databaseName);
-        checkReadwriteSplittingRule(contextManager, databaseName);
-        Map<String, String> replicaStorageUnits = getReplicaResources(contextManager, databaseName);
-        Map<String, String> disabledStorageUnits = getDisabledResources(contextManager, databaseName);
-        Map<String, String> autoAwareResources = getAutoAwareResources(contextManager, databaseName);
-        boolean isDisable = DISABLE.equals(getSqlStatement().getStatus());
+        checkDatabaseName(actualDatabaseName);
+        checkReadwriteSplittingRule(contextManager, actualDatabaseName);
+        Map<String, String> replicaStorageUnits = getReplicaResources(contextManager, actualDatabaseName);
+        Map<String, String> disabledStorageUnits = getDisabledResources(contextManager, actualDatabaseName);
+        Map<String, String> autoAwareResources = getAutoAwareResources(contextManager, actualDatabaseName);
+        boolean isDisable = DISABLE.equals(sqlStatement.getStatus());
         if (isDisable) {
-            checkDisable(contextManager, databaseName, disabledStorageUnits.keySet(), toBeUpdatedStorageUnit, replicaStorageUnits);
+            checkDisable(contextManager, actualDatabaseName, disabledStorageUnits.keySet(), toBeUpdatedStorageUnit, replicaStorageUnits);
         } else {
-            checkEnable(contextManager, databaseName, disabledStorageUnits, toBeUpdatedStorageUnit);
+            checkEnable(contextManager, actualDatabaseName, disabledStorageUnits, toBeUpdatedStorageUnit);
         }
         Collection<String> groupNames = getGroupNames(toBeUpdatedStorageUnit, replicaStorageUnits, disabledStorageUnits, autoAwareResources);
-        String groupName = getSqlStatement().getGroupName();
+        String groupName = sqlStatement.getGroupName();
         if (Strings.isNullOrEmpty(groupName)) {
-            updateStatus(databaseName, groupNames, toBeUpdatedStorageUnit, isDisable);
+            updateStatus(actualDatabaseName, groupNames, toBeUpdatedStorageUnit, isDisable);
         } else {
             checkGroupName(groupNames, groupName);
-            updateStatus(databaseName, Collections.singleton(groupName), toBeUpdatedStorageUnit, isDisable);
+            updateStatus(actualDatabaseName, Collections.singleton(groupName), toBeUpdatedStorageUnit, isDisable);
         }
     }
     
@@ -216,5 +217,10 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler exte
     
     private void put(final Map<String, String> map, final String key, final String value) {
         map.put(key, map.containsKey(key) ? String.join(",", map.get(key), value) : value);
+    }
+    
+    @Override
+    public String getType() {
+        return AlterReadwriteSplittingStorageUnitStatusStatement.class.getName();
     }
 }
