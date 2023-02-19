@@ -26,5 +26,4 @@ props:
   max-connections-size-per-query: 1
   kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
-  proxy-hint-enabled: false
   sql-show: true

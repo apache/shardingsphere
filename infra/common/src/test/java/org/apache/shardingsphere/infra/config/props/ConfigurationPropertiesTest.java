@@ -42,7 +42,6 @@ public final class ConfigurationPropertiesTest {
         assertThat(actual.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE), is("ORIGINAL"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE), is("PostgreSQL"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(20));
-        assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE), is(BackendExecutorType.OLTP));
@@ -63,7 +62,6 @@ public final class ConfigurationPropertiesTest {
                 new Property(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL"),
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL"),
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), "20"),
-                new Property(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString()),
                 new Property(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE.getKey(), "20"),
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE.getKey(), "20"),
                 new Property(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getKey(), BackendExecutorType.OLTP.name()),
@@ -85,7 +83,6 @@ public final class ConfigurationPropertiesTest {
         assertThat(actual.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE), is("NONE"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE), is(""));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(128));
-        assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE), is(-1));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE), is(0));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE), is(BackendExecutorType.OLAP));

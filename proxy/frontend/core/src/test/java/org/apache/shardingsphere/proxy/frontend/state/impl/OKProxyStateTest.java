@@ -68,17 +68,7 @@ public final class OKProxyStateTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertExecuteWithProxyHintEnabled() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(true);
-        ExecutorService executorService = registerMockExecutorService(1);
-        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
-        verify(executorService).execute(any(CommandExecutorTask.class));
-        ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
-    }
-    
-    @Test
     public void assertExecuteWithDistributedTransaction() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.XA);
         ExecutorService executorService = registerMockExecutorService(1);
         new OKProxyState().execute(context, null, frontendEngine, connectionSession);
@@ -88,7 +78,6 @@ public final class OKProxyStateTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithProxyBackendExecutorSuitableForOLTP() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLTP);
         EventExecutor eventExecutor = mock(EventExecutor.class);
@@ -99,7 +88,6 @@ public final class OKProxyStateTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithProxyBackendExecutorSuitableForOLAPAndRequiredSameThreadForConnection() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(ProxyContext.getInstance().getContextManager()
                 .getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLAP);
         when(frontendEngine.getFrontendContext().isRequiredSameThreadForConnection(null)).thenReturn(true);
