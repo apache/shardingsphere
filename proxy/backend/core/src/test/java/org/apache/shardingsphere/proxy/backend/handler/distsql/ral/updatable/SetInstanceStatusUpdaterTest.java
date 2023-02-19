@@ -25,8 +25,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
-import java.sql.SQLException;
-
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,7 +32,7 @@ import static org.mockito.Mockito.when;
 public final class SetInstanceStatusUpdaterTest extends ProxyContextRestorer {
     
     @Test(expected = UnsupportedSQLOperationException.class)
-    public void assertExecuteWithNotNotClusterMode() throws SQLException {
+    public void assertExecuteWithNotNotClusterMode() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(false);
         ProxyContext.init(contextManager);
@@ -43,7 +41,7 @@ public final class SetInstanceStatusUpdaterTest extends ProxyContextRestorer {
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
-    public void assertExecuteWithNotExistsInstanceID() throws SQLException {
+    public void assertExecuteWithNotExistsInstanceID() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         ProxyContext.init(contextManager);
@@ -52,7 +50,7 @@ public final class SetInstanceStatusUpdaterTest extends ProxyContextRestorer {
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
-    public void assertExecuteWithCurrentUsingInstance() throws SQLException {
+    public void assertExecuteWithCurrentUsingInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("instanceID");
@@ -62,7 +60,7 @@ public final class SetInstanceStatusUpdaterTest extends ProxyContextRestorer {
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
-    public void assertExecuteWithAlreadyDisableInstance() throws SQLException {
+    public void assertExecuteWithAlreadyDisableInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("currentInstance");

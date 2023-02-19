@@ -22,10 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
@@ -53,13 +52,7 @@ public final class DatabaseBackendHandlerFactory {
             return new UnicastDatabaseBackendHandler(queryContext, connectionSession);
         }
         if (sqlStatement instanceof SetStatement && null == connectionSession.getDatabaseName()) {
-            return new DatabaseBackendHandler() {
-                
-                @Override
-                public ResponseHeader execute() {
-                    return new UpdateResponseHeader(sqlStatement);
-                }
-            };
+            return () -> new UpdateResponseHeader(sqlStatement);
         }
         if (sqlStatement instanceof DALStatement || (sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom())) {
             return new UnicastDatabaseBackendHandler(queryContext, connectionSession);

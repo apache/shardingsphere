@@ -17,25 +17,23 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelComputeNodeStatement;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
-import java.sql.SQLException;
-
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class RefreshDatabaseMetaDataUpdaterTest extends ProxyContextRestorer {
+public final class UnlabelComputeNodeUpdaterTest extends ProxyContextRestorer {
     
-    @Test(expected = UnknownDatabaseException.class)
-    public void assertExecuteWithNoDatabase() throws SQLException {
+    @Test(expected = UnsupportedSQLOperationException.class)
+    public void assertWithStandaloneMode() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ProxyContext.init(contextManager);
-        RefreshDatabaseMetaDataUpdater updater = new RefreshDatabaseMetaDataUpdater();
-        updater.executeUpdate("foo", mock(RefreshDatabaseMetaDataStatement.class));
+        UnlabelComputeNodeUpdater updater = new UnlabelComputeNodeUpdater();
+        updater.executeUpdate("foo", mock(UnlabelComputeNodeStatement.class));
     }
 }
