@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.authentication;
+package org.apache.shardingsphere.proxy.backend.communication.sane;
 
-import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.sql.SQLException;
+import java.util.Optional;
 
 /**
- * Authenticator.
+ * Sane query result engine.
  */
-public interface Authenticator {
+@SingletonSPI
+public interface SaneQueryResultEngine extends TypedSPI {
     
     /**
-     * Authenticate.
+     * Get sane query result.
      *
-     * @param user ShardingSphere user
-     * @param authInfo authentication information
-     * @return authentication success or not
+     * @param sqlStatement SQL statement
+     * @param ex SQL exception
+     * @return sane execute result
      */
-    boolean authenticate(ShardingSphereUser user, Object[] authInfo);
-    
-    /**
-     * Get authentication method.
-     *
-     * @return authentication method
-     */
-    AuthenticationMethod getAuthenticationMethod();
+    Optional<ExecuteResult> getSaneQueryResult(SQLStatement sqlStatement, SQLException ex);
 }

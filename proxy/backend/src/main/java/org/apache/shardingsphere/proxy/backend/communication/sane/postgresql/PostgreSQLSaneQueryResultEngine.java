@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.authentication;
+package org.apache.shardingsphere.proxy.backend.communication.sane.postgresql;
 
-import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.proxy.backend.communication.sane.SaneQueryResultEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.sql.SQLException;
+import java.util.Optional;
 
 /**
- * Authenticator.
+ * Sane query result engine for PostgreSQL.
  */
-public interface Authenticator {
+public final class PostgreSQLSaneQueryResultEngine implements SaneQueryResultEngine {
     
-    /**
-     * Authenticate.
-     *
-     * @param user ShardingSphere user
-     * @param authInfo authentication information
-     * @return authentication success or not
-     */
-    boolean authenticate(ShardingSphereUser user, Object[] authInfo);
+    @Override
+    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement, final SQLException ex) {
+        return Optional.empty();
+    }
     
-    /**
-     * Get authentication method.
-     *
-     * @return authentication method
-     */
-    AuthenticationMethod getAuthenticationMethod();
+    @Override
+    public String getType() {
+        return "PostgreSQL";
+    }
 }

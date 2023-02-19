@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.authentication;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl;
 
-import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.junit.Test;
 
-/**
- * Authenticator.
- */
-public interface Authenticator {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class PostgreSQLPasswordAuthenticatorTest {
     
-    /**
-     * Authenticate.
-     *
-     * @param user ShardingSphere user
-     * @param authInfo authentication information
-     * @return authentication success or not
-     */
-    boolean authenticate(ShardingSphereUser user, Object[] authInfo);
+    @Test
+    public void assertAuthenticateSuccess() {
+        assertTrue(new PostgreSQLPasswordAuthenticator().authenticate(new ShardingSphereUser("root", "password", ""), new Object[]{"password", null}));
+    }
     
-    /**
-     * Get authentication method.
-     *
-     * @return authentication method
-     */
-    AuthenticationMethod getAuthenticationMethod();
+    @Test
+    public void assertAuthenticateFailed() {
+        assertFalse(new PostgreSQLPasswordAuthenticator().authenticate(new ShardingSphereUser("root", "password", ""), new Object[]{"wrong", null}));
+    }
 }

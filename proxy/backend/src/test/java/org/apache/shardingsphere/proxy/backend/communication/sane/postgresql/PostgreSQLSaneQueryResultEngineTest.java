@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.authentication;
+package org.apache.shardingsphere.proxy.backend.communication.sane.postgresql;
 
-import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.junit.Test;
 
-/**
- * Authenticator.
- */
-public interface Authenticator {
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class PostgreSQLSaneQueryResultEngineTest {
     
-    /**
-     * Authenticate.
-     *
-     * @param user ShardingSphere user
-     * @param authInfo authentication information
-     * @return authentication success or not
-     */
-    boolean authenticate(ShardingSphereUser user, Object[] authInfo);
+    @Test
+    public void assertGetSaneQueryResult() {
+        assertThat(new PostgreSQLSaneQueryResultEngine().getSaneQueryResult(null, null), is(Optional.empty()));
+    }
     
-    /**
-     * Get authentication method.
-     *
-     * @return authentication method
-     */
-    AuthenticationMethod getAuthenticationMethod();
+    @Test
+    public void assertGetType() {
+        assertThat(new PostgreSQLSaneQueryResultEngine().getType(), is("PostgreSQL"));
+    }
 }

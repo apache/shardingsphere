@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.authentication;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticator;
 
 /**
- * Authenticator.
+ * Password authenticator for PostgreSQL.
  */
-public interface Authenticator {
+public final class PostgreSQLPasswordAuthenticator implements PostgreSQLAuthenticator {
     
-    /**
-     * Authenticate.
-     *
-     * @param user ShardingSphere user
-     * @param authInfo authentication information
-     * @return authentication success or not
-     */
-    boolean authenticate(ShardingSphereUser user, Object[] authInfo);
+    @Override
+    public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
+        String password = (String) authInfo[0];
+        return Strings.isNullOrEmpty(user.getPassword()) || user.getPassword().equals(password);
+    }
     
-    /**
-     * Get authentication method.
-     *
-     * @return authentication method
-     */
-    AuthenticationMethod getAuthenticationMethod();
+    @Override
+    public AuthenticationMethod getAuthenticationMethod() {
+        return PostgreSQLAuthenticationMethod.PASSWORD;
+    }
 }
