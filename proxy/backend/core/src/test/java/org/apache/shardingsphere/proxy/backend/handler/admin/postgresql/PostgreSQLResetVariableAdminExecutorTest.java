@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal
 import org.junit.Test;
 import org.mockito.MockedStatic;
 
-import java.util.Optional;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -35,7 +33,7 @@ public final class PostgreSQLResetVariableAdminExecutorTest {
         PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement("key"));
         try (MockedStatic<TypedSPILoader> mockStatic = mockStatic(TypedSPILoader.class)) {
             PostgreSQLSessionVariableHandler mockHandler = mock(PostgreSQLSessionVariableHandler.class);
-            mockStatic.when(() -> TypedSPILoader.findService(PostgreSQLSessionVariableHandler.class, "key")).thenReturn(Optional.of(mockHandler));
+            mockStatic.when(() -> TypedSPILoader.getService(PostgreSQLSessionVariableHandler.class, "key")).thenReturn(mockHandler);
             executor.execute(null);
             verify(mockHandler).handle(null, "key", "DEFAULT");
         }
