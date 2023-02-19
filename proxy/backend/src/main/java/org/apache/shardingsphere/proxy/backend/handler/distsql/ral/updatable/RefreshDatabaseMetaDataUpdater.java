@@ -44,4 +44,9 @@ public final class RefreshDatabaseMetaDataUpdater implements RALUpdater<RefreshD
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(result), () -> new UnknownDatabaseException(result));
         return result;
     }
+    
+    @Override
+    public String getType() {
+        return RefreshDatabaseMetaDataStatement.class.getName();
+    }
 }
