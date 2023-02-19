@@ -32,8 +32,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.StorageUnitNotExistedException;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExecutor {
     
-    private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
+    private final DatabaseConnectorFactory databaseConnectorFactory = DatabaseConnectorFactory.getInstance();
     
     private final SelectStatement sqlStatement;
     
@@ -67,7 +67,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     
     private MergedResult mergedResult;
     
-    private DatabaseCommunicationEngine databaseCommunicationEngine;
+    private DatabaseConnector databaseConnector;
     
     private ResponseHeader responseHeader;
     
@@ -80,13 +80,13 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
             connectionSession.setCurrentDatabase(databaseName);
             SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                     sqlStatement, connectionSession.getDefaultDatabaseName());
-            databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, sql, Collections.emptyList()),
+            databaseConnector = databaseConnectorFactory.newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList()),
                     connectionSession.getBackendConnection(), false);
-            responseHeader = databaseCommunicationEngine.execute();
+            responseHeader = databaseConnector.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());
         } finally {
             connectionSession.setCurrentDatabase(originDatabase);
-            databaseCommunicationEngine.close();
+            databaseConnector.close();
         }
     }
     
@@ -110,8 +110,8 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     
     private QueryResult createQueryResult() throws SQLException {
         List<MemoryQueryResultDataRow> rows = new LinkedList<>();
-        while (databaseCommunicationEngine.next()) {
-            List<Object> data = databaseCommunicationEngine.getRowData().getData();
+        while (databaseConnector.next()) {
+            List<Object> data = databaseConnector.getRowData().getData();
             rows.add(new MemoryQueryResultDataRow(data));
         }
         return new RawMemoryQueryResult(getQueryResultMetaData(), rows);

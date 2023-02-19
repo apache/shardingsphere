@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -100,11 +100,11 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
     public void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
         SQLStatementContext<TCLStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(TCLStatement.class));
-        try (MockedStatic<DatabaseCommunicationEngineFactory> mockedStatic = mockStatic(DatabaseCommunicationEngineFactory.class)) {
-            DatabaseCommunicationEngineFactory mockFactory = mock(DatabaseCommunicationEngineFactory.class);
-            mockedStatic.when(DatabaseCommunicationEngineFactory::getInstance).thenReturn(mockFactory);
-            when(mockFactory.newDatabaseCommunicationEngine(any(QueryContext.class), nullable(BackendConnection.class), anyBoolean())).thenReturn(mock(DatabaseCommunicationEngine.class));
-            assertThat(TransactionBackendHandlerFactory.newInstance(context, null, mock(ConnectionSession.class)), instanceOf(DatabaseCommunicationEngine.class));
+        try (MockedStatic<DatabaseConnectorFactory> mockedStatic = mockStatic(DatabaseConnectorFactory.class)) {
+            DatabaseConnectorFactory mockFactory = mock(DatabaseConnectorFactory.class);
+            mockedStatic.when(DatabaseConnectorFactory::getInstance).thenReturn(mockFactory);
+            when(mockFactory.newInstance(any(QueryContext.class), nullable(BackendConnection.class), anyBoolean())).thenReturn(mock(DatabaseConnector.class));
+            assertThat(TransactionBackendHandlerFactory.newInstance(context, null, mock(ConnectionSession.class)), instanceOf(DatabaseConnector.class));
         }
     }
     

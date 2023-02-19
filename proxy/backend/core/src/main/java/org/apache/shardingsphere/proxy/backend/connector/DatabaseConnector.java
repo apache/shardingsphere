@@ -88,9 +88,9 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Database communication engine.
+ * Database connector.
  */
-public final class DatabaseCommunicationEngine implements DatabaseBackendHandler {
+public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final ProxySQLExecutor proxySQLExecutor;
     
@@ -112,7 +112,7 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
     
     private MergedResult mergedResult;
     
-    public DatabaseCommunicationEngine(final String driverType, final ShardingSphereDatabase database, final QueryContext queryContext, final BackendConnection backendConnection) {
+    public DatabaseConnector(final String driverType, final ShardingSphereDatabase database, final QueryContext queryContext, final BackendConnection backendConnection) {
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         failedIfBackendNotReady(backendConnection.getConnectionSession(), sqlStatementContext);
         this.driverType = driverType;
@@ -120,7 +120,7 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
         this.queryContext = queryContext;
         this.backendConnection = backendConnection;
         if (sqlStatementContext instanceof CursorAvailable) {
-            DatabaseCommunicationEngine.this.prepareCursorStatementContext((CursorAvailable) sqlStatementContext, backendConnection.getConnectionSession());
+            DatabaseConnector.this.prepareCursorStatementContext((CursorAvailable) sqlStatementContext, backendConnection.getConnectionSession());
         }
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection, this);
     }
@@ -342,7 +342,7 @@ public final class DatabaseCommunicationEngine implements DatabaseBackendHandler
     }
     
     /**
-     * Close database communication engine.
+     * Close database connector.
      *
      * @throws SQLException SQL exception
      */

@@ -82,12 +82,12 @@ public final class ProxySQLExecutor {
     
     private final RawExecutor rawExecutor;
     
-    public ProxySQLExecutor(final String type, final BackendConnection backendConnection, final DatabaseCommunicationEngine databaseCommunicationEngine) {
+    public ProxySQLExecutor(final String type, final BackendConnection backendConnection, final DatabaseConnector databaseConnector) {
         this.type = type;
         this.backendConnection = backendConnection;
         ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
         ConnectionContext connectionContext = backendConnection.getConnectionSession().getConnectionContext();
-        jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection.getConnectionSession(), databaseCommunicationEngine, new JDBCExecutor(executorEngine, connectionContext));
+        jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection.getConnectionSession(), databaseConnector, new JDBCExecutor(executorEngine, connectionContext));
         rawExecutor = new RawExecutor(executorEngine, connectionContext);
     }
     

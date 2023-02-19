@@ -29,8 +29,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -73,10 +73,10 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
     private ConnectionSession connectionSession;
     
     @Mock
-    private DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory;
+    private DatabaseConnectorFactory databaseConnectorFactory;
     
     @Mock
-    private DatabaseCommunicationEngine databaseCommunicationEngine;
+    private DatabaseConnector databaseConnector;
     
     @Before
     public void setUp() throws SQLException {
@@ -87,7 +87,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
         ProxyContext.init(contextManager);
         when(connectionSession.getDefaultDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         when(connectionSession.getBackendConnection()).thenReturn(mock(BackendConnection.class));
-        mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
+        mockDatabaseConnector(new UpdateResponseHeader(mock(SQLStatement.class)));
         unicastDatabaseBackendHandler = new UnicastDatabaseBackendHandler(new QueryContext(mock(SQLStatementContext.class), EXECUTE_SQL, Collections.emptyList()), connectionSession);
         setBackendHandlerFactory(unicastDatabaseBackendHandler);
     }
@@ -103,15 +103,15 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
         return result;
     }
     
-    private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) throws SQLException {
-        when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
-        when(databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(any(QueryContext.class), any(BackendConnection.class), eq(false))).thenReturn(databaseCommunicationEngine);
+    private void mockDatabaseConnector(final ResponseHeader responseHeader) throws SQLException {
+        when(databaseConnector.execute()).thenReturn(responseHeader);
+        when(databaseConnectorFactory.newInstance(any(QueryContext.class), any(BackendConnection.class), eq(false))).thenReturn(databaseConnector);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setBackendHandlerFactory(final DatabaseBackendHandler schemaDatabaseBackendHandler) {
         Plugins.getMemberAccessor()
-                .set(schemaDatabaseBackendHandler.getClass().getDeclaredField("databaseCommunicationEngineFactory"), schemaDatabaseBackendHandler, databaseCommunicationEngineFactory);
+                .set(schemaDatabaseBackendHandler.getClass().getDeclaredField("databaseConnectorFactory"), schemaDatabaseBackendHandler, databaseConnectorFactory);
     }
     
     @Test

@@ -25,34 +25,34 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
- * Database communication engine factory.
+ * Database connector factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseCommunicationEngineFactory {
+public final class DatabaseConnectorFactory {
     
-    private static final DatabaseCommunicationEngineFactory INSTANCE = new DatabaseCommunicationEngineFactory();
+    private static final DatabaseConnectorFactory INSTANCE = new DatabaseConnectorFactory();
     
     /**
      * Get backend handler factory instance.
      *
      * @return backend handler factory
      */
-    public static DatabaseCommunicationEngineFactory getInstance() {
+    public static DatabaseConnectorFactory getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Create new instance of {@link DatabaseCommunicationEngine}.
+     * Create new instance of {@link DatabaseConnector}.
      *
      * @param queryContext query context
      * @param backendConnection backend connection
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance
      */
-    public DatabaseCommunicationEngine newDatabaseCommunicationEngine(final QueryContext queryContext, final BackendConnection backendConnection, final boolean preferPreparedStatement) {
+    public DatabaseConnector newInstance(final QueryContext queryContext, final BackendConnection backendConnection, final boolean preferPreparedStatement) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
         String driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
-        DatabaseCommunicationEngine result = new DatabaseCommunicationEngine(driverType, database, queryContext, backendConnection);
+        DatabaseConnector result = new DatabaseConnector(driverType, database, queryContext, backendConnection);
         backendConnection.add(result);
         return result;
     }

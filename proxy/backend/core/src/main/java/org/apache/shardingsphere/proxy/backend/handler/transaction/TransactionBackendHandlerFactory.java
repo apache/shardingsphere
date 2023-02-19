@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OperationScope;
@@ -82,6 +82,6 @@ public final class TransactionBackendHandlerFactory {
             return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList());
-        return DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(queryContext, connectionSession.getBackendConnection(), false);
+        return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getBackendConnection(), false);
     }
 }

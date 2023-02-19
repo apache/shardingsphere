@@ -23,8 +23,8 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.StorageUnitNotExistedException;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
@@ -43,13 +43,13 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandler {
     
-    private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
+    private final DatabaseConnectorFactory databaseConnectorFactory = DatabaseConnectorFactory.getInstance();
     
     private final QueryContext queryContext;
     
     private final ConnectionSession connectionSession;
     
-    private DatabaseCommunicationEngine databaseCommunicationEngine;
+    private DatabaseConnector databaseConnector;
     
     @Override
     public ResponseHeader execute() throws SQLException {
@@ -58,8 +58,8 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).containsDataSource(), () -> new StorageUnitNotExistedException(databaseName));
         try {
             connectionSession.setCurrentDatabase(databaseName);
-            databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(queryContext, connectionSession.getBackendConnection(), false);
-            return databaseCommunicationEngine.execute();
+            databaseConnector = databaseConnectorFactory.newInstance(queryContext, connectionSession.getBackendConnection(), false);
+            return databaseConnector.execute();
         } finally {
             connectionSession.setCurrentDatabase(databaseName);
         }
@@ -80,18 +80,18 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     @Override
     public boolean next() throws SQLException {
-        return databaseCommunicationEngine.next();
+        return databaseConnector.next();
     }
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return databaseCommunicationEngine.getRowData();
+        return databaseConnector.getRowData();
     }
     
     @Override
     public void close() throws SQLException {
-        if (null != databaseCommunicationEngine) {
-            databaseCommunicationEngine.close();
+        if (null != databaseConnector) {
+            databaseConnector.close();
         }
     }
 }

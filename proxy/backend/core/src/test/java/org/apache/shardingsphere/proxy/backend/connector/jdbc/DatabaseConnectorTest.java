@@ -45,8 +45,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -97,7 +97,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer {
+public final class DatabaseConnectorTest extends ProxyContextRestorer {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private BackendConnection backendConnection;
@@ -135,8 +135,8 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
     public void assertExecuteFederationAndClose() throws SQLException {
         SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        DatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, true);
+        DatabaseConnector engine =
+                DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, true);
         when(backendConnection.getConnectionSession().getStatementManager()).thenReturn(new JDBCBackendStatement());
         SQLFederationExecutor federationExecutor = mock(SQLFederationExecutor.class);
         try (
@@ -165,16 +165,16 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
     public void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException, IllegalAccessException {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, true);
+        DatabaseConnector engine =
+                DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, true);
         assertNotNull(engine);
-        assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
-        Field queryHeadersField = DatabaseCommunicationEngine.class.getDeclaredField("queryHeaders");
+        assertThat(engine, instanceOf(DatabaseConnector.class));
+        Field queryHeadersField = DatabaseConnector.class.getDeclaredField("queryHeaders");
         ShardingSphereDatabase database = createDatabaseMetaData();
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(queryHeadersField, engine, Collections.singletonList(
                 new QueryHeaderBuilderEngine(new MySQLDatabaseType()).build(createQueryResultMetaData(), database, 1)));
-        Field mergedResultField = DatabaseCommunicationEngine.class.getDeclaredField("mergedResult");
+        Field mergedResultField = DatabaseConnector.class.getDeclaredField("mergedResult");
         accessor.set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
             
             @Override
@@ -221,8 +221,8 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
     public void assertAddStatementCorrectly() {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
+        DatabaseConnector engine =
+                DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         engine.add(statement);
         Collection<?> actual = getField(engine, "cachedStatements");
         assertThat(actual.size(), is(1));
@@ -233,8 +233,8 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
     public void assertAddResultSetCorrectly() {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
+        DatabaseConnector engine =
+                DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         engine.add(resultSet);
         Collection<?> actual = getField(engine, "cachedResultSets");
         assertThat(actual.size(), is(1));
@@ -245,8 +245,8 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
     public void assertCloseCorrectly() throws SQLException {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
+        DatabaseConnector engine =
+                DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         cachedResultSets.add(resultSet);
         Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
@@ -263,8 +263,8 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
     public void assertCloseResultSetsWithExceptionThrown() throws SQLException {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
+        DatabaseConnector engine =
+                DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         SQLException sqlExceptionByResultSet = new SQLException("ResultSet");
         doThrow(sqlExceptionByResultSet).when(resultSet).close();
@@ -290,7 +290,7 @@ public final class DatabaseCommunicationEngineTest extends ProxyContextRestorer 
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private <T> T getField(final DatabaseCommunicationEngine target, final String fieldName) {
-        return (T) Plugins.getMemberAccessor().get(DatabaseCommunicationEngine.class.getDeclaredField(fieldName), target);
+    private <T> T getField(final DatabaseConnector target, final String fieldName) {
+        return (T) Plugins.getMemberAccessor().get(DatabaseConnector.class.getDeclaredField(fieldName), target);
     }
 }

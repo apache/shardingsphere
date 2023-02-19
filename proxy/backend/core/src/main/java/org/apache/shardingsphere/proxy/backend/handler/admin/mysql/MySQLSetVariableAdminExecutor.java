@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngineFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
@@ -85,8 +85,8 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL").getType()).parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
-        DatabaseBackendHandler databaseBackendHandler = DatabaseCommunicationEngineFactory.getInstance()
-                .newDatabaseCommunicationEngine(new QueryContext(sqlStatementContext, sql, Collections.emptyList()), connectionSession.getBackendConnection(), false);
+        DatabaseBackendHandler databaseBackendHandler = DatabaseConnectorFactory.getInstance()
+                .newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList()), connectionSession.getBackendConnection(), false);
         try {
             databaseBackendHandler.execute();
         } finally {

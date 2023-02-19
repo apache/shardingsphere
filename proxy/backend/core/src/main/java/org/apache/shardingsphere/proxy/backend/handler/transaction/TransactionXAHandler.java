@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
+import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -46,13 +46,13 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
     
     private final ConnectionSession connectionSession;
     
-    private final DatabaseCommunicationEngine backendHandler;
+    private final DatabaseConnector backendHandler;
     
     public TransactionXAHandler(final SQLStatementContext<? extends TCLStatement> sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         this.tclStatement = (XAStatement) sqlStatementContext.getSqlStatement();
         this.connectionSession = connectionSession;
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList());
-        backendHandler = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(queryContext, connectionSession.getBackendConnection(), false);
+        backendHandler = DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getBackendConnection(), false);
     }
     
     @Override
