@@ -55,9 +55,12 @@ public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
         if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
-        String version = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType()).get(0);
+        List<String> versions = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
+        if (versions.isEmpty()) {
+            return result;
+        }
         // TODO use MariaDBDatabaseType
-        result.add(new PipelineTestParameter(new MySQLDatabaseType(), version, "env/common/none.xml"));
+        result.add(new PipelineTestParameter(new MySQLDatabaseType(), versions.get(0), "env/common/none.xml"));
         return result;
     }
     

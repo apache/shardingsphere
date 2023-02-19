@@ -60,8 +60,11 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
-        String version = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType()).get(0);
-        result.add(new PipelineTestParameter(new MySQLDatabaseType(), version, "env/common/none.xml"));
+        List<String> versions = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
+        if (versions.isEmpty()) {
+            return result;
+        }
+        result.add(new PipelineTestParameter(new MySQLDatabaseType(), versions.get(0), "env/common/none.xml"));
         return result;
     }
     
