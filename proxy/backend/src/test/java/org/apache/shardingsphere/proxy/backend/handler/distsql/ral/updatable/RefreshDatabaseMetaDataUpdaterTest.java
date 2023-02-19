@@ -17,32 +17,25 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.junit.Test;
 
-import java.util.Optional;
+import java.sql.SQLException;
 
-/**
- * Refresh database meta data handler.
- */
-public final class RefreshDatabaseMetaDataHandler extends UpdatableRALBackendHandler<RefreshDatabaseMetaDataStatement> {
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+
+public final class RefreshDatabaseMetaDataUpdaterTest extends ProxyContextRestorer {
     
-    @Override
-    protected void update(final ContextManager contextManager) {
-        contextManager.reloadDatabaseMetaData(getDatabaseName());
-    }
-    
-    private String getDatabaseName() {
-        Optional<String> databaseName = getSqlStatement().getDatabaseName();
-        String result = databaseName.orElseGet(() -> getConnectionSession().getDatabaseName());
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(result), NoDatabaseSelectedException::new);
-        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(result), () -> new UnknownDatabaseException(result));
-        return result;
+    @Test(expected = UnknownDatabaseException.class)
+    public void assertExecuteWithNoDatabase() throws SQLException {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ProxyContext.init(contextManager);
+        RefreshDatabaseMetaDataUpdater updater = new RefreshDatabaseMetaDataUpdater();
+        updater.executeUpdate("foo", mock(RefreshDatabaseMetaDataStatement.class));
     }
 }
