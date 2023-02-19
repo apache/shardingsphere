@@ -25,7 +25,7 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSel
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
 
 import java.util.Collection;
 import java.util.Optional;

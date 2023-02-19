@@ -53,7 +53,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
