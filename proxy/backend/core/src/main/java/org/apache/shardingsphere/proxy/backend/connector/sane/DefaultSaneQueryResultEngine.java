@@ -46,4 +46,9 @@ public final class DefaultSaneQueryResultEngine implements SaneQueryResultEngine
         MemoryQueryResultDataRow resultDataRow = new MemoryQueryResultDataRow(Collections.singletonList("1"));
         return new RawMemoryQueryResult(new RawQueryResultMetaData(Collections.singletonList(queryResultColumnMetaData)), Collections.singletonList(resultDataRow));
     }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

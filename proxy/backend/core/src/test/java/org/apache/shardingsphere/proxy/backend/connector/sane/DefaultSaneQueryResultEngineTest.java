@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.connector.sane;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
 
@@ -26,20 +27,20 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class DefaultSaneQueryResultEngineTest {
     
     @Test
     public void assertGetSaneQueryResultForOtherStatement() {
-        assertThat(new DefaultSaneQueryResultEngine().getSaneQueryResult(() -> 0, null), is(Optional.empty()));
+        assertThat(TypedSPILoader.getService(SaneQueryResultEngine.class, null).getSaneQueryResult(() -> 0, null), is(Optional.empty()));
     }
     
     @Test
     public void assertGetSaneQueryResultForSelectStatement() {
-        Optional<ExecuteResult> actual = new DefaultSaneQueryResultEngine().getSaneQueryResult(new SelectStatement() {
+        Optional<ExecuteResult> actual = TypedSPILoader.getService(SaneQueryResultEngine.class, null).getSaneQueryResult(new SelectStatement() {
         }, null);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(RawMemoryQueryResult.class));
