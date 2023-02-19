@@ -132,7 +132,7 @@ public final class PipelineJobPreparerUtils {
         }
         String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        return TypedSPILoader.getService(PositionInitializer.class, databaseType).init(dataSource, dumperConfig.getJobId());
+        return PipelineTypedSPILoader.getDatabaseTypedService(PositionInitializer.class, databaseType).init(dataSource, dumperConfig.getJobId());
     }
     
     /**
@@ -177,7 +177,7 @@ public final class PipelineJobPreparerUtils {
      */
     public static void destroyPosition(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         DatabaseType databaseType = pipelineDataSourceConfig.getDatabaseType();
-        PositionInitializer positionInitializer = TypedSPILoader.getService(PositionInitializer.class, databaseType.getType());
+        PositionInitializer positionInitializer = PipelineTypedSPILoader.getDatabaseTypedService(PositionInitializer.class, databaseType.getType());
         final long startTimeMillis = System.currentTimeMillis();
         log.info("Cleanup database type:{}, data source type:{}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {

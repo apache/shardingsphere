@@ -40,6 +40,7 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -78,7 +79,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
         IngestPosition<?> position = dumperConfig.getPosition();
         taskProgress = createIncrementalTaskProgress(position, jobItemContext.getInitProgress());
         channel = createChannel(concurrency, pipelineChannelCreator, taskProgress);
-        dumper = TypedSPILoader.getService(
+        dumper = PipelineTypedSPILoader.getDatabaseTypedService(
                 IncrementalDumperCreator.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType()).createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
         importers = createImporters(concurrency, importerConfig, importerConnector, channel, jobItemContext);
     }
