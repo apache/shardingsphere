@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.util.spi;
 
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.junit.Test;
@@ -39,16 +38,9 @@ public final class PipelineTypedSPILoaderTest {
     }
     
     @Test
-    public void assertGetPipelineSQLBuilder() {
+    public void assertGetDatabaseTypedService() {
         PipelineSQLBuilder actual = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, "MariaDB");
         assertNotNull(actual);
         assertThat(actual.getType(), is("MySQL"));
-    }
-    
-    @Test
-    public void assertGetColumnValueReader() {
-        ColumnValueReader actual = PipelineTypedSPILoader.getDatabaseTypedService(ColumnValueReader.class, "Unknown");
-        assertNotNull(actual);
-        assertThat(actual.getType(), is(""));
     }
 }
