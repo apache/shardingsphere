@@ -341,10 +341,15 @@ public abstract class PipelineBaseE2EIT {
         return Collections.emptyList();
     }
     
-    protected void assertProxyOrderRecordExist(final Object id, final String tableName) {
+    protected void assertProxyOrderRecordExist(final String tableName, final Object orderId) {
         boolean recordExist = false;
+        String sql;
+        if (orderId instanceof String) {
+            sql = String.format("SELECT 1 FROM %s WHERE order_id = '%s'", tableName, orderId);
+        } else {
+            sql = String.format("SELECT 1 FROM %s WHERE order_id = %s", tableName, orderId);
+        }
         for (int i = 0; i < 5; i++) {
-            String sql = String.format("select * from %s where order_id = %s", tableName, id);
             List<Map<String, Object>> result = queryForListWithLog(sql);
             recordExist = !result.isEmpty();
             if (recordExist) {
@@ -355,10 +360,15 @@ public abstract class PipelineBaseE2EIT {
         assertTrue("The insert record must exist after the stop", recordExist);
     }
     
+    protected int getTargetTableRecordsCount(final String tableName) {
+        List<Map<String, Object>> targetList = queryForListWithLog("SELECT COUNT(1) AS count FROM " + tableName);
+        assertFalse(targetList.isEmpty());
+        return ((Number) targetList.get(0).get("count")).intValue();
+    }
+    
     protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) {
-        String countSQL = Strings.isNullOrEmpty(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
-        Map<String, Object> actual = queryForListWithLog(countSQL).get(0);
-        log.info("actual count {}", actual.get("count"));
-        assertTrue("actual count " + actual.get("count"), Integer.parseInt(actual.get("count").toString()) > tableInitRows);
+        String tableName = Strings.isNullOrEmpty(schema) ? "t_order" : String.format("%s.t_order", schema);
+        int recordsCount = getTargetTableRecordsCount(tableName);
+        assertTrue("actual count " + recordsCount, recordsCount > tableInitRows);
     }
 }
