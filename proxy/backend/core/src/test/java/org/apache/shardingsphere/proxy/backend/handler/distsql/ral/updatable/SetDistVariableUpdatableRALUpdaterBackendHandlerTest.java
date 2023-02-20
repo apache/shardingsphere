@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALUpdaterBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -58,7 +59,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SetDistVariableBackendHandlerTest extends ProxyContextRestorer {
+public final class SetDistVariableUpdatableRALUpdaterBackendHandlerTest extends ProxyContextRestorer {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
@@ -91,8 +92,7 @@ public final class SetDistVariableBackendHandlerTest extends ProxyContextRestore
     @Test
     public void assertSwitchTransactionTypeXA() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        SetDistVariableHandler handler = new SetDistVariableHandler();
-        handler.init(new SetDistVariableStatement("transaction_type", "XA"), connectionSession);
+        UpdatableRALUpdaterBackendHandler handler = new UpdatableRALUpdaterBackendHandler(new SetDistVariableStatement("transaction_type", "XA"), connectionSession);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.XA));
@@ -101,8 +101,7 @@ public final class SetDistVariableBackendHandlerTest extends ProxyContextRestore
     @Test
     public void assertSwitchTransactionTypeBASE() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        SetDistVariableHandler handler = new SetDistVariableHandler();
-        handler.init(new SetDistVariableStatement("transaction_type", "BASE"), connectionSession);
+        UpdatableRALUpdaterBackendHandler handler = new UpdatableRALUpdaterBackendHandler(new SetDistVariableStatement("transaction_type", "BASE"), connectionSession);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.BASE));
@@ -111,8 +110,7 @@ public final class SetDistVariableBackendHandlerTest extends ProxyContextRestore
     @Test
     public void assertSwitchTransactionTypeLOCAL() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        SetDistVariableHandler handler = new SetDistVariableHandler();
-        handler.init(new SetDistVariableStatement("transaction_type", "LOCAL"), connectionSession);
+        UpdatableRALUpdaterBackendHandler handler = new UpdatableRALUpdaterBackendHandler(new SetDistVariableStatement("transaction_type", "LOCAL"), connectionSession);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
@@ -120,24 +118,21 @@ public final class SetDistVariableBackendHandlerTest extends ProxyContextRestore
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertSwitchTransactionTypeFailed() throws SQLException {
-        SetDistVariableHandler handler = new SetDistVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        handler.init(new SetDistVariableStatement("transaction_type", "XXX"), connectionSession);
+        UpdatableRALUpdaterBackendHandler handler = new UpdatableRALUpdaterBackendHandler(new SetDistVariableStatement("transaction_type", "XXX"), connectionSession);
         handler.execute();
     }
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertNotSupportedVariable() throws SQLException {
-        SetDistVariableHandler handler = new SetDistVariableHandler();
-        handler.init(new SetDistVariableStatement("@@session", "XXX"), connectionSession);
+        UpdatableRALUpdaterBackendHandler handler = new UpdatableRALUpdaterBackendHandler(new SetDistVariableStatement("@@session", "XXX"), connectionSession);
         handler.execute();
     }
     
     @Test
     public void assertSetAgentPluginsEnabledTrue() throws SQLException {
-        SetDistVariableHandler handler = new SetDistVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        handler.init(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null);
+        UpdatableRALUpdaterBackendHandler handler = new UpdatableRALUpdaterBackendHandler(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
@@ -145,9 +140,8 @@ public final class SetDistVariableBackendHandlerTest extends ProxyContextRestore
     
     @Test
     public void assertSetAgentPluginsEnabledFalse() throws SQLException {
-        SetDistVariableHandler handler = new SetDistVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        handler.init(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null);
+        UpdatableRALUpdaterBackendHandler handler = new UpdatableRALUpdaterBackendHandler(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
@@ -155,9 +149,8 @@ public final class SetDistVariableBackendHandlerTest extends ProxyContextRestore
     
     @Test
     public void assertSetAgentPluginsEnabledFalseWithUnknownValue() throws SQLException {
-        SetDistVariableHandler handler = new SetDistVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        handler.init(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession);
+        UpdatableRALUpdaterBackendHandler handler = new UpdatableRALUpdaterBackendHandler(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));

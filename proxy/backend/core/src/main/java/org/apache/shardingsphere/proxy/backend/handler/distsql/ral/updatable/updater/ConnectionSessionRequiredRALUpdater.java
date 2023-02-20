@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.ral.update;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 
 /**
- * RAL updater.
- * 
- * @param <T> type of updatable RAL statement
+ * Connection session required RAL updater.
  */
-@SingletonSPI
-public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
+public interface ConnectionSessionRequiredRALUpdater<T extends SQLStatement> extends RALUpdater<T> {
     
     /**
      * Execute update.
      *
-     * @param databaseName database name
+     * @param connectionSession connection session
      * @param sqlStatement updatable RAL statement
      * @throws SQLException SQL exception
      */
-    default void executeUpdate(String databaseName, T sqlStatement) throws SQLException {
-    }
+    void executeUpdate(ConnectionSession connectionSession, T sqlStatement) throws SQLException;
 }
