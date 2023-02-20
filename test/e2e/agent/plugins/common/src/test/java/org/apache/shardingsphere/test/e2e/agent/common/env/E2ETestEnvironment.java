@@ -76,7 +76,7 @@ public final class E2ETestEnvironment {
     private boolean waitForEnvironmentReady(final Properties props) {
         log.info("Proxy with agent environment initializing ...");
         try {
-            Awaitility.await().atMost(120, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> isProxyReady(props));
+            Awaitility.await().atMost(120, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> isProxyReady(props));
         } catch (final ConditionTimeoutException ignored) {
             log.info("Proxy with agent environment initialization failed ...");
             return false;
@@ -85,10 +85,10 @@ public final class E2ETestEnvironment {
     }
     
     private boolean isProxyReady(final Properties props) {
+        log.info("try to connect proxy ...");
         String url = props.getProperty("proxy.url");
         String username = props.getProperty("proxy.username", "root");
         String password = props.getProperty("proxy.password", "root");
-        DriverManager.setLoginTimeout(1);
         try (
                 Connection connection = DriverManager.getConnection(url, username, password);
                 Statement statement = connection.createStatement()) {
