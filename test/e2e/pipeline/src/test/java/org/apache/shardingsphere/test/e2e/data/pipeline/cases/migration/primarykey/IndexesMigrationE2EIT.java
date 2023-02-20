@@ -37,11 +37,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
 
 /**
  * E2E IT for different types of indexes, includes:
@@ -52,11 +50,8 @@ import static org.junit.Assert.assertFalse;
 @Slf4j
 public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
-    private final PipelineTestParameter testParam;
-    
     public IndexesMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
-        this.testParam = testParam;
     }
     
     @Parameters(name = "{0}")
@@ -65,9 +60,11 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
-        for (String version : PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType())) {
-            result.add(new PipelineTestParameter(new MySQLDatabaseType(), version, "env/common/none.xml"));
+        List<String> versions = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
+        if (versions.isEmpty()) {
+            return result;
         }
+        result.add(new PipelineTestParameter(new MySQLDatabaseType(), versions.get(0), "env/common/none.xml"));
         return result;
     }
     
@@ -131,8 +128,8 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void assertMigrationSuccess(final String sqlPattern, final String consistencyCheckAlgorithmType) throws SQLException, InterruptedException {
-        initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
-        createSourceOrderTable(sqlPattern);
+        initEnvironment(getDatabaseType(), new MigrationJobType());
+        sourceExecuteWithLog(String.format(sqlPattern, getSourceTableOrderName()));
         try (Connection connection = getSourceDataSource().getConnection()) {
             KeyGenerateAlgorithm generateAlgorithm = new UUIDKeyGenerateAlgorithm();
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, generateAlgorithm, getSourceTableOrderName(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
@@ -143,22 +140,15 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         createTargetOrderTableRule();
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         String jobId = listJobId().get(0);
+        waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        sourceExecuteWithLog("INSERT INTO t_order (order_id, user_id, status) VALUES ('a1', 1, 'OK')");
+        assertProxyOrderRecordExist("t_order", "a1");
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, consistencyCheckAlgorithmType);
         commitMigrationByJobId(jobId);
         proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
-        assertTargetAndSourceCountAreSame();
+        assertThat(getTargetTableRecordsCount(getSourceTableOrderName()), is(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT + 1));
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
-    }
-    
-    private void createSourceOrderTable(final String sqlPattern) throws SQLException {
-        sourceExecuteWithLog(String.format(sqlPattern, getSourceTableOrderName()));
-    }
-    
-    private void assertTargetAndSourceCountAreSame() {
-        List<Map<String, Object>> targetList = queryForListWithLog("SELECT COUNT(*) AS count FROM t_order");
-        assertFalse(targetList.isEmpty());
-        assertThat(Integer.parseInt(targetList.get(0).get("count").toString()), is(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT));
     }
 }

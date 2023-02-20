@@ -21,8 +21,6 @@ import Symbol, RALStatement;
 
 execute
     : (showTrafficRules
-    | createTrafficRule
     | alterTrafficRule
-    | dropTrafficRule
     ) SEMI?
     ;

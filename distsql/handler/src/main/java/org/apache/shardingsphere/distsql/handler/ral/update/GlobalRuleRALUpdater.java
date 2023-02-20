@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.ral.update;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -26,13 +26,29 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
  * RAL updater for global rule.
  */
 @SingletonSPI
-public interface GlobalRuleRALUpdater extends TypedSPI {
+public interface GlobalRuleRALUpdater<T extends SQLStatement, R extends RuleConfiguration> extends TypedSPI {
     
     /**
-     * Execute update.
+     * Check SQL statement.
      *
-     * @param metaData meta data
+     * @param currentRuleConfig current rule configuration
      * @param sqlStatement SQL statement
      */
-    void executeUpdate(ShardingSphereMetaData metaData, SQLStatement sqlStatement);
+    void checkSQLStatement(R currentRuleConfig, T sqlStatement);
+    
+    /**
+     * Build altered rule configuration.
+     *
+     * @param currentRuleConfig current rule configuration
+     * @param sqlStatement SQL statement
+     * @return built altered rule configuration
+     */
+    RuleConfiguration buildAlteredRuleConfiguration(R currentRuleConfig, T sqlStatement);
+    
+    /**
+     * Get rule configuration class.
+     *
+     * @return rule configuration class
+     */
+    Class<R> getRuleConfigurationClass();
 }
