@@ -85,8 +85,9 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         this.dumperConfig = dumperConfig;
         this.channel = channel;
         this.dataSource = dataSource;
-        sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType());
-        columnValueReader = PipelineTypedSPILoader.getDatabaseTypedService(ColumnValueReader.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType());
+        String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
+        sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, databaseType);
+        columnValueReader = PipelineTypedSPILoader.findDatabaseTypedService(ColumnValueReader.class, databaseType).orElseGet(() -> new BasicColumnValueReader(databaseType));
         this.metaDataLoader = metaDataLoader;
     }
     
