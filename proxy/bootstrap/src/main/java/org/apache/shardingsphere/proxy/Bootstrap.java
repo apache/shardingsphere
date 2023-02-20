@@ -31,6 +31,7 @@ import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * ShardingSphere-Proxy Bootstrap.
@@ -51,10 +52,8 @@ public final class Bootstrap {
         int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
         List<String> addresses = bootstrapArgs.getAddresses();
         new BootstrapInitializer().init(yamlConfig, port, bootstrapArgs.getForce());
-        Integer cdcServerPort = (Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey());
-        if (null != cdcServerPort && cdcServerPort > 0) {
-            new CDCServer(addresses, cdcServerPort).start();
-        }
+        Optional.ofNullable((Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
+                .ifPresent(cdcPort -> new CDCServer(addresses, cdcPort).start());
         new ShardingSphereProxy().start(port, addresses);
     }
 }

@@ -127,7 +127,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * CDC server port.
      */
-    CDC_SERVER_PORT("cdc-server-port", "0", int.class, true);
+    CDC_SERVER_PORT("cdc-server-port", "33071", int.class, true);
     
     private final String key;
     
