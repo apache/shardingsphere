@@ -34,8 +34,9 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.slf4j.LoggerFactory;
@@ -43,19 +44,19 @@ import org.slf4j.LoggerFactory;
 import java.util.Properties;
 
 /**
- * Set dist variable statement handler.
+ * Set dist variable statement updater.
  */
-public final class SetDistVariableHandler extends UpdatableRALBackendHandler<SetDistVariableStatement> {
+public final class SetDistVariableUpdater implements ConnectionSessionRequiredRALUpdater<SetDistVariableStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager) {
-        Enum<?> enumType = getEnumType(getSqlStatement().getName());
+    public void executeUpdate(final ConnectionSession connectionSession, final SetDistVariableStatement sqlStatement) {
+        Enum<?> enumType = getEnumType(sqlStatement.getName());
         if (enumType instanceof TypedPropertyKey) {
-            handleConfigurationProperty((TypedPropertyKey) enumType, getSqlStatement().getValue());
+            handleConfigurationProperty((TypedPropertyKey) enumType, sqlStatement.getValue());
         } else if (enumType instanceof VariableEnum) {
-            handleVariables();
+            handleVariables(connectionSession, sqlStatement);
         } else {
-            throw new UnsupportedVariableException(getSqlStatement().getName());
+            throw new UnsupportedVariableException(sqlStatement.getName());
         }
     }
     
@@ -121,18 +122,18 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         }
     }
     
-    private void handleVariables() {
-        VariableEnum variable = VariableEnum.getValueOf(getSqlStatement().getName());
+    private void handleVariables(final ConnectionSession connectionSession, final SetDistVariableStatement sqlStatement) {
+        VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
-                Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(getSqlStatement().getValue());
+                Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(sqlStatement.getValue());
                 SystemPropertyUtil.setSystemProperty(variable.name(), null == agentPluginsEnabled ? Boolean.FALSE.toString() : agentPluginsEnabled.toString());
                 break;
             case TRANSACTION_TYPE:
-                getConnectionSession().getTransactionStatus().setTransactionType(getTransactionType(getSqlStatement().getValue()));
+                connectionSession.getTransactionStatus().setTransactionType(getTransactionType(sqlStatement.getValue()));
                 break;
             default:
-                throw new UnsupportedVariableException(getSqlStatement().getName());
+                throw new UnsupportedVariableException(sqlStatement.getName());
         }
     }
     
@@ -142,5 +143,10 @@ public final class SetDistVariableHandler extends UpdatableRALBackendHandler<Set
         } catch (final IllegalArgumentException ex) {
             throw new UnsupportedVariableException(transactionTypeName);
         }
+    }
+    
+    @Override
+    public String getType() {
+        return SetDistVariableStatement.class.getName();
     }
 }
