@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.rule;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.cdc.config.CDCRuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.sql.SQLException;
 
 /**
- * CDC rule.
+ * Connection session required RAL updater.
  */
-@RequiredArgsConstructor
-@Getter
-public final class CDCRule implements GlobalRule {
+public interface ConnectionSessionRequiredRALUpdater<T extends SQLStatement> extends RALUpdater<T> {
     
-    private final boolean enable;
-    
-    private final int port;
-    
-    @Override
-    public RuleConfiguration getConfiguration() {
-        return new CDCRuleConfiguration(enable, port);
-    }
-    
-    @Override
-    public String getType() {
-        return CDCRule.class.getSimpleName();
-    }
+    /**
+     * Execute update.
+     *
+     * @param connectionSession connection session
+     * @param sqlStatement updatable RAL statement
+     * @throws SQLException SQL exception
+     */
+    void executeUpdate(ConnectionSession connectionSession, T sqlStatement) throws SQLException;
 }

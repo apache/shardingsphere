@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -44,7 +45,12 @@ public final class UpdatableRALUpdaterBackendHandler<T extends UpdatableRALState
     @SuppressWarnings("unchecked")
     @Override
     public ResponseHeader execute() throws SQLException {
-        TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass().getName()).executeUpdate(connectionSession.getDatabaseName(), sqlStatement);
+        RALUpdater<T> updater = TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass().getName());
+        if (updater instanceof ConnectionSessionRequiredRALUpdater) {
+            ((ConnectionSessionRequiredRALUpdater<T>) updater).executeUpdate(connectionSession, (T) sqlStatement);
+        } else {
+            updater.executeUpdate(connectionSession.getDatabaseName(), (T) sqlStatement);
+        }
         return new UpdateResponseHeader(sqlStatement);
     }
 }

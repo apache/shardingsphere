@@ -38,5 +38,6 @@ public interface RALUpdater<T extends SQLStatement> extends TypedSPI {
      * @param sqlStatement updatable RAL statement
      * @throws SQLException SQL exception
      */
-    void executeUpdate(String databaseName, T sqlStatement) throws SQLException;
+    default void executeUpdate(String databaseName, T sqlStatement) throws SQLException {
+    }
 }

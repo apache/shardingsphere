@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
+public final class SetDistVariableUpdaterTest extends ProxyContextRestorer {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -63,18 +63,16 @@ public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
     public void assertExecuteWithTransactionType() throws SQLException {
         SetDistVariableStatement statement = new SetDistVariableStatement("transaction_type", "local");
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
-        SetDistVariableHandler handler = new SetDistVariableHandler();
-        handler.init(statement, connectionSession);
-        handler.execute();
+        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        updater.executeUpdate(connectionSession, statement);
         assertThat(connectionSession.getTransactionStatus().getTransactionType().name(), is(TransactionType.LOCAL.name()));
     }
     
     @Test
     public void assertExecuteWithAgent() throws SQLException {
         SetDistVariableStatement statement = new SetDistVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
-        SetDistVariableHandler handler = new SetDistVariableHandler();
-        handler.init(statement, connectionSession);
-        handler.execute();
+        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        updater.executeUpdate(connectionSession, statement);
         String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
         assertThat(actualValue, is(Boolean.FALSE.toString()));
     }
@@ -83,9 +81,8 @@ public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
     public void assertExecuteWithConfigurationKey() throws SQLException {
         ContextManager contextManager = mockContextManager();
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
-        SetDistVariableHandler handler = new SetDistVariableHandler();
-        handler.init(statement, connectionSession);
-        handler.execute();
+        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        updater.executeUpdate(connectionSession, statement);
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
         assertThat(actualValue.toString(), is("1024"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
@@ -95,9 +92,8 @@ public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
     public void assertExecuteWithInternalConfigurationKey() throws SQLException {
         ContextManager contextManager = mockContextManager();
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
-        SetDistVariableHandler handler = new SetDistVariableHandler();
-        handler.init(statement, connectionSession);
-        handler.execute();
+        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        updater.executeUpdate(connectionSession, statement);
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getInternalProps().getProps().get("proxy-meta-data-collector-enabled");
         assertThat(actualValue.toString(), is("false"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getInternalProps().getValue(InternalConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED), is(false));
@@ -107,9 +103,8 @@ public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
     public void assertExecuteWithSystemLogLevel() throws SQLException {
         ContextManager contextManager = mockContextManager();
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debug");
-        SetDistVariableHandler handler = new SetDistVariableHandler();
-        handler.init(statement, connectionSession);
-        handler.execute();
+        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        updater.executeUpdate(connectionSession, statement);
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("system-log-level");
         assertThat(actualValue.toString(), is("DEBUG"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.DEBUG));
@@ -119,9 +114,8 @@ public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
     public void assertExecuteWithWrongSystemLogLevel() throws SQLException {
         mockContextManager();
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");
-        SetDistVariableHandler handler = new SetDistVariableHandler();
-        handler.init(statement, connectionSession);
-        handler.execute();
+        SetDistVariableUpdater updater = new SetDistVariableUpdater();
+        updater.executeUpdate(connectionSession, statement);
     }
     
     private ContextManager mockContextManager() {

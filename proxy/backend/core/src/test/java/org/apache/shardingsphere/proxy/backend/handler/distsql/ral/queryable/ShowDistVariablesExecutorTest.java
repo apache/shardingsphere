@@ -65,7 +65,7 @@ public final class ShowDistVariablesExecutorTest extends ProxyContextRestorer {
         when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, mock(ShowDistVariablesStatement.class));
-        assertThat(actual.size(), is(22));
+        assertThat(actual.size(), is(23));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("system_log_level"));
         assertThat(row.getCell(2), is("INFO"));
