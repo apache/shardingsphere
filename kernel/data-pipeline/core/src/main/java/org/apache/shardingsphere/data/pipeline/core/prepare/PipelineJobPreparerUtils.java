@@ -36,13 +36,13 @@ import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceCh
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
@@ -64,7 +64,7 @@ public final class PipelineJobPreparerUtils {
      * @return true if supported, otherwise false
      */
     public static boolean isIncrementalSupported(final String databaseType) {
-        return TypedSPILoader.contains(IncrementalDumperCreator.class, databaseType);
+        return PipelineTypedSPILoader.findDatabaseTypedService(IncrementalDumperCreator.class, databaseType).isPresent();
     }
     
     /**
@@ -92,7 +92,11 @@ public final class PipelineJobPreparerUtils {
     public static ShardingSphereSQLParserEngine getSQLParserEngine(final String targetDatabaseName) {
         ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
         ShardingSphereDatabase database = metaData.getDatabase(targetDatabaseName);
-        return metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(database.getProtocolType().getType());
+        DatabaseType databaseType = database.getProtocolType();
+        if (databaseType instanceof BranchDatabaseType) {
+            databaseType = ((BranchDatabaseType) databaseType).getTrunkDatabaseType();
+        }
+        return metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(databaseType.getType());
     }
     
     /**

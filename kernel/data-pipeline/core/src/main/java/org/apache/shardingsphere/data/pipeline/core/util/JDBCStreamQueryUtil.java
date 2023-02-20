@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -49,6 +50,9 @@ public final class JDBCStreamQueryUtil {
         }
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             return generatePostgreSQLStreamQueryPreparedStatement(connection, sql);
+        }
+        if (databaseType instanceof BranchDatabaseType) {
+            return generateStreamQueryPreparedStatement(((BranchDatabaseType) databaseType).getTrunkDatabaseType(), connection, sql);
         }
         log.warn("not support {} streaming query now, pay attention to memory usage", databaseType.getType());
         return connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
