@@ -36,6 +36,7 @@
     <row values="proxy_default_port| 3307" />
     <row values="proxy_netty_backlog| 1024" />
     <row values="proxy_instance_type| Proxy" />
+    <row values="cdc_server_port| 33071" />
     <row values="proxy_meta_data_collector_enabled| true" />
     <row values="agent_plugins_enabled| true" />
     <row values="cached_connections| 0" />
