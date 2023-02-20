@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Basic integration test.
@@ -41,7 +42,9 @@ public abstract class BasePluginE2EIT {
     @Before
     public void check() {
         Assume.assumeThat(E2ETestEnvironment.getInstance().isEnvironmentPrepared(), is(true));
+        Assume.assumeThat(E2ETestEnvironment.getInstance().isInitializationFailed(), is(false));
         E2ETestEnvironment.getInstance().createDataSource();
+        assertNotNull(E2ETestEnvironment.getInstance().getDataSource());
     }
     
     @Test

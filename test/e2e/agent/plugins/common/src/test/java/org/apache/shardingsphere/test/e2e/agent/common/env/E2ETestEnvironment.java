@@ -22,6 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
+import org.awaitility.core.ConditionTimeoutException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -43,6 +44,8 @@ public final class E2ETestEnvironment {
     
     private DataSource dataSource;
     
+    private boolean initializationFailed;
+    
     private E2ETestEnvironment() {
         props = EnvironmentProperties.loadProperties("env/engine-env.properties");
         isEnvironmentPrepared = props.getProperty("it.env.value").equals(props.getProperty("it.env.type"));
@@ -62,17 +65,27 @@ public final class E2ETestEnvironment {
      */
     public void createDataSource() {
         if (isEnvironmentPrepared && null == dataSource) {
-            waitForEnvironmentReady(props);
-            dataSource = createHikariCP(props);
+            if (waitForEnvironmentReady(props)) {
+                dataSource = createHikariCP(props);
+            } else {
+                initializationFailed = true;
+            }
         }
     }
     
-    private void waitForEnvironmentReady(final Properties props) {
+    private boolean waitForEnvironmentReady(final Properties props) {
         log.info("Proxy with agent environment initializing ...");
-        Awaitility.await().atMost(120, TimeUnit.SECONDS).pollInterval(200, TimeUnit.MILLISECONDS).until(() -> isProxyReady(props));
+        try {
+            Awaitility.await().atMost(4, TimeUnit.MINUTES).pollInterval(2, TimeUnit.SECONDS).until(() -> isProxyReady(props));
+        } catch (final ConditionTimeoutException ignored) {
+            log.info("Proxy with agent environment initialization failed ...");
+            return false;
+        }
+        return true;
     }
     
     private boolean isProxyReady(final Properties props) {
+        log.info("try to connect proxy ...");
         String url = props.getProperty("proxy.url");
         String username = props.getProperty("proxy.username", "root");
         String password = props.getProperty("proxy.password", "root");
