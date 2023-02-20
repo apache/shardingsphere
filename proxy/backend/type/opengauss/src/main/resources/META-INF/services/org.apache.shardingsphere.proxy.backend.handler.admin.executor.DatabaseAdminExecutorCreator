@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.handler.admin.opengauss.OpenGaussAdminExecutorCreator
+org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.OpenGaussAdminExecutorCreator
