@@ -44,4 +44,9 @@ public abstract class DefaultSessionVariableHandler implements SessionVariableHa
             log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
         }
     }
+    
+    @Override
+    public final boolean isDefault() {
+        return true;
+    }
 }
