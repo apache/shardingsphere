@@ -357,7 +357,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             }
             if (each instanceof AlterConvertContext) {
                 result.getValue().add((ConvertTableDefinitionSegment) visit(each));
-            } 
+            }
             if (each instanceof RenameIndexContext) {
                 result.getValue().add((RenameIndexDefinitionSegment) visit(each));
             }

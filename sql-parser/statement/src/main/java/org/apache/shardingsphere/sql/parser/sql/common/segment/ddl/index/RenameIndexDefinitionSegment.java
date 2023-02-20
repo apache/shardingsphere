@@ -33,6 +33,6 @@ public final class RenameIndexDefinitionSegment implements AlterDefinitionSegmen
     private final int stopIndex;
     
     private final IndexSegment indexSegment;
-
+    
     private final IndexSegment renameIndexSegment;
 }
