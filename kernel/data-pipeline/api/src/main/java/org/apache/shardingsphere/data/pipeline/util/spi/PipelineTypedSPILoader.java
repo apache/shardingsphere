@@ -59,6 +59,6 @@ public final class PipelineTypedSPILoader {
      * @return service
      */
     public static <T extends TypedSPI> T getDatabaseTypedService(final Class<T> spiClass, final String databaseType) {
-        return findDatabaseTypedService(spiClass, databaseType).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass));
+        return findDatabaseTypedService(spiClass, databaseType).orElseGet(() -> TypedSPILoader.findDefaultService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass)));
     }
 }

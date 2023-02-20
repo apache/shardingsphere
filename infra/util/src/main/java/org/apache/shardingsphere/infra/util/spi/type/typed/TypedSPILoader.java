@@ -71,10 +71,17 @@ public final class TypedSPILoader {
                 return Optional.of(each);
             }
         }
-        return findService(spiClass);
+        return findDefaultService(spiClass);
     }
     
-    private static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass) {
+    /**
+     * Find default service.
+     *
+     * @param spiClass typed SPI class
+     * @param <T> SPI class type
+     * @return service
+     */
+    public static <T extends TypedSPI> Optional<T> findDefaultService(final Class<T> spiClass) {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (!each.isDefault()) {
                 continue;
@@ -120,6 +127,6 @@ public final class TypedSPILoader {
      * @return service
      */
     public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type, final Properties props) {
-        return findService(spiClass, type, props).orElseGet(() -> findService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass)));
+        return findService(spiClass, type, props).orElseGet(() -> findDefaultService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass)));
     }
 }
