@@ -38,7 +38,7 @@ public final class DefaultMySQLSessionVariableHandlerTest {
     @Test
     public void assertHandleDiscard() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        new DefaultMySQLSessionVariableHandler().handle(connectionSession, "", "");
+        TypedSPILoader.getService(MySQLSessionVariableHandler.class, null).handle(connectionSession, "", "");
         verifyNoInteractions(connectionSession);
     }
     
