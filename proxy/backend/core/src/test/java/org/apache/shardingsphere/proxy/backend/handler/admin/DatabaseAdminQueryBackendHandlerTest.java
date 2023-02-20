@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.executor.SelectTableExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
@@ -63,7 +63,7 @@ public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRest
         ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn("db");
-        SelectTableExecutor executor = mock(SelectTableExecutor.class, RETURNS_DEEP_STUBS);
+        DatabaseAdminQueryExecutor executor = mock(DatabaseAdminQueryExecutor.class, RETURNS_DEEP_STUBS);
         MergedResult mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow("demo_ds_0", "demo_ds_1")));
         when(executor.getMergedResult()).thenReturn(mergedResult);
         when(executor.getQueryResultMetaData().getColumnCount()).thenReturn(1);
