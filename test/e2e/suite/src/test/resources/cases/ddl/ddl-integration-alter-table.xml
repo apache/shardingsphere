@@ -100,4 +100,10 @@
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
     </test-case>
+    
+    <test-case sql="ALTER TABLE t_order_details RENAME INDEX t_order_details_original_index TO t_order_details_index" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+        <assertion expected-data-file="create_index.xml">
+            <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10));CREATE INDEX t_order_details_original_index ON t_order_details(id);" affected-table="t_order_details" />
+        </assertion>
+    </test-case>
 </integration-test-cases>

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.DropIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.RenameIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -66,6 +67,8 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     private final Collection<DropConstraintDefinitionSegment> dropConstraintDefinitions = new LinkedList<>();
     
     private final Collection<DropIndexDefinitionSegment> dropIndexDefinitions = new LinkedList<>();
+    
+    private final Collection<RenameIndexDefinitionSegment> renameIndexDefinitions = new LinkedList<>();
     
     /**
      * Get rename table.
