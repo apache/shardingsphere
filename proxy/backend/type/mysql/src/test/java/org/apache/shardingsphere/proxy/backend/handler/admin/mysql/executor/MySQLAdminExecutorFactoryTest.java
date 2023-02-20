@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
+package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowFunctionStatusExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowProcedureStatusExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowTablesExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.MySQLAdminExecutorCreator;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowFunctionStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;

@@ -84,7 +84,7 @@ public final class BinlogContext {
      * Get column defined by table id.
      *
      * @param tableId table id
-     * @return array of column defined
+     * @return MySQL binlog column definitions
      */
     public List<MySQLBinlogColumnDef> getColumnDefs(final long tableId) {
         return tableMap.get(tableId).getColumnDefs();

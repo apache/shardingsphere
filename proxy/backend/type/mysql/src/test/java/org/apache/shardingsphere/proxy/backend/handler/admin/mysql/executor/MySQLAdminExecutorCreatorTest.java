@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
+package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -30,20 +30,8 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.NoResourceShowExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowConnectionIdExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowCreateDatabaseExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowCurrentDatabaseExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowCurrentUserExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowDatabasesExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowFunctionStatusExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowProcedureStatusExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowProcessListExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowTablesExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowTransactionExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.ShowVersionExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.UnicastResourceShowExecutor;
-import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.UseDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.MySQLAdminExecutorCreator;
+import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.MySQLSetVariableAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.information.SelectInformationSchemataExecutor;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;

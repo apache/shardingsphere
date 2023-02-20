@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
+package org.apache.shardingsphere.proxy.backend.util;
 
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.junit.After;
+import org.junit.Before;
 
-public final class TestFixtureSessionVariableHandler implements MySQLSessionVariableHandler {
+public abstract class ProxyContextRestorer {
     
-    @Override
-    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
-        connectionSession.setCurrentDatabase(assignValue);
+    private ContextManager currentContextManager;
+    
+    @Before
+    public void recordCurrentContextManager() {
+        currentContextManager = ProxyContext.getInstance().getContextManager();
     }
     
-    @Override
-    public String getType() {
-        return "test_fixture";
+    @After
+    public void restorePreviousContextManager() {
+        ProxyContext.init(currentContextManager);
     }
 }

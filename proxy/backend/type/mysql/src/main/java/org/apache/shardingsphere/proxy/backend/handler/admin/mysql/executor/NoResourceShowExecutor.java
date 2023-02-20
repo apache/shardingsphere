@@ -72,7 +72,7 @@ public final class NoResourceShowExecutor implements DatabaseAdminQueryExecutor 
             return new RawMemoryQueryResult(getQueryResultMetaData(), rows);
         }
         List<Object> row = new ArrayList<>(expressions);
-        row.replaceAll(each -> "");
+        Collections.fill(row, "");
         rows.add(new MemoryQueryResultDataRow(row));
         return new RawMemoryQueryResult(getQueryResultMetaData(), rows);
     }
