@@ -43,9 +43,9 @@ public final class PipelineTypedSPILoader {
         if (result.isPresent()) {
             return result;
         }
-        DatabaseType type = TypedSPILoader.getService(DatabaseType.class, databaseType);
-        if (type instanceof BranchDatabaseType) {
-            return TypedSPILoader.findService(spiClass, ((BranchDatabaseType) type).getTrunkDatabaseType().getType());
+        Optional<DatabaseType> type = TypedSPILoader.findService(DatabaseType.class, databaseType);
+        if (type.isPresent() && type.get() instanceof BranchDatabaseType) {
+            return TypedSPILoader.findService(spiClass, ((BranchDatabaseType) type.get()).getTrunkDatabaseType().getType());
         }
         return result;
     }

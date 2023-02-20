@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.util.spi;
 
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.junit.Test;
@@ -25,6 +27,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -38,9 +41,22 @@ public final class PipelineTypedSPILoaderTest {
     }
     
     @Test
-    public void assertGetDatabaseTypedService() {
+    public void assertGetPipelineSQLBuilder() {
         PipelineSQLBuilder actual = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, "MariaDB");
         assertNotNull(actual);
         assertThat(actual.getType(), is("MySQL"));
+    }
+    
+    @Test
+    public void assertFindColumnValueReaderByUnknown() {
+        Optional<ColumnValueReader> actual = PipelineTypedSPILoader.findDatabaseTypedService(ColumnValueReader.class, "Unknown");
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
+    public void assertGetColumnValueReaderByBranchDB() {
+        ColumnValueReader actual = PipelineTypedSPILoader.getDatabaseTypedService(ColumnValueReader.class, "MariaDB");
+        assertNotNull(actual);
+        assertThat(actual.getClass().getName(), is(MySQLColumnValueReader.class.getName()));
     }
 }
