@@ -76,7 +76,7 @@ public final class E2ETestEnvironment {
     private boolean waitForEnvironmentReady(final Properties props) {
         log.info("Proxy with agent environment initializing ...");
         try {
-            Awaitility.await().atMost(120, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> isProxyReady(props));
+            Awaitility.await().atMost(4, TimeUnit.MINUTES).pollInterval(2, TimeUnit.SECONDS).until(() -> isProxyReady(props));
         } catch (final ConditionTimeoutException ignored) {
             log.info("Proxy with agent environment initialization failed ...");
             return false;
