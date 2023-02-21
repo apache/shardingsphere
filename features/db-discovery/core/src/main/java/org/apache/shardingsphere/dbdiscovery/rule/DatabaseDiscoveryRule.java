@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
+import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceDeletedEvent;
 import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
 
 import javax.sql.DataSource;
@@ -119,6 +120,17 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         }
     }
     
+    private void initHeartBeatJobs() {
+        for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
+            DatabaseDiscoveryDataSourceRule rule = entry.getValue();
+            String jobName = rule.getProvider().getType() + "-" + databaseName + "-" + rule.getGroupName();
+            CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), rule.getDataSourceGroup(dataSourceMap),
+                    rule.getProvider(), rule.getDisabledDataSourceNames(), instanceContext).execute(null),
+                    rule.getHeartbeatProps().getProperty("keep-alive-cron"));
+            scheduleContext.startSchedule(job);
+        }
+    }
+    
     /**
      * Get single data source rule.
      *
@@ -162,6 +174,13 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         DatabaseDiscoveryDataSourceRule dataSourceRule = dataSourceRules.get(groupName);
         ShardingSpherePreconditions.checkNotNull(dataSourceRule, () -> new DBDiscoveryDataSourceRuleNotFoundException(databaseName));
         scheduleContext.closeSchedule(dataSourceRule.getProvider().getType() + "-" + databaseName + "-" + dataSourceRule.getGroupName());
+        deleteStorageNodeDataSources(dataSourceRule);
+    }
+    
+    private void deleteStorageNodeDataSources(final DatabaseDiscoveryDataSourceRule dataSourceRule) {
+        for (String each : dataSourceRule.getDataSourceNames()) {
+            instanceContext.getEventBusContext().post(new StorageNodeDataSourceDeletedEvent(new QualifiedDatabase(databaseName, dataSourceRule.getGroupName(), each)));
+        }
     }
     
     @Override
@@ -169,17 +188,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             DatabaseDiscoveryDataSourceRule rule = entry.getValue();
             scheduleContext.closeSchedule(rule.getProvider().getType() + "-" + databaseName + "-" + rule.getGroupName());
-        }
-    }
-    
-    private void initHeartBeatJobs() {
-        for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-            DatabaseDiscoveryDataSourceRule rule = entry.getValue();
-            String jobName = rule.getProvider().getType() + "-" + databaseName + "-" + rule.getGroupName();
-            CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), rule.getDataSourceGroup(dataSourceMap),
-                    rule.getProvider(), rule.getDisabledDataSourceNames(), instanceContext).execute(null),
-                    rule.getHeartbeatProps().getProperty("keep-alive-cron"));
-            scheduleContext.startSchedule(job);
+            deleteStorageNodeDataSources(rule);
         }
     }
     

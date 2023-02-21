@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver;
+package org.apache.shardingsphere.mode.metadata.storage.event;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 
 /**
- * Shardingsphere driver URL provider.
+ * Storage node data source deleted event.
  */
-public interface ShardingsphereDriverURLProvider {
+@RequiredArgsConstructor
+@Getter
+public final class StorageNodeDataSourceDeletedEvent {
     
-    /**
-     * Check if the url is suitable for this provider.
-     * 
-     * @param url the driver url
-     * @return true if the url is suitable for this provider or false
-     */
-    boolean accept(String url);
-    
-    /**
-     * Get config content from url.
-     * 
-     * @param url the driver url 
-     * @return the config content
-     */
-    byte[] getContent(String url);
+    private final QualifiedDatabase qualifiedDatabase;
 }

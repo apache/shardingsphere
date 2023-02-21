@@ -15,32 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
-
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
+package org.apache.shardingsphere.driver.jdbc.core.driver;
 
 /**
- * Static data source contained rule.
+ * ShardingSphere driver URL provider.
  */
-public interface StaticDataSourceContainedRule extends ShardingSphereRule {
+public interface ShardingSphereDriverURLProvider {
     
     /**
-     * Update data source status.
-     *
-     * @param event data source status changed event
+     * Check if the url is suitable for this provider.
+     * 
+     * @param url the driver url
+     * @return true if the url is suitable for this provider or false
      */
-    void updateStatus(DataSourceStatusChangedEvent event);
+    boolean accept(String url);
     
     /**
-     * Clean single storage node data source.
-     *
-     * @param groupName group name
+     * Get config content from url.
+     * 
+     * @param url the driver url 
+     * @return the config content
      */
-    void cleanStorageNodeDataSource(String groupName);
-    
-    /**
-     * Clean storage nodes data sources.
-     */
-    void cleanStorageNodeDataSources();
+    byte[] getContent(String url);
 }

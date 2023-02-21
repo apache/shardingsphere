@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.spi;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingsphereDriverURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereDriverURLProvider;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,7 +32,7 @@ import java.util.Objects;
 /**
  * Classpath driver URL provider.
  */
-public final class ClasspathDriverURLProvider implements ShardingsphereDriverURLProvider {
+public final class ClasspathDriverURLProvider implements ShardingSphereDriverURLProvider {
     
     private static final String CLASSPATH_TYPE = "classpath:";
     
