@@ -15,54 +15,27 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import Symbol, Keyword, Literals;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
-literal
-    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
-    ;
+import java.util.Optional;
 
-algorithmDefinition
-    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
-    ;
-
-algorithmTypeName
-    : STRING_
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP_ properties? RP_
-    ;
-
-properties
-    : property (COMMA_ property)*
-    ;
-
-property
-    : key=STRING_ EQ_ value=literal
-    ;
-
-databaseName
-    : IDENTIFIER_
-    ;
-
-schemaName
-    : IDENTIFIER_
-    ;
-
-tableName
-    : IDENTIFIER_
-    ;
-
-resourceName
-    : IDENTIFIER_
-    ;
-
-storageUnitName
-    : IDENTIFIER_
-    ;
-
-metadata
-    : STRING_
-    ;
+/**
+ * Export metadata statement.
+ */
+@RequiredArgsConstructor
+public final class ExportMetaDataStatement extends QueryableRALStatement {
+    
+    private final String filePath;
+    
+    /**
+     * Get file path.
+     *
+     * @return file path
+     */
+    public Optional<String> getFilePath() {
+        return Optional.ofNullable(filePath);
+    }
+}

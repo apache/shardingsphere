@@ -31,8 +31,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DisableComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.EnableComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ExportDatabaseConfigurationContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ExportMetaDataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.FromSegmentContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ImportDatabaseConfigurationContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ImportMetaDataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InstanceIdContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InventoryIncrementalRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LabelComputeNodeContext;
@@ -74,6 +76,7 @@ import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegmen
 import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportMetaDataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodesStatement;
@@ -84,6 +87,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTabl
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterComputeNodeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInventoryIncrementalRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelComputeNodeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
@@ -294,6 +298,11 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
+    public ASTNode visitExportMetaData(final ExportMetaDataContext ctx) {
+        return new ExportMetaDataStatement(null == ctx.filePath() ? null : getIdentifierValue(ctx.filePath()));
+    }
+    
+    @Override
     public ASTNode visitConvertYamlConfiguration(final ConvertYamlConfigurationContext ctx) {
         return new ConvertYamlConfigurationStatement(getIdentifierValue(ctx.filePath()));
     }
@@ -306,6 +315,11 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitImportDatabaseConfiguration(final ImportDatabaseConfigurationContext ctx) {
         return new ImportDatabaseConfigurationStatement(getIdentifierValue(ctx.filePath()));
+    }
+    
+    @Override
+    public ASTNode visitImportMetaData(final ImportMetaDataContext ctx) {
+        return new ImportMetaDataStatement(null == ctx.METADATA() ? null : ctx.METADATA().getText(), getIdentifierValue(ctx.filePath()));
     }
     
     @Override

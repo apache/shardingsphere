@@ -15,54 +15,12 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral;
 
-import Symbol, Keyword, Literals;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 
-literal
-    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
-    ;
-
-algorithmDefinition
-    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
-    ;
-
-algorithmTypeName
-    : STRING_
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP_ properties? RP_
-    ;
-
-properties
-    : property (COMMA_ property)*
-    ;
-
-property
-    : key=STRING_ EQ_ value=literal
-    ;
-
-databaseName
-    : IDENTIFIER_
-    ;
-
-schemaName
-    : IDENTIFIER_
-    ;
-
-tableName
-    : IDENTIFIER_
-    ;
-
-resourceName
-    : IDENTIFIER_
-    ;
-
-storageUnitName
-    : IDENTIFIER_
-    ;
-
-metadata
-    : STRING_
-    ;
+/**
+ * Export meta data statement test case.
+ */
+public final class ExportMetaDataStatementTestCase extends DatabaseContainedTestCase {
+}

@@ -47,6 +47,8 @@ execute
     | showTableMetadata
     | exportDatabaseConfiguration
     | importDatabaseConfiguration
+    | exportMetaData
+    | importMetaData
     | convertYamlConfiguration
     | showMigrationRule
     | alterMigrationRule
