@@ -34,6 +34,8 @@ public interface StaticDataSourceContainedRule extends ShardingSphereRule {
     
     /**
      * Clean single storage node data source.
+     *
+     * @param groupName group name
      */
     void cleanStorageNodeDataSource(String groupName);
     
