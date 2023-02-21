@@ -37,8 +37,8 @@ public final class OpenGaussStatementMemoryStrictlyFetchSizeSetterTest {
     @Test
     public void assertSetFetchSize() throws SQLException {
         Statement statement = mock(Statement.class);
+        ContextManager contextManager = mockContextManager();
         try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            ContextManager contextManager = mockContextManager();
             proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             new OpenGaussStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
             verify(statement).setFetchSize(1);
