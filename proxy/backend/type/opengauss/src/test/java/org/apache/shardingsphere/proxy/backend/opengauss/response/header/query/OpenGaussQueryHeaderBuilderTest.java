@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
+package org.apache.shardingsphere.proxy.backend.opengauss.response.header.query;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -29,20 +30,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLQueryHeaderBuilderTest {
+public final class OpenGaussQueryHeaderBuilderTest {
     
     @Test
-    public void assertBuildPostgreSQLQueryHeader() throws SQLException {
+    public void assertBuildOpenGaussQueryHeader() throws SQLException {
         final int columnIndex = 1;
         QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
         when(queryResultMetaData.getColumnLabel(columnIndex)).thenReturn("label");
         when(queryResultMetaData.getColumnType(columnIndex)).thenReturn(Types.INTEGER);
         when(queryResultMetaData.getColumnTypeName(columnIndex)).thenReturn("int");
         when(queryResultMetaData.getColumnLength(columnIndex)).thenReturn(11);
-        QueryHeader actual = new PostgreSQLQueryHeaderBuilder().build(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex);
-        assertThat(actual.getColumnLabel(), is("label"));
-        assertThat(actual.getColumnType(), is(Types.INTEGER));
-        assertThat(actual.getColumnTypeName(), is("int"));
-        assertThat(actual.getColumnLength(), is(11));
+        QueryHeader expected = new PostgreSQLQueryHeaderBuilder().build(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex);
+        QueryHeader actual = new OpenGaussQueryHeaderBuilder().build(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex);
+        assertThat(actual.getColumnLabel(), is(expected.getColumnLabel()));
+        assertThat(actual.getColumnType(), is(expected.getColumnType()));
+        assertThat(actual.getColumnTypeName(), is(expected.getColumnTypeName()));
+        assertThat(actual.getColumnLength(), is(expected.getColumnLength()));
     }
 }
