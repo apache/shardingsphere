@@ -58,7 +58,7 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
         return availableTargetNames;
     }
     
-    private long hashShardingValue(final Comparable<?> shardingValue) {
+    private long hashShardingValue(final Object shardingValue) {
         return Math.abs((long) shardingValue.hashCode());
     }
     

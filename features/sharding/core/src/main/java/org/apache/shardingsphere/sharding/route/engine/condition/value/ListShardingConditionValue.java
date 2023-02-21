@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ListShardingConditionValue<T extends Comparable<?>> implements ShardingConditionValue {
+public final class ListShardingConditionValue<T> implements ShardingConditionValue {
     
     private final String columnName;
     
