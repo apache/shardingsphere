@@ -30,17 +30,15 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,38 +50,35 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class SelectTableExecutorTest extends ProxyContextRestorer {
-    
-    @Before
-    public void setUp() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(new HashMap<>(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
-    }
+public final class SelectTableExecutorTest {
     
     @Test
-    public void assertSelectSchemataExecute() throws SQLException {
-        Map<String, ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
-        databases.put("public", createDatabase());
+    public void assertExecute() throws SQLException {
         String sql = "SELECT c.oid, n.nspname AS schemaname, c.relname AS tablename from pg_tablespace";
-        SelectTableExecutor selectSchemataExecutor = new SelectTableExecutor(sql);
-        selectSchemataExecutor.execute(mock(ConnectionSession.class));
-        assertThat(selectSchemataExecutor.getQueryResultMetaData().getColumnCount(), is(3));
-        int count = 0;
-        while (selectSchemataExecutor.getMergedResult().next()) {
-            count++;
-            if ("t_order".equals(selectSchemataExecutor.getMergedResult().getValue(1, String.class))) {
-                assertThat(selectSchemataExecutor.getMergedResult().getValue(2, String.class), is("0000"));
-                assertThat(selectSchemataExecutor.getMergedResult().getValue(3, String.class), is("public"));
-            } else {
-                fail("expected : `t_order`");
+        SelectTableExecutor executor = new SelectTableExecutor(sql);
+        ShardingSphereDatabase database = createDatabase();
+        ContextManager contextManager = mockContextManager(database);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("public"));
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("public")).thenReturn(database);
+            executor.execute(mock(ConnectionSession.class));
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(3));
+            int count = 0;
+            while (executor.getMergedResult().next()) {
+                count++;
+                if ("t_order".equals(executor.getMergedResult().getValue(1, String.class))) {
+                    assertThat(executor.getMergedResult().getValue(2, String.class), is("0000"));
+                    assertThat(executor.getMergedResult().getValue(3, String.class), is("public"));
+                } else {
+                    fail("expected : `t_order`");
+                }
             }
+            assertThat(count, is(1));
         }
-        assertThat(count, is(1));
     }
     
     private ShardingSphereDatabase createDatabase() throws SQLException {
@@ -91,6 +86,14 @@ public final class SelectTableExecutorTest extends ProxyContextRestorer {
                 new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection()))),
                 new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.singletonMap("public",
                         new ShardingSphereSchema(Collections.singletonMap("t_order", mock(ShardingSphereTable.class)), Collections.emptyMap())));
+    }
+    
+    private ContextManager mockContextManager(final ShardingSphereDatabase database) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(Collections.singletonMap("public", database), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
     }
     
     private Connection mockConnection() throws SQLException {
@@ -116,7 +119,7 @@ public final class SelectTableExecutorTest extends ProxyContextRestorer {
     }
     
     private Map<String, String> createExpectedResultSetMap() {
-        Map<String, String> result = new LinkedHashMap<>();
+        Map<String, String> result = new LinkedHashMap<>(3, 1);
         result.put("tablename", "t_order_1");
         result.put("c.oid", "0000");
         result.put("schemaname", "public");
