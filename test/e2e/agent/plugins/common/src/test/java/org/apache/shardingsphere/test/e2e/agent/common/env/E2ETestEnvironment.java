@@ -46,8 +46,6 @@ public final class E2ETestEnvironment {
     
     private boolean initializationFailed;
     
-    private volatile Connection connection;
-    
     private E2ETestEnvironment() {
         props = EnvironmentProperties.loadProperties("env/engine-env.properties");
         isEnvironmentPrepared = props.getProperty("it.env.value").equals(props.getProperty("it.env.type"));
@@ -65,9 +63,9 @@ public final class E2ETestEnvironment {
     /**
      * Create data source.
      */
-    public void createDataSource() {
+    public synchronized void createDataSource() {
         if (isEnvironmentPrepared && null == dataSource) {
-            if (waitForEnvironmentReady(props) || waitForEnvironmentReady(props)) {
+            if (waitForEnvironmentReady(props)) {
                 dataSource = createHikariCP(props);
             } else {
                 initializationFailed = true;
@@ -78,7 +76,7 @@ public final class E2ETestEnvironment {
     private boolean waitForEnvironmentReady(final Properties props) {
         log.info("Proxy with agent environment initializing ...");
         try {
-            Awaitility.await().atMost(2, TimeUnit.MINUTES).pollInterval(10, TimeUnit.SECONDS).until(() -> isProxyReady(props));
+            Awaitility.await().atMost(4, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> isProxyReady(props));
         } catch (final ConditionTimeoutException ignored) {
             log.info("Proxy with agent environment initialization failed ...");
             return false;
