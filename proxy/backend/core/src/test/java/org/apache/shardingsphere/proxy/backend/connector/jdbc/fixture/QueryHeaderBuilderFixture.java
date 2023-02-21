@@ -19,61 +19,17 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.fixture;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 
 import java.sql.SQLException;
-import java.util.Optional;
+import java.sql.Types;
 
 public final class QueryHeaderBuilderFixture implements QueryHeaderBuilder {
     
     @Override
     public QueryHeader build(final QueryResultMetaData queryResultMetaData,
                              final ShardingSphereDatabase database, final String columnName, final String columnLabel, final int columnIndex) throws SQLException {
-        String schemaName = null == database ? "" : database.getName();
-        String actualTableName = queryResultMetaData.getTableName(columnIndex);
-        String tableName;
-        boolean primaryKey;
-        if (null == actualTableName || null == database) {
-            tableName = actualTableName;
-            primaryKey = false;
-        } else {
-            tableName = getLogicTableName(database, actualTableName);
-            ShardingSphereSchema schema = database.getSchema(schemaName);
-            primaryKey = null != schema
-                    && Optional.ofNullable(schema.getTable(tableName)).map(optional -> optional.getColumns().get(columnName.toLowerCase())).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
-        }
-        int columnType = queryResultMetaData.getColumnType(columnIndex);
-        String columnTypeName = queryResultMetaData.getColumnTypeName(columnIndex);
-        int columnLength = queryResultMetaData.getColumnLength(columnIndex);
-        int decimals = queryResultMetaData.getDecimals(columnIndex);
-        boolean signed = queryResultMetaData.isSigned(columnIndex);
-        boolean notNull = queryResultMetaData.isNotNull(columnIndex);
-        boolean autoIncrement = queryResultMetaData.isAutoIncrement(columnIndex);
-        return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement);
-    }
-    
-    private String getLogicTableName(final ShardingSphereDatabase database, final String actualTableName) {
-        for (DataNodeContainedRule each : database.getRuleMetaData().findRules(DataNodeContainedRule.class)) {
-            Optional<String> logicTable = each.findLogicTableByActualTable(actualTableName);
-            if (logicTable.isPresent()) {
-                return logicTable.get();
-            }
-        }
-        return actualTableName;
-    }
-    
-    @Override
-    public String getType() {
-        return "MySQL";
-    }
-    
-    // TODO to be confirmed, QueryHeaderBuilder should not has default value, just throw unsupported exception if database type missing
-    @Override
-    public boolean isDefault() {
-        return true;
+        return new QueryHeader(null, null, null, null, Types.INTEGER, null, 0, 0, false, false, false, false);
     }
 }
