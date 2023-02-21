@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
-import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
+//import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -58,7 +58,8 @@ public final class OKProxyState implements ProxyState {
         if (databaseProtocolFrontendEngine.getFrontendContext().isRequiredSameThreadForConnection(message)) {
             return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
         }
-        return UserExecutorGroup.getInstance().getExecutorService();
+        // return UserExecutorGroup.getInstance().getExecutorService();
+        return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
     }
     
     private boolean requireOccupyThreadForConnection(final ConnectionSession connectionSession) {

@@ -34,10 +34,6 @@ authority:
   privilege:
     type: ALL_PERMITTED
     
-transaction:
-  defaultType: XA
-  providerType: Atomikos
-    
 sqlParser:
   sqlCommentParseEnabled: true
   sqlStatementCache:
