@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.impl;
+package org.apache.shardingsphere.proxy.backend.mysql.connector.jdbc.statement;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
@@ -25,19 +25,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Statement memory strictly fetch size setter for PostgreSQL.
+ * Statement memory strictly fetch size setter for MySQL.
  */
-public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
+public final class MySQLStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
     
     @Override
     public void setFetchSize(final Statement statement) throws SQLException {
         int configuredFetchSize = ProxyContext.getInstance()
                 .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE);
-        statement.setFetchSize(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE.getDefaultValue().equals(String.valueOf(configuredFetchSize)) ? 1 : configuredFetchSize);
+        statement.setFetchSize(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE.getDefaultValue().equals(String.valueOf(configuredFetchSize)) ? Integer.MIN_VALUE : configuredFetchSize);
     }
     
     @Override
     public String getType() {
-        return "PostgreSQL";
+        return "MySQL";
     }
 }

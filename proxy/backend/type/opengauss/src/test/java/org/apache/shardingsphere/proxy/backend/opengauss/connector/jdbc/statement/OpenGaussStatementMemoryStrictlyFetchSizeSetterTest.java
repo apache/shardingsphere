@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.impl;
+package org.apache.shardingsphere.proxy.backend.opengauss.connector.jdbc.statement;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetterTest extends ProxyContextRestorer {
+public final class OpenGaussStatementMemoryStrictlyFetchSizeSetterTest extends ProxyContextRestorer {
     
     @Before
     public void setUp() {
@@ -44,7 +44,7 @@ public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetterTest extends 
     @Test
     public void assertSetFetchSize() throws SQLException {
         Statement statement = mock(Statement.class);
-        new PostgreSQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
+        new OpenGaussStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
         verify(statement).setFetchSize(1);
     }
 }

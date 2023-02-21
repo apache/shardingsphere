@@ -15,29 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.impl;
+package org.apache.shardingsphere.proxy.backend.opengauss.connector.jdbc.statement;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.postgresql.connector.jdbc.statement.PostgreSQLStatementMemoryStrictlyFetchSizeSetter;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Statement memory strictly fetch size setter for MySQL.
+ * Statement memory strictly fetch size setter for openGauss.
  */
-public final class MySQLStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
+public final class OpenGaussStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
+    
+    private final PostgreSQLStatementMemoryStrictlyFetchSizeSetter delegated = new PostgreSQLStatementMemoryStrictlyFetchSizeSetter();
     
     @Override
     public void setFetchSize(final Statement statement) throws SQLException {
-        int configuredFetchSize = ProxyContext.getInstance()
-                .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE);
-        statement.setFetchSize(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE.getDefaultValue().equals(String.valueOf(configuredFetchSize)) ? Integer.MIN_VALUE : configuredFetchSize);
+        delegated.setFetchSize(statement);
     }
     
     @Override
     public String getType() {
-        return "MySQL";
+        return "openGauss";
     }
 }

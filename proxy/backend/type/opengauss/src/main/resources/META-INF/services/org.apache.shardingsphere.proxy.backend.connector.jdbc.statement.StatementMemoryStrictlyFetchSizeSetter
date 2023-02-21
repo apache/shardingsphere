@@ -15,6 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.impl.MySQLStatementMemoryStrictlyFetchSizeSetter
-org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.impl.PostgreSQLStatementMemoryStrictlyFetchSizeSetter
-org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.impl.OpenGaussStatementMemoryStrictlyFetchSizeSetter
+org.apache.shardingsphere.proxy.backend.opengauss.connector.jdbc.statement.OpenGaussStatementMemoryStrictlyFetchSizeSetter
