@@ -169,7 +169,7 @@ public final class ImportDatabaseConfigurationUpdater implements RALUpdater<Impo
                 ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new YamlReadwriteSplittingRuleConfigurationSwapper().swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
                 readwriteSplittingRuleConfigurationImportChecker.check(database, readwriteSplittingRuleConfig);
                 ruleConfigs.add(readwriteSplittingRuleConfig);
-                rules.add(new ReadwriteSplittingRule(databaseName, readwriteSplittingRuleConfig, rules));
+                rules.add(new ReadwriteSplittingRule(databaseName, readwriteSplittingRuleConfig, rules, instanceContext));
             } else if (each instanceof YamlDatabaseDiscoveryRuleConfiguration) {
                 DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = new YamlDatabaseDiscoveryRuleConfigurationSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);
                 databaseDiscoveryRuleConfigurationImportChecker.check(database, databaseDiscoveryRuleConfig);
