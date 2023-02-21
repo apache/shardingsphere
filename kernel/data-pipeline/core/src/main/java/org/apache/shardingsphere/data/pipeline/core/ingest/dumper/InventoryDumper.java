@@ -140,12 +140,9 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         if (!dumperConfig.hasUniqueKey()) {
             return sqlBuilder.buildNoUniqueKeyInventoryDumpSQL(schemaName, dumperConfig.getActualTableName());
         }
+        PrimaryKeyPosition<?> position = (PrimaryKeyPosition<?>) dumperConfig.getPosition();
         PipelineColumnMetaData firstColumn = dumperConfig.getUniqueKeyColumns().get(0);
-        if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType())) {
-            return sqlBuilder.buildDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), firstColumn.getName());
-        }
-        if (PipelineJdbcUtils.isStringColumn(firstColumn.getDataType())) {
-            PrimaryKeyPosition<?> position = (PrimaryKeyPosition<?>) dumperConfig.getPosition();
+        if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) || PipelineJdbcUtils.isStringColumn(firstColumn.getDataType())) {
             if (null != position.getBeginValue() && null != position.getEndValue()) {
                 return sqlBuilder.buildDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), firstColumn.getName());
             }
@@ -162,7 +159,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         }
         PipelineColumnMetaData firstColumn = dumperConfig.getUniqueKeyColumns().get(0);
         PrimaryKeyPosition<?> position = (PrimaryKeyPosition<?>) dumperConfig.getPosition();
-        if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType())) {
+        if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) && null != position.getBeginValue() && null != position.getEndValue()) {
             preparedStatement.setObject(1, position.getBeginValue());
             preparedStatement.setObject(2, position.getEndValue());
             return;

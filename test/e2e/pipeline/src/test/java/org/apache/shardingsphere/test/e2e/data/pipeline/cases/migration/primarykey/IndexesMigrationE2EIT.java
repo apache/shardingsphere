@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.primary
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
@@ -33,6 +34,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -84,7 +86,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         } else {
             return;
         }
-        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
+        assertMigrationSuccess(sql, new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
     @Test
@@ -97,7 +99,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         } else {
             return;
         }
-        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
+        assertMigrationSuccess(sql, new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
     @Test
@@ -105,12 +107,12 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         String sql;
         String consistencyCheckAlgorithmType;
         if (getDatabaseType() instanceof MySQLDatabaseType) {
-            sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), UNIQUE KEY (`order_id`,`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+            sql = "CREATE TABLE `%s` (`order_id` BIGINT NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), UNIQUE KEY (`order_id`,`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
             consistencyCheckAlgorithmType = "DATA_MATCH";
         } else {
             return;
         }
-        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
+        assertMigrationSuccess(sql, new SnowflakeKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
     @Test
@@ -124,14 +126,13 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         } else {
             return;
         }
-        assertMigrationSuccess(sql, consistencyCheckAlgorithmType);
+        assertMigrationSuccess(sql, new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
-    private void assertMigrationSuccess(final String sqlPattern, final String consistencyCheckAlgorithmType) throws SQLException, InterruptedException {
+    private void assertMigrationSuccess(final String sqlPattern, final KeyGenerateAlgorithm generateAlgorithm, final String consistencyCheckAlgorithmType) throws SQLException, InterruptedException {
         initEnvironment(getDatabaseType(), new MigrationJobType());
         sourceExecuteWithLog(String.format(sqlPattern, getSourceTableOrderName()));
         try (Connection connection = getSourceDataSource().getConnection()) {
-            KeyGenerateAlgorithm generateAlgorithm = new UUIDKeyGenerateAlgorithm();
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, generateAlgorithm, getSourceTableOrderName(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
         }
         addMigrationProcessConfig();
@@ -141,8 +142,14 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         String jobId = listJobId().get(0);
         waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        sourceExecuteWithLog("INSERT INTO t_order (order_id, user_id, status) VALUES ('a1', 1, 'OK')");
-        assertProxyOrderRecordExist("t_order", "a1");
+        Comparable<?> primaryKey = generateAlgorithm.generateKey();
+        try (PreparedStatement preparedStatement = getSourceDataSource().getConnection().prepareStatement("INSERT INTO t_order (order_id,user_id,status) VALUES (?,?,?)")) {
+            preparedStatement.setObject(1, primaryKey);
+            preparedStatement.setObject(2, 1);
+            preparedStatement.setObject(3, "OK");
+            preparedStatement.execute();
+        }
+        assertProxyOrderRecordExist("t_order", primaryKey);
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, consistencyCheckAlgorithmType);
         commitMigrationByJobId(jobId);
