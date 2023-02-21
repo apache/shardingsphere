@@ -70,7 +70,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
     
     public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
-        this.databaseName= databaseName;
+        this.databaseName = databaseName;
         configuration = ruleConfig;
         for (ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfiguration : ruleConfig.getDataSources()) {
             if (ruleConfig.getLoadBalancers().containsKey(dataSourceRuleConfiguration.getLoadBalancerName())) {
