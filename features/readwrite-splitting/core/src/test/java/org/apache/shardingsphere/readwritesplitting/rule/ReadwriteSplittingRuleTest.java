@@ -56,7 +56,7 @@ public final class ReadwriteSplittingRuleTest {
     private ReadwriteSplittingRule createReadwriteSplittingRule() {
         ReadwriteSplittingDataSourceRuleConfiguration config =
                 new ReadwriteSplittingDataSourceRuleConfiguration("readwrite", new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, "random");
-        return new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(
+        return new ReadwriteSplittingRule("logic_db", new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), Collections.emptyList());
     }
     

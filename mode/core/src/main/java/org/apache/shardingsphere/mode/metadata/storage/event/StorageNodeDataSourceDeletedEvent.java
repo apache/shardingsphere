@@ -15,32 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.mode.metadata.storage.event;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 
 /**
- * Static data source contained rule.
+ * Storage node data source deleted event.
  */
-public interface StaticDataSourceContainedRule extends ShardingSphereRule {
+@RequiredArgsConstructor
+@Getter
+public final class StorageNodeDataSourceDeletedEvent {
     
-    /**
-     * Update data source status.
-     *
-     * @param event data source status changed event
-     */
-    void updateStatus(DataSourceStatusChangedEvent event);
-    
-    /**
-     * Clean single storage node data source.
-     *
-     * @param groupName group name
-     */
-    void cleanStorageNodeDataSource(String groupName);
-    
-    /**
-     * Clean storage nodes data sources.
-     */
-    void cleanStorageNodeDataSources();
+    private final QualifiedDatabase qualifiedDatabase;
 }
