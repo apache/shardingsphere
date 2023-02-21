@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
+package org.apache.shardingsphere.proxy.backend.postgresql.response.header.query;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -25,20 +25,28 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import java.sql.SQLException;
 
 /**
- * Query header builder for openGauss.
+ * Query header builder for PostgreSQL.
  */
-public final class OpenGaussQueryHeaderBuilder implements QueryHeaderBuilder {
+public final class PostgreSQLQueryHeaderBuilder implements QueryHeaderBuilder {
     
-    private final PostgreSQLQueryHeaderBuilder delegated = new PostgreSQLQueryHeaderBuilder();
+    private static final int UNUSED_INT_FIELD = 0;
+    
+    private static final String UNUSED_STRING_FIELD = "";
+    
+    private static final boolean UNUSED_BOOLEAN_FIELD = false;
     
     @Override
     public QueryHeader build(final QueryResultMetaData queryResultMetaData,
                              final ShardingSphereDatabase database, final String columnName, final String columnLabel, final int columnIndex) throws SQLException {
-        return delegated.build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
+        int columnType = queryResultMetaData.getColumnType(columnIndex);
+        String columnTypeName = queryResultMetaData.getColumnTypeName(columnIndex);
+        int columnLength = queryResultMetaData.getColumnLength(columnIndex);
+        return new QueryHeader(UNUSED_STRING_FIELD, UNUSED_STRING_FIELD, columnLabel, UNUSED_STRING_FIELD, columnType, columnTypeName, columnLength,
+                UNUSED_INT_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD, UNUSED_BOOLEAN_FIELD);
     }
     
     @Override
     public String getType() {
-        return "openGauss";
+        return "PostgreSQL";
     }
 }

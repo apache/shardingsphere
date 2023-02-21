@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
+package org.apache.shardingsphere.proxy.backend.connector.jdbc.fixture;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -28,10 +28,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import java.sql.SQLException;
 import java.util.Optional;
 
-/**
- * Query header builder for MySQL.
- */
-public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
+public final class QueryHeaderBuilderFixture implements QueryHeaderBuilder {
     
     @Override
     public QueryHeader build(final QueryResultMetaData queryResultMetaData,
