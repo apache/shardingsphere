@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.datasource;
+package org.apache.shardingsphere.data.pipeline.core.datasource;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
 
 import java.util.Properties;
 
 /**
- * JDBC query properties extension.
+ * H2 JDBC query properties extension.
+ *
+ * <p>H2 is branch database of MySQL, but JDBC URL isn't compatible with MySQL.</p>
  */
-@SingletonSPI
-public interface JdbcQueryPropertiesExtension extends TypedSPI {
+public final class H2JdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
     
-    /**
-     * Extend query properties.
-     *
-     * @return JDBC query properties for extension. Could NOT be null
-     */
-    Properties extendQueryProperties();
+    private final Properties queryProps = new Properties();
+    
+    @Override
+    public Properties extendQueryProperties() {
+        return queryProps;
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
+    }
 }

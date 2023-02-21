@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.data.pipeline.util.spi;
+package org.apache.shardingsphere.test.it.data.pipeline.core.util.spi;
 
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
