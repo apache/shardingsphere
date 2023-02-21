@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.impl;
+package org.apache.shardingsphere.proxy.backend.util;
 
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.junit.After;
+import org.junit.Before;
 
-import java.sql.SQLException;
-import java.sql.Statement;
-
-/**
- * Statement memory strictly fetch size setter for openGauss.
- */
-public final class OpenGaussStatementMemoryStrictlyFetchSizeSetter implements StatementMemoryStrictlyFetchSizeSetter {
+public abstract class ProxyContextRestorer {
     
-    private final PostgreSQLStatementMemoryStrictlyFetchSizeSetter delegated = new PostgreSQLStatementMemoryStrictlyFetchSizeSetter();
+    private ContextManager currentContextManager;
     
-    @Override
-    public void setFetchSize(final Statement statement) throws SQLException {
-        delegated.setFetchSize(statement);
+    @Before
+    public void recordCurrentContextManager() {
+        currentContextManager = ProxyContext.getInstance().getContextManager();
     }
     
-    @Override
-    public String getType() {
-        return "openGauss";
+    @After
+    public void restorePreviousContextManager() {
+        ProxyContext.init(currentContextManager);
     }
 }
