@@ -85,7 +85,7 @@ public final class SelectTableExecutorTest {
         return new ShardingSphereDatabase("public", new PostgreSQLDatabaseType(),
                 new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection()))),
                 new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.singletonMap("public",
-                new ShardingSphereSchema(Collections.singletonMap("t_order", mock(ShardingSphereTable.class)), Collections.emptyMap())));
+                        new ShardingSphereSchema(Collections.singletonMap("t_order", mock(ShardingSphereTable.class)), Collections.emptyMap())));
     }
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database) {
