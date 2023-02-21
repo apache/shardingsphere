@@ -17,14 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
+import lombok.RequiredArgsConstructor;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
- * Default column value reader.
+ * Basic column value reader.
  */
-public final class DefaultColumnValueReader extends AbstractColumnValueReader {
+@RequiredArgsConstructor
+public final class BasicColumnValueReader extends AbstractColumnValueReader {
+    
+    private final String databaseType;
     
     @Override
     protected Object doReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
@@ -32,7 +37,7 @@ public final class DefaultColumnValueReader extends AbstractColumnValueReader {
     }
     
     @Override
-    public boolean isDefault() {
-        return true;
+    public String getType() {
+        return databaseType;
     }
 }

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.sqlbuilder.DefaultPipelineSQLBuilder
+org.apache.shardingsphere.data.pipeline.core.datasource.H2JdbcQueryPropertiesExtension

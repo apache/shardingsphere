@@ -15,30 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.core.datasource;
+
+import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
+
+import java.util.Properties;
 
 /**
- * Default pipeline SQL builder.
+ * H2 JDBC query properties extension.
+ *
+ * <p>H2 is branch database of MySQL, but JDBC URL isn't compatible with MySQL.</p>
  */
-public final class DefaultPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
+public final class H2JdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
+    
+    private final Properties queryProps = new Properties();
     
     @Override
-    public boolean isDefault() {
-        return true;
+    public Properties extendQueryProperties() {
+        return queryProps;
     }
     
     @Override
-    protected boolean isKeyword(final String item) {
-        return false;
-    }
-    
-    @Override
-    protected String getLeftIdentifierQuoteString() {
-        return "";
-    }
-    
-    @Override
-    protected String getRightIdentifierQuoteString() {
-        return "";
+    public String getType() {
+        return "H2";
     }
 }

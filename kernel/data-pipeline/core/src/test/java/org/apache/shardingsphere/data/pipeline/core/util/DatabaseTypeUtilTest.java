@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.util;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.junit.Test;
 
-import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
-/**
- * Default position initializer.
- */
-public final class DefaultPositionInitializer implements PositionInitializer {
+import static org.junit.Assert.assertTrue;
+
+public final class DatabaseTypeUtilTest {
     
-    @Override
-    public IngestPosition<?> init(final DataSource dataSource, final String slotNameSuffix) {
-        return null;
-    }
-    
-    @Override
-    public IngestPosition<?> init(final String data) {
-        return null;
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+    @Test
+    public void assertGetBranchDatabaseTypes() {
+        Set<String> trunkDatabaseTypes = Collections.singleton(new MySQLDatabaseType().getType());
+        Collection<String> actual = DatabaseTypeUtil.getTrunkAndBranchDatabaseTypes(trunkDatabaseTypes);
+        assertTrue("MySQL not present", actual.contains("MySQL"));
+        assertTrue("MariaDB not present", actual.contains("MariaDB"));
     }
 }
