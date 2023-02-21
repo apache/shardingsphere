@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
+import org.apache.shardingsphere.dbdiscovery.distsql.handler.update.DropDatabaseDiscoveryRuleStatementUpdater;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
@@ -24,6 +26,8 @@ import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -31,6 +35,8 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHan
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.readwritesplitting.distsql.handler.update.DropReadwriteSplittingRuleStatementUpdater;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
@@ -85,7 +91,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
             result.remove(currentRuleConfig);
             result.add(processAlter(sqlStatement, (RuleDefinitionAlterUpdater) updater, currentRuleConfig));
         } else if (updater instanceof RuleDefinitionDropUpdater) {
-            processDrop(result, sqlStatement, (RuleDefinitionDropUpdater) updater, currentRuleConfig);
+            processDrop(database, result, sqlStatement, (RuleDefinitionDropUpdater) updater, currentRuleConfig);
         } else {
             throw new UnsupportedSQLOperationException(String.format("Cannot support RDL updater type `%s`", updater.getClass().getName()));
         }
@@ -110,12 +116,21 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void processDrop(final Collection<RuleConfiguration> configs, final T sqlStatement, final RuleDefinitionDropUpdater updater, final RuleConfiguration currentRuleConfig) {
+    private void processDrop(final ShardingSphereDatabase database, final Collection<RuleConfiguration> configs, final T sqlStatement,
+                             final RuleDefinitionDropUpdater updater, final RuleConfiguration currentRuleConfig) {
         if (!updater.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig)) {
             return;
         }
         if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
             configs.remove(currentRuleConfig);
+        }
+        if (updater instanceof DropDatabaseDiscoveryRuleStatementUpdater) {
+            database.getRuleMetaData().findSingleRule(DynamicDataSourceContainedRule.class)
+                    .ifPresent(optional -> ((DropDatabaseDiscoveryRuleStatement) sqlStatement).getNames().forEach(optional::closeSingleHeartBeatJob));
+        }
+        if (updater instanceof DropReadwriteSplittingRuleStatementUpdater) {
+            database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)
+                    .ifPresent(optional -> ((DropReadwriteSplittingRuleStatement) sqlStatement).getNames().forEach(optional::cleanStorageNodeDataSource));
         }
     }
     
