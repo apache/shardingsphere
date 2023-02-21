@@ -127,12 +127,7 @@ public final class ConfigurationChangedSubscriber {
         }
     }
     
-    private Map<String, StorageNodeDataSource> getDisabledDataSources() {
-       return registryCenter.getStorageNodeStatusService().loadStorageNodes().entrySet()
-                .stream().filter(entry -> DataSourceState.DISABLED == entry.getValue().getStatus()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-    
-    private void disableDataSources(final String databaseName, final StaticDataSourceContainedRule rule, Map<String, StorageNodeDataSource> storageNodes) {
+    private void disableDataSources(final String databaseName, final StaticDataSourceContainedRule rule, final Map<String, StorageNodeDataSource> storageNodes) {
         for (Entry<String, StorageNodeDataSource> entry : storageNodes.entrySet()) {
             QualifiedDatabase database = new QualifiedDatabase(entry.getKey());
             if (!database.getDatabaseName().equals(databaseName)) {
@@ -149,5 +144,10 @@ public final class ConfigurationChangedSubscriber {
             }
             entry.getValue().forEach(each -> rule.updateStatus(new StorageNodeDataSourceChangedEvent(database, storageNodeDataSource)));
         }
+    }
+    
+    private Map<String, StorageNodeDataSource> getDisabledDataSources() {
+        return registryCenter.getStorageNodeStatusService().loadStorageNodes().entrySet()
+                .stream().filter(entry -> DataSourceState.DISABLED == entry.getValue().getStatus()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }
