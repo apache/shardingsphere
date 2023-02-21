@@ -17,26 +17,24 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
-import org.apache.shardingsphere.driver.jdbc.exception.syntax.DriverURLProviderNotFoundException;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-
 /**
- * ShardingSphere driver URL manager.
+ * ShardingSphere driver URL provider.
  */
-public final class ShardingSphereDriverURLManager {
+public interface ShardingSphereDriverURLProvider {
+    
+    /**
+     * Check if the url is suitable for this provider.
+     * 
+     * @param url the driver url
+     * @return true if the url is suitable for this provider or false
+     */
+    boolean accept(String url);
     
     /**
      * Get config content from url.
      * 
-     * @param url the driver url
+     * @param url the driver url 
      * @return the config content
      */
-    public static byte[] getContent(final String url) {
-        for (ShardingSphereDriverURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDriverURLProvider.class)) {
-            if (each.accept(url)) {
-                return each.getContent(url);
-            }
-        }
-        throw new DriverURLProviderNotFoundException(url);
-    }
+    byte[] getContent(String url);
 }

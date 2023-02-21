@@ -48,12 +48,12 @@ import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.fixture.QueryHeaderBuilderFixture;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.MySQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
@@ -148,7 +148,7 @@ public final class DatabaseConnectorTest extends ProxyContextRestorer {
             when(resultSet.next()).thenReturn(true, false);
             when(resultSet.getObject(1)).thenReturn(Integer.MAX_VALUE);
             typedSPILoader.when(() -> TypedSPILoader.getService(SQLFederationExecutor.class, "NONE")).thenReturn(federationExecutor);
-            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, "H2")).thenReturn(new MySQLQueryHeaderBuilder());
+            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, "H2")).thenReturn(new QueryHeaderBuilderFixture());
             systemSchemaUtil.when(() -> SystemSchemaUtil.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
             engine.execute();
         }
@@ -172,24 +172,27 @@ public final class DatabaseConnectorTest extends ProxyContextRestorer {
         Field queryHeadersField = DatabaseConnector.class.getDeclaredField("queryHeaders");
         ShardingSphereDatabase database = createDatabaseMetaData();
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(queryHeadersField, engine, Collections.singletonList(
-                new QueryHeaderBuilderEngine(new MySQLDatabaseType()).build(createQueryResultMetaData(), database, 1)));
-        Field mergedResultField = DatabaseConnector.class.getDeclaredField("mergedResult");
-        accessor.set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
-            
-            @Override
-            protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema,
-                                                      final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) {
-                return Collections.singletonList(mock(MemoryQueryResultRow.class));
+        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, "MySQL")).thenReturn(new QueryHeaderBuilderFixture());
+            accessor.set(queryHeadersField, engine, Collections.singletonList(
+                    new QueryHeaderBuilderEngine(new MySQLDatabaseType()).build(createQueryResultMetaData(), database, 1)));
+            Field mergedResultField = DatabaseConnector.class.getDeclaredField("mergedResult");
+            accessor.set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
+                
+                @Override
+                protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema,
+                                                          final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) {
+                    return Collections.singletonList(mock(MemoryQueryResultRow.class));
+                }
+            });
+            Exception ex = null;
+            try {
+                engine.getRowData();
+            } catch (final SQLException | IndexOutOfBoundsException e) {
+                ex = e;
+            } finally {
+                assertFalse(ex instanceof IndexOutOfBoundsException);
             }
-        });
-        Exception ex = null;
-        try {
-            engine.getRowData();
-        } catch (final SQLException | IndexOutOfBoundsException e) {
-            ex = e;
-        } finally {
-            assertFalse(ex instanceof IndexOutOfBoundsException);
         }
     }
     

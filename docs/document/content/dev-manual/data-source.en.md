@@ -84,11 +84,11 @@ Data source connection pool active detector
 | Default                            | Default data source pool active detector | [`org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type.DefaultDataSourcePoolActiveDetector`](https://github.com/apache/shardingsphere/blob/master/infra/common/src/main/java/org/apache/shardingsphere/infra/datasource/pool/destroyer/detector/type/DefaultDataSourcePoolActiveDetector.java) |
 | com.zaxxer.hikari.HikariDataSource | Hikari data source pool active detector  | [`org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type.HikariDataSourcePoolActiveDetector`](https://github.com/apache/shardingsphere/blob/master/infra/common/src/main/java/org/apache/shardingsphere/infra/datasource/pool/destroyer/detector/type/HikariDataSourcePoolActiveDetector.java) |
 
-## ShardingsphereDriverURLProvider
+## ShardingSphereDriverURLProvider
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/ShardingsphereDriverURLProvider.java)
+[`org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/ShardingSphereDriverURLProvider.java)
 
 ### Definition
 

@@ -26,16 +26,19 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -49,6 +52,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRestorer {
@@ -82,20 +86,29 @@ public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRest
     
     @Test
     public void assertExecute() throws SQLException {
-        assertThat(((QueryResponseHeader) handler.execute()).getQueryHeaders().size(), is(1));
+        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, "MySQL")).thenReturn(mock(QueryHeaderBuilder.class));
+            assertThat(((QueryResponseHeader) handler.execute()).getQueryHeaders().size(), is(1));
+        }
     }
     
     @Test
     public void assertNext() throws SQLException {
-        handler.execute();
-        assertTrue(handler.next());
-        assertFalse(handler.next());
+        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, "MySQL")).thenReturn(mock(QueryHeaderBuilder.class));
+            handler.execute();
+            assertTrue(handler.next());
+            assertFalse(handler.next());
+        }
     }
     
     @Test
     public void assertGetRowData() throws SQLException {
-        handler.execute();
-        assertTrue(handler.next());
-        assertThat(handler.getRowData().getData().size(), is(1));
+        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, "MySQL")).thenReturn(mock(QueryHeaderBuilder.class));
+            handler.execute();
+            assertTrue(handler.next());
+            assertThat(handler.getRowData().getData().size(), is(1));
+        }
     }
 }
