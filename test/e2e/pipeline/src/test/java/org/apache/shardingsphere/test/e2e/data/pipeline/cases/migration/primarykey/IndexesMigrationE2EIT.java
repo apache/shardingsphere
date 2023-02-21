@@ -52,6 +52,12 @@ import static org.hamcrest.Matchers.is;
 @Slf4j
 public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
+    private static final String ORDER_TABLE_SHARDING_RULE_FORMAT = "CREATE SHARDING TABLE RULE t_order(\n"
+            + "STORAGE_UNITS(ds_2,ds_3,ds_4),\n"
+            + "SHARDING_COLUMN=%s,\n"
+            + "TYPE(NAME=\"hash_mod\",PROPERTIES(\"sharding-count\"=\"6\"))\n"
+            + ");";
+    
     public IndexesMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
     }
@@ -86,7 +92,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         } else {
             return;
         }
-        assertMigrationSuccess(sql, new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
+        assertMigrationSuccess(sql, "user_id", new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
     @Test
@@ -99,7 +105,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         } else {
             return;
         }
-        assertMigrationSuccess(sql, new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
+        assertMigrationSuccess(sql, "user_id", new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
     @Test
@@ -112,7 +118,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         } else {
             return;
         }
-        assertMigrationSuccess(sql, new SnowflakeKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
+        assertMigrationSuccess(sql, "user_id", new SnowflakeKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
     @Test
@@ -126,10 +132,11 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         } else {
             return;
         }
-        assertMigrationSuccess(sql, new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
+        assertMigrationSuccess(sql, "order_id", new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
-    private void assertMigrationSuccess(final String sqlPattern, final KeyGenerateAlgorithm generateAlgorithm, final String consistencyCheckAlgorithmType) throws SQLException, InterruptedException {
+    private void assertMigrationSuccess(final String sqlPattern, final String shardingColumn, final KeyGenerateAlgorithm generateAlgorithm,
+                                        final String consistencyCheckAlgorithmType) throws SQLException, InterruptedException {
         initEnvironment(getDatabaseType(), new MigrationJobType());
         sourceExecuteWithLog(String.format(sqlPattern, getSourceTableOrderName()));
         try (Connection connection = getSourceDataSource().getConnection()) {
@@ -138,7 +145,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         addMigrationProcessConfig();
         addMigrationSourceResource();
         addMigrationTargetResource();
-        createTargetOrderTableRule();
+        proxyExecuteWithLog(String.format(ORDER_TABLE_SHARDING_RULE_FORMAT, shardingColumn), 2);
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         String jobId = listJobId().get(0);
         waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
