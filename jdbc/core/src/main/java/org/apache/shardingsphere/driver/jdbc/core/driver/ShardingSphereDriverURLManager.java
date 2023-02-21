@@ -32,7 +32,7 @@ public final class ShardingSphereDriverURLManager {
      * @return the config content
      */
     public static byte[] getContent(final String url) {
-        for (ShardingsphereDriverURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingsphereDriverURLProvider.class)) {
+        for (ShardingSphereDriverURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDriverURLProvider.class)) {
             if (each.accept(url)) {
                 return each.getContent(url);
             }

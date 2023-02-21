@@ -101,11 +101,11 @@ chapter = true
 | Default                            | 默认数据源连接池活跃探测器     | [`org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type.DefaultDataSourcePoolActiveDetector`](https://github.com/apache/shardingsphere/blob/master/infra/common/src/main/java/org/apache/shardingsphere/infra/datasource/pool/destroyer/detector/type/DefaultDataSourcePoolActiveDetector.java) |
 | com.zaxxer.hikari.HikariDataSource | Hikari 数据源连接池活跃探测器 | [`org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type.HikariDataSourcePoolActiveDetector`](https://github.com/apache/shardingsphere/blob/master/infra/common/src/main/java/org/apache/shardingsphere/infra/datasource/pool/destroyer/detector/type/HikariDataSourcePoolActiveDetector.java) |
 
-## ShardingsphereDriverURLProvider
+## ShardingSphereDriverURLProvider
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetector`](https://github.com/apache/shardingsphere/blob/master/infra/common/src/main/java/org/apache/shardingsphere/infra/datasource/pool/destroyer/detector/DataSourcePoolActiveDetector.java)
+[`org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/ShardingSphereDriverURLProvider.java)
 
 ### 定义
 
