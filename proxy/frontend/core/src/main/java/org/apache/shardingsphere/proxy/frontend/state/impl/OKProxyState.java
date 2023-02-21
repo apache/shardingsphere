@@ -45,6 +45,8 @@ public final class OKProxyState implements ProxyState {
     
     private ExecutorService determineSuitableExecutorService(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine,
                                                              final ConnectionSession connectionSession) {
+        System.out.println(requireOccupyThreadForConnection(connectionSession));
+        System.out.println(connectionSession.getTransactionStatus().getTransactionType());
         if (requireOccupyThreadForConnection(connectionSession)) {
             return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
         }
