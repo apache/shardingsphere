@@ -178,7 +178,7 @@ public final class DatabaseConnectorTest extends ProxyContextRestorer {
                     new QueryHeaderBuilderEngine(new MySQLDatabaseType()).build(createQueryResultMetaData(), database, 1)));
             Field mergedResultField = DatabaseConnector.class.getDeclaredField("mergedResult");
             accessor.set(mergedResultField, engine, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
-        
+                
                 @Override
                 protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema,
                                                           final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) {
