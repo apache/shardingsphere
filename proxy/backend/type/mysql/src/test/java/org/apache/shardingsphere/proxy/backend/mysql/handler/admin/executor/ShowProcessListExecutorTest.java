@@ -23,10 +23,9 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.SQLException;
@@ -36,19 +35,32 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
-public final class ShowProcessListExecutorTest extends ProxyContextRestorer {
+public final class ShowProcessListExecutorTest {
     
-    private ShowProcessListExecutor showProcessListExecutor;
-    
-    @Before
-    public void setUp() throws ReflectiveOperationException {
-        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        showProcessListExecutor = new ShowProcessListExecutor();
-        setupBatchProcessContexts();
+    @Test
+    public void assertExecute() throws SQLException, ReflectiveOperationException {
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            ShowProcessListExecutor showProcessListExecutor = new ShowProcessListExecutor();
+            setupBatchProcessContexts(showProcessListExecutor);
+            showProcessListExecutor.execute(new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap()));
+            assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
+            MergedResult mergedResult = showProcessListExecutor.getMergedResult();
+            while (mergedResult.next()) {
+                assertThat(mergedResult.getValue(1, String.class), is("f6c2336a-63ba-41bf-941e-2e3504eb2c80"));
+                assertThat(mergedResult.getValue(2, String.class), is("sharding"));
+                assertThat(mergedResult.getValue(3, String.class), is("127.0.0.1"));
+                assertThat(mergedResult.getValue(4, String.class), is("sharding_db"));
+                assertThat(mergedResult.getValue(7, String.class), is("Executing 1/2"));
+                assertThat(mergedResult.getValue(8, String.class), is("alter table t_order add column a varchar(64) after order_id"));
+            }
+        }
     }
     
-    private void setupBatchProcessContexts() throws ReflectiveOperationException {
+    private void setupBatchProcessContexts(final ShowProcessListExecutor showProcessListExecutor) throws ReflectiveOperationException {
         String executionNodeValue = "contexts:\n"
                 + "- executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
                 + "  sql: alter table t_order add column a varchar(64) after order_id\n"
@@ -62,20 +74,5 @@ public final class ShowProcessListExecutorTest extends ProxyContextRestorer {
                 + "  - processStatus: DONE\n"
                 + "    unitID: unitID2\n";
         Plugins.getMemberAccessor().set(showProcessListExecutor.getClass().getDeclaredField("batchProcessContexts"), showProcessListExecutor, Collections.singleton(executionNodeValue));
-    }
-    
-    @Test
-    public void assertExecute() throws SQLException {
-        showProcessListExecutor.execute(new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap()));
-        assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
-        MergedResult mergedResult = showProcessListExecutor.getMergedResult();
-        while (mergedResult.next()) {
-            assertThat(mergedResult.getValue(1, String.class), is("f6c2336a-63ba-41bf-941e-2e3504eb2c80"));
-            assertThat(mergedResult.getValue(2, String.class), is("sharding"));
-            assertThat(mergedResult.getValue(3, String.class), is("127.0.0.1"));
-            assertThat(mergedResult.getValue(4, String.class), is("sharding_db"));
-            assertThat(mergedResult.getValue(7, String.class), is("Executing 1/2"));
-            assertThat(mergedResult.getValue(8, String.class), is("alter table t_order add column a varchar(64) after order_id"));
-        }
     }
 }
