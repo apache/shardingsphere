@@ -71,7 +71,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final ListShardingConditionValue<?> shardingValue, final DataNodeInfo dataNodeInfo) {
         Collection<String> result = new LinkedList<>();
-        for (Comparable<?> each : shardingValue.getValues()) {
+        for (Object each : shardingValue.getValues()) {
             String target = shardingAlgorithm.doSharding(availableTargetNames,
                     new PreciseShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), dataNodeInfo, each));
             if (null != target && availableTargetNames.contains(target)) {
