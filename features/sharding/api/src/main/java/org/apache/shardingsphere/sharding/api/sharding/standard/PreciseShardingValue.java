@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.api.sharding.standard;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.sharding.api.sharding.ShardingValue;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.sharding.api.sharding.ShardingValue;
 
 /**
  * Sharding value for precise.
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class PreciseShardingValue<T extends Comparable<?>> implements ShardingValue {
+public final class PreciseShardingValue<T> implements ShardingValue {
     
     private final String logicTableName;
     

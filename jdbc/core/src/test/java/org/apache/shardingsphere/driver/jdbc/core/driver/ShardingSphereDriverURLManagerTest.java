@@ -27,7 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ShardingSphereDriverURLManagerTest {
     
-    private final int fooDriverConfigLength = 995;
+    private final int fooDriverConfigLength = 999;
     
     @Test(expected = DriverURLProviderNotFoundException.class)
     public void assertNewConstructorWithEmptyURL() {
