@@ -20,32 +20,34 @@ package org.apache.shardingsphere.proxy.backend.mysql.connector.jdbc.statement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class MySQLStatementMemoryStrictlyFetchSizeSetterTest extends ProxyContextRestorer {
-    
-    @Before
-    public void setUp() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(-1);
-        ProxyContext.init(contextManager);
-    }
+public final class MySQLStatementMemoryStrictlyFetchSizeSetterTest {
     
     @Test
     public void assertSetFetchSize() throws SQLException {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(-1);
         Statement statement = mock(Statement.class);
-        new MySQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
-        verify(statement).setFetchSize(Integer.MIN_VALUE);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            new MySQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
+            verify(statement).setFetchSize(Integer.MIN_VALUE);
+        }
+    }
+    
+    private static ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(-1);
+        return result;
     }
 }
