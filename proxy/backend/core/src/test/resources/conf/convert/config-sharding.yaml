@@ -46,6 +46,8 @@ rules:
        complex:
          shardingColumns: order_id, user_id
          shardingAlgorithmName: t_order_inline
+     databaseStrategy:
+       none:
      keyGenerateStrategy:
        column: order_id
        keyGeneratorName: snowflake
