@@ -173,13 +173,13 @@ public final class InventoryTaskSplitter {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
         PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType());
-        Optional<String> estimatedCountSQL = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
+        Optional<String> sql = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
         try {
-            if (estimatedCountSQL.isPresent()) {
-                long estimatedCount = getEstimatedCountSQLResult(dataSource, estimatedCountSQL.get());
-                return estimatedCount > 0 ? estimatedCount : getCountSQLResult(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
+            if (sql.isPresent()) {
+                long result = getEstimatedCount(dataSource, sql.get());
+                return result > 0 ? result : getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
             }
-            return getCountSQLResult(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
+            return getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
         } catch (final SQLException ex) {
             String uniqueKey = dumperConfig.hasUniqueKey() ? dumperConfig.getUniqueKeyColumns().get(0).getName() : "";
             throw new SplitPipelineJobByUniqueKeyException(dumperConfig.getActualTableName(), uniqueKey, ex);
@@ -187,7 +187,7 @@ public final class InventoryTaskSplitter {
     }
     
     // TODO maybe need refactor after PostgreSQL support estimated count.
-    private long getEstimatedCountSQLResult(final DataSource dataSource, final String estimatedCountSQL) throws SQLException {
+    private long getEstimatedCount(final DataSource dataSource, final String estimatedCountSQL) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(estimatedCountSQL)) {
@@ -199,7 +199,7 @@ public final class InventoryTaskSplitter {
         }
     }
     
-    private long getCountSQLResult(final DataSource dataSource, final String countSQL) throws SQLException {
+    private long getCount(final DataSource dataSource, final String countSQL) throws SQLException {
         long startTimeMillis = System.currentTimeMillis();
         long result;
         try (

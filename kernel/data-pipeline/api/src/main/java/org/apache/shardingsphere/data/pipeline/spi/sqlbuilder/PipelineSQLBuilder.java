@@ -136,7 +136,7 @@ public interface PipelineSQLBuilder extends TypedSPI {
     String buildCountSQL(String schemaName, String tableName);
     
     /**
-     * Build Estimated count SQL.
+     * Build estimated count SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
