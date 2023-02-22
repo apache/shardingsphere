@@ -84,7 +84,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -415,14 +414,20 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
      * @return job id
      */
     public String createJobAndStart(final CreateMigrationJobParameter param) {
+        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(createYamlJobConfiguration(param));
+        start(jobConfig);
+        return jobConfig.getJobId();
+    }
+    
+    private YamlMigrationJobConfiguration createYamlJobConfiguration(final CreateMigrationJobParameter param) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(new MigrationJobType());
         Map<String, Object> sourceDataSourceProps = swapper.swapToMap(metaDataDataSource.get(param.getSourceResourceName()));
+        StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
         YamlPipelineDataSourceConfiguration sourcePipelineDataSourceConfig = createYamlPipelineDataSourceConfiguration(
-                StandardPipelineDataSourceConfiguration.TYPE, YamlEngine.marshal(sourceDataSourceProps));
+                sourceDataSourceConfig.getType(), sourceDataSourceConfig.getParameter());
         result.setSource(sourcePipelineDataSourceConfig);
         result.setSourceResourceName(param.getSourceResourceName());
-        StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
         DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
         result.setSourceDatabaseType(sourceDatabaseType.getType());
         String sourceSchemaName = null == param.getSourceSchemaName() && sourceDatabaseType.isSchemaAvailable()
@@ -439,14 +444,12 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         String targetDatabaseName = param.getTargetDatabaseName();
         YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(targetDatabaseName, targetDataSourceProps, targetDatabase.getRuleMetaData().getConfigurations());
         PipelineDataSourceConfiguration targetPipelineDataSource = new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
-        result.setTarget(createYamlPipelineDataSourceConfiguration(targetPipelineDataSource.getType(), YamlEngine.marshal(targetPipelineDataSource.getDataSourceConfiguration())));
+        result.setTarget(createYamlPipelineDataSourceConfiguration(targetPipelineDataSource.getType(), targetPipelineDataSource.getParameter()));
         result.setTargetDatabaseType(targetPipelineDataSource.getDatabaseType().getType());
         result.setTargetDatabaseName(targetDatabaseName);
         result.setTargetTableName(param.getTargetTableName());
         extendYamlJobConfiguration(result);
-        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
-        start(jobConfig);
-        return jobConfig.getJobId();
+        return result;
     }
     
     private YamlRootConfiguration getYamlRootConfiguration(final String databaseName, final Map<String, Map<String, Object>> yamlDataSources, final Collection<RuleConfiguration> rules) {
