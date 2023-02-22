@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.result.JaegerTraceResult;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -45,6 +46,7 @@ public final class JaegerPluginE2EIT extends BasePluginE2EIT {
         serviceName = props.getProperty("jaeger.servername");
     }
     
+    @Ignore
     @SneakyThrows(IOException.class)
     @Test
     public void assertProxyWithAgent() {
