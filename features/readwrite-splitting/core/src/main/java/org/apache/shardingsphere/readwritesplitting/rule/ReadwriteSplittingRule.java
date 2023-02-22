@@ -195,8 +195,8 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         if (rule.getReadwriteSplittingStrategy() instanceof DynamicReadwriteSplittingStrategy) {
             return;
         }
-        rule.getReadwriteSplittingStrategy().getReadDataSources().forEach(each ->
-                instanceContext.getEventBusContext().post(new StorageNodeDataSourceDeletedEvent(new QualifiedDatabase(databaseName, rule.getName(), each))));
+        rule.getReadwriteSplittingStrategy().getReadDataSources()
+                .forEach(each -> instanceContext.getEventBusContext().post(new StorageNodeDataSourceDeletedEvent(new QualifiedDatabase(databaseName, rule.getName(), each))));
     }
     
     @Override

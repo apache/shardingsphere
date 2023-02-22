@@ -342,6 +342,9 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
             case DistSQLScriptConstants.HINT:
                 result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_HINT, type, algorithmDefinition));
                 break;
+            case DistSQLScriptConstants.NONE:
+                result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_NONE, strategyType, "none"));
+                break;
             default:
                 break;
         }
