@@ -28,12 +28,11 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.HashMap;
@@ -44,24 +43,50 @@ import java.util.Properties;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class UseDatabaseExecutorTest extends ProxyContextRestorer {
+public final class UseDatabaseExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
     @Mock
     private ConnectionSession connectionSession;
     
-    @Before
-    public void setUp() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+    @Test
+    public void assertExecuteUseStatementBackendHandler() {
+        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
+        when(useStatement.getSchema()).thenReturn(String.format(DATABASE_PATTERN, 0));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("db_0")).thenReturn(true);
+            UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);
+            executor.execute(connectionSession);
+            verify(connectionSession).setCurrentDatabase(anyString());
+        }
+    }
+    
+    @Test(expected = UnknownDatabaseException.class)
+    public void assertExecuteUseStatementBackendHandlerWhenSchemaNotExist() {
+        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
+        when(useStatement.getSchema()).thenReturn(String.format(DATABASE_PATTERN, 10));
+        UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            executor.execute(connectionSession);
+        }
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
     }
     
     private Map<String, ShardingSphereDatabase> getDatabases() {
@@ -73,27 +98,5 @@ public final class UseDatabaseExecutorTest extends ProxyContextRestorer {
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;
-    }
-    
-    @Test
-    public void assertExecuteUseStatementBackendHandler() {
-        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getSchema()).thenReturn(String.format(DATABASE_PATTERN, 0));
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
-        UseDatabaseExecutor useSchemaBackendHandler = new UseDatabaseExecutor(useStatement);
-        useSchemaBackendHandler.execute(connectionSession);
-        verify(connectionSession).setCurrentDatabase(anyString());
-    }
-    
-    @Test(expected = UnknownDatabaseException.class)
-    public void assertExecuteUseStatementBackendHandlerWhenSchemaNotExist() {
-        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getSchema()).thenReturn(String.format(DATABASE_PATTERN, 10));
-        UseDatabaseExecutor useSchemaBackendHandler = new UseDatabaseExecutor(useStatement);
-        useSchemaBackendHandler.execute(connectionSession);
     }
 }

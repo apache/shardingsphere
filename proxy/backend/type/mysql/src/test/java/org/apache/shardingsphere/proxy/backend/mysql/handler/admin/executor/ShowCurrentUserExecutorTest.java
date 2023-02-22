@@ -28,9 +28,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -42,19 +41,33 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class ShowCurrentUserExecutorTest extends ProxyContextRestorer {
+public final class ShowCurrentUserExecutorTest {
     
     private static final Grantee GRANTEE = new Grantee("root", "");
     
-    @Before
-    public void setUp() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+    @Test
+    public void assertExecute() throws SQLException {
+        ShowCurrentUserExecutor executor = new ShowCurrentUserExecutor();
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            executor.execute(mockConnectionSession());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+            while (executor.getMergedResult().next()) {
+                assertThat(executor.getMergedResult().getValue(1, Object.class), is("root@%"));
+            }
+        }
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(new HashMap<>(), mockShardingSphereRuleMetaData(), new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
     }
     
     private ShardingSphereRuleMetaData mockShardingSphereRuleMetaData() {
@@ -63,16 +76,6 @@ public final class ShowCurrentUserExecutorTest extends ProxyContextRestorer {
         when(shardingSphereUser.getGrantee()).thenReturn(new Grantee("root", "%"));
         when(authorityRule.findUser(GRANTEE)).thenReturn(Optional.of(shardingSphereUser));
         return new ShardingSphereRuleMetaData(Collections.singletonList(authorityRule));
-    }
-    
-    @Test
-    public void assertExecute() throws SQLException {
-        ShowCurrentUserExecutor executor = new ShowCurrentUserExecutor();
-        executor.execute(mockConnectionSession());
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
-        while (executor.getMergedResult().next()) {
-            assertThat(executor.getMergedResult().getValue(1, Object.class), is("root@%"));
-        }
     }
     
     private ConnectionSession mockConnectionSession() {

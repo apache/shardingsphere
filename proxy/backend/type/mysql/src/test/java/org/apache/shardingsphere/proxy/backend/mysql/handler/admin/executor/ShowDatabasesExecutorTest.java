@@ -30,12 +30,11 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -45,53 +44,33 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
+public final class ShowDatabasesExecutorTest {
     
     private static final String DATABASE_PATTERN = "database_%s";
     
-    private ShowDatabasesExecutor showDatabasesExecutor;
-    
-    @Before
-    public void setUp() {
-        showDatabasesExecutor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement());
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockAuthorityRule()));
-        MetaDataContexts metaDataContexts = new MetaDataContexts(
-                mock(MetaDataPersistService.class), new ShardingSphereMetaData(getDatabases(), globalRuleMetaData, new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
-    }
-    
-    private AuthorityRule mockAuthorityRule() {
-        AuthorityRule result = mock(AuthorityRule.class);
-        when(result.findPrivileges(new Grantee("root", ""))).thenReturn(Optional.of(new AllPrivilegesPermittedShardingSpherePrivileges()));
-        return result;
-    }
-    
-    private Map<String, ShardingSphereDatabase> getDatabases() {
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
-        for (int i = 0; i < 10; i++) {
-            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
-            when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-            when(database.getName()).thenReturn(String.format(DATABASE_PATTERN, i));
-            result.put(String.format(DATABASE_PATTERN, i), database);
-        }
-        return result;
-    }
+    private ShowDatabasesExecutor executor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement());
     
     @Test
     public void assertExecute() throws SQLException {
-        showDatabasesExecutor.execute(mockConnectionSession());
-        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
-        assertThat(getActual(), is(getExpected()));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames())
+                    .thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
+            executor.execute(mockConnectionSession());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+            assertThat(getActual(), is(getExpected()));
+        }
     }
     
     @Test
@@ -101,15 +80,21 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database%");
         showFilterSegment.setLike(showLikeSegment);
         showDatabasesStatement.setFilter(showFilterSegment);
-        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
-        showDatabasesExecutor.execute(mockConnectionSession());
-        assertThat(getActual(), is(getExpected()));
+        ContextManager contextManager = mockContextManager();
+        executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames())
+                    .thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
+            executor.execute(mockConnectionSession());
+            assertThat(getActual(), is(getExpected()));
+        }
     }
     
     private Collection<String> getActual() throws SQLException {
         Map<String, String> result = new ConcurrentHashMap<>(10, 1);
-        while (showDatabasesExecutor.getMergedResult().next()) {
-            String value = showDatabasesExecutor.getMergedResult().getValue(1, Object.class).toString();
+        while (executor.getMergedResult().next()) {
+            String value = executor.getMergedResult().getValue(1, Object.class).toString();
             result.put(value, value);
         }
         return result.keySet();
@@ -131,15 +116,21 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "%_1");
         showFilterSegment.setLike(showLikeSegment);
         showDatabasesStatement.setFilter(showFilterSegment);
-        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
-        showDatabasesExecutor.execute(mockConnectionSession());
-        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
-        int count = 0;
-        while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("database_1"));
-            count++;
+        executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames())
+                    .thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
+            executor.execute(mockConnectionSession());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+            int count = 0;
+            while (executor.getMergedResult().next()) {
+                assertThat(executor.getMergedResult().getValue(1, Object.class), is("database_1"));
+                count++;
+            }
+            assertThat(count, is(1));
         }
-        assertThat(count, is(1));
     }
     
     @Test
@@ -149,15 +140,21 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database_9");
         showFilterSegment.setLike(showLikeSegment);
         showDatabasesStatement.setFilter(showFilterSegment);
-        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
-        showDatabasesExecutor.execute(mockConnectionSession());
-        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
-        int count = 0;
-        while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("database_9"));
-            count++;
+        executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames())
+                    .thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
+            executor.execute(mockConnectionSession());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+            int count = 0;
+            while (executor.getMergedResult().next()) {
+                assertThat(executor.getMergedResult().getValue(1, Object.class), is("database_9"));
+                count++;
+            }
+            assertThat(count, is(1));
         }
-        assertThat(count, is(1));
     }
     
     @Test
@@ -167,15 +164,48 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "not_exist_database");
         showFilterSegment.setLike(showLikeSegment);
         showDatabasesStatement.setFilter(showFilterSegment);
-        showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
-        showDatabasesExecutor.execute(mockConnectionSession());
-        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
-        int count = 0;
-        while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("not_exist_database"));
-            count++;
+        executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames())
+                    .thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
+            executor.execute(mockConnectionSession());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+            int count = 0;
+            while (executor.getMergedResult().next()) {
+                assertThat(executor.getMergedResult().getValue(1, Object.class), is("not_exist_database"));
+                count++;
+            }
+            assertThat(count, is(0));
         }
-        assertThat(count, is(0));
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockAuthorityRule()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(
+                mock(MetaDataPersistService.class), new ShardingSphereMetaData(getDatabases(), globalRuleMetaData, new ConfigurationProperties(new Properties())));
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
+    }
+    
+    private AuthorityRule mockAuthorityRule() {
+        AuthorityRule result = mock(AuthorityRule.class);
+        when(result.findPrivileges(new Grantee("root", ""))).thenReturn(Optional.of(new AllPrivilegesPermittedShardingSpherePrivileges()));
+        return result;
+    }
+    
+    private Map<String, ShardingSphereDatabase> getDatabases() {
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
+        for (int i = 0; i < 10; i++) {
+            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+            when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
+            when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+            when(database.getName()).thenReturn(String.format(DATABASE_PATTERN, i));
+            result.put(String.format(DATABASE_PATTERN, i), database);
+        }
+        return result;
     }
     
     private ConnectionSession mockConnectionSession() {
