@@ -72,7 +72,7 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
         return "t_order";
     }
     
-    //    @Test
+    @Test
     public void assertNoRuleMigrationSuccess() throws Exception {
         assertMigrationSuccess(null);
     }
