@@ -27,7 +27,6 @@ import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecuto
 import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.util.concurrent.ExecutorService;
 
@@ -58,7 +57,7 @@ public final class OKProxyState implements ProxyState {
     }
     
     private boolean requireOccupyThreadForConnection(final ConnectionSession connectionSession) {
-        return TransactionType.isDistributedTransaction(connectionSession.getTransactionStatus().getTransactionType());
+        return true;
     }
     
     private boolean isPreferNettyEventLoop() {
