@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
@@ -69,8 +70,12 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
     
-    public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
+    private final InstanceContext instanceContext;
+    
+    public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig,
+                                  final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         this.databaseName = databaseName;
+        this.instanceContext = instanceContext;
         configuration = ruleConfig;
         for (ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfiguration : ruleConfig.getDataSources()) {
             if (ruleConfig.getLoadBalancers().containsKey(dataSourceRuleConfiguration.getLoadBalancerName())) {
@@ -190,7 +195,8 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         if (rule.getReadwriteSplittingStrategy() instanceof DynamicReadwriteSplittingStrategy) {
             return;
         }
-        rule.getReadwriteSplittingStrategy().getReadDataSources().forEach(each -> new StorageNodeDataSourceDeletedEvent(new QualifiedDatabase(databaseName, rule.getName(), each)));
+        rule.getReadwriteSplittingStrategy().getReadDataSources().forEach(each ->
+                instanceContext.getEventBusContext().post(new StorageNodeDataSourceDeletedEvent(new QualifiedDatabase(databaseName, rule.getName(), each))));
     }
     
     @Override
