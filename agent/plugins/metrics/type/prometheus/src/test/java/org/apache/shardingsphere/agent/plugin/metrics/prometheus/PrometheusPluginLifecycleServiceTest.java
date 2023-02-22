@@ -35,14 +35,17 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
-public final class PrometheusPluginLifecycleServiceTest extends ProxyContextRestorer {
+public final class PrometheusPluginLifecycleServiceTest {
     
     private final PrometheusPluginLifecycleService pluginLifecycleService = new PrometheusPluginLifecycleService();
     
@@ -53,12 +56,21 @@ public final class PrometheusPluginLifecycleServiceTest extends ProxyContextRest
     
     @Test
     public void assertStart() throws IOException {
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString()))), true);
+            try (Socket socket = new Socket();) {
+                socket.connect(new InetSocketAddress("localhost", 8090));
+            }
+        }
+    }
+    
+    private static ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         InstanceContext instanceContext = new InstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null),
                 mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
-        ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
-        pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString()))), true);
-        new Socket().connect(new InetSocketAddress("localhost", 8090));
+        return new ContextManager(metaDataContexts, instanceContext);
     }
 }

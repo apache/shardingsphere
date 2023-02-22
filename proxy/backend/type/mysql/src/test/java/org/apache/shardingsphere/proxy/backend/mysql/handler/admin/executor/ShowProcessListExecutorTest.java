@@ -41,8 +41,8 @@ public final class ShowProcessListExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException, ReflectiveOperationException {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
             proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             ShowProcessListExecutor showProcessListExecutor = new ShowProcessListExecutor();
             setupBatchProcessContexts(showProcessListExecutor);
