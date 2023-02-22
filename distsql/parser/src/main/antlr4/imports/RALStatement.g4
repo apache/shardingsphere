@@ -140,7 +140,7 @@ filePath
     ;
 
 variableName
-    : STRING_
+    : IDENTIFIER_ | STRING_
     ;
 
 variableValues
