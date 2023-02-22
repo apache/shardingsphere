@@ -121,15 +121,33 @@ public final class ConfigurationChangedSubscriber {
     }
     
     private void disableDataSources() {
+        Map<String, StorageNodeDataSource> storageNodes = getDisabledDataSources();
         for (Entry<String, ShardingSphereDatabase> entry : contextManager.getMetaDataContexts().getMetaData().getDatabases().entrySet()) {
-            entry.getValue().getRuleMetaData().findRules(StaticDataSourceContainedRule.class).forEach(this::disableDataSources);
+            entry.getValue().getRuleMetaData().findRules(StaticDataSourceContainedRule.class).forEach(each -> disableDataSources(entry.getKey(), each, storageNodes));
         }
     }
     
-    private void disableDataSources(final StaticDataSourceContainedRule rule) {
-        Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
-        Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet()
+    private void disableDataSources(final String databaseName, final StaticDataSourceContainedRule rule, final Map<String, StorageNodeDataSource> storageNodes) {
+        for (Entry<String, StorageNodeDataSource> entry : storageNodes.entrySet()) {
+            QualifiedDatabase database = new QualifiedDatabase(entry.getKey());
+            if (!database.getDatabaseName().equals(databaseName)) {
+                continue;
+            }
+            disableDataSources(entry.getValue(), rule, database);
+        }
+    }
+    
+    private void disableDataSources(final StorageNodeDataSource storageNodeDataSource, final StaticDataSourceContainedRule rule, final QualifiedDatabase database) {
+        for (Entry<String, Collection<String>> entry : rule.getDataSourceMapper().entrySet()) {
+            if (!database.getGroupName().equals(entry.getKey())) {
+                continue;
+            }
+            entry.getValue().forEach(each -> rule.updateStatus(new StorageNodeDataSourceChangedEvent(database, storageNodeDataSource)));
+        }
+    }
+    
+    private Map<String, StorageNodeDataSource> getDisabledDataSources() {
+        return registryCenter.getStorageNodeStatusService().loadStorageNodes().entrySet()
                 .stream().filter(entry -> DataSourceState.DISABLED == entry.getValue().getStatus()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        disableDataSources.forEach((key, value) -> rule.updateStatus(new StorageNodeDataSourceChangedEvent(new QualifiedDatabase(key), value)));
     }
 }
