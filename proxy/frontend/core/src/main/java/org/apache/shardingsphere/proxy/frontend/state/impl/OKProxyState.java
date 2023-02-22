@@ -58,8 +58,7 @@ public final class OKProxyState implements ProxyState {
     }
     
     private boolean requireOccupyThreadForConnection(final ConnectionSession connectionSession) {
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)
-                || TransactionType.isDistributedTransaction(connectionSession.getTransactionStatus().getTransactionType());
+        return TransactionType.isDistributedTransaction(connectionSession.getTransactionStatus().getTransactionType());
     }
     
     private boolean isPreferNettyEventLoop() {
