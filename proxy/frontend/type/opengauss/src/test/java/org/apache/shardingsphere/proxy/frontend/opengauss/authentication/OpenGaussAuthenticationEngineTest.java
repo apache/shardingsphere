@@ -40,12 +40,12 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
-import org.apache.shardingsphere.proxy.frontend.opengauss.ProxyContextRestorer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -56,10 +56,11 @@ import java.util.Properties;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestorer {
+public final class OpenGaussAuthenticationEngineTest {
     
     private final String username = "root";
     
@@ -71,11 +72,6 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
     @SuppressWarnings("unchecked")
     @Before
     public void setup() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(Collections.emptyMap(), buildGlobalRuleMetaData(new ShardingSphereUser(username, password, "")), mock(ConfigurationProperties.class)));
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
     }
     
@@ -101,7 +97,11 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         payload.writeInt4(196608);
         payload.writeStringNul("client_encoding");
         payload.writeStringNul("UTF8");
-        new OpenGaussAuthenticationEngine().authenticate(channelHandlerContext, payload);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            new OpenGaussAuthenticationEngine().authenticate(channelHandlerContext, payload);
+        }
     }
     
     @Test(expected = ProtocolViolationException.class)
@@ -111,7 +111,19 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 16), StandardCharsets.UTF_8);
         payload.writeInt1('F');
         payload.writeInt8(0);
-        authenticationEngine.authenticate(channelHandlerContext, payload);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            authenticationEngine.authenticate(channelHandlerContext, payload);
+        }
+    }
+    
+    private ContextManager mockContextManager() {
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(Collections.emptyMap(), buildGlobalRuleMetaData(new ShardingSphereUser(username, password, "")), mock(ConfigurationProperties.class)));
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
