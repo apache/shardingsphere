@@ -183,6 +183,11 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
+    public String buildEstimateCountSQL(final String schemaName, final String tableName) {
+        return String.format("SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'", getQualifiedTableName(schemaName, tableName));
+    }
+    
+    @Override
     public String buildQueryAllOrderingSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);

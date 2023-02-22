@@ -72,8 +72,8 @@ public final class MySQLPipelineSQLBuilderTest {
     }
     
     @Test
-    public void assertBuilderCountSQLWithoutKeyword() {
-        String actualCountSQL = sqlBuilder.buildCountSQL(null, "t_order");
-        assertThat(actualCountSQL, is("SELECT COUNT(*) FROM t_order"));
+    public void assertBuilderEstimateCountSQLWithoutKeyword() {
+        String actualCountSQL = sqlBuilder.buildEstimateCountSQL(null, "t_order");
+        assertThat(actualCountSQL, is("SELECT TABLE_ROWS from INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 't_order'"));
     }
 }

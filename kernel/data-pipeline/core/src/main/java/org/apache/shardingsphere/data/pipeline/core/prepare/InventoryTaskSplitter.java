@@ -171,12 +171,21 @@ public final class InventoryTaskSplitter {
         PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
-        // TODO with a large amount of data, count the full table will have performance problem
-        String sql = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType()).buildCountSQL(schemaName, actualTableName);
+        PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType());
+        String sql = pipelineSQLBuilder.buildEstimateCountSQL(schemaName, actualTableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, connection.getCatalog());
+            long estimateCount;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                estimateCount = resultSet.getLong(1);
+            }
+            if (estimateCount > 0) {
+                return estimateCount;
+            }
+            try (ResultSet resultSet = connection.createStatement().executeQuery(pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName))) {
                 resultSet.next();
                 return resultSet.getLong(1);
             }
