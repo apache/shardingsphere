@@ -104,7 +104,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 44000     | 18002       | Altered process configuration does not exist. |
+| 42S02     | 18002       | There is no rule in database \`%s\`. |
 | 44000     | 18003       | Mode configuration does not exist. |
 | 44000     | 18004       | Target database name is null. You could define it in DistSQL or select a database. |
 | HY000     | 18020       | Failed to get DDL for table \`%s\`. |

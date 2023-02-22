@@ -21,13 +21,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Alter not exist process configuration exception.
+ * No any rule exists exception.
  */
-public final class AlterNotExistProcessConfigurationException extends PipelineSQLException {
+public final class NoAnyRuleExistsException extends PipelineSQLException {
     
     private static final long serialVersionUID = 8799641580689564088L;
     
-    public AlterNotExistProcessConfigurationException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Altered process configuration does not exist.");
+    public NoAnyRuleExistsException(final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 2, String.format("There is no rule in database `%s`.", databaseName));
     }
 }
