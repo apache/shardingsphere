@@ -123,6 +123,10 @@ public final class DistSQLScriptConstants {
     
     public static final String BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s";
     
+    public static final String DEFAULT_DATABASE_STRATEGY = "CREATE DEFAULT SHARDING DATABASE STRATEGY";
+    
+    public static final String DEFAULT_TABLE_STRATEGY = "CREATE DEFAULT SHARDING TABLE STRATEGY";
+    
     public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
     
     public static final String READWRITE_SPLITTING_FOR_STATIC = " %s ("

@@ -78,3 +78,5 @@ DATANODES('replica_ds_${0..1}.t_order_${0..1}'),
 TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))),
 KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake'))
 );
+
+CREATE DEFAULT SHARDING DATABASE STRATEGY(TYPE='standard', SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='replica_ds_${user_id % 2}'))));
