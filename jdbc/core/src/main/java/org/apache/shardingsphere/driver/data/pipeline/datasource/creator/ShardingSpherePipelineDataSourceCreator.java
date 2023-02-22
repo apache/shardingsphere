@@ -39,8 +39,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     public DataSource createPipelineDataSource(final Object dataSourceConfig) throws SQLException {
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
         enableStreamingQuery(rootConfig);
-        YamlShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules());
-        enableRangeQueryForInline(shardingRuleConfig);
+        ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules()).ifPresent(this::enableRangeQueryForInline);
         rootConfig.setDatabaseName(null);
         rootConfig.setSchemaName(null);
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
