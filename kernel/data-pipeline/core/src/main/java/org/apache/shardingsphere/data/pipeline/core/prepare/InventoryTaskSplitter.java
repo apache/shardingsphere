@@ -54,6 +54,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Inventory data task splitter.
@@ -171,19 +172,46 @@ public final class InventoryTaskSplitter {
         PipelineJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
-        // TODO with a large amount of data, count the full table will have performance problem
-        String sql = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType()).buildCountSQL(schemaName, actualTableName);
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                resultSet.next();
-                return resultSet.getLong(1);
+        PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType());
+        Optional<String> sql = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
+        try {
+            if (sql.isPresent()) {
+                long result = getEstimatedCount(dataSource, sql.get());
+                return result > 0 ? result : getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
             }
+            return getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
         } catch (final SQLException ex) {
             String uniqueKey = dumperConfig.hasUniqueKey() ? dumperConfig.getUniqueKeyColumns().get(0).getName() : "";
             throw new SplitPipelineJobByUniqueKeyException(dumperConfig.getActualTableName(), uniqueKey, ex);
         }
+    }
+    
+    // TODO maybe need refactor after PostgreSQL support estimated count.
+    private long getEstimatedCount(final DataSource dataSource, final String estimatedCountSQL) throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(estimatedCountSQL)) {
+            preparedStatement.setString(1, connection.getCatalog());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                return resultSet.getLong(1);
+            }
+        }
+    }
+    
+    private long getCount(final DataSource dataSource, final String countSQL) throws SQLException {
+        long startTimeMillis = System.currentTimeMillis();
+        long result;
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(countSQL)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                result = resultSet.getLong(1);
+            }
+        }
+        log.info("getCountSQLResult cost {} ms", System.currentTimeMillis() - startTimeMillis);
+        return result;
     }
     
     private Collection<IngestPosition<?>> getPositionByIntegerUniqueKeyRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,
