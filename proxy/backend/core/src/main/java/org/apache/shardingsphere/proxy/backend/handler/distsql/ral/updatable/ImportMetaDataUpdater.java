@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Import meta data updater.
@@ -66,6 +67,9 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
     
     private void importServerConfig(final ExportedMetaData exportedMetaData) {
         YamlProxyServerConfiguration yamlServerConfig = YamlEngine.unmarshal(exportedMetaData.getRules() + System.lineSeparator() + exportedMetaData.getProps(), YamlProxyServerConfiguration.class);
+        if (Objects.isNull(yamlServerConfig)) {
+            return;
+        }
         Collection<RuleConfiguration> rules = ruleConfigSwapperEngine.swapToRuleConfigurations(yamlServerConfig.getRules());
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getGlobalRuleService().persist(rules);
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getPropsService().persist(yamlServerConfig.getProps());

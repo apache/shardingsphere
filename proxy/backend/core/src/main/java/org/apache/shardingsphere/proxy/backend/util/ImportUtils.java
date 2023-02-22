@@ -50,7 +50,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.DatabaseDiscoveryRuleConfigurationImportChecker;
@@ -102,8 +101,6 @@ public class ImportUtils {
     private static final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
     private static final DataSourcePropertiesValidateHandler validateHandler = new DataSourcePropertiesValidateHandler();
-    
-    private static final YamlProxyConfigurationSwapper yamlProxyConfigurationSwapper = new YamlProxyConfigurationSwapper();
     
     public static void importDatabaseConfig(final YamlProxyDatabaseConfiguration yamlConfig) {
         String yamlDatabaseName = yamlConfig.getDatabaseName();
