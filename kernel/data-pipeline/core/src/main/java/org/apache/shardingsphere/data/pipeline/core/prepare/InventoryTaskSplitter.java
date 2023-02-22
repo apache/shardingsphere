@@ -172,11 +172,10 @@ public final class InventoryTaskSplitter {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
         PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType());
-        String sql = pipelineSQLBuilder.buildEstimateCountSQL(schemaName, actualTableName);
+        String sql = pipelineSQLBuilder.buildEstimateCountSQL(dumperConfig.getDataSourceName(), schemaName, actualTableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, connection.getCatalog());
             long estimateCount;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 resultSet.next();

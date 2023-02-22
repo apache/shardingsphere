@@ -40,4 +40,9 @@ public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder 
     protected String getRightIdentifierQuoteString() {
         return "";
     }
+    
+    @Override
+    public String buildEstimateCountSQL(final String databaseName, final String schemaName, final String tableName) {
+        return String.format("SELECT COUNT(*) FROM %s", getQualifiedTableName(schemaName, tableName));
+    }
 }
