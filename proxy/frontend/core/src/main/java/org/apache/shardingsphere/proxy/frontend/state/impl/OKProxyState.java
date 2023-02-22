@@ -54,7 +54,8 @@ public final class OKProxyState implements ProxyState {
         if (databaseProtocolFrontendEngine.getFrontendContext().isRequiredSameThreadForConnection(message)) {
             return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
         }
-        return UserExecutorGroup.getInstance().getExecutorService();
+        ExecutorService executorService = ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
+        return null != executorService ? executorService : UserExecutorGroup.getInstance().getExecutorService();
     }
     
     private boolean requireOccupyThreadForConnection(final ConnectionSession connectionSession) {
