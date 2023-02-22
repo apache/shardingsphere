@@ -27,7 +27,6 @@
     <row values="sql_federation_type| ADVANCED" />
     <row values="proxy_frontend_database_protocol_type| " />
     <row values="proxy_frontend_flush_threshold| 128" />
-    <row values="proxy_hint_enabled| true" />
     <row values="proxy_backend_query_fetch_size| -1" />
     <row values="proxy_frontend_executor_size| 0" />
     <row values="proxy_backend_executor_suitable| OLAP" />

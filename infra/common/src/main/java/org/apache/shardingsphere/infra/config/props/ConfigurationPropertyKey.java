@@ -78,11 +78,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class, false),
     
     /**
-     * Whether enable hint for ShardingSphere-Proxy.
-     */
-    PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
-    
-    /**
      * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
      * The default value is -1, which means set the minimum value for different JDBC drivers.
      */

@@ -20,10 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.RALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -46,9 +42,6 @@ public final class HintRALBackendHandler extends RALBackendHandler {
     
     @Override
     public ResponseHeader execute() {
-        ShardingSpherePreconditions.checkState(
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED),
-                () -> new UnsupportedSQLOperationException(String.format("%s should be true, please check your config", ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey())));
         hintRALStatementExecutor = HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession);
         return hintRALStatementExecutor.execute();
     }
