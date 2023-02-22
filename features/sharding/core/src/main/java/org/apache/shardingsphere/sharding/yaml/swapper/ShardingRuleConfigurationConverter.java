@@ -29,6 +29,7 @@ import java.util.Optional;
 /**
  * Sharding rule configuration converter.
  */
+// TODO Move to pipeline module
 public final class ShardingRuleConfigurationConverter {
     
     /**
@@ -38,8 +39,8 @@ public final class ShardingRuleConfigurationConverter {
      * @return sharding rule configuration
      * @throws IllegalStateException if there is no available sharding rule
      */
-    public static ShardingRuleConfiguration findAndConvertShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        return new YamlShardingRuleConfigurationSwapper().swapToObject(findYamlShardingRuleConfiguration(yamlRuleConfigs));
+    public static Optional<ShardingRuleConfiguration> findAndConvertShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
+        return Optional.of(new YamlShardingRuleConfigurationSwapper().swapToObject(findYamlShardingRuleConfiguration(yamlRuleConfigs)));
     }
     
     /**
