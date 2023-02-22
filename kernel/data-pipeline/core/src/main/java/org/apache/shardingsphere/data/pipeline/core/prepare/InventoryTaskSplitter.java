@@ -173,16 +173,29 @@ public final class InventoryTaskSplitter {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
         PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType());
-        Optional<String> estimatedCountSQL = pipelineSQLBuilder.buildEstimatedCountSQL(dumperConfig.getDataSourceName(), schemaName, actualTableName);
+        Optional<String> estimatedCountSQL = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
         try {
             if (estimatedCountSQL.isPresent()) {
-                long estimatedCount = getCountSQLResult(dataSource, estimatedCountSQL.get());
+                long estimatedCount = getEstimatedCountSQLResult(dataSource, estimatedCountSQL.get());
                 return estimatedCount > 0 ? estimatedCount : getCountSQLResult(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
             }
             return getCountSQLResult(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
         } catch (final SQLException ex) {
             String uniqueKey = dumperConfig.hasUniqueKey() ? dumperConfig.getUniqueKeyColumns().get(0).getName() : "";
             throw new SplitPipelineJobByUniqueKeyException(dumperConfig.getActualTableName(), uniqueKey, ex);
+        }
+    }
+    
+    // TODO maybe need refactor after PostgreSQL support estimated count.
+    private long getEstimatedCountSQLResult(final DataSource dataSource, final String estimatedCountSQL) throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(estimatedCountSQL)) {
+            preparedStatement.setString(1, connection.getCatalog());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                return resultSet.getLong(1);
+            }
         }
     }
     
