@@ -54,6 +54,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Inventory data task splitter.
@@ -172,26 +173,32 @@ public final class InventoryTaskSplitter {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
         PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getSourceDatabaseType());
-        String sql = pipelineSQLBuilder.buildEstimateCountSQL(dumperConfig.getDataSourceName(), schemaName, actualTableName);
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            long estimateCount;
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                resultSet.next();
-                estimateCount = resultSet.getLong(1);
+        Optional<String> estimatedCountSQL = pipelineSQLBuilder.buildEstimatedCountSQL(dumperConfig.getDataSourceName(), schemaName, actualTableName);
+        try {
+            if (estimatedCountSQL.isPresent()) {
+                long estimatedCount = getCountSQLResult(dataSource, estimatedCountSQL.get());
+                return estimatedCount > 0 ? estimatedCount : getCountSQLResult(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
             }
-            if (estimateCount > 0) {
-                return estimateCount;
-            }
-            try (ResultSet resultSet = connection.createStatement().executeQuery(pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName))) {
-                resultSet.next();
-                return resultSet.getLong(1);
-            }
+            return getCountSQLResult(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
         } catch (final SQLException ex) {
             String uniqueKey = dumperConfig.hasUniqueKey() ? dumperConfig.getUniqueKeyColumns().get(0).getName() : "";
             throw new SplitPipelineJobByUniqueKeyException(dumperConfig.getActualTableName(), uniqueKey, ex);
         }
+    }
+    
+    private long getCountSQLResult(final DataSource dataSource, final String countSQL) throws SQLException {
+        long startTimeMillis = System.currentTimeMillis();
+        long result;
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(countSQL)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                result = resultSet.getLong(1);
+            }
+        }
+        log.info("getCountSQLResult cost {} ms", System.currentTimeMillis() - startTimeMillis);
+        return result;
     }
     
     private Collection<IngestPosition<?>> getPositionByIntegerUniqueKeyRange(final InventoryIncrementalJobItemContext jobItemContext, final DataSource dataSource,

@@ -74,8 +74,8 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildEstimateCountSQL(final String databaseName, final String schemaName, final String tableName) {
-        return "";
+    public Optional<String> buildEstimatedCountSQL(final String databaseName, final String schemaName, final String tableName) {
+        return Optional.empty();
     }
     
     @Override

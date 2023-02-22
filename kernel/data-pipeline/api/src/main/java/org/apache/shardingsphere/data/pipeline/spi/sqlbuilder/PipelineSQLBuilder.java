@@ -136,14 +136,14 @@ public interface PipelineSQLBuilder extends TypedSPI {
     String buildCountSQL(String schemaName, String tableName);
     
     /**
-     * Build Estimate count SQL.
+     * Build Estimated count SQL.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
-     * @return estimate count sql
+     * @return estimated count sql
      */
-    String buildEstimateCountSQL(String databaseName, String schemaName, String tableName);
+    Optional<String> buildEstimatedCountSQL(String databaseName, String schemaName, String tableName);
     
     /**
      * Build query all ordering SQL.
