@@ -21,6 +21,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportMetaDataStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -28,7 +31,9 @@ import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
+import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNode;
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
 import org.apache.shardingsphere.proxy.backend.util.JsonUtils;
 
@@ -66,6 +71,8 @@ public final class ExportMetaDataExecutor implements DatabaseRequiredQueryableRA
     
     @SneakyThrows
     private String generateExportData(final ShardingSphereDatabase database) {
+        ExportedClusterInfo exportedClusterInfo = new ExportedClusterInfo();
+        exportedClusterInfo.setStorageNodes(generateExportStorageNodeData(database));
         ExportedMetaData exportedMetaData = new ExportedMetaData();
         Map<String, String> databases = new LinkedHashMap<>();
         exportedMetaData.setDatabases(databases);
@@ -73,7 +80,29 @@ public final class ExportMetaDataExecutor implements DatabaseRequiredQueryableRA
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
         exportedMetaData.setProps(generatePropsData(metaData.getProps().getProps()));
         exportedMetaData.setRules(generateRulesData(metaData.getGlobalRuleMetaData().getConfigurations()));
-        return JsonUtils.toJsonString(exportedMetaData);
+        exportedClusterInfo.setMetaData(exportedMetaData);
+        return JsonUtils.toJsonString(exportedClusterInfo);
+    }
+    
+    private Collection<ExportedStorageNode> generateExportStorageNodeData(final ShardingSphereDatabase database) {
+        Map<String, ExportedStorageNode> storageNodes = new LinkedHashMap<>();
+        database.getResourceMetaData().getDataSources().forEach((key, value) -> {
+            DataSourceMetaData dataSourceMetaData = database.getResourceMetaData().getDataSourceMetaData(key);
+            String databaseInstanceIp = dataSourceMetaData.getHostname() + ":" + dataSourceMetaData.getPort();
+            if (storageNodes.containsKey(databaseInstanceIp)) {
+                return;
+            }
+            ExportedStorageNode exportedStorageNode = new ExportedStorageNode();
+            exportedStorageNode.setIp(dataSourceMetaData.getHostname());
+            exportedStorageNode.setPort(String.valueOf(dataSourceMetaData.getPort()));
+            exportedStorageNode.setDatabase(dataSourceMetaData.getCatalog());
+            DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(value);
+            Map<String, Object> standardProperties = dataSourceProps.getConnectionPropertySynonyms().getStandardProperties();
+            exportedStorageNode.setUsername(String.valueOf(standardProperties.get("username")));
+            exportedStorageNode.setPassword(String.valueOf(standardProperties.get("password")));
+            storageNodes.put(databaseInstanceIp, exportedStorageNode);
+        });
+        return storageNodes.values();
     }
     
     private String generatePropsData(final Properties props) {

@@ -20,19 +20,14 @@ package org.apache.shardingsphere.proxy.backend.distsql.export;
 import lombok.Data;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
- * Exported meta data
+ * Exported cluster info
  */
 @Data
-public class ExportedMetaData {
+public class ExportedClusterInfo {
     
     private Collection<ExportedStorageNode> storageNodes;
     
-    private Map<String, String> databases;
-    
-    private String props;
-    
-    private String rules;
+    private ExportedMetaData metaData;
 }
