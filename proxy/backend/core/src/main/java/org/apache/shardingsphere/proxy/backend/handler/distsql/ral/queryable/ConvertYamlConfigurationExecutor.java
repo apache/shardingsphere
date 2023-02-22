@@ -81,6 +81,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.TreeMap;
 
@@ -225,7 +226,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         appendShardingTableRules(ruleConfig, result);
         appendShardingBindingTableRules(ruleConfig, result);
         appendShardingBroadcastTableRules(ruleConfig, result);
-        // TODO append defaultStrategy
+        appendDefaultShardingStrategy(ruleConfig, result);
     }
     
     private void appendShardingTableRules(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
@@ -327,7 +328,9 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         if (null == strategyConfig) {
             return;
         }
-        result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
+        if (Objects.equals(strategyType, DistSQLScriptConstants.DATABASE_STRATEGY) || Objects.equals(strategyType, DistSQLScriptConstants.TABLE_STRATEGY)) {
+            result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
+        }
         String type = strategyConfig.getType().toLowerCase();
         String algorithmDefinition = getAlgorithmType(shardingAlgorithms.get(strategyConfig.getShardingAlgorithmName()));
         switch (type) {
@@ -372,6 +375,20 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         }
         result.append(String.format(DistSQLScriptConstants.BROADCAST_TABLE_RULE, String.join(",", ruleConfig.getBroadcastTables())));
         result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+    }
+    
+    private void appendDefaultShardingStrategy(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
+        if (null == ruleConfig.getDefaultDatabaseShardingStrategy() && null == ruleConfig.getDefaultTableShardingStrategy()) {
+            return;
+        }
+        if (null != ruleConfig.getDefaultDatabaseShardingStrategy()) {
+            appendStrategy(ruleConfig.getDefaultDatabaseShardingStrategy(), DistSQLScriptConstants.DEFAULT_DATABASE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
+            result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+        }
+        if (null != ruleConfig.getDefaultTableShardingStrategy()) {
+            appendStrategy(ruleConfig.getDefaultTableShardingStrategy(), DistSQLScriptConstants.DEFAULT_TABLE_STRATEGY, result, ruleConfig.getShardingAlgorithms());
+            result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+        }
     }
     
     private void appendReadWriteSplittingDistSQL(final ReadwriteSplittingRuleConfiguration ruleConfig, final StringBuilder result) {
