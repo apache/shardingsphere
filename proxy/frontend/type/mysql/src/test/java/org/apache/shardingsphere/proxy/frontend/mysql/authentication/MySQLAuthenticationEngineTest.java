@@ -89,7 +89,6 @@ public final class MySQLAuthenticationEngineTest {
     public void assertAuthenticationMethodMismatch() {
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
-        mockContextManager(rule);
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
