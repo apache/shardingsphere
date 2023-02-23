@@ -393,7 +393,7 @@ public final class PostgreSQLComDescribeExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageTypes())
                 .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
-        return  result;
+        return result;
     }
     
     private void prepareJDBCBackendConnection(final String sql) throws SQLException {
