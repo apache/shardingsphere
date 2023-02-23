@@ -54,13 +54,6 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
     
     private YamlPipelineDataSourceConfiguration target;
     
-    /**
-     * Collection of each logic table's first data node.
-     * <p>
-     * If <pre>actualDataNodes: ds_${0..1}.t_order_${0..1}</pre> and <pre>actualDataNodes: ds_${0..1}.t_order_item_${0..1}</pre>,
-     * then value may be: {@code t_order:ds_0.t_order_0|t_order_item:ds_0.t_order_item_0}.
-     * </p>
-     */
     private String tablesFirstDataNodes;
     
     private List<String> jobShardingDataNodes;

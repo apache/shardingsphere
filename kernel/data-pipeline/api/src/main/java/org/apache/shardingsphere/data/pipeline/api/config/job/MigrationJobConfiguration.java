@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.config.job;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 
 import java.util.List;
@@ -54,16 +55,9 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     
     private final PipelineDataSourceConfiguration target;
     
-    /**
-     * Collection of each logic table's first data node.
-     * <p>
-     * If <pre>actualDataNodes: ds_${0..1}.t_order_${0..1}</pre> and <pre>actualDataNodes: ds_${0..1}.t_order_item_${0..1}</pre>,
-     * then value may be: {@code t_order:ds_0.t_order_0|t_order_item:ds_0.t_order_item_0}.
-     * </p>
-     */
-    private final String tablesFirstDataNodes;
+    private final JobDataNodeLine tablesFirstDataNodes;
     
-    private final List<String> jobShardingDataNodes;
+    private final List<JobDataNodeLine> jobShardingDataNodes;
     
     private final int concurrency;
     

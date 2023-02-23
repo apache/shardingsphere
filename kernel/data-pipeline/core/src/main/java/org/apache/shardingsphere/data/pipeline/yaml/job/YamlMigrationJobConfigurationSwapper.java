@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.data.pipeline.yaml.job;
 
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+
+import java.util.stream.Collectors;
 
 /**
  * YAML migration job configuration swapper.
@@ -42,8 +45,8 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
         result.setTargetTableName(data.getTargetTableName());
         result.setSource(dataSourceConfigSwapper.swapToYamlConfiguration(data.getSource()));
         result.setTarget(dataSourceConfigSwapper.swapToYamlConfiguration(data.getTarget()));
-        result.setTablesFirstDataNodes(data.getTablesFirstDataNodes());
-        result.setJobShardingDataNodes(data.getJobShardingDataNodes());
+        result.setTablesFirstDataNodes(data.getTablesFirstDataNodes().marshal());
+        result.setJobShardingDataNodes(data.getJobShardingDataNodes().stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
         result.setConcurrency(data.getConcurrency());
         result.setRetryTimes(data.getRetryTimes());
         return result;
@@ -56,7 +59,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
                 yamlConfig.getSourceDatabaseType(), yamlConfig.getTargetDatabaseType(),
                 yamlConfig.getSourceTableName(), yamlConfig.getTargetTableName(),
                 dataSourceConfigSwapper.swapToObject(yamlConfig.getSource()), dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
-                yamlConfig.getTablesFirstDataNodes(), yamlConfig.getJobShardingDataNodes(),
+                JobDataNodeLine.unmarshal(yamlConfig.getTablesFirstDataNodes()), yamlConfig.getJobShardingDataNodes().stream().map(JobDataNodeLine::unmarshal).collect(Collectors.toList()),
                 yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }
     
