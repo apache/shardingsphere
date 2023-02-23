@@ -18,31 +18,23 @@
 package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.impl;
 
 import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
-import org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussAuthenticationMethod;
-import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussMacCalculator;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticator;
-
-import java.util.Arrays;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl.PostgreSQLMD5PasswordAuthenticator;
 
 /**
- * SCRAM Sha256 password authenticator for openGauss.
+ * MD5 password authenticator for openGauss.
  */
-public final class OpenGaussSCRAMSha256PasswordAuthenticator implements OpenGaussAuthenticator {
+public final class OpenGaussMD5PasswordAuthenticator implements OpenGaussAuthenticator {
     
     @Override
     public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
-        String h3HexString = (String) authInfo[0];
-        String salt = (String) authInfo[1];
-        String nonce = (String) authInfo[2];
-        int serverIteration = (int) authInfo[3];
-        byte[] serverStoredKey = OpenGaussMacCalculator.requestClientMac(user.getPassword(), salt, serverIteration);
-        byte[] clientCalculatedStoredKey = OpenGaussMacCalculator.calculateClientMac(h3HexString, nonce, serverStoredKey);
-        return Arrays.equals(clientCalculatedStoredKey, serverStoredKey);
+        return new PostgreSQLMD5PasswordAuthenticator().authenticate(user, authInfo);
     }
     
     @Override
     public AuthenticationMethod getAuthenticationMethod() {
-        return OpenGaussAuthenticationMethod.SCRAM_SHA256;
+        return PostgreSQLAuthenticationMethod.MD5;
     }
 }
