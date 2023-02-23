@@ -142,8 +142,9 @@ public final class MySQLAuthenticationEngineTest {
         when(rule.findUser(new Grantee("root", "127.0.0.1"))).thenReturn(Optional.empty());
         ChannelHandlerContext context = mockChannelHandlerContext();
         ContextManager contextManager = mockContextManager(rule);
-        try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()));
-             MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
+        try (
+                MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()));
+                MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
             proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             proxyContext.when(() -> ProxyContext.getInstance().databaseExists("sharding_db")).thenReturn(true);
             authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
@@ -189,8 +190,9 @@ public final class MySQLAuthenticationEngineTest {
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));
         ChannelHandlerContext context = mockChannelHandlerContext();
         ContextManager contextManager = mockContextManager(rule);
-        try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertDatabaseAccessDeniedErrorPacket(mockContext.arguments()));
-             MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
+        try (
+                MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertDatabaseAccessDeniedErrorPacket(mockContext.arguments()));
+                MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
             proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             proxyContext.when(() -> ProxyContext.getInstance().databaseExists("sharding_db")).thenReturn(true);
             authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
