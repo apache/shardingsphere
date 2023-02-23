@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.prometheus;
+package org.apache.shardingsphere.test.e2e.agent.zipkin.result;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
-import org.junit.Before;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class ProxyContextRestorer {
+import java.util.Map;
+
+/**
+ * Span result.
+ */
+@Getter
+@Setter
+public class SpanResult {
     
-    private ContextManager currentContextManager;
+    private String traceId;
     
-    @Before
-    public void recordCurrentContextManager() {
-        currentContextManager = ProxyContext.getInstance().getContextManager();
-    }
+    private String id;
     
-    @After
-    public void restorePreviousContextManager() {
-        ProxyContext.init(currentContextManager);
-    }
+    private String name;
+    
+    private long timestamp;
+    
+    private long duration;
+    
+    private LocalEndpoint localEndpoint;
+    
+    private Map<String, String> tags;
 }

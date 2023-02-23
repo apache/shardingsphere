@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
+import java.util.Optional;
+
 public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
@@ -39,5 +41,10 @@ public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder 
     @Override
     protected String getRightIdentifierQuoteString() {
         return "";
+    }
+    
+    @Override
+    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
+        return Optional.empty();
     }
 }

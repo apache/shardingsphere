@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing;
+package org.apache.shardingsphere.data.pipeline.core.exception.metadata;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-public abstract class ProxyContextRestorer {
+/**
+ * No any rule exists exception.
+ */
+public final class NoAnyRuleExistsException extends PipelineSQLException {
     
-    private ContextManager currentContextManager;
+    private static final long serialVersionUID = 8799641580689564088L;
     
-    @Before
-    public void recordCurrentContextManager() {
-        currentContextManager = ProxyContext.getInstance().getContextManager();
-    }
-    
-    @After
-    public void restorePreviousContextManager() {
-        ProxyContext.init(currentContextManager);
+    public NoAnyRuleExistsException(final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 2, String.format("There is no rule in database `%s`.", databaseName));
     }
 }

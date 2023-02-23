@@ -88,6 +88,12 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     }
     
     @Override
+    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
+        // TODO Support estimated count later.
+        return Optional.empty();
+    }
+    
+    @Override
     public String getType() {
         return "openGauss";
     }

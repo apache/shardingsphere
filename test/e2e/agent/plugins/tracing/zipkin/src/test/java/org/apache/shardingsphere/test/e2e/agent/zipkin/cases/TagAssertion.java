@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.util;
+package org.apache.shardingsphere.test.e2e.agent.zipkin.cases;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
-import org.junit.Before;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class ProxyContextRestorer {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
+/**
+ * Tag assertion.
+ */
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class TagAssertion {
     
-    private ContextManager currentContextManager;
+    @XmlAttribute(name = "key")
+    private String tagKey;
     
-    @Before
-    public void recordCurrentContextManager() {
-        currentContextManager = ProxyContext.getInstance().getContextManager();
-    }
+    @XmlAttribute(name = "value")
+    private String tagValue;
     
-    @After
-    public void restorePreviousContextManager() {
-        ProxyContext.init(currentContextManager);
-    }
+    @XmlAttribute(name = "need-assert-value")
+    private boolean needAssertValue;
 }
