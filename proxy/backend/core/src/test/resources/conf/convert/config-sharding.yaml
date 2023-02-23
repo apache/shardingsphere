@@ -99,7 +99,7 @@ rules:
    t_order_item_hint_inline:
      type: HINT_INLINE
      props:
-       algorithm-expression: t_order_item_${order_id % 2}
+       algorithm-expression: ds_${Integer.valueOf(value) % 2}
 
  keyGenerators:
    snowflake:
