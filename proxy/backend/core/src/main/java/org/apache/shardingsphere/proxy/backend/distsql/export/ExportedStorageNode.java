@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.distsql.export;
 import lombok.Data;
 
 /**
- * Exported storage node
+ * Exported storage node.
  */
 @Data
 public class ExportedStorageNode {

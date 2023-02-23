@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -46,13 +47,27 @@ public class JsonUtils {
         return mapper;
     }
     
-    @SneakyThrows
+    /**
+     * Parse data to json string.
+     * 
+     * @param data data
+     * @return json string
+     */
+    @SneakyThrows(JsonProcessingException.class)
     public static String toJsonString(final Object data) {
         return MAPPER.writeValueAsString(data);
     }
     
-    @SneakyThrows
-    public static <T> T readValue(final String value, Class<T> clazz) {
+    /**
+     * Deserialize to Object from json string.
+     * 
+     * @param value json string
+     * @param clazz target Object
+     * @param <T> the type of return Object data
+     * @return target Object data
+     */
+    @SneakyThrows(JsonProcessingException.class)
+    public static <T> T readValue(final String value, final Class<T> clazz) {
         return MAPPER.readValue(value, clazz);
     }
 }

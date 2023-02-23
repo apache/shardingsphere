@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ImportMetaDataUpdaterTest extends ProxyContextRestorer {
     
-    private static final String metadata = "{\"storageNodes\":[{\"ip\":\"127.0.0.1\",\"port\":\"3306\",\"username\":\"root\",\"password\":\"\",\"database\":\"db0\"}],"
+    private static final String METADATA_VALUE = "{\"storageNodes\":[{\"ip\":\"127.0.0.1\",\"port\":\"3306\",\"username\":\"root\",\"password\":\"\",\"database\":\"db0\"}],"
             + "\"metaData\":{\"databases\":{\"sharding_db\":\"databaseName: sharding_db\\ndataSources:\\nrules:\\n\"},"
             + "\"props\":\"props:\\n  system-log-level: INFO\\n  sql-show: false\\n\","
             + "\"rules\":\"rules:\\n- !AUTHORITY\\n  privilege:\\n    type: ALL_PERMITTED\\n  users:\\n  - authenticationMethodName: ''\\n    password: root\\n    user: root@%\\n\"}}";
@@ -87,7 +87,7 @@ public final class ImportMetaDataUpdaterTest extends ProxyContextRestorer {
     public void assertImportMetaData() throws SQLException {
         initWithDataSource(empty);
         importMetaDataUpdater = new ImportMetaDataUpdater();
-        importMetaDataUpdater.executeUpdate(empty, new ImportMetaDataStatement(metadata, null));
+        importMetaDataUpdater.executeUpdate(empty, new ImportMetaDataStatement(METADATA_VALUE, null));
     }
     
     @Test(expected = IllegalStateException.class)

@@ -22,7 +22,7 @@ import lombok.Data;
 import java.util.Collection;
 
 /**
- * Exported cluster info
+ * Exported cluster info.
  */
 @Data
 public class ExportedClusterInfo {

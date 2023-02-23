@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Exported meta data
+ * Exported meta data.
  */
 @Data
 public class ExportedMetaData {
