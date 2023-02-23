@@ -58,9 +58,7 @@ public final class JobConfigurationBuilder {
     }
     
     private static String generateJobId(final YamlMigrationJobConfiguration yamlJobConfig) {
-        String sourceTableName = RandomStringUtils.randomAlphabetic(32);
-        MigrationJobId migrationJobId = new MigrationJobId(yamlJobConfig.getSourceResourceName(), yamlJobConfig.getSourceSchemaName(), sourceTableName,
-                yamlJobConfig.getTargetDatabaseName(), yamlJobConfig.getTargetTableName());
+        MigrationJobId migrationJobId = new MigrationJobId(yamlJobConfig.getJobShardingDataNodes(), RandomStringUtils.randomAlphabetic(32));
         return new MigrationJobAPI().marshalJobId(migrationJobId);
     }
     

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.api.datanode;
 
 import com.google.common.base.Splitter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
 
@@ -26,6 +28,7 @@ import java.util.List;
 /**
  * Data node util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataNodeUtil {
     
     /**

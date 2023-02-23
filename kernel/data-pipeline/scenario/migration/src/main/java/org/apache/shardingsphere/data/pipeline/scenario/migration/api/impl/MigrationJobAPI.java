@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -114,6 +113,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
+    private static final Gson GSON = new Gson();
+    
     private final YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
     
     private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
@@ -122,9 +123,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
-        MigrationJobId jobId = (MigrationJobId) pipelineJobId;
-        String sourceSchemaName = null != jobId.getSourceSchemaName() ? jobId.getSourceSchemaName() : "";
-        String text = Joiner.on('|').join(jobId.getSourceResourceName(), sourceSchemaName, jobId.getSourceTableName(), jobId.getTargetDatabaseName(), jobId.getTargetTableName());
+        String text = GSON.toJson(pipelineJobId);
         return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     
@@ -158,8 +157,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     private String generateJobId(final YamlMigrationJobConfiguration config) {
-        MigrationJobId jobId = new MigrationJobId(config.getSourceResourceName(), config.getSourceSchemaName(), config.getSourceTableName(),
-                config.getTargetDatabaseName(), config.getTargetTableName());
+        MigrationJobId jobId = new MigrationJobId(config.getJobShardingDataNodes(), config.getTargetDatabaseName());
         return marshalJobId(jobId);
     }
     
