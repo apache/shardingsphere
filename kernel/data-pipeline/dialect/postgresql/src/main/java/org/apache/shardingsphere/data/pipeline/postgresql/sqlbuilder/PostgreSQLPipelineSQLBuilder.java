@@ -63,7 +63,12 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     
     @Override
     public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
-        return super.buildInsertSQL(schemaName, dataRecord) + buildConflictSQL(dataRecord);
+        String result = super.buildInsertSQL(schemaName, dataRecord);
+        // TODO without unique key, job has been interrupted, which may lead to data duplication
+        if (dataRecord.getUniqueKeyValue().isEmpty()) {
+            return result;
+        }
+        return result + buildConflictSQL(dataRecord);
     }
     
     // Refer to https://www.postgresql.org/docs/current/sql-insert.html
