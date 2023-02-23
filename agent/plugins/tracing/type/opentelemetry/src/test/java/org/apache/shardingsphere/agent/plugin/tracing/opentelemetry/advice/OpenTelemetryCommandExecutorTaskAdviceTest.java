@@ -55,7 +55,6 @@ public final class OpenTelemetryCommandExecutorTaskAdviceTest extends AbstractCo
         OpenTelemetryCommandExecutorTaskAdvice advice = new OpenTelemetryCommandExecutorTaskAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, "OpenTelemetry");
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException(), "OpenTelemetry");
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, null, "OpenTelemetry");
         List<SpanData> spanItems = COLLECTOR.getSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);

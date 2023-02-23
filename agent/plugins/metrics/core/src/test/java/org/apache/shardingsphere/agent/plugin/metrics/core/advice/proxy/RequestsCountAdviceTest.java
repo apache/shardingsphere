@@ -46,7 +46,7 @@ public final class RequestsCountAdviceTest {
     @Test
     public void assertCountRequests() {
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
-        advice.beforeMethod(targetObject, mock(Method.class), new Object[]{}, "FIXTURE");
+        advice.afterMethod(targetObject, mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("1"));
     }
 }

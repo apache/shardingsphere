@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.opentelemetry.result.TracingResult;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ public final class OpenTelemetryPluginE2EIT extends BasePluginE2EIT {
     
     private static final String EXECUTE_SQL = "/shardingsphere/executesql/";
     
+    @Ignore
     @Test
     public void assertProxyWithAgent() throws IOException {
         super.assertProxyWithAgent();

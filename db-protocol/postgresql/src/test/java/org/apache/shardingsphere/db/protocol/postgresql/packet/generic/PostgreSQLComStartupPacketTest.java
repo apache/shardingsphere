@@ -42,7 +42,7 @@ public final class PostgreSQLComStartupPacketTest {
         PostgreSQLPacketPayload payload = createPayload(parametersMap, packetMessageLength, byteBuf);
         PostgreSQLComStartupPacket actual = new PostgreSQLComStartupPacket(payload);
         assertThat(actual.getDatabase(), is("test_db"));
-        assertThat(actual.getUser(), is("postgres"));
+        assertThat(actual.getUsername(), is("postgres"));
         assertThat(actual.getClientEncoding(), is("UTF8"));
         assertThat(byteBuf.writerIndex(), is(packetMessageLength));
     }

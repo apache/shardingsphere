@@ -58,11 +58,11 @@ public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
     }
     
     /**
-     * Get user.
+     * Get user name.
      * 
-     * @return user
+     * @return username
      */
-    public String getUser() {
+    public String getUsername() {
         return parametersMap.get(USER_NAME_KEY);
     }
     

@@ -43,8 +43,8 @@ services:
 - 当前阶段，GraalVM Native Image 形态的 ShardingSphere Proxy 处于混合 AOT ( GraalVM Native Image ) 和 JIT ( GraalVM
   Truffle Espresso ) 运行的阶段。由于 https://github.com/oracle/graal/issues/4555 尚未关闭，GraalVM Truffle Espresso
   运行需要的 `.so` 文件并不会进入 GraalVM Native Image 内。因此如果你需要在 Docker Image 外运行 ShardingSphere Proxy
-  Native 的二进制文件，你需要确保系统环境变量 `GRAALVM_HOME` 或 `JAVA_HOME` 指向 GraalVM 的 `bin` 目录，并且此 GraalVM
-  实例已经通过 `GraalVM Updater` 安装了 `espresso` 组件。目前，`GRAALVM_HOME` 优先级比 `JAVA_HOME` 高。
+  Native 的二进制文件，你需要确保系统环境变量 `JAVA_HOME` 指向 GraalVM 的 `bin` 目录，并且此 GraalVM
+  实例已经通过 `GraalVM Updater` 安装了 `espresso` 组件。
 
 - 本节假定处于 Linux（amd64，aarch64）， MacOS（amd64）或 Windows（amd64）环境。
   如果你位于 MacOS（aarch64/M1） 环境，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/2666 。
@@ -58,7 +58,7 @@ services:
 
 3. 根据 https://www.graalvm.org/22.3/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
 
-4. 如果需要构建 Docker Image， 确保 `docker-cli` 在系统环境变量内。
+4. 如果需要构建 Docker Image， 确保 `docker-ce` 已安装。
 
 ## 操作步骤
 
@@ -104,15 +104,16 @@ services:
 ./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
 ```
 
-3. 通过命令行启动 Native Image, 需要带上两个参数，
+3. 通过命令行启动 Native Image, 需要带上 4 个参数。
    第一个参数为 ShardingSphere Proxy 使用的端口，第二个参数为你编写的包含 `server.yaml` 的 `/conf` 文件夹，
+   第三个参数为绑定端口的 Address，第四个参数为 Force Start，如果为 true 则保证 ShardingSphere Proxy Native 无论能否连接都能正常启动。
    假设已存在文件夹`./custom/conf`，示例为
 
 ```bash
-./apache-shardingsphere-proxy-native 3307 ./custom/conf
+./apache-shardingsphere-proxy-native 3307 ./custom/conf "0.0.0.0" false
 ```
 
-4. 如果需要构建 Docker Image, 在添加后存在 SPI 实现的依赖或第三方依赖后, 在命令行执行如下命令。
+4. 如果需要构建 Docker Image, 在添加存在 SPI 实现的依赖或第三方依赖后, 在命令行执行如下命令。
 
 ```shell
 ./mvnw -am -pl distribution/proxy-native -B -Pnative,docker.native -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
@@ -149,13 +150,13 @@ services:
 
 - 你可以使用 https://www.graalvm.org/22.3/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image
   的内部行为，并根据其要求使用 VSCode 完成调试工作。
-  如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，
-  你可以关注 https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
-  及其后继。
+  如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native
+  Image，你可以关注 https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
+  及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行
+  Debug，请关注尚未关闭的 https://github.com/oracle/graal/issues/5648 。
 
-- 对于使用 `ShardingSphere Agent` 等 APM Java Agent 的情形，
-  GraalVM 的 `native-image` 组件尚未完全支持在构建 Native Image 时使用
-  javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065。
+- 对于使用 `ShardingSphere Agent` 等 APM Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
+  Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065。
 
 - 以下部分采用 `Apache SkyWalking Java Agent` 作为示例，可用于跟踪 GraalVM 社区的对应 issue。
 

@@ -42,6 +42,6 @@ public abstract class PrimaryKeyPosition<T> {
     
     @Override
     public final String toString() {
-        return String.format("%s,%s,%s", getType(), getBeginValue(), getEndValue());
+        return String.format("%s,%s,%s", getType(), null != getBeginValue() ? getBeginValue() : "", null != getEndValue() ? getEndValue() : "");
     }
 }

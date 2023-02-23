@@ -55,10 +55,12 @@ public final class ShardingSphereResourceMetaData {
         dataSourceMetaDataMap = createDataSourceMetaDataMap(enabledDataSources, storageTypes);
     }
     
-    private Map<String, DatabaseType> createStorageTypes(final Map<String, DataSource> dataSources) {
+    private Map<String, DatabaseType> createStorageTypes(final Map<String, DataSource> enabledDataSources) {
         Map<String, DatabaseType> result = new LinkedHashMap<>(dataSources.size(), 1);
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            result.put(entry.getKey(), DatabaseTypeEngine.getStorageType(Collections.singletonList(entry.getValue())));
+            DatabaseType storageType = enabledDataSources.containsKey(entry.getKey()) ? DatabaseTypeEngine.getStorageType(Collections.singletonList(entry.getValue()))
+                    : DatabaseTypeEngine.getStorageType(Collections.emptyList());
+            result.put(entry.getKey(), storageType);
         }
         return result;
     }

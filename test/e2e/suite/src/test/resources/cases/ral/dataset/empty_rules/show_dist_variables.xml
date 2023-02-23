@@ -21,8 +21,6 @@
         <column name="variable_value" />
     </metadata>
     <row values="system_log_level| INFO" />
-    <row values="sql_show| false" />
-    <row values="sql_simple| false" />
     <row values="kernel_executor_size| 16" />
     <row values="max_connections_size_per_query| 1" />
     <row values="check_table_meta_data_enabled| false" />
@@ -38,7 +36,11 @@
     <row values="proxy_default_port| 3307" />
     <row values="proxy_netty_backlog| 1024" />
     <row values="proxy_instance_type| Proxy" />
+    <row values="cdc_server_port| 33071" />
+    <row values="proxy_meta_data_collector_enabled| true" />
     <row values="agent_plugins_enabled| true" />
     <row values="cached_connections| 0" />
     <row values="transaction_type| LOCAL" />
+    <row values="sql_show| false" />
+    <row values="sql_simple| false" />
 </dataset>

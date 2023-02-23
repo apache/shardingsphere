@@ -72,7 +72,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             MySQLHandshakeResponse41Packet handshakeResponsePacket = new MySQLHandshakeResponse41Packet(MAX_PACKET_SIZE, CHARACTER_SET, username);
             handshakeResponsePacket.setAuthResponse(generateAuthResponse(handshake.getAuthPluginData().getAuthenticationPluginData()));
             handshakeResponsePacket.setCapabilityFlags(generateClientCapability());
-            handshakeResponsePacket.setAuthPluginName(MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION);
+            handshakeResponsePacket.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
             ctx.channel().writeAndFlush(handshakeResponsePacket);
             serverInfo = new ServerInfo();
             serverInfo.setServerVersion(new ServerVersion(handshake.getServerVersion()));

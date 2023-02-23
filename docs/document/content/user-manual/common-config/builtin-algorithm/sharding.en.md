@@ -23,20 +23,6 @@ Attributes:
 | -------------- | ---------- | -------------- |
 | sharding-count | int        | Sharding count |
 
-#### Modulo sharding algorithm provided by CosId
-
-Modulo sharding algorithm implemented by the tool class based on `me.ahoo.cosid:cosid-core`.
-See the discussion at https://github.com/apache/shardingsphere/issues/14047 .
-
-Type: COSID_MOD
-
-Attributes:
-
-| *Name*          | *DataType* | *Description*                                     |
-|-------------------| -------- |---------------------------------------------------|
-| mod               | int      | Sharding count                                    |
-| logic-name-prefix | String   | Prefix pattern of sharding data sources or tables |
-
 #### Hash Modulo Sharding Algorithm
 
 Type: HASH_MOD
@@ -160,6 +146,19 @@ Attributes：
 | datetime-interval-unit   | String  | Unit of sharding value interval, must can be transformed to Java ChronoUnit's Enum value. For example: MONTHS                                                           |         |
 | datetime-interval-amount | int     | Interval of sharding value, after which the next shard will be entered                                                                                                            |
 
+#### Modulo sharding algorithm provided by CosId
+
+Modulo sharding algorithm implemented by the tool class based on `me.ahoo.cosid:cosid-core`.
+See the discussion at https://github.com/apache/shardingsphere/issues/14047 .
+
+Type: COSID_MOD
+
+Attributes:
+
+| *Name*          | *DataType* | *Description*                                     |
+|-------------------| -------- |---------------------------------------------------|
+| mod               | int      | Sharding count                                    |
+| logic-name-prefix | String   | Prefix pattern of sharding data sources or tables |
 
 ### Complex Sharding Algorithm
 

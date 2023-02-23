@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.common;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.JDBCAgentTestUtils;
@@ -30,15 +31,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Basic integration test.
  */
+@Slf4j
 public abstract class BasePluginE2EIT {
     
     @Before
     public void check() {
         Assume.assumeThat(E2ETestEnvironment.getInstance().isEnvironmentPrepared(), is(true));
+        Assume.assumeThat(E2ETestEnvironment.getInstance().isInitializationFailed(), is(false));
+        E2ETestEnvironment.getInstance().createDataSource();
+        assertNotNull(E2ETestEnvironment.getInstance().getDataSource());
     }
     
     @Test

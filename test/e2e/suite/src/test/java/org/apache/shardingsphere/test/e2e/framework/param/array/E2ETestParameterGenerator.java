@@ -104,7 +104,7 @@ public final class E2ETestParameterGenerator {
                                                                          final DatabaseType databaseType, final SQLExecuteType sqlExecuteType,
                                                                          final IntegrationTestCaseAssertion assertion, final SQLCommandType sqlCommandType) {
         Collection<AssertionTestParameter> result = new LinkedList<>();
-        for (String each : envAdapters) {
+        for (String each : getEnvAdapters(testCaseContext.getTestCase().getAdapters())) {
             if (sqlCommandType.getRunningAdaptors().contains(each)) {
                 result.addAll(getAssertionTestParameter(testCaseContext, assertion, each, databaseType, sqlExecuteType, sqlCommandType));
             }
@@ -118,6 +118,10 @@ public final class E2ETestParameterGenerator {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> filterScenarios(each, scenarios, sqlCommandType.getSqlStatementClass()))
                 .map(each -> new AssertionTestParameter(testCaseContext, assertion, adapter, each, envMode, databaseType, sqlExecuteType)).collect(Collectors.toList());
+    }
+    
+    private Collection<String> getEnvAdapters(final String envAdapters) {
+        return Strings.isNullOrEmpty(envAdapters) ? this.envAdapters : Splitter.on(',').trimResults().splitToList(envAdapters);
     }
     
     private boolean filterScenarios(final String scenario, final Collection<String> scenarios, final Class<? extends SQLStatement> sqlStatementClass) {

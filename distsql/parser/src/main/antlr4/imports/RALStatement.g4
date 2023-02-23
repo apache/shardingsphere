@@ -140,7 +140,7 @@ filePath
     ;
 
 variableName
-    : IDENTIFIER_
+    : IDENTIFIER_ | STRING_
     ;
 
 variableValues
@@ -169,16 +169,4 @@ label
 
 intValue
     : INT_
-    ;
-
-prepareDistSQL
-    : PREPARE DISTSQL
-    ;
-
-applyDistSQL
-    : APPLY DISTSQL
-    ;
-
-discardDistSQL
-    : DISCARD DISTSQL
     ;

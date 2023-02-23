@@ -40,27 +40,36 @@ public final class AuthorityRule implements GlobalRule {
     @Getter
     private final AuthorityRuleConfiguration configuration;
     
-    private final Collection<ShardingSphereUser> users;
-    
     private final AuthorityProvider provider;
     
     private volatile AuthorityRegistry authorityRegistry;
     
     public AuthorityRule(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
-        users = ruleConfig.getUsers();
-        provider = TypedSPILoader.getService(AuthorityProvider.class, ruleConfig.getProvider().getType(), ruleConfig.getProvider().getProps());
+        provider = TypedSPILoader.getService(AuthorityProvider.class, ruleConfig.getAuthorityProvider().getType(), ruleConfig.getAuthorityProvider().getProps());
         authorityRegistry = provider.buildAuthorityRegistry(databases, ruleConfig.getUsers());
     }
     
     /**
+     * Get authenticator type.
+     *
+     * @param user user
+     * @return authenticator type
+     */
+    public String getAuthenticatorType(final ShardingSphereUser user) {
+        return configuration.getAuthenticators().containsKey(user.getAuthenticationMethodName())
+                ? configuration.getAuthenticators().get(user.getAuthenticationMethodName()).getType()
+                : Optional.ofNullable(configuration.getDefaultAuthenticator()).orElse("");
+    }
+    
+    /**
      * Find user.
-     * 
+     *
      * @param grantee grantee user
      * @return user
      */
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
-        return users.stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
+        return configuration.getUsers().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
     }
     
     /**

@@ -82,7 +82,6 @@ public final class OpenTracingCommandExecutorTaskAdviceTest extends AbstractComm
         TargetAdviceObject targetObject = getTargetObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, "OpenTracing");
         ADVICE.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException(), "OpenTracing");
-        ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

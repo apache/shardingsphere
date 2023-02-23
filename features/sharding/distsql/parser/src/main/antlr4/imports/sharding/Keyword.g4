@@ -326,3 +326,7 @@ DML_SHARDING_CONDITIONS
 NOT
     : N O T
     ;
+
+NONE
+    : N O N E
+    ;

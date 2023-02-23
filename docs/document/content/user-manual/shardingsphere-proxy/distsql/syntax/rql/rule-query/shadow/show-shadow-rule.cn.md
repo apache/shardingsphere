@@ -61,7 +61,7 @@ mysql> SHOW SHADOW RULE shadow_rule FROM shadow_db;
 - 查询当前逻辑库中的指定影子规则
 
 ```sql
-SHOW SHADOW RULE shadow_rule；
+SHOW SHADOW RULE shadow_rule;
 ```
 
 ```sql

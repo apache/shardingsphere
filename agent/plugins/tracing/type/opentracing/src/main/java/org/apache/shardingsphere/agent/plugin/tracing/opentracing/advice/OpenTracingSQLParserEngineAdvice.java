@@ -50,6 +50,8 @@ public final class OpenTracingSQLParserEngineAdvice extends TracingSQLParserEngi
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
-        OpenTracingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
+        Scope scope = (Scope) target.getAttachment();
+        OpenTracingErrorSpan.setError(scope.span(), throwable);
+        scope.close();
     }
 }

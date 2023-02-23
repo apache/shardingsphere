@@ -26,7 +26,7 @@ import com.google.protobuf.Int32Value;
 import com.google.protobuf.Int64Value;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.StringValue;
-import com.google.protobuf.util.JsonFormat;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigDecimalValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigIntegerValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BlobValue;
@@ -43,6 +43,7 @@ import java.time.LocalTime;
 /**
  * Any value convert.
  */
+@Slf4j
 public final class AnyValueConvert {
     
     /**
@@ -98,7 +99,9 @@ public final class AnyValueConvert {
         if (any.is(BlobValue.class)) {
             return any.unpack(BlobValue.class).getValue().toByteArray();
         }
-        return JsonFormat.printer().includingDefaultValueFields().print(any);
+        // TODO can't use JsonFormat, might change the original value without error prompt. there need to cover more types,
+        log.error("not support unpack value={}", any);
+        throw new UnsupportedOperationException(String.format("not support unpack the type %s", any.getTypeUrl()));
     }
     
     private static Timestamp converProtobufTimestamp(final com.google.protobuf.Timestamp timestamp) {

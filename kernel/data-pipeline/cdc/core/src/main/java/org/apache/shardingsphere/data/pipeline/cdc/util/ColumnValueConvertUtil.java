@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
-import com.google.gson.Gson;
 import com.google.protobuf.BoolValue;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.BytesValue;
@@ -25,12 +24,8 @@ import com.google.protobuf.DoubleValue;
 import com.google.protobuf.FloatValue;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.Int64Value;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
-import com.google.protobuf.Message.Builder;
 import com.google.protobuf.StringValue;
-import com.google.protobuf.Struct;
-import com.google.protobuf.util.JsonFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigDecimalValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigIntegerValue;
@@ -58,8 +53,6 @@ import java.util.Date;
 @Slf4j
 public final class ColumnValueConvertUtil {
     
-    private static final Gson GSON = new Gson();
-    
     /**
      * Convert java object to protobuf message.
      *
@@ -71,37 +64,37 @@ public final class ColumnValueConvertUtil {
             return NullValue.newBuilder().build();
         }
         if (object instanceof Integer) {
-            return Int32Value.newBuilder().setValue((int) object).build();
+            return Int32Value.of((int) object);
         }
         if (object instanceof Short) {
-            return Int32Value.newBuilder().setValue(((Short) object).intValue()).build();
+            return Int32Value.of(((Short) object).intValue());
         }
         if (object instanceof Byte) {
-            return Int32Value.newBuilder().setValue(((Byte) object).intValue()).build();
+            return Int32Value.of(((Byte) object).intValue());
         }
         if (object instanceof Long) {
-            return Int64Value.newBuilder().setValue((long) object).build();
+            return Int64Value.of((long) object);
         }
         if (object instanceof BigInteger) {
             return BigIntegerValue.newBuilder().setValue(ByteString.copyFrom(((BigInteger) object).toByteArray())).build();
         }
         if (object instanceof Float) {
-            return FloatValue.newBuilder().setValue((float) object).build();
+            return FloatValue.of((float) object);
         }
         if (object instanceof Double) {
-            return DoubleValue.newBuilder().setValue((double) object).build();
+            return DoubleValue.of((double) object);
         }
         if (object instanceof BigDecimal) {
             return BigDecimalValue.newBuilder().setValue(object.toString()).build();
         }
         if (object instanceof String) {
-            return StringValue.newBuilder().setValue(object.toString()).build();
+            return StringValue.of(object.toString());
         }
         if (object instanceof Boolean) {
-            return BoolValue.newBuilder().setValue((boolean) object).build();
+            return BoolValue.of((boolean) object);
         }
         if (object instanceof byte[]) {
-            return BytesValue.newBuilder().setValue(ByteString.copyFrom((byte[]) object)).build();
+            return BytesValue.of(ByteString.copyFrom((byte[]) object));
         }
         if (object instanceof Date) {
             return converToProtobufTimestamp((Date) object);
@@ -141,21 +134,11 @@ public final class ColumnValueConvertUtil {
                 throw new RuntimeException(ex);
             }
         }
-        return fromJson(GSON.toJson(object));
+        return StringValue.newBuilder().setValue(object.toString()).build();
     }
     
     private static com.google.protobuf.Timestamp converToProtobufTimestamp(final Date timestamp) {
         long millis = timestamp.getTime();
         return com.google.protobuf.Timestamp.newBuilder().setSeconds(millis / 1000).setNanos((int) ((millis % 1000) * 1000000)).build();
-    }
-    
-    private static Message fromJson(final String json) {
-        Builder structBuilder = Struct.newBuilder();
-        try {
-            JsonFormat.parser().ignoringUnknownFields().merge(json, structBuilder);
-        } catch (final InvalidProtocolBufferException ex) {
-            throw new RuntimeException(ex);
-        }
-        return structBuilder.build();
     }
 }

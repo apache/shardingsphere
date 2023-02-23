@@ -151,6 +151,34 @@
         </rule>
     </alter-sharding-table-rule>
     
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-with-complex-table-strategy-and-standard-database-strategy">
+        <rule name="t_order_item">
+            <data-node>ds_${0..1}.t_order_item_${0..1}</data-node>
+            <table-strategy type="complex" sharding-column="user_id,order_id">
+                <algorithm-segment algorithm-name="complex_inline">
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}_${order_id % 2}" />
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="inline">
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                </algorithm-segment>
+            </database-strategy>
+        </rule>
+    </alter-sharding-table-rule>
+    
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-with-none-table-strategy-and-hint-database-strategy">
+        <rule name="t_order_item">
+            <data-node>ds_${0..1}.t_order_item_${0..1}</data-node>
+            <database-strategy type="hint" sharding-column="user_id">
+                <algorithm-segment algorithm-name="hint_inline">
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                </algorithm-segment>
+            </database-strategy>
+            <table-strategy type="none" />
+        </rule>
+    </alter-sharding-table-rule>
+    
     <alter-sharding-table-reference-rule sql-case-id="alter-sharding-table-reference-rule">
         <rule name="reference_0" table-groups="t_order,t_order_item" />
         <rule name="reference_1" table-groups="t_1,t_2" />
@@ -270,12 +298,44 @@
         </strategy>
     </alter-default-sharding-strategy>
     
-    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy-complex">
-        <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id">
-            <algorithm-segment algorithm-name="INLINE">
-                <property key="algorithm-expression" value="t_order_${order_id % 2}_${user_id % 2}" />
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-table-strategy-with-complex-strategy-type">
+        <strategy default-type="TABLE" strategy-type="complex" sharding-column="user_id,order_id">
+            <algorithm-segment algorithm-name="COMPLEX_INLINE">
+                <property key="algorithm-expression" value="t_order_${user_id % 2}_${order_id % 2}" />
             </algorithm-segment>
         </strategy>
+    </alter-default-sharding-strategy>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-table-strategy-with-hint-strategy-type">
+        <strategy default-type="TABLE" strategy-type="hint" sharding-column="user_id">
+            <algorithm-segment algorithm-name="HINT_INLINE">
+                <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+            </algorithm-segment>
+        </strategy>
+    </alter-default-sharding-strategy>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-table-strategy-with-none-strategy-type">
+        <strategy default-type="TABLE" strategy-type="none" />
+    </alter-default-sharding-strategy>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-database-strategy-with-complex-strategy-type">
+        <strategy default-type="DATABASE" strategy-type="complex" sharding-column="user_id,order_id">
+            <algorithm-segment algorithm-name="COMPLEX_INLINE">
+                <property key="algorithm-expression" value="t_order_${user_id % 2}_${order_id % 2}" />
+            </algorithm-segment>
+        </strategy>
+    </alter-default-sharding-strategy>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-database-strategy-with-hint-strategy-type">
+        <strategy default-type="DATABASE" strategy-type="hint" sharding-column="user_id">
+            <algorithm-segment algorithm-name="HINT_INLINE">
+                <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+            </algorithm-segment>
+        </strategy>
+    </alter-default-sharding-strategy>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-database-strategy-with-none-strategy-type">
+        <strategy default-type="DATABASE" strategy-type="none" />
     </alter-default-sharding-strategy>
     
     <alter-mask-rule sql-case-id="alter-mask-rule">

@@ -19,23 +19,24 @@ package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 
 /**
- * MySQL client/server protocol authentication method.
+ * Authentication method for MySQL.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/authentication-method.html">Authentication Method</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_authentication_methods.html">Authentication Method</a>
  */
 @RequiredArgsConstructor
 @Getter
-public enum MySQLAuthenticationMethod {
+public enum MySQLAuthenticationMethod implements AuthenticationMethod {
     
-    OLD_PASSWORD_AUTHENTICATION("mysql_old_password"),
+    OLD_PASSWORD("mysql_old_password"),
     
-    SECURE_PASSWORD_AUTHENTICATION("mysql_native_password"),
+    NATIVE("mysql_native_password"),
     
-    CLEAR_TEXT_AUTHENTICATION("mysql_clear_password"),
+    CLEAR_TEXT("mysql_clear_password"),
     
-    WINDOWS_NATIVE_AUTHENTICATION("authentication_windows_client"),
+    WINDOWS_NATIVE("authentication_windows_client"),
     
     SHA256("sha256_password");
     

@@ -22,5 +22,5 @@ package org.apache.shardingsphere.infra.state;
  */
 public enum StateType {
     
-    OK, CIRCUIT_BREAK, READ_ONLY, LOCK
+    OK, CIRCUIT_BREAK, LOCK
 }

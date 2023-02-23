@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
 import com.google.common.base.Preconditions;
-import lombok.NonNull;
+import com.google.common.base.Splitter;
+
+import java.util.List;
 
 /**
  * Primary key position factory.
@@ -32,12 +34,12 @@ public final class PrimaryKeyPositionFactory {
      * @return primary key position
      */
     public static IngestPosition<?> newInstance(final String data) {
-        String[] array = data.split(",");
-        Preconditions.checkArgument(3 == array.length, "Unknown primary key position: " + data);
-        Preconditions.checkArgument(1 == array[0].length(), "Invalid primary key position type: " + array[0]);
-        char type = array[0].charAt(0);
-        String beginValue = array[1];
-        String endValue = array[2];
+        List<String> parts = Splitter.on(',').splitToList(data);
+        Preconditions.checkArgument(3 == parts.size(), "Unknown primary key position: " + data);
+        Preconditions.checkArgument(1 == parts.get(0).length(), "Invalid primary key position type: " + parts.get(0));
+        char type = parts.get(0).charAt(0);
+        String beginValue = parts.get(1);
+        String endValue = parts.get(2);
         switch (type) {
             case 'i':
                 return new IntegerPrimaryKeyPosition(Long.parseLong(beginValue), Long.parseLong(endValue));
@@ -45,6 +47,8 @@ public final class PrimaryKeyPositionFactory {
                 return new StringPrimaryKeyPosition(beginValue, endValue);
             case 'n':
                 return new NoUniqueKeyPosition();
+            case 'u':
+                return new UnsupportedKeyPosition();
             default:
                 throw new IllegalArgumentException("Unknown primary key position type: " + type);
         }
@@ -57,13 +61,14 @@ public final class PrimaryKeyPositionFactory {
      * @param endValue end value
      * @return ingest position
      */
-    public static IngestPosition<?> newInstance(final @NonNull Object beginValue, final @NonNull Object endValue) {
+    public static IngestPosition<?> newInstance(final Object beginValue, final Object endValue) {
         if (beginValue instanceof Number) {
-            return new IntegerPrimaryKeyPosition(((Number) beginValue).longValue(), ((Number) endValue).longValue());
+            return new IntegerPrimaryKeyPosition(((Number) beginValue).longValue(), null != endValue ? ((Number) endValue).longValue() : Long.MAX_VALUE);
         }
         if (beginValue instanceof CharSequence) {
-            return new StringPrimaryKeyPosition(beginValue.toString(), endValue.toString());
+            return new StringPrimaryKeyPosition(beginValue.toString(), null != endValue ? endValue.toString() : null);
         }
-        throw new IllegalArgumentException("Unknown begin value type: " + beginValue.getClass().getName());
+        // TODO support more types, e.g. byte[] (MySQL varbinary)
+        return new UnsupportedKeyPosition();
     }
 }

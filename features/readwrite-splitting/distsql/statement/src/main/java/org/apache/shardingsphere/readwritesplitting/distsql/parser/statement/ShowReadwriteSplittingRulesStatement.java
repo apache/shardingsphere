@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
 
+import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show readwrite splitting rules statement.
  */
+@Getter
 public final class ShowReadwriteSplittingRulesStatement extends ShowRulesStatement {
     
-    public ShowReadwriteSplittingRulesStatement(final DatabaseSegment database) {
+    private final String ruleName;
+    
+    public ShowReadwriteSplittingRulesStatement(final String ruleName, final DatabaseSegment database) {
         super(database);
+        this.ruleName = ruleName;
     }
 }

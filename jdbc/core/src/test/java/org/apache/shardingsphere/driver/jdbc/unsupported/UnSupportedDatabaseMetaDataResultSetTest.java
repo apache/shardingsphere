@@ -92,11 +92,6 @@ public final class UnSupportedDatabaseMetaDataResultSetTest {
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetStatement() throws SQLException {
-        databaseMetaDataResultSet.getStatement();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetBlobWithIndex() throws SQLException {
         databaseMetaDataResultSet.getBlob(1);
     }

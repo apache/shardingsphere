@@ -26,15 +26,15 @@
     
     <fileSets>
         <fileSet>
-            <directory>../../proxy/bootstrap/src/main/resources/conf</directory>
-            <outputDirectory>conf</outputDirectory>
-            <fileMode>0644</fileMode>
+            <directory>${project.build.directory}</directory>
+            <includes>
+                <include>${imageName}</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0755</fileMode>
         </fileSet>
         <fileSet>
-            <directory>../../proxy/bootstrap/src/main/resources</directory>
-            <includes>
-                <include>logback.xml</include>
-            </includes>
+            <directory>../../proxy/bootstrap/src/main/resources/conf</directory>
             <outputDirectory>conf</outputDirectory>
             <fileMode>0644</fileMode>
         </fileSet>

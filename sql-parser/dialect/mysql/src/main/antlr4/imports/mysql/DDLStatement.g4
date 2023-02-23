@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import DMLStatement, DALStatement;
+import DMLStatement, DALStatement, TCLStatement;
 
 alterStatement
     : alterTable
@@ -665,7 +665,7 @@ compoundStatement
 validStatement
     : (createTable | alterTable | dropTable | truncateTable 
     | insert | replace | update | delete | select | call
-    | createView
+    | createView | prepare | executeStmt | commit | deallocate
     | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement) SEMI_?
     ;
 

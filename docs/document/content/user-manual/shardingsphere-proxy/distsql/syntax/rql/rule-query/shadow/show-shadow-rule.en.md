@@ -64,7 +64,7 @@ mysql> SHOW SHADOW RULE shadow_rule FROM shadow_db;
 - Query specified shadow rule in current database.
 
 ```sql
-SHOW SHADOW RULE shadow_rule；
+SHOW SHADOW RULE shadow_rule;
 ```
 
 ```sql

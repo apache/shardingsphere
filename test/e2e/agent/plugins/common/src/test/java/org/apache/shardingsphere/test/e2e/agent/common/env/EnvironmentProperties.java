@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.agent.common.env;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 /**
  * Environment properties.

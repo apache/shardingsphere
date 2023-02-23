@@ -35,6 +35,10 @@ public final class MetricsMetaDataResult implements JsonConfiguration {
     
     private Map<String, List<Metric>> data;
     
+    private String errorType;
+    
+    private String error;
+    
     /**
      * Metric.
      */

@@ -38,14 +38,14 @@ value ::=
 
 ### 补充说明
 
-- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`。
+- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SQL_HINT`。
 
 ### 示例
 
 - 修改默认影子库压测算法
 
 ```sql
-ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
+ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SQL_HINT");
 ```
 
 ### 保留字

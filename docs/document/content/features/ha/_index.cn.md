@@ -29,5 +29,5 @@ Apache ShardingSphere 需要自动感知多样化的存储节点高可用方案�
 
 ## 相关参考
 
-[Java API](/cn/user-manual/shardingsphere-jdbc/java-api/rules/ha)\
-[YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/ha)\
+[Java API](/cn/user-manual/shardingsphere-jdbc/java-api/rules/ha)
+[YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/ha)

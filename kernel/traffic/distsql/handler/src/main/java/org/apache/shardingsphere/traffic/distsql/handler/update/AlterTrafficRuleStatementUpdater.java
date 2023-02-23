@@ -19,21 +19,15 @@ package org.apache.shardingsphere.traffic.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.distsql.handler.update.GlobalRuleRALUpdater;
+import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.distsql.handler.convert.TrafficRuleConverter;
 import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.AlterTrafficRuleStatement;
-import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
@@ -46,28 +40,21 @@ import java.util.stream.Collectors;
 /**
  * Alter traffic rule statement updater.
  */
-public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpdater {
+public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpdater<AlterTrafficRuleStatement, TrafficRuleConfiguration> {
     
     @Override
-    public void executeUpdate(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        AlterTrafficRuleStatement statement = (AlterTrafficRuleStatement) sqlStatement;
-        check(metaData.getGlobalRuleMetaData(), statement);
-        replaceNewRule(metaData.getGlobalRuleMetaData(), statement);
-    }
-    
-    private void check(final ShardingSphereRuleMetaData ruleMetaData, final AlterTrafficRuleStatement sqlStatement) {
-        checkRuleNames(ruleMetaData, sqlStatement);
+    public void checkSQLStatement(final TrafficRuleConfiguration currentRuleConfig, final AlterTrafficRuleStatement sqlStatement) {
+        checkRuleNames(currentRuleConfig, sqlStatement);
         checkAlgorithmNames(sqlStatement);
     }
     
-    private void checkRuleNames(final ShardingSphereRuleMetaData ruleMetaData, final AlterTrafficRuleStatement sqlStatement) {
-        Collection<String> notExistRuleNames = getNotExistRuleNames(ruleMetaData, sqlStatement);
+    private void checkRuleNames(final TrafficRuleConfiguration currentRuleConfig, final AlterTrafficRuleStatement sqlStatement) {
+        Collection<String> notExistRuleNames = getNotExistRuleNames(currentRuleConfig, sqlStatement);
         ShardingSpherePreconditions.checkState(notExistRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Traffic", notExistRuleNames));
     }
     
-    private Collection<String> getNotExistRuleNames(final ShardingSphereRuleMetaData ruleMetaData, final AlterTrafficRuleStatement sqlStatement) {
-        TrafficRule currentRule = ruleMetaData.getSingleRule(TrafficRule.class);
-        Collection<String> currentRuleNames = currentRule.getStrategyRules().stream().map(TrafficStrategyRule::getName).collect(Collectors.toSet());
+    private Collection<String> getNotExistRuleNames(final TrafficRuleConfiguration currentRuleConfig, final AlterTrafficRuleStatement sqlStatement) {
+        Collection<String> currentRuleNames = currentRuleConfig.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
         return sqlStatement.getSegments().stream().map(TrafficRuleSegment::getName).filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
     }
     
@@ -89,21 +76,13 @@ public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpda
         return result;
     }
     
-    private void replaceNewRule(final ShardingSphereRuleMetaData ruleMetaData, final AlterTrafficRuleStatement sqlStatement) {
-        TrafficRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration(ruleMetaData, sqlStatement);
-        Collection<ShardingSphereRule> globalRules = ruleMetaData.getRules();
-        TrafficRule trafficRule = new TrafficRule(toBeAlteredRuleConfig);
-        globalRules.removeIf(each -> each instanceof TrafficRule);
-        globalRules.add(trafficRule);
-    }
-    
-    private TrafficRuleConfiguration createToBeAlteredRuleConfiguration(final ShardingSphereRuleMetaData ruleMetaData, final AlterTrafficRuleStatement sqlStatement) {
+    @Override
+    public TrafficRuleConfiguration buildAlteredRuleConfiguration(final TrafficRuleConfiguration currentRuleConfig, final AlterTrafficRuleStatement sqlStatement) {
         TrafficRuleConfiguration result = new TrafficRuleConfiguration();
         TrafficRuleConfiguration configFromSQLStatement = TrafficRuleConverter.convert(sqlStatement.getSegments());
-        TrafficRuleConfiguration currentConfig = ruleMetaData.getSingleRule(TrafficRule.class).getConfiguration();
-        result.getTrafficStrategies().addAll(createToBeAlteredStrategyConfigurations(currentConfig, configFromSQLStatement));
-        result.getTrafficAlgorithms().putAll(createToBeAlteredTrafficAlgorithms(currentConfig, configFromSQLStatement, getInUsedTrafficAlgorithm(result)));
-        result.getLoadBalancers().putAll(createToBeAlteredLoadBalancers(currentConfig, configFromSQLStatement, getInUsedLoadBalancer(result)));
+        result.getTrafficStrategies().addAll(createToBeAlteredStrategyConfigurations(currentRuleConfig, configFromSQLStatement));
+        result.getTrafficAlgorithms().putAll(createToBeAlteredTrafficAlgorithms(currentRuleConfig, configFromSQLStatement, getInUsedTrafficAlgorithm(result)));
+        result.getLoadBalancers().putAll(createToBeAlteredLoadBalancers(currentRuleConfig, configFromSQLStatement, getInUsedLoadBalancer(result)));
         return result;
     }
     
@@ -141,6 +120,11 @@ public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpda
             result.remove(each);
         }
         return result;
+    }
+    
+    @Override
+    public Class<TrafficRuleConfiguration> getRuleConfigurationClass() {
+        return TrafficRuleConfiguration.class;
     }
     
     @Override

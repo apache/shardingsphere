@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.replica.DuplicatePrimaryDataSourceException;
+import org.apache.shardingsphere.dbdiscovery.mysql.exception.replica.PrimaryDataSourceNotFoundException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -28,6 +30,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,24 +42,35 @@ import static org.mockito.Mockito.when;
 
 public final class MySQLNormalReplicationDatabaseDiscoveryProviderTest {
     
+    @Test(expected = PrimaryDataSourceNotFoundException.class)
+    public void assertCheckEnvironmentNoPrimaryDataSource() throws SQLException {
+        new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Collections.singleton(mockDataSourceForReplicationInstances("ON")));
+    }
+    
     @Test
-    public void assertCheckEnvironment() throws SQLException {
-        new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Collections.singleton(mockDataSourceForReplicationInstances()));
+    public void assertCheckEnvironmentHasSinglePrimaryDataSource() throws SQLException {
+        new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Collections.singleton(mockDataSourceForReplicationInstances("OFF")));
+    }
+    
+    @Test(expected = DuplicatePrimaryDataSourceException.class)
+    public void assertCheckEnvironmentHasManyPrimaryDataSources() throws SQLException {
+        new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Arrays.asList(mockDataSourceForReplicationInstances("OFF"),
+                mockDataSourceForReplicationInstances("OFF")));
     }
     
     @Test
     public void assertIsPrimaryInstance() throws SQLException {
-        assertTrue(new MySQLNormalReplicationDatabaseDiscoveryProvider().isPrimaryInstance(mockDataSourceForReplicationInstances()));
+        assertTrue(new MySQLNormalReplicationDatabaseDiscoveryProvider().isPrimaryInstance(mockDataSourceForReplicationInstances("OFF")));
     }
     
-    private DataSource mockDataSourceForReplicationInstances() throws SQLException {
+    private DataSource mockDataSourceForReplicationInstances(final String readOnly) throws SQLException {
         ResultSet slaveHostsResultSet = mock(ResultSet.class);
         when(slaveHostsResultSet.next()).thenReturn(true, false);
         when(slaveHostsResultSet.getString("Host")).thenReturn("127.0.0.1");
         when(slaveHostsResultSet.getString("Port")).thenReturn("3306");
         ResultSet readonlyResultSet = mock(ResultSet.class);
         when(readonlyResultSet.next()).thenReturn(true, false);
-        when(readonlyResultSet.getString("Value")).thenReturn("OFF");
+        when(readonlyResultSet.getString("Value")).thenReturn(readOnly);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.createStatement().executeQuery("SHOW SLAVE HOSTS")).thenReturn(slaveHostsResultSet);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
