@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -31,11 +30,11 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfig
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datanode.DataNodeUtil;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
@@ -58,8 +57,10 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.RegisterMigrationSourceStorageUnitException;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.UnregisterMigrationSourceStorageUnitException;
 import org.apache.shardingsphere.data.pipeline.core.exception.metadata.NoAnyRuleExistsException;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtil;
 import org.apache.shardingsphere.data.pipeline.core.sharding.ShardingColumnsExtractor;
+import org.apache.shardingsphere.data.pipeline.core.util.JobDataNodeLineConvertUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
@@ -88,6 +89,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
+import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
@@ -97,6 +99,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -132,7 +135,10 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(jobId, !jobConfigPOJO.isDisabled(),
                 jobConfigPOJO.getShardingTotalCount(), jobConfigPOJO.getProps().getProperty("create_time"), jobConfigPOJO.getProps().getProperty("stop_time"), jobConfigPOJO.getJobParameter());
-        return new TableBasedPipelineJobInfo(jobMetaData, getJobConfiguration(jobConfigPOJO).getSourceTableName());
+        List<String> sourceTables = new LinkedList<>();
+        getJobConfiguration(jobConfigPOJO).getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes()
+                .forEach(dataNode -> sourceTables.add(dataNode.getTableName()))));
+        return new TableBasedPipelineJobInfo(jobMetaData, String.join(",", sourceTables));
     }
     
     @Override
@@ -141,19 +147,6 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         if (null == yamlJobConfig.getJobId()) {
             config.setJobId(generateJobId(config));
         }
-        if (Strings.isNullOrEmpty(config.getSourceDatabaseType())) {
-            PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(config.getSource().getType(), config.getSource().getParameter());
-            config.setSourceDatabaseType(sourceDataSourceConfig.getDatabaseType().getType());
-        }
-        if (Strings.isNullOrEmpty(config.getTargetDatabaseType())) {
-            PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(config.getTarget().getType(), config.getTarget().getParameter());
-            config.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getType());
-        }
-        // target table name is logic table name, source table name is actual table name.
-        JobDataNodeEntry nodeEntry = new JobDataNodeEntry(config.getTargetTableName(), Collections.singletonList(new DataNode(config.getSourceResourceName(), config.getSourceTableName())));
-        String dataNodeLine = new JobDataNodeLine(Collections.singleton(nodeEntry)).marshal();
-        config.setTablesFirstDataNodes(dataNodeLine);
-        config.setJobShardingDataNodes(Collections.singletonList(dataNodeLine));
     }
     
     private String generateJobId(final YamlMigrationJobConfiguration config) {
@@ -418,35 +411,52 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     private YamlMigrationJobConfiguration createYamlJobConfiguration(final MigrateTableStatement param) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
+        result.setTargetDatabaseName(param.getTargetDatabaseName());
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(new MigrationJobType());
-        Map<String, Object> sourceDataSourceProps = swapper.swapToMap(metaDataDataSource.get(param.getSourceResourceName()));
-        StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
-        YamlPipelineDataSourceConfiguration sourcePipelineDataSourceConfig = createYamlPipelineDataSourceConfiguration(
-                sourceDataSourceConfig.getType(), sourceDataSourceConfig.getParameter());
-        result.setSource(sourcePipelineDataSourceConfig);
-        result.setSourceResourceName(param.getSourceResourceName());
-        DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
-        result.setSourceDatabaseType(sourceDatabaseType.getType());
-        String sourceSchemaName = null == param.getSourceSchemaName() && sourceDatabaseType.isSchemaAvailable()
-                ? PipelineSchemaUtil.getDefaultSchema(sourceDataSourceConfig)
-                : param.getSourceSchemaName();
-        result.setSourceSchemaName(sourceSchemaName);
-        result.setSourceTableName(param.getSourceTableName());
+        Map<String, List<DataNode>> sourceDataNodes = new LinkedHashMap<>();
+        Map<String, YamlPipelineDataSourceConfiguration> configSources = new LinkedHashMap<>();
+        List<SourceTargetEntry> sourceTargetEntries = new ArrayList<>(new HashSet<>(param.getSourceTargetEntries())).stream().sorted(Comparator.comparing(SourceTargetEntry::getTargetTableName)
+                .thenComparing(each -> DataNodeUtil.formatWithSchema(each.getSource()))).collect(Collectors.toList());
+        for (SourceTargetEntry each : sourceTargetEntries) {
+            sourceDataNodes.computeIfAbsent(each.getTargetTableName(), key -> new LinkedList<>()).add(each.getSource());
+            String dataSourceName = each.getSource().getDataSourceName();
+            if (configSources.containsKey(dataSourceName)) {
+                continue;
+            }
+            Map<String, Object> sourceDataSourceProps = swapper.swapToMap(metaDataDataSource.get(dataSourceName));
+            StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
+            configSources.put(dataSourceName, createYamlPipelineDataSourceConfiguration(sourceDataSourceConfig.getType(), sourceDataSourceConfig.getParameter()));
+            if (null == each.getSource().getSchemaName() && sourceDataSourceConfig.getDatabaseType().isSchemaAvailable()) {
+                each.getSource().setSchemaName(PipelineSchemaUtil.getDefaultSchema(sourceDataSourceConfig));
+            }
+            DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
+            if (null == result.getSourceDatabaseType()) {
+                result.setSourceDatabaseType(sourceDatabaseType.getType());
+            } else if (!result.getSourceDatabaseType().equals(sourceDatabaseType.getType())) {
+                throw new PipelineInvalidParameterException("Source storage units have different database types");
+            }
+        }
+        result.setSources(configSources);
+        PipelineDataSourceConfiguration targetPipelineDataSourceConfig = createTargetPipelineDataSourceConfiguration(param.getTargetDatabaseName());
+        result.setTarget(createYamlPipelineDataSourceConfiguration(targetPipelineDataSourceConfig.getType(), targetPipelineDataSourceConfig.getParameter()));
+        result.setTargetDatabaseType(targetPipelineDataSourceConfig.getDatabaseType().getType());
+        List<JobDataNodeEntry> tablesFirstDataNodes = sourceDataNodes.entrySet().stream()
+                .map(entry -> new JobDataNodeEntry(entry.getKey(), entry.getValue().subList(0, 1))).collect(Collectors.toList());
+        result.setTablesFirstDataNodes(new JobDataNodeLine(tablesFirstDataNodes).marshal());
+        result.setJobShardingDataNodes(JobDataNodeLineConvertUtil.convertDataNodesToLines(sourceDataNodes).stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
+        extendYamlJobConfiguration(result);
+        return result;
+    }
+    
+    private PipelineDataSourceConfiguration createTargetPipelineDataSourceConfiguration(final String targetDatabaseName) {
         Map<String, Map<String, Object>> targetDataSourceProps = new HashMap<>();
-        ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getTargetDatabaseName());
+        ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(targetDatabaseName);
         for (Entry<String, DataSource> entry : targetDatabase.getResourceMetaData().getDataSources().entrySet()) {
             Map<String, Object> dataSourceProps = swapper.swapToMap(DataSourcePropertiesCreator.create(entry.getValue()));
             targetDataSourceProps.put(entry.getKey(), dataSourceProps);
         }
-        String targetDatabaseName = param.getTargetDatabaseName();
         YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(targetDatabaseName, targetDataSourceProps, targetDatabase.getRuleMetaData().getConfigurations());
-        PipelineDataSourceConfiguration targetPipelineDataSource = new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
-        result.setTarget(createYamlPipelineDataSourceConfiguration(targetPipelineDataSource.getType(), targetPipelineDataSource.getParameter()));
-        result.setTargetDatabaseType(targetPipelineDataSource.getDatabaseType().getType());
-        result.setTargetDatabaseName(targetDatabaseName);
-        result.setTargetTableName(param.getTargetTableName());
-        extendYamlJobConfiguration(result);
-        return result;
+        return new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
     }
     
     private YamlRootConfiguration getYamlRootConfiguration(final String databaseName, final Map<String, Map<String, Object>> yamlDataSources, final Collection<RuleConfiguration> rules) {
