@@ -37,16 +37,15 @@ import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -67,13 +66,11 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextRestorer {
-    
-    @Mock
-    private ConnectionSession connectionSession;
+public final class PostgreSQLBatchedStatementsExecutorTest {
     
     @Mock
     private BackendConnection backendConnection;
@@ -81,39 +78,8 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
     @Mock
     private JDBCBackendStatement backendStatement;
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ContextManager contextManager;
-    
-    @Before
-    public void setup() {
-        when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
-        when(connectionSession.getStatementManager()).thenReturn(backendStatement);
-        when(connectionSession.getConnectionContext()).thenReturn(new ConnectionContext());
-        ProxyContext.init(contextManager);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
-        when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
-                new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-    }
-    
     @Test
     public void assertExecuteBatch() throws SQLException {
-        PostgreSQLInsertStatement insertStatement = mock(PostgreSQLInsertStatement.class, RETURNS_DEEP_STUBS);
-        when(insertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("t");
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
-        PostgreSQLServerPreparedStatement postgreSQLPreparedStatement = new PostgreSQLServerPreparedStatement("insert into t (id, col) values (?, ?)", insertStatementContext,
-                Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR));
-        List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
-                Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://127.0.0.1/db");
         when(backendConnection.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
@@ -122,16 +88,58 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1, 1, 1});
         when(backendStatement.createStorageResource(any(ExecutionUnit.class), eq(connection), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
                 .thenReturn(preparedStatement);
-        PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgreSQLPreparedStatement, parameterSets);
-        prepareExecutionUnitParameters(actual, parameterSets);
-        int actualUpdated = actual.executeBatch();
-        assertThat(actualUpdated, is(3));
-        InOrder inOrder = inOrder(preparedStatement);
-        for (List<Object> each : parameterSets) {
-            inOrder.verify(preparedStatement).setObject(1, each.get(0));
-            inOrder.verify(preparedStatement).setObject(2, each.get(1).toString());
-            inOrder.verify(preparedStatement).addBatch();
+        ContextManager contextManager = mockContextManager();
+        ConnectionSession connectionSession = mockConnectionSession();
+        PostgreSQLServerPreparedStatement postgreSQLPreparedStatement = new PostgreSQLServerPreparedStatement("insert into t (id, col) values (?, ?)", mockInsertStatementContext(),
+                Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR));
+        List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
+                Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgreSQLPreparedStatement, parameterSets);
+            prepareExecutionUnitParameters(actual, parameterSets);
+            int actualUpdated = actual.executeBatch();
+            assertThat(actualUpdated, is(3));
+            InOrder inOrder = inOrder(preparedStatement);
+            for (List<Object> each : parameterSets) {
+                inOrder.verify(preparedStatement).setObject(1, each.get(0));
+                inOrder.verify(preparedStatement).setObject(2, each.get(1).toString());
+                inOrder.verify(preparedStatement).addBatch();
+            }
         }
+    }
+    
+    private static InsertStatementContext mockInsertStatementContext() {
+        PostgreSQLInsertStatement insertStatement = mock(PostgreSQLInsertStatement.class, RETURNS_DEEP_STUBS);
+        when(insertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("t");
+        InsertStatementContext result = mock(InsertStatementContext.class);
+        when(result.getSqlStatement()).thenReturn(insertStatement);
+        return result;
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
+        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
+        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
+        when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
+                new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        return result;
+    }
+    
+    private ConnectionSession mockConnectionSession() {
+        ConnectionSession result = mock(ConnectionSession.class);
+        when(result.getDatabaseName()).thenReturn("db");
+        when(result.getBackendConnection()).thenReturn(backendConnection);
+        when(result.getStatementManager()).thenReturn(backendStatement);
+        when(result.getConnectionContext()).thenReturn(new ConnectionContext());
+        return result;
     }
     
     @SuppressWarnings("unchecked")
