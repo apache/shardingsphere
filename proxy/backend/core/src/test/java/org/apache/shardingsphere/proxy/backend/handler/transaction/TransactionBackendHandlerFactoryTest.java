@@ -29,14 +29,12 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.Backen
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.hamcrest.Matcher;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
 import org.mockito.MockedStatic;
@@ -55,14 +53,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class TransactionBackendHandlerFactoryTest extends ProxyContextRestorer {
-    
-    @Before
-    public void setTransactionContexts() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mock(TransactionRule.class))));
-        ProxyContext.init(contextManager);
-    }
+public final class TransactionBackendHandlerFactoryTest {
     
     @SuppressWarnings("unchecked")
     @Test
@@ -73,11 +64,15 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<CommitStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(CommitStatement.class));
-        ProxyBackendHandler proxyBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
-        assertThat(proxyBackendHandler, instanceOf(TransactionBackendHandler.class));
-        TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) proxyBackendHandler;
-        assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.COMMIT));
-        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            ProxyBackendHandler proxyBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
+            assertThat(proxyBackendHandler, instanceOf(TransactionBackendHandler.class));
+            TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) proxyBackendHandler;
+            assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.COMMIT));
+            assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
+        }
     }
     
     @Test
@@ -88,11 +83,21 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<RollbackStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(RollbackStatement.class));
-        ProxyBackendHandler proxyBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
-        assertThat(proxyBackendHandler, instanceOf(TransactionBackendHandler.class));
-        TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) proxyBackendHandler;
-        assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
-        assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            ProxyBackendHandler proxyBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
+            assertThat(proxyBackendHandler, instanceOf(TransactionBackendHandler.class));
+            TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) proxyBackendHandler;
+            assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
+            assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
+        }
+    }
+    
+    private static ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mock(TransactionRule.class))));
+        return result;
     }
     
     @SuppressWarnings("unchecked")

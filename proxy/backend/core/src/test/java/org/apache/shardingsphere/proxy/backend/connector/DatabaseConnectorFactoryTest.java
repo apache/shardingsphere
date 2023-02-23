@@ -28,42 +28,20 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class DatabaseConnectorFactoryTest extends ProxyContextRestorer {
-    
-    @Before
-    public void setUp() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
-    }
-    
-    private Map<String, ShardingSphereDatabase> getDatabases() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.containsDataSource()).thenReturn(true);
-        when(database.isComplete()).thenReturn(true);
-        when(database.getProtocolType()).thenReturn(new H2DatabaseType());
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        result.put("db", database);
-        return result;
-    }
+public final class DatabaseConnectorFactoryTest {
     
     @Test
     public void assertNewDatabaseConnectorWithoutParameter() {
@@ -72,8 +50,14 @@ public final class DatabaseConnectorFactoryTest extends ProxyContextRestorer {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList());
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(queryContext, backendConnection, false);
-        assertThat(engine, instanceOf(DatabaseConnector.class));
+        ShardingSphereDatabase database = mockDatabase();
+        ContextManager contextManager = mockContextManager(database);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db")).thenReturn(database);
+            DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(queryContext, backendConnection, false);
+            assertThat(engine, instanceOf(DatabaseConnector.class));
+        }
     }
     
     @Test
@@ -82,7 +66,30 @@ public final class DatabaseConnectorFactoryTest extends ProxyContextRestorer {
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        assertThat(DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false),
-                instanceOf(DatabaseConnector.class));
+        ShardingSphereDatabase database = mockDatabase();
+        ContextManager contextManager = mockContextManager(database);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db")).thenReturn(database);
+            assertThat(DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false),
+                    instanceOf(DatabaseConnector.class));
+        }
+    }
+    
+    private ContextManager mockContextManager(final ShardingSphereDatabase database) {
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(Collections.singletonMap("db", database), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
+    }
+    
+    private static ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.containsDataSource()).thenReturn(true);
+        when(result.isComplete()).thenReturn(true);
+        when(result.getProtocolType()).thenReturn(new H2DatabaseType());
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        return result;
     }
 }

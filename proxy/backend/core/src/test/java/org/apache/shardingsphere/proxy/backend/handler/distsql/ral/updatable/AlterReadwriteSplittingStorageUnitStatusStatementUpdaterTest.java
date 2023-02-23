@@ -25,9 +25,11 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.sta
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest {
@@ -35,25 +37,36 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest 
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertWithStandaloneMode() {
         AlterReadwriteSplittingStorageUnitStatusStatementUpdater updater = new AlterReadwriteSplittingStorageUnitStatusStatementUpdater();
-        updater.executeUpdate("foo", new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("db")), "group", "read_ds", "ENABLE"));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+            updater.executeUpdate("foo", new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("db")), "group", "read_ds", "ENABLE"));
+        }
     }
     
     @Test(expected = UnknownDatabaseException.class)
     public void assertWithUnknownDatabase() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
-        ProxyContext.init(contextManager);
-        AlterReadwriteSplittingStorageUnitStatusStatementUpdater updater = new AlterReadwriteSplittingStorageUnitStatusStatementUpdater();
-        updater.executeUpdate("foo", new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("db")), "group", "read_ds", "ENABLE"));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            AlterReadwriteSplittingStorageUnitStatusStatementUpdater updater = new AlterReadwriteSplittingStorageUnitStatusStatementUpdater();
+            updater.executeUpdate("foo", new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("db")), "group", "read_ds", "ENABLE"));
+        }
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertWithNoReadwriteSplittingRule() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
-        when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
-        ProxyContext.init(contextManager);
-        AlterReadwriteSplittingStorageUnitStatusStatementUpdater updater = new AlterReadwriteSplittingStorageUnitStatusStatementUpdater();
-        updater.executeUpdate("foo", new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("db")), "group", "read_ds", "ENABLE"));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("db")).thenReturn(true);
+            AlterReadwriteSplittingStorageUnitStatusStatementUpdater updater = new AlterReadwriteSplittingStorageUnitStatusStatementUpdater();
+            updater.executeUpdate("foo", new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("db")), "group", "read_ds", "ENABLE"));
+        }
+    }
+    
+    private static ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getInstanceContext().isCluster()).thenReturn(true);
+        return result;
     }
 }
