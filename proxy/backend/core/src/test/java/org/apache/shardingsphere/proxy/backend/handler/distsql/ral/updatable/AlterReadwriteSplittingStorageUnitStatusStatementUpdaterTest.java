@@ -21,7 +21,6 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDataba
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -31,12 +30,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest extends ProxyContextRestorer {
+public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest {
     
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertWithStandaloneMode() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ProxyContext.init(contextManager);
         AlterReadwriteSplittingStorageUnitStatusStatementUpdater updater = new AlterReadwriteSplittingStorageUnitStatusStatementUpdater();
         updater.executeUpdate("foo", new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("db")), "group", "read_ds", "ENABLE"));
     }
