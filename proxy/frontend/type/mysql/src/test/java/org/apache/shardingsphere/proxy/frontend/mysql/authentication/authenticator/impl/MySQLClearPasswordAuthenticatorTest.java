@@ -21,10 +21,17 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class MySQLClearPasswordAuthenticatorTest extends ProxyContextRestorer {
+    
+    @Test
+    public void assertAuthenticationMethodName() {
+        assertThat(new MySQLClearPasswordAuthenticator().getAuthenticationMethod().getMethodName(), is("mysql_clear_password"));
+    }
     
     @Test
     public void assertAuthenticate() {
