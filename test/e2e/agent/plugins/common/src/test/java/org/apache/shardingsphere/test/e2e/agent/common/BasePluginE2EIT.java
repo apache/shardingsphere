@@ -71,7 +71,7 @@ public abstract class BasePluginE2EIT {
         sleep();
     }
     
-    @SneakyThrows({InterruptedException.class})
+    @SneakyThrows(InterruptedException.class)
     private void sleep() {
         if (!hasSleep) {
             log.info("Waiting to collect data ...");
