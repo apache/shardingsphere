@@ -89,8 +89,8 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        // TODO Support estimated count later.
-        return Optional.empty();
+        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
+        return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
     }
     
     @Override
