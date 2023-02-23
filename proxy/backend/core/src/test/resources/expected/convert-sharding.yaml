@@ -37,6 +37,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake')),
 AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)
 ), t_order_item (
 DATANODES('ds_${0..1}.t_order_item_${0..1}'),
+DATABASE_STRATEGY(TYPE='hint', SHARDING_ALGORITHM(TYPE(NAME='hint_inline', PROPERTIES('algorithm-expression'='ds_${Integer.valueOf(value) % 2}')))),
 TABLE_STRATEGY(TYPE='complex', SHARDING_COLUMNS=order_id, user_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}', 'datetime-lower'='2022-01-01 00:00:00')))),
 KEY_GENERATE_STRATEGY(COLUMN=order_item_id, TYPE(NAME='snowflake')),
 AUDIT_STRATEGY(TYPE(NAME='dml_sharding_conditions'), ALLOW_HINT_DISABLE=true)
