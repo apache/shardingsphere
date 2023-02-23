@@ -40,7 +40,6 @@ import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
@@ -51,6 +50,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -90,7 +90,7 @@ public final class PostgreSQLComBindExecutorTest {
         when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());
         when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mockContextManager(databaseName);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
             proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             proxyContext.when(() -> ProxyContext.getInstance().getDatabase(databaseName)).thenReturn(database);
             Collection<DatabasePacket<?>> actual = executor.execute();

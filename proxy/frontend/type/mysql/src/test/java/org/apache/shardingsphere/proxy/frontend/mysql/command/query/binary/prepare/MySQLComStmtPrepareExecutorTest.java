@@ -40,13 +40,11 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
-import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -58,6 +56,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.charset.StandardCharsets;
@@ -71,10 +70,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer {
+public final class MySQLComStmtPrepareExecutorTest {
     
     @Mock
     private MySQLComStmtPreparePacket packet;
@@ -84,33 +84,8 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
     
     @Before
     public void setup() {
-        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        prepareSQLParser();
-        prepareMetaData();
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_UNICODE_CI);
-    }
-    
-    private void prepareSQLParser() {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
-        CacheOption cacheOption = new CacheOption(1024, 1024);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
-                .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
-        when(metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
-    }
-    
-    private static void prepareMetaData() {
-        ShardingSphereTable table = new ShardingSphereTable();
-        table.getColumns().put("id", new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
-        table.getColumns().put("name", new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
-        table.getColumns().put("age", new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
-        ShardingSphereSchema schema = new ShardingSphereSchema();
-        schema.getTables().put("user", table);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("db", new MySQLDatabaseType(), new ShardingSphereResourceMetaData("db", Collections.emptyMap()),
-                new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.singletonMap("db", schema));
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
     }
     
     @Test(expected = UnsupportedPreparedStatementException.class)
@@ -127,18 +102,22 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         when(packet.getSql()).thenReturn(sql);
         when(connectionSession.getConnectionId()).thenReturn(1);
         MySQLStatementIDGenerator.getInstance().registerConnection(1);
-        Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
-        assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
-        assertFalse(actualIterator.hasNext());
-        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
-        assertThat(actualPreparedStatement.getSql(), is(sql));
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLSelectStatement.class));
-        MySQLStatementIDGenerator.getInstance().unregisterConnection(1);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+            assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
+            assertFalse(actualIterator.hasNext());
+            MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+            assertThat(actualPreparedStatement.getSql(), is(sql));
+            assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
+            assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLSelectStatement.class));
+            MySQLStatementIDGenerator.getInstance().unregisterConnection(1);
+        }
     }
     
     @Test
@@ -148,26 +127,30 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         int connectionId = 2;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
         MySQLStatementIDGenerator.getInstance().registerConnection(connectionId);
-        Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
-        assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
-        DatabasePacket<?> idColumnDefinitionPacket = actualIterator.next();
-        assertThat(idColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) idColumnDefinitionPacket),
-                is(MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() | MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        DatabasePacket<?> ageColumnDefinitionPacket = actualIterator.next();
-        assertThat(ageColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) ageColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
-        assertFalse(actualIterator.hasNext());
-        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
-        assertThat(actualPreparedStatement.getSql(), is(sql));
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLSelectStatement.class));
-        MySQLStatementIDGenerator.getInstance().unregisterConnection(connectionId);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+            assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
+            DatabasePacket<?> idColumnDefinitionPacket = actualIterator.next();
+            assertThat(idColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) idColumnDefinitionPacket),
+                    is(MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() | MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
+            assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+            DatabasePacket<?> ageColumnDefinitionPacket = actualIterator.next();
+            assertThat(ageColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) ageColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
+            assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
+            assertFalse(actualIterator.hasNext());
+            MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+            assertThat(actualPreparedStatement.getSql(), is(sql));
+            assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
+            assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLSelectStatement.class));
+            MySQLStatementIDGenerator.getInstance().unregisterConnection(connectionId);
+        }
     }
     
     @Test
@@ -178,26 +161,30 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
         MySQLStatementIDGenerator.getInstance().registerConnection(connectionId);
-        Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
-        assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        DatabasePacket<?> firstAgeColumnDefinitionPacket = actualIterator.next();
-        assertThat(firstAgeColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) firstAgeColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
-        DatabasePacket<?> idColumnDefinitionPacket = actualIterator.next();
-        assertThat(idColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) idColumnDefinitionPacket),
-                is(MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() | MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
-        DatabasePacket<?> secondAgeColumnDefinitionPacket = actualIterator.next();
-        assertThat(secondAgeColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) secondAgeColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
-        assertFalse(actualIterator.hasNext());
-        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
-        assertThat(actualPreparedStatement.getSql(), is(sql));
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(InsertStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLInsertStatement.class));
-        MySQLStatementIDGenerator.getInstance().unregisterConnection(connectionId);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+            assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+            DatabasePacket<?> firstAgeColumnDefinitionPacket = actualIterator.next();
+            assertThat(firstAgeColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) firstAgeColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
+            DatabasePacket<?> idColumnDefinitionPacket = actualIterator.next();
+            assertThat(idColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) idColumnDefinitionPacket),
+                    is(MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() | MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
+            DatabasePacket<?> secondAgeColumnDefinitionPacket = actualIterator.next();
+            assertThat(secondAgeColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) secondAgeColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
+            assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
+            assertFalse(actualIterator.hasNext());
+            MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+            assertThat(actualPreparedStatement.getSql(), is(sql));
+            assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(InsertStatementContext.class));
+            assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLInsertStatement.class));
+            MySQLStatementIDGenerator.getInstance().unregisterConnection(connectionId);
+        }
     }
     
     private int getColumnDefinitionFlag(final MySQLColumnDefinition41Packet packet) {
@@ -213,23 +200,50 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         when(connectionSession.getConnectionId()).thenReturn(1);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
         MySQLStatementIDGenerator.getInstance().registerConnection(1);
-        Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
-        assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
-        assertFalse(actualIterator.hasNext());
-        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
-        assertThat(actualPreparedStatement.getSql(), is(sql));
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(UpdateStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLUpdateStatement.class));
-        MySQLStatementIDGenerator.getInstance().unregisterConnection(1);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+            assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+            assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
+            assertFalse(actualIterator.hasNext());
+            MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+            assertThat(actualPreparedStatement.getSql(), is(sql));
+            assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(UpdateStatementContext.class));
+            assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLUpdateStatement.class));
+            MySQLStatementIDGenerator.getInstance().unregisterConnection(1);
+        }
     }
     
     @Test(expected = UnsupportedPreparedStatementException.class)
     public void assertPrepareNotAllowedStatement() {
         when(packet.getSql()).thenReturn("begin");
-        new MySQLComStmtPrepareExecutor(packet, connectionSession).execute();
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            new MySQLComStmtPrepareExecutor(packet, connectionSession).execute();
+        }
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
+        CacheOption cacheOption = new CacheOption(1024, 1024);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
+                .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
+        when(result.getMetaDataContexts().getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
+        ShardingSphereTable table = new ShardingSphereTable();
+        table.getColumns().put("id", new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
+        table.getColumns().put("name", new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
+        table.getColumns().put("age", new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
+        ShardingSphereSchema schema = new ShardingSphereSchema();
+        schema.getTables().put("user", table);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("db", new MySQLDatabaseType(), new ShardingSphereResourceMetaData("db", Collections.emptyMap()),
+                new ShardingSphereRuleMetaData(Collections.emptyList()), Collections.singletonMap("db", schema));
+        when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
+        return result;
     }
 }
