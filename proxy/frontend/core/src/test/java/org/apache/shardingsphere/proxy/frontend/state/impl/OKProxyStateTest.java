@@ -98,7 +98,8 @@ public final class OKProxyStateTest {
     public void assertExecuteWithProxyBackendExecutorSuitableForOLTP() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLTP);
+        when(contextManager.getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(
+                ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLTP);
         EventExecutor eventExecutor = mock(EventExecutor.class);
         when(context.executor()).thenReturn(eventExecutor);
         try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
@@ -112,7 +113,8 @@ public final class OKProxyStateTest {
     public void assertExecuteWithProxyBackendExecutorSuitableForOLAPAndRequiredSameThreadForConnection() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLAP);
+        when(contextManager.getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(
+                ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLAP);
         when(frontendEngine.getFrontendContext().isRequiredSameThreadForConnection(null)).thenReturn(true);
         ExecutorService executorService = registerMockExecutorService(1);
         try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
