@@ -59,7 +59,7 @@ public final class JobDataNodeEntry {
      * @return text, format: logicTableName:dataNode1,dataNode2, e.g. t_order:ds_0.t_order_0,ds_0.t_order_1
      */
     public String marshal() {
-        StringBuilder result = new StringBuilder(getMarshalledTextEstimatedLength());
+        StringBuilder result = new StringBuilder();
         result.append(logicTableName);
         result.append(":");
         for (DataNode each : dataNodes) {
@@ -69,14 +69,5 @@ public final class JobDataNodeEntry {
             result.setLength(result.length() - 1);
         }
         return result.toString();
-    }
-    
-    /**
-     * Get marshalled text estimated length.
-     *
-     * @return marshalled text estimated length
-     */
-    public int getMarshalledTextEstimatedLength() {
-        return logicTableName.length() + 1 + dataNodes.stream().mapToInt(DataNode::getFormattedTextLength).sum() + dataNodes.size();
     }
 }
