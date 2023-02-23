@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
@@ -37,8 +36,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
@@ -49,13 +51,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostgreSQLComBindExecutorTest extends ProxyContextRestorer {
+public final class PostgreSQLComBindExecutorTest {
     
     @Mock
     private PortalContext portalContext;
@@ -71,11 +73,8 @@ public final class PostgreSQLComBindExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteBind() throws SQLException {
-        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         String databaseName = "postgres";
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(databaseName)).thenReturn(true);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(ProxyContext.getInstance().getDatabase(databaseName)).thenReturn(database);
         when(database.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         BackendConnection backendConnection = mock(BackendConnection.class);
@@ -90,9 +89,20 @@ public final class PostgreSQLComBindExecutorTest extends ProxyContextRestorer {
         when(bindPacket.getPortal()).thenReturn("C_1");
         when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());
         when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
-        Collection<DatabasePacket<?>> actual = executor.execute();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
-        verify(portalContext).add(any(Portal.class));
+        ContextManager contextManager = mockContextManager(databaseName);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase(databaseName)).thenReturn(database);
+            Collection<DatabasePacket<?>> actual = executor.execute();
+            assertThat(actual.size(), is(1));
+            assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
+            verify(portalContext).add(any(Portal.class));
+        }
+    }
+    
+    private ContextManager mockContextManager(final String databaseName) {
+        ContextManager result = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(databaseName)).thenReturn(true);
+        return result;
     }
 }
