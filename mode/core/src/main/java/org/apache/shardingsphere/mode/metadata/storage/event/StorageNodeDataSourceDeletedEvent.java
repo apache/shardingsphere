@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.util;
+package org.apache.shardingsphere.mode.metadata.storage.event;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
-import org.junit.Before;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 
-public abstract class ProxyContextRestorer {
+/**
+ * Storage node data source deleted event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class StorageNodeDataSourceDeletedEvent {
     
-    private ContextManager currentContextManager;
-    
-    @Before
-    public void recordCurrentContextManager() {
-        currentContextManager = ProxyContext.getInstance().getContextManager();
-    }
-    
-    @After
-    public void restorePreviousContextManager() {
-        ProxyContext.init(currentContextManager);
-    }
+    private final QualifiedDatabase qualifiedDatabase;
 }

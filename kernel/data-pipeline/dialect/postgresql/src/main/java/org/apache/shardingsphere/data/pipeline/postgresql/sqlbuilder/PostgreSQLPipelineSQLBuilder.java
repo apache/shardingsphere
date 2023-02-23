@@ -86,6 +86,12 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     }
     
     @Override
+    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
+        // TODO Support estimated count later.
+        return Optional.empty();
+    }
+    
+    @Override
     public String getType() {
         return "PostgreSQL";
     }

@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core;
+package org.apache.shardingsphere.test.e2e.agent.zipkin.result;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
-import org.junit.Before;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class ProxyContextRestorer {
+/**
+ * Local endpoint.
+ */
+@Getter
+@Setter
+public final class LocalEndpoint {
     
-    private ContextManager currentContextManager;
+    private String serviceName;
     
-    @Before
-    public void recordCurrentContextManager() {
-        currentContextManager = ProxyContext.getInstance().getContextManager();
-    }
-    
-    @After
-    public void restorePreviousContextManager() {
-        ProxyContext.init(currentContextManager);
-    }
+    private String ipv4;
 }

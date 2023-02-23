@@ -144,7 +144,6 @@ public final class DatabaseConnectorTest extends ProxyContextRestorer {
                 MockedStatic<SystemSchemaUtil> systemSchemaUtil = mockStatic(SystemSchemaUtil.class)) {
             when(federationExecutor.executeQuery(any(DriverExecutionPrepareEngine.class), any(ProxyJDBCExecutorCallback.class), any(SQLFederationExecutorContext.class))).thenReturn(resultSet);
             when(resultSet.getMetaData().getColumnCount()).thenReturn(1);
-            when(resultSet.getMetaData().getColumnType(1)).thenReturn(Types.INTEGER);
             when(resultSet.next()).thenReturn(true, false);
             when(resultSet.getObject(1)).thenReturn(Integer.MAX_VALUE);
             typedSPILoader.when(() -> TypedSPILoader.getService(SQLFederationExecutor.class, "NONE")).thenReturn(federationExecutor);
@@ -202,21 +201,13 @@ public final class DatabaseConnectorTest extends ProxyContextRestorer {
         when(result.getSchema(DefaultDatabase.LOGIC_NAME).getTable("t_logic_order")).thenReturn(
                 new ShardingSphereTable("t_logic_order", Collections.singleton(column), Collections.singleton(new ShardingSphereIndex("order_id")), Collections.emptyList()));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singleton(mock(ShardingRule.class)));
-        when(result.getName()).thenReturn("sharding_schema");
         return result;
     }
     
     private QueryResultMetaData createQueryResultMetaData() throws SQLException {
         QueryResultMetaData result = mock(QueryResultMetaData.class);
-        when(result.getTableName(1)).thenReturn("t_order");
         when(result.getColumnLabel(1)).thenReturn("order_id");
         when(result.getColumnName(1)).thenReturn("order_id");
-        when(result.getColumnType(1)).thenReturn(Types.INTEGER);
-        when(result.isSigned(1)).thenReturn(true);
-        when(result.isAutoIncrement(1)).thenReturn(true);
-        when(result.getColumnLength(1)).thenReturn(1);
-        when(result.getDecimals(1)).thenReturn(1);
-        when(result.isNotNull(1)).thenReturn(true);
         return result;
     }
     

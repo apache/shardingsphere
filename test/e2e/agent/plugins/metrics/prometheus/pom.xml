@@ -29,6 +29,7 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <mysql-connector-java.version>8.0.31</mysql-connector-java.version>
     </properties>
     
     <dependencies>
@@ -38,24 +39,11 @@
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-bootstrap</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql-connector-java.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

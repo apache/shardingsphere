@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend;
+package org.apache.shardingsphere.test.e2e.agent.zipkin.cases;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
-import org.junit.Before;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class ProxyContextRestorer {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+
+/**
+ * Span test case.
+ */
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class SpanTestCase {
     
-    private ContextManager currentContextManager;
+    @XmlAttribute(name = "service-name")
+    private String serviceName;
     
-    @Before
-    public void recordCurrentContextManager() {
-        currentContextManager = ProxyContext.getInstance().getContextManager();
-    }
+    @XmlAttribute(name = "span-name")
+    private String spanName;
     
-    @After
-    public void restorePreviousContextManager() {
-        ProxyContext.init(currentContextManager);
-    }
+    @XmlElement(name = "tag-assertion")
+    private Collection<TagAssertion> tagCases;
 }

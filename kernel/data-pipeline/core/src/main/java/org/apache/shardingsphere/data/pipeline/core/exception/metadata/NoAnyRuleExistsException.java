@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.core.driver;
+package org.apache.shardingsphere.data.pipeline.core.exception.metadata;
+
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Shardingsphere driver URL provider.
+ * No any rule exists exception.
  */
-public interface ShardingsphereDriverURLProvider {
+public final class NoAnyRuleExistsException extends PipelineSQLException {
     
-    /**
-     * Check if the url is suitable for this provider.
-     * 
-     * @param url the driver url
-     * @return true if the url is suitable for this provider or false
-     */
-    boolean accept(String url);
+    private static final long serialVersionUID = 8799641580689564088L;
     
-    /**
-     * Get config content from url.
-     * 
-     * @param url the driver url 
-     * @return the config content
-     */
-    byte[] getContent(String url);
+    public NoAnyRuleExistsException(final String databaseName) {
+        super(XOpenSQLState.NOT_FOUND, 2, String.format("There is no rule in database `%s`.", databaseName));
+    }
 }

@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.util;
+package org.apache.shardingsphere.driver.jdbc.core.driver;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
-import org.junit.Before;
-
-public abstract class ProxyContextRestorer {
+/**
+ * ShardingSphere driver URL provider.
+ */
+public interface ShardingSphereDriverURLProvider {
     
-    private ContextManager currentContextManager;
+    /**
+     * Check if the url is suitable for this provider.
+     * 
+     * @param url the driver url
+     * @return true if the url is suitable for this provider or false
+     */
+    boolean accept(String url);
     
-    @Before
-    public void recordCurrentContextManager() {
-        currentContextManager = ProxyContext.getInstance().getContextManager();
-    }
-    
-    @After
-    public void restorePreviousContextManager() {
-        ProxyContext.init(currentContextManager);
-    }
+    /**
+     * Get config content from url.
+     * 
+     * @param url the driver url 
+     * @return the config content
+     */
+    byte[] getContent(String url);
 }
