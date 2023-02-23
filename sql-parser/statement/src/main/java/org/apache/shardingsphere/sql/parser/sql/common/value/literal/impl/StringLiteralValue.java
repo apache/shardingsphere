@@ -34,16 +34,7 @@ public final class StringLiteralValue implements LiteralValue<String> {
     }
     
     /**
-     * get special escape sequences string, do this:
-     *   1. \' = A single quote (') character
-     *   2. \" = A single quote (") character
-     *   3. \\ = A single quote (\) character
-     *   4. \b = A backspace character
-     *   5. \n = A newline (linefeed) character
-     *   6. \r = A carriage return character
-     *   7. \t = A tab character
-     *   8. \f = A form feed character
-     *   9. \s = A empty character
+     * Get special escape sequences string.
      *
      * @param value string text
      * @return String literal value
