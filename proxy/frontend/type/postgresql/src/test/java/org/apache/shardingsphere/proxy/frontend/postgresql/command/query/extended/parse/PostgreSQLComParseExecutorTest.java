@@ -34,16 +34,15 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
-import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -54,12 +53,13 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
-    
-    private final ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build())));
+public final class PostgreSQLComParseExecutorTest {
     
     @Mock
     private PostgreSQLComParsePacket parsePacket;
@@ -70,13 +70,10 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
     @InjectMocks
     private PostgreSQLComParseExecutor executor;
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ContextManager mockedContextManager;
-    
     @Before
     public void setup() {
-        ProxyContext.init(mockedContextManager);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
+        when(connectionSession.getDatabaseName()).thenReturn("db");
     }
     
     @Test
@@ -85,19 +82,18 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         final String statementId = "S_1";
         when(parsePacket.getSql()).thenReturn(expectedSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
-        when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageTypes())
-                .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
-        assertThat(actualPackets.size(), is(1));
-        assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
-        PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(CommonSQLStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(EmptyStatement.class));
-        assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
-        assertThat(actualPreparedStatement.getParameterTypes(), is(Collections.emptyList()));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            Collection<DatabasePacket<?>> actualPackets = executor.execute();
+            assertThat(actualPackets.size(), is(1));
+            assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
+            PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+            assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(CommonSQLStatementContext.class));
+            assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(EmptyStatement.class));
+            assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
+            assertThat(actualPreparedStatement.getParameterTypes(), is(Collections.emptyList()));
+        }
     }
     
     @Test
@@ -108,21 +104,20 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         when(parsePacket.getSql()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageTypes())
-                .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
-        when(connectionSession.getDatabaseName()).thenReturn("db");
         setConnectionSession();
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
-        assertThat(actualPackets.size(), is(1));
-        assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
-        PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(InsertStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(PostgreSQLInsertStatement.class));
-        assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
-        assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED)));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            Collection<DatabasePacket<?>> actualPackets = executor.execute();
+            assertThat(actualPackets.size(), is(1));
+            assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
+            PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+            assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(InsertStatementContext.class));
+            assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(PostgreSQLInsertStatement.class));
+            assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
+            assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED)));
+        }
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -136,18 +131,26 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         String statementId = "";
         when(parsePacket.getSql()).thenReturn(sql);
         when(parsePacket.getStatementId()).thenReturn(statementId);
-        when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageTypes())
-                .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
-        assertThat(actualPackets.size(), is(1));
-        assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
-        PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
-        assertThat(actualPreparedStatement.getSql(), is(sql));
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(DistSQLStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(ShowDistVariableStatement.class));
-        assertThat(actualPreparedStatement.getParameterTypes(), is(Collections.emptyList()));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            Collection<DatabasePacket<?>> actualPackets = executor.execute();
+            assertThat(actualPackets.size(), is(1));
+            assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
+            PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+            assertThat(actualPreparedStatement.getSql(), is(sql));
+            assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(DistSQLStatementContext.class));
+            assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(ShowDistVariableStatement.class));
+            assertThat(actualPreparedStatement.getParameterTypes(), is(Collections.emptyList()));
+        }
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
+        when(result.getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
+                .thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
+        return result;
     }
 }
