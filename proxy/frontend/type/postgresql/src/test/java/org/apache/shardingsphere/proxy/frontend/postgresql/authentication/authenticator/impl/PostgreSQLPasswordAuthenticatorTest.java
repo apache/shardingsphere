@@ -20,10 +20,17 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authe
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class PostgreSQLPasswordAuthenticatorTest {
+    
+    @Test
+    public void assertAuthenticationMethodName() {
+        assertThat(new PostgreSQLPasswordAuthenticator().getAuthenticationMethod().getMethodName(), is("password"));
+    }
     
     @Test
     public void assertAuthenticateSuccess() {
