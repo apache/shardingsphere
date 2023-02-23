@@ -46,7 +46,6 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
-import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -89,6 +88,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
@@ -412,13 +412,13 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
      * @param param create migration job parameter
      * @return job id
      */
-    public String createJobAndStart(final CreateMigrationJobParameter param) {
+    public String createJobAndStart(final MigrateTableStatement param) {
         MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(createYamlJobConfiguration(param));
         start(jobConfig);
         return jobConfig.getJobId();
     }
     
-    private YamlMigrationJobConfiguration createYamlJobConfiguration(final CreateMigrationJobParameter param) {
+    private YamlMigrationJobConfiguration createYamlJobConfiguration(final MigrateTableStatement param) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(new MigrationJobType());
         Map<String, Object> sourceDataSourceProps = swapper.swapToMap(metaDataDataSource.get(param.getSourceResourceName()));

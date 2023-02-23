@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDat
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
@@ -42,10 +41,13 @@ import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDa
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
+import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
 import org.junit.AfterClass;
@@ -275,7 +277,8 @@ public final class MigrationJobAPITest {
     @Test
     public void assertCreateJobConfig() throws SQLException {
         initIntPrimaryEnvironment();
-        String jobId = jobAPI.createJobAndStart(new CreateMigrationJobParameter("ds_0", null, "t_order", "logic_db", "t_order"));
+        SourceTargetEntry sourceTargetEntry = new SourceTargetEntry(new DataNode("ds_0", "t_order"), "t_order");
+        String jobId = jobAPI.createJobAndStart(new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), "logic_db"));
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId);
         assertThat(jobConfig.getSourceResourceName(), is("ds_0"));
         assertThat(jobConfig.getSourceTableName(), is("t_order"));
