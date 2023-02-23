@@ -92,7 +92,7 @@ exportMetaData
     ;
 
 importMetaData
-    : IMPORT METADATA (metadata | FROM FILE filePath)
+    : IMPORT METADATA (metaDataValue | FROM FILE filePath)
     ;
 
 convertYamlConfiguration
@@ -144,6 +144,10 @@ confPath
     ;
 
 filePath
+    : STRING_
+    ;
+
+metaDataValue
     : STRING_
     ;
 

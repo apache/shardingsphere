@@ -102,6 +102,11 @@ public class ImportUtils {
     
     private static final DataSourcePropertiesValidateHandler validateHandler = new DataSourcePropertiesValidateHandler();
     
+    /**
+     * Import proxy database from yaml configuration.
+     * 
+     * @param yamlConfig yaml proxy database configuration
+     */
     public static void importDatabaseConfig(final YamlProxyDatabaseConfiguration yamlConfig) {
         String yamlDatabaseName = yamlConfig.getDatabaseName();
         checkDatabase(yamlDatabaseName);

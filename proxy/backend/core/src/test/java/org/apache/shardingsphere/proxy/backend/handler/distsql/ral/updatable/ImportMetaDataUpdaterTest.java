@@ -60,6 +60,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class ImportMetaDataUpdaterTest extends ProxyContextRestorer {
     
+    private static final String metadata = "{\"storageNodes\":[{\"ip\":\"127.0.0.1\",\"port\":\"3306\",\"username\":\"root\",\"password\":\"\",\"database\":\"db0\"}],"
+            + "\"metaData\":{\"databases\":{\"sharding_db\":\"databaseName: sharding_db\\ndataSources:\\nrules:\\n\"},"
+            + "\"props\":\"props:\\n  system-log-level: INFO\\n  sql-show: false\\n\","
+            + "\"rules\":\"rules:\\n- !AUTHORITY\\n  privilege:\\n    type: ALL_PERMITTED\\n  users:\\n  - authenticationMethodName: ''\\n    password: root\\n    user: root@%\\n\"}}";
+    
     private final String empty = "empty_metadata";
     
     private ImportMetaDataUpdater importMetaDataUpdater;
@@ -78,8 +83,15 @@ public final class ImportMetaDataUpdaterTest extends ProxyContextRestorer {
         importMetaDataUpdater.executeUpdate(empty, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(empty))).getPath()));
     }
     
+    @Test(expected = NullPointerException.class)
+    public void assertImportMetaData() throws SQLException {
+        initWithDataSource(empty);
+        importMetaDataUpdater = new ImportMetaDataUpdater();
+        importMetaDataUpdater.executeUpdate(empty, new ImportMetaDataStatement(metadata, null));
+    }
+    
     @Test(expected = IllegalStateException.class)
-    public void assertImportExistedMetaData() throws SQLException {
+    public void assertImportExistedMetaDataFromFile() throws SQLException {
         initWithDataSource(empty);
         assertNotNull(ProxyContext.getInstance().getContextManager().getDataSourceMap(empty));
         assertNotNull(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(empty).getRuleMetaData().getConfigurations());
@@ -98,7 +110,7 @@ public final class ImportMetaDataUpdaterTest extends ProxyContextRestorer {
     }
     
     private void initWithDataSource(final String feature) {
-        init();
+        importMetaDataUpdater = new ImportMetaDataUpdater();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
@@ -106,6 +118,8 @@ public final class ImportMetaDataUpdaterTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(feature, database));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase(feature)).thenReturn(database);
         when(contextManager.getMetaDataContexts().getMetaData().containsDatabase(feature)).thenReturn(true);
+        when(contextManager.getMetaDataContexts().getMetaData().getProps())
+                .thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL"))));
         ProxyContext.init(contextManager);
     }
     

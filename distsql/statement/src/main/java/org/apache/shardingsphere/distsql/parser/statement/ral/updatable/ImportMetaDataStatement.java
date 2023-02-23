@@ -30,7 +30,7 @@ import java.util.Optional;
 @Getter
 public final class ImportMetaDataStatement extends UpdatableRALStatement {
     
-    private final String metaData;
+    private final String metaDataValue;
     
     private final String filePath;
     

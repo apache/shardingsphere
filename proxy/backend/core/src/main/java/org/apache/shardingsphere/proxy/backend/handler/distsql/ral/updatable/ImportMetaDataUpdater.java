@@ -57,7 +57,7 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
                 throw new FileIOException(ex);
             }
         } else {
-            jsonMetaDataConfig = sqlStatement.getMetaData();
+            jsonMetaDataConfig = sqlStatement.getMetaDataValue();
         }
         ExportedClusterInfo exportedClusterInfo = JsonUtils.readValue(jsonMetaDataConfig, ExportedClusterInfo.class);
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();

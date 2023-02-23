@@ -49,6 +49,12 @@ import java.util.Map.Entry;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExportUtils {
     
+    /**
+     * Export configuration data to specified file.
+     * 
+     * @param filePath file path
+     * @param exportedData exported configuration data
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void exportToFile(final String filePath, final String exportedData) {
         File file = new File(filePath);
@@ -63,6 +69,12 @@ public class ExportUtils {
         }
     }
     
+    /**
+     * Generate configuration data of ShardingSphere database.
+     * 
+     * @param database ShardingSphere database
+     * @return configuration data
+     */
     public static String generateExportDatabaseData(final ShardingSphereDatabase database) {
         StringBuilder result = new StringBuilder();
         appendDatabaseName(database.getName(), result);
