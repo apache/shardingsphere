@@ -174,6 +174,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     private String getQuerySQL(final DataConsistencyCalculateParameter param) {
+        if (null == param.getUniqueKey()) {
+            throw new UnsupportedOperationException("Data consistency of DATA_MATCH type not support table without unique key and primary key now");
+        }
         PipelineSQLBuilder sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, param.getDatabaseType());
         String logicTableName = param.getLogicTableName();
         String schemaName = param.getSchemaName();
