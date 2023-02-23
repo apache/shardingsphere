@@ -15,19 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.metadata;
+package org.apache.shardingsphere.test.e2e.agent.zipkin.cases;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 
 /**
- * Alter not exist process configuration exception.
+ * Span test case.
  */
-public final class AlterNotExistProcessConfigurationException extends PipelineSQLException {
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class SpanTestCase {
     
-    private static final long serialVersionUID = 8799641580689564088L;
+    @XmlAttribute(name = "service-name")
+    private String serviceName;
     
-    public AlterNotExistProcessConfigurationException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Altered process configuration does not exist.");
-    }
+    @XmlAttribute(name = "span-name")
+    private String spanName;
+    
+    @XmlElement(name = "tag-assertion")
+    private Collection<TagAssertion> tagCases;
 }

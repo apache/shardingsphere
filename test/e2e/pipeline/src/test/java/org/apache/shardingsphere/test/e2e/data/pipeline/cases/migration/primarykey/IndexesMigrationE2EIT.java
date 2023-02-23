@@ -46,7 +46,9 @@ import static org.hamcrest.Matchers.is;
 /**
  * E2E IT for different types of indexes, includes:
  * 1) no unique key.
- * 2) special type single column unique key.
+ * 2) special type single column unique key, e.g. VARBINARY.
+ * 3) multiple columns primary key, first column type is VARCHAR.
+ * 4) multiple columns unique key, first column type is BIGINT.
  */
 @RunWith(Parameterized.class)
 @Slf4j

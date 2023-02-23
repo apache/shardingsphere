@@ -59,6 +59,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.RegisterMigrationSourceStorageUnitException;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.UnregisterMigrationSourceStorageUnitException;
+import org.apache.shardingsphere.data.pipeline.core.exception.metadata.NoAnyRuleExistsException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtil;
 import org.apache.shardingsphere.data.pipeline.core.sharding.ShardingColumnsExtractor;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
@@ -88,8 +89,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.exception.metadata.ShardingRuleNotFoundException;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
@@ -453,9 +452,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     private YamlRootConfiguration getYamlRootConfiguration(final String databaseName, final Map<String, Map<String, Object>> yamlDataSources, final Collection<RuleConfiguration> rules) {
-        // TODO Check rules empty. Sharding rule could be empty
-        if (rules.stream().noneMatch(each -> each instanceof ShardingRuleConfiguration)) {
-            throw new ShardingRuleNotFoundException();
+        if (rules.isEmpty()) {
+            throw new NoAnyRuleExistsException(databaseName);
         }
         YamlRootConfiguration result = new YamlRootConfiguration();
         result.setDatabaseName(databaseName);
