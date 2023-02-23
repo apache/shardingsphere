@@ -74,7 +74,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class DistSQLBackendHandlerFactoryTest {
     
-    private MockedStatic<ProxyContext> proxyContext; 
+    private MockedStatic<ProxyContext> proxyContext;
     
     @Mock
     private ConnectionSession connectionSession;
