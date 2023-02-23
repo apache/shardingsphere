@@ -134,9 +134,9 @@ public class ImportUtils {
     
     private static void addDatabase(final String databaseName) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+        contextManager.getInstanceContext().getModeContextManager().createDatabase(databaseName);
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), contextManager.getMetaDataContexts().getMetaData().getProps());
         contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType);
-        contextManager.getInstanceContext().getModeContextManager().createDatabase(databaseName);
     }
     
     private static void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
@@ -145,13 +145,13 @@ public class ImportUtils {
             dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), DATA_SOURCE_CONFIGURATION_SWAPPER.swap(entry.getValue())));
         }
         VALIDATE_HANDLER.validate(dataSourcePropsMap);
-        Map<String, DataSource> dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources();
-        dataSourcePropsMap.forEach((key, value) -> dataSource.put(key, DataSourcePoolCreator.create(value)));
         try {
             ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, dataSourcePropsMap);
         } catch (final SQLException ex) {
             throw new InvalidStorageUnitsException(Collections.singleton(ex.getMessage()));
         }
+        Map<String, DataSource> dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources();
+        dataSourcePropsMap.forEach((key, value) -> dataSource.put(key, DataSourcePoolCreator.create(value)));
     }
     
     private static void addRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
