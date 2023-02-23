@@ -57,7 +57,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.charset.StandardCharsets;
@@ -104,7 +103,7 @@ public final class MySQLComStmtPrepareExecutorTest {
         when(connectionSession.getConnectionId()).thenReturn(1);
         MySQLStatementIDGenerator.getInstance().registerConnection(1);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
             proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
             assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
@@ -129,7 +128,7 @@ public final class MySQLComStmtPrepareExecutorTest {
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
         MySQLStatementIDGenerator.getInstance().registerConnection(connectionId);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
             proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
             assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
@@ -163,7 +162,7 @@ public final class MySQLComStmtPrepareExecutorTest {
         when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
         MySQLStatementIDGenerator.getInstance().registerConnection(connectionId);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
             proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
             assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
@@ -202,7 +201,7 @@ public final class MySQLComStmtPrepareExecutorTest {
         when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
         MySQLStatementIDGenerator.getInstance().registerConnection(1);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
             proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
             assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
@@ -223,7 +222,7 @@ public final class MySQLComStmtPrepareExecutorTest {
     public void assertPrepareNotAllowedStatement() {
         when(packet.getSql()).thenReturn("begin");
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, Mockito.RETURNS_DEEP_STUBS)) {
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
             proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             new MySQLComStmtPrepareExecutor(packet, connectionSession).execute();
         }
