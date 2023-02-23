@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.opengauss;
+package org.apache.shardingsphere.test.e2e.agent.jaeger.cases;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
-import org.junit.Before;
+import lombok.Getter;
 
-public abstract class ProxyContextRestorer {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.LinkedList;
+
+/**
+ * Integration test cases.
+ */
+@Getter
+@XmlRootElement(name = "integration-test-cases")
+public final class IntegrationTestCases {
     
-    private ContextManager currentContextManager;
-    
-    @Before
-    public void recordCurrentContextManager() {
-        currentContextManager = ProxyContext.getInstance().getContextManager();
-    }
-    
-    @After
-    public void restorePreviousContextManager() {
-        ProxyContext.init(currentContextManager);
-    }
+    @XmlElement(name = "test-case")
+    private final Collection<SpanTestCase> testCases = new LinkedList<>();
 }

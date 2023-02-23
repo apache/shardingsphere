@@ -32,7 +32,6 @@ import org.junit.runners.Parameterized.Parameters;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 @RunWith(Parameterized.class)
 public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
@@ -59,10 +58,9 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     }
     
     @Test
-    @SneakyThrows({IOException.class, InterruptedException.class})
+    @SneakyThrows(IOException.class)
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
-        TimeUnit.SECONDS.sleep(5);
         SpanAssert.assertIs(url, spanTestCase);
     }
 }

@@ -15,28 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.opentelemetry.result;
+package org.apache.shardingsphere.test.e2e.agent.jaeger.result;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Map;
+import java.util.Collection;
 
 @Getter
 @Setter
-public final class TracingResult {
+public final class TraceResults {
     
-    private String traceId;
-    
-    private String id;
-    
-    private String name;
-    
-    private Long timestamp;
-    
-    private Long duration;
-    
-    private Map<String, String> localEndpoint;
-    
-    private Map<String, String> tags;
+    private Collection<TraceResult> data;
 }
