@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
+// TODO Move to pipeline-core
 public final class JobDataNodeLine {
     
     private final Collection<JobDataNodeEntry> entries;

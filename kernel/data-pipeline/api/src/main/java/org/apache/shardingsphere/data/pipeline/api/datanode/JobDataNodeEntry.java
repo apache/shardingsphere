@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public final class JobDataNodeEntry {
     
     private final String logicTableName;
     
-    private final Collection<DataNode> dataNodes;
+    private final List<DataNode> dataNodes;
     
     /**
      * Unmarshal from text.
@@ -48,7 +47,7 @@ public final class JobDataNodeEntry {
         String logicTableName = segments.get(0);
         List<DataNode> dataNodes = new LinkedList<>();
         for (String each : Splitter.on(",").omitEmptyStrings().splitToList(segments.get(1))) {
-            dataNodes.add(new DataNode(each));
+            dataNodes.add(DataNodeUtil.parseWithSchema(each));
         }
         return new JobDataNodeEntry(logicTableName, dataNodes);
     }
@@ -63,7 +62,7 @@ public final class JobDataNodeEntry {
         result.append(logicTableName);
         result.append(":");
         for (DataNode each : dataNodes) {
-            result.append(each.format()).append(',');
+            result.append(DataNodeUtil.formatWithSchema(each)).append(',');
         }
         if (!dataNodes.isEmpty()) {
             result.setLength(result.length() - 1);
