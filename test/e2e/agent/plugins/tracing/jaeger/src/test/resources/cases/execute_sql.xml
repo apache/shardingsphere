@@ -21,7 +21,7 @@
         <tag-assertion key="component" value="ShardingSphere" need-assert-value="true" />
         <tag-assertion key="span.kind" value="client" need-assert-value="true" />
         <tag-assertion key="db.type" value="MySQL" need-assert-value="true" />
-        <tag-assertion key="peer.hostname" value="mysql.agent.tracing.zipkin.host" need-assert-value="true" />
+        <tag-assertion key="peer.hostname" value="mysql.agent.tracing.jaeger.host" need-assert-value="true" />
         <tag-assertion key="peer.port" value="3306" need-assert-value="true" />
         <tag-assertion key="db.instance" value="ds_0" need-assert-value="true" />
         <tag-assertion key="db.instance" value="ds_1" need-assert-value="true" />

@@ -63,7 +63,7 @@ public final class E2ETestEnvironment {
     /**
      * Create data source.
      */
-    public synchronized void createDataSource() {
+    public void createDataSource() {
         if (isEnvironmentPrepared && null == dataSource) {
             if (waitForEnvironmentReady(props)) {
                 dataSource = createHikariCP(props);
@@ -85,7 +85,7 @@ public final class E2ETestEnvironment {
     }
     
     private boolean isProxyReady(final Properties props) {
-        log.info("try to connect proxy ...");
+        log.info("Try to connect proxy ...");
         String url = props.getProperty("proxy.url");
         String username = props.getProperty("proxy.username", "root");
         String password = props.getProperty("proxy.password", "root");
@@ -102,7 +102,7 @@ public final class E2ETestEnvironment {
     
     private DataSource createHikariCP(final Properties props) {
         HikariConfig result = new HikariConfig();
-        result.setDriverClassName("com.mysql.jdbc.Driver");
+        result.setDriverClassName("com.mysql.cj.jdbc.Driver");
         result.setJdbcUrl(props.getProperty("proxy.url"));
         result.setUsername(props.getProperty("proxy.username", "root"));
         result.setPassword(props.getProperty("proxy.password", "root"));

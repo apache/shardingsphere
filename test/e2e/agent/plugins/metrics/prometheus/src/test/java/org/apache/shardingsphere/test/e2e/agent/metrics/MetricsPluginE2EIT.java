@@ -38,13 +38,10 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RunWith(Parameterized.class)
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
-    
-    private static boolean hasCollect;
     
     private final MetricTestCase metricTestCase;
     
@@ -58,17 +55,12 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     }
     
     @Test
-    @SneakyThrows({IOException.class, InterruptedException.class})
+    @SneakyThrows(IOException.class)
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
         Properties props = E2ETestEnvironment.getInstance().getProps();
         String metaDataURL = props.getProperty("prometheus.metadata.url");
         String queryURL = props.getProperty("prometheus.query.url");
-        if (!hasCollect) {
-            log.info("Wait for prometheus to collect data ...");
-            TimeUnit.SECONDS.sleep(35);
-            hasCollect = true;
-        }
         assertMetadata(metaDataURL, metricTestCase);
         assertQuery(queryURL, metricTestCase);
     }

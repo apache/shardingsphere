@@ -29,7 +29,7 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-        <mysql-connector-java.version>8.0.31</mysql-connector-java.version>
+        <mysql-connector-java.version>8.0.22</mysql-connector-java.version>
     </properties>
     
     <dependencies>
