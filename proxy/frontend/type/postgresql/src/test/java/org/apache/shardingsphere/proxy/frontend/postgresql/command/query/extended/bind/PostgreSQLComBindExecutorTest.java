@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -48,7 +49,6 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
@@ -101,7 +101,7 @@ public final class PostgreSQLComBindExecutorTest {
     }
     
     private ContextManager mockContextManager(final String databaseName) {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ContextManager result = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().containsDatabase(databaseName)).thenReturn(true);
         return result;
     }
