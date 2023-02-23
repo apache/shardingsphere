@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -32,7 +33,8 @@ import java.util.stream.Collectors;
 // TODO Move to pipeline-core
 public final class JobDataNodeLine {
     
-    private final Collection<JobDataNodeEntry> entries;
+    // Need sequential collection
+    private final List<JobDataNodeEntry> entries;
     
     /**
      * Marshal to text.

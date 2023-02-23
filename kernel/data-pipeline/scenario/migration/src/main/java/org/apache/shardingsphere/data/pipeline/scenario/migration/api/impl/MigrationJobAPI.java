@@ -69,6 +69,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobTypeFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
@@ -98,7 +99,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -137,6 +137,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     private YamlMigrationJobConfiguration buildYamlJobConfiguration(final MigrateTableStatement param) {
+        // TODO Check sources schemas are the same
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setTargetDatabaseName(param.getTargetDatabaseName());
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(new MigrationJobType());
@@ -258,25 +259,54 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     @Override
     public MigrationTaskConfiguration buildTaskConfiguration(final PipelineJobConfiguration pipelineJobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
         MigrationJobConfiguration jobConfig = (MigrationJobConfiguration) pipelineJobConfig;
-        Map<ActualTableName, LogicTableName> tableNameMap = new LinkedHashMap<>();
-        tableNameMap.put(new ActualTableName(jobConfig.getSourceTableName()), new LogicTableName(jobConfig.getTargetTableName()));
-        Map<LogicTableName, String> tableNameSchemaMap = TableNameSchemaNameMapping.convert(jobConfig.getSourceSchemaName(), Collections.singletonList(jobConfig.getTargetTableName()));
-        TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(tableNameSchemaMap);
-        CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig);
-        DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig.getJobId(), jobConfig.getSourceResourceName(), jobConfig.getSource(), tableNameMap, tableNameSchemaNameMapping);
+        JobDataNodeLine dataNodeLine = jobConfig.getJobShardingDataNodes().get(jobShardingItem);
+        Map<ActualTableName, LogicTableName> tableNameMap = buildTableNameMap(dataNodeLine);
+        TableNameSchemaNameMapping tableNameSchemaNameMapping = buildTableNameSchemaNameMapping(jobConfig.getJobShardingDataNodes());
+        CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig, tableNameSchemaNameMapping);
+        String dataSourceName = dataNodeLine.getEntries().get(0).getDataNodes().get(0).getDataSourceName();
+        DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig.getJobId(), dataSourceName, jobConfig.getSources().get(dataSourceName), tableNameMap, tableNameSchemaNameMapping);
+        Set<LogicTableName> logicTableNames = jobConfig.getJobShardingDataNodes().stream()
+                .flatMap(each -> each.getEntries().stream().map(entry -> new LogicTableName(entry.getLogicTableName()))).collect(Collectors.toSet());
         Map<LogicTableName, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor().getShardingColumnsMap(
-                ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), Collections.singleton(new LogicTableName(jobConfig.getTargetTableName())));
+                ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), logicTableNames);
         ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, shardingColumnsMap, tableNameSchemaNameMapping);
-        return new MigrationTaskConfiguration(jobConfig.getSourceResourceName(), createTableConfig, dumperConfig, importerConfig);
+        MigrationTaskConfiguration result = new MigrationTaskConfiguration(dataSourceName, createTableConfig, dumperConfig, importerConfig);
+        log.info("buildTaskConfiguration, result={}", result);
+        return result;
     }
     
-    private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig) {
-        String sourceSchemaName = jobConfig.getSourceSchemaName();
-        String targetSchemaName = PipelineTypedSPILoader.getDatabaseTypedService(DatabaseType.class, jobConfig.getTargetDatabaseType()).isSchemaAvailable() ? sourceSchemaName : null;
-        CreateTableEntry createTableEntry = new CreateTableEntry(
-                jobConfig.getSource(), new SchemaTableName(new SchemaName(sourceSchemaName), new TableName(jobConfig.getSourceTableName())),
-                jobConfig.getTarget(), new SchemaTableName(new SchemaName(targetSchemaName), new TableName(jobConfig.getTargetTableName())));
-        return new CreateTableConfiguration(Collections.singletonList(createTableEntry));
+    private Map<ActualTableName, LogicTableName> buildTableNameMap(final JobDataNodeLine dataNodeLine) {
+        Map<ActualTableName, LogicTableName> result = new LinkedHashMap<>();
+        for (JobDataNodeEntry each : dataNodeLine.getEntries()) {
+            for (DataNode dataNode : each.getDataNodes()) {
+                result.put(new ActualTableName(dataNode.getTableName()), new LogicTableName(each.getLogicTableName()));
+            }
+        }
+        return result;
+    }
+    
+    private TableNameSchemaNameMapping buildTableNameSchemaNameMapping(final List<JobDataNodeLine> dataNodeLines) {
+        Map<String, List<String>> schemaTablesMap = new LinkedHashMap<>();
+        dataNodeLines.forEach(each -> each.getEntries().forEach(entry -> schemaTablesMap.computeIfAbsent(entry.getDataNodes().get(0).getSchemaName(),
+                key -> new LinkedList<>()).add(entry.getLogicTableName())));
+        return new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(schemaTablesMap));
+    }
+    
+    private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
+        Collection<CreateTableEntry> createTableEntries = new LinkedList<>();
+        for (JobDataNodeEntry each : jobConfig.getTablesFirstDataNodes().getEntries()) {
+            String sourceSchemaName = tableNameSchemaNameMapping.getSchemaName(each.getLogicTableName());
+            String targetSchemaName = TypedSPILoader.getService(DatabaseType.class, jobConfig.getTargetDatabaseType()).isSchemaAvailable() ? sourceSchemaName : null;
+            DataNode dataNode = each.getDataNodes().get(0);
+            PipelineDataSourceConfiguration sourceDataSourceConfig = jobConfig.getSources().get(dataNode.getDataSourceName());
+            CreateTableEntry createTableEntry = new CreateTableEntry(
+                    sourceDataSourceConfig, new SchemaTableName(new SchemaName(sourceSchemaName), new TableName(dataNode.getTableName())),
+                    jobConfig.getTarget(), new SchemaTableName(new SchemaName(targetSchemaName), new TableName(each.getLogicTableName())));
+            createTableEntries.add(createTableEntry);
+        }
+        CreateTableConfiguration result = new CreateTableConfiguration(createTableEntries);
+        log.info("getCreateTableConfiguration, result={}", result);
+        return result;
     }
     
     private DumperConfiguration buildDumperConfiguration(final String jobId, final String dataSourceName, final PipelineDataSourceConfiguration sourceDataSource,
@@ -292,20 +322,12 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     private ImporterConfiguration buildImporterConfiguration(final MigrationJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig,
                                                              final Map<LogicTableName, Set<String>> shardingColumnsMap, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
+        MigrationProcessContext processContext = new MigrationProcessContext(jobConfig.getJobId(), pipelineProcessConfig);
+        JobRateLimitAlgorithm writeRateLimitAlgorithm = processContext.getWriteRateLimitAlgorithm();
         int batchSize = pipelineProcessConfig.getWrite().getBatchSize();
         int retryTimes = jobConfig.getRetryTimes();
         int concurrency = jobConfig.getConcurrency();
-        MigrationProcessContext migrationProcessContext = new MigrationProcessContext(jobConfig.getJobId(), pipelineProcessConfig);
-        return new ImporterConfiguration(jobConfig.getTarget(), unmodifiable(shardingColumnsMap), tableNameSchemaNameMapping, batchSize, migrationProcessContext.getWriteRateLimitAlgorithm(),
-                retryTimes, concurrency);
-    }
-    
-    private Map<LogicTableName, Set<String>> unmodifiable(final Map<LogicTableName, Set<String>> shardingColumnsMap) {
-        Map<LogicTableName, Set<String>> result = new HashMap<>(shardingColumnsMap.size());
-        for (Entry<LogicTableName, Set<String>> entry : shardingColumnsMap.entrySet()) {
-            result.put(entry.getKey(), Collections.unmodifiableSet(entry.getValue()));
-        }
-        return Collections.unmodifiableMap(result);
+        return new ImporterConfiguration(jobConfig.getTarget(), shardingColumnsMap, tableNameSchemaNameMapping, batchSize, writeRateLimitAlgorithm, retryTimes, concurrency);
     }
     
     @Override
