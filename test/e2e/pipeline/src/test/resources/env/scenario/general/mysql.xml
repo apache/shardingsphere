@@ -53,7 +53,7 @@
     </create-table-order>
     
     <create-table-order-item>
-        CREATE TABLE t_order_item (
+        CREATE TABLE T_ORDER_ITEM (
         item_id bigint NOT NULL,
         order_id bigint NOT NULL,
         user_id int NOT NULL,
@@ -72,6 +72,6 @@
     </full-insert-order>
     
     <full-insert-order-item>
-        INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)
+        INSERT INTO T_ORDER_ITEM(item_id,order_id,user_id,status) VALUES(?,?,?,?)
     </full-insert-order-item>
 </command>

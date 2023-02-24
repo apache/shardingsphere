@@ -122,8 +122,8 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     }
     
     private void checkOrderItemMigration() throws SQLException, InterruptedException {
-        startMigrationWithSchema("t_order_item", "t_order_item");
-        String jobId = getJobIdByTableName("ds_0.test.t_order_item");
+        startMigrationWithSchema("T_ORDER_ITEM", "T_ORDER_ITEM");
+        String jobId = getJobIdByTableName("ds_0.test.T_ORDER_ITEM");
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }

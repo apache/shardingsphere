@@ -28,7 +28,6 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.Abstract
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -55,9 +54,6 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @Override
     protected String getSourceTableOrderName() {
-        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
-            return "T_ORDER";
-        }
         return "t_order";
     }
     
