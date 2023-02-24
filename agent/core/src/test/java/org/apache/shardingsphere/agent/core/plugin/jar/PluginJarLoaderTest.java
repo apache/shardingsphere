@@ -37,7 +37,7 @@ public class PluginJarLoaderTest {
     public void assertLoad() throws IOException {
         Collection<JarFile> jarFiles = PluginJarLoader.load(new File(getResourceURL()));
         assertThat(jarFiles.size(), is(1));
-        assertThat(jarFiles.iterator().next().getName(), endsWith("plugin0.jar"));
+        assertThat(jarFiles.iterator().next().getName(), endsWith("test-plugin.jar"));
     }
     
     private String getResourceURL() throws UnsupportedEncodingException {
