@@ -18,9 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.yaml.job;
 
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * YAML migration job configuration swapper.
@@ -33,17 +38,16 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
     public YamlMigrationJobConfiguration swapToYamlConfiguration(final MigrationJobConfiguration data) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setJobId(data.getJobId());
-        result.setSourceResourceName(data.getSourceResourceName());
         result.setTargetDatabaseName(data.getTargetDatabaseName());
         result.setSourceDatabaseType(data.getSourceDatabaseType());
         result.setTargetDatabaseType(data.getTargetDatabaseType());
-        result.setSourceSchemaName(data.getSourceSchemaName());
-        result.setSourceTableName(data.getSourceTableName());
-        result.setTargetTableName(data.getTargetTableName());
-        result.setSource(dataSourceConfigSwapper.swapToYamlConfiguration(data.getSource()));
+        result.setSources(data.getSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+                entry -> dataSourceConfigSwapper.swapToYamlConfiguration(entry.getValue()), (key, value) -> value, LinkedHashMap::new)));
         result.setTarget(dataSourceConfigSwapper.swapToYamlConfiguration(data.getTarget()));
-        result.setTablesFirstDataNodes(data.getTablesFirstDataNodes());
-        result.setJobShardingDataNodes(data.getJobShardingDataNodes());
+        result.setTargetTableNames(data.getTargetTableNames());
+        result.setTargetTableSchemaMap(data.getTargetTableSchemaMap());
+        result.setTablesFirstDataNodes(data.getTablesFirstDataNodes().marshal());
+        result.setJobShardingDataNodes(data.getJobShardingDataNodes().stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
         result.setConcurrency(data.getConcurrency());
         result.setRetryTimes(data.getRetryTimes());
         return result;
@@ -51,12 +55,13 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
     
     @Override
     public MigrationJobConfiguration swapToObject(final YamlMigrationJobConfiguration yamlConfig) {
-        return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getSourceResourceName(), yamlConfig.getTargetDatabaseName(),
-                yamlConfig.getSourceSchemaName(),
+        return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getTargetDatabaseName(),
                 yamlConfig.getSourceDatabaseType(), yamlConfig.getTargetDatabaseType(),
-                yamlConfig.getSourceTableName(), yamlConfig.getTargetTableName(),
-                dataSourceConfigSwapper.swapToObject(yamlConfig.getSource()), dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
-                yamlConfig.getTablesFirstDataNodes(), yamlConfig.getJobShardingDataNodes(),
+                yamlConfig.getSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+                        entry -> dataSourceConfigSwapper.swapToObject(entry.getValue()), (key, value) -> value, LinkedHashMap::new)),
+                dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
+                yamlConfig.getTargetTableNames(), yamlConfig.getTargetTableSchemaMap(),
+                JobDataNodeLine.unmarshal(yamlConfig.getTablesFirstDataNodes()), yamlConfig.getJobShardingDataNodes().stream().map(JobDataNodeLine::unmarshal).collect(Collectors.toList()),
                 yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }
     

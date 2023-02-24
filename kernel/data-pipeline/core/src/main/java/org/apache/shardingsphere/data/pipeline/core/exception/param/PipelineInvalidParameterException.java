@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.pojo;
+package org.apache.shardingsphere.data.pipeline.core.exception.param;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-@RequiredArgsConstructor
-@Getter
-public final class CreateMigrationJobParameter {
+/**
+ * Pipeline invalid parameter exception.
+ */
+public final class PipelineInvalidParameterException extends PipelineSQLException {
     
-    private final String sourceResourceName;
+    private static final long serialVersionUID = -2162309404414015630L;
     
-    private final String sourceSchemaName;
-    
-    private final String sourceTableName;
-    
-    private final String targetDatabaseName;
-    
-    private final String targetTableName;
+    public PipelineInvalidParameterException(final String message) {
+        super(XOpenSQLState.INVALID_PARAMETER_VALUE, 5, String.format("There is invalid parameter value: %s.", message));
+    }
 }

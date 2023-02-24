@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job;
+package org.apache.shardingsphere.data.pipeline.api.datanode;
 
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.Test;
 
-import java.util.Collections;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PipelineJobIdUtilsTest {
+public final class DataNodeUtilTest {
     
     @Test
-    public void assertParseJobType() {
-        MigrationJobId pipelineJobId = new MigrationJobId(Collections.singletonList("t_order:ds_0.t_order_0,ds_0.t_order_1"), "sharding_db");
-        String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
-        JobType actualJobType = PipelineJobIdUtils.parseJobType(jobId);
-        assertThat(actualJobType, instanceOf(MigrationJobType.class));
+    public void assertFormatWithSchema() {
+        DataNode dataNode = new DataNode("ds_0.tbl_0");
+        dataNode.setSchemaName("public");
+        assertThat(DataNodeUtil.formatWithSchema(dataNode), is("ds_0.public.tbl_0"));
+    }
+    
+    @Test
+    public void assertParseWithSchema() {
+        DataNode actual = DataNodeUtil.parseWithSchema("ds_0.public.tbl_0");
+        assertThat(actual.getDataSourceName(), is("ds_0"));
+        assertThat(actual.getSchemaName(), is("public"));
+        assertThat(actual.getTableName(), is("tbl_0"));
     }
 }

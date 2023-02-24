@@ -22,12 +22,13 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
@@ -42,10 +43,13 @@ import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDa
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
+import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
 import org.junit.AfterClass;
@@ -178,9 +182,10 @@ public final class MigrationJobAPITest {
         DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm(jobConfig, "FIXTURE", null);
         Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobConfig, calculateAlgorithm, new ConsistencyCheckJobItemProgressContext(jobId.get(), 0));
         assertThat(checkResultMap.size(), is(1));
-        assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());
-        assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));
-        assertTrue(checkResultMap.get("t_order").getContentCheckResult().isMatched());
+        String checkKey = "ds_0.t_order";
+        assertTrue(checkResultMap.get(checkKey).getCountCheckResult().isMatched());
+        assertThat(checkResultMap.get(checkKey).getCountCheckResult().getTargetRecordsCount(), is(2L));
+        assertTrue(checkResultMap.get(checkKey).getContentCheckResult().isMatched());
     }
     
     @Test
@@ -236,7 +241,8 @@ public final class MigrationJobAPITest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final MigrationJobConfiguration jobConfig) {
-        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
+        PipelineDataSourceConfiguration source = jobConfig.getSources().values().iterator().next();
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter());
         initTableData(TypedSPILoader.getService(
                 PipelineDataSourceCreator.class, sourceDataSourceConfig.getType()).createPipelineDataSource(sourceDataSourceConfig.getDataSourceConfiguration()));
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
@@ -275,12 +281,19 @@ public final class MigrationJobAPITest {
     @Test
     public void assertCreateJobConfig() throws SQLException {
         initIntPrimaryEnvironment();
-        String jobId = jobAPI.createJobAndStart(new CreateMigrationJobParameter("ds_0", null, "t_order", "logic_db", "t_order"));
-        MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId);
-        assertThat(jobConfig.getSourceResourceName(), is("ds_0"));
-        assertThat(jobConfig.getSourceTableName(), is("t_order"));
-        assertThat(jobConfig.getTargetDatabaseName(), is("logic_db"));
-        assertThat(jobConfig.getTargetTableName(), is("t_order"));
+        SourceTargetEntry sourceTargetEntry = new SourceTargetEntry("logic_db", new DataNode("ds_0", "t_order"), "t_order");
+        String jobId = jobAPI.createJobAndStart(new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), "logic_db"));
+        MigrationJobConfiguration actual = jobAPI.getJobConfiguration(jobId);
+        assertThat(actual.getTargetDatabaseName(), is("logic_db"));
+        List<JobDataNodeLine> dataNodeLines = actual.getJobShardingDataNodes();
+        assertThat(dataNodeLines.size(), is(1));
+        assertThat(dataNodeLines.get(0).getEntries().size(), is(1));
+        JobDataNodeEntry entry = dataNodeLines.get(0).getEntries().get(0);
+        assertThat(entry.getDataNodes().size(), is(1));
+        DataNode dataNode = entry.getDataNodes().get(0);
+        assertThat(dataNode.getDataSourceName(), is("ds_0"));
+        assertThat(dataNode.getTableName(), is("t_order"));
+        assertThat(entry.getLogicTableName(), is("t_order"));
     }
     
     private void initIntPrimaryEnvironment() throws SQLException {
