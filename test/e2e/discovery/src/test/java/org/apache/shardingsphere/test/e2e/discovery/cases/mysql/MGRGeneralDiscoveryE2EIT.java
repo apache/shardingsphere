@@ -56,6 +56,6 @@ public final class MGRGeneralDiscoveryE2EIT extends BaseDiscoveryE2EIT {
         assertCloseReplicationDataSource(mgrEnvironment);
         dropDatabaseDiscoveryDatabase();
         createReadWriteSplittingDatabase();
-        registerStorageUnit();
+        registerSingleStorageUnit();
     }
 }

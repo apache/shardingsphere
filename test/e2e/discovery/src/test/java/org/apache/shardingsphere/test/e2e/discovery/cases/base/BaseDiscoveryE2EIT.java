@@ -193,8 +193,8 @@ public abstract class BaseDiscoveryE2EIT {
         try (
                 Connection connection = getProxyDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
-            statement.execute(discoveryDistSQLCommand.getCreateDatabase().getExecuteSQL());
-            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertCreateSQL(statement, discoveryDistSQLCommand.getCreateDatabase().getAssertionSQL()));
+            statement.execute(discoveryDistSQLCommand.getCreateReadwriteSplittingDatabase().getExecuteSQL());
+            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertCreateSQL(statement, discoveryDistSQLCommand.getCreateReadwriteSplittingDatabase().getAssertionSQL()));
         }
     }
     
@@ -207,16 +207,16 @@ public abstract class BaseDiscoveryE2EIT {
     }
     
     /**
-     * Register storage units.
+     * Register single storage units.
      *
      * @throws SQLException sql exception
      */
-    public void registerStorageUnit() throws SQLException {
+    public void registerSingleStorageUnit() throws SQLException {
         try (
                 Connection connection = getProxyDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
-            statement.execute(discoveryDistSQLCommand.getRegisterStorageUnits().getExecuteSQL());
-            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertRDLDistSQL(statement, discoveryDistSQLCommand.getRegisterStorageUnits().getAssertionSQL()));
+            statement.execute(discoveryDistSQLCommand.getRegisterSingleStorageUnit().getExecuteSQL());
+            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertRDLDistSQL(statement, discoveryDistSQLCommand.getRegisterSingleStorageUnit().getAssertionSQL()));
         }
     }
     
