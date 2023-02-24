@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.discovery.build;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.discovery.cases.base.BaseDiscoveryE2EIT;
 import org.apache.shardingsphere.test.e2e.discovery.command.DiscoveryDistSQLCommand;
 import org.awaitility.Awaitility;
@@ -33,16 +34,12 @@ import java.util.Objects;
 /**
  * Build discovery rule.
  */
+@RequiredArgsConstructor
 public final class DiscoveryRuleBuilder {
     
     private final DiscoveryDistSQLCommand discoveryDistSQLCommand;
     
     private final DataSource proxyDataSource;
-    
-    public DiscoveryRuleBuilder(final DataSource proxyDataSource) {
-        this.proxyDataSource = proxyDataSource;
-        discoveryDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseDiscoveryE2EIT.class.getClassLoader().getResource("env/common/discovery-command.xml")), DiscoveryDistSQLCommand.class);
-    }
     
     /**
      *  build Discovery Environment.
