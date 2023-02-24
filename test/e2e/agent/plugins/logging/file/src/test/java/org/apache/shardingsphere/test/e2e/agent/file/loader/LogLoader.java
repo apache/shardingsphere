@@ -28,6 +28,9 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Log loader.
+ */
 public final class LogLoader {
     
     /**

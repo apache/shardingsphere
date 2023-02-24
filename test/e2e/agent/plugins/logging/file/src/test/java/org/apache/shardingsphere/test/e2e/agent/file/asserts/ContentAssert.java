@@ -18,14 +18,17 @@
 package org.apache.shardingsphere.test.e2e.agent.file.asserts;
 
 import org.apache.shardingsphere.test.e2e.agent.file.loader.LogLoader;
-import org.hamcrest.Matchers;
 
 import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 
+/**
+ * Content assert.
+ */
 public final class ContentAssert {
     
     /**
@@ -35,9 +38,9 @@ public final class ContentAssert {
      */
     public static void assertIs(final String expectedLogRegex) {
         Collection<String> actualLogLines = LogLoader.getLogLines();
-        assertThat(String.format("Actual log is empty"), actualLogLines.size(), Matchers.greaterThan(0));
+        assertThat(String.format("Actual log is empty"), actualLogLines.size(), greaterThan(0));
         Pattern pattern = Pattern.compile(expectedLogRegex);
         Collection<String> expectedLogs = actualLogLines.stream().filter(each -> pattern.matcher(each).find()).collect(Collectors.toList());
-        assertThat(String.format("The log for the specified regular `%s` does not exist", expectedLogRegex), expectedLogs.size(), Matchers.greaterThan(0));
+        assertThat(String.format("The log for the specified regular `%s` does not exist", expectedLogRegex), expectedLogs.size(), greaterThan(0));
     }
 }
