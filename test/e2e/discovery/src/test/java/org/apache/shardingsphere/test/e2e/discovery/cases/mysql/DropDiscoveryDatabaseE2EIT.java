@@ -46,7 +46,6 @@ public final class DropDiscoveryDatabaseE2EIT extends BaseDiscoveryE2EIT {
         super(testParam);
         discoveryDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseDiscoveryE2EIT.class.getClassLoader().getResource("env/common/drop-discovery-database-command.xml")),
                 DropDiscoveryDatabaseDistSQLCommand.class);
-    
     }
     
     @Parameterized.Parameters(name = "{0}")

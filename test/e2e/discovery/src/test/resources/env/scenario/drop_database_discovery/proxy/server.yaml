@@ -14,9 +14,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# it.type=NONE,DOCKER,NATIVE
-it.env.type=DOCKER
-# it.env.cases=mgr_discovery
-it.env.cases=mgr_discovery
-# it.docker.mysql.version=mysql:5.7,mysql:8.0
-it.docker.mysql.version=mysql:5.7
+
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: it_discovery
+      server-lists: zk.host:2181
+      timeToLiveSeconds: 60
+      operationTimeoutMilliseconds: 500
+      retryIntervalMilliseconds: 500
+      maxRetries: 3
+
+authority:
+  users:
+    - user: proxy
+      password: Proxy@123
+  privilege:
+    type: ALL_PERMITTED
+
+props:
+  max-connections-size-per-query: 1
+  kernel-executor-size: 16  # Infinite by default.
+  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  proxy-hint-enabled: true
+  sql-show: true
+  sql-federation-type: ADVANCED
