@@ -95,11 +95,11 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         log.info("init data end: {}", LocalDateTime.now());
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         startMigration("t_order_item", "t_order_item");
-        String orderJobId = getJobIdByTableName(getSourceTableOrderName());
+        String orderJobId = getJobIdByTableName("ds_0." + getSourceTableOrderName());
         waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", orderJobId));
         startIncrementTask(new MySQLIncrementTask(getSourceDataSource(), getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), 30));
         assertMigrationSuccessById(orderJobId, "DATA_MATCH");
-        String orderItemJobId = getJobIdByTableName("t_order_item");
+        String orderItemJobId = getJobIdByTableName("ds_0.t_order_item");
         assertMigrationSuccessById(orderItemJobId, "DATA_MATCH");
         ThreadUtil.sleep(2, TimeUnit.SECONDS);
         assertMigrationSuccessById(orderItemJobId, "CRC32_MATCH");
