@@ -35,6 +35,8 @@ services:
     ports:
       - "14317:4317"
       - "26686:16686"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
 
   shardingsphere-proxy-agent-tracing:
     image: apache/shardingsphere-proxy-agent-tracing-jaeger-test

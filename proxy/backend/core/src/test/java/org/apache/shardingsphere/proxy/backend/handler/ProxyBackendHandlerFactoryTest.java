@@ -34,11 +34,9 @@ import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetDistVariableHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALUpdaterBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
@@ -112,16 +110,13 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     public void assertNewInstanceWithDistSQL() throws SQLException {
         String sql = "set dist variable transaction_type='LOCAL'";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(SetDistVariableHandler.class));
+        assertThat(actual, instanceOf(UpdatableRALUpdaterBackendHandler.class));
         sql = "show dist variable where name = transaction_type";
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
         sql = "show dist variables";
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
-        sql = "set sharding hint database_value=1";
-        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(HintRALBackendHandler.class));
     }
     
     @Test
@@ -164,27 +159,6 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
         String sql = "SET @@SESSION.AUTOCOMMIT = ON";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
-    }
-    
-    @Test
-    public void assertNewInstanceWithUse() throws SQLException {
-        String sql = "use sharding_db";
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(DatabaseAdminUpdateBackendHandler.class));
-    }
-    
-    @Test
-    public void assertNewInstanceWithShowDatabase() throws SQLException {
-        String sql = "show databases";
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(DatabaseAdminQueryBackendHandler.class));
-    }
-    
-    @Test
-    public void assertNewInstanceWithSet() throws SQLException {
-        String sql = "set @num=1";
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(DatabaseAdminUpdateBackendHandler.class));
     }
     
     @Test

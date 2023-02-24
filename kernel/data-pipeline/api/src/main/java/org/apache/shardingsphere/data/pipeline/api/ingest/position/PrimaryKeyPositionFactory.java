@@ -63,7 +63,7 @@ public final class PrimaryKeyPositionFactory {
      */
     public static IngestPosition<?> newInstance(final Object beginValue, final Object endValue) {
         if (beginValue instanceof Number) {
-            return new IntegerPrimaryKeyPosition(((Number) beginValue).longValue(), ((Number) endValue).longValue());
+            return new IntegerPrimaryKeyPosition(((Number) beginValue).longValue(), null != endValue ? ((Number) endValue).longValue() : Long.MAX_VALUE);
         }
         if (beginValue instanceof CharSequence) {
             return new StringPrimaryKeyPosition(beginValue.toString(), null != endValue ? endValue.toString() : null);

@@ -20,40 +20,47 @@ package org.apache.shardingsphere.proxy.frontend.connection;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.ProxyContextRestorer;
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class ConnectionLimitContextTest extends ProxyContextRestorer {
-    
-    @Before
-    public void setup() {
-        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-    }
+public final class ConnectionLimitContextTest {
     
     @Test
     public void assertConnectionsLimited() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(2);
-        assertTrue(ConnectionLimitContext.getInstance().connectionAllowed());
-        assertTrue(ConnectionLimitContext.getInstance().connectionAllowed());
-        assertFalse(ConnectionLimitContext.getInstance().connectionAllowed());
-        ConnectionLimitContext.getInstance().connectionInactive();
-        ConnectionLimitContext.getInstance().connectionInactive();
-        assertTrue(ConnectionLimitContext.getInstance().connectionAllowed());
-        ConnectionLimitContext.getInstance().connectionInactive();
-        ConnectionLimitContext.getInstance().connectionInactive();
-        ConnectionLimitContext.getInstance().connectionInactive();
+        ContextManager contextManager = mockContextManager(2);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            assertTrue(ConnectionLimitContext.getInstance().connectionAllowed());
+            assertTrue(ConnectionLimitContext.getInstance().connectionAllowed());
+            assertFalse(ConnectionLimitContext.getInstance().connectionAllowed());
+            ConnectionLimitContext.getInstance().connectionInactive();
+            ConnectionLimitContext.getInstance().connectionInactive();
+            assertTrue(ConnectionLimitContext.getInstance().connectionAllowed());
+            ConnectionLimitContext.getInstance().connectionInactive();
+            ConnectionLimitContext.getInstance().connectionInactive();
+            ConnectionLimitContext.getInstance().connectionInactive();
+        }
     }
     
     @Test
     public void assertConnectionsUnlimited() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(0);
-        assertFalse(ConnectionLimitContext.getInstance().limitsMaxConnections());
+        ContextManager contextManager = mockContextManager(0);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            assertFalse(ConnectionLimitContext.getInstance().limitsMaxConnections());
+        }
+    }
+    
+    private static ContextManager mockContextManager(final int maxConnections) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(maxConnections);
+        return result;
     }
 }

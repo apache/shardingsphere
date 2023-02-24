@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl;
 
 import lombok.Getter;
+import org.apache.groovy.parser.antlr4.util.StringUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.LiteralValue;
 
 /**
@@ -30,5 +31,15 @@ public final class StringLiteralValue implements LiteralValue<String> {
     
     public StringLiteralValue(final String value) {
         this.value = value.substring(1, value.length() - 1);
+    }
+    
+    /**
+     * Get special escape sequences string.
+     *
+     * @param value string text
+     * @return String literal value
+     */
+    public static StringLiteralValue getStandardEscapesStringLiteralValue(final String value) {
+        return new StringLiteralValue(StringUtils.replaceStandardEscapes(value));
     }
 }

@@ -65,6 +65,9 @@ public final class TypedSPILoader {
      * @return service
      */
     public static <T extends TypedSPI> Optional<T> findService(final Class<T> spiClass, final String type, final Properties props) {
+        if (null == type) {
+            return findService(spiClass);
+        }
         for (T each : ShardingSphereServiceLoader.getServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 each.init(null == props ? new Properties() : convertToStringTypedProperties(props));

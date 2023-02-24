@@ -46,7 +46,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -85,42 +84,52 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PortalTest extends ProxyContextRestorer {
+public final class PortalTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ContextManager mockContextManager;
+    private MockedStatic<ProxyContext> mockedProxyContext;
+    
+    private MockedStatic<ProxyBackendHandlerFactory> mockedProxyBackendHandlerFactory;
     
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
     
     @Mock
-    private ConnectionSession connectionSession;
-    
-    @Mock
     private BackendConnection backendConnection;
-    
-    private MockedStatic<ProxyBackendHandlerFactory> mockedStatic;
     
     @Before
     public void setup() {
-        ProxyContext.init(mockContextManager);
-        when(mockContextManager.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        mockedProxyContext = mockProxyContext();
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
-        when(ProxyContext.getInstance().getDatabase("db")).thenReturn(database);
+        mockedProxyBackendHandlerFactory = mockProxyBackendHandlerFactory(connectionSession);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
-        mockedStatic = mockStatic(ProxyBackendHandlerFactory.class);
-        mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), anyString(), any(SQLStatement.class), eq(connectionSession), any(HintValueContext.class)))
+    }
+    
+    private MockedStatic<ProxyBackendHandlerFactory> mockProxyBackendHandlerFactory(final ConnectionSession connectionSession) {
+        MockedStatic<ProxyBackendHandlerFactory> result = mockStatic(ProxyBackendHandlerFactory.class);
+        result.when(() -> ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), anyString(), any(SQLStatement.class), eq(connectionSession), any(HintValueContext.class)))
                 .thenReturn(proxyBackendHandler);
-        mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), any(QueryContext.class), eq(connectionSession), anyBoolean()))
-                .thenReturn(proxyBackendHandler);
+        result.when(() -> ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
+        return result;
+    }
+    
+    private MockedStatic<ProxyContext> mockProxyContext() {
+        MockedStatic<ProxyContext> result = mockStatic(ProxyContext.class);
+        result.when(() -> ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
+        ContextManager mockedContextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
+        result.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(mockedContextManager);
+        when(mockedContextManager.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        result.when(() -> ProxyContext.getInstance().getDatabase("db")).thenReturn(database);
+        return result;
     }
     
     @After
     public void tearDown() {
-        mockedStatic.close();
+        mockedProxyContext.close();
+        mockedProxyBackendHandlerFactory.close();
     }
     
     @Test

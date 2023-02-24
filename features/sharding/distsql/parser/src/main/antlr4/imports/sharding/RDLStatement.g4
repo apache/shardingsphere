@@ -136,7 +136,7 @@ shardingAlgorithm
     ;
 
 shardingStrategy
-    : TYPE EQ_ strategyType (COMMA_ shardingColumnDefinition COMMA_ shardingAlgorithm)?
+    : TYPE EQ_ strategyType ((COMMA_ shardingColumnDefinition)? COMMA_ shardingAlgorithm)?
     ;
 
 databaseStrategy

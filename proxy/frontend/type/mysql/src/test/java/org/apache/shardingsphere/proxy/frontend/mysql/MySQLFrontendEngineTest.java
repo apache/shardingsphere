@@ -50,6 +50,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -72,11 +73,12 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
+public final class MySQLFrontendEngineTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
@@ -94,7 +96,6 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
     @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
-        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         resetConnectionIdGenerator();
         when(context.channel()).thenReturn(channel);
         when(channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
@@ -105,7 +106,10 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
     @SneakyThrows(ReflectiveOperationException.class)
     private void resetConnectionIdGenerator() {
         Plugins.getMemberAccessor().set(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance(), 0);
-        mysqlFrontendEngine = new MySQLFrontendEngine();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+            mysqlFrontendEngine = new MySQLFrontendEngine();
+        }
     }
     
     @Test
