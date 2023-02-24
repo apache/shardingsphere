@@ -22,8 +22,8 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 
 public final class DataNodeTest {
     
@@ -86,13 +86,6 @@ public final class DataNodeTest {
     }
     
     @Test
-    public void assertFormattedTextLength() {
-        String text = "ds_0.tbl_0";
-        DataNode dataNode = new DataNode(text);
-        assertThat(dataNode.getFormattedTextLength(), is(text.length()));
-    }
-    
-    @Test
     public void assertNewValidDataNodeIncludeInstance() {
         DataNode dataNode = new DataNode("ds_0.db_0.tbl_0");
         assertThat(dataNode.getDataSourceName(), is("ds_0.db_0"));
@@ -114,12 +107,5 @@ public final class DataNodeTest {
         String expected = "ds_0.db_0.tbl_0";
         DataNode dataNode = new DataNode(expected);
         assertThat(dataNode.format(), is(expected));
-    }
-    
-    @Test
-    public void assertFormattedTextLengthIncludeInstance() {
-        String text = "ds_0.db_0.tbl_0";
-        DataNode dataNode = new DataNode(text);
-        assertThat(dataNode.getFormattedTextLength(), is(text.length()));
     }
 }

@@ -226,11 +226,11 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     private TableNameSchemaNameMapping getTableNameSchemaNameMapping(final Collection<String> tableNames) {
-        Map<LogicTableName, String> tableNameSchemaMap = new LinkedHashMap<>();
+        Map<String, String> tableNameSchemaMap = new LinkedHashMap<>();
         for (String each : tableNames) {
             String[] split = each.split("\\.");
             if (split.length > 1) {
-                tableNameSchemaMap.put(new LogicTableName(split[1]), split[0]);
+                tableNameSchemaMap.put(split[1], split[0]);
             }
         }
         return new TableNameSchemaNameMapping(tableNameSchemaMap);

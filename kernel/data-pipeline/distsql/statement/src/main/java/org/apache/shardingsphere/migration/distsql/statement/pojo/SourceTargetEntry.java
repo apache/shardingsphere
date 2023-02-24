@@ -15,23 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.statement;
+package org.apache.shardingsphere.migration.distsql.statement.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
-import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 
-import java.util.List;
+import java.util.Objects;
 
 /**
- * Migrate table statement.
+ * Source target entry.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MigrateTableStatement extends UpdatableScalingRALStatement {
-    
-    private final List<SourceTargetEntry> sourceTargetEntries;
+public final class SourceTargetEntry {
     
     private final String targetDatabaseName;
+    
+    private final DataNode source;
+    
+    private final String targetTableName;
+    
+    @Override
+    public boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (null == object || getClass() != object.getClass()) {
+            return false;
+        }
+        final SourceTargetEntry that = (SourceTargetEntry) object;
+        return source.equals(that.source) && targetTableName.equals(that.targetTableName);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(source, targetTableName);
+    }
 }
