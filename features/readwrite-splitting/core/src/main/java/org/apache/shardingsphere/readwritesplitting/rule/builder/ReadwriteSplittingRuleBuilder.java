@@ -36,7 +36,7 @@ public final class ReadwriteSplittingRuleBuilder implements DatabaseRuleBuilder<
     @Override
     public ReadwriteSplittingRule build(final ReadwriteSplittingRuleConfiguration config, final String databaseName,
                                         final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new ReadwriteSplittingRule(config, builtRules);
+        return new ReadwriteSplittingRule(databaseName, config, builtRules, instanceContext);
     }
     
     @Override

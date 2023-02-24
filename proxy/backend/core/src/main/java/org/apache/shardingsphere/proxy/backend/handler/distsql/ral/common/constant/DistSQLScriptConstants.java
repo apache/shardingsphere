@@ -32,6 +32,8 @@ public final class DistSQLScriptConstants {
     
     public static final String HINT = "hint";
     
+    public static final String NONE = "";
+    
     public static final String COMMA = ",";
     
     public static final String SEMI = ";";
@@ -101,11 +103,15 @@ public final class DistSQLScriptConstants {
     
     public static final String STRATEGY_HINT = "TYPE='%s', SHARDING_ALGORITHM(%s)";
     
+    public static final String STRATEGY_NONE = "TYPE='%s'";
+    
     public static final String SHARDING_STRATEGY_STANDARD = "%s(" + STRATEGY_STANDARD + ")";
     
     public static final String SHARDING_STRATEGY_COMPLEX = "%s(" + STRATEGY_COMPLEX + ")";
     
     public static final String SHARDING_STRATEGY_HINT = "%s(" + STRATEGY_HINT + ")";
+    
+    public static final String SHARDING_STRATEGY_NONE = "%s(" + STRATEGY_NONE + ")";
     
     public static final String KEY_GENERATOR_STRATEGY = "KEY_GENERATE_STRATEGY(COLUMN=%s, %s)";
     
@@ -116,6 +122,10 @@ public final class DistSQLScriptConstants {
     public static final String BINDING_TABLES = " %s (%s)";
     
     public static final String BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s";
+    
+    public static final String DEFAULT_DATABASE_STRATEGY = "CREATE DEFAULT SHARDING DATABASE STRATEGY";
+    
+    public static final String DEFAULT_TABLE_STRATEGY = "CREATE DEFAULT SHARDING TABLE STRATEGY";
     
     public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
     

@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
@@ -45,24 +47,35 @@ public final class JDBCStreamQueryUtil {
      */
     public static PreparedStatement generateStreamQueryPreparedStatement(final DatabaseType databaseType, final Connection connection, final String sql) throws SQLException {
         if (databaseType instanceof MySQLDatabaseType) {
-            return generateMySQLStreamQueryPreparedStatement(connection, sql);
+            return generateForMySQL(connection, sql);
         }
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            return generatePostgreSQLStreamQueryPreparedStatement(connection, sql);
+            return generateForPostgreSQL(connection, sql);
+        }
+        if (databaseType instanceof H2DatabaseType) {
+            return generateByDefault(connection, sql);
+        }
+        if (databaseType instanceof BranchDatabaseType) {
+            return generateStreamQueryPreparedStatement(((BranchDatabaseType) databaseType).getTrunkDatabaseType(), connection, sql);
         }
         log.warn("not support {} streaming query now, pay attention to memory usage", databaseType.getType());
-        return connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        return generateByDefault(connection, sql);
     }
     
-    private static PreparedStatement generateMySQLStreamQueryPreparedStatement(final Connection connection, final String sql) throws SQLException {
+    // TODO Consider use SPI
+    private static PreparedStatement generateForMySQL(final Connection connection, final String sql) throws SQLException {
         PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         result.setFetchSize(Integer.MIN_VALUE);
         return result;
     }
     
-    private static PreparedStatement generatePostgreSQLStreamQueryPreparedStatement(final Connection connection, final String sql) throws SQLException {
+    private static PreparedStatement generateForPostgreSQL(final Connection connection, final String sql) throws SQLException {
         PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.CLOSE_CURSORS_AT_COMMIT);
         connection.setAutoCommit(false);
         return result;
+    }
+    
+    private static PreparedStatement generateByDefault(final Connection connection, final String sql) throws SQLException {
+        return connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
     }
 }

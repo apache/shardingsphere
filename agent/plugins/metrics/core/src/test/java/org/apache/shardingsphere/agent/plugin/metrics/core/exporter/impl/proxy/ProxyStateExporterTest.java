@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.ProxyContextRestorer;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -46,9 +47,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
-public final class ProxyStateExporterTest extends ProxyContextRestorer {
+public final class ProxyStateExporterTest {
     
     @After
     public void reset() {
@@ -58,19 +61,29 @@ public final class ProxyStateExporterTest extends ProxyContextRestorer {
     
     @Test
     public void assertExportWithoutContextManager() {
-        ProxyContext.init(null);
-        assertFalse(new ProxyStateExporter().export("FIXTURE").isPresent());
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(null);
+            assertFalse(new ProxyStateExporter().export("FIXTURE").isPresent());
+        }
     }
     
     @Test
     public void assertExportWithContextManager() {
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getStateContext()).thenReturn(Optional.of(mock(StateContext.class, RETURNS_DEEP_STUBS)));
+            Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyStateExporter().export("FIXTURE");
+            assertTrue(collector.isPresent());
+            assertThat(collector.get().toString(), is("0"));
+        }
+    }
+    
+    private ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         InstanceContext instanceContext = new InstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null),
                 mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
-        ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
-        Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyStateExporter().export("FIXTURE");
-        assertTrue(collector.isPresent());
-        assertThat(collector.get().toString(), is("0"));
+        return new ContextManager(metaDataContexts, instanceContext);
     }
 }

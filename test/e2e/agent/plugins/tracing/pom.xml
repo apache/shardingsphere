@@ -30,7 +30,6 @@
     
     <modules>
         <module>jaeger</module>
-        <module>opentelemetry</module>
         <module>zipkin</module>
     </modules>
 </project>

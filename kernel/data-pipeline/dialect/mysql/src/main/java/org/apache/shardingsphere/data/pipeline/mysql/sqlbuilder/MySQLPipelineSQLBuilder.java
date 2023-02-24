@@ -90,6 +90,12 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     }
     
     @Override
+    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
+        return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'",
+                getQualifiedTableName(schemaName, tableName)));
+    }
+    
+    @Override
     public String getType() {
         return "MySQL";
     }
