@@ -22,6 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
@@ -180,9 +182,10 @@ public final class MigrationJobAPITest {
         DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm(jobConfig, "FIXTURE", null);
         Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobConfig, calculateAlgorithm, new ConsistencyCheckJobItemProgressContext(jobId.get(), 0));
         assertThat(checkResultMap.size(), is(1));
-        assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());
-        assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));
-        assertTrue(checkResultMap.get("t_order").getContentCheckResult().isMatched());
+        String checkKey = "ds_0.t_order";
+        assertTrue(checkResultMap.get(checkKey).getCountCheckResult().isMatched());
+        assertThat(checkResultMap.get(checkKey).getCountCheckResult().getTargetRecordsCount(), is(2L));
+        assertTrue(checkResultMap.get(checkKey).getContentCheckResult().isMatched());
     }
     
     @Test
@@ -238,7 +241,8 @@ public final class MigrationJobAPITest {
     
     @SneakyThrows(SQLException.class)
     private void initTableData(final MigrationJobConfiguration jobConfig) {
-        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
+        PipelineDataSourceConfiguration source = jobConfig.getSources().values().iterator().next();
+        PipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(source.getType(), source.getParameter());
         initTableData(TypedSPILoader.getService(
                 PipelineDataSourceCreator.class, sourceDataSourceConfig.getType()).createPipelineDataSource(sourceDataSourceConfig.getDataSourceConfiguration()));
         PipelineDataSourceConfiguration targetDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getTarget().getType(), jobConfig.getTarget().getParameter());
@@ -279,11 +283,17 @@ public final class MigrationJobAPITest {
         initIntPrimaryEnvironment();
         SourceTargetEntry sourceTargetEntry = new SourceTargetEntry(new DataNode("ds_0", "t_order"), "t_order");
         String jobId = jobAPI.createJobAndStart(new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), "logic_db"));
-        MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId);
-        assertThat(jobConfig.getSourceResourceName(), is("ds_0"));
-        assertThat(jobConfig.getSourceTableName(), is("t_order"));
-        assertThat(jobConfig.getTargetDatabaseName(), is("logic_db"));
-        assertThat(jobConfig.getTargetTableName(), is("t_order"));
+        MigrationJobConfiguration actual = jobAPI.getJobConfiguration(jobId);
+        assertThat(actual.getTargetDatabaseName(), is("logic_db"));
+        List<JobDataNodeLine> dataNodeLines = actual.getJobShardingDataNodes();
+        assertThat(dataNodeLines.size(), is(1));
+        assertThat(dataNodeLines.get(0).getEntries().size(), is(1));
+        JobDataNodeEntry entry = dataNodeLines.get(0).getEntries().get(0);
+        assertThat(entry.getDataNodes().size(), is(1));
+        DataNode dataNode = entry.getDataNodes().get(0);
+        assertThat(dataNode.getDataSourceName(), is("ds_0"));
+        assertThat(dataNode.getTableName(), is("t_order"));
+        assertThat(entry.getLogicTableName(), is("t_order"));
     }
     
     private void initIntPrimaryEnvironment() throws SQLException {

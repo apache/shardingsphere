@@ -51,6 +51,12 @@ public final class JobConfigurationBuilder {
     public static MigrationJobConfiguration createJobConfiguration() {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setTargetDatabaseName("logic_db");
+        result.setSourceDatabaseType("H2");
+        result.setTargetDatabaseType("H2");
+        result.setTargetTableNames(Collections.singletonList("t_order"));
+        Map<String, String> targetTableSchemaMap = new LinkedHashMap<>();
+        targetTableSchemaMap.put("t_order", "");
+        result.setTargetTableSchemaMap(targetTableSchemaMap);
         result.setTablesFirstDataNodes("t_order:ds_0.t_order");
         result.setJobShardingDataNodes(Collections.singletonList("t_order:ds_0.t_order"));
         result.setJobId(generateJobId(result));

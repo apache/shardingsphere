@@ -23,6 +23,9 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import java.util.Objects;
 
+/**
+ * Source target entry.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class SourceTargetEntry {
