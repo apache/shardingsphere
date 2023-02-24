@@ -35,16 +35,15 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -54,10 +53,11 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestorer {
+public final class AlterStorageUnitBackendHandlerTest {
     
     @Mock
     private DataSourcePropertiesValidateHandler validateHandler;
@@ -77,15 +77,10 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
     @Mock
     private ShardingSphereResourceMetaData resourceMetaData;
     
-    @Mock
-    private DataSource dataSource;
-    
     private AlterStorageUnitBackendHandler alterStorageUnitBackendHandler;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        when(metaDataContexts.getMetaData().getDatabase("test_db")).thenReturn(database);
-        when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         alterStorageUnitBackendHandler = new AlterStorageUnitBackendHandler(alterStorageUnitStatement, connectionSession);
         Plugins.getMemberAccessor().set(alterStorageUnitBackendHandler.getClass().getDeclaredField("validateHandler"), alterStorageUnitBackendHandler, validateHandler);
@@ -95,10 +90,13 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
     public void assertExecute() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_0")));
-        assertThat(alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("test_db")).thenReturn(database);
+            when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+            when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_0")));
+            assertThat(alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
+        }
     }
     
     @Test(expected = DuplicateStorageUnitException.class)
@@ -110,22 +108,25 @@ public final class AlterStorageUnitBackendHandlerTest extends ProxyContextRestor
     public void assertExecuteWithNotExistedStorageUnitNames() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", dataSource));
-        alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("not_existed"));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
+            alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("not_existed"));
+        }
     }
     
     @Test(expected = InvalidStorageUnitsException.class)
     public void assertExecuteWithAlterDatabase() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
-        ResponseHeader responseHeader = alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("ds_0"));
-        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("test_db")).thenReturn(database);
+            when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+            when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
+            ResponseHeader responseHeader = alterStorageUnitBackendHandler.execute("test_db", createAlterStorageUnitStatement("ds_0"));
+            assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
+        }
     }
     
     private AlterStorageUnitStatement createAlterStorageUnitStatement(final String resourceName) {
