@@ -89,7 +89,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
         String sourceTableName = source.get(source.size() - 1);
         String targetDatabaseName = target.size() > 1 ? target.get(0) : null;
         String targetTableName = target.get(target.size() - 1);
-        SourceTargetEntry sourceTargetEntry = new SourceTargetEntry(new DataNode(sourceResourceName, sourceTableName), targetTableName);
+        SourceTargetEntry sourceTargetEntry = new SourceTargetEntry(targetDatabaseName, new DataNode(sourceResourceName, sourceTableName), targetTableName);
         sourceTargetEntry.getSource().setSchemaName(sourceSchemaName);
         return new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), targetDatabaseName);
     }
