@@ -32,6 +32,10 @@ import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigur
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Job configuration builder.
  */
@@ -43,14 +47,16 @@ public final class JobConfigurationBuilder {
      *
      * @return created job configuration
      */
+    // TODO Rename createJobConfiguration
     public static MigrationJobConfiguration createJobConfiguration() {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setTargetDatabaseName("logic_db");
-        result.setSourceResourceName("standard_0");
-        result.setSourceTableName("t_order");
-        result.setTargetTableName("t_order");
+        result.setTablesFirstDataNodes("t_order:ds_0.t_order");
+        result.setJobShardingDataNodes(Collections.singletonList("t_order:ds_0.t_order"));
         result.setJobId(generateJobId(result));
-        result.setSource(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
+        Map<String, YamlPipelineDataSourceConfiguration> sources = new LinkedHashMap<>();
+        sources.put("ds_0", createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
+        result.setSources(sources);
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
         TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(result);
