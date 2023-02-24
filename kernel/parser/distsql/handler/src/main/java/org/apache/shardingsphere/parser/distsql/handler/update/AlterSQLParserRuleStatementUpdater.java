@@ -17,40 +17,29 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.update.GlobalRuleRALUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.AlterSQLParserRuleStatement;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.Collection;
 
 /**
  * Alter SQL parser rule statement handler.
  */
-public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUpdater {
+public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUpdater<AlterSQLParserRuleStatement, SQLParserRuleConfiguration> {
     
     @Override
-    public void executeUpdate(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        SQLParserRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration(metaData.getGlobalRuleMetaData(), sqlStatement);
-        Collection<ShardingSphereRule> globalRules = metaData.getGlobalRuleMetaData().getRules();
-        globalRules.removeIf(each -> each instanceof SQLParserRule);
-        globalRules.add(new SQLParserRule(toBeAlteredRuleConfig));
+    public void checkSQLStatement(final SQLParserRuleConfiguration currentRuleConfig, final AlterSQLParserRuleStatement sqlStatement) {
     }
     
-    private SQLParserRuleConfiguration createToBeAlteredRuleConfiguration(final ShardingSphereRuleMetaData ruleMetaData, final SQLStatement sqlStatement) {
-        AlterSQLParserRuleStatement ruleStatement = (AlterSQLParserRuleStatement) sqlStatement;
-        SQLParserRuleConfiguration currentConfig = ruleMetaData.getSingleRule(SQLParserRule.class).getConfiguration();
-        boolean sqlCommentParseEnabled = null == ruleStatement.getSqlCommentParseEnable() ? currentConfig.isSqlCommentParseEnabled() : ruleStatement.getSqlCommentParseEnable();
+    @Override
+    public SQLParserRuleConfiguration buildAlteredRuleConfiguration(final SQLParserRuleConfiguration currentRuleConfig, final AlterSQLParserRuleStatement sqlStatement) {
+        boolean sqlCommentParseEnabled = null == sqlStatement.getSqlCommentParseEnable() ? currentRuleConfig.isSqlCommentParseEnabled() : sqlStatement.getSqlCommentParseEnable();
         CacheOption parseTreeCache =
-                null == ruleStatement.getParseTreeCache() ? currentConfig.getParseTreeCache() : createCacheOption(currentConfig.getParseTreeCache(), ruleStatement.getParseTreeCache());
+                null == sqlStatement.getParseTreeCache() ? currentRuleConfig.getParseTreeCache() : createCacheOption(currentRuleConfig.getParseTreeCache(), sqlStatement.getParseTreeCache());
         CacheOption sqlStatementCache =
-                null == ruleStatement.getSqlStatementCache() ? currentConfig.getSqlStatementCache() : createCacheOption(currentConfig.getSqlStatementCache(), ruleStatement.getSqlStatementCache());
+                null == sqlStatement.getSqlStatementCache() ? currentRuleConfig.getSqlStatementCache()
+                        : createCacheOption(currentRuleConfig.getSqlStatementCache(), sqlStatement.getSqlStatementCache());
         return new SQLParserRuleConfiguration(sqlCommentParseEnabled, parseTreeCache, sqlStatementCache);
     }
     
@@ -58,6 +47,11 @@ public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUp
         int initialCapacity = null == segment.getInitialCapacity() ? cacheOption.getInitialCapacity() : segment.getInitialCapacity();
         long maximumSize = null == segment.getMaximumSize() ? cacheOption.getMaximumSize() : segment.getMaximumSize();
         return new CacheOption(initialCapacity, maximumSize);
+    }
+    
+    @Override
+    public Class<SQLParserRuleConfiguration> getRuleConfigurationClass() {
+        return SQLParserRuleConfiguration.class;
     }
     
     @Override

@@ -19,15 +19,16 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 
 /**
- * PostgreSQL password authentication method.
+ * Authentication method for PostgreSQL.
  *
  * @see <a href="https://www.postgresql.org/docs/14/auth-password.html">Password Authentication</a>
  */
 @RequiredArgsConstructor
 @Getter
-public enum PostgreSQLAuthenticationMethod {
+public enum PostgreSQLAuthenticationMethod implements AuthenticationMethod {
     
     MD5("md5"),
     

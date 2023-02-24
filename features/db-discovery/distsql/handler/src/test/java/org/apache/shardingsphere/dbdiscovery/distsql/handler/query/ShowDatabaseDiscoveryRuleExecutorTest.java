@@ -61,6 +61,20 @@ public final class ShowDatabaseDiscoveryRuleExecutorTest {
     }
     
     @Test
+    public void assertGetRowsWithSpecifiedRuleName() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        DatabaseDiscoveryRule rule = mock(DatabaseDiscoveryRule.class, RETURNS_DEEP_STUBS);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        DatabaseDiscoveryDataSourceRule dataSourceRule = mock(DatabaseDiscoveryDataSourceRule.class);
+        when(dataSourceRule.getPrimaryDataSourceName()).thenReturn("ds_0");
+        when(rule.getDataSourceRules()).thenReturn(Collections.singletonMap("ms_group", dataSourceRule));
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
+        RQLExecutor<ShowDatabaseDiscoveryRulesStatement> executor = new ShowDatabaseDiscoveryRuleExecutor();
+        assertColumns(executor.getColumnNames());
+        assertRowData(new ArrayList<>(executor.getRows(database, new ShowDatabaseDiscoveryRulesStatement("ms_group", null))));
+    }
+    
+    @Test
     public void assertGetColumnNames() {
         RQLExecutor<ShowDatabaseDiscoveryRulesStatement> executor = new ShowDatabaseDiscoveryRuleExecutor();
         assertColumns(executor.getColumnNames());

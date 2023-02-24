@@ -44,17 +44,7 @@ import java.util.stream.Collectors;
  */
 public final class ShowDatabaseDiscoveryRuleExecutor implements RQLExecutor<ShowDatabaseDiscoveryRulesStatement> {
     
-    private static final String GROUP_NAME = "group_name";
-    
-    private static final String DATA_SOURCE_NAMES = "data_source_names";
-    
-    private static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
-    
     private static final String NAME = "name";
-    
-    private static final String DISCOVER_TYPE = "discovery_type";
-    
-    private static final String HEARTBEAT = "discovery_heartbeat";
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowDatabaseDiscoveryRulesStatement sqlStatement) {
@@ -80,14 +70,16 @@ public final class ShowDatabaseDiscoveryRuleExecutor implements RQLExecutor<Show
             heartbeatMap.putAll(convertToMap(discoveryHeartbeats.get(dataSourceRuleConfig.getDiscoveryHeartbeatName())));
             String groupName = dataSourceRuleConfig.getGroupName();
             String primaryDataSourceName = null == primaryDataSources.get(groupName) ? "" : primaryDataSources.get(groupName);
-            result.add(new LocalDataQueryResultRow(groupName, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, typeMap, heartbeatMap));
+            if (null == sqlStatement.getRuleName() || sqlStatement.getRuleName().equalsIgnoreCase(groupName)) {
+                result.add(new LocalDataQueryResultRow(groupName, String.join(",", dataSourceRuleConfig.getDataSourceNames()), primaryDataSourceName, typeMap, heartbeatMap));
+            }
         }
         return result;
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(GROUP_NAME, DATA_SOURCE_NAMES, PRIMARY_DATA_SOURCE_NAME, DISCOVER_TYPE, HEARTBEAT);
+        return Arrays.asList("group_name", "data_source_names", "primary_data_source_name", "discovery_type", "discovery_heartbeat");
     }
     
     @SuppressWarnings("unchecked")

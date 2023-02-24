@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.executor;
 
 import org.apache.calcite.linq4j.Enumerable;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 /**
  * Table scan executor.

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
+import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
@@ -50,7 +51,7 @@ public final class StorageNodeStatusSubscriber {
      */
     @Subscribe
     public void update(final DataSourceDisabledEvent event) {
-        repository.persist(StorageNode.getStatusPath(new QualifiedDatabase(event.getDatabaseName(), event.getGroupName(), event.getDataSourceName())),
+        repository.persist(StorageNode.getStorageNodeDataSourcePath(new QualifiedDatabase(event.getDatabaseName(), event.getGroupName(), event.getDataSourceName())),
                 YamlEngine.marshal(new YamlStorageNodeDataSourceSwapper().swapToYamlConfiguration(event.getStorageNodeDataSource())));
     }
     
@@ -61,7 +62,17 @@ public final class StorageNodeStatusSubscriber {
      */
     @Subscribe
     public void update(final PrimaryDataSourceChangedEvent event) {
-        repository.persist(StorageNode.getStatusPath(event.getQualifiedDatabase()),
+        repository.persist(StorageNode.getStorageNodeDataSourcePath(event.getQualifiedDatabase()),
                 YamlEngine.marshal(new YamlStorageNodeDataSourceSwapper().swapToYamlConfiguration(new StorageNodeDataSource(StorageNodeRole.PRIMARY, DataSourceState.ENABLED))));
+    }
+    
+    /**
+     * Delete storage node data source.
+     *
+     * @param event storage node data source deleted event
+     */
+    @Subscribe
+    public void delete(final StorageNodeDataSourceDeletedEvent event) {
+        repository.delete(StorageNode.getStorageNodeDataSourcePath(event.getQualifiedDatabase()));
     }
 }

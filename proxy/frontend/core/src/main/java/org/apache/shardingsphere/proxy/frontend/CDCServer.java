@@ -31,7 +31,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.proxy.frontend.netty.CDCServerHandlerInitializer;
 
@@ -54,13 +53,13 @@ public final class CDCServer extends Thread {
     private EventLoopGroup workerGroup;
     
     @Override
-    @SneakyThrows(InterruptedException.class)
     public void run() {
         try {
             List<ChannelFuture> futures = startInternal(addressed, port);
             for (ChannelFuture each : futures) {
                 each.channel().closeFuture().sync();
             }
+        } catch (final InterruptedException ignored) {
         } finally {
             close();
         }

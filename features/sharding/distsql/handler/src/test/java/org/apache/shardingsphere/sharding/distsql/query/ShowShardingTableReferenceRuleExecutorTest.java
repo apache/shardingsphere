@@ -54,6 +54,17 @@ public final class ShowShardingTableReferenceRuleExecutorTest {
     }
     
     @Test
+    public void assertGetRowDataWithSpecifiedRuleName() {
+        RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), new ShowShardingTableReferenceRulesStatement("foo", null));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("foo"));
+        assertThat(row.getCell(2), is("t_order,t_order_item"));
+    }
+    
+    @Test
     public void assertGetColumnNames() {
         RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
         Collection<String> columns = executor.getColumnNames();

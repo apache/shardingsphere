@@ -17,72 +17,74 @@
 
 package org.apache.shardingsphere.test.e2e.agent.metrics;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
+import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.MetricMetadataAssert;
+import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.MetricQueryAssert;
+import org.apache.shardingsphere.test.e2e.agent.metrics.cases.IntegrationTestCasesLoader;
+import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricQueryAssertion;
+import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricTestCase;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsMetaDataResult;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsQueryResult;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-
 @Slf4j
+@RunWith(Parameterized.class)
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
+    private final MetricTestCase metricTestCase;
+    
+    public MetricsPluginE2EIT(final MetricTestCase metricTestCase) {
+        this.metricTestCase = metricTestCase;
+    }
+    
+    @Parameters
+    public static Collection<MetricTestCase> getTestParameters() {
+        return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases();
+    }
+    
     @Test
-    public void assertProxyWithAgent() throws IOException {
+    @SneakyThrows(IOException.class)
+    public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
         Properties props = E2ETestEnvironment.getInstance().getProps();
         String metaDataURL = props.getProperty("prometheus.metadata.url");
         String queryURL = props.getProperty("prometheus.query.url");
-        Collection<String> metricsNames = buildMetricsNames();
-        for (String each : metricsNames) {
-            String metaDataURLWithParam = buildURLWithParameter(metaDataURL, each);
-            String queryURLWithParam = buildURLWithParameter(queryURL, each);
+        assertMetadata(metaDataURL, metricTestCase);
+        assertQuery(queryURL, metricTestCase);
+    }
+    
+    private void assertMetadata(final String metaDataURL, final MetricTestCase metricCase) {
+        String metricName = "counter".equalsIgnoreCase(metricCase.getMetricType()) && metricCase.getMetricName().endsWith("_total")
+                ? metricCase.getMetricName().replace("_total", "")
+                : metricCase.getMetricName();
+        try {
+            String metaDataURLWithParam = String.join("", metaDataURL, "?metric=", URLEncoder.encode(metricName, "UTF-8"));
+            MetricMetadataAssert.assertIs(OkHttpUtils.getInstance().get(metaDataURLWithParam, MetricsMetaDataResult.class), metricCase);
+        } catch (final IOException ex) {
+            log.info("Access prometheus HTTP RESTful API error: ", ex);
+        }
+    }
+    
+    private void assertQuery(final String queryURL, final MetricTestCase metricCase) {
+        for (MetricQueryAssertion each : metricCase.getQueryAssertions()) {
             try {
-                assertMetadata(each, OkHttpUtils.getInstance().get(metaDataURLWithParam, MetricsMetaDataResult.class));
-                assertQuery(each, OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class));
+                String queryURLWithParam = String.join("", queryURL, "?query=", URLEncoder.encode(each.getQuery(), "UTF-8"));
+                MetricQueryAssert.assertIs(OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class), each);
             } catch (final IOException ex) {
                 log.info("Access prometheus HTTP RESTful API error: ", ex);
             }
         }
-    }
-    
-    private Collection<String> buildMetricsNames() {
-        Collection<String> result = new LinkedHashSet<>();
-        result.add("proxy_requests_total");
-        result.add("proxy_current_connections");
-        result.add("proxy_execute_latency_millis_bucket");
-        result.add("routed_sql_total");
-        result.add("routed_result_total");
-        result.add("proxy_commit_transactions_total");
-        result.add("proxy_rollback_transactions_total");
-        result.add("proxy_execute_errors_total");
-        return result;
-    }
-    
-    private String buildURLWithParameter(final String url, final String metricsName) {
-        return String.join("", url, metricsName);
-    }
-    
-    // TODO remove if metadata result is not detailed.
-    private void assertMetadata(final String metricName, final MetricsMetaDataResult metricsMetaDataResult) {
-        assertThat(String.format("Metric name `%s` is not success.", metricName), metricsMetaDataResult.getStatus(), is("success"));
-        assertNotNull(String.format("Metric name `%s` is null.", metricName), metricsMetaDataResult.getData());
-    }
-    
-    // TODO add more detailed assert
-    private static void assertQuery(final String metricName, final MetricsQueryResult metricsQueryResult) {
-        assertThat(String.format("Metric name `%s` is not success.", metricName), metricsQueryResult.getStatus(), is("success"));
-        assertFalse(String.format("Metric name `%s` is empty.", metricName), metricsQueryResult.getData().getResult().isEmpty());
     }
 }

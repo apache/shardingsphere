@@ -247,6 +247,16 @@
     <row data-node="expected_dataset.t_user" values="27, jack, 222333, jack@gmail.com, 12345678917, 2017-08-08" />
     <row data-node="expected_dataset.t_user" values="28, jordan, 333444, jordan@gmail.com, 12345678918, 2017-08-08" />
     <row data-node="expected_dataset.t_user" values="29, julie, 444555, julie@gmail.com, 12345678919, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="30, 张三, 123456, zhangsan@gmail.com, 18012312345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="31, 张飞, 234567, zhangfei@gmail.com, 18012412345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="32, 张翼, 345678, zhangyi@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="33, 李四, 456789, lisi@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="34, 李靖, 123123, lijing@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="35, 王献之, 234234, wangxianzhi@qq.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="36, 王安石, 345345, jeff@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="37, 王羲之, 345345, wangxizhi@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="38, 王莽, 456456, wangmang@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="39, 王勃, 567567, wangbo@gmail.com, 18012512345, 2017-08-08" />
     <row data-node="expected_dataset.t_merchant" values="1, 86, tencent, 86000001, 86100000001, 2017-08-08" />
     <row data-node="expected_dataset.t_merchant" values="2, 86, haier, 86000002, 86100000002, 2017-08-08" />
     <row data-node="expected_dataset.t_merchant" values="3, 86, huawei, 86000003, 86100000003, 2017-08-08" />

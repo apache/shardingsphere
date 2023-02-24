@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.TableName;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 
 import java.util.List;
 
@@ -29,6 +29,7 @@ import java.util.List;
  */
 @Getter
 @Setter
+@RequiredArgsConstructor
 public final class StartCDCClientParameter {
     
     private String databaseType;
@@ -43,11 +44,9 @@ public final class StartCDCClientParameter {
     
     private String database;
     
-    private List<TableName> subscribeTables;
+    private List<SchemaTable> schemaTables;
     
-    private String subscriptionName;
+    private boolean full;
     
-    private SubscriptionMode subscriptionMode = SubscriptionMode.INCREMENTAL;
-    
-    private boolean incrementalGlobalOrderly;
+    private final ImportDataSourceParameter importDataSourceParameter;
 }

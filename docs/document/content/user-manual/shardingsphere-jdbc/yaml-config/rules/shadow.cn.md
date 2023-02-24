@@ -70,7 +70,7 @@ rules:
         - shadowDataSource
       shadowAlgorithmNames: 
         - user_id_insert_match_algorithm
-        - simple_hint_algorithm
+        - sql_hint_algorithm
   shadowAlgorithms:
     user_id_insert_match_algorithm:
       type: REGEX_MATCH
@@ -78,10 +78,8 @@ rules:
         operation: insert
         column: user_id
         regex: "[1]"
-    simple_hint_algorithm:
-      type: SIMPLE_HINT
-      props:
-        foo: bar
+    sql_hint_algorithm:
+      type: SQL_HINT
 ```
 
 ## 相关参考

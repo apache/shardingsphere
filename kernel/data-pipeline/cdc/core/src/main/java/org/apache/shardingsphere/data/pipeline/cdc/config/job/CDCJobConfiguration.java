@@ -22,8 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 
 import java.util.List;
+import java.util.Properties;
 
 /**
  * CDC job configuration.
@@ -36,11 +38,9 @@ public final class CDCJobConfiguration implements PipelineJobConfiguration {
     
     private final String database;
     
-    private final List<String> tableNames;
+    private final List<String> schemaTableNames;
     
-    private final String subscriptionName;
-    
-    private final String subscriptionMode;
+    private final boolean full;
     
     private final String sourceDatabaseType;
     
@@ -52,6 +52,8 @@ public final class CDCJobConfiguration implements PipelineJobConfiguration {
     
     private final boolean decodeWithTX;
     
+    private final SinkConfiguration sinkConfig;
+    
     private final int concurrency;
     
     private final int retryTimes;
@@ -59,5 +61,14 @@ public final class CDCJobConfiguration implements PipelineJobConfiguration {
     @Override
     public int getJobShardingCount() {
         return jobShardingDataNodes.size();
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    public static class SinkConfiguration {
+        
+        private final CDCSinkType sinkType;
+        
+        private final Properties props;
     }
 }

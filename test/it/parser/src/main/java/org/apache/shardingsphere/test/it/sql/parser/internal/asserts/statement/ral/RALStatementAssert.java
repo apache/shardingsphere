@@ -19,14 +19,12 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.HintRALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.QueryableRALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.QueryableScalingRALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.UpdatableRALStatementAssert;
@@ -55,8 +53,6 @@ public final class RALStatementAssert {
             QueryableRALStatementAssert.assertIs(assertContext, (QueryableRALStatement) actual, expected);
         } else if (actual instanceof UpdatableRALStatement) {
             UpdatableRALStatementAssert.assertIs(assertContext, (UpdatableRALStatement) actual, expected);
-        } else if (actual instanceof HintRALStatement) {
-            HintRALStatementAssert.assertIs(assertContext, (HintRALStatement) actual, expected);
         }
     }
 }

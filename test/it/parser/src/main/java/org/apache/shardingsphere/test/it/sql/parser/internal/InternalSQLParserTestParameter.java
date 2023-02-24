@@ -34,6 +34,8 @@ public final class InternalSQLParserTestParameter {
     
     private final String databaseType;
     
+    private final String visitorType;
+    
     @Override
     public String toString() {
         return String.format("%s (%s) -> %s", sqlCaseId, sqlCaseType, databaseType);

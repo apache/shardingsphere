@@ -20,13 +20,13 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.prepare;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChanne
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * CDC job preparer.
@@ -53,21 +54,27 @@ public final class CDCJobPreparer {
      * @param jobItemContext job item context
      */
     public void prepare(final CDCJobItemContext jobItemContext) {
-        if (!jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem()).isPresent()) {
+        Optional<InventoryIncrementalJobItemProgress> jobItemProgress = jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        if (!jobItemProgress.isPresent()) {
             jobAPI.persistJobItemProgress(jobItemContext);
         }
         if (jobItemContext.isStopping()) {
             PipelineJobCenter.stop(jobItemContext.getJobId());
             return;
         }
-        updateJobItemStatus(JobStatus.PREPARING, jobItemContext);
+        boolean needUpdateJobStatus = !jobItemProgress.isPresent() || JobStatus.PREPARING.equals(jobItemContext.getStatus()) || JobStatus.RUNNING.equals(jobItemContext.getStatus())
+                || JobStatus.PREPARING_FAILURE.equals(jobItemContext.getStatus());
+        if (needUpdateJobStatus) {
+            updateJobItemStatus(JobStatus.PREPARING, jobItemContext);
+        }
         initIncrementalTasks(jobItemContext);
         CDCJobConfiguration jobConfig = jobItemContext.getJobConfig();
-        if (SubscriptionMode.FULL.name().equals(jobConfig.getSubscriptionMode())) {
+        if (jobConfig.isFull()) {
             initInventoryTasks(jobItemContext);
         }
-        jobAPI.persistJobItemProgress(jobItemContext);
-        updateJobItemStatus(JobStatus.PREPARE_SUCCESS, jobItemContext);
+        if (needUpdateJobStatus) {
+            updateJobItemStatus(JobStatus.PREPARE_SUCCESS, jobItemContext);
+        }
     }
     
     private void updateJobItemStatus(final JobStatus jobStatus, final CDCJobItemContext jobItemContext) {

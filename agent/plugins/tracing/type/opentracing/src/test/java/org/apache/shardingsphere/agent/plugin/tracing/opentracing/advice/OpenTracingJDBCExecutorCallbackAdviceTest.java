@@ -84,7 +84,6 @@ public final class OpenTracingJDBCExecutorCallbackAdviceTest extends AbstractJDB
         OpenTracingJDBCExecutorCallbackAdvice advice = new OpenTracingJDBCExecutorCallbackAdvice();
         advice.beforeMethod(getTargetObject(), executeMethod, new Object[]{getExecutionUnit(), false, extraMap}, "OpenTracing");
         advice.onThrowing(getTargetObject(), executeMethod, new Object[]{getExecutionUnit(), false, extraMap}, new IOException(), "OpenTracing");
-        advice.afterMethod(getTargetObject(), executeMethod, new Object[]{getExecutionUnit(), false, extraMap}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);

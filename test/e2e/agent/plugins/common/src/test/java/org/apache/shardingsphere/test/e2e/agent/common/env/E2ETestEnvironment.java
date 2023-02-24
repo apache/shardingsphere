@@ -22,7 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
-import org.awaitility.Durations;
+import org.awaitility.core.ConditionTimeoutException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -30,6 +30,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 @Slf4j
@@ -43,32 +44,48 @@ public final class E2ETestEnvironment {
     
     private DataSource dataSource;
     
+    private boolean initializationFailed;
+    
     private E2ETestEnvironment() {
         props = EnvironmentProperties.loadProperties("env/engine-env.properties");
         isEnvironmentPrepared = props.getProperty("it.env.value").equals(props.getProperty("it.env.type"));
-        if (isEnvironmentPrepared) {
-            waitForEnvironmentReady(props);
-            dataSource = createHikariCP(props);
+    }
+    
+    /**
+     * Get instance.
+     *
+     * @return singleton instance
+     */
+    public static E2ETestEnvironment getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Create data source.
+     */
+    public void createDataSource() {
+        if (isEnvironmentPrepared && null == dataSource) {
+            if (waitForEnvironmentReady(props)) {
+                dataSource = createHikariCP(props);
+            } else {
+                initializationFailed = true;
+            }
         }
     }
     
-    private static DataSource createHikariCP(final Properties props) {
-        HikariConfig result = new HikariConfig();
-        result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setJdbcUrl(props.getProperty("proxy.url"));
-        result.setUsername(props.getProperty("proxy.username", "root"));
-        result.setPassword(props.getProperty("proxy.password", "root"));
-        result.setMaximumPoolSize(5);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        return new HikariDataSource(result);
-    }
-    
-    private void waitForEnvironmentReady(final Properties props) {
+    private boolean waitForEnvironmentReady(final Properties props) {
         log.info("Proxy with agent environment initializing ...");
-        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> isProxyReady(props));
+        try {
+            Awaitility.await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> isProxyReady(props));
+        } catch (final ConditionTimeoutException ignored) {
+            log.info("Proxy with agent environment initialization failed ...");
+            return false;
+        }
+        return true;
     }
     
     private boolean isProxyReady(final Properties props) {
+        log.info("Try to connect proxy ...");
         String url = props.getProperty("proxy.url");
         String username = props.getProperty("proxy.username", "root");
         String password = props.getProperty("proxy.password", "root");
@@ -83,12 +100,14 @@ public final class E2ETestEnvironment {
         return true;
     }
     
-    /**
-     * Get instance.
-     *
-     * @return singleton instance
-     */
-    public static E2ETestEnvironment getInstance() {
-        return INSTANCE;
+    private DataSource createHikariCP(final Properties props) {
+        HikariConfig result = new HikariConfig();
+        result.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        result.setJdbcUrl(props.getProperty("proxy.url"));
+        result.setUsername(props.getProperty("proxy.username", "root"));
+        result.setPassword(props.getProperty("proxy.password", "root"));
+        result.setMaximumPoolSize(5);
+        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        return new HikariDataSource(result);
     }
 }

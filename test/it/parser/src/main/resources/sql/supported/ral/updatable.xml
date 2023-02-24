@@ -29,11 +29,7 @@
     <sql-case id="alter-local-transaction-rule" value="ALTER TRANSACTION RULE (DEFAULT='LOCAL')" db-types="ShardingSphere" />
     <sql-case id="alter-xa-transaction-rule" value="ALTER TRANSACTION RULE(DEFAULT='XA', TYPE(NAME='Atomikos'))" db-types="ShardingSphere" />
     <sql-case id="alter-xa-transaction-rule-without-quote-on-build-in-default-type-name-and-provider-type-name" value="ALTER TRANSACTION RULE(DEFAULT=XA, TYPE(NAME=Atomikos))" db-types="ShardingSphere" />
-
-    <sql-case id="create-traffic-rule" value="CREATE TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME='SQL_MATCH',PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME='RANDOM', PROPERTIES('key'='value'))) )" db-types="ShardingSphere" />
     <sql-case id="alter-traffic-rule" value="ALTER TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME='SQL_MATCH',PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME='RANDOM', PROPERTIES('key'='value'))) )" db-types="ShardingSphere" />
-    <sql-case id="drop-traffic-rule" value="DROP TRAFFIC RULE rule_name" db-types="ShardingSphere" />
-    <sql-case id="create-traffic-rule-without-quote-on-build-in-traffic-algorithm-type-name-and-load-balancer-type-name" value="CREATE TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME=SQL_MATCH,PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME=RANDOM, PROPERTIES('key'='value'))) )" db-types="ShardingSphere" />
     
     <sql-case id="alter-compute-node-xa-recovery-nodes" value="ALTER COMPUTE NODE instance_xa_recovery SET XA_RECOVERY_NODES='instance_1'" db-types="ShardingSphere" />
     <sql-case id="alter-compute-node-xa-recovery-nodes-with-multiple-values" value="ALTER COMPUTE NODE instance_xa_recovery_multiple SET XA_RECOVERY_NODES='instance_1,instance_2'" db-types="ShardingSphere" />
@@ -42,10 +38,6 @@
     <sql-case id="relabel-compute-node" value="RELABEL COMPUTE NODE instance_relabel WITH OLAP_1,OLAP_2" db-types="ShardingSphere" />
     <sql-case id="unlabel-compute-node" value="UNLABEL COMPUTE NODE instance_unlabel WITH OLAP_1" db-types="ShardingSphere" />
     <sql-case id="unlabel-compute-node-without-label" value="UNLABEL COMPUTE NODE instance_unlabel_2" db-types="ShardingSphere" />
-    
-    <sql-case id="prepare-distsql" value="PREPARE DISTSQL" db-types="ShardingSphere" />
-    <sql-case id="apply-distsql" value="APPLY DISTSQL" db-types="ShardingSphere" />
-    <sql-case id="discard-distsql" value="DISCARD DISTSQL" db-types="ShardingSphere" />
     
     <sql-case id="import-database-config" value="IMPORT DATABASE CONFIGURATION FROM FILE '/yaml/config-sharding.yaml'" db-types="ShardingSphere" />
     

@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 public final class MySQLAuthSwitchRequestPacketTest {
     
     @Mock
-    private MySQLAuthPluginData authPluginData;
+    private MySQLAuthenticationPluginData authPluginData;
     
     @Mock
     private MySQLPacketPayload payload;

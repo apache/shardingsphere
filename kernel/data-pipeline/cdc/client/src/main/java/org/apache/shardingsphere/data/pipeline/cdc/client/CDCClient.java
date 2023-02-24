@@ -28,10 +28,9 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.client.handler.CDCRequestHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoginRequestHandler;
-import org.apache.shardingsphere.data.pipeline.cdc.client.handler.SubscriptionRequestHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 
@@ -58,26 +57,23 @@ public final class CDCClient {
         if (null == parameter.getAddress() || parameter.getAddress().isEmpty()) {
             throw new IllegalArgumentException("The address parameter can't be null");
         }
-        if (null == parameter.getSubscriptionMode()) {
-            throw new IllegalArgumentException("The subscriptionMode parameter can't be null");
-        }
-        if (null == parameter.getSubscribeTables() || parameter.getSubscribeTables().isEmpty()) {
-            throw new IllegalArgumentException("The subscribeTables parameter can't be null");
+        if (null == parameter.getSchemaTables() || parameter.getSchemaTables().isEmpty()) {
+            throw new IllegalArgumentException("The schema tables parameter can't be null");
         }
     }
     
     /**
      * Start ShardingSphere CDC client.
      */
-    @SneakyThrows(InterruptedException.class)
     public void start() {
         startInternal(parameter.getAddress(), parameter.getPort());
     }
     
-    private void startInternal(final String address, final int port) throws InterruptedException {
+    private void startInternal(final String address, final int port) {
         Bootstrap bootstrap = new Bootstrap();
+        NioEventLoopGroup group = new NioEventLoopGroup();
         bootstrap.channel(NioSocketChannel.class)
-                .group(new NioEventLoopGroup())
+                .group(group)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .option(ChannelOption.SO_REUSEADDR, true)
                 .handler(new ChannelInitializer<NioSocketChannel>() {
@@ -89,10 +85,15 @@ public final class CDCClient {
                         channel.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
                         channel.pipeline().addLast(new ProtobufEncoder());
                         channel.pipeline().addLast(new LoginRequestHandler(parameter.getUsername(), parameter.getPassword()));
-                        channel.pipeline().addLast(new SubscriptionRequestHandler(parameter));
+                        channel.pipeline().addLast(new CDCRequestHandler(parameter));
                     }
                 });
-        ChannelFuture future = bootstrap.connect(address, port).sync();
-        future.channel().closeFuture().sync();
+        try {
+            ChannelFuture future = bootstrap.connect(address, port).sync();
+            future.channel().closeFuture().sync();
+        } catch (final InterruptedException ex) {
+            log.warn("CDC client interrupted", ex);
+            group.shutdownGracefully();
+        }
     }
 }

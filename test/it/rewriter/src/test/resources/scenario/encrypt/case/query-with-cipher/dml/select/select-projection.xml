@@ -81,14 +81,4 @@
         <input sql="SELECT logic_db.t_account.account_id FROM t_account WHERE account_id = 100" />
         <output sql="SELECT t_account.account_id FROM t_account WHERE account_id = 100" />
     </rewrite-assertion>
-    
-    <rewrite-assertion id="select_shorthand_with_upper_column_and_schema_based_algorithm_for_parameters" db-types="MySQL">
-        <input sql="SELECT * FROM t_order WHERE content = ?" parameters="TEST" />
-        <output sql="SELECT `t_order`.`ORDER_ID`, `t_order`.`USER_ID`, `t_order`.`CIPHER_CONTENT` AS `CONTENT` FROM t_order WHERE CIPHER_CONTENT = ?" parameters="encrypt_TEST_t_order" />
-    </rewrite-assertion>
-    
-    <rewrite-assertion id="select_shorthand_with_upper_column_and_schema_based_algorithm_for_literals" db-types="MySQL">
-        <input sql="SELECT * FROM t_order WHERE content = 'TEST'" />
-        <output sql="SELECT `t_order`.`ORDER_ID`, `t_order`.`USER_ID`, `t_order`.`CIPHER_CONTENT` AS `CONTENT` FROM t_order WHERE CIPHER_CONTENT = 'encrypt_TEST_t_order'" />
-    </rewrite-assertion>
 </rewrite-assertions>

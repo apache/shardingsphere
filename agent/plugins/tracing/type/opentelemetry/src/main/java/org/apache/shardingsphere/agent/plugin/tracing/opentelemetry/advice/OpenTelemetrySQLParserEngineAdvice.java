@@ -26,6 +26,7 @@ import io.opentelemetry.context.Context;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingSQLParserEngineAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 
 import java.lang.reflect.Method;
 
@@ -36,7 +37,7 @@ public final class OpenTelemetrySQLParserEngineAdvice extends TracingSQLParserEn
     
     @Override
     protected Object recordSQLParseInfo(final Span parentSpan, final TargetAdviceObject target, final String sql) {
-        Tracer tracer = GlobalOpenTelemetry.getTracer("shardingsphere-agent");
+        Tracer tracer = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME);
         SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME)
                 .setAttribute(AttributeConstants.COMPONENT, AttributeConstants.COMPONENT_NAME)
                 .setAttribute(AttributeConstants.DB_STATEMENT, sql)
@@ -54,6 +55,8 @@ public final class OpenTelemetrySQLParserEngineAdvice extends TracingSQLParserEn
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
-        ((Span) target.getAttachment()).setStatus(StatusCode.ERROR).recordException(throwable);
+        Span span = (Span) target.getAttachment();
+        span.setStatus(StatusCode.ERROR).recordException(throwable);
+        span.end();
     }
 }

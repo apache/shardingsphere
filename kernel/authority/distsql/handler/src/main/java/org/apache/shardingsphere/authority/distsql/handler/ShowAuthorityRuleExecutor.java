@@ -39,7 +39,7 @@ public final class ShowAuthorityRuleExecutor implements MetaDataRequiredQueryabl
         AuthorityRule rule = metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         AuthorityRuleConfiguration ruleConfig = rule.getConfiguration();
         return Collections.singleton(new LocalDataQueryResultRow(ruleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")),
-                ruleConfig.getProvider().getType(), ruleConfig.getProvider().getProps().isEmpty() ? "" : ruleConfig.getProvider().getProps()));
+                ruleConfig.getAuthorityProvider().getType(), ruleConfig.getAuthorityProvider().getProps().isEmpty() ? "" : ruleConfig.getAuthorityProvider().getProps()));
     }
     
     @Override

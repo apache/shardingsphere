@@ -28,10 +28,11 @@
     <artifactId>shardingsphere-proxy-native-distribution</artifactId>
     
     <properties>
-        <native.image.name>apache-shardingsphere-proxy-native</native.image.name>
-        <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         <native.maven.plugin.version>0.9.19</native.maven.plugin.version>
+        <imageName>apache-shardingsphere-proxy-native</imageName>
+        <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
+        <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
     </properties>
     
     <dependencies>
@@ -68,41 +69,14 @@
     
     <profiles>
         <profile>
-            <id>release</id>
-            <build>
-                <finalName>apache-shardingsphere-${project.version}</finalName>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/shardingsphere-proxy-native-binary-distribution.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>shardingsphere-proxy-native-bin</id>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>net.nicoulaj.maven.plugins</groupId>
-                        <artifactId>checksum-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>native</id>
             <properties>
                 <hikari-cp.version>5.0.1</hikari-cp.version>
                 <truffle-api.version>22.3.1</truffle-api.version>
+                <caffeine.version>3.1.2</caffeine.version>
             </properties>
             <build>
+                <finalName>apache-shardingsphere-${project.version}</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -120,8 +94,6 @@
                         <version>${native.maven.plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <imageName>${native.image.name}</imageName>
-                            <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
                             <fallback>false</fallback>
                             <verbose>true</verbose>
                             <buildArgs>
@@ -153,6 +125,27 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/shardingsphere-proxy-native-binary-distribution.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>shardingsphere-proxy-native-bin</id>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>net.nicoulaj.maven.plugins</groupId>
+                        <artifactId>checksum-maven-plugin</artifactId>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -181,7 +174,9 @@
                                         <argument>build</argument>
                                         <argument>--pull</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=${native.image.name}</argument>
+                                        <argument>APP_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>NATIVE_IMAGE_NAME=${imageName}</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
                                         <argument>${proxy.image.repository}:${proxy.image.tag}</argument>
@@ -245,7 +240,9 @@
                                         <argument>--platform</argument>
                                         <argument>${proxy.image.platform}</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=${native.image.name}</argument>
+                                        <argument>APP_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>NATIVE_IMAGE_NAME=${imageName}</argument>
                                         <argument>.</argument>
                                     </arguments>
                                 </configuration>
@@ -265,7 +262,9 @@
                                         <argument>--platform</argument>
                                         <argument>${proxy.image.platform}</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=${native.image.name}</argument>
+                                        <argument>APP_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>NATIVE_IMAGE_NAME=${imageName}</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
                                         <argument>${proxy.image.repository}:${proxy.image.tag}</argument>

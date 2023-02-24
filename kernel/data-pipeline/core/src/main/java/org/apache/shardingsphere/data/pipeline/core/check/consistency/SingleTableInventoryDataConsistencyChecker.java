@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumn
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtil;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
@@ -109,6 +110,23 @@ public final class SingleTableInventoryDataConsistencyChecker {
                 columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey, tableCheckPositions.get(targetTableName));
         Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParam).iterator();
         Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = calculateAlgorithm.calculate(targetParam).iterator();
+        try {
+            return check0(sourceCalculatedResults, targetCalculatedResults, executor);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            if (null != sourceParam.getCalculationContext()) {
+                CloseUtil.closeQuietly(sourceParam.getCalculationContext());
+            }
+            if (null != targetParam.getCalculationContext()) {
+                CloseUtil.closeQuietly(targetParam.getCalculationContext());
+            }
+            throw ex;
+        }
+    }
+    
+    private DataConsistencyCheckResult check0(final Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults, final Iterator<DataConsistencyCalculatedResult> targetCalculatedResults,
+                                              final ThreadPoolExecutor executor) {
         long sourceRecordsCount = 0;
         long targetRecordsCount = 0;
         boolean contentMatched = true;
@@ -128,10 +146,10 @@ public final class SingleTableInventoryDataConsistencyChecker {
                 break;
             }
             if (sourceCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
-                tableCheckPositions.put(sourceTableName, sourceCalculatedResult.getMaxUniqueKeyValue().get());
+                progressContext.getTableCheckPositions().put(sourceTable.getTableName().getOriginal(), sourceCalculatedResult.getMaxUniqueKeyValue().get());
             }
             if (targetCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
-                tableCheckPositions.put(targetTableName, targetCalculatedResult.getMaxUniqueKeyValue().get());
+                progressContext.getTableCheckPositions().put(targetTable.getTableName().getOriginal(), targetCalculatedResult.getMaxUniqueKeyValue().get());
             }
             progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
         }
@@ -146,8 +164,8 @@ public final class SingleTableInventoryDataConsistencyChecker {
     private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource,
                                                              final String schemaName, final String tableName, final Collection<String> columnNames,
                                                              final String sourceDatabaseType, final String targetDatabaseType, final PipelineColumnMetaData uniqueKey,
-                                                             final Object tableCheckPositionValue) {
-        return new DataConsistencyCalculateParameter(sourceDataSource, schemaName, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey, tableCheckPositionValue);
+                                                             final Object tableCheckPosition) {
+        return new DataConsistencyCalculateParameter(sourceDataSource, schemaName, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey, tableCheckPosition);
     }
     
     private <T> T waitFuture(final Future<T> future) {

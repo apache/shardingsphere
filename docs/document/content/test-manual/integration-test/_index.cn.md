@@ -49,7 +49,7 @@ weight = 1
 
 ## 使用指南
 
-模块路径：`shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-test-suite`
+模块路径：`test/e2e/suite`
 
 ### 测试用例配置
 
@@ -112,7 +112,7 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 
   - `proxy/conf/config-${SCENARIO-TYPE}.yaml`: 规则配置。
 
-**Docker 环境配置为 ShardingSphere-Proxy 提供了远程调试端口，可以在 `shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-fixture/src/test/assembly/bin/start.sh` 文件的 `JAVA_OPTS` 中找到第 2 个暴露的端口用于远程调试。**
+**Docker 环境配置为 ShardingSphere-Proxy 提供了远程调试端口，可以在 `test/e2e/fixture/src/test/assembly/bin/start.sh` 文件的 `JAVA_OPTS` 中找到第 2 个暴露的端口用于远程调试。**
 
 ### 运行测试引擎
 
@@ -156,14 +156,14 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 #### 运行 Docker 模式
 
 ```bash
-./mvnw -B clean install -f shardingsphere-test/shardingsphere-test-e2e/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
 
 运行以上命令会构建出一个用于集成测试的 Docker 镜像 `apache/shardingsphere-proxy-test:latest`。
 如果仅修改了测试代码，可以复用已有的测试镜像，无须重新构建。使用以下命令可以跳过镜像构建，直接运行集成测试：
 
 ```bash
-./mvnw -B clean install -f shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-test-suite/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/suite/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
 
 #### 远程 debug Docker 容器中的 Proxy 代码

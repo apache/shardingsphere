@@ -450,6 +450,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/77877486?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/mlycore" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/22319610?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -469,6 +474,9 @@ chapter = true
         </td>
         <td>
             <b>Everly Precia Suresh</b>
+        </td>
+        <td>
+            <b>苗立尧</b>
         </td>
     </tr>
 </table>

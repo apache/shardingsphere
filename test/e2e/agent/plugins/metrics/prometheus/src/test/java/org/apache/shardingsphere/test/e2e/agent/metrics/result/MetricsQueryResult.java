@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.agent.metrics.result;
 
-import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.e2e.agent.common.result.JsonConfiguration;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Metrics query result.
@@ -34,6 +34,10 @@ public final class MetricsQueryResult implements JsonConfiguration {
     private String status;
     
     private QueryData data;
+    
+    private String errorType;
+    
+    private String error;
     
     /**
      * Query data.
@@ -54,25 +58,8 @@ public final class MetricsQueryResult implements JsonConfiguration {
     @Setter
     public static final class QueryDataResult {
         
-        private QueryDataResultMetric queryDataResultMetric;
+        private Map<String, String> metric;
         
         private List<String> value;
-    }
-    
-    /**
-     * Query data result metric.
-     */
-    public static final class QueryDataResultMetric {
-        
-        @SerializedName("__name__")
-        private String name;
-        
-        private String instance;
-        
-        private String job;
-        
-        private String sql;
-        
-        private String type;
     }
 }

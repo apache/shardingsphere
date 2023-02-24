@@ -9,7 +9,7 @@ chapter = true
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/core/src/main/java/org/apache/shardingsphere/transaction/spi/ShardingSphereTransactionManager.java)
+[`org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/api/src/main/java/org/apache/shardingsphere/transaction/spi/ShardingSphereTransactionManager.java)
 
 ### Definition
 

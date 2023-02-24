@@ -39,7 +39,7 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
         YamlUserConfiguration result = new YamlUserConfiguration();
         result.setUser(data.getGrantee().toString());
         result.setPassword(data.getPassword());
-        result.setAuth(data.getAuth());
+        result.setAuthenticationMethodName(data.getAuthenticationMethodName());
         return result;
     }
     
@@ -49,7 +49,7 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
             return null;
         }
         Grantee grantee = convertYamlUserToGrantee(yamlConfig.getUser());
-        return new ShardingSphereUser(grantee.getUsername(), yamlConfig.getPassword(), grantee.getHostname(), yamlConfig.getAuth());
+        return new ShardingSphereUser(grantee.getUsername(), yamlConfig.getPassword(), grantee.getHostname(), yamlConfig.getAuthenticationMethodName());
     }
     
     private Grantee convertYamlUserToGrantee(final String yamlUser) {

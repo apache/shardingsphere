@@ -8,7 +8,7 @@ weight = 1
 ```yaml
 mode (?): # 不配置则默认单机模式
   type: # 运行模式类型。可选配置：Standalone、Cluster
-  repository (?): # 久化仓库配置
+  repository (?): # 持久化仓库配置
 ```
 
 ### 单机模式

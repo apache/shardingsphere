@@ -22,13 +22,16 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingRuleConfigurationConverterTest {
     
     @Test
     public void assertFindAndConvertShardingRuleConfiguration() {
-        assertNotNull(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(Collections.singletonList(mock(YamlShardingRuleConfiguration.class))));
+        assertTrue("Sharding rule should be present", ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(
+                Collections.singletonList(mock(YamlShardingRuleConfiguration.class))).isPresent());
+        assertFalse("Sharding rule should be not present", ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(Collections.emptyList()).isPresent());
     }
 }

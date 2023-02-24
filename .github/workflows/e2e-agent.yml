@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        plugin: [ jaeger, opentelemetry, zipkin ]
+        plugin: [ jaeger, zipkin ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -87,7 +87,7 @@ jobs:
           java-version: 8
       - name: Run E2E Test
         run: |
-          ./mvnw -B clean install -f test/e2e/agent/plugins/tracing/${{ matrix.plugin }}/pom.xml -Dspotless.apply.skip=true -Pit.env.${{ matrix.plugin }}
+          ./mvnw -B clean install -f test/e2e/agent/plugins/tracing/${{ matrix.plugin }}/pom.xml -Dspotless.apply.skip=true -Dit.env.type=${{ matrix.plugin }} -Pit.env.${{ matrix.plugin }}
 
   mysql-proxy-agent-metrics:
     name: Agent metrics with MySQL
@@ -117,4 +117,4 @@ jobs:
           java-version: 8
       - name: Run E2E Test
         run: |
-          ./mvnw -B clean install -f test/e2e/agent/plugins/metrics/${{ matrix.plugin }}/pom.xml -Dspotless.apply.skip=true -Pit.env.${{ matrix.plugin }}
+          ./mvnw -B clean install -f test/e2e/agent/plugins/metrics/${{ matrix.plugin }}/pom.xml -Dspotless.apply.skip=true -Dit.env.type=${{ matrix.plugin }} -Pit.env.${{ matrix.plugin }}

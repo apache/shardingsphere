@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.BaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.DockerContainerComposer;
-import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.NativeContainerComposer;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
@@ -39,13 +38,6 @@ import java.util.Properties;
 public class PipelineWatcher extends TestWatcher {
     
     private final BaseContainerComposer containerComposer;
-    
-    @Override
-    protected void failed(final Throwable e, final Description description) {
-        if (containerComposer instanceof NativeContainerComposer) {
-            super.failed(e, description);
-        }
-    }
     
     // TODO now the meta data mistake is not reproduce, but keep this method, it may be used again
     private void outputZookeeperData() {
@@ -78,6 +70,22 @@ public class PipelineWatcher extends TestWatcher {
         for (String each : childrenKeys) {
             addZookeeperData(each, path, zookeeperRepository, nodeMap);
         }
+    }
+    
+    @Override
+    protected void starting(final Description description) {
+        log.info("pipeline E2E starting: {}", description);
+        containerComposer.start();
+    }
+    
+    @Override
+    protected void succeeded(final Description description) {
+        log.info("pipeline E2E succeeded: {}", description);
+    }
+    
+    @Override
+    protected void failed(final Throwable ex, final Description description) {
+        log.info("pipeline E2E failed: {}", description, ex);
     }
     
     @Override

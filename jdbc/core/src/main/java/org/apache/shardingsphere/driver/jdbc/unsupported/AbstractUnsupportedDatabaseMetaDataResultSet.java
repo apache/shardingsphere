@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
 import java.sql.SQLXML;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -85,11 +84,6 @@ public abstract class AbstractUnsupportedDatabaseMetaDataResultSet extends Abstr
     @Override
     public final Reader getCharacterStream(final String columnLabel) throws SQLException {
         throw new SQLFeatureNotSupportedException("getCharacterStream");
-    }
-    
-    @Override
-    public final Statement getStatement() throws SQLException {
-        throw new SQLFeatureNotSupportedException("getStatement");
     }
     
     @Override
