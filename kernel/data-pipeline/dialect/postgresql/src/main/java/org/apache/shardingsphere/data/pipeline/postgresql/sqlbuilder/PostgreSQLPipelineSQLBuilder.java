@@ -63,7 +63,12 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     
     @Override
     public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
-        return super.buildInsertSQL(schemaName, dataRecord) + buildConflictSQL(dataRecord);
+        String result = super.buildInsertSQL(schemaName, dataRecord);
+        // TODO without unique key, job has been interrupted, which may lead to data duplication
+        if (dataRecord.getUniqueKeyValue().isEmpty()) {
+            return result;
+        }
+        return result + buildConflictSQL(dataRecord);
     }
     
     // Refer to https://www.postgresql.org/docs/current/sql-insert.html
@@ -87,8 +92,8 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        // TODO Support estimated count later.
-        return Optional.empty();
+        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
+        return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
     }
     
     @Override

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.primary
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
@@ -70,11 +71,14 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
-        List<String> versions = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
-        if (versions.isEmpty()) {
-            return result;
+        List<String> mysqlVersion = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
+        if (!mysqlVersion.isEmpty()) {
+            result.add(new PipelineTestParameter(new MySQLDatabaseType(), mysqlVersion.get(0), "env/common/none.xml"));
         }
-        result.add(new PipelineTestParameter(new MySQLDatabaseType(), versions.get(0), "env/common/none.xml"));
+        List<String> postgresqlVersion = PipelineBaseE2EIT.ENV.listStorageContainerImages(new PostgreSQLDatabaseType());
+        if (!postgresqlVersion.isEmpty()) {
+            result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), postgresqlVersion.get(0), "env/common/none.xml"));
+        }
         return result;
     }
     
@@ -91,6 +95,9 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
             // DATA_MATCH doesn't supported, could not order by records
             consistencyCheckAlgorithmType = "CRC32_MATCH";
+        } else if (getDatabaseType() instanceof PostgreSQLDatabaseType) {
+            sql = "CREATE TABLE %s (order_id varchar(255) NOT NULL,user_id int NOT NULL,status varchar(255) NULL)";
+            consistencyCheckAlgorithmType = null;
         } else {
             return;
         }
@@ -160,7 +167,9 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         }
         assertProxyOrderRecordExist("t_order", primaryKey);
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        assertCheckMigrationSuccess(jobId, consistencyCheckAlgorithmType);
+        if (null != consistencyCheckAlgorithmType) {
+            assertCheckMigrationSuccess(jobId, consistencyCheckAlgorithmType);
+        }
         commitMigrationByJobId(jobId);
         proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
         assertThat(getTargetTableRecordsCount(getSourceTableOrderName()), is(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT + 1));
