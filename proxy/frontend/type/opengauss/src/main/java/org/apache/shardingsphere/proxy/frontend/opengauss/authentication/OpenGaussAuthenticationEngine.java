@@ -26,13 +26,17 @@ import org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussProtoco
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationHexData;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLComStartupPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLRandomGenerator;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authentication.PostgreSQLMD5PasswordAuthenticationPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
@@ -49,6 +53,7 @@ import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.PostgreS
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
+import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticatorType;
@@ -77,6 +82,8 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
     private String clientEncoding;
     
     private int serverIteration;
+    
+    private byte[] md5Salt;
     
     private AuthenticationResult currentAuthResult;
     
@@ -118,9 +125,16 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         Grantee grantee = new Grantee(username, "%");
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
         ShardingSpherePreconditions.checkState(user.isPresent(), () -> new UnknownUsernameException(username));
-        ShardingSpherePreconditions.checkState(new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user.get())
-                .authenticate(user.get(), new Object[]{digest, authHexData.getSalt(), authHexData.getNonce(), serverIteration}), () -> new InvalidPasswordException(username));
+        Authenticator authenticator = new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(user.get());
+        ShardingSpherePreconditions.checkState(login(authenticator, user.get(), digest), () -> new InvalidPasswordException(username));
         ShardingSpherePreconditions.checkState(null == databaseName || new AuthorityChecker(rule, grantee).isAuthorized(databaseName), () -> new PrivilegeNotGrantedException(username, databaseName));
+    }
+    
+    private boolean login(final Authenticator authenticator, final ShardingSphereUser user, final String digest) {
+        if (PostgreSQLAuthenticationMethod.MD5 == authenticator.getAuthenticationMethod()) {
+            return authenticator.authenticate(user, new Object[]{digest, md5Salt});
+        }
+        return authenticator.authenticate(user, new Object[]{digest, authHexData.getSalt(), authHexData.getNonce(), serverIteration});
     }
     
     private AuthenticationResult processStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, final AuthorityRule rule) {
@@ -130,10 +144,19 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.findCharacterSet(clientEncoding));
         String username = startupPacket.getUsername();
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(username), EmptyUsernameException::new);
-        serverIteration = startupPacket.getVersion() == OpenGaussProtocolVersion.PROTOCOL_350.getVersion() ? PROTOCOL_350_SERVER_ITERATOR : PROTOCOL_351_SERVER_ITERATOR;
-        String password = rule.findUser(new Grantee(username, "%")).map(ShardingSphereUser::getPassword).orElse("");
-        context.writeAndFlush(new OpenGaussAuthenticationSCRAMSha256Packet(startupPacket.getVersion(), serverIteration, authHexData, password));
+        context.writeAndFlush(getIdentifierPacket(username, rule, startupPacket.getVersion()));
         currentAuthResult = AuthenticationResultBuilder.continued(username, "", startupPacket.getDatabase());
         return currentAuthResult;
+    }
+    
+    private PostgreSQLIdentifierPacket getIdentifierPacket(final String username, final AuthorityRule rule, final int version) {
+        Optional<Authenticator> authenticator = rule.findUser(new Grantee(username, "")).map(optional -> new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(optional));
+        if (authenticator.isPresent() && PostgreSQLAuthenticationMethod.MD5 == authenticator.get().getAuthenticationMethod()) {
+            md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
+            return new PostgreSQLMD5PasswordAuthenticationPacket(md5Salt);
+        }
+        serverIteration = version == OpenGaussProtocolVersion.PROTOCOL_350.getVersion() ? PROTOCOL_350_SERVER_ITERATOR : PROTOCOL_351_SERVER_ITERATOR;
+        String password = rule.findUser(new Grantee(username, "%")).map(ShardingSphereUser::getPassword).orElse("");
+        return new OpenGaussAuthenticationSCRAMSha256Packet(version, serverIteration, authHexData, password);
     }
 }

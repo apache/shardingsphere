@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authen
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorType;
+import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.impl.OpenGaussMD5PasswordAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.impl.OpenGaussSCRAMSha256PasswordAuthenticator;
 
 /**
@@ -29,9 +30,15 @@ import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authent
 @Getter
 public enum OpenGaussAuthenticatorType implements AuthenticatorType {
     
+    MD5(OpenGaussMD5PasswordAuthenticator.class),
+    
     SCRAM_SHA256(OpenGaussSCRAMSha256PasswordAuthenticator.class, true);
     
     private final Class<? extends OpenGaussAuthenticator> authenticatorClass;
     
     private final boolean isDefault;
+    
+    OpenGaussAuthenticatorType(final Class<? extends OpenGaussAuthenticator> authenticatorClass) {
+        this(authenticatorClass, false);
+    }
 }

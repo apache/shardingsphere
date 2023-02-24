@@ -33,15 +33,14 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -55,20 +54,142 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class ShowTablesExecutorTest extends ProxyContextRestorer {
+public final class ShowTablesExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
-    @Before
-    public void setUp() {
+    @Test
+    public void assertShowTablesExecutorWithoutFilter() throws SQLException {
+        ShowTablesExecutor executor = new ShowTablesExecutor(new MySQLShowTablesStatement(), DatabaseTypeEngine.getDatabaseType("MySQL"));
         Map<String, ShardingSphereDatabase> databases = getDatabases();
+        ContextManager contextManager = mockContextManager(databases);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
+            executor.execute(mockConnectionSession());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+            executor.getMergedResult().next();
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
+            executor.getMergedResult().next();
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account"));
+            executor.getMergedResult().next();
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account_bak"));
+            executor.getMergedResult().next();
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account_detail"));
+            assertFalse(executor.getMergedResult().next());
+        }
+    }
+    
+    @Test
+    public void assertShowTablesExecutorWithLikeFilter() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
+        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account%")));
+        showTablesStatement.setFilter(showFilterSegment);
+        ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
+        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        ContextManager contextManager = mockContextManager(databases);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
+            executor.execute(mockConnectionSession());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+            executor.getMergedResult().next();
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account"));
+            executor.getMergedResult().next();
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account_bak"));
+            executor.getMergedResult().next();
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account_detail"));
+            assertFalse(executor.getMergedResult().next());
+        }
+    }
+    
+    @Test
+    public void assertShowTablesExecutorWithSpecificTable() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
+        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account")));
+        showTablesStatement.setFilter(showFilterSegment);
+        ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
+        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        ContextManager contextManager = mockContextManager(databases);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
+            executor.execute(mockConnectionSession());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+            executor.getMergedResult().next();
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account"));
+            assertFalse(executor.getMergedResult().next());
+        }
+    }
+    
+    @Test
+    public void assertShowTablesExecutorWithUpperCase() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
+        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_TEST")));
+        showTablesStatement.setFilter(showFilterSegment);
+        ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
+        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        ContextManager contextManager = mockContextManager(databases);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
+            executor.execute(mockConnectionSession());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+            executor.getMergedResult().next();
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
+            assertFalse(executor.getMergedResult().next());
+        }
+    }
+    
+    @Test
+    public void assertShowTablesExecutorWithLowerCase() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
+        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_test")));
+        showTablesStatement.setFilter(showFilterSegment);
+        ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
+        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        ContextManager contextManager = mockContextManager(databases);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
+            executor.execute(mockConnectionSession());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+            executor.getMergedResult().next();
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
+            assertFalse(executor.getMergedResult().next());
+        }
+    }
+    
+    @Test
+    public void assertShowTableFromUncompletedDatabase() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        showTablesStatement.setFromSchema(new FromSchemaSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted"))));
+        ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
+        ContextManager contextManager = mockContextManager(getDatabases());
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            executor.execute(mockConnectionSession());
+            QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
+            assertThat(actualMetaData.getColumnCount(), is(2));
+            assertThat(actualMetaData.getColumnName(1), is("Tables_in_uncompleted"));
+            MergedResult actualResult = executor.getMergedResult();
+            assertFalse(actualResult.next());
+        }
+    }
+    
+    private ContextManager mockContextManager(final Map<String, ShardingSphereDatabase> databases) {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
     }
     
     private Map<String, ShardingSphereDatabase> getDatabases() {
@@ -88,95 +209,6 @@ public final class ShowTablesExecutorTest extends ProxyContextRestorer {
         when(uncompletedDatabase.isComplete()).thenReturn(false);
         result.put("uncompleted", uncompletedDatabase);
         return result;
-    }
-    
-    @Test
-    public void assertShowTablesExecutorWithoutFilter() throws SQLException {
-        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(new MySQLShowTablesStatement(), DatabaseTypeEngine.getDatabaseType("MySQL"));
-        showTablesExecutor.execute(mockConnectionSession());
-        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
-        showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
-        showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account"));
-        showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account_bak"));
-        showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account_detail"));
-        assertFalse(showTablesExecutor.getMergedResult().next());
-    }
-    
-    @Test
-    public void assertShowTablesExecutorWithLikeFilter() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
-        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
-        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account%")));
-        showTablesStatement.setFilter(showFilterSegment);
-        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
-        showTablesExecutor.execute(mockConnectionSession());
-        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
-        showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account"));
-        showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account_bak"));
-        showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account_detail"));
-        assertFalse(showTablesExecutor.getMergedResult().next());
-    }
-    
-    @Test
-    public void assertShowTablesExecutorWithSpecificTable() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
-        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
-        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account")));
-        showTablesStatement.setFilter(showFilterSegment);
-        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
-        showTablesExecutor.execute(mockConnectionSession());
-        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
-        showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("t_account"));
-        assertFalse(showTablesExecutor.getMergedResult().next());
-    }
-    
-    @Test
-    public void assertShowTablesExecutorWithUpperCase() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
-        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
-        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_TEST")));
-        showTablesStatement.setFilter(showFilterSegment);
-        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
-        showTablesExecutor.execute(mockConnectionSession());
-        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
-        showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
-        assertFalse(showTablesExecutor.getMergedResult().next());
-    }
-    
-    @Test
-    public void assertShowTablesExecutorWithLowerCase() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
-        ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
-        when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_test")));
-        showTablesStatement.setFilter(showFilterSegment);
-        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
-        showTablesExecutor.execute(mockConnectionSession());
-        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(2));
-        showTablesExecutor.getMergedResult().next();
-        assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
-        assertFalse(showTablesExecutor.getMergedResult().next());
-    }
-    
-    @Test
-    public void assertShowTableFromUncompletedDatabase() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
-        showTablesStatement.setFromSchema(new FromSchemaSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted"))));
-        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
-        showTablesExecutor.execute(mockConnectionSession());
-        QueryResultMetaData actualMetaData = showTablesExecutor.getQueryResultMetaData();
-        assertThat(actualMetaData.getColumnCount(), is(2));
-        assertThat(actualMetaData.getColumnName(1), is("Tables_in_uncompleted"));
-        MergedResult actualResult = showTablesExecutor.getMergedResult();
-        assertFalse(actualResult.next());
     }
     
     private ConnectionSession mockConnectionSession() {

@@ -46,7 +46,6 @@ import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
-import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
@@ -54,12 +53,11 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -83,21 +81,19 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestorer {
+public final class PostgreSQLComDescribeExecutorTest {
     
     private static final String DATABASE_NAME = "postgres";
     
     private static final String TABLE_NAME = "t_order";
     
     private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ContextManager contextManager;
     
     @Mock
     private PortalContext portalContext;
@@ -110,33 +106,6 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
     
     @InjectMocks
     private PostgreSQLComDescribeExecutor executor;
-    
-    @Before
-    public void setup() {
-        ProxyContext.init(contextManager);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
-        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
-                new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(DATABASE_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)));
-        prepareTableMetaData();
-    }
-    
-    private void prepareTableMetaData() {
-        Collection<ShardingSphereColumn> columnMetaData = Arrays.asList(
-                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false),
-                new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false),
-                new ShardingSphereColumn("c", Types.CHAR, true, false, false, true, false),
-                new ShardingSphereColumn("pad", Types.CHAR, true, false, false, true, false));
-        ShardingSphereTable table = new ShardingSphereTable(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").getTable(TABLE_NAME)).thenReturn(table);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageTypes())
-                .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
-        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
-    }
     
     @Test
     public void assertDescribePortal() throws SQLException {
@@ -165,17 +134,23 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
-        assertThat(actualPackets.size(), is(2));
-        Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
-        PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
-        PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
-        actualParameterDescription.write(mockPayload);
-        verify(mockPayload).writeInt2(4);
-        verify(mockPayload, times(2)).writeInt4(23);
-        verify(mockPayload, times(2)).writeInt4(18);
-        assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
+            connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+            Collection<DatabasePacket<?>> actualPackets = executor.execute();
+            assertThat(actualPackets.size(), is(2));
+            Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
+            PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
+            PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
+            actualParameterDescription.write(mockPayload);
+            verify(mockPayload).writeInt2(4);
+            verify(mockPayload, times(2)).writeInt4(23);
+            verify(mockPayload, times(2)).writeInt4(18);
+            assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
+        }
     }
     
     @SuppressWarnings("rawtypes")
@@ -192,17 +167,23 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
-        assertThat(actualPackets.size(), is(2));
-        Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
-        PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
-        PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
-        actualParameterDescription.write(mockPayload);
-        verify(mockPayload).writeInt2(5);
-        verify(mockPayload, times(2)).writeInt4(23);
-        verify(mockPayload, times(3)).writeInt4(18);
-        assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
+            connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+            Collection<DatabasePacket<?>> actualPackets = executor.execute();
+            assertThat(actualPackets.size(), is(2));
+            Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
+            PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
+            PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
+            actualParameterDescription.write(mockPayload);
+            verify(mockPayload).writeInt2(5);
+            verify(mockPayload, times(2)).writeInt4(23);
+            verify(mockPayload, times(3)).writeInt4(18);
+            assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
+        }
     }
     
     @SuppressWarnings("rawtypes")
@@ -219,17 +200,23 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
-        assertThat(actualPackets.size(), is(2));
-        Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
-        PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
-        PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
-        actualParameterDescription.write(mockPayload);
-        verify(mockPayload).writeInt2(5);
-        verify(mockPayload, times(2)).writeInt4(23);
-        verify(mockPayload, times(3)).writeInt4(18);
-        assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
+            connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+            Collection<DatabasePacket<?>> actualPackets = executor.execute();
+            assertThat(actualPackets.size(), is(2));
+            Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
+            PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
+            PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
+            actualParameterDescription.write(mockPayload);
+            verify(mockPayload).writeInt2(5);
+            verify(mockPayload, times(2)).writeInt4(23);
+            verify(mockPayload, times(3)).writeInt4(18);
+            assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
+        }
     }
     
     @SuppressWarnings("rawtypes")
@@ -246,8 +233,14 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
-        executor.execute();
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
+            connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+            executor.execute();
+        }
     }
     
     @SuppressWarnings("rawtypes")
@@ -265,19 +258,25 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
-        assertThat(actualPackets.size(), is(2));
-        Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
-        PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
-        PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
-        actualParameterDescription.write(mockPayload);
-        verify(mockPayload).writeInt2(3);
-        verify(mockPayload).writeInt4(23);
-        verify(mockPayload, times(2)).writeInt4(18);
-        DatabasePacket<?> actualRowDescriptionPacket = actualPacketsIterator.next();
-        assertThat(actualRowDescriptionPacket, is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
-        assertRowDescriptions((PostgreSQLRowDescriptionPacket) actualRowDescriptionPacket);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
+            connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+            Collection<DatabasePacket<?>> actualPackets = executor.execute();
+            assertThat(actualPackets.size(), is(2));
+            Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
+            PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
+            PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
+            actualParameterDescription.write(mockPayload);
+            verify(mockPayload).writeInt2(3);
+            verify(mockPayload).writeInt4(23);
+            verify(mockPayload, times(2)).writeInt4(18);
+            DatabasePacket<?> actualRowDescriptionPacket = actualPacketsIterator.next();
+            assertThat(actualRowDescriptionPacket, is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
+            assertRowDescriptions((PostgreSQLRowDescriptionPacket) actualRowDescriptionPacket);
+        }
     }
     
     private void assertRowDescriptions(final PostgreSQLRowDescriptionPacket actualRowDescriptionPacket) {
@@ -342,31 +341,59 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnection(sql);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
-        Collection<DatabasePacket<?>> actual = executor.execute();
-        assertThat(actual.size(), is(2));
-        Iterator<DatabasePacket<?>> actualPacketsIterator = actual.iterator();
-        PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
-        assertThat(actualParameterDescription, instanceOf(PostgreSQLParameterDescriptionPacket.class));
-        PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
-        actualParameterDescription.write(mockPayload);
-        verify(mockPayload).writeInt2(1);
-        verify(mockPayload).writeInt4(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4.getValue());
-        PostgreSQLRowDescriptionPacket actualRowDescription = (PostgreSQLRowDescriptionPacket) actualPacketsIterator.next();
-        List<PostgreSQLColumnDescription> actualColumnDescriptions = getColumnDescriptions(actualRowDescription);
-        List<PostgreSQLColumnDescription> expectedColumnDescriptions = Arrays.asList(
-                new PostgreSQLColumnDescription("id", 1, Types.INTEGER, 11, "int4"),
-                new PostgreSQLColumnDescription("k", 2, Types.INTEGER, 11, "int4"),
-                new PostgreSQLColumnDescription("c", 3, Types.CHAR, 60, "int4"),
-                new PostgreSQLColumnDescription("pad", 4, Types.CHAR, 120, "int4"));
-        for (int i = 0; i < expectedColumnDescriptions.size(); i++) {
-            PostgreSQLColumnDescription expectedColumnDescription = expectedColumnDescriptions.get(i);
-            PostgreSQLColumnDescription actualColumnDescription = actualColumnDescriptions.get(i);
-            assertThat(actualColumnDescription.getColumnName(), is(expectedColumnDescription.getColumnName()));
-            assertThat(actualColumnDescription.getColumnIndex(), is(expectedColumnDescription.getColumnIndex()));
-            assertThat(actualColumnDescription.getColumnLength(), is(expectedColumnDescription.getColumnLength()));
-            assertThat(actualColumnDescription.getTypeOID(), is(expectedColumnDescription.getTypeOID()));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase(DATABASE_NAME)).thenReturn(database);
+            connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, parameterTypes));
+            Collection<DatabasePacket<?>> actual = executor.execute();
+            assertThat(actual.size(), is(2));
+            Iterator<DatabasePacket<?>> actualPacketsIterator = actual.iterator();
+            PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
+            assertThat(actualParameterDescription, instanceOf(PostgreSQLParameterDescriptionPacket.class));
+            PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
+            actualParameterDescription.write(mockPayload);
+            verify(mockPayload).writeInt2(1);
+            verify(mockPayload).writeInt4(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4.getValue());
+            PostgreSQLRowDescriptionPacket actualRowDescription = (PostgreSQLRowDescriptionPacket) actualPacketsIterator.next();
+            List<PostgreSQLColumnDescription> actualColumnDescriptions = getColumnDescriptions(actualRowDescription);
+            List<PostgreSQLColumnDescription> expectedColumnDescriptions = Arrays.asList(
+                    new PostgreSQLColumnDescription("id", 1, Types.INTEGER, 11, "int4"),
+                    new PostgreSQLColumnDescription("k", 2, Types.INTEGER, 11, "int4"),
+                    new PostgreSQLColumnDescription("c", 3, Types.CHAR, 60, "int4"),
+                    new PostgreSQLColumnDescription("pad", 4, Types.CHAR, 120, "int4"));
+            for (int i = 0; i < expectedColumnDescriptions.size(); i++) {
+                PostgreSQLColumnDescription expectedColumnDescription = expectedColumnDescriptions.get(i);
+                PostgreSQLColumnDescription actualColumnDescription = actualColumnDescriptions.get(i);
+                assertThat(actualColumnDescription.getColumnName(), is(expectedColumnDescription.getColumnName()));
+                assertThat(actualColumnDescription.getColumnIndex(), is(expectedColumnDescription.getColumnIndex()));
+                assertThat(actualColumnDescription.getColumnLength(), is(expectedColumnDescription.getColumnLength()));
+                assertThat(actualColumnDescription.getTypeOID(), is(expectedColumnDescription.getTypeOID()));
+            }
         }
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
+                new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(DATABASE_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)));
+        Collection<ShardingSphereColumn> columnMetaData = Arrays.asList(
+                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("c", Types.CHAR, true, false, false, true, false),
+                new ShardingSphereColumn("pad", Types.CHAR, true, false, false, true, false));
+        ShardingSphereTable table = new ShardingSphereTable(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
+        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").getTable(TABLE_NAME)).thenReturn(table);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageTypes())
+                .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
+        return result;
     }
     
     private void prepareJDBCBackendConnection(final String sql) throws SQLException {

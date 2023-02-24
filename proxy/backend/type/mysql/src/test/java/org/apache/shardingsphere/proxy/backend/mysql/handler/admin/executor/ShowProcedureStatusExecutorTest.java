@@ -28,10 +28,9 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcedureStatusStatement;
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -42,20 +41,31 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class ShowProcedureStatusExecutorTest extends ProxyContextRestorer {
+public final class ShowProcedureStatusExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
-    @Before
-    public void setUp() {
+    @Test
+    public void assertExecute() throws SQLException {
+        ShowProcedureStatusExecutor executor = new ShowProcedureStatusExecutor(new MySQLShowProcedureStatusStatement());
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            executor.execute(mockConnectionSession());
+            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(11));
+        }
+    }
+    
+    private ContextManager mockContextManager() {
         Map<String, ShardingSphereDatabase> databases = getDatabases();
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
     }
     
     private Map<String, ShardingSphereDatabase> getDatabases() {
@@ -67,13 +77,6 @@ public final class ShowProcedureStatusExecutorTest extends ProxyContextRestorer 
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;
-    }
-    
-    @Test
-    public void assertExecute() throws SQLException {
-        ShowProcedureStatusExecutor executor = new ShowProcedureStatusExecutor(new MySQLShowProcedureStatusStatement());
-        executor.execute(mockConnectionSession());
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(11));
     }
     
     private ConnectionSession mockConnectionSession() {
