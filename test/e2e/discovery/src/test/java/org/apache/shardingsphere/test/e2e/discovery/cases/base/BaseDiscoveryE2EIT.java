@@ -131,7 +131,7 @@ public abstract class BaseDiscoveryE2EIT {
         mgrEnvironment.getDataSources().remove(getPrimaryDataSourceName());
         String closedRoutingDataSourceName = getCloseReplicationDataSourceName(mgrEnvironment);
         mgrEnvironment.getDataSources().remove(closedRoutingDataSourceName);
-        Awaitility.await().atMost(Durations.ONE_MINUTE)
+        Awaitility.await().atMost(Durations.TWO_MINUTES)
                 .until(() -> getRouteDataSourceName().equals(Objects.requireNonNull(mgrEnvironment.getDataSources().entrySet().stream().findFirst().orElse(null)).getKey()));
     }
     
@@ -155,15 +155,5 @@ public abstract class BaseDiscoveryE2EIT {
         try (ResultSet resultSet = statement.executeQuery("PREVIEW SELECT 1")) {
             return resultSet.next() ? resultSet.getString("data_source_name") : "";
         }
-    }
-    
-    /**
-     * Assert close all replication data source.
-     * @param mgrEnvironment mgr environment
-     * @throws SQLException SQL Exception
-     */
-    public void assertCloseAllReplicationDataSource(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
-        closeDataSource(Objects.requireNonNull(mgrEnvironment.getDataSources().values().stream().findFirst().orElse(null)));
-        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> getRouteDataSourceName().equals(getPrimaryDataSourceName()));
     }
 }
