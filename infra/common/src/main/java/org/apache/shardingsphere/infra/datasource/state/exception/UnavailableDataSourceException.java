@@ -37,6 +37,6 @@ public final class UnavailableDataSourceException extends ShardingSphereServerEx
     }
     
     public UnavailableDataSourceException(final SQLException cause, final String databaseName) {
-        super(ERROR_CATEGORY, ERROR_CODE, String.format("Data source unavailable from `%s` .", databaseName), cause);
+        super(ERROR_CATEGORY, ERROR_CODE, String.format("Data source unavailable from `%s`.", databaseName), cause);
     }
 }
