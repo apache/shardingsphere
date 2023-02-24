@@ -1,6 +1,6 @@
 +++
 title = "Book Release: “A Definitive Guide to Apache ShardingSphere” is Published Internationally"
-weight = 70
+weight = 71
 chapter = true 
 +++
 
@@ -23,10 +23,9 @@ This is a technical book written for the ShardingSphere community users as well 
 - Use ShardingSphere pluggable architecture to build custom solutions.
 
 # Why did we write a professional book about ShardingSphere?
+**To introduce the strengths of ShardingSphere’s kernel, features, and architecture to more programmers.**
 
-> ***To introduce the strengths of ShardingSphere’s kernel, features, and architecture to more programmers.\***
->
-> *— By Zhang Liang, Apache ShardingSphere PMC Chair*
+<p align="right">— By Zhang Liang, Apache ShardingSphere PMC Chair</p>
 
 As the Apache ShardingSphere community has grown in the past two years, its project features and application scenarios have become increasingly diversified and many developers have applied ShardingSphere to real production scenarios.
 
@@ -54,7 +53,7 @@ To give back to the community users, ShardingSphere also launched a free book gi
 
 **LinkedIn:** https://www.linkedin.com/feed/update/urn:li:activity:6955445327667548160
 
-## **👉Free Chapter**
+## 👉Free Chapter
 
 A free copy of chapter one is available [**here**](https://www.amazon.com/Definitive-Guide-Apache-ShardingSphere-multi-model-dp-1803239425/dp/1803239425/ref=mt_other?_encoding=UTF8&me=&qid=1655188637&asin=1803239425&revisionId=&format=4&depth=1) for download.
 
@@ -102,6 +101,6 @@ Please note that the discount is only available on the publisher’s website thr
 
 [ShardingSphere Slack](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/en/involved/contribute/contributor/)
 
 [GitHub Issues](https://github.com/apache/shardingsphere/issues)

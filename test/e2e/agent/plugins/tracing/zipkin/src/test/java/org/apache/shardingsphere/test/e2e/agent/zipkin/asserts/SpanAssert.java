@@ -28,12 +28,14 @@ import org.apache.shardingsphere.test.e2e.agent.zipkin.result.SpanResult;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Span assert.
@@ -47,36 +49,38 @@ public final class SpanAssert {
      * @param expected expected span
      */
     public static void assertIs(final String baseUrl, final SpanTestCase expected) {
-        for (TagAssertion each : expected.getTagCases()) {
-            assertSpan(baseUrl, expected, each);
-        }
+        assertTagKey(baseUrl, expected);
+        expected.getTagCases().stream().filter(TagAssertion::isNeedAssertValue).forEach(each -> assertTagValue(baseUrl, expected, each));
     }
     
-    private static void assertSpan(final String baseUrl, final SpanTestCase expected, final TagAssertion expectedTagCase) {
-        String tracesApiUrl = getTraceApiUrl(baseUrl, expected, expectedTagCase);
-        List<List<SpanResult>> spanResults = null;
-        try {
-            spanResults = new Gson().fromJson(OkHttpUtils.getInstance().get(tracesApiUrl), new TypeToken<List<List<SpanResult>>>() {
-            }.getType());
-        } catch (final IOException ignored) {
-        }
-        assertNotNull(spanResults);
-        List<SpanResult> spanList = spanResults.stream().findFirst().orElse(Collections.emptyList()).stream()
-                .filter(each -> expected.getSpanName().equalsIgnoreCase(each.getName())).collect(Collectors.toList());
-        assertFalse(expectedTagCase.isNeedAssertValue()
-                ? String.format("The tag `%s`=`%s` does not exist in `%s` span", expectedTagCase.getTagKey(), expectedTagCase.getTagValue(), expected.getSpanName())
-                : String.format("The tag `%s` does not exist in `%s` span", expectedTagCase.getTagKey(), expected.getSpanName()), spanList.isEmpty());
+    private static void assertTagKey(final String baseUrl, final SpanTestCase expected) {
+        String baseTraceApiUrl = String.format("%s/api/v2/traces?serviceName=%s&spanName=%s&limit=%s", baseUrl, getEncodeValue(expected.getServiceName()),
+                getEncodeValue(expected.getSpanName()), 1000);
+        Collection<SpanResult> spanResults = getSpanResults(expected, baseTraceApiUrl);
+        Collection<String> actualTags = spanResults.stream().flatMap(each -> each.getTags().keySet().stream()).collect(Collectors.toSet());
+        Collection<String> expectedTags = expected.getTagCases().stream().map(TagAssertion::getTagKey).collect(Collectors.toSet());
+        Collection<String> nonExistentTags = expectedTags.stream().filter(each -> !actualTags.contains(each)).collect(Collectors.toSet());
+        assertTrue(String.format("The tags `%s` does not exist in `%s` span", nonExistentTags, expected.getSpanName()), nonExistentTags.isEmpty());
     }
     
-    private static String getTraceApiUrl(final String baseUrl, final SpanTestCase expected, final TagAssertion expectedTagCase) {
-        String baseTraceApiUrl = String.format("%s/api/v2/traces?serviceName=%s&spanName=%s", baseUrl, getEncodeValue(expected.getServiceName()), getEncodeValue(expected.getSpanName()));
-        return expectedTagCase.isNeedAssertValue()
-                ? String.format("%s&annotationQuery=%s", baseTraceApiUrl, getEncodeValue(String.format("%s=%s", expectedTagCase.getTagKey(), expectedTagCase.getTagValue())))
-                : String.format("%s&annotationQuery=%s", baseTraceApiUrl, getEncodeValue(expectedTagCase.getTagKey()));
+    private static void assertTagValue(final String baseUrl, final SpanTestCase expected, final TagAssertion expectedTagCase) {
+        String baseTraceApiUrl = String.format("%s/api/v2/traces?serviceName=%s&spanName=%s&annotationQuery=%s&limit=%s", baseUrl, getEncodeValue(expected.getServiceName()),
+                getEncodeValue(expected.getSpanName()), getEncodeValue(String.format("%s=%s", expectedTagCase.getTagKey(), expectedTagCase.getTagValue())), 1000);
+        Collection<SpanResult> spanResults = getSpanResults(expected, baseTraceApiUrl);
+        assertFalse(String.format("The tag `%s`=`%s` does not exist in `%s` span", expectedTagCase.getTagKey(), expectedTagCase.getTagValue(), expected.getSpanName()), spanResults.isEmpty());
     }
     
     @SneakyThrows(UnsupportedEncodingException.class)
     private static String getEncodeValue(final String value) {
         return URLEncoder.encode(value, "UTF-8");
+    }
+    
+    @SneakyThrows(IOException.class)
+    private static Collection<SpanResult> getSpanResults(final SpanTestCase expected, final String url) {
+        List<List<SpanResult>> result = new Gson().fromJson(OkHttpUtils.getInstance().get(url), new TypeToken<List<List<SpanResult>>>() {
+        }.getType());
+        assertNotNull(result);
+        return result.stream().findFirst().orElse(Collections.emptyList()).stream()
+                .filter(each -> expected.getSpanName().equalsIgnoreCase(each.getName())).collect(Collectors.toList());
     }
 }

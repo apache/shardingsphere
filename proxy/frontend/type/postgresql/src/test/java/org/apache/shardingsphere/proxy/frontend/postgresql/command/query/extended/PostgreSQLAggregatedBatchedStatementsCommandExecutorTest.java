@@ -46,13 +46,11 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBack
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
-import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
-import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -70,9 +68,10 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest extends ProxyContextRestorer {
+public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     
     private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
     
@@ -80,39 +79,38 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest exte
     
     private static final String STATEMENT_ID = "S_1";
     
-    private static final String SQL = "insert into t_order (id) values (?)";
+    private static final String SQL = "INSERT INTO t_order (id) VALUES (?)";
     
     private static final int BATCH_SIZE = 10;
     
-    @Before
-    public void setup() {
-        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-    }
-    
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertExecute() throws SQLException {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
-                new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(connectionSession.getConnectionContext()).thenReturn(new ConnectionContext());
-        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
-        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(SQL, false);
+        ConnectionSession connectionSession = mockConnectionSession();
+        PostgreSQLAggregatedBatchedStatementsCommandExecutor executor = new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, createPackets());
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            List<DatabasePacket<?>> actualPackets = new ArrayList<>(executor.execute());
+            assertThat(actualPackets.size(), is(BATCH_SIZE * 3));
+            for (int i = 0; i < BATCH_SIZE; i++) {
+                assertThat(actualPackets.get(i * 3), is(PostgreSQLBindCompletePacket.getInstance()));
+                assertThat(actualPackets.get(i * 3 + 1), is(PostgreSQLNoDataPacket.getInstance()));
+                assertThat(actualPackets.get(i * 3 + 2), instanceOf(PostgreSQLCommandCompletePacket.class));
+            }
+        }
+    }
+    
+    private static ConnectionSession mockConnectionSession() throws SQLException {
+        ConnectionSession result = mock(ConnectionSession.class);
+        @SuppressWarnings("rawtypes")
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(STATEMENT_ID,
+        when(sqlStatementContext.getSqlStatement()).thenReturn(SQL_PARSER_ENGINE.parse(SQL, false));
+        when(result.getDatabaseName()).thenReturn("db");
+        when(result.getConnectionContext()).thenReturn(new ConnectionContext());
+        when(result.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
+        result.getServerPreparedStatementRegistry().addPreparedStatement(STATEMENT_ID,
                 new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4)));
-        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(result.getConnectionId()).thenReturn(CONNECTION_ID);
         BackendConnection backendConnection = mock(BackendConnection.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://127.0.0.1/db");
@@ -122,20 +120,13 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest exte
         JDBCBackendStatement backendStatement = mock(JDBCBackendStatement.class);
         when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
                 .thenReturn(preparedStatement);
-        when(connectionSession.getStatementManager()).thenReturn(backendStatement);
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
-        PostgreSQLAggregatedBatchedStatementsCommandExecutor batchedStatementsCommandExecutor = new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, preparePackets());
-        List<DatabasePacket<?>> actualPackets = new ArrayList<>(batchedStatementsCommandExecutor.execute());
-        assertThat(actualPackets.size(), is(BATCH_SIZE * 3));
-        for (int i = 0; i < BATCH_SIZE; i++) {
-            assertThat(actualPackets.get(i * 3), is(PostgreSQLBindCompletePacket.getInstance()));
-            assertThat(actualPackets.get(i * 3 + 1), is(PostgreSQLNoDataPacket.getInstance()));
-            assertThat(actualPackets.get(i * 3 + 2), instanceOf(PostgreSQLCommandCompletePacket.class));
-        }
+        when(result.getStatementManager()).thenReturn(backendStatement);
+        when(result.getBackendConnection()).thenReturn(backendConnection);
+        return result;
     }
     
-    private List<PostgreSQLCommandPacket> preparePackets() {
-        List<PostgreSQLCommandPacket> result = new ArrayList<>();
+    private List<PostgreSQLCommandPacket> createPackets() {
+        List<PostgreSQLCommandPacket> result = new ArrayList<>(BATCH_SIZE);
         for (int i = 0; i < BATCH_SIZE; i++) {
             PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
             when(bindPacket.getStatementId()).thenReturn(STATEMENT_ID);
@@ -146,6 +137,22 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest exte
             result.add(describePacket);
             result.add(executePacket);
         }
+        return result;
+    }
+    
+    private static ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
+        when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
+        when(result.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
+                new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
+        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
         return result;
     }
 }

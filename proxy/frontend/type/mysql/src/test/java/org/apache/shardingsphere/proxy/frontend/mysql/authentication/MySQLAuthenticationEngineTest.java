@@ -44,9 +44,9 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
-import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
 import org.junit.Test;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.net.InetSocketAddress;
@@ -66,10 +66,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
+public final class MySQLAuthenticationEngineTest {
     
     private final MySQLAuthenticationEngine authenticationEngine = new MySQLAuthenticationEngine();
     
@@ -87,7 +88,6 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     public void assertAuthenticationMethodMismatch() {
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
-        setMetaDataContexts(rule);
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
@@ -100,8 +100,12 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         when(payload.readInt1()).thenReturn(1);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
         when(payload.readStringNul()).thenReturn("root");
-        authenticationEngine.authenticate(channelHandlerContext, payload);
-        assertThat(getConnectionPhase(), is(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH));
+        ContextManager contextManager = mockContextManager(rule);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            authenticationEngine.authenticate(channelHandlerContext, payload);
+            assertThat(getConnectionPhase(), is(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH));
+        }
     }
     
     @Test
@@ -116,9 +120,12 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         setAuthenticationResult();
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
-        setMetaDataContexts(rule);
-        authenticationEngine.authenticate(channelHandlerContext, payload);
-        assertThat(getAuthResponse(), is(authResponse));
+        ContextManager contextManager = mockContextManager(rule);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            authenticationEngine.authenticate(channelHandlerContext, payload);
+            assertThat(getAuthResponse(), is(authResponse));
+        }
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -132,9 +139,13 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
         when(rule.findUser(new Grantee("root", "127.0.0.1"))).thenReturn(Optional.empty());
-        setMetaDataContexts(rule);
         ChannelHandlerContext context = mockChannelHandlerContext();
-        try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))) {
+        ContextManager contextManager = mockContextManager(rule);
+        try (
+                MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()));
+                MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("sharding_db")).thenReturn(true);
             authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
             verify(context).writeAndFlush(any(MySQLErrPacket.class));
             verify(context).close();
@@ -149,12 +160,15 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         when(rule.getAuthenticatorType(any())).thenReturn("");
         ShardingSphereUser user = new ShardingSphereUser("root", "", "127.0.0.1");
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));
-        setMetaDataContexts(rule);
         ChannelHandlerContext context = mockChannelHandlerContext();
+        ContextManager contextManager = mockContextManager(rule);
         try (
                 MockedConstruction<AuthenticatorFactory> mockedAuthenticatorFactory = mockConstruction(AuthenticatorFactory.class,
                         (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(mock(Authenticator.class)));
-                MockedConstruction<MySQLErrPacket> mockedErrPacket = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()))) {
+                MockedConstruction<MySQLErrPacket> mockedErrPacket = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertAuthenticationErrorPacket(mockContext.arguments()));
+                MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("sharding_db")).thenReturn(true);
             authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
             verify(context).writeAndFlush(any(MySQLErrPacket.class));
             verify(context).close();
@@ -173,9 +187,13 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         when(rule.getAuthenticatorType(any())).thenReturn("");
         ShardingSphereUser user = new ShardingSphereUser("root", "", "127.0.0.1");
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));
-        setMetaDataContexts(rule);
         ChannelHandlerContext context = mockChannelHandlerContext();
-        try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertDatabaseAccessDeniedErrorPacket(mockContext.arguments()))) {
+        ContextManager contextManager = mockContextManager(rule);
+        try (
+                MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertDatabaseAccessDeniedErrorPacket(mockContext.arguments()));
+                MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("sharding_db")).thenReturn(true);
             authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
             verify(context).writeAndFlush(any(MySQLErrPacket.class));
             verify(context).close();
@@ -191,10 +209,13 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     public void assertAuthenticateFailedWithInvalidDatabase() {
         AuthorityRule rule = mock(AuthorityRule.class);
         when(rule.getAuthenticatorType(any())).thenReturn("");
-        setMetaDataContexts(rule);
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = mockChannelHandlerContext();
-        try (MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertInvalidDatabaseErrorPacket(mockContext.arguments()))) {
+        ContextManager contextManager = mockContextManager(rule);
+        try (
+                MockedConstruction<MySQLErrPacket> ignored = mockConstruction(MySQLErrPacket.class, (mock, mockContext) -> assertInvalidDatabaseErrorPacket(mockContext.arguments()));
+                MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             authenticationEngine.authenticate(context, getPayload("root", "invalid_db", authResponse));
             verify(context).writeAndFlush(any(MySQLErrPacket.class));
             verify(context).close();
@@ -213,20 +234,23 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         when(rule.getAuthenticatorType(any())).thenReturn("");
         ShardingSphereUser user = new ShardingSphereUser("root", "", "127.0.0.1");
         when(rule.findUser(user.getGrantee())).thenReturn(Optional.of(user));
-        setMetaDataContexts(rule);
         ChannelHandlerContext context = mockChannelHandlerContext();
-        authenticationEngine.authenticate(context, getPayload("root", null, authResponse));
-        verify(context).writeAndFlush(any(MySQLOKPacket.class));
+        ContextManager contextManager = mockContextManager(rule);
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            authenticationEngine.authenticate(context, getPayload("root", null, authResponse));
+            verify(context).writeAndFlush(any(MySQLOKPacket.class));
+        }
     }
     
-    private void setMetaDataContexts(final AuthorityRule rule) {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+    private ContextManager mockContextManager(final AuthorityRule rule) {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>(1, 1);
         databases.put("sharding_db", mock(ShardingSphereDatabase.class));
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases,
                 new ShardingSphereRuleMetaData(Collections.singleton(rule)), new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
     }
     
     private MySQLPacketPayload getPayload(final String username, final String database, final byte[] authResponse) {

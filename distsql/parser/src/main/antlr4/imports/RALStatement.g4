@@ -152,7 +152,7 @@ metaDataValue
     ;
 
 variableName
-    : IDENTIFIER_
+    : IDENTIFIER_ | STRING_
     ;
 
 variableValues

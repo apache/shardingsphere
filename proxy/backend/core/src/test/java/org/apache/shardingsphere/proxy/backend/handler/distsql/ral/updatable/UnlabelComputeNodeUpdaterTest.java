@@ -21,19 +21,21 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelC
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
-public final class UnlabelComputeNodeUpdaterTest extends ProxyContextRestorer {
+public final class UnlabelComputeNodeUpdaterTest {
     
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertWithStandaloneMode() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ProxyContext.init(contextManager);
-        UnlabelComputeNodeUpdater updater = new UnlabelComputeNodeUpdater();
-        updater.executeUpdate("foo", mock(UnlabelComputeNodeStatement.class));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+            UnlabelComputeNodeUpdater updater = new UnlabelComputeNodeUpdater();
+            updater.executeUpdate("foo", mock(UnlabelComputeNodeStatement.class));
+        }
     }
 }
