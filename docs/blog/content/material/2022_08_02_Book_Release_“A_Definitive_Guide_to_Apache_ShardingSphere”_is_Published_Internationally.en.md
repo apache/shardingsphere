@@ -23,9 +23,9 @@ This is a technical book written for the ShardingSphere community users as well 
 - Use ShardingSphere pluggable architecture to build custom solutions.
 
 # Why did we write a professional book about ShardingSphere?
-> ***To introduce the strengths of ShardingSphere’s kernel, features, and architecture to more programmers.\***
->
-> *— By Zhang Liang, Apache ShardingSphere PMC Chair*
+**To introduce the strengths of ShardingSphere’s kernel, features, and architecture to more programmers.**
+
+<p align="right">— By Zhang Liang, Apache ShardingSphere PMC Chair</p>
 
 As the Apache ShardingSphere community has grown in the past two years, its project features and application scenarios have become increasingly diversified and many developers have applied ShardingSphere to real production scenarios.
 

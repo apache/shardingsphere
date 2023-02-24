@@ -6,7 +6,7 @@ chapter = true
 
 **One more day before ShardingSphere's first in-person meetup in Beijing on September 3, 2022.**
 
-**Join us to learn about the best practices and technical highlights of Apache ShardingSphere's latest release - version** `5.2.0`**.**
+**Join us to learn about the best practices and technical highlights of Apache ShardingSphere's latest release - version`5.2.0`.**
 
 On Saturday, the first in-person Meetup of the ShardingSphere Community will be held in Beijing on Sep 3, 2022. Four technology experts from the developers’ community are invited to give you a detailed analysis of the following:
 
@@ -40,15 +40,15 @@ The `5.2.0` release brings the following new features:
 Best Practices
 --------------
 
-**1\. Enhance user’s ability to manage ShardingSphere**
+**1. Enhance user's ability to manage ShardingSphere**
 
 Newly added features, including data sharding, SQL audit, and MySQL `SHOW PROCESSLIST` & `KILL`, can enhance users’ capability to manage ShardingSphere.
 
-**2\. Add heterogeneous database migration for users**
+**2. Add heterogeneous database migration for users**
 
 Specific DistSQL for data migration and heterogeneous migration is added. Data can be migrated from Oracle to PostgreSQL.
 
-**3\. Provide enhanced and complete cloud solutions**
+**3. Provide enhanced and complete cloud solutions**
 
 Version 5.2.0 transfers Helm Charts from ShardingSphere repository to the shardingsphere-on-cloud sub-project, to provide more complete cloud solutions for ShardingSphere.
 

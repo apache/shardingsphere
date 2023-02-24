@@ -18,7 +18,7 @@ In response to the above issues, [Apache ShardingSphere](https://shardingsphere.
 
 `Show processlist`: this command can display the list of SQL currently being executed by ShardingSphere and the execution progress of each SQL. If ShardingSphere is deployed in cluster mode, the `Show processlist` function aggregates the SQL running for all Proxy instances in the cluster and then displays the result, so you can always see all the SQL running at that moment.
 
-```
+```mysql
 mysql> show processlist \G;
 *************************** 1. row ***************************
      Id: 82a67f254959e0a0807a00f3cd695d87
@@ -34,7 +34,7 @@ Command: Execute
 
 `Kill <processID>`: This command is implemented based on `Show processlist` and can terminate the running SQL listed in the `Show processlist`.
 
-```
+```mysql
 mysql> kill 82a67f254959e0a0807a00f3cd695d87;
 Query OK, 0 rows affected (0.17 sec)
 ```
@@ -49,7 +49,7 @@ Each SQL executed in ShardingSphere will generate an `ExecutionGroupContext` obj
 
 When ShardingSphere receives a SQL command, the `GovernanceExecuteProcessReporter# report` is called to store `ExecutionGroupContext` information into the cache of `ConcurrentHashMap `(currently only DML and DDL statements of MySQL are supported; other types of databases will be supported in later versions. Query statements are also classified into DML).
 
-```
+```java
 public final class GovernanceExecuteProcessReporter implements ExecuteProcessReporter {
     
     @Override
@@ -93,7 +93,7 @@ The latter contains the mapping between `executionID` and `Statement objects` th
 
 Every time ShardingSphere receives a SQL statement, the SQL information will be cached into the two Maps. After SQL is executed, the cache of Map will be deleted.
 
-```
+```java
 @RequiredArgsConstructor
 public final class ProxyJDBCExecutor {
     
@@ -136,7 +136,7 @@ The SQL shown in the `Show processlist` was obtained from `processContexts`. But
 
 When ShardingSphere receives the `Show process` command, it is sent to the executor `ShowProcessListExecutor#execute` for processing. The implementation of the `getQueryResult()` is the focus.
 
-```
+```java
 public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
     private Collection<String> batchProcessContexts;
@@ -213,7 +213,7 @@ You’ll use the `guava` package's `EventBus` function, which is an information 
 
 This method is the core to implementing `Show processlist`. Next, we'll introduce specific procedures of this method.
 
-```
+```java
 public final class ProcessRegistrySubscriber {    
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
@@ -251,7 +251,7 @@ However, monitoring is an asynchronous process and the main thread does not bloc
 
 Let's take a look at how the ShardingSphere handles the monitoring logic.
 
-```
+```java
 public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
@@ -305,7 +305,7 @@ As shown in the above code, it is a new node, so `ShowProcessListTriggerEvent` w
 
 In this case, single-machine processing is transformed into cluster processing. Let's look at how ShardingSphere handles it.
 
-```
+```java
 public final class ClusterContextManagerCoordinator {    @Subscribe
     public synchronized void triggerShowProcessList(final ShowProcessListTriggerEvent event) {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
@@ -325,7 +325,7 @@ public final class ClusterContextManagerCoordinator {    @Subscribe
 
 When you delete the node, monitoring will also be triggered and `ShowProcessListUnitCompleteEvent` will be posted. This event will finally awake the pending lock.
 
-```
+```java
 public final class ClusterContextManagerCoordinator {
     
     @Subscribe
@@ -344,7 +344,7 @@ ShardingSphere uses the `isReady(Paths)` method to determine whether all instanc
 
 There is a maximum waiting time of 5 seconds for data processing. If the processing is not completed in 5 seconds, then `false` is returned.
 
-```
+```java
 public final class ClusterContextManagerCoordinator {
     
     @Subscribe
@@ -361,7 +361,7 @@ public final class ClusterContextManagerCoordinator {
 
 After each instance processed the data, the instance that received the `Show processlist` command needs to aggregate the data and then display the result.
 
-```
+```java
 public final class ProcessRegistrySubscriber {  
     
     private void sendShowProcessList(final String processListId) {

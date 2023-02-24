@@ -35,11 +35,11 @@ It involves the design of new databases and tables and data cleaning and migrati
 
 *   Stability: smooth release in a short time without halting.
 
-• Accuracy: ensure accurate cleaning of tens of millions of data volumes.
+*   Accuracy: ensure accurate cleaning of tens of millions of data volumes.
 
-• Scalability: solve the performance problems caused by increasing data volume and ensure scalability.
+*   Scalability: solve the performance problems caused by increasing data volume and ensure scalability.
 
-> **_Solutions to data cleansing and migration_**
+**_Solutions to data cleansing and migration_**
 
 *   Initial data synchronization.
 *   The application’s server cuts off the entry (users).
@@ -49,7 +49,7 @@ It involves the design of new databases and tables and data cleaning and migrati
 
 ![img](https://shardingsphere.apache.org/blog/img/2022_09_06_Apache_ShardingSphere_Enterprise_User_Case_-_Energy_Monster1.png)
 
-> **_Data sharding strategy_**
+**_Data sharding strategy_**
 
 The database adopts a database shards design, divided into 16 databases. The default shard key is `user_id` and the default sharding strategy `user_id` is mod 16, such as `${user_id % 16}` for the user table. For SQL that does not carry shard keys, broadcast routing is used.
 
@@ -57,7 +57,7 @@ The database adopts a database shards design, divided into 16 databases. The def
 
 `user_id` is used as the shard key because `user_id` can cover most business scenarios, and other fields possibly can be empty. In the local test, the query of shard key strategy (openId,mobile) took 50ms to 200ms.
 
-> **_Using the sharding algorithm_**
+**_Using the sharding algorithm_**
 
 There are currently three sharding algorithms available.
 
@@ -114,7 +114,7 @@ To avoid data query failure caused by changing the shard key value, shard key de
 
 The druid data connection pool starter will load and create a default data source. This will cause conflicts when ShardingSphere-JDBC creates data sources.
 
-**5. `**inline strategy**` reports an error in range query.**
+**5. `inline strategy` reports an error in range query.**
 
 The `inline strategy` doesn't support range query by default and the `standard strategy` is advised. Add the following configuration if the `inline strategy` is needed for the range query.
 
@@ -122,7 +122,7 @@ The `inline strategy` doesn't support range query by default and the `standard s
 
 **Note:** Here all the `inline strategy` range queries will query each sub-table in broadcasting.
 
-**6. The “Cannot find owner from table” error is reported.**
+**6. The "Cannot find owner from table" error is reported.**
 
 SQL (simplified):
 
