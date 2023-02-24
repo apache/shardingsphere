@@ -137,7 +137,6 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     private YamlMigrationJobConfiguration buildYamlJobConfiguration(final MigrateTableStatement param) {
-        // TODO Check sources schemas are the same
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setTargetDatabaseName(param.getTargetDatabaseName());
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(new MigrationJobType());
@@ -147,6 +146,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
                 .thenComparing(each -> DataNodeUtil.formatWithSchema(each.getSource()))).collect(Collectors.toList());
         for (SourceTargetEntry each : sourceTargetEntries) {
             sourceDataNodes.computeIfAbsent(each.getTargetTableName(), key -> new LinkedList<>()).add(each.getSource());
+            ShardingSpherePreconditions.checkState(1 == sourceDataNodes.get(each.getTargetTableName()).size(),
+                    () -> new PipelineInvalidParameterException("more than one source table for " + each.getTargetTableName()));
             String dataSourceName = each.getSource().getDataSourceName();
             if (configSources.containsKey(dataSourceName)) {
                 continue;
@@ -210,12 +211,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     private Map<String, String> buildTargetTableSchemaMap(final Map<String, List<DataNode>> sourceDataNodes) {
         Map<String, String> result = new LinkedHashMap<>();
-        sourceDataNodes.entrySet().forEach(entry -> {
-            String schemaName = entry.getValue().get(0).getSchemaName();
-            if (null != schemaName) {
-                result.put(entry.getKey(), schemaName);
-            }
-        });
+        sourceDataNodes.forEach((tableName, dataNodes) -> result.put(tableName, dataNodes.get(0).getSchemaName()));
         return result;
     }
     

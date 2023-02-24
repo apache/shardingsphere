@@ -30,6 +30,8 @@ import java.util.Objects;
 @Getter
 public final class SourceTargetEntry {
     
+    private final String targetDatabaseName;
+    
     private final DataNode source;
     
     private final String targetTableName;
