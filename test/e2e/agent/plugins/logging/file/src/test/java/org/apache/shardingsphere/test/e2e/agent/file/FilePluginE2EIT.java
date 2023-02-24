@@ -20,11 +20,14 @@ package org.apache.shardingsphere.test.e2e.agent.file;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
+import org.apache.shardingsphere.test.e2e.agent.file.loader.LogLoader;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
+
+import static org.junit.Assert.assertTrue;
 
 public final class FilePluginE2EIT extends BasePluginE2EIT {
     
@@ -32,6 +35,7 @@ public final class FilePluginE2EIT extends BasePluginE2EIT {
     @Test
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
+        assertTrue(String.format("The file `%s` does not exist", LogLoader.getLogFilePath()), LogLoader.getLogFile().exists());
         Collection<String> expectedLogRegexs = getExpectedLogRegex();
         expectedLogRegexs.forEach(ContentAssert::assertIs);
     }

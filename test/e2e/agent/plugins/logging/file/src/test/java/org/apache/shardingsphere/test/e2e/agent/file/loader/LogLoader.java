@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.file.utils;
+package org.apache.shardingsphere.test.e2e.agent.file.loader;
 
 import lombok.SneakyThrows;
 
@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public final class LogLoader {
     
     /**
-     * Get log lines
+     * Get log lines.
      *
      * @return log lines
      */
@@ -63,7 +63,21 @@ public final class LogLoader {
         return result;
     }
     
-    private static String getLogFilePath() {
+    /**
+     * Get log file path.
+     *
+     * @return log file path
+     */
+    public static String getLogFilePath() {
         return String.join(File.separator, System.getProperty("user.dir"), "target", "logs", "stdout.log");
+    }
+    
+    /**
+     * Get log file.
+     *
+     * @return log file
+     */
+    public static File getLogFile() {
+        return new File(getLogFilePath());
     }
 }
