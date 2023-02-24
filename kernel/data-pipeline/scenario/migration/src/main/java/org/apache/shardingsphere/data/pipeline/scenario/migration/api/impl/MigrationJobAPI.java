@@ -171,7 +171,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         List<JobDataNodeEntry> tablesFirstDataNodes = sourceDataNodes.entrySet().stream()
                 .map(entry -> new JobDataNodeEntry(entry.getKey(), entry.getValue().subList(0, 1))).collect(Collectors.toList());
         result.setTargetTableNames(new ArrayList<>(sourceDataNodes.keySet()).stream().sorted().collect(Collectors.toList()));
-        result.setTargetTableSchemaMap(sourceDataNodes.entrySet().stream().collect(Collectors.toMap(entry -> entry.getValue().get(0).getSchemaName(), Entry::getKey)));
+        result.setTargetTableSchemaMap(buildTargetTableSchemaMap(sourceDataNodes));
         result.setTablesFirstDataNodes(new JobDataNodeLine(tablesFirstDataNodes).marshal());
         result.setJobShardingDataNodes(JobDataNodeLineConvertUtil.convertDataNodesToLines(sourceDataNodes).stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
         extendYamlJobConfiguration(result);
@@ -205,6 +205,17 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         result.setDataSources(yamlDataSources);
         Collection<YamlRuleConfiguration> yamlRuleConfigurations = swapperEngine.swapToYamlRuleConfigurations(rules);
         result.setRules(yamlRuleConfigurations);
+        return result;
+    }
+    
+    private Map<String, String> buildTargetTableSchemaMap(final Map<String, List<DataNode>> sourceDataNodes) {
+        Map<String, String> result = new LinkedHashMap<>();
+        sourceDataNodes.entrySet().forEach(entry -> {
+            String schemaName = entry.getValue().get(0).getSchemaName();
+            if (null != schemaName) {
+                result.put(entry.getKey(), schemaName);
+            }
+        });
         return result;
     }
     
@@ -263,8 +274,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         MigrationJobConfiguration jobConfig = (MigrationJobConfiguration) pipelineJobConfig;
         JobDataNodeLine dataNodeLine = jobConfig.getJobShardingDataNodes().get(jobShardingItem);
         Map<ActualTableName, LogicTableName> tableNameMap = buildTableNameMap(dataNodeLine);
-        TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(
-                jobConfig.getTargetTableSchemaMap().entrySet().stream().collect(Collectors.toMap(entry -> new LogicTableName(entry.getKey()), Entry::getValue)));
+        TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(jobConfig.getTargetTableSchemaMap());
         CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig, tableNameSchemaNameMapping);
         String dataSourceName = dataNodeLine.getEntries().get(0).getDataNodes().get(0).getDataSourceName();
         DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig.getJobId(), dataSourceName, jobConfig.getSources().get(dataSourceName), tableNameMap, tableNameSchemaNameMapping);
@@ -395,11 +405,12 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     private void cleanTempTableOnRollback(final String jobId) throws SQLException {
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
         PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType());
+        TableNameSchemaNameMapping mapping = new TableNameSchemaNameMapping(jobConfig.getTargetTableSchemaMap());
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(jobConfig.getTarget());
                 Connection connection = dataSource.getConnection()) {
             for (String each : jobConfig.getTargetTableNames()) {
-                String targetSchemaName = jobConfig.getTargetTableSchemaMap().get(each);
+                String targetSchemaName = mapping.getSchemaName(each);
                 String sql = pipelineSQLBuilder.buildDropSQL(targetSchemaName, each);
                 log.info("cleanTempTableOnRollback, targetSchemaName={}, targetTableName={}, sql={}", targetSchemaName, each, sql);
                 try (Statement statement = connection.createStatement()) {

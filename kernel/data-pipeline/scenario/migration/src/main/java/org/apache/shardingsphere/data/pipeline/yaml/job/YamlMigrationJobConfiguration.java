@@ -24,6 +24,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
