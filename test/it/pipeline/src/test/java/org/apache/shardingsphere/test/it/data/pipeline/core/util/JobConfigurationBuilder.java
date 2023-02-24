@@ -43,12 +43,21 @@ import java.util.Map;
 public final class JobConfigurationBuilder {
     
     /**
-     * Create job configuration.
+     * Create migration job configuration.
      *
      * @return created job configuration
      */
     // TODO Rename createJobConfiguration
     public static MigrationJobConfiguration createJobConfiguration() {
+        return new YamlMigrationJobConfigurationSwapper().swapToObject(createYamlMigrationJobConfiguration());
+    }
+    
+    /**
+     * Create YAML migration job configuration.
+     *
+     * @return created job configuration
+     */
+    public static YamlMigrationJobConfiguration createYamlMigrationJobConfiguration() {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setTargetDatabaseName("logic_db");
         result.setSourceDatabaseType("H2");
@@ -66,7 +75,7 @@ public final class JobConfigurationBuilder {
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
         TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(result);
-        return new YamlMigrationJobConfigurationSwapper().swapToObject(result);
+        return result;
     }
     
     private static String generateJobId(final YamlMigrationJobConfiguration yamlJobConfig) {
