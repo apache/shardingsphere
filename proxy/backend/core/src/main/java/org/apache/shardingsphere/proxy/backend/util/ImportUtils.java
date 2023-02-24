@@ -155,7 +155,7 @@ public class ImportUtils {
     }
     
     private static void addRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        if (yamlRuleConfigs.isEmpty()) {
+        if (yamlRuleConfigs == null || yamlRuleConfigs.isEmpty()) {
             return;
         }
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();

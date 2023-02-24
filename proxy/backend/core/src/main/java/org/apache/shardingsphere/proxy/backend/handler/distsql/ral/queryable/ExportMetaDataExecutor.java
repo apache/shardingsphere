@@ -71,17 +71,28 @@ public final class ExportMetaDataExecutor implements DatabaseRequiredQueryableRA
     
     @SneakyThrows
     private String generateExportData(final ShardingSphereDatabase database) {
+        ProxyContext proxyContext = ProxyContext.getInstance();
+        ShardingSphereMetaData metaData = proxyContext.getContextManager().getMetaDataContexts().getMetaData();
         ExportedClusterInfo exportedClusterInfo = new ExportedClusterInfo();
         exportedClusterInfo.setStorageNodes(generateExportStorageNodeData(database));
         ExportedMetaData exportedMetaData = new ExportedMetaData();
-        Map<String, String> databases = new LinkedHashMap<>();
-        exportedMetaData.setDatabases(databases);
-        databases.put(database.getName(), ExportUtils.generateExportDatabaseData(database));
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
+        exportedMetaData.setDatabases(getDatabases(proxyContext));
         exportedMetaData.setProps(generatePropsData(metaData.getProps().getProps()));
         exportedMetaData.setRules(generateRulesData(metaData.getGlobalRuleMetaData().getConfigurations()));
         exportedClusterInfo.setMetaData(exportedMetaData);
         return JsonUtils.toJsonString(exportedClusterInfo);
+    }
+    
+    private Map<String, String> getDatabases(final ProxyContext proxyContext) {
+        Map<String, String> result = new LinkedHashMap<>();
+        proxyContext.getAllDatabaseNames().forEach(each -> {
+            ShardingSphereDatabase database = proxyContext.getDatabase(each);
+            if (database.getResourceMetaData().getAllInstanceDataSourceNames().isEmpty()) {
+                return;
+            }
+            result.put(each, ExportUtils.generateExportDatabaseData(database));
+        });
+        return result;
     }
     
     private Collection<ExportedStorageNode> generateExportStorageNodeData(final ShardingSphereDatabase database) {
