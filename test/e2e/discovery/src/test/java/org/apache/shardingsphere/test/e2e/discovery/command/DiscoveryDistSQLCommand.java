@@ -46,4 +46,16 @@ public final class DiscoveryDistSQLCommand {
     @XmlElement(name = "create-readwrite-splitting-rule")
     @Getter
     private DistSQLCommandPOJO createReadwriteSplittingRule;
+    
+    @XmlElement(name = "drop-database")
+    @Getter
+    private DistSQLCommandPOJO dropDatabase;
+    
+    @XmlElement(name = "create-readwrite-splitting-database")
+    @Getter
+    private DistSQLCommandPOJO createReadwriteSplittingDatabase;
+    
+    @XmlElement(name = "register-single-storage-unit")
+    @Getter
+    private DistSQLCommandPOJO registerSingleStorageUnit;
 }
