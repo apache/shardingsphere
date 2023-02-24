@@ -40,6 +40,7 @@ public final class TableNameSchemaNameMapping {
      * @param schemaTablesMap schema name and table names map
      * @return logic table name and schema name map
      */
+    // TODO Remove
     public static Map<LogicTableName, String> convert(final Map<String, List<String>> schemaTablesMap) {
         Map<LogicTableName, String> result = new LinkedHashMap<>();
         schemaTablesMap.forEach((schemaName, tableNames) -> {

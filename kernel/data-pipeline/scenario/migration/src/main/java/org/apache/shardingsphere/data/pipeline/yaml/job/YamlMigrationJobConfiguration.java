@@ -47,6 +47,13 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
     
     private YamlPipelineDataSourceConfiguration target;
     
+    private List<String> targetTableNames;
+    
+    /**
+     * Map{logic table names, schema name}.
+     */
+    private Map<String, String> targetTableSchemaMap;
+    
     private String tablesFirstDataNodes;
     
     private List<String> jobShardingDataNodes;

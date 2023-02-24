@@ -46,6 +46,13 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     
     private final PipelineDataSourceConfiguration target;
     
+    private final List<String> targetTableNames;
+    
+    /**
+     * Map{logic table names, schema name}.
+     */
+    private final Map<String, String> targetTableSchemaMap;
+    
     private final JobDataNodeLine tablesFirstDataNodes;
     
     private final List<JobDataNodeLine> jobShardingDataNodes;

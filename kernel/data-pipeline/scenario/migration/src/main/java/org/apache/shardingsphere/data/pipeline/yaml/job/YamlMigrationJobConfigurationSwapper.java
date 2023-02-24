@@ -44,6 +44,8 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
         result.setSources(data.getSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
                 entry -> dataSourceConfigSwapper.swapToYamlConfiguration(entry.getValue()), (key, value) -> value, LinkedHashMap::new)));
         result.setTarget(dataSourceConfigSwapper.swapToYamlConfiguration(data.getTarget()));
+        result.setTargetTableNames(data.getTargetTableNames());
+        result.setTargetTableSchemaMap(data.getTargetTableSchemaMap());
         result.setTablesFirstDataNodes(data.getTablesFirstDataNodes().marshal());
         result.setJobShardingDataNodes(data.getJobShardingDataNodes().stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
         result.setConcurrency(data.getConcurrency());
@@ -58,6 +60,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
                 yamlConfig.getSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
                         entry -> dataSourceConfigSwapper.swapToObject(entry.getValue()), (key, value) -> value, LinkedHashMap::new)),
                 dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
+                yamlConfig.getTargetTableNames(), yamlConfig.getTargetTableSchemaMap(),
                 JobDataNodeLine.unmarshal(yamlConfig.getTablesFirstDataNodes()), yamlConfig.getJobShardingDataNodes().stream().map(JobDataNodeLine::unmarshal).collect(Collectors.toList()),
                 yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }

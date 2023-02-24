@@ -95,8 +95,8 @@ import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEn
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -170,6 +170,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         result.setTargetDatabaseType(targetPipelineDataSourceConfig.getDatabaseType().getType());
         List<JobDataNodeEntry> tablesFirstDataNodes = sourceDataNodes.entrySet().stream()
                 .map(entry -> new JobDataNodeEntry(entry.getKey(), entry.getValue().subList(0, 1))).collect(Collectors.toList());
+        result.setTargetTableNames(new ArrayList<>(sourceDataNodes.keySet()).stream().sorted().collect(Collectors.toList()));
+        result.setTargetTableSchemaMap(sourceDataNodes.entrySet().stream().collect(Collectors.toMap(entry -> entry.getValue().get(0).getSchemaName(), Entry::getKey)));
         result.setTablesFirstDataNodes(new JobDataNodeLine(tablesFirstDataNodes).marshal());
         result.setJobShardingDataNodes(JobDataNodeLineConvertUtil.convertDataNodesToLines(sourceDataNodes).stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
         extendYamlJobConfiguration(result);
@@ -261,14 +263,14 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         MigrationJobConfiguration jobConfig = (MigrationJobConfiguration) pipelineJobConfig;
         JobDataNodeLine dataNodeLine = jobConfig.getJobShardingDataNodes().get(jobShardingItem);
         Map<ActualTableName, LogicTableName> tableNameMap = buildTableNameMap(dataNodeLine);
-        TableNameSchemaNameMapping tableNameSchemaNameMapping = buildTableNameSchemaNameMapping(jobConfig.getJobShardingDataNodes());
+        TableNameSchemaNameMapping tableNameSchemaNameMapping = new TableNameSchemaNameMapping(
+                jobConfig.getTargetTableSchemaMap().entrySet().stream().collect(Collectors.toMap(entry -> new LogicTableName(entry.getKey()), Entry::getValue)));
         CreateTableConfiguration createTableConfig = buildCreateTableConfiguration(jobConfig, tableNameSchemaNameMapping);
         String dataSourceName = dataNodeLine.getEntries().get(0).getDataNodes().get(0).getDataSourceName();
         DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig.getJobId(), dataSourceName, jobConfig.getSources().get(dataSourceName), tableNameMap, tableNameSchemaNameMapping);
-        Set<LogicTableName> logicTableNames = jobConfig.getJobShardingDataNodes().stream()
-                .flatMap(each -> each.getEntries().stream().map(entry -> new LogicTableName(entry.getLogicTableName()))).collect(Collectors.toSet());
+        Set<LogicTableName> targetTableNames = jobConfig.getTargetTableNames().stream().map(LogicTableName::new).collect(Collectors.toSet());
         Map<LogicTableName, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor().getShardingColumnsMap(
-                ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), logicTableNames);
+                ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), targetTableNames);
         ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, shardingColumnsMap, tableNameSchemaNameMapping);
         MigrationTaskConfiguration result = new MigrationTaskConfiguration(dataSourceName, createTableConfig, dumperConfig, importerConfig);
         log.info("buildTaskConfiguration, result={}", result);
@@ -283,13 +285,6 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             }
         }
         return result;
-    }
-    
-    private TableNameSchemaNameMapping buildTableNameSchemaNameMapping(final List<JobDataNodeLine> dataNodeLines) {
-        Map<String, List<String>> schemaTablesMap = new LinkedHashMap<>();
-        dataNodeLines.forEach(each -> each.getEntries().forEach(entry -> schemaTablesMap.computeIfAbsent(entry.getDataNodes().get(0).getSchemaName(),
-                key -> new LinkedList<>()).add(entry.getLogicTableName())));
-        return new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(schemaTablesMap));
     }
     
     private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
@@ -399,17 +394,17 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     private void cleanTempTableOnRollback(final String jobId) throws SQLException {
         MigrationJobConfiguration jobConfig = getJobConfiguration(jobId);
-        String targetTableName = jobConfig.getTargetTableName();
-        // TODO use jobConfig.targetSchemaName
-        String targetSchemaName = jobConfig.getSourceSchemaName();
         PipelineSQLBuilder pipelineSQLBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, jobConfig.getTargetDatabaseType());
         try (
                 PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(jobConfig.getTarget());
                 Connection connection = dataSource.getConnection()) {
-            String sql = pipelineSQLBuilder.buildDropSQL(targetSchemaName, targetTableName);
-            log.info("cleanTempTableOnRollback, targetSchemaName={}, targetTableName={}, sql={}", targetSchemaName, targetTableName, sql);
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.execute();
+            for (String each : jobConfig.getTargetTableNames()) {
+                String targetSchemaName = jobConfig.getTargetTableSchemaMap().get(each);
+                String sql = pipelineSQLBuilder.buildDropSQL(targetSchemaName, each);
+                log.info("cleanTempTableOnRollback, targetSchemaName={}, targetTableName={}, sql={}", targetSchemaName, each, sql);
+                try (Statement statement = connection.createStatement()) {
+                    statement.execute(sql);
+                }
             }
         }
     }
