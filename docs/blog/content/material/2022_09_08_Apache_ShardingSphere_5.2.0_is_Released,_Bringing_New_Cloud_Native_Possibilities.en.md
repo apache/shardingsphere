@@ -40,31 +40,35 @@ As a result, a large number of database connections will be occupied and busines
 
 In response to the above problems, ShardingSphere 5.2.0 provides the SQL audit for data sharding feature and allows users to configure audit strategies. The strategy specifies multiple audit algorithms, and users can decide whether audit rules should be disabled. If any audit algorithm fails to pass, SQL execution will be prohibited. The configuration of SQL audit for data sharding is as follows.
 
-    rules:
-    - !SHARDING
-      tables:
-        t_order:
-          actualDataNodes: ds_${0..1}.t_order_${0..1}
-          tableStrategy:
-            standard:
-              shardingColumn: order_id
-              shardingAlgorithmName: t_order_inline
-          auditStrategy:
-            auditorNames:
-              - sharding_key_required_auditor
-            allowHintDisable: true
-      defaultAuditStrategy:
+```sql
+rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_inline
+      auditStrategy:
         auditorNames:
           - sharding_key_required_auditor
         allowHintDisable: true
-    
-      auditors:
-        sharding_key_required_auditor:
-          type: DML_SHARDING_CONDITIONS
+  defaultAuditStrategy:
+    auditorNames:
+      - sharding_key_required_auditor
+    allowHintDisable: true
+
+  auditors:
+    sharding_key_required_auditor:
+      type: DML_SHARDING_CONDITIONS
+```
 
 In view of complex business scenarios, the new feature allows users to dynamically disable the audit algorithm by using SQL hints so that the business SQL that is allowable in partial scenarios can be executed. Currently, ShardingSphere 5.2.0 has a built-in DML disables full-route audit algorithm. Users can also implement ShardingAuditAlgorithm interface by themselves to realize more advanced SQL audit functions.
 
-    /* ShardingSphere hint: disableAuditNames=sharding_key_required_auditor */ SELECT * FROM t_order;
+```sql
+/* ShardingSphere hint: disableAuditNames=sharding_key_required_auditor */ SELECT * FROM t_order;
+```
 
 ### Elastic data migration
 
