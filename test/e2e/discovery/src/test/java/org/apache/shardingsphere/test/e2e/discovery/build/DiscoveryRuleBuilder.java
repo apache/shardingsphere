@@ -18,18 +18,15 @@
 package org.apache.shardingsphere.test.e2e.discovery.build;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.discovery.cases.base.BaseDiscoveryE2EIT;
 import org.apache.shardingsphere.test.e2e.discovery.command.DiscoveryDistSQLCommand;
 import org.awaitility.Awaitility;
 import org.awaitility.Durations;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Objects;
 
 /**
  * Build discovery rule.

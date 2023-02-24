@@ -216,6 +216,15 @@ public abstract class BaseDiscoveryE2EIT {
                 Connection connection = getProxyDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute(discoveryDistSQLCommand.getRegisterStorageUnits().getExecuteSQL());
+            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertRDLDistSQL(statement, discoveryDistSQLCommand.getRegisterStorageUnits().getAssertionSQL()));
+        }
+    }
+    
+    private boolean assertRDLDistSQL(final Statement statement, final String assertionSQL) {
+        try (ResultSet resultSet = statement.executeQuery(assertionSQL)) {
+            return resultSet.next();
+        } catch (final SQLException ignored) {
+            return false;
         }
     }
 }
