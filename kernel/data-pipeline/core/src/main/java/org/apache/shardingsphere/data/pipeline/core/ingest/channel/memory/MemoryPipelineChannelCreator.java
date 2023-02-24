@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
-import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
@@ -30,24 +28,15 @@ import java.util.Properties;
  */
 public final class MemoryPipelineChannelCreator implements PipelineChannelCreator {
     
-    public static final String TYPE = "MEMORY";
+    private static final String BLOCK_QUEUE_SIZE_KEY = "block-queue-size";
     
-    public static final int BLOCK_QUEUE_SIZE_DEFAULT_VALUE = 10000;
+    private static final String BLOCK_QUEUE_SIZE_DEFAULT_VALUE = "10000";
     
-    public static final String BLOCK_QUEUE_SIZE_KEY = "block-queue-size";
-    
-    @Getter
-    private Properties props;
-    
-    private int blockQueueSize = BLOCK_QUEUE_SIZE_DEFAULT_VALUE;
+    private int blockQueueSize;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
-        String blockQueueSizeValue = props.getProperty(BLOCK_QUEUE_SIZE_KEY);
-        if (!Strings.isNullOrEmpty(blockQueueSizeValue)) {
-            blockQueueSize = Integer.parseInt(blockQueueSizeValue);
-        }
+        blockQueueSize = Integer.parseInt(props.getProperty(BLOCK_QUEUE_SIZE_KEY, BLOCK_QUEUE_SIZE_DEFAULT_VALUE));
     }
     
     @Override
@@ -57,6 +46,6 @@ public final class MemoryPipelineChannelCreator implements PipelineChannelCreato
     
     @Override
     public String getType() {
-        return TYPE;
+        return "MEMORY";
     }
 }

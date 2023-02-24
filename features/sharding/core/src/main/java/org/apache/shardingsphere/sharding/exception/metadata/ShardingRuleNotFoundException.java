@@ -20,16 +20,14 @@ package org.apache.shardingsphere.sharding.exception.metadata;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
-import java.util.Collection;
-
 /**
  * Sharding rule not found exception.
  */
 public final class ShardingRuleNotFoundException extends ShardingSQLException {
     
-    private static final long serialVersionUID = 142299282103233064L;
+    private static final long serialVersionUID = 2221013821545620446L;
     
-    public ShardingRuleNotFoundException(final Collection<String> logicTables) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not find table rule with logic tables `%s`.", logicTables.toString());
+    public ShardingRuleNotFoundException() {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 13, "Can not find sharding rule.");
     }
 }

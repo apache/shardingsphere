@@ -17,6 +17,18 @@
 
 databaseName: logic_db
 
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: test
+      server-lists: localhost:3181
+      retryIntervalMilliseconds: 500
+      timeToLiveSeconds: 60
+      maxRetries: 3
+      operationTimeoutMilliseconds: 500
+
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource

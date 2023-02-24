@@ -21,6 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 /**
  * Internal typed property key of configuration.
  */
@@ -29,9 +33,9 @@ import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 public enum InternalConfigurationPropertyKey implements TypedPropertyKey {
     
     /**
-     * Proxy metadata collector enabled.
+     * Proxy meta data collector enabled.
      */
-    PROXY_METADATA_COLLECTOR_ENABLED("proxy-metadata-collector-enabled", String.valueOf(Boolean.TRUE), boolean.class, true);
+    PROXY_META_DATA_COLLECTOR_ENABLED("proxy-meta-data-collector-enabled", String.valueOf(Boolean.TRUE), boolean.class, true);
     
     private final String key;
     
@@ -40,4 +44,13 @@ public enum InternalConfigurationPropertyKey implements TypedPropertyKey {
     private final Class<?> type;
     
     private final boolean rebootRequired;
+    
+    /**
+     * Get internal property key names.
+     *
+     * @return collection of internal key names
+     */
+    public static Collection<String> getKeyNames() {
+        return Arrays.stream(values()).map(InternalConfigurationPropertyKey::name).collect(Collectors.toList());
+    }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.traffic.executor;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -77,9 +76,7 @@ public final class TrafficExecutor implements AutoCloseable {
     @Override
     public void close() throws SQLException {
         if (null != statement) {
-            Connection connection = statement.getConnection();
             statement.close();
-            connection.close();
         }
     }
 }

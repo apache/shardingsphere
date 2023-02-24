@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.datasource.state.exception;
 
 import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 
+import java.sql.SQLException;
+
 /**
  * Data source state exception.
  */
@@ -30,7 +32,11 @@ public final class UnavailableDataSourceException extends ShardingSphereServerEx
     
     private static final int ERROR_CODE = 1;
     
-    public UnavailableDataSourceException() {
-        super(ERROR_CATEGORY, ERROR_CODE, "Data source unavailable.");
+    public UnavailableDataSourceException(final SQLException cause) {
+        super(ERROR_CATEGORY, ERROR_CODE, "Data source unavailable.", cause);
+    }
+    
+    public UnavailableDataSourceException(final SQLException cause, final String databaseName) {
+        super(ERROR_CATEGORY, ERROR_CODE, String.format("Data source unavailable from `%s`.", databaseName), cause);
     }
 }

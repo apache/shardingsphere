@@ -20,9 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 /**
  * Data consistency calculate algorithm chooser.
@@ -46,6 +46,6 @@ public final class DataConsistencyCalculateAlgorithmChooser {
         } else {
             algorithmType = "DATA_MATCH";
         }
-        return DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, null);
+        return TypedSPILoader.getService(DataConsistencyCalculateAlgorithm.class, algorithmType);
     }
 }

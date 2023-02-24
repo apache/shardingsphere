@@ -143,6 +143,10 @@ REGEX_MATCH
     : R E G E X UL_ M A T C H
     ;
 
-SIMPLE_HINT
+SQL_HINT
     : S I M P L E UL_ H I N T
+    ;
+
+NOT
+    : N O T
     ;

@@ -28,14 +28,9 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlUserConfiguration implements YamlConfiguration {
     
-    private String username;
-    
-    private String hostname;
+    private String user;
     
     private String password;
     
-    @Override
-    public String toString() {
-        return username + "@" + (null == hostname ? "%" : hostname) + ":" + password;
-    }
+    private String authenticationMethodName;
 }

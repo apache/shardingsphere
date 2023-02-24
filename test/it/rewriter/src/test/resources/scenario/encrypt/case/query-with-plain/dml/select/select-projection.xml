@@ -61,14 +61,4 @@
         <input sql="SELECT a.*, account_id, 1+1 FROM t_account a" />
         <output sql="SELECT `a`.`account_id`, `a`.`cipher_certificate_number` AS `certificate_number`, `a`.`cipher_password` AS `password`, `a`.`cipher_amount` AS `amount`, account_id, 1+1 FROM t_account a" />
     </rewrite-assertion>
-
-    <rewrite-assertion id="select_shorthand_with_upper_column_and_schema_based_algorithm_for_plain" db-types="MySQL">
-        <input sql="SELECT * FROM t_order WHERE content = 'TEST'" />
-        <output sql="SELECT `t_order`.`ORDER_ID`, `t_order`.`USER_ID`, `t_order`.`PLAIN_CONTENT` AS `CONTENT` FROM t_order WHERE PLAIN_CONTENT = 'TEST'" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_shorthand_with_upper_column_and_schema_based_algorithm_for_parameters" db-types="MySQL">
-        <input sql="SELECT * FROM t_order WHERE content = ?" parameters="TEST" />
-        <output sql="SELECT `t_order`.`ORDER_ID`, `t_order`.`USER_ID`, `t_order`.`PLAIN_CONTENT` AS `CONTENT` FROM t_order WHERE PLAIN_CONTENT = ?" parameters="TEST" />
-    </rewrite-assertion>
 </rewrite-assertions>

@@ -46,6 +46,7 @@ public final class CreateBroadcastTableRuleStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(expected.isIfNotExists()));
             assertThat(assertContext.getText("create broadcast table rule assertion error: "), actual.getTables(), is(expected.getTables()));
         }
     }

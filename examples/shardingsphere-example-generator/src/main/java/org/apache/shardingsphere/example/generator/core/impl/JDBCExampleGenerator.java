@@ -36,13 +36,13 @@ public final class JDBCExampleGenerator implements ExampleGenerator {
             + "${package}/${framework?replace('-', '/')}";
     
     @Override
-    public void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String feature, final String framework, final String transaction) throws IOException, TemplateException {
-        ExampleScenarioFactory exampleScenarioFactory = new ExampleScenarioFactory(feature, framework, transaction);
-        GenerateUtil.generateDirs(templateConfig, dataModel, exampleScenarioFactory.getJavaClassPaths(), OUTPUT_PATH + JAVA_CLASS_PATH);
-        GenerateUtil.generateDirs(templateConfig, dataModel, exampleScenarioFactory.getResourcePaths(), OUTPUT_PATH + RESOURCES_PATH);
-        GenerateUtil.generateFile(templateConfig, getType(), dataModel, exampleScenarioFactory.getJavaClassTemplateMap(), OUTPUT_PATH + JAVA_CLASS_PATH);
-        GenerateUtil.generateFile(templateConfig, getType(), dataModel, exampleScenarioFactory.getResourceTemplateMap(), OUTPUT_PATH + RESOURCES_PATH);
-        String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, OUTPUT_PATH);
+    public void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String relativePath) throws IOException, TemplateException {
+        ExampleScenarioFactory exampleScenarioFactory = new ExampleScenarioFactory(dataModel.get("feature"), dataModel.get("framework"), dataModel.get("transaction"));
+        GenerateUtil.generateDirs(templateConfig, dataModel, exampleScenarioFactory.getJavaClassPaths(), relativePath + JAVA_CLASS_PATH);
+        GenerateUtil.generateDirs(templateConfig, dataModel, exampleScenarioFactory.getResourcePaths(), relativePath + RESOURCES_PATH);
+        GenerateUtil.generateFile(templateConfig, getType(), dataModel, exampleScenarioFactory.getJavaClassTemplateMap(), relativePath + JAVA_CLASS_PATH);
+        GenerateUtil.generateFile(templateConfig, getType(), dataModel, exampleScenarioFactory.getResourceTemplateMap(), relativePath + RESOURCES_PATH);
+        String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, relativePath);
         GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", outputPath + "pom.xml");
     }
     

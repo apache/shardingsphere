@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
 
@@ -39,13 +41,11 @@ public final class ClusterWorkerIdGeneratorTest {
     
     @Test
     public void assertGenerateWithExistedWorkerId() {
-        Properties props = new Properties();
-        props.setProperty(WorkerIdGenerator.WORKER_ID_KEY, "1");
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         when(instanceMetaData.getId()).thenReturn("foo_id");
         RegistryCenter registryCenter = mock(RegistryCenter.class, RETURNS_DEEP_STUBS);
         when(registryCenter.getComputeNodeStatusService().loadInstanceWorkerId("foo_id")).thenReturn(Optional.of(10));
-        assertThat(new ClusterWorkerIdGenerator(registryCenter, instanceMetaData).generate(props), is(10));
+        assertThat(new ClusterWorkerIdGenerator(registryCenter, instanceMetaData).generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1"))), is(10));
     }
     
     @Test

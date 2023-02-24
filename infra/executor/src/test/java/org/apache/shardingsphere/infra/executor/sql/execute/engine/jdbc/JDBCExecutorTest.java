@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -44,7 +45,7 @@ public final class JDBCExecutorTest {
     public void assertExecute() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         ExecutionGroup<JDBCExecutionUnit> group = new ExecutionGroup<>(Collections.singletonList(mock(JDBCExecutionUnit.class)));
-        ExecutionGroupContext context = new ExecutionGroupContext(Collections.singletonList(group));
+        ExecutionGroupContext context = new ExecutionGroupContext(Collections.singletonList(group), mock(ExecutionGroupReportContext.class));
         when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList("test"));
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, new ConnectionContext());
         List<?> actual1 = jdbcExecutor.execute(context, null);
@@ -57,9 +58,11 @@ public final class JDBCExecutorTest {
     public void assertExecuteSQLException() {
         try {
             ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-            when(executorEngine.execute(new ExecutionGroupContext<>(anyCollection()), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
+            ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
+            when(executorEngine.execute(new ExecutionGroupContext<>(anyCollection(), reportContext), any(), any(), anyBoolean()))
+                    .thenThrow(new SQLException("TestSQLException"));
             JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, new ConnectionContext());
-            jdbcExecutor.execute(new ExecutionGroupContext<>(Collections.emptyList()), null);
+            jdbcExecutor.execute(new ExecutionGroupContext<>(Collections.emptyList(), reportContext), null);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("TestSQLException"));
         }
@@ -68,10 +71,11 @@ public final class JDBCExecutorTest {
     @Test
     public void assertExecuteNotThrownSQLException() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-        when(executorEngine.execute(new ExecutionGroupContext<>(anyCollection()), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
+        ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
+        when(executorEngine.execute(new ExecutionGroupContext<>(anyCollection(), reportContext), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, new ConnectionContext());
         SQLExecutorExceptionHandler.setExceptionThrown(false);
-        List<?> actual = jdbcExecutor.execute(new ExecutionGroupContext<>(Collections.emptyList()), null);
+        List<?> actual = jdbcExecutor.execute(new ExecutionGroupContext<>(Collections.emptyList(), reportContext), null);
         assertThat(actual, is(Collections.emptyList()));
     }
 }

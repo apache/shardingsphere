@@ -72,15 +72,15 @@ showMigrationCheckAlgorithms
     ;
 
 jobId
-    : INT | STRING
+    : INT_ | STRING_
     ;
 
 sourceTableName
-    : owner DOT (schema DOT)? name
+    : owner DOT_ (schema DOT_)? name
     ;
 
 targetTableName
-    : (owner DOT)? name
+    : (owner DOT_)? name
     ;
 
 owner
@@ -96,53 +96,53 @@ name
     ;
 
 identifier
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 storageUnitDefinition
-    : storageUnitName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
+    : storageUnitName LP_ (simpleSource | urlSource) COMMA_ USER EQ_ user (COMMA_ PASSWORD EQ_ password)? (COMMA_ propertiesDefinition)? RP_
     ;
 
 storageUnitName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 simpleSource
-    : HOST EQ hostname COMMA PORT EQ port COMMA DB EQ dbName
+    : HOST EQ_ hostname COMMA_ PORT EQ_ port COMMA_ DB EQ_ dbName
     ;
 
 urlSource
-    : URL EQ url
+    : URL EQ_ url
     ;
 
 hostname
-    : STRING
+    : STRING_
     ;
 
 port
-    : INT
+    : INT_
     ;
 
 dbName
-    : STRING
+    : STRING_
     ;
 
 url
-    : STRING
+    : STRING_
     ;
 
 user
-    : STRING
+    : STRING_
     ;
 
 password
-    : STRING
+    : STRING_
     ;
 
 registerMigrationSourceStorageUnit
-    : REGISTER MIGRATION SOURCE STORAGE UNIT storageUnitDefinition (COMMA storageUnitDefinition)*
+    : REGISTER MIGRATION SOURCE STORAGE UNIT storageUnitDefinition (COMMA_ storageUnitDefinition)*
     ;
     
 unregisterMigrationSourceStorageUnit
-    : UNREGISTER MIGRATION SOURCE STORAGE UNIT storageUnitName (COMMA storageUnitName)*
+    : UNREGISTER MIGRATION SOURCE STORAGE UNIT storageUnitName (COMMA_ storageUnitName)*
     ;

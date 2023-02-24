@@ -102,7 +102,7 @@ The most popular solutions for developers are to reduce the capital cost, not ch
 
 1. Before system migration
 
-Assuming that the system needs to encrypt the `pwd` field of `t_user`, the business side uses Apache ShardingSphere to replace the standardized JDBC interface, which basically requires no additional modification (we also provide Spring Boot Starter, Spring Namespace, YAML and other access methods to meet different business requirements). In addition, we would like to demonstrate a set of encryption configuration rules, as follows:
+Assuming that the system needs to encrypt the `pwd` field of `t_user`, the business side uses Apache ShardingSphere to replace the standardized JDBC interface, which basically requires no additional modification (we also provide YAML and other access methods to meet different business requirements). In addition, we would like to demonstrate a set of encryption configuration rules, as follows:
 
 ```yaml
 -!ENCRYPT
@@ -193,7 +193,7 @@ The problem persists. The plaintext column data has been deleted, and the amount
 
 Under these circumstances, the system still needs to provide services correctly. What can we do? The answer lies in the auxiliary query column. Because auxiliary query columns generally use algorithms such as irreversible MD5 and SM3. Queries based on auxiliary columns are performed correctly by the system even during the migration and data cleansing process.
 
-So far, the encryption rectification solution for the released business has been completely demonstrated. We provide Java, YAML, Spring Boot Starter, and Spring namespace for users to choose and access to meet different business requirements. This solution has been continuously verified by enterprise users such as JD Technology.
+So far, the encryption rectification solution for the released business has been completely demonstrated. We provide Java, YAML for users to choose and access to meet different business requirements. This solution has been continuously verified by enterprise users such as JD Technology.
 
 ## The advantages of Middleware encryption service
 

@@ -33,13 +33,12 @@ weight = 6
 
 ### Hint 影子算法
 
-####  简单 Hint 匹配影子算法
+####  SQL HINT 影子算法
 
-类型：SIMPLE_HINT
-
-| *属性名称* | *数据类型* | *说明* |
-| --------- | -------- | ----- |
-| foo       | String   | bar   |
+类型：SQL_HINT
+```sql
+/* SHARDINGSPHERE_HINT: SHADOW=true */
+```
 
 ## 配置示例
 
@@ -71,25 +70,4 @@ shadowAlgorithms:
       column: user_id
       operation: insert
       value: 1
-```
-
-- Spring Boot Starter:
-
-```properties
-spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.type=VALUE_MATCH
-spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.props.operation=insert
-spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.props.column=user_id
-spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.props.value=1
-```
-
-- Spring 命名空间:
-
-```xml
-<shadow:shadow-algorithm id="user-id-insert-algorithm" type="VALUE_MATCH">
-    <props>
-        <prop key="operation">insert</prop>
-        <prop key="column">user_id</prop>
-        <prop key="value">1</prop>
-    </props>
-</shadow:shadow-algorithm>
 ```

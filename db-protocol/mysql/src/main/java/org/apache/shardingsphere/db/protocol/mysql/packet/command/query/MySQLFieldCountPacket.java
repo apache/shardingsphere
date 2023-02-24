@@ -31,12 +31,10 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 @Getter
 public final class MySQLFieldCountPacket implements MySQLPacket {
     
-    private final int sequenceId;
-    
     private final int columnCount;
     
     public MySQLFieldCountPacket(final MySQLPacketPayload payload) {
-        this(payload.readInt1(), payload.readInt1());
+        this(payload.readInt1());
     }
     
     @Override

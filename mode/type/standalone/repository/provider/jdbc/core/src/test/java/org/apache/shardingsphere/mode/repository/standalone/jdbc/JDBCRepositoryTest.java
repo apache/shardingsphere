@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.fixture.JDBCRepositoryProviderFixture;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.h2.jdbc.JdbcCallableStatement;
 import org.h2.jdbc.JdbcConnection;
 import org.h2.jdbc.JdbcResultSet;
@@ -72,7 +74,12 @@ public final class JDBCRepositoryTest {
         this.mockedConstruction = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection));
         when(mockJdbcConnection.createStatement()).thenReturn(mockStatement);
         repository = new JDBCRepository();
-        repository.init(createProperties());
+        Properties props = PropertiesBuilder.build(
+                new Property("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"),
+                new Property("username", "sa"),
+                new Property("password", ""),
+                new Property("provider", "FIXTURE"));
+        repository.init(props);
     }
     
     @After
@@ -251,14 +258,5 @@ public final class JDBCRepositoryTest {
         repository.close();
         HikariDataSource hikariDataSource = mockedConstruction.constructed().get(0);
         verify(hikariDataSource).close();
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        result.setProperty("username", "sa");
-        result.setProperty("password", "");
-        result.setProperty("provider", "FIXTURE");
-        return result;
     }
 }

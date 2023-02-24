@@ -54,9 +54,9 @@ SQL execution process listener
 
 ### Implementation classes
 
-| *Configuration type*          | *Description*                     | *Fully-qualified class name* |
-| ----------------------------- | --------------------------------- | ---------------------------- |
-| Empty | Transaction hook of SQL execution | [`org.apache.shardingsphere.transaction.base.seata.at.TransactionalSQLExecutionHook`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/base/seata-at/src/main/java/org/apache/shardingsphere/transaction/base/seata/at/TransactionalSQLExecutionHook.java) |
+| *Configuration type* | *Description*                     | *Fully-qualified class name* |
+| -------------------- | --------------------------------- | ---------------------------- |
+| Empty                | Transaction hook of SQL execution | [`org.apache.shardingsphere.transaction.base.seata.at.TransactionalSQLExecutionHook`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/base/seata-at/src/main/java/org/apache/shardingsphere/transaction/base/seata/at/TransactionalSQLExecutionHook.java) |
 
 ## ResultProcessEngine
 

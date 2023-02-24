@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.swapper;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
@@ -33,9 +34,9 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class YamlReadwriteSplittingRuleConfigurationSwapperTest {
@@ -101,7 +102,7 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapperTest {
     }
     
     private YamlReadwriteSplittingRuleConfigurationSwapper getYamlReadwriteSplittingRuleConfigurationSwapper() {
-        Optional<YamlReadwriteSplittingRuleConfigurationSwapper> result = YamlRuleConfigurationSwapperFactory.getAllInstances().stream()
+        Optional<YamlReadwriteSplittingRuleConfigurationSwapper> result = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class).stream()
                 .filter(each -> each instanceof YamlReadwriteSplittingRuleConfigurationSwapper)
                 .map(each -> (YamlReadwriteSplittingRuleConfigurationSwapper) each)
                 .findFirst();

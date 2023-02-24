@@ -32,9 +32,12 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedCombine extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "select")
-    private SelectStatementTestCase selectClause;
+    @XmlElement(name = "left")
+    private SelectStatementTestCase left;
     
     @XmlAttribute(name = "combine-type")
     private String combineType;
+    
+    @XmlElement(name = "right")
+    private SelectStatementTestCase right;
 }

@@ -21,7 +21,7 @@ services:
   apache-shardingsphere-proxy-native:
     image: ghcr.io/apache/shardingsphere-proxy-native:latest
     volumes:
-      - ./custom/conf:/conf
+      - ./custom/conf:/opt/shardingsphere-proxy-native/conf
     ports:
       - "3307:3307"
 ```
@@ -34,19 +34,31 @@ services:
   需要等待 Junit 5 Platform 的集成，你总是需要在构建 GraalVM Native Image 的过程中，
   加上特定于 `GraalVM Native Build Tools` 的 `-DskipNativeTests` 或 `-DskipTests` 参数跳过 Native Image 中的单元测试。
 
+- 如下 3 个算法类由于涉及到 GraalVM Truffle Espresso 不方便在 host JVM 和 guest JVM 之间交互的 `groovy.lang.Closure`
+  类，暂未可在 GraalVM Native Image 下使用。
+    - `org.apache.shardingsphere.sharding.algorithm.sharding.complex.ComplexInlineShardingAlgorithm`
+    - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
+    - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`
+
+- 当前阶段，GraalVM Native Image 形态的 ShardingSphere Proxy 处于混合 AOT ( GraalVM Native Image ) 和 JIT ( GraalVM
+  Truffle Espresso ) 运行的阶段。由于 https://github.com/oracle/graal/issues/4555 尚未关闭，GraalVM Truffle Espresso
+  运行需要的 `.so` 文件并不会进入 GraalVM Native Image 内。因此如果你需要在 Docker Image 外运行 ShardingSphere Proxy
+  Native 的二进制文件，你需要确保系统环境变量 `JAVA_HOME` 指向 GraalVM 的 `bin` 目录，并且此 GraalVM
+  实例已经通过 `GraalVM Updater` 安装了 `espresso` 组件。
+
 - 本节假定处于 Linux（amd64，aarch64）， MacOS（amd64）或 Windows（amd64）环境。
-  如果你位于 MacOS（aarch64/M1） 环境，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/2666。
+  如果你位于 MacOS（aarch64/M1） 环境，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/2666 。
 
 ## 前提条件
 
 1. 根据 https://www.graalvm.org/downloads/ 要求安装和配置 JDK 17 对应的 `GraalVM CE` 或 `GraalVM EE`。
    同时可以通过 `SDKMAN!` 安装 JDK 17 对应的 `GraalVM CE`。
 
-2. 通过 `GraalVM Updater` 工具安装 `native-image` 组件。
+2. 通过 `GraalVM Updater` 工具安装 `native-image` 和 `espresso` 组件。
 
-3. 根据 https://www.graalvm.org/22.2/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
+3. 根据 https://www.graalvm.org/22.3/reference-manual/native-image/#prerequisites 的要求安装本地工具链。
 
-4. 如果需要构建 Docker Image， 确保 `docker-cli` 在系统环境变量内。
+4. 如果需要构建 Docker Image， 确保 `docker-ce` 已安装。
 
 ## 操作步骤
 
@@ -73,16 +85,16 @@ services:
 ```xml
 
 <dependencies>
-    <dependency>
-        <groupId>com.mysql</groupId>
-        <artifactId>mysql-connector-j</artifactId>
-        <version>8.0.31</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-sql-translator-jooq-provider</artifactId>
-        <version>5.2.0</version>
-    </dependency>
+  <dependency>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <version>8.0.32</version>
+  </dependency>
+  <dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sql-translator-jooq-provider</artifactId>
+    <version>5.3.1</version>
+  </dependency>
 </dependencies>
 ```
 
@@ -92,15 +104,16 @@ services:
 ./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
 ```
 
-3. 通过命令行启动 Native Image, 需要带上两个参数，
+3. 通过命令行启动 Native Image, 需要带上 4 个参数。
    第一个参数为 ShardingSphere Proxy 使用的端口，第二个参数为你编写的包含 `server.yaml` 的 `/conf` 文件夹，
+   第三个参数为绑定端口的 Address，第四个参数为 Force Start，如果为 true 则保证 ShardingSphere Proxy Native 无论能否连接都能正常启动。
    假设已存在文件夹`./custom/conf`，示例为
 
 ```bash
-./apache-shardingsphere-proxy-native 3307 ./custom/conf
+./apache-shardingsphere-proxy-native 3307 ./custom/conf "0.0.0.0" false
 ```
 
-4. 如果需要构建 Docker Image, 在添加后存在 SPI 实现的依赖或第三方依赖后, 在命令行执行如下命令。
+4. 如果需要构建 Docker Image, 在添加存在 SPI 实现的依赖或第三方依赖后, 在命令行执行如下命令。
 
 ```shell
 ./mvnw -am -pl distribution/proxy-native -B -Pnative,docker.native -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
@@ -116,14 +129,14 @@ services:
   apache-shardingsphere-proxy-native:
     image: apache/shardingsphere-proxy-native:latest
     volumes:
-      - ./custom/conf:/conf
+      - ./custom/conf:/opt/shardingsphere-proxy-native/conf
     ports:
       - "3307:3307"
 ```
 
 - 如果你不对 Git Source 做任何更改， 上文提及的命令将使用 `oraclelinux:9-slim` 作为 Base Docker Image。
   但如果你希望使用 `busybox:glic`，`gcr.io/distroless/base` 或 `scratch` 等更小体积的 Docker Image 作为 Base Docker
-  Image，你需要根据 https://www.graalvm.org/22.2/reference-manual/native-image/guides/build-static-executables/ 的要求，
+  Image，你需要根据 https://www.graalvm.org/22.3/reference-manual/native-image/guides/build-static-executables/ 的要求，
   做为 `pom.xml`的 `native profile` 添加 `-H:+StaticExecutableWithDynamicLibC` 的 `jvmArgs` 等操作。
   另请注意，某些第三方依赖将需要在 `Dockerfile` 安装更多系统库，例如 `libdl`。
   因此请确保根据你的使用情况调整 `distribution/proxy-native`
@@ -135,15 +148,15 @@ services:
   Proxy，其提供的可观察性的能力与 https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/observability/
   并不一致。
 
-- 你可以使用 https://www.graalvm.org/22.2/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image
+- 你可以使用 https://www.graalvm.org/22.3/tools/ 提供的一系列命令行工具或可视化工具观察 GraalVM Native Image
   的内部行为，并根据其要求使用 VSCode 完成调试工作。
-  如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native Image，
-  你可以关注 https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
-  及其后继。
+  如果你正在使用 IntelliJ IDEA 并且希望调试生成的 GraalVM Native
+  Image，你可以关注 https://blog.jetbrains.com/idea/2022/06/intellij-idea-2022-2-eap-5/#Experimental_GraalVM_Native_Debugger_for_Java
+  及其后继。如果你使用的不是 Linux，则无法对 GraalVM Native Image 进行
+  Debug，请关注尚未关闭的 https://github.com/oracle/graal/issues/5648 。
 
-- 对于使用 `ShardingSphere Agent` 等 APM Java Agent 的情形，
-  GraalVM 的 `native-image` 组件尚未完全支持在构建 Native Image 时使用
-  javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065。
+- 对于使用 `ShardingSphere Agent` 等 APM Java Agent 的情形， GraalVM 的 `native-image` 组件尚未完全支持在构建 Native
+  Image 时使用 javaagent，你需要关注尚未关闭的 https://github.com/oracle/graal/issues/1065。
 
 - 以下部分采用 `Apache SkyWalking Java Agent` 作为示例，可用于跟踪 GraalVM 社区的对应 issue。
 

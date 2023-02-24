@@ -19,8 +19,6 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.api.impl;
 
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineProcessConfigurationPersistService;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelCreator;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfiguration;
@@ -29,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineReadConf
 import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -53,7 +52,7 @@ public final class PipelineProcessConfigurationPersistServiceTest {
         yamlProcessConfig.setRead(yamlReadConfig);
         YamlPipelineWriteConfiguration yamlWriteConfig = YamlPipelineWriteConfiguration.buildWithDefaultValue();
         yamlProcessConfig.setWrite(yamlWriteConfig);
-        YamlAlgorithmConfiguration yamlStreamChannel = new YamlAlgorithmConfiguration(MemoryPipelineChannelCreator.TYPE, new Properties());
+        YamlAlgorithmConfiguration yamlStreamChannel = new YamlAlgorithmConfiguration("MEMORY", new Properties());
         yamlProcessConfig.setStreamChannel(yamlStreamChannel);
         String expectedYamlText = YamlEngine.marshal(yamlProcessConfig);
         PipelineProcessConfiguration processConfig = new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);

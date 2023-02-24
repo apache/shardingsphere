@@ -100,9 +100,7 @@ For every interface that needs to be extended and created by SPI, there usually 
 ```java
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DialectTableMetaDataLoaderFactory {
-    static {
-        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
-    }
+    
     /**
      * Create new instance of dialect table meta data loader.
      * 
@@ -110,115 +108,25 @@ public final class DialectTableMetaDataLoaderFactory {
      * @return new instance of dialect table meta data loader
      */
     public static Optional<DialectTableMetaDataLoader> newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(DialectTableMetaDataLoader.class, databaseType.getName());
+        return TypedSPILoader.findService(DialectTableMetaDataLoader.class, databaseType.getName());
     }
 }
 ```
-Here you can see that a static block is used, and all the `DialectTableMetaDataLoader` implementation classes are registered through `ShardingSphereServiceLoader.register` while class loading is in process. By using `TypedSPIRegistry.findRegisteredService`, we can get our specified spi extension class.
 
-```
-TypedSPIRegistry.findRegisteredService(final Class<T> spiClass, final String type)
-```
-So we just have to pay attention to `ShardingSphereServiceLoader.register` and `ypedSPIRegistry.findRegisteredService` approaches.
-
-**`ShardingSphereServiceLoader`**
+Here you can see that a static block is used, and all the `DialectTableMetaDataLoader` implementation classes are registered through `ShardingSphereServiceLoader.register` while class loading is in process. By using `TypedSPILoader.findService`, we can get our specified spi extension class.
 
 ```java
-@NoArgsConstructor(access =AccessLevel.PRIVATE)
-public final class ShardingSphereServiceLoader {
-    private static final Map<Class<?>, Collection<object>> SERVICES = new ConcurrentHashMap<>();
-    /**
-     *Register service.
-     *
-     *@param serviceInterface service interface
-     */
-    public static void register(final Class<?> serviceInterface){
-        if (!SERVICES.containsKey(serviceInterface)) {
-            SERVICES.put(serviceInterface, load(serviceInterface) ) ;
-        }
-    }
-   
-    private static <T> Collection<Object> load(final Class<T> serviceInterface) {
-        Collection<Object> result = new LinkedList<>();
-        for (T each: ServiceLoader. load(serviceInterface)) {
-        result.add(each);
-        }
-        return result;
-    }
-    
-    /**
-     *Get singleton service instances.
-     *
-     *@param service service class
-     * @param <T> type of service
-     *@return service instances
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Collection<T> getSingletonServiceInstances(final Class<T> service) {
-        return (Collection<T>) SERVICES.getorDefault(service,Collections.emptyList());
-    }
-    
-    /**
-     *New service instances.
-     *
-     * eparam service service class
-     *@param <T> type of service
-     *@return service instances
-     */
-    @SuppressWarnings ("unchecked" )
-    public static <T> Collection<T> newserviceInstances(final Class<T> service){
-        if(!SERVICES.containskey(service)) {
-           return Collections.emptyList();
-        }
-        Collection<object> services = SERVICES.get(service);
-        if (services.isEmpty()){
-            return Collections.emptyList();
-        }
-        Collection<T> result = new ArrayList<>(services.size());
-        for (Object each: services) {
-            result.add((T) newServiceInstance(each.getClass()));
-        }
-        return result;
-    }
-    
-    private static Object newServiceInstance(final Class<?> clazz) {
-        try{
-           return clazz.getDeclaredConstructor( ) . newInstance( ) ;
-        } catch (final ReflectiveOperationException ex) {
-            throw new ServiceLoaderInstantiationException(clazz, ex);
-        }
-    }
-}
-```
-We can see that all SPI classes are placed in this `SERVICES`property.
-
-```java
-private static final Map<Class<?>, Collection<Object>> SERVICES = new ConcurrentHashMap<>();
+TypedSPILoader.findService(final Class<T> spiClass, final String type)
 ```
 
+So we just have to pay attention to `TypedSPILoader.findService` approaches.
 
-And registering is pretty simple too, just use the SPI api embedded in java.
+**`TypedSPILoader`**
 
-```java
-public static void register(final Class<?> serviceInterface) {
-        if (!SERVICES.containsKey(serviceInterface)) {
-            SERVICES.put(serviceInterface, load(serviceInterface));
-        }
-    }
-private static <T> Collection<Object> load(final Class<T> serviceInterface) {
-        Collection<Object> result = new LinkedList<>();
-        for (T each : ServiceLoader.load(serviceInterface)) {
-            result.add(each);
-        }
-        return result;
-    }
-```
-**`TypedSPIRegistry`**
-
-The `findRegisteredService` method in `TypedSPIRegistry` is essentially a call to the `getSingletonServiceInstancesmethod` of the `ShardingSphereServiceLoader`.
+The `findService` method in `TypedSPILoader` is essentially a call to the `getSingletonServiceInstancesmethod` of the `ShardingSphereServiceLoader`.
 
 ```java
-public static <T extends StatelessTypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type) {
+public static <T extends StatelessTypedSPI> Optional<T> findService(final Class<T> spiClass, final String type) {
         for (T each : ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
                 return Optional.of(each);

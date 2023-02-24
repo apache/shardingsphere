@@ -24,12 +24,16 @@ tables:
         generated: false
         name: id
         primaryKey: true
+        unsigned: false
+        visible: true
       name:
         caseSensitive: true
         dataType: 10
         generated: true
         name: name
         primaryKey: false
+        unsigned: true
+        visible: false
     indexes:
        primary:
           name: PRIMARY

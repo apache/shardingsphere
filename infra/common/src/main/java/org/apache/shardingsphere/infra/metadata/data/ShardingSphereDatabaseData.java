@@ -29,4 +29,43 @@ import java.util.Map;
 public final class ShardingSphereDatabaseData {
     
     private final Map<String, ShardingSphereSchemaData> schemaData = new LinkedHashMap<>();
+    
+    /**
+     * Get ShardingSphere schema data.
+     *
+     * @param schemaName schema name
+     * @return ShardingSphere schema data
+     */
+    public ShardingSphereSchemaData getSchema(final String schemaName) {
+        return schemaData.get(schemaName.toLowerCase());
+    }
+    
+    /**
+     * Put ShardingSphere schema data.
+     *
+     * @param schemaName schema name
+     * @param schema ShardingSphere schema data
+     */
+    public void putSchema(final String schemaName, final ShardingSphereSchemaData schema) {
+        schemaData.put(schemaName.toLowerCase(), schema);
+    }
+    
+    /**
+     * Remove ShardingSphere schema data.
+     *
+     * @param schemaName schema name
+     */
+    public void removeSchema(final String schemaName) {
+        schemaData.remove(schemaName.toLowerCase());
+    }
+    
+    /**
+     * Judge contains ShardingSphere schema from ShardingSphere database or not.
+     *
+     * @param schemaName schema name
+     * @return Contains schema from database or not
+     */
+    public boolean containsSchema(final String schemaName) {
+        return schemaData.containsKey(schemaName.toLowerCase());
+    }
 }

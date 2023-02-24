@@ -19,8 +19,10 @@ package org.apache.shardingsphere.data.pipeline.core.record;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,5 +81,22 @@ public final class RecordUtil {
             }
         }
         return result;
+    }
+    
+    /**
+    * Get last normal record.
+    *
+    * @param records records
+    * @return last normal record.
+    */
+    public static Record getLastNormalRecord(final List<Record> records) {
+        for (int index = records.size() - 1; index >= 0; index--) {
+            Record record = records.get(index);
+            if (record.getPosition() instanceof PlaceholderPosition) {
+                continue;
+            }
+            return record;
+        }
+        return null;
     }
 }

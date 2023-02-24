@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 public final class FixturePipelineDataSourceCreator implements PipelineDataSourceCreator {
     
     @Override
-    public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) {
+    public DataSource createPipelineDataSource(final Object dataSourceConfig) {
         return null;
     }
     

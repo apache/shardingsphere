@@ -24,14 +24,13 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Builder;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest.BasicBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody.BasicBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -40,7 +39,6 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -66,19 +64,11 @@ public final class CDCChannelInboundHandlerTest {
         proxyContext = mockStatic(ProxyContext.class);
         ProxyContext mockedProxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
         proxyContext.when(ProxyContext::getInstance).thenReturn(mockedProxyContext);
-        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(mockedProxyContext.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        List<ShardingSphereRule> rules = Collections.singletonList(mockAuthRule());
-        when(globalRuleMetaData.getRules()).thenReturn(rules);
-    }
-    
-    private static AuthorityRule mockAuthRule() {
-        AuthorityRule result = mock(AuthorityRule.class);
-        ShardingSphereUser mockUser = mock(ShardingSphereUser.class);
-        when(mockUser.getGrantee()).thenReturn(new Grantee("root", "%"));
-        when(mockUser.getPassword()).thenReturn("root");
-        when(result.findUser(any())).thenReturn(Optional.of(mockUser));
-        return result;
+        AuthorityRule authorityRule = mock(AuthorityRule.class);
+        ShardingSphereUser rootUser = new ShardingSphereUser("root", "root", "%");
+        when(authorityRule.findUser(any())).thenReturn(Optional.of(rootUser));
+        ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(Collections.singletonList(authorityRule));
+        when(mockedProxyContext.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
     }
     
     @AfterClass
@@ -93,19 +83,20 @@ public final class CDCChannelInboundHandlerTest {
     
     @Test
     public void assertLoginRequestFailed() {
-        CDCRequest actualRequest = CDCRequest.newBuilder().setLogin(LoginRequest.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root2").build()).build()).build();
+        CDCRequest actualRequest = CDCRequest.newBuilder().setType(Type.LOGIN).setLoginRequestBody(LoginRequestBody.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root2").build())
+                .build()).build();
         channel.writeInbound(actualRequest);
         CDCResponse expectedGreetingResult = channel.readOutbound();
         assertTrue(expectedGreetingResult.hasServerGreetingResult());
         CDCResponse expectedLoginResult = channel.readOutbound();
         assertThat(expectedLoginResult.getStatus(), is(Status.FAILED));
-        assertThat(expectedLoginResult.getErrorCode(), is(CDCResponseErrorCode.SERVER_ERROR.getCode()));
+        assertThat(expectedLoginResult.getErrorCode(), is(CDCResponseErrorCode.ILLEGAL_USERNAME_OR_PASSWORD.getCode()));
         assertFalse(channel.isOpen());
     }
     
     @Test
     public void assertIllegalLoginRequest() {
-        CDCRequest actualRequest = CDCRequest.newBuilder().setVersion(1).setRequestId("test").build();
+        CDCRequest actualRequest = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId("test").build();
         channel.writeInbound(actualRequest);
         CDCResponse expectedGreetingResult = channel.readOutbound();
         assertTrue(expectedGreetingResult.hasServerGreetingResult());
@@ -118,7 +109,8 @@ public final class CDCChannelInboundHandlerTest {
     @Test
     public void assertLoginRequestSucceed() {
         String encryptPassword = Hashing.sha256().hashBytes("root".getBytes()).toString().toUpperCase();
-        Builder builder = CDCRequest.newBuilder().setLogin(LoginRequest.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root").setPassword(encryptPassword).build()).build());
+        Builder builder = CDCRequest.newBuilder().setType(Type.LOGIN).setLoginRequestBody(LoginRequestBody.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root")
+                .setPassword(encryptPassword).build()).build());
         CDCRequest actualRequest = builder.build();
         channel.writeInbound(actualRequest);
         CDCResponse expectedGreetingResult = channel.readOutbound();

@@ -28,8 +28,8 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public final class InternalMySQLParserIT extends InternalSQLParserIT {
     
-    public InternalMySQLParserIT(final InternalSQLParserTestParameter testParameter) {
-        super(testParameter);
+    public InternalMySQLParserIT(final InternalSQLParserTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

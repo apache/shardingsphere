@@ -41,7 +41,7 @@ public final class MySQLDateBinaryProtocolValueTest {
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertReadWithZeroByte() throws SQLException {
-        new MySQLDateBinaryProtocolValue().read(payload);
+        new MySQLDateBinaryProtocolValue().read(payload, false);
     }
     
     @Test
@@ -49,7 +49,7 @@ public final class MySQLDateBinaryProtocolValueTest {
         when(payload.readInt1()).thenReturn(4, 12, 31);
         when(payload.readInt2()).thenReturn(2018);
         Calendar actual = Calendar.getInstance();
-        actual.setTimeInMillis(((Timestamp) new MySQLDateBinaryProtocolValue().read(payload)).getTime());
+        actual.setTimeInMillis(((Timestamp) new MySQLDateBinaryProtocolValue().read(payload, false)).getTime());
         assertThat(actual.get(Calendar.YEAR), is(2018));
         assertThat(actual.get(Calendar.MONTH), is(Calendar.DECEMBER));
         assertThat(actual.get(Calendar.DAY_OF_MONTH), is(31));
@@ -60,7 +60,7 @@ public final class MySQLDateBinaryProtocolValueTest {
         when(payload.readInt1()).thenReturn(7, 12, 31, 10, 59, 0);
         when(payload.readInt2()).thenReturn(2018);
         Calendar actual = Calendar.getInstance();
-        actual.setTimeInMillis(((Timestamp) new MySQLDateBinaryProtocolValue().read(payload)).getTime());
+        actual.setTimeInMillis(((Timestamp) new MySQLDateBinaryProtocolValue().read(payload, false)).getTime());
         assertThat(actual.get(Calendar.YEAR), is(2018));
         assertThat(actual.get(Calendar.MONTH), is(Calendar.DECEMBER));
         assertThat(actual.get(Calendar.DAY_OF_MONTH), is(31));
@@ -75,7 +75,7 @@ public final class MySQLDateBinaryProtocolValueTest {
         when(payload.readInt2()).thenReturn(2018);
         when(payload.readInt4()).thenReturn(232323);
         Calendar actual = Calendar.getInstance();
-        Timestamp actualTimestamp = (Timestamp) new MySQLDateBinaryProtocolValue().read(payload);
+        Timestamp actualTimestamp = (Timestamp) new MySQLDateBinaryProtocolValue().read(payload, false);
         actual.setTimeInMillis(actualTimestamp.getTime());
         assertThat(actual.get(Calendar.YEAR), is(2018));
         assertThat(actual.get(Calendar.MONTH), is(Calendar.DECEMBER));
@@ -89,7 +89,7 @@ public final class MySQLDateBinaryProtocolValueTest {
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertReadWithIllegalArgument() throws SQLException {
         when(payload.readInt1()).thenReturn(100);
-        new MySQLDateBinaryProtocolValue().read(payload);
+        new MySQLDateBinaryProtocolValue().read(payload, false);
     }
     
     @Test

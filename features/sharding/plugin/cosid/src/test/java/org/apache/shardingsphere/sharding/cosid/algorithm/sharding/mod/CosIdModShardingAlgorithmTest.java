@@ -20,13 +20,15 @@ package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.mod;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.sharding.ExactCollection;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.cosid.algorithm.Arguments;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
-import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,14 +55,8 @@ public final class CosIdModShardingAlgorithmTest {
     
     @SuppressWarnings("unchecked")
     static CosIdModShardingAlgorithm<Long> createShardingAlgorithm() {
-        return (CosIdModShardingAlgorithm<Long>) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID_MOD", createProperties()));
-    }
-    
-    private static Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX);
-        result.put("mod", DIVISOR);
-        return result;
+        Properties props = PropertiesBuilder.build(new Property(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX), new Property("mod", Integer.toString(DIVISOR)));
+        return (CosIdModShardingAlgorithm<Long>) TypedSPILoader.getService(ShardingAlgorithm.class, "COSID_MOD", props);
     }
     
     @RunWith(Parameterized.class)

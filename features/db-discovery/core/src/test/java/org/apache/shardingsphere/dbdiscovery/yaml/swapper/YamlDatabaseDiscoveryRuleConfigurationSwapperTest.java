@@ -22,7 +22,8 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -85,7 +86,7 @@ public final class YamlDatabaseDiscoveryRuleConfigurationSwapperTest {
     }
     
     private YamlDatabaseDiscoveryRuleConfigurationSwapper getYamlDatabaseDiscoveryRuleConfigurationSwapper() {
-        Optional<YamlDatabaseDiscoveryRuleConfigurationSwapper> result = YamlRuleConfigurationSwapperFactory.getAllInstances().stream()
+        Optional<YamlDatabaseDiscoveryRuleConfigurationSwapper> result = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class).stream()
                 .filter(each -> each instanceof YamlDatabaseDiscoveryRuleConfigurationSwapper)
                 .map(each -> (YamlDatabaseDiscoveryRuleConfigurationSwapper) each)
                 .findFirst();

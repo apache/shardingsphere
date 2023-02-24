@@ -70,16 +70,15 @@ DROP DATABASE sharding_db;
 1. ShardingSphere-Proxy 可以看做是一个 database server，所以首选支持 SQL 命令连接和操作。
 2. 如果使用其他第三方数据库工具，可能由于不同工具的特定实现导致出现异常。
 3. 目前已测试的第三方数据库工具如下：
-   - Navicat：11.1.13、15.0.20。
    - DataGrip：2020.1、2021.1（使用 IDEA/DataGrip 时打开 `introspect using JDBC metadata` 选项）。
-   - WorkBench：8.0.25。
+   - MySQLWorkBench：8.0.25。
 
-### [Proxy] 使用 Navicat 等第三方数据库工具连接 ShardingSphere-Proxy 时，如果 ShardingSphere-Proxy 没有创建 Database 或者没有添加 Storage Unit，连接失败？
+### [Proxy] 使用第三方数据库工具连接 ShardingSphere-Proxy 时，如果 ShardingSphere-Proxy 没有创建 Database 或者没有注册 Storage Unit，连接失败？
 
 回答：
 
-1. 第三方数据库工具在连接 ShardingSphere-Proxy 时会发送一些 SQL 查询元数据，当 ShardingSphere-Proxy 没有创建 `database` 或者没有添加 `storage unit` 时，ShardingSphere-Proxy 无法执行 SQL。
-2. 推荐先创建 `database` 和 `storage unit` 之后再使用第三方数据库工具连接。
+1. 第三方数据库工具在连接 ShardingSphere-Proxy 时会发送一些 SQL 查询元数据，当 ShardingSphere-Proxy 没有创建 `database` 或者没有注册 `storage unit` 时，ShardingSphere-Proxy 无法执行 SQL。
+2. 推荐先创建 `database` 并注册 `storage unit` 之后再使用第三方数据库工具连接。
 3. 有关 `storage unit` 的详情请参考。[相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)
 
 ## 分片
@@ -170,14 +169,14 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 2. ShardingSphere 预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout` 等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
 3. 以上规则请参考 [相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)。
 
-### [DistSQL] 使用 `DistSQL` 删除资源时，出现 `Resource [xxx] is still used by [SingleTableRule]`。
+### [DistSQL] 使用 `DistSQL` 删除 `storage unit` 时，出现 `Storage unit [xxx] is still used by [SingleTableRule]`。
 
 回答：
 
-1. 被规则引用的资源将无法被删除。
-2. 若资源只被 single table rule 引用，且用户确认可以忽略该限制，则可以添加可选参数 ignore single tables 进行强制删除。
+1. 被规则引用的 `storage unit` 将无法被删除。
+2. 若 `storage unit` 只被 `single table rule` 引用，且用户确认可以忽略该限制，则可以添加可选参数 ignore single tables 进行强制删除。
 
-### [DistSQL] 使用 `DistSQL` 添加资源时，出现 `Failed to get driver instance for jdbcURL=xxx`。
+### [DistSQL] 使用 `DistSQL` 添加数据源时，出现 `Failed to get driver instance for jdbcURL=xxx`。
 
 回答：
 

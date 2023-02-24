@@ -24,24 +24,6 @@ Yaml:
   providerType: Atomikos 
 ```
 
-SpringBoot:
-
-```yaml
-spring:
-  shardingsphere:
-    props:
-      xa-transaction-manager-type: Atomikos
-```
-
-Spring Namespace:
-
-```xml
-<shardingsphere:data-source id="xxx" data-source-names="xxx" rule-refs="xxx">
-    <props>
-        <prop key="xa-transaction-manager-type">Atomikos</prop>
-    </props>
-</shardingsphere:data-source>
-```
 ### Configure Atomikos
 
 Atomikos configuration items can be customized by adding `jta.properties` to the project's classpath.

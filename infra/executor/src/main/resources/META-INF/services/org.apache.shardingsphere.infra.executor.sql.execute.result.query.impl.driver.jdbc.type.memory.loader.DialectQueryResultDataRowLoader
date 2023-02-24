@@ -17,5 +17,5 @@
 
 org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect.DefaultQueryResultDataRowLoader
 org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect.MySQLQueryResultDataRowLoader
-org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect.OpenGuassQueryResultDataRowLoader
+org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect.OpenGaussQueryResultDataRowLoader
 org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect.PostgreSQLQueryResultDataRowLoader

@@ -11,7 +11,7 @@ Supported MySQL versions: 5.1.15 to 8.0.x.
 
 ### Authority required
 
-1. Enable `binlog`
+1. Enable `binlog` in source
 
 MySQL 5.7 `my.cnf` configuration sample:
 
@@ -41,7 +41,7 @@ If the following information is displayed, binlog is enabled.
 +-----------------------------------------+---------------------------------------+
 ```
 
-2. Grant Replication-related permissions for MySQL account.
+2. Grant Replication-related permissions for source MySQL account.
 
 Run the following command to check whether the user has migration permission.
 ```
@@ -58,12 +58,16 @@ Result sample:
 +------------------------------------------------------------------------------+
 ```
 
-3. Grant insert, select, update and delete permissions to the physical library used in the migration
+3. Grant DDL DML permissions for MySQL account
 
-If you use a non-super admin account for migration, you need to make sure that the account has the permission to insert, select, update and delete on the physical library used for migration.
-
+Source MySQL account needs SELECT permission. Example:
 ```sql
-GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO `migration_user`@`%`;
+GRANT SELECT ON migration_ds_0.* TO `migration_user`@`%`;
+```
+
+Target MySQL account needs part of DDL and all DML permissions. Example:
+```sql
+GRANT CREATE, DROP, INDEX, SELECT, INSERT, UPDATE, DELETE ON *.* TO `migration_user`@`%`;
 ```
 
 Please refer to [MySQL GRANT](https://dev.mysql.com/doc/refman/8.0/en/grant.html)
@@ -100,7 +104,7 @@ CREATE DATABASE migration_ds_12 DEFAULT CHARSET utf8;
 
 #### Procedure
 
-1. Create a new logical database in proxy and configure resources and rules.
+1. Create a new logical database in proxy and configure storage units and rules.
 
 ```sql
 CREATE DATABASE sharding_db;
@@ -134,7 +138,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 If you are migrating to a heterogeneous database, you need to execute the table-creation statements in proxy.
 
-2. Configure the source resources in proxy.
+2. Configure the source storage units in proxy.
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
@@ -249,9 +253,9 @@ Supported PostgreSQL version: 9.4 or later.
 
 ### Authority required
 
-1. Enable [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html).
+1. Enable [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html) in source.
 
-2. Modify WAL Configuration.
+2. Modify WAL configuration in source.
 
 `postgresql.conf` configuration sample:
 ```
@@ -264,7 +268,7 @@ max_connections = 600
 
 Please refer to [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-config-wal.html) and [Replication](https://www.postgresql.org/docs/9.6/runtime-config-replication.html ) for details.
 
-3. Configure PostgreSQL and grant Proxy the replication permission.
+3. Grant replication permission for source PostgreSQL account.
 
 `pg_hba.conf` instance configuration:
 ```
@@ -273,7 +277,7 @@ host replication repl_acct 0.0.0.0/0 md5
 
 Please refer to [The pg_hba.conf File](https://www.postgresql.org/docs/9.6/auth-pg-hba-conf.html) for details.
 
-4. Grant access to databases and tables 
+4. Grant DDL DML permissions for PostgreSQL account.
 
 If you are using a non-super admin account for migration, you need to GRANT CREATE and CONNECT privileges on the database used for migration.
 
@@ -326,7 +330,7 @@ CREATE DATABASE migration_ds_12;
 
 #### Procedure
 
-1. Create a new logical database in proxy and configure resources and rules.
+1. Create a new logical database in proxy and configure storage units and rules.
 
 ```sql
 CREATE DATABASE sharding_db;
@@ -360,7 +364,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 If you are migrating to a heterogeneous database, you need to execute the table-creation statements in proxy.
 
-2. Configure the source resources in proxy.
+2. Configure the source storage units in proxy.
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
@@ -462,7 +466,7 @@ Supported openGauss version: 2.0.1 to 3.0.0.
 
 ### Authority required
 
-1. Modify WAL configuration.
+1. Modify WAL configuration in source.
 
 `postgresql.conf` configuration sample:
 ```
@@ -475,7 +479,7 @@ max_connections = 600
 
 Please refer to [Write Ahead Log](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) and [Replication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html) for details.
 
-2. Configure openGauss and grant Proxy the replication permission.
+2. Grant replication permission for source openGauss account.
 
 `pg_hba.conf` instance configuration:
 ```
@@ -484,7 +488,7 @@ host replication repl_acct 0.0.0.0/0 md5
 
 Please refer to [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) and [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html) for details.
 
-3. Grant access to databases and tables 
+3. Grant DDL DML permissions for openGauss account.
 
 If you are using a non-super admin account for migration, you need to GRANT CREATE and CONNECT privileges on the database used for migration.
 
@@ -515,13 +519,29 @@ GRANT ALL PRIVILEGES TO migration_user;
 
 #### Requirements
 
-1. Prepare the source database, table, and data in openGauss.
+1. Prepare the source database, table, and data.
+
+1.1. Isomorphic database.
 
 ```sql
 DROP DATABASE IF EXISTS migration_ds_0;
 CREATE DATABASE migration_ds_0;
 
 \c migration_ds_0
+
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+
+INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
+```
+
+1.2. Heterogeneous database.
+
+MySQL example:
+```sql
+DROP DATABASE IF EXISTS migration_ds_0;
+CREATE DATABASE migration_ds_0 DEFAULT CHARSET utf8;
+
+USE migration_ds_0
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 
@@ -543,13 +563,19 @@ CREATE DATABASE migration_ds_12;
 
 #### Procedure
 
-1. Create a new logical database and configure resources and rules.
+1. Create a new logical database and configure storage units and rules.
+
+1.1. Create logic database.
 
 ```sql
 CREATE DATABASE sharding_db;
 
 \c sharding_db
+```
 
+1.2. Register storage units.
+
+```sql
 REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_10",
     USER="gaussdb",
@@ -566,7 +592,11 @@ REGISTER STORAGE UNIT ds_2 (
     PASSWORD="Root@123",
     PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
 );
+```
 
+1.3. Create sharding table rule.
+
+```sql
 CREATE SHARDING TABLE RULE t_order(
 STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
@@ -575,15 +605,36 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```
 
+1.4. Create target table.
+
 If you are migrating to a heterogeneous database, you need to execute the table-creation statements in proxy.
 
-2. Configure the source resources in proxy.
+MySQL example:
+```sql
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+```
+
+2. Configure the source storage units in proxy.
+
+2.1. Isomorphic database.
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_0",
     USER="gaussdb",
     PASSWORD="Root@123",
+    PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
+);
+```
+
+2.2. Heterogeneous database.
+
+MySQL example:
+```sql
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
+    URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
+    USER="root",
+    PASSWORD="root",
     PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
 );
 ```

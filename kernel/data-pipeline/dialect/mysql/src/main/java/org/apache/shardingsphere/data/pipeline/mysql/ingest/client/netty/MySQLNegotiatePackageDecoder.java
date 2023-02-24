@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
@@ -59,7 +59,7 @@ public final class MySQLNegotiatePackageDecoder extends ByteToMessageDecoder {
     }
     
     private MySQLPacket decodeResponsePacket(final MySQLPacketPayload payload, final List<Object> out) {
-        int header = payload.getByteBuf().getByte(1) & 0xff;
+        int header = payload.getByteBuf().getByte(0) & 0xff;
         switch (header) {
             case MySQLErrPacket.HEADER:
                 return new MySQLErrPacket(payload);

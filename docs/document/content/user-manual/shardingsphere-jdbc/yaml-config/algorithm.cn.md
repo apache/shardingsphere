@@ -61,3 +61,15 @@ discoveryTypes:
     props:
       xxx: xxx
 ```
+
+## 脱敏算法
+
+```yaml
+maskAlgorithms:
+  # maskAlgorithmName 由用户指定，需要和脱敏规则中的 maskAlgorithm 属性一致
+  <maskAlgorithmName>:
+    # type 和 props，请参考脱敏内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/builtin-algorithm/mask/
+    type: xxx
+    props:
+      xxx: xxx
+```

@@ -34,7 +34,9 @@ public final class CombineSegment implements SQLSegment {
     
     private final int stopIndex;
     
+    private final SelectStatement left;
+    
     private final CombineType combineType;
     
-    private final SelectStatement selectStatement;
+    private final SelectStatement right;
 }

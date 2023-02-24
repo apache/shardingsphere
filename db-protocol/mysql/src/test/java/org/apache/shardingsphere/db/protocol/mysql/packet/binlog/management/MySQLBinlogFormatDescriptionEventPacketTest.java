@@ -50,7 +50,6 @@ public final class MySQLBinlogFormatDescriptionEventPacketTest {
         assertThat(actual.getMysqlServerVersion(), is(MYSQL_SERVER_VERSION.getBytes()));
         assertThat(actual.getCreateTimestamp(), is(1234567890));
         assertThat(actual.getEventHeaderLength(), is(19));
-        assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getBinlogEventHeader(), is(binlogEventHeader));
     }
 }

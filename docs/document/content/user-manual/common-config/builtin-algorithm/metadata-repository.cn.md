@@ -17,12 +17,12 @@ Apache ShardingSphere 为不同的运行模式提供了不同的元数据持久�
 
 可配置属性：
 
-| *名称*                        | *数据类型* | *说明*            | *默认值*         |
-| ---------------------------- | --------- | ----------------- | --------------- |
-| provider                    | String      | 元数据存储类型     | H2              |
-| jdbc_url                    | String      | JDBC URL         | jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL              |
-| username                    | String      | 账号              | sa              |
-| password                    | String      | 密码              |                 |
+| *名称*     | *数据类型* | *说明*                  | *默认值*                                                                   |
+|----------|--------|-----------------------|-------------------------------------------------------------------------|
+| provider | String | 元数据存储类型，可选值为 H2，MySQL | H2                                                                      |
+| jdbc_url | String | JDBC URL              | jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL |
+| username | String | 账号                    | sa                                                                      |
+| password | String | 密码                    |                                                                         |
 
 
 ### ZooKeeper 持久化

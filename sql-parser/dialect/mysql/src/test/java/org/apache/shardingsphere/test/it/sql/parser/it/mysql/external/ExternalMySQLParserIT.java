@@ -28,8 +28,8 @@ import java.util.Collection;
 
 public final class ExternalMySQLParserIT extends ExternalSQLParserIT {
     
-    public ExternalMySQLParserIT(final ExternalSQLParserTestParameter testParameter) {
-        super(testParameter);
+    public ExternalMySQLParserIT(final ExternalSQLParserTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

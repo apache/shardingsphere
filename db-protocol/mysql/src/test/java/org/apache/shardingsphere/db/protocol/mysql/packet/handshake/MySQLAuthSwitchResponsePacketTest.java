@@ -37,10 +37,8 @@ public final class MySQLAuthSwitchResponsePacketTest {
     
     @Test
     public void assertMySQLAuthSwitchResponsePacket() {
-        when(payload.readInt1()).thenReturn(0x11);
         when(payload.readStringEOFByBytes()).thenReturn(authPluginResponse);
         MySQLAuthSwitchResponsePacket authSwitchResponsePacket = new MySQLAuthSwitchResponsePacket(payload);
-        assertThat(authSwitchResponsePacket.getSequenceId(), is(0x11));
         assertThat(authSwitchResponsePacket.getAuthPluginResponse(), is(authPluginResponse));
     }
 }

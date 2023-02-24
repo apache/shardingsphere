@@ -39,7 +39,6 @@ public final class MySQLComInitDbPacketTest {
     public void assertNew() {
         when(payload.readStringEOF()).thenReturn("logic_db");
         MySQLComInitDbPacket actual = new MySQLComInitDbPacket(payload);
-        assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getSchema(), is("logic_db"));
     }
     

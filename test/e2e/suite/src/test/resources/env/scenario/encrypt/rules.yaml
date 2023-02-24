@@ -22,13 +22,31 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
+      props:
+        mask: 4093
   tables:
     t_user:
       columns:
-        pwd:
-          plainColumn: pwd_plain
-          cipherColumn: pwd_cipher
+        user_name:
+          plainColumn: user_name_plain
+          cipherColumn: user_name_cipher
+          likeQueryColumn: user_name_like
           encryptorName: aes_encryptor
+          likeQueryEncryptorName: like_encryptor
+        password:
+          cipherColumn: password_cipher
+          encryptorName: aes_encryptor
+        email:
+          cipherColumn: email_cipher
+          encryptorName: aes_encryptor
+        telephone:
+          plainColumn: telephone_plain
+          cipherColumn: telephone_cipher
+          likeQueryColumn: telephone_like
+          encryptorName: aes_encryptor
+          likeQueryEncryptorName: like_encryptor
     t_user_details:
       columns:
         number:
@@ -44,8 +62,12 @@ rules:
         business_code:
           plainColumn: business_code_plain
           cipherColumn: business_code_cipher
+          likeQueryColumn: business_code_like
           encryptorName: aes_encryptor
+          likeQueryEncryptorName: like_encryptor
         telephone:
           plainColumn: telephone_plain
           cipherColumn: telephone_cipher
+          likeQueryColumn: telephone_like
           encryptorName: aes_encryptor
+          likeQueryEncryptorName: like_encryptor

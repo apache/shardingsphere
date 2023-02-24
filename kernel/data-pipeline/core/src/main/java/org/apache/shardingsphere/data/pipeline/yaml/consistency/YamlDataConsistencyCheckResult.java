@@ -32,6 +32,8 @@ public final class YamlDataConsistencyCheckResult implements YamlConfiguration {
     
     private YamlDataConsistencyContentCheckResult contentCheckResult;
     
+    private String ignoredType;
+    
     /**
      * YAML data consistency count result.
      */

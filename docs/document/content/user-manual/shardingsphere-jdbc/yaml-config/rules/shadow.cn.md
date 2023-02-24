@@ -70,7 +70,7 @@ rules:
         - shadowDataSource
       shadowAlgorithmNames: 
         - user_id_insert_match_algorithm
-        - simple_hint_algorithm
+        - sql_hint_algorithm
   shadowAlgorithms:
     user_id_insert_match_algorithm:
       type: REGEX_MATCH
@@ -78,15 +78,11 @@ rules:
         operation: insert
         column: user_id
         regex: "[1]"
-    simple_hint_algorithm:
-      type: SIMPLE_HINT
-      props:
-        foo: bar
+    sql_hint_algorithm:
+      type: SQL_HINT
 ```
 
 ## 相关参考
 
 - [影子库的核心特性](/cn/features/shadow/)
 - [JAVA API：影子库配置](/cn/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)
-- [Spring Boot Starter：影子库配置](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/shadow/)
-- [Spring 命名空间：影子库配置](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/shadow/)

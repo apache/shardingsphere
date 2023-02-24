@@ -30,9 +30,4 @@ public final class EncryptOrder {
      * Encrypt order.
      */
     public static final int ORDER = 10;
-    
-    /**
-     * Algorithm provider encrypt order.
-     */
-    public static final int ALGORITHM_PROVIDER_ORDER = ORDER + 1;
 }

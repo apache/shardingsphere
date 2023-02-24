@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.authority.distsql.parser.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableGlobalRuleRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
  * Show authority rule statement.
  */
-public final class ShowAuthorityRuleStatement extends QueryableGlobalRuleRALStatement {
+public final class ShowAuthorityRuleStatement extends QueryableRALStatement {
 }

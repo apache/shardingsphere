@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
-import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

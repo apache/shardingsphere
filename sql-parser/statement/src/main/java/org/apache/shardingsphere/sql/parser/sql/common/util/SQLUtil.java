@@ -21,7 +21,6 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.Paren;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -30,32 +29,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NullLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCacheIndexStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLChecksumTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLInstallPluginStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLKillStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLLoadIndexInfoStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRepairTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallPluginStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -204,53 +182,6 @@ public final class SQLUtil {
             result.addAll(getSubqueryTableSegmentFromJoinTableSegment((JoinTableSegment) joinTableSegment.getRight()));
         }
         return result;
-    }
-    
-    /**
-     * Determine whether SQL is read-only.
-     *
-     * @param sqlStatement SQL statement
-     * @return true if read-only, otherwise false
-     */
-    public static boolean isReadOnly(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof DMLStatement) {
-            return isReadOnly((DMLStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof DALStatement) {
-            return isReadOnly((DALStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof DDLStatement) {
-            return false;
-        }
-        if (sqlStatement instanceof DCLStatement) {
-            return false;
-        }
-        throw new UnsupportedSQLOperationException(String.format("Unsupported SQL Type `%s`", sqlStatement.getClass().getSimpleName()));
-    }
-    
-    private static boolean isReadOnly(final DMLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            return true;
-        }
-        if (sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement || sqlStatement instanceof InsertStatement) {
-            return false;
-        }
-        throw new UnsupportedSQLOperationException(String.format("Unsupported SQL Type `%s`", sqlStatement.getClass().getSimpleName()));
-    }
-    
-    private static boolean isReadOnly(final DALStatement sqlStatement) {
-        return !(sqlStatement instanceof SetStatement
-                | sqlStatement instanceof MySQLUseStatement
-                | sqlStatement instanceof MySQLUninstallPluginStatement
-                | sqlStatement instanceof MySQLResetStatement
-                | sqlStatement instanceof MySQLRepairTableStatement
-                | sqlStatement instanceof MySQLOptimizeTableStatement
-                | sqlStatement instanceof MySQLLoadIndexInfoStatement
-                | sqlStatement instanceof MySQLKillStatement
-                | sqlStatement instanceof MySQLInstallPluginStatement
-                | sqlStatement instanceof MySQLFlushStatement
-                | sqlStatement instanceof MySQLChecksumTableStatement
-                | sqlStatement instanceof MySQLCacheIndexStatement);
     }
     
     /**

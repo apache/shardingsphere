@@ -20,7 +20,15 @@ grammar RQLStatement;
 import BaseRule;
 
 showStorageUnits
-    : SHOW STORAGE UNITS (FROM databaseName)? (WHERE USAGE_COUNT EQ usageCount)?
+    : SHOW STORAGE UNITS (FROM databaseName)? (WHERE USAGE_COUNT EQ_ usageCount)?
+    ;
+
+showRulesUsedStorageUnit
+    : SHOW RULES USED STORAGE UNIT storageUnitName (FROM databaseName)?
+    ;
+
+showLogicalTables
+    : SHOW LOGICAL TABLES showLike? (FROM databaseName)?
     ;
 
 showDefaultSingleTableStorageUnit
@@ -28,17 +36,21 @@ showDefaultSingleTableStorageUnit
     ;
 
 showSingleTable
-    : SHOW SINGLE (TABLES | TABLE tableName) (FROM databaseName)?
+    : SHOW SINGLE (TABLES showLike? | TABLE tableName) (FROM databaseName)?
     ;
 
-showRulesUsedStorageUnit
-    : SHOW RULES USED STORAGE UNIT storageUnitName (FROM databaseName)?
-    ;
-
-countSingleTableRule
-    : COUNT SINGLE_TABLE RULE (FROM databaseName)?
+countSingleTable
+    : COUNT SINGLE TABLE (FROM databaseName)?
     ;
 
 usageCount
-    : INT
+    : INT_
+    ;
+
+showLike
+    : LIKE likePattern
+    ;
+
+likePattern
+    : STRING_
     ;

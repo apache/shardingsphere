@@ -15,16 +15,16 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.context.refresher.type.AlterIndexStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.AlterTableStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.AlterViewStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.CreateIndexStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.CreateSchemaStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.CreateTableStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.CreateViewStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.DropIndexStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.DropSchemaStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.DropTableStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.DropViewStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.AlterSchemaStatementSchemaRefresher
-org.apache.shardingsphere.infra.context.refresher.type.RenameTableStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.schema.CreateSchemaStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.schema.AlterSchemaStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.schema.DropSchemaStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.index.CreateIndexStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.index.AlterIndexStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.index.DropIndexStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.view.CreateViewStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.view.AlterViewStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.view.DropViewStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.table.CreateTableStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.table.AlterTableStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.table.RenameTableStatementSchemaRefresher
+org.apache.shardingsphere.infra.context.refresher.type.table.DropTableStatementSchemaRefresher

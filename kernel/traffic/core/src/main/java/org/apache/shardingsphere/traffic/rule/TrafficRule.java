@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -34,8 +35,6 @@ import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgor
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
-import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
-import org.apache.shardingsphere.traffic.factory.TrafficLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
@@ -71,7 +70,8 @@ public final class TrafficRule implements GlobalRule {
             if (null == trafficAlgorithms.get(each.getAlgorithmName())) {
                 break;
             }
-            result.put(each.getName() + "." + each.getAlgorithmName(), TrafficAlgorithmFactory.newInstance(trafficAlgorithms.get(each.getAlgorithmName())));
+            AlgorithmConfiguration algorithmConfig = trafficAlgorithms.get(each.getAlgorithmName());
+            result.put(each.getName() + "." + each.getAlgorithmName(), TypedSPILoader.getService(TrafficAlgorithm.class, algorithmConfig.getType(), algorithmConfig.getProps()));
         }
         return result;
     }
@@ -82,7 +82,8 @@ public final class TrafficRule implements GlobalRule {
             if (null == loadBalancers.get(each.getLoadBalancerName())) {
                 break;
             }
-            result.put(each.getName() + "." + each.getLoadBalancerName(), TrafficLoadBalanceAlgorithmFactory.newInstance(loadBalancers.get(each.getLoadBalancerName())));
+            AlgorithmConfiguration algorithmConfig = loadBalancers.get(each.getLoadBalancerName());
+            result.put(each.getName() + "." + each.getLoadBalancerName(), TypedSPILoader.getService(TrafficLoadBalanceAlgorithm.class, algorithmConfig.getType(), algorithmConfig.getProps()));
         }
         return result;
     }

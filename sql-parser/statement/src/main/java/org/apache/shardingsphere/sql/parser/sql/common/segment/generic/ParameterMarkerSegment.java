@@ -23,4 +23,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
  * Parameter marker segment.
  */
 public interface ParameterMarkerSegment extends SQLSegment {
+    
+    /**
+     * Get parameter index.
+     *
+     * @return parameter index
+     */
+    int getParameterIndex();
 }

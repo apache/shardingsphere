@@ -59,4 +59,9 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     public Optional<String> getAlias() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
     }
+    
+    @Override
+    public int getParameterIndex() {
+        return parameterMarkerIndex;
+    }
 }

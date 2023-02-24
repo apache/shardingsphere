@@ -24,5 +24,3 @@ Apache ShardingSphere 关注于全链路压测场景下，数据库层面的解�
 
 - [Java API：影子库](/cn/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)
 - [YAML 配置：影子库](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/shadow/)
-- [Spring Boot Starter：影子库](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/shadow/)
-- [Spring 命名空间：影子库](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/shadow/)

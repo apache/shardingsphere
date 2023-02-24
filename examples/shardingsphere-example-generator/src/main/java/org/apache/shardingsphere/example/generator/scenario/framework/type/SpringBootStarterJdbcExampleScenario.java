@@ -41,7 +41,10 @@ public final class SpringBootStarterJdbcExampleScenario implements FrameworkExam
     
     @Override
     public Map<String, String> getResourceTemplateMap() {
-        return Collections.singletonMap("resources/properties/application.ftl", "application.properties");
+        Map<String, String> result = new HashMap<>(2, 1);
+        result.put("resources/properties/application.ftl", "application.properties");
+        result.put("resources/yaml/config.ftl", "config.yaml");
+        return result;
     }
     
     @Override

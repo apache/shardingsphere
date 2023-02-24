@@ -18,6 +18,6 @@
 <dataset>
     <metadata>
         <column name="table_name" />
-        <column name="resource_name" />
+        <column name="storage_unit_name" />
     </metadata>
 </dataset>

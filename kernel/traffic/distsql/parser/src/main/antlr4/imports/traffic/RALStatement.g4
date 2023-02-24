@@ -19,16 +19,8 @@ grammar RALStatement;
 
 import BaseRule;
 
-createTrafficRule
-    : CREATE TRAFFIC RULE trafficRuleDefinition (COMMA_ trafficRuleDefinition)*
-    ;
-
 alterTrafficRule
     : ALTER TRAFFIC RULE trafficRuleDefinition (COMMA_ trafficRuleDefinition)*
-    ;
-
-dropTrafficRule
-    : DROP TRAFFIC RULE ifExists? ruleName (COMMA_ ruleName)*
     ;
 
 showTrafficRules

@@ -137,37 +137,43 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                         .orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
                 Object originalValue = insertValueContext.getLiteralValue(columnIndex).orElse(null);
                 EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, columnName);
-                addPlainColumn(insertValueToken, columnIndex, encryptContext, insertValueContext, originalValue);
+                setCipherColumn(insertValueToken, encryptor.get(), columnIndex, encryptContext, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
                 int indexDelta = 1;
                 if (encryptRule.findAssistedQueryEncryptor(tableName, columnName).isPresent()) {
-                    addAssistedQueryColumn(insertValueToken, encryptRule.findAssistedQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue);
-                    indexDelta = indexDelta + 1;
+                    addAssistedQueryColumn(insertValueToken, encryptRule.findAssistedQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext,
+                            insertValueContext, originalValue, indexDelta);
+                    indexDelta++;
                 }
                 if (encryptRule.findLikeQueryEncryptor(tableName, columnName).isPresent()) {
                     addLikeQueryColumn(insertValueToken, encryptRule.findLikeQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue, indexDelta);
+                    indexDelta++;
                 }
-                setCipherColumn(insertValueToken, encryptor.get(), columnIndex, encryptContext, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
+                if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
+                    addPlainColumn(insertValueToken, columnIndex, encryptContext, insertValueContext, originalValue, indexDelta);
+                }
             }
         }
     }
     
     private void addPlainColumn(final InsertValue insertValueToken, final int columnIndex,
-                                final EncryptContext encryptContext, final InsertValueContext insertValueContext, final Object originalValue) {
+                                final EncryptContext encryptContext, final InsertValueContext insertValueContext,
+                                final Object originalValue, final int indexDelta) {
         if (encryptRule.findPlainColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
             DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
                     ? new DerivedLiteralExpressionSegment(originalValue)
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
-            insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
+            insertValueToken.getValues().add(columnIndex + indexDelta, derivedExpressionSegment);
         }
     }
     
     private void addAssistedQueryColumn(final InsertValue insertValueToken, final StandardEncryptAlgorithm encryptAlgorithm, final int columnIndex,
-                                        final EncryptContext encryptContext, final InsertValueContext insertValueContext, final Object originalValue) {
+                                        final EncryptContext encryptContext, final InsertValueContext insertValueContext,
+                                        final Object originalValue, final int indexDelta) {
         if (encryptRule.findAssistedQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
             DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
                     ? new DerivedLiteralExpressionSegment(encryptAlgorithm.encrypt(originalValue, encryptContext))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
-            insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
+            insertValueToken.getValues().add(columnIndex + indexDelta, derivedExpressionSegment);
         }
     }
     

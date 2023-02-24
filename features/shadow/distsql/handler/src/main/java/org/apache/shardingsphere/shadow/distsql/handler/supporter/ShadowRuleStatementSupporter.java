@@ -47,7 +47,7 @@ public final class ShadowRuleStatementSupporter {
     }
     
     /**
-     * Get rule names from the rules.
+     * Get rule names from the segments.
      *
      * @param segments shadow rule segments
      * @return rule names
@@ -63,12 +63,12 @@ public final class ShadowRuleStatementSupporter {
     }
     
     /**
-     * Get the resource names from the rules.
+     * Get storage unit names from the segments.
      *
      * @param segments shadow rule segments
-     * @return resource names
+     * @return storage unit names
      */
-    public static List<String> getResourceNames(final Collection<ShadowRuleSegment> segments) {
+    public static List<String> getStorageUnitNames(final Collection<ShadowRuleSegment> segments) {
         return segments.isEmpty()
                 ? Collections.emptyList()
                 : segments.stream().map(each -> Arrays.asList(each.getSource(), each.getShadow())).flatMap(Collection::stream).filter(Objects::nonNull).collect(Collectors.toList());

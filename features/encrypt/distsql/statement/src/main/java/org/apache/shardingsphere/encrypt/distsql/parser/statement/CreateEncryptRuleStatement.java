@@ -18,18 +18,21 @@
 package org.apache.shardingsphere.encrypt.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 
 import java.util.Collection;
 
 /**
  * Create encrypt rule statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CreateEncryptRuleStatement extends CreateRuleStatement {
     
     private final Collection<EncryptRuleSegment> rules;
+    
+    public CreateEncryptRuleStatement(final boolean ifNotExists, final Collection<EncryptRuleSegment> rules) {
+        super(ifNotExists);
+        this.rules = rules;
+    }
 }

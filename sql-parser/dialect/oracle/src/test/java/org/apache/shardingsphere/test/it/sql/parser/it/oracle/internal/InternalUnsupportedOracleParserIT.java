@@ -28,8 +28,8 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public final class InternalUnsupportedOracleParserIT extends InternalUnsupportedSQLParserIT {
     
-    public InternalUnsupportedOracleParserIT(final InternalSQLParserTestParameter testParameter) {
-        super(testParameter);
+    public InternalUnsupportedOracleParserIT(final InternalSQLParserTestParameter testParam) {
+        super(testParam);
     }
     
     @Parameters(name = "{0}")

@@ -19,20 +19,16 @@ package org.apache.shardingsphere.driver.data.pipeline.datasource.creator;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * ShardingSphere pipeline data source creator.
@@ -40,21 +36,19 @@ import java.util.Map;
 public final class ShardingSpherePipelineDataSourceCreator implements PipelineDataSourceCreator {
     
     @Override
-    public DataSource createPipelineDataSource(final Object pipelineDataSourceConfig) throws SQLException {
-        YamlRootConfiguration rootConfig = (YamlRootConfiguration) pipelineDataSourceConfig;
-        YamlShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules());
-        enableRangeQueryForInline(shardingRuleConfig);
-        String databaseName = null;
-        Map<String, DataSource> dataSourceMap = new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources(), false);
-        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules());
-        try {
-            return ShardingSphereDataSourceFactory.createDataSource(databaseName, dataSourceMap, ruleConfigs, null);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            closeDataSources(dataSourceMap.values());
-            throw ex;
-        }
+    public DataSource createPipelineDataSource(final Object dataSourceConfig) throws SQLException {
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
+        enableStreamingQuery(rootConfig);
+        ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules()).ifPresent(this::enableRangeQueryForInline);
+        rootConfig.setDatabaseName(null);
+        rootConfig.setSchemaName(null);
+        return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
+    }
+    
+    // TODO Another way is improving ExecuteQueryCallback.executeSQL to enable streaming query, then remove it
+    private void enableStreamingQuery(final YamlRootConfiguration rootConfig) {
+        // Set a large enough value to enable ConnectionMode.MEMORY_STRICTLY, make sure streaming query work.
+        rootConfig.getProps().put(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), 100000);
     }
     
     private void enableRangeQueryForInline(final YamlShardingRuleConfiguration shardingRuleConfig) {
@@ -63,10 +57,6 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
                 each.getProps().put("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
             }
         }
-    }
-    
-    private void closeDataSources(final Collection<DataSource> dataSources) {
-        dataSources.stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
     }
     
     @Override

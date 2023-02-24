@@ -32,5 +32,6 @@ public final class ContextManagerSubscriberFacade {
         new DatabaseChangedSubscriber(contextManager);
         new StateChangedSubscriber(registryCenter, contextManager);
         new ProcessListChangedSubscriber(registryCenter, contextManager);
+        new CacheEvictedSubscriber(contextManager.getInstanceContext().getEventBusContext());
     }
 }

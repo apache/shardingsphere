@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.ScanNodeExecutorContext;
 import org.junit.Test;
@@ -57,7 +57,7 @@ public final class FilterableTableScanExecutorTest {
         when(schemaData.getTableData().get("test")).thenReturn(tableData);
         ShardingSphereTable shardingSphereTable = mock(ShardingSphereTable.class);
         when(shardingSphereTable.getName()).thenReturn("test");
-        Enumerable<Object[]> enumerable = new FilterableTableScanExecutor(null, null, null, optimizerContext, null, executorContext, shardingSphereData, null)
+        Enumerable<Object[]> enumerable = new FilterableTableScanExecutor(null, null, null, optimizerContext, null, executorContext, shardingSphereData)
                 .execute(shardingSphereTable, mock(ScanNodeExecutorContext.class));
         Enumerator<Object[]> actual = enumerable.enumerator();
         actual.moveNext();

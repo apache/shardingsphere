@@ -101,4 +101,14 @@
         <input sql="SELECT COUNT(1) AS cnt FROM (SELECT a.amount FROM t_account a ORDER BY a.amount DESC ) AS tmp" />
         <output sql="SELECT COUNT(1) AS cnt FROM (SELECT a.cipher_amount FROM t_account a ORDER BY a.cipher_amount DESC ) AS tmp" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_shorthand_from_sub_query_with_simple_select" db-types="MySQL">
+        <input sql="SELECT * FROM (SELECT * FROM t_account a) AS temp" />
+        <output sql="SELECT `temp`.`account_id`, `temp`.`cipher_certificate_number` AS `certificate_number`, `temp`.`cipher_password` AS `password`, `temp`.`cipher_amount` AS `amount` FROM (SELECT `a`.`account_id`, `a`.`cipher_certificate_number`, `a`.`assisted_query_certificate_number`, `a`.`cipher_password`, `a`.`assisted_query_password`, `a`.`cipher_amount` FROM t_account a) AS temp" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_shorthand_from_sub_query_with_select_join" db-types="MySQL">
+        <input sql="SELECT * FROM (SELECT a1.* FROM t_account a1 INNER JOIN t_account a2) AS temp" />
+        <output sql="SELECT `temp`.`account_id`, `temp`.`cipher_certificate_number` AS `certificate_number`, `temp`.`cipher_password` AS `password`, `temp`.`cipher_amount` AS `amount` FROM (SELECT `a1`.`account_id`, `a1`.`cipher_certificate_number`, `a1`.`assisted_query_certificate_number`, `a1`.`cipher_password`, `a1`.`assisted_query_password`, `a1`.`cipher_amount` FROM t_account a1 INNER JOIN t_account a2) AS temp" />
+    </rewrite-assertion>
 </rewrite-assertions>

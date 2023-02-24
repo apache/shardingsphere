@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.discovery.cases.mysql.env;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.discovery.cases.base.BaseE2EIT;
+import org.apache.shardingsphere.test.e2e.discovery.cases.base.BaseDiscoveryE2EIT;
 import org.apache.shardingsphere.test.e2e.discovery.command.MGRPrimaryReplicaCommand;
 import org.apache.shardingsphere.test.e2e.discovery.cases.DatabaseClusterEnvironment;
 
@@ -51,7 +51,7 @@ public final class MySQLMGREnvironment implements DatabaseClusterEnvironment {
         primaryDataSource = dataSources.get(0);
         replicationDataSources = dataSources.subList(1, dataSources.size());
         this.dataSources = getAllDataSources();
-        mgrPrimaryReplicaCommand = JAXB.unmarshal(Objects.requireNonNull(BaseE2EIT.class.getClassLoader().getResource("env/common/mgr-primary-replica-command.xml")),
+        mgrPrimaryReplicaCommand = JAXB.unmarshal(Objects.requireNonNull(BaseDiscoveryE2EIT.class.getClassLoader().getResource("env/common/mgr-primary-replica-command.xml")),
                 MGRPrimaryReplicaCommand.class);
         buildMGRPrimaryDataSource();
         buildMGRReplicaDataSources();

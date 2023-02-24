@@ -6,7 +6,7 @@ weight = 1
 
 ## 应用场景
 
-Apache ShardingSphere-JDBC 可以通过 `Java`，`YAML`，`Spring 命名空间` 和 `Spring Boot Starter` 这 4 种方式进行配置，开发者可根据场景选择适合的配置方式。
+Apache ShardingSphere-JDBC 可以通过 `Java` 和 `YAML` 这 2 种方式进行配置，开发者可根据场景选择适合的配置方式。
 
 ## 使用限制
 
@@ -28,38 +28,42 @@ Apache ShardingSphere-JDBC 可以通过 `Java`，`YAML`，`Spring 命名空间` 
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
     <version>${latest.release.version}</version>
 </dependency>
 ```
 
 > 注意：请将 `${latest.release.version}` 更改为实际的版本号。
 
+3. 创建 YAML 配置文件
 
+```yaml
+# JDBC 逻辑库名称。在集群模式中，使用该参数来联通 ShardingSphere-JDBC 与 ShardingSphere-Proxy。
+# 默认值：logic_db
+databaseName (?):
 
-3. 编辑 `application.yml`。
+mode:
 
+dataSources:
 
+rules:
+- !FOO_XXX
+    ...
+- !BAR_XXX
+    ...
 
-```java
-spring:
-  shardingsphere:
-    datasource:
-      names: ds_0, ds_1
-      ds_0:
-        type: com.zaxxer.hikari.HikariDataSource
-        driverClassName: com.mysql.cj.jdbc.Driver
-        jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
-        username: root
-        password: 
-      ds_1:
-        type: com.zaxxer.hikari.HikariDataSource
-        driverClassName: com.mysql.cj.jdbc.Driver
-        jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
-        username: root
-        password: 
-    rules:
-      sharding:
-        tables:
-            ...
+props:
+  key_1: value_1
+  key_2: value_2
 ```
+
+4. 以 `spring boot` 为例，编辑 `application.properties`。
+
+```properties
+# 配置 DataSource Driver
+spring.datasource.driver-class-name=org.apache.shardingsphere.driver.ShardingSphereDriver
+# 指定 YAML 配置文件
+spring.datasource.url=jdbc:shardingsphere:classpath:xxx.yaml
+```
+
+详情请参见[Spring Boot](/cn/user-manual/shardingsphere-jdbc/yaml-config/jdbc-driver/spring-boot/)。

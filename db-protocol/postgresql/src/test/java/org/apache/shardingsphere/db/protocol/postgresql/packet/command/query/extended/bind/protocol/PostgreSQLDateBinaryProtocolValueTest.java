@@ -17,40 +17,45 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.postgresql.jdbc.TimestampUtils;
+import org.postgresql.util.PSQLException;
 
-import java.sql.Timestamp;
+import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLDateBinaryProtocolValueTest {
     
-    @Mock
-    private PostgreSQLPacketPayload payload;
-    
     @Test
     public void assertGetColumnLength() {
-        assertThat(new PostgreSQLDateBinaryProtocolValue().getColumnLength(""), is(8));
+        assertThat(new PostgreSQLDateBinaryProtocolValue().getColumnLength(""), is(4));
     }
     
     @Test
-    public void assertRead() {
-        when(payload.readInt8()).thenReturn(1L);
-        assertThat(new PostgreSQLDateBinaryProtocolValue().read(payload, 8), is(1L));
+    public void assertRead() throws PSQLException {
+        byte[] payloadBytes = new byte[4];
+        Date expected = Date.valueOf("2023-01-30");
+        new TimestampUtils(false, null).toBinDate(null, payloadBytes, expected);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(payloadBytes), StandardCharsets.UTF_8);
+        assertThat(new PostgreSQLDateBinaryProtocolValue().read(payload, 4), is(expected));
     }
     
     @Test
-    public void assertWrite() {
-        Timestamp data = new Timestamp(System.currentTimeMillis());
-        new PostgreSQLDateBinaryProtocolValue().write(payload, data);
-        verify(payload).writeInt8(data.getTime());
+    public void assertWrite() throws PSQLException {
+        byte[] actual = new byte[4];
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(actual).writerIndex(0), StandardCharsets.UTF_8);
+        Date input = Date.valueOf("2023-01-30");
+        new PostgreSQLDateBinaryProtocolValue().write(payload, input);
+        byte[] expected = new byte[4];
+        new TimestampUtils(false, null).toBinDate(null, expected, input);
+        assertThat(actual, is(expected));
     }
 }

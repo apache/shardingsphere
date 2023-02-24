@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.mode.manager.cluster.process.subscriber;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.mode.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.process.event.KillProcessListIdRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
-import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.process.node.ProcessNode;
 
 import java.util.Collection;
@@ -75,6 +75,22 @@ public final class ProcessRegistrySubscriber {
         }
     }
     
+    private Collection<String> getTriggerPaths(final String processListId) {
+        return Stream.of(InstanceType.values())
+                .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream()
+                        .map(onlinePath -> ComputeNode.getProcessTriggerInstanceIdNodePath(onlinePath, processListId)))
+                .collect(Collectors.toList());
+    }
+    
+    private void sendShowProcessList(final String processListId) {
+        List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getProcessListIdPath(processListId));
+        Collection<String> batchProcessContexts = new LinkedList<>();
+        for (String each : childrenKeys) {
+            batchProcessContexts.add(repository.getDirectly(ProcessNode.getProcessListInstancePath(processListId, each)));
+        }
+        eventBusContext.post(new ShowProcessListResponseEvent(batchProcessContexts));
+    }
+    
     /**
      * Kill process list id.
      *
@@ -102,13 +118,6 @@ public final class ProcessRegistrySubscriber {
                 .collect(Collectors.toList());
     }
     
-    private Collection<String> getTriggerPaths(final String processListId) {
-        return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream()
-                        .map(onlinePath -> ComputeNode.getProcessTriggerInstanceIdNodePath(onlinePath, processListId)))
-                .collect(Collectors.toList());
-    }
-    
     private boolean waitAllNodeDataReady(final String processListId, final Collection<String> paths) {
         ShowProcessListSimpleLock simpleLock = new ShowProcessListSimpleLock();
         ShowProcessListManager.getInstance().getLocks().put(processListId, simpleLock);
@@ -128,14 +137,5 @@ public final class ProcessRegistrySubscriber {
     
     private boolean isReady(final Collection<String> paths) {
         return paths.stream().noneMatch(each -> null != repository.getDirectly(each));
-    }
-    
-    private void sendShowProcessList(final String processListId) {
-        List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getProcessListIdPath(processListId));
-        Collection<String> batchProcessContexts = new LinkedList<>();
-        for (String each : childrenKeys) {
-            batchProcessContexts.add(repository.getDirectly(ProcessNode.getProcessListInstancePath(processListId, each)));
-        }
-        eventBusContext.post(new ShowProcessListResponseEvent(batchProcessContexts));
     }
 }

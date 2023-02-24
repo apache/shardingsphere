@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.Routi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
@@ -73,7 +74,12 @@ public final class TableExtractor {
      * @param selectStatement select statement
      */
     public void extractTablesFromSelect(final SelectStatement selectStatement) {
-        if (null != selectStatement.getFrom()) {
+        if (selectStatement.getCombine().isPresent()) {
+            CombineSegment combineSegment = selectStatement.getCombine().get();
+            extractTablesFromSelect(combineSegment.getLeft());
+            extractTablesFromSelect(combineSegment.getRight());
+        }
+        if (null != selectStatement.getFrom() && !selectStatement.getCombine().isPresent()) {
             extractTablesFromTableSegment(selectStatement.getFrom());
         }
         if (selectStatement.getWhere().isPresent()) {
@@ -90,9 +96,6 @@ public final class TableExtractor {
         }
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
         lockSegment.ifPresent(this::extractTablesFromLock);
-        if (selectStatement.getCombine().isPresent()) {
-            extractTablesFromSelect(selectStatement.getCombine().get().getSelectStatement());
-        }
     }
     
     private void extractTablesFromTableSegment(final TableSegment tableSegment) {
@@ -222,7 +225,7 @@ public final class TableExtractor {
                 extractTablesFromExpression(each);
             }
         }
-        InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).ifPresent(each -> extractTablesFromAssignmentItems(each.getColumns()));
+        InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).ifPresent(optional -> extractTablesFromAssignmentItems(optional.getColumns()));
         if (insertStatement.getInsertSelect().isPresent()) {
             extractTablesFromSelect(insertStatement.getInsertSelect().get().getSelect());
         }

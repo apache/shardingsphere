@@ -15,7 +15,11 @@ Encryption algorithms are by the encryption features of Apache ShardingSphere. A
 
 Type: MD5
 
-Attributes: None
+Attributes:
+
+| *Name* | *DataType* | *Description*        |
+|--------| ---------- |----------------------|
+| salt   | String     | Salt value(optional) |
 
 #### AES Encrypt Algorithm
 

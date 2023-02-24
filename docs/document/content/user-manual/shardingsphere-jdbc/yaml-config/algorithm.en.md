@@ -59,3 +59,15 @@ discoveryTypes:
     props:
       xxx: xxx
 ```
+
+## Data Masking
+
+```yaml
+maskAlgorithms:
+  # maskAlgorithmName is specified by users, and its property should be consistent with that of maskAlgorithm in mask rules.
+  <maskAlgorithmName>:
+    # type and props, please refer to the built-in mask algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/mask/
+    type: xxx
+    props:
+      xxx: xxx
+```

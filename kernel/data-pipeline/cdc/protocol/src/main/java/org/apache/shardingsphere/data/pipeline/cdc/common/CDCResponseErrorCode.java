@@ -28,7 +28,9 @@ public enum CDCResponseErrorCode {
     
     SERVER_ERROR("1"),
     
-    ILLEGAL_REQUEST_ERROR("2");
+    ILLEGAL_REQUEST_ERROR("2"),
+    
+    ILLEGAL_USERNAME_OR_PASSWORD("3");
     
     @Getter
     private final String code;

@@ -22,7 +22,8 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -36,12 +37,13 @@ public final class PipelineDataSourceFactory {
     /**
      * New instance data source wrapper.
      *
-     * @param dataSourceConfig data source configuration
+     * @param pipelineDataSourceConfig pipeline data source configuration
      * @return new data source wrapper
      */
     @SneakyThrows(SQLException.class)
-    public static PipelineDataSourceWrapper newInstance(final PipelineDataSourceConfiguration dataSourceConfig) {
-        DataSource pipelineDataSource = PipelineDataSourceCreatorFactory.getInstance(dataSourceConfig.getType()).createPipelineDataSource(dataSourceConfig.getDataSourceConfiguration());
-        return new PipelineDataSourceWrapper(pipelineDataSource, dataSourceConfig.getDatabaseType());
+    public static PipelineDataSourceWrapper newInstance(final PipelineDataSourceConfiguration pipelineDataSourceConfig) {
+        DataSource dataSource = TypedSPILoader.getService(
+                PipelineDataSourceCreator.class, pipelineDataSourceConfig.getType()).createPipelineDataSource(pipelineDataSourceConfig.getDataSourceConfiguration());
+        return new PipelineDataSourceWrapper(dataSource, pipelineDataSourceConfig.getDatabaseType());
     }
 }

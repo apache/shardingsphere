@@ -53,10 +53,9 @@ public final class ShardingSphereSchemaDataRegistrySubscriber {
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition("sys_data_" + event.getDatabaseName() + event.getSchemaName() + event.getTableName());
         if (lockPersistService.tryLock(lockDefinition, 10_000)) {
             try {
-                persistService.persistTable(databaseName, schemaName, event.getTableName());
-                persistService.persistRows(databaseName, schemaName, event.getTableName(), event.getAddedRows());
-                persistService.persistRows(databaseName, schemaName, event.getTableName(), event.getUpdatedRows());
-                persistService.deleteRows(databaseName, schemaName, event.getTableName(), event.getDeletedRows());
+                persistService.getTableRowDataPersistService().persist(databaseName, schemaName, event.getTableName(), event.getAddedRows());
+                persistService.getTableRowDataPersistService().persist(databaseName, schemaName, event.getTableName(), event.getUpdatedRows());
+                persistService.getTableRowDataPersistService().delete(databaseName, schemaName, event.getTableName(), event.getDeletedRows());
             } finally {
                 lockPersistService.unlock(lockDefinition);
             }

@@ -75,33 +75,31 @@ dataSources:
     minPoolSize: 1
 
 rules:
-  - !READWRITE_SPLITTING
-    dataSources:
-      replica_ds:
-        dynamicStrategy:
-          autoAwareDataSourceName: readwrite_ds
-  - !DB_DISCOVERY
-    dataSources:
-      readwrite_ds:
-        dataSourceNames:
-          - ds_0
-          - ds_1
-          - ds_2
-        discoveryHeartbeatName: mgr_heartbeat
-        discoveryTypeName: mgr
-    discoveryHeartbeats:
-      mgr_heartbeat:
-        props:
-          keep-alive-cron: '0/5 * * * * ?'
-    discoveryTypes:
-      mgr:
-        type: MySQL.MGR
-        props:
-          group-name: 558edd3c-02ec-11ea-9bb3-080027e39bd2
+- !READWRITE_SPLITTING
+  dataSources:
+    replica_ds:
+      dynamicStrategy:
+        autoAwareDataSourceName: readwrite_ds
+- !DB_DISCOVERY
+  dataSources:
+    readwrite_ds:
+      dataSourceNames:
+        - ds_0
+        - ds_1
+        - ds_2
+      discoveryHeartbeatName: mgr_heartbeat
+      discoveryTypeName: mgr
+  discoveryHeartbeats:
+    mgr_heartbeat:
+      props:
+        keep-alive-cron: '0/5 * * * * ?'
+  discoveryTypes:
+    mgr:
+      type: MySQL.MGR
+      props:
+        group-name: 558edd3c-02ec-11ea-9bb3-080027e39bd2
 ```
 ## Related References
 
 - [Feature Description of HA](/en/features/ha/)
 - [JAVA API: HA](/en/user-manual/shardingsphere-jdbc/java-api/rules/ha/)
-- [Spring Boot Starter: HA](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/ha/)
-- [Spring Namespace: HA](/en/user-manual/shardingsphere-jdbc/spring-namespace/rules/ha/)

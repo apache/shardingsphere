@@ -4,11 +4,11 @@ title: Organisation des pages
 weight: 5
 ---
 
-Dans **Hugo**, les pages sont le coeur de votre site. Une fois configurées, les pages sont la valeur ajoutée de votre site de documentation.
+Dans **Hugo**, les pages sont le cœur de votre site. Une fois configurées, les pages sont la valeur ajoutée de votre site de documentation.
 
 ## Dossiers
 
-Organisez votre site comment n'importe quel autre [projet Hugo](https://gohugo.io/content/organization/). Typiquement, vous allez avoir un dossier *content* avec vos pages.
+Organisez votre site comme n'importe quel autre [projet Hugo](https://gohugo.io/content/organization/). Typiquement, vous allez avoir un dossier *content* avec vos pages.
 
     content
     ├── niveau-un 
@@ -35,7 +35,7 @@ Organisez votre site comment n'importe quel autre [projet Hugo](https://gohugo.i
     └── premiere-page.md                <-- /premiere-page
 
 {{% notice note %}}
-Le fichier `_index.md` est obligatoire dans chaque dossier, c'est en quelques rotes votre page d'accueil pour le dossier.
+Le fichier `_index.md` est obligatoire dans chaque dossier, c'est en quelque sorte votre page d'accueil pour le dossier.
 {{% /notice %}}
 
 ## Types
@@ -45,7 +45,7 @@ Le fichier `_index.md` est obligatoire dans chaque dossier, c'est en quelques ro
 Un **Chapitre** affiche une page vouée à être une introduction pour un ensemble de pages filles. Habituellement, il va seulement contenir un titre et un résumé de la section.
 Vous pouvez définir n'importe quel contenu HTML comme préfixe de l'entrée du menu. Dans l'exemple ci-dessous, c'est juste un nombre mais vous pourriez utiliser une [icône](https://fortawesome.github.io/Font-Awesome/).
 
-![Page Chapitre](/cont/pages/images/pages-chapter.png?width=50pc)
+![Page Chapitre](/en/cont/pages/images/pages-chapter.png?width=50pc)
 
 ```markdown
 +++
@@ -66,7 +66,7 @@ Pour dire à **Hugo-theme-learn** de considérer la page comme un chapitre, conf
 
 Une page **Défaut** est n'importe quelle autre page.
 
-![Page défaut](/cont/pages/images/pages-default.png?width=50pc)
+![Page défaut](/en/cont/pages/images/pages-default.png?width=50pc)
 
     +++
     title = "Installation"
@@ -118,11 +118,11 @@ Dans le Front Matter, ajouter un paramètre `pre` pour insérer du code HTML qui
 ```toml
 +++
 title = "Repo Github"
-pre = "<i class='fa fa-github'></i> "
+pre = "<i class='fab fa-github'></i> "
 +++
 ```
 
-![Titre avec icône](/cont/pages/images/frontmatter-icon.png)
+![Titre avec icône](/en/cont/pages/images/frontmatter-icon.png)
 
 ### Ordonner les entrées dans le menu
 

@@ -106,8 +106,7 @@ try (HintManager hintManager = HintManager.getInstance();
 
 ##### Terms of Use
 
-To use SQL Hint function, users need to set `sqlCommentParseEnabled` to `true`.
-The comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and optional attributes include:
+For the SQL Hint function, the comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and optional attributes include:
 
 - `{table}.SHARDING_DATABASE_VALUE`: used to add the data source sharding value corresponding to `{table}` table, multiple attributes are separated by commas;
 - `{table}.SHARDING_TABLE_VALUE`: used to add the table sharding value corresponding to `{table}` table, multiple attributes are separated by commas.

@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 public final class MySQLAuthSwitchRequestPacketTest {
     
     @Mock
-    private MySQLAuthPluginData authPluginData;
+    private MySQLAuthenticationPluginData authPluginData;
     
     @Mock
     private MySQLPacketPayload payload;
@@ -40,7 +40,7 @@ public final class MySQLAuthSwitchRequestPacketTest {
     @Test
     public void assertWrite() {
         when(authPluginData.getAuthenticationPluginData()).thenReturn(new byte[]{0x11, 0x22});
-        MySQLAuthSwitchRequestPacket authSwitchRequestPacket = new MySQLAuthSwitchRequestPacket(1, "plugin", authPluginData);
+        MySQLAuthSwitchRequestPacket authSwitchRequestPacket = new MySQLAuthSwitchRequestPacket("plugin", authPluginData);
         authSwitchRequestPacket.write(payload);
         verify(payload).writeInt1(0xfe);
         verify(payload, times(2)).writeStringNul(anyString());

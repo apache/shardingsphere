@@ -35,6 +35,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -58,10 +60,12 @@ public final class CreateShardingTableRuleStatementAssert {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             if (expected instanceof CreateShardingAutoTableRuleStatementTestCase) {
                 CreateShardingAutoTableRuleStatementTestCase autoTableRuleStatementTestCase = (CreateShardingAutoTableRuleStatementTestCase) expected;
+                assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(autoTableRuleStatementTestCase.isIfNotExists()));
                 Collection<AutoTableRuleSegment> actualAutoTableRules = actual.getRules().stream().map(each -> (AutoTableRuleSegment) each).collect(Collectors.toList());
                 assertShardingAutoTableRules(assertContext, actualAutoTableRules, autoTableRuleStatementTestCase.getRules());
             } else {
                 CreateShardingTableRuleStatementTestCase tableRuleStatementTestCase = (CreateShardingTableRuleStatementTestCase) expected;
+                assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(tableRuleStatementTestCase.isIfNotExists()));
                 Collection<TableRuleSegment> actualTableRules = actual.getRules().stream().map(each -> (TableRuleSegment) each).collect(Collectors.toList());
                 assertShardingTableRules(assertContext, actualTableRules, tableRuleStatementTestCase.getRules());
             }

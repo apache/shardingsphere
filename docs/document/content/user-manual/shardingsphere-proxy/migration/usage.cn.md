@@ -11,7 +11,7 @@ weight = 2
 
 ### 权限要求
 
-1. 开启 `binlog`
+1. 源端开启 `binlog`
 
 MySQL 5.7 `my.cnf` 示例配置：
 
@@ -43,16 +43,14 @@ show variables like '%binlog%';
 +-----------------------------------------+---------------------------------------+
 ```
 
-2. 赋予 MySQL 账号 Replication 相关权限。
+2. 赋予源端 MySQL 账号 replication 相关权限。
 
 执行以下命令，查看该用户是否有迁移权限：
-
 ```
 SHOW GRANTS FOR 'migration_user';
 ```
 
 示例结果：
-
 ```
 +------------------------------------------------------------------------------+
 |Grants for ${username}@${host}                                                |
@@ -62,14 +60,18 @@ SHOW GRANTS FOR 'migration_user';
 +------------------------------------------------------------------------------+
 ```
 
-3. 赋予迁移时用到物理库的增删改查权限
+3. 赋予 MySQL 账号 DDL DML 权限
 
-如果使用非超级管理员账号进行迁移，要求该账号在迁移时用到的物理库上，具备增删改查的权限。
-
+源端账号需要具备查询权限。
 示例：
-
 ```sql
-GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO `migration_user`@`%`;
+GRANT SELECT ON migration_ds_0.* TO `migration_user`@`%`;
+```
+
+目标端账号需要具备增删改查等权限。
+示例：
+```sql
+GRANT CREATE, DROP, INDEX, SELECT, INSERT, UPDATE, DELETE ON *.* TO `migration_user`@`%`;
 ```
 
 详情请参见 [MySQL GRANT](https://dev.mysql.com/doc/refman/8.0/en/grant.html)
@@ -79,8 +81,6 @@ GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO
 #### 前提条件
 
 1. 在 MySQL 已准备好源端库、表、数据。
-
-示例：
 
 ```sql
 DROP DATABASE IF EXISTS migration_ds_0;
@@ -95,8 +95,6 @@ INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,
 
 2. 在 MySQL 准备目标端库。
 
-示例：
-
 ```sql
 DROP DATABASE IF EXISTS migration_ds_10;
 CREATE DATABASE migration_ds_10 DEFAULT CHARSET utf8;
@@ -110,7 +108,7 @@ CREATE DATABASE migration_ds_12 DEFAULT CHARSET utf8;
 
 #### 操作步骤
 
-1. 在 proxy 新建逻辑数据库并配置好资源和规则。
+1. 在 proxy 新建逻辑数据库并配置好存储单元和规则。
 
 ```sql
 CREATE DATABASE sharding_db;
@@ -144,7 +142,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 如果是迁移到异构数据库，那目前需要在 proxy 执行建表语句。
 
-2. 在 proxy 配置源端资源。
+2. 在 proxy 配置源端存储单元。
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
@@ -257,9 +255,9 @@ REFRESH TABLE METADATA;
 
 ### 权限要求
 
-1. 开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)。
+1. 源端开启 [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html)。
 
-2. 调整 WAL 配置。
+2. 源端调整 WAL 配置。
 
 `postgresql.conf` 示例配置：
 ```
@@ -272,7 +270,7 @@ max_connections = 600
 
 详情请参见 [Write Ahead Log](https://www.postgresql.org/docs/9.6/runtime-config-wal.html) 和 [Replication](https://www.postgresql.org/docs/9.6/runtime-config-replication.html )。
 
-3. 配置 PostgreSQL 允许 Proxy 拥有 replication 权限。
+3. 赋予源端 PostgreSQL 账号 replication 权限。
 
 `pg_hba.conf` 示例配置：
 ```
@@ -281,12 +279,11 @@ host replication repl_acct 0.0.0.0/0 md5
 
 详情请参见 [The pg_hba.conf File](https://www.postgresql.org/docs/9.6/auth-pg-hba-conf.html)。
 
-4. 赋予数据库和表的访问权限
+4. 赋予源端 PostgreSQL 账号 DDL DML 权限。
 
 如果使用非超级管理员账号进行迁移，要求该账号在迁移时用到的数据库上，具备 CREATE 和 CONNECT 的权限。
 
 示例：
-
 ```sql
 GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
 ```
@@ -336,7 +333,7 @@ CREATE DATABASE migration_ds_12;
 
 #### 操作步骤
 
-1. 在 proxy 新建逻辑数据库并配置好资源和规则。
+1. 在 proxy 新建逻辑数据库并配置好存储单元和规则。
 
 ```sql
 CREATE DATABASE sharding_db;
@@ -370,7 +367,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 
 如果是迁移到异构数据库，那目前需要在 proxy 执行建表语句。
 
-2. 在 proxy 配置源端资源。
+2. 在 proxy 配置源端存储单元。
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
@@ -471,7 +468,7 @@ REFRESH TABLE METADATA;
 
 ### 权限要求
 
-1. 调整 WAL 配置。
+1. 调整源端 WAL 配置。
 
 `postgresql.conf` 示例配置：
 ```
@@ -484,7 +481,7 @@ max_connections = 600
 
 详情请参见 [Write Ahead Log](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/settings.html) 和 [Replication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/sending-server.html)。
 
-2. 配置 openGauss 允许 Proxy 拥有 replication 权限。
+2. 赋予源端 openGauss 账号 replication 权限。
 
 `pg_hba.conf` 示例配置：
 ```
@@ -493,12 +490,11 @@ host replication repl_acct 0.0.0.0/0 md5
 
 详情请参见 [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) 和 [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html)。
 
-3. 赋予数据库和表的访问权限
+3. 赋予 openGauss 账号 DDL DML 权限。
 
 如果使用非超级管理员账号进行迁移，要求该账号在迁移时用到的数据库上，具备 CREATE 和 CONNECT 的权限。
 
 示例：
-
 ```sql
 GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
 ```
@@ -526,13 +522,29 @@ GRANT ALL PRIVILEGES TO migration_user;
 
 #### 前提条件
 
-1. 在 openGauss 已准备好源端库、表、数据。
+1. 准备好源端库、表、数据。
+
+1.1. 同构数据库。
 
 ```sql
 DROP DATABASE IF EXISTS migration_ds_0;
 CREATE DATABASE migration_ds_0;
 
 \c migration_ds_0
+
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+
+INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,6,'ok'),(4,1,'ok'),(5,3,'ok'),(6,5,'ok');
+```
+
+1.2. 异构数据库。
+
+MySQL 示例：
+```sql
+DROP DATABASE IF EXISTS migration_ds_0;
+CREATE DATABASE migration_ds_0 DEFAULT CHARSET utf8;
+
+USE migration_ds_0;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 
@@ -554,13 +566,18 @@ CREATE DATABASE migration_ds_12;
 
 #### 操作步骤
 
-1. 在 proxy 新建逻辑数据库并配置好资源和规则。
+1. 在 proxy 新建逻辑数据库并配置好存储单元和规则。
+
+1.1. 创建逻辑库。
 
 ```sql
 CREATE DATABASE sharding_db;
 
 \c sharding_db
+```
+1.2. 注册存储单元。
 
+```sql
 REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_10",
     USER="gaussdb",
@@ -577,7 +594,11 @@ REGISTER STORAGE UNIT ds_2 (
     PASSWORD="Root@123",
     PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
 );
+```
 
+1.3. 创建分片规则。
+
+```sql
 CREATE SHARDING TABLE RULE t_order(
 STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
@@ -586,15 +607,35 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```
 
+1.4. 创建目标端表。
+
 如果是迁移到异构数据库，那目前需要在 proxy 执行建表语句。
 
-2. 在 proxy 配置源端资源。
+```sql
+CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+```
+
+2. 在 proxy 配置源端存储单元。
+
+2.1. 同构数据库。
 
 ```sql
 REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_0",
     USER="gaussdb",
     PASSWORD="Root@123",
+    PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
+);
+```
+
+2.2. 异构数据库。
+
+MySQL 示例：
+```sql
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
+    URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
+    USER="root",
+    PASSWORD="root",
     PROPERTIES("minPoolSize"="1","maxPoolSize"="20","idleTimeout"="60000")
 );
 ```

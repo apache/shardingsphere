@@ -47,3 +47,12 @@ algorithmConfigs.put("shadowAlgorithmName", new AlgorithmConfiguration("xxx", ne
 Map<String, AlgorithmConfiguration> algorithmConfigs = new HashMap<>(1, 1);
 algorithmConfigs.put("discoveryTypeName", new AlgorithmConfiguration("xxx", new Properties()));
 ```
+
+## Data Masking
+
+```java
+// maskAlgorithmName is specified by users, and its property should be consistent with that of maskAlgorithm in mask rules.
+// type and props, please refer to the built-in mask algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/mask/
+Map<String, AlgorithmConfiguration> algorithmConfigs = new LinkedHashMap<>(1, 1);
+algorithmConfigs.put("maskAlgorithmName", new AlgorithmConfiguration("xxx", new Properties()));
+```

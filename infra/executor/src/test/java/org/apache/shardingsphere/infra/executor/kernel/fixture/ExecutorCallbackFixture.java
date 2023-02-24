@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public final class ExecutorCallbackFixture implements ExecutorCallback<Object, S
     private final CountDownLatch latch;
     
     @Override
-    public Collection<String> execute(final Collection<Object> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) {
+    public Collection<String> execute(final Collection<Object> inputs, final boolean isTrunkThread) {
         List<String> result = new LinkedList<>();
         for (Object each : inputs) {
             latch.countDown();

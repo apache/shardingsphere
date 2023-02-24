@@ -106,3 +106,7 @@ COUNT
 MYSQLMGR
     : M Y S Q L DOT_ M G R
     ;
+
+NOT
+    : N O T
+    ;

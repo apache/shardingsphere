@@ -18,20 +18,41 @@
 package org.apache.shardingsphere.data.pipeline.api.check.consistency;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
  * Data consistency check result.
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
 public final class DataConsistencyCheckResult {
     
+    private final DataConsistencyCheckIgnoredType ignoredType;
+    
     private final DataConsistencyCountCheckResult countCheckResult;
     
     private final DataConsistencyContentCheckResult contentCheckResult;
+    
+    public DataConsistencyCheckResult(final DataConsistencyCountCheckResult countCheckResult, final DataConsistencyContentCheckResult contentCheckResult) {
+        ignoredType = null;
+        this.countCheckResult = countCheckResult;
+        this.contentCheckResult = contentCheckResult;
+    }
+    
+    public DataConsistencyCheckResult(final DataConsistencyCheckIgnoredType ignoredType) {
+        this.ignoredType = ignoredType;
+        countCheckResult = null;
+        contentCheckResult = null;
+    }
+    
+    /**
+     * Is ignored.
+     *
+     * @return ignored or not
+     */
+    public boolean isIgnored() {
+        return null != ignoredType;
+    }
     
     /**
      * Is count and content matched.
@@ -39,6 +60,9 @@ public final class DataConsistencyCheckResult {
      * @return matched or not
      */
     public boolean isMatched() {
+        if (null != ignoredType) {
+            return false;
+        }
         return countCheckResult.isMatched() && contentCheckResult.isMatched();
     }
 }

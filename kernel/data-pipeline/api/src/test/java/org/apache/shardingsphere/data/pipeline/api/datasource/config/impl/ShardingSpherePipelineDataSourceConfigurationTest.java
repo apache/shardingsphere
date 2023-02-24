@@ -17,23 +17,41 @@
 
 package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
 
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingSpherePipelineDataSourceConfigurationTest {
     
     @Test
     public void assertCreate() {
-        ShardingSpherePipelineDataSourceConfiguration actual = new ShardingSpherePipelineDataSourceConfiguration(getDataSourceYaml());
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(getDataSourceYaml(), YamlRootConfiguration.class, true);
+        Map<String, Object> backupDs0 = new HashMap<>(rootConfig.getDataSources().get("ds_0"));
+        Map<String, Object> backupDs1 = new HashMap<>(rootConfig.getDataSources().get("ds_1"));
+        ShardingSpherePipelineDataSourceConfiguration actual = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
+        assertParameterUnchanged(backupDs0, rootConfig.getDataSources().get("ds_0"));
+        assertParameterUnchanged(backupDs1, rootConfig.getDataSources().get("ds_1"));
         assertGetConfig(actual);
+    }
+    
+    private void assertParameterUnchanged(final Map<String, Object> backup, final Map<String, Object> handled) {
+        assertThat(handled.size(), is(backup.size()));
+        for (Entry<String, Object> entry : backup.entrySet()) {
+            Object actual = handled.get(entry.getKey());
+            assertNotNull("value of '" + entry.getKey() + "' doesn't exist", actual);
+            assertThat("value of '" + entry.getKey() + "' doesn't match", actual, is(entry.getValue()));
+        }
     }
     
     private void assertGetConfig(final ShardingSpherePipelineDataSourceConfiguration actual) {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
@@ -36,9 +35,6 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     private static final int PACKET_HEADER = 0x00;
     
     private static final int NULL_BITMAP_OFFSET = 2;
-    
-    @Getter
-    private final int sequenceId;
     
     private final BinaryRow row;
     

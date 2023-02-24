@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sqlfederation.executor.FilterableTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
@@ -74,8 +73,6 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     
     private JDBCExecutor jdbcExecutor;
     
-    private EventBusContext eventBusContext;
-    
     private Connection connection;
     
     private Statement statement;
@@ -89,8 +86,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     }
     
     @Override
-    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData,
-                     final ShardingSphereData data, final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
+    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData data, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
         this.optimizerContext = OptimizerContextFactory.create(metaData.getDatabases(), metaData.getGlobalRuleMetaData());
@@ -98,7 +94,6 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
         this.data = data;
         this.props = metaData.getProps();
         this.jdbcExecutor = jdbcExecutor;
-        this.eventBusContext = eventBusContext;
     }
     
     @Override
@@ -121,8 +116,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
-        FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData,
-                executorContext, data, eventBusContext);
+        FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, data);
         FilterableDatabase database = new FilterableDatabase(federationContext.getMetaData().getDatabase(databaseName), JAVA_TYPE_FACTORY, executor);
         // TODO support database.schema.table query when switch to AdvancedFederationExecutor, calcite jdbc just support schema.table query now
         connection.getRootSchema().add(schemaName, database.getSubSchema(schemaName));

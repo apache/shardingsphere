@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Raw executor callback.
@@ -36,8 +35,7 @@ public interface RawExecutorCallback<I, O> {
      *
      * @param inputs input values
      * @param isTrunkThread is execution in trunk thread
-     * @param dataMap data map
      * @return execution results
      */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> dataMap);
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread);
 }

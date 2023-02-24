@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.state.circuit.resultset;
 import java.sql.ResultSetMetaData;
 
 /**
- * Circuit breaker result set metadata.
+ * Circuit breaker result set meta data.
  */
 public final class CircuitBreakerResultSetMetaData implements ResultSetMetaData {
     

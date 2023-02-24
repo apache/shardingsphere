@@ -31,7 +31,7 @@ import java.util.Date;
 public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolValue {
     
     @Override
-    public Object read(final MySQLPacketPayload payload) throws SQLException {
+    public Object read(final MySQLPacketPayload payload, final boolean unsigned) throws SQLException {
         int length = payload.readInt1();
         switch (length) {
             case 0:

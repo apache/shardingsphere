@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
-import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -38,16 +37,12 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private static final int KEY_MIN_LENGTH = 5;
     
-    @Getter
-    private Properties props;
-    
     private volatile byte[] key = new byte[SBOX_LENGTH - 1];
     
     private volatile int[] sBox = new int[SBOX_LENGTH];
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         reset();
         setKey(props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8));
     }
@@ -61,7 +56,7 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return null == plainValue ? null : Base64.encodeBase64String(handle(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8), key));
+        return null == plainValue ? null : Base64.encodeBase64String(handle(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8)));
     }
     
     @Override
@@ -69,11 +64,11 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
         if (null == cipherValue) {
             return null;
         }
-        byte[] result = handle(Base64.decodeBase64(cipherValue), key);
+        byte[] result = handle(Base64.decodeBase64(cipherValue));
         return new String(result, StandardCharsets.UTF_8);
     }
     
-    private byte[] handle(final byte[] data, final byte[] key) {
+    private byte[] handle(final byte[] data) {
         return crypt(data);
     }
     

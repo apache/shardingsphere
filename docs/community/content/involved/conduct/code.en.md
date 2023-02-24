@@ -86,6 +86,9 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Actual values of test cases should be named `actualXXX`, expected values `expectedXXX`.
  - Class for test case and `@Test` annotation do not need javadoc.
  - Mockito `mockStatic` and `mockConstruction` methods must be used with try-with-resource or closed in the teardown method to avoid leaks.
+ - Using `mock` should follow following specifications:
+   - Using `mock` when unit tests need to connect to an environment;
+   - Using `mock` when unit tests contain objects that are not easy to build, for example, objects that are more than two layers nested and unrelated to the test.
 
 ## Contributor Covenant G4 Code of Conduct
 

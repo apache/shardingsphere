@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,12 +38,18 @@ public final class EncryptTable {
     private final Boolean queryWithCipherColumn;
     
     public EncryptTable(final EncryptTableRuleConfiguration config) {
-        columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getLikeQueryColumn(),
-                    each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName(), each.getQueryWithCipherColumn()));
-        }
+        columns = createEncryptColumns(config);
         queryWithCipherColumn = config.getQueryWithCipherColumn();
+    }
+    
+    private Map<String, EncryptColumn> createEncryptColumns(final EncryptTableRuleConfiguration config) {
+        Map<String, EncryptColumn> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (EncryptColumnRuleConfiguration each : config.getColumns()) {
+            EncryptColumn encryptColumn = new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(),
+                    each.getLikeQueryColumn(), each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName(), each.getQueryWithCipherColumn());
+            result.put(each.getLogicColumn(), encryptColumn);
+        }
+        return result;
     }
     
     /**
@@ -217,7 +222,7 @@ public final class EncryptTable {
      * @return logic and cipher columns
      */
     public Map<String, String> getLogicAndCipherColumns() {
-        Map<String, String> result = new HashMap<>(columns.size(), 1);
+        Map<String, String> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
             result.put(entry.getKey(), entry.getValue().getCipherColumn());
         }

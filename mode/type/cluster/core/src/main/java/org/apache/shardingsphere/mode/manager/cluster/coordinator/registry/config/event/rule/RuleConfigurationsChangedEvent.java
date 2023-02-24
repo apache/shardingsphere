@@ -35,5 +35,5 @@ public final class RuleConfigurationsChangedEvent implements GovernanceEvent {
     
     private final String databaseVersion;
     
-    private final Collection<RuleConfiguration> ruleConfigurations;
+    private final Collection<RuleConfiguration> ruleConfigs;
 }

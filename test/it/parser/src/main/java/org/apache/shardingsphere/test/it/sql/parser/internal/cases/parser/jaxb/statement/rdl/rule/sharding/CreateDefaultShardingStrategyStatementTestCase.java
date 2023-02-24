@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedDefaultShardingStrategy;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -33,4 +34,7 @@ public final class CreateDefaultShardingStrategyStatementTestCase extends SQLPar
     
     @XmlElement
     private ExpectedDefaultShardingStrategy strategy;
+    
+    @XmlAttribute(name = "if-not-exists")
+    private boolean ifNotExists;
 }

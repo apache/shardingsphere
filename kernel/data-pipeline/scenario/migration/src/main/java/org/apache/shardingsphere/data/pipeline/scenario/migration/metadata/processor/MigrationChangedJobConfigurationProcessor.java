@@ -19,22 +19,17 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.proc
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineChangedJobConfigurationProcessor;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.prepare.MigrationJobPreparer;
-import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
-import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrierFactory;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Migration job configuration changed processor.
@@ -43,15 +38,20 @@ import java.util.concurrent.CompletableFuture;
 public final class MigrationChangedJobConfigurationProcessor implements PipelineChangedJobConfigurationProcessor {
     
     @Override
-    public void process(final Type eventType, final JobConfigurationPOJO jobConfigPOJO) {
-        String jobId = jobConfigPOJO.getJobName();
-        if (jobConfigPOJO.isDisabled()) {
-            Collection<Integer> shardingItems = PipelineJobCenter.getShardingItems(jobId);
-            PipelineJobCenter.stop(jobId);
-            PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrierFactory.getInstance();
-            for (Integer each : shardingItems) {
-                pipelineDistributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
+    public void process(final Type eventType, final JobConfiguration jobConfig) {
+        String jobId = jobConfig.getJobName();
+        boolean disabled = jobConfig.isDisabled();
+        if (disabled) {
+            for (Integer each : PipelineJobCenter.getShardingItems(jobId)) {
+                PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
             }
+        }
+        boolean deleted = Type.DELETED == eventType;
+        if (deleted) {
+            new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
+        }
+        if (disabled || deleted) {
+            PipelineJobCenter.stop(jobId);
             return;
         }
         switch (eventType) {
@@ -60,26 +60,18 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                 if (PipelineJobCenter.isJobExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
-                    CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor()).whenComplete((unused, throwable) -> {
-                        if (null != throwable) {
-                            log.error("execute failed, jobId={}", jobId, throwable);
-                        }
-                    });
+                    execute(jobConfig);
                 }
-                break;
-            case DELETED:
-                new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter()));
-                PipelineJobCenter.stop(jobId);
                 break;
             default:
                 break;
         }
     }
     
-    private void execute(final JobConfigurationPOJO jobConfigPOJO) {
+    private void execute(final JobConfiguration jobConfig) {
         MigrationJob job = new MigrationJob();
-        PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
-        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
+        PipelineJobCenter.addJob(jobConfig.getJobName(), job);
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfig);
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }

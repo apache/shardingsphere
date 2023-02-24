@@ -27,7 +27,7 @@ RUN cat bin/start.sh | tr -d '\r' > _start.sh && mv _start.sh bin/start.sh
 RUN cat bin/stop.sh | tr -d '\r' > _stop.sh && mv _stop.sh bin/stop.sh
 RUN chmod +x -R ./bin
 
-FROM openjdk:8-jdk-alpine
+FROM eclipse-temurin:8-jdk
 
 COPY --from=prepare /opt/shardingsphere-proxy /opt/shardingsphere-proxy
 

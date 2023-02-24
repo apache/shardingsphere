@@ -17,18 +17,25 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.record;
 
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class RecordUtilTest {
@@ -66,5 +73,15 @@ public final class RecordUtilTest {
         result.addColumn(new Column("c2", "", true, false));
         result.addColumn(new Column("c3", "", true, false));
         return result;
+    }
+    
+    @Test
+    public void assertGetLastNormalRecord() {
+        List<Record> actual = Arrays.asList(new DataRecord(new IntegerPrimaryKeyPosition(0, 1), 0), new PlaceholderRecord(new PlaceholderPosition()));
+        Record expected = RecordUtil.getLastNormalRecord(actual);
+        assertThat(expected, instanceOf(DataRecord.class));
+        actual = Arrays.asList(new DataRecord(new IntegerPrimaryKeyPosition(0, 1), 0), new PlaceholderRecord(new PlaceholderPosition()), new FinishedRecord(new FinishedPosition()));
+        expected = RecordUtil.getLastNormalRecord(actual);
+        assertThat(expected, instanceOf(FinishedRecord.class));
     }
 }

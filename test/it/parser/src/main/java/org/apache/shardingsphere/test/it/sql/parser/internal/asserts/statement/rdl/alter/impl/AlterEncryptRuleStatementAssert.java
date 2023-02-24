@@ -35,17 +35,17 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Create encrypt rule statement assert.
+ * Alter encrypt rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterEncryptRuleStatementAssert {
     
     /**
-     * Assert create encrypt rule statement is correct with expected parser result.
+     * Assert alter encrypt rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create encrypt rule statement
-     * @param expected expected create encrypt rule statement test case
+     * @param actual actual alter encrypt rule statement
+     * @param expected expected alter encrypt rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterEncryptRuleStatement actual, final AlterEncryptRuleStatementTestCase expected) {
         if (null == expected) {

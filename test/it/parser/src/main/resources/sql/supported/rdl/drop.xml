@@ -49,4 +49,6 @@
     <sql-case id="drop-default-sharding-strategy" value="DROP DEFAULT SHARDING TABLE STRATEGY" db-types="ShardingSphere" />
     <sql-case id="drop-default-sharding-strategy-if-exists" value="DROP DEFAULT SHARDING TABLE STRATEGY IF EXISTS" db-types="ShardingSphere" />
     <sql-case id="drop-sharding-algorithm" value="DROP SHARDING ALGORITHM IF EXISTS t_order_hash_mod" db-types="ShardingSphere" />
+    <sql-case id="drop-mask-rule" value="DROP MASK RULE t_mask, t_order" db-types="ShardingSphere" />
+    <sql-case id="drop-mask-rule-if-exists" value="DROP MASK RULE IF EXISTS t_mask, t_order" db-types="ShardingSphere" />
 </sql-cases>

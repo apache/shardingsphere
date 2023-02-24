@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.EmptyAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 
 import java.util.ArrayList;
@@ -33,15 +32,9 @@ import java.util.concurrent.BlockingQueue;
  */
 public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     
-    private static final EmptyAckCallback EMPTY_ACK_CALLBACK = new EmptyAckCallback();
-    
     private final BlockingQueue<Record> queue;
     
     private final AckCallback ackCallback;
-    
-    public SimpleMemoryPipelineChannel(final int blockQueueSize) {
-        this(blockQueueSize, EMPTY_ACK_CALLBACK);
-    }
     
     public SimpleMemoryPipelineChannel(final int blockQueueSize, final AckCallback ackCallback) {
         this.queue = new ArrayBlockingQueue<>(blockQueueSize);

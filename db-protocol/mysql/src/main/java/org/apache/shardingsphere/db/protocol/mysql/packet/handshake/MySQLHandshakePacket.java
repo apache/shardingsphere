@@ -46,13 +46,13 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     
     private final MySQLStatusFlag statusFlag;
     
-    private final MySQLAuthPluginData authPluginData;
+    private final MySQLAuthenticationPluginData authPluginData;
     
     private int capabilityFlagsUpper;
     
     private String authPluginName;
     
-    public MySQLHandshakePacket(final int connectionId, final MySQLAuthPluginData authPluginData) {
+    public MySQLHandshakePacket(final int connectionId, final MySQLAuthenticationPluginData authPluginData) {
         serverVersion = MySQLServerInfo.getDefaultServerVersion();
         this.connectionId = connectionId;
         capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower();
@@ -60,11 +60,10 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         statusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
         capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
         this.authPluginData = authPluginData;
-        authPluginName = MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName();
+        authPluginName = MySQLAuthenticationMethod.NATIVE.getMethodName();
     }
     
     public MySQLHandshakePacket(final MySQLPacketPayload payload) {
-        Preconditions.checkArgument(0 == payload.readInt1(), "Sequence ID of MySQL handshake packet must be `0`");
         Preconditions.checkArgument(protocolVersion == payload.readInt1());
         serverVersion = payload.readStringNul();
         connectionId = payload.readInt4();
@@ -75,7 +74,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         capabilityFlagsUpper = payload.readInt2();
         payload.readInt1();
         payload.skipReserved(10);
-        authPluginData = new MySQLAuthPluginData(authPluginDataPart1, readAuthPluginDataPart2(payload));
+        authPluginData = new MySQLAuthenticationPluginData(authPluginDataPart1, readAuthPluginDataPart2(payload));
         authPluginName = readAuthPluginName(payload);
     }
     
@@ -99,10 +98,10 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     /**
      * Set authentication plugin name.
      *
-     * @param mysqlAuthenticationMethod MySQL authentication method
+     * @param authenticationMethod MySQL authentication method
      */
-    public void setAuthPluginName(final MySQLAuthenticationMethod mysqlAuthenticationMethod) {
-        authPluginName = mysqlAuthenticationMethod.getMethodName();
+    public void setAuthPluginName(final MySQLAuthenticationMethod authenticationMethod) {
+        authPluginName = authenticationMethod.getMethodName();
         capabilityFlagsUpper |= MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16;
     }
     
@@ -111,7 +110,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
         payload.writeInt1(protocolVersion);
         payload.writeStringNul(serverVersion);
         payload.writeInt4(connectionId);
-        payload.writeStringNul(new String(authPluginData.getAuthPluginDataPart1()));
+        payload.writeStringNul(new String(authPluginData.getAuthenticationPluginDataPart1()));
         payload.writeInt2(capabilityFlagsLower);
         payload.writeInt1(characterSet);
         payload.writeInt2(statusFlag.getValue());
@@ -124,7 +123,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     
     private void writeAuthPluginDataPart2(final MySQLPacketPayload payload) {
         if (isClientSecureConnection()) {
-            payload.writeStringNul(new String(authPluginData.getAuthPluginDataPart2()));
+            payload.writeStringNul(new String(authPluginData.getAuthenticationPluginDataPart2()));
         }
     }
     
@@ -140,10 +139,5 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     
     private boolean isClientPluginAuth() {
         return 0 != (capabilityFlagsUpper & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16);
-    }
-    
-    @Override
-    public int getSequenceId() {
-        return 0;
     }
 }

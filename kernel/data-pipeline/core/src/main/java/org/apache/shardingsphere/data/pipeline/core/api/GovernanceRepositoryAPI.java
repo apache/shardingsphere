@@ -55,7 +55,7 @@ public interface GovernanceRepositoryAPI {
      * @param shardingItem sharding item
      * @return job item progress
      */
-    String getJobItemProgress(String jobId, int shardingItem);
+    Optional<String> getJobItemProgress(String jobId, int shardingItem);
     
     /**
      * Get latest check job id.

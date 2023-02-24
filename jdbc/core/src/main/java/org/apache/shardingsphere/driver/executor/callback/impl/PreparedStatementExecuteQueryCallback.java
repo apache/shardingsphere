@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.executor.callback.impl;
 
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.PreparedStatement;
@@ -33,9 +32,8 @@ import java.util.Map;
  */
 public final class PreparedStatementExecuteQueryCallback extends ExecuteQueryCallback {
     
-    public PreparedStatementExecuteQueryCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown,
-                                                 final EventBusContext eventBusContext) {
-        super(protocolType, storageTypes, sqlStatement, isExceptionThrown, eventBusContext);
+    public PreparedStatementExecuteQueryCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+        super(protocolType, storageTypes, sqlStatement, isExceptionThrown);
     }
     
     @Override

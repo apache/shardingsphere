@@ -19,14 +19,22 @@ package org.apache.shardingsphere.sqlfederation.row;
 
 import org.apache.calcite.linq4j.Enumerator;
 
+import java.lang.reflect.ParameterizedType;
+
 /**
  * Empty row enumerator.
  */
-public final class EmptyRowEnumerator implements Enumerator<Object[]> {
+public final class EmptyRowEnumerator<T> implements Enumerator<T> {
     
     @Override
-    public Object[] current() {
-        return new Object[0];
+    public T current() {
+        ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
+        System.out.println(type.getActualTypeArguments()[0].getTypeName());
+        if ("Object".equals(type.getActualTypeArguments()[0].getTypeName())) {
+            return (T) new Object();
+        } else {
+            return (T) new Object[0];
+        }
     }
     
     @Override

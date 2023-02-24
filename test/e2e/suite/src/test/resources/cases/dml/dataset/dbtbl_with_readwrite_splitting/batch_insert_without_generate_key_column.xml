@@ -69,7 +69,7 @@
     <row data-node="write_ds_2.t_order_item_0" values="120001, 1200, 12, 2, 1, 2017-08-08" />
     <row data-node="write_ds_2.t_order_item_1" values="120100, 1201, 12, 3, 1, 2017-08-08" />
     <row data-node="write_ds_2.t_order_item_1" values="120101, 1201, 12, 4, 1, 2017-08-08" />
-    <row data-node="write_ds_2.t_order_item_2" values="1, 2, 2, 2, 2, 2017-08-08" />
+    <row data-node="write_ds_2.t_order_item_2" values="2, 2, 2, 2, 2, 2017-08-08" />
     <row data-node="write_ds_2.t_order_item_2" values="120200, 1202, 12, 5, 1, 2017-08-08" />
     <row data-node="write_ds_2.t_order_item_2" values="120201, 1202, 12, 6, 1, 2017-08-08" />
     <row data-node="write_ds_2.t_order_item_3" values="120300, 1203, 12, 7, 1, 2017-08-08" />

@@ -21,15 +21,16 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
 
@@ -62,15 +63,8 @@ public final class ShadowRuleConfigurationCheckerTest {
     }
     
     private AlgorithmConfiguration createAlgorithmConfiguration() {
-        return new AlgorithmConfiguration("user-id-insert-match-algorithm", createProperties());
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("column", "shadow");
-        result.setProperty("operation", "insert");
-        result.setProperty("regex", "[1]");
-        return result;
+        return new AlgorithmConfiguration("user-id-insert-match-algorithm",
+                PropertiesBuilder.build(new Property("column", "shadow"), new Property("operation", "insert"), new Property("regex", "[1]")));
     }
     
     private Map<String, ShadowTableConfiguration> createTables() {

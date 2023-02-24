@@ -31,7 +31,6 @@ import java.io.Serializable;
  * <p>
  *     There are no detail document about JSON type in MySQL replication.
  *     Also no detail document in MariaDB.
- *
  *     Decoding implementation is referred to MySQL source code.
  * </p>
  *

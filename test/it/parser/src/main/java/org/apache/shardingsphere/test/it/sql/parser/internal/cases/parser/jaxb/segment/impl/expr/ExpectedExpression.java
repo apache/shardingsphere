@@ -89,4 +89,7 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "case-when-expression")
     private ExpectedCaseWhenExpression caseWhenExpression;
+    
+    @XmlElement(name = "type-cast-expression")
+    private ExpectedTypeCastExpression typeCastExpression;
 }

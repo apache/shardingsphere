@@ -34,6 +34,8 @@ public final class YamlConsistencyCheckJobItemProgress implements YamlConfigurat
     
     private String tableNames;
     
+    private String ignoredTableNames;
+    
     private Long checkedRecordsCount;
     
     private Long recordsCount;

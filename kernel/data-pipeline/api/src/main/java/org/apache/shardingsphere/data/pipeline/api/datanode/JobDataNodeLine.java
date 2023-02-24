@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.api.datanode;
 
+import com.google.common.base.Splitter;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Job data node line.
  */
 @RequiredArgsConstructor
+@Getter
 public final class JobDataNodeLine {
     
     private final Collection<JobDataNodeEntry> entries;
@@ -43,5 +47,15 @@ public final class JobDataNodeLine {
             result.setLength(result.length() - 1);
         }
         return result.toString();
+    }
+    
+    /**
+     * Unmarshal from text.
+     *
+     * @param text marshalled line
+     * @return line
+     */
+    public static JobDataNodeLine unmarshal(final String text) {
+        return new JobDataNodeLine(Splitter.on('|').omitEmptyStrings().splitToList(text).stream().map(JobDataNodeEntry::unmarshal).collect(Collectors.toList()));
     }
 }

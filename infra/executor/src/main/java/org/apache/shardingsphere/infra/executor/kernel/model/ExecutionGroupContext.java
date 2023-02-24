@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.executor.kernel.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.util.Collection;
 
@@ -31,14 +29,9 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class ExecutionGroupContext<T> {
     
     private final Collection<ExecutionGroup<T>> inputGroups;
     
-    private volatile String executionID;
-    
-    private volatile String databaseName;
-    
-    private volatile Grantee grantee;
+    private final ExecutionGroupReportContext reportContext;
 }

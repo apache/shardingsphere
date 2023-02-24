@@ -126,7 +126,7 @@ SELECT o.* FROM t_order o, t_order_item i WHERE o.order_id=i.order_id ORDER BY u
 SELECT o.*, order_item_id AS ORDER_BY_DERIVED_0 FROM t_order o, t_order_item i WHERE o.order_id=i.order_id ORDER BY user_id, order_item_id;
 ```
 
-补列的另一种情况是使用 AVG 聚合函数。在分布式的场景中，使用 avg1 + avg2 + avg3 / 3 计算平均值并不正确，需要改写为 (sum1 + sum2 + sum3)  / (count1 + count2 + count3)。
+补列的另一种情况是使用 AVG 聚合函数。在分布式的场景中，使用 (avg1 + avg2 + avg3) / 3 计算平均值并不正确，需要改写为 (sum1 + sum2 + sum3) / (count1 + count2 + count3)。
 这就需要将包含 AVG 的 SQL 改写为 SUM 和 COUNT，并在结果归并时重新计算平均值。例如以下 SQL：
 
 ```sql
@@ -207,15 +207,15 @@ SELECT score FROM t_score ORDER BY score DESC LIMIT 1, 2;
 举例说明，如下 SQL：
 
 ```sql
-INSERT INTO t_order (order_id, xxx) VALUES (1, 'xxx'), (2, 'xxx'), (3, 'xxx');
+INSERT INTO t_order (order_id, xxx) VALUES (1, 'xxx'), (2, 'xxx'), (3, 'xxx');
 ```
 
 假设数据库仍然是按照 order_id 的奇偶值分为两片的，仅将这条 SQL 中的表名进行修改，然后发送至数据库完成 SQL 的执行 ，则两个分片都会写入相同的记录。
 虽然只有符合分片查询条件的数据才能够被查询语句取出，但存在冗余数据的实现方案并不合理。因此需要将 SQL 改写为：
 
 ```sql
-INSERT INTO t_order_0 (order_id, xxx) VALUES (2, 'xxx');
-INSERT INTO t_order_1 (order_id, xxx) VALUES (1, 'xxx'), (3, 'xxx');
+INSERT INTO t_order_0 (order_id, xxx) VALUES (2, 'xxx');
+INSERT INTO t_order_1 (order_id, xxx) VALUES (1, 'xxx'), (3, 'xxx');
 ```
 
 使用 IN 的查询与批量插入的情况相似，不过 IN 操作并不会导致数据查询结果错误。通过对 IN 查询的改写，可以进一步的提升查询性能。如以下 SQL：

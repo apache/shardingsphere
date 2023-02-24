@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingException;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -34,11 +38,15 @@ import java.nio.ByteBuffer;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -224,6 +232,31 @@ public final class MppdbDecodingPluginTest {
         TimestampUtils timestampUtils = mock(TimestampUtils.class);
         when(timestampUtils.toTime(null, "1 2 3")).thenThrow(new SQLException(""));
         ByteBuffer data = ByteBuffer.wrap(toJSON(tableData).getBytes());
-        new MppdbDecodingPlugin(new OpenGaussTimestampUtils(timestampUtils)).decode(data, logSequenceNumber);
+        new MppdbDecodingPlugin(new OpenGaussTimestampUtils(timestampUtils), true).decode(data, logSequenceNumber);
+    }
+    
+    @Test
+    public void assertDecodeWithXid() throws JsonProcessingException {
+        MppTableData tableData = new MppTableData();
+        tableData.setTableName("public.test");
+        tableData.setOpType("INSERT");
+        tableData.setColumnsName(new String[]{"data"});
+        tableData.setColumnsType(new String[]{"raw"});
+        tableData.setColumnsVal(new String[]{"'7D'"});
+        List<String> dataList = Arrays.asList("BEGIN 1", OBJECT_MAPPER.writeValueAsString(tableData), OBJECT_MAPPER.writeValueAsString(tableData),
+                "COMMIT 1 (at 2022-10-27 04:19:39.476261+00) CSN 3468");
+        MppdbDecodingPlugin mppdbDecodingPlugin = new MppdbDecodingPlugin(null, true);
+        List<AbstractWALEvent> expectedEvent = new LinkedList<>();
+        for (String each : dataList) {
+            expectedEvent.add(mppdbDecodingPlugin.decode(ByteBuffer.wrap(each.getBytes()), logSequenceNumber));
+        }
+        assertThat(expectedEvent.size(), is(4));
+        AbstractWALEvent actualFirstEvent = expectedEvent.get(0);
+        assertTrue(actualFirstEvent instanceof BeginTXEvent);
+        assertThat(((BeginTXEvent) actualFirstEvent).getXid(), is(1L));
+        AbstractWALEvent actualLastEvent = expectedEvent.get(expectedEvent.size() - 1);
+        assertTrue(actualLastEvent instanceof CommitTXEvent);
+        assertThat(((CommitTXEvent) actualLastEvent).getCsn(), is(3468L));
+        assertThat(((CommitTXEvent) actualLastEvent).getXid(), is(1L));
     }
 }

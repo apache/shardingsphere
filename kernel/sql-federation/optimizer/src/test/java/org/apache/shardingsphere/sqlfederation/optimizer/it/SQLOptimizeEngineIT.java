@@ -31,9 +31,9 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -88,6 +88,11 @@ public final class SQLOptimizeEngineIT {
         tables.put("t_single_table", createTSingleTableMetaData());
         tables.put("t_order_federate_sharding", createTOrderFederateShardingMetaData());
         tables.put("t_order_item_federate_sharding", createTOrderItemFederateShardingMetaData());
+        tables.put("t_merchant", createTMerchantMetaData());
+        tables.put("t_product", createTProductMetaData());
+        tables.put("t_product_detail", createTProductDetailMetaData());
+        tables.put("multi_types_first", createMultiTypesFirstTableMetaData());
+        tables.put("multi_types_second", createMultiTypesSecondTableMetaData());
         optimizeEngine = new SQLOptimizeEngine(createSqlToRelConverter(new ShardingSphereSchema(tables, Collections.emptyMap())), SQLFederationPlannerUtil.createHepPlanner());
     }
     
@@ -150,6 +155,93 @@ public final class SQLOptimizeEngineIT {
                 Collections.emptyList(), Collections.emptyList());
     }
     
+    private ShardingSphereTable createTMerchantMetaData() {
+        ShardingSphereColumn merchantIdColumn = new ShardingSphereColumn("merchant_id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn countryIdColumn = new ShardingSphereColumn("country_id", Types.SMALLINT, false, false, false, true, false);
+        ShardingSphereColumn merchantNameColumn = new ShardingSphereColumn("merchant_name", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn businessCodeColumn = new ShardingSphereColumn("business_code", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn telephoneColumn = new ShardingSphereColumn("telephone", Types.CHAR, false, false, false, true, false);
+        ShardingSphereColumn creationDateColumn = new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false);
+        return new ShardingSphereTable("t_merchant", Arrays.asList(merchantIdColumn, countryIdColumn, merchantNameColumn, businessCodeColumn, telephoneColumn, creationDateColumn),
+                Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createTProductDetailMetaData() {
+        ShardingSphereColumn detailIdColumn = new ShardingSphereColumn("detail_id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn productIdColumn = new ShardingSphereColumn("product_id", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn descriptionColumn = new ShardingSphereColumn("description", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn creationDateColumn = new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false);
+        return new ShardingSphereTable("t_product_detail", Arrays.asList(detailIdColumn, productIdColumn, descriptionColumn, creationDateColumn),
+                Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createTProductMetaData() {
+        ShardingSphereColumn productIdColumn = new ShardingSphereColumn("product_id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn productNameColumn = new ShardingSphereColumn("product_name", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn categoryIdColumn = new ShardingSphereColumn("category_id", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn priceColumn = new ShardingSphereColumn("price", Types.DECIMAL, false, false, false, true, false);
+        ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn creationDateColumn = new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false);
+        return new ShardingSphereTable("t_product", Arrays.asList(productIdColumn, productNameColumn, categoryIdColumn, priceColumn, statusColumn, creationDateColumn),
+                Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createMultiTypesFirstTableMetaData() {
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn bitColumn = new ShardingSphereColumn("bit_column", Types.BIT, false, false, false, true, false);
+        ShardingSphereColumn tinyIntColumn = new ShardingSphereColumn("tiny_int_column", Types.TINYINT, false, false, false, true, false);
+        ShardingSphereColumn smallIntColumn = new ShardingSphereColumn("small_int_column", Types.SMALLINT, false, false, false, true, false);
+        ShardingSphereColumn integerColumn = new ShardingSphereColumn("integer_column", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn bigIntColumn = new ShardingSphereColumn("big_int_column", Types.BIGINT, false, false, false, true, false);
+        ShardingSphereColumn floatColumn = new ShardingSphereColumn("float_column", Types.FLOAT, false, false, false, true, false);
+        ShardingSphereColumn realColumn = new ShardingSphereColumn("real_column", Types.REAL, false, false, false, true, false);
+        ShardingSphereColumn doubleColumn = new ShardingSphereColumn("double_column", Types.DOUBLE, false, false, false, true, false);
+        ShardingSphereColumn numericColumn = new ShardingSphereColumn("numeric_column", Types.NUMERIC, false, false, false, true, false);
+        ShardingSphereColumn decimalColumn = new ShardingSphereColumn("decimal_column", Types.DECIMAL, false, false, false, true, false);
+        ShardingSphereColumn charColumn = new ShardingSphereColumn("char_column", Types.CHAR, false, false, false, true, false);
+        ShardingSphereColumn varcharColumn = new ShardingSphereColumn("varchar_column", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn longVarcharColumn = new ShardingSphereColumn("long_varchar_column", Types.LONGVARCHAR, false, false, false, true, false);
+        ShardingSphereColumn dateColumn = new ShardingSphereColumn("date_column", Types.DATE, false, false, false, true, false);
+        ShardingSphereColumn timeColumn = new ShardingSphereColumn("time_column", Types.TIME, false, false, false, true, false);
+        ShardingSphereColumn timeStampColumn = new ShardingSphereColumn("time_stamp_column", Types.TIMESTAMP, false, false, false, true, false);
+        ShardingSphereColumn binaryColumn = new ShardingSphereColumn("binary_column", Types.BINARY, false, false, false, true, false);
+        ShardingSphereColumn varBinaryColumn = new ShardingSphereColumn("varbinary_column", Types.VARBINARY, false, false, false, true, false);
+        ShardingSphereColumn longVarbinaryColumn = new ShardingSphereColumn("long_varbinary_column", Types.LONGVARBINARY, false, false, false, true, false);
+        ShardingSphereColumn nullColumn = new ShardingSphereColumn("null_column", Types.NULL, false, false, false, true, false);
+        ShardingSphereColumn otherColumn = new ShardingSphereColumn("other_column", Types.OTHER, false, false, false, true, false);
+        return new ShardingSphereTable("multi_types_first", Arrays.asList(idColumn, bitColumn, tinyIntColumn, smallIntColumn, integerColumn, bigIntColumn, floatColumn,
+                realColumn, doubleColumn, numericColumn, decimalColumn, charColumn, varcharColumn, longVarcharColumn, dateColumn, timeColumn, timeStampColumn, binaryColumn,
+                varBinaryColumn, longVarbinaryColumn, nullColumn, otherColumn),
+                Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createMultiTypesSecondTableMetaData() {
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn bitColumn = new ShardingSphereColumn("bit_column", Types.BIT, false, false, false, true, false);
+        ShardingSphereColumn tinyIntColumn = new ShardingSphereColumn("tiny_int_column", Types.TINYINT, false, false, false, true, false);
+        ShardingSphereColumn smallIntColumn = new ShardingSphereColumn("small_int_column", Types.SMALLINT, false, false, false, true, false);
+        ShardingSphereColumn integerColumn = new ShardingSphereColumn("integer_column", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn bigIntColumn = new ShardingSphereColumn("big_int_column", Types.BIGINT, false, false, false, true, false);
+        ShardingSphereColumn floatColumn = new ShardingSphereColumn("float_column", Types.FLOAT, false, false, false, true, false);
+        ShardingSphereColumn realColumn = new ShardingSphereColumn("real_column", Types.REAL, false, false, false, true, false);
+        ShardingSphereColumn doubleColumn = new ShardingSphereColumn("double_column", Types.DOUBLE, false, false, false, true, false);
+        ShardingSphereColumn numericColumn = new ShardingSphereColumn("numeric_column", Types.NUMERIC, false, false, false, true, false);
+        ShardingSphereColumn decimalColumn = new ShardingSphereColumn("decimal_column", Types.DECIMAL, false, false, false, true, false);
+        ShardingSphereColumn charColumn = new ShardingSphereColumn("char_column", Types.CHAR, false, false, false, true, false);
+        ShardingSphereColumn varcharColumn = new ShardingSphereColumn("varchar_column", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn longVarcharColumn = new ShardingSphereColumn("long_varchar_column", Types.LONGVARCHAR, false, false, false, true, false);
+        ShardingSphereColumn dateColumn = new ShardingSphereColumn("date_column", Types.DATE, false, false, false, true, false);
+        ShardingSphereColumn timeColumn = new ShardingSphereColumn("time_column", Types.TIME, false, false, false, true, false);
+        ShardingSphereColumn timeStampColumn = new ShardingSphereColumn("time_stamp_column", Types.TIMESTAMP, false, false, false, true, false);
+        ShardingSphereColumn binaryColumn = new ShardingSphereColumn("binary_column", Types.BINARY, false, false, false, true, false);
+        ShardingSphereColumn varBinaryColumn = new ShardingSphereColumn("varbinary_column", Types.VARBINARY, false, false, false, true, false);
+        ShardingSphereColumn longVarbinaryColumn = new ShardingSphereColumn("long_varbinary_column", Types.LONGVARBINARY, false, false, false, true, false);
+        return new ShardingSphereTable("multi_types_second", Arrays.asList(idColumn, bitColumn, tinyIntColumn, smallIntColumn, integerColumn, bigIntColumn, floatColumn,
+                realColumn, doubleColumn, numericColumn, decimalColumn, charColumn, varcharColumn, longVarcharColumn, dateColumn, timeColumn, timeStampColumn, binaryColumn,
+                varBinaryColumn, longVarbinaryColumn),
+                Collections.emptyList(), Collections.emptyList());
+    }
+    
     private SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(new Properties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
@@ -164,7 +256,7 @@ public final class SQLOptimizeEngineIT {
     @Test
     public void assertOptimize() {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType())).parse(testcase.getSql(), false);
-        String expected = optimizeEngine.optimize(sqlStatement).getBestPlan().explain().replaceAll("[\r\n]", "");
-        assertThat(testcase.getAssertion().getExpectedResult(), is(expected));
+        String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain().replaceAll("[\r\n]", "");
+        assertThat(actual, is(testcase.getAssertion().getExpectedResult()));
     }
 }

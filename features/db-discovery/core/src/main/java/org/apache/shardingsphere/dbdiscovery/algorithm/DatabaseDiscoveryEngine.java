@@ -19,20 +19,20 @@ package org.apache.shardingsphere.dbdiscovery.algorithm;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.dbdiscovery.mysql.type.MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -44,9 +44,9 @@ import java.util.Optional;
 @Slf4j
 public final class DatabaseDiscoveryEngine {
     
-    private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
+    private final DatabaseDiscoveryProvider provider;
     
-    private final EventBusContext eventBusContext;
+    private final InstanceContext instanceContext;
     
     /**
      * Check environment of database cluster.
@@ -55,7 +55,7 @@ public final class DatabaseDiscoveryEngine {
      * @param dataSourceMap data source map
      */
     public void checkEnvironment(final String databaseName, final Map<String, DataSource> dataSourceMap) {
-        databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, dataSourceMap.values());
+        provider.checkEnvironment(databaseName, dataSourceMap.values());
     }
     
     /**
@@ -71,18 +71,17 @@ public final class DatabaseDiscoveryEngine {
     public String changePrimaryDataSource(final String databaseName, final String groupName, final String originalPrimaryDataSourceName,
                                           final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         Optional<String> newPrimaryDataSourceName = findPrimaryDataSourceName(dataSourceMap);
-        if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(originalPrimaryDataSourceName)) {
-            eventBusContext.post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
-        }
-        String result = newPrimaryDataSourceName.orElse(originalPrimaryDataSourceName);
-        postReplicaDataSourceDisabledEvent(databaseName, groupName, result, dataSourceMap, disabledDataSourceNames);
-        return result;
+        newPrimaryDataSourceName.ifPresent(optional -> postPrimaryChangedEvent(databaseName, groupName, originalPrimaryDataSourceName, optional));
+        Map<String, DataSource> replicaDataSourceMap = new HashMap<>(dataSourceMap);
+        newPrimaryDataSourceName.ifPresent(replicaDataSourceMap::remove);
+        postReplicaDisabledEvent(databaseName, groupName, replicaDataSourceMap, disabledDataSourceNames);
+        return newPrimaryDataSourceName.orElse("");
     }
     
     private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try {
-                if (databaseDiscoveryProviderAlgorithm.isPrimaryInstance(entry.getValue())) {
+                if (provider.isPrimaryInstance(entry.getValue())) {
                     return Optional.of(entry.getKey());
                 }
             } catch (final SQLException ex) {
@@ -92,34 +91,41 @@ public final class DatabaseDiscoveryEngine {
         return Optional.empty();
     }
     
-    private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName, final String primaryDataSourceName,
-                                                    final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        int enabledReplicasCount = dataSourceMap.size() - disabledDataSourceNames.size() - 1;
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            if (!entry.getKey().equals(primaryDataSourceName)) {
-                StorageNodeDataSource storageNodeDataSource = createStorageNodeDataSource(loadReplicaStatus(entry.getValue()));
-                if (StorageNodeStatus.isEnable(storageNodeDataSource.getStatus())) {
-                    enabledReplicasCount += disabledDataSourceNames.contains(entry.getKey()) ? 1 : 0;
-                    eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
-                    continue;
-                }
-                if (!(databaseDiscoveryProviderAlgorithm instanceof MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm)
-                        || enabledReplicasCount > Integer.parseInt(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas", "0"))) {
-                    enabledReplicasCount -= disabledDataSourceNames.contains(entry.getKey()) ? 0 : 1;
-                    eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
-                }
+    private void postPrimaryChangedEvent(final String databaseName, final String groupName, final String originalPrimaryDataSourceName, final String newPrimaryDataSourceName) {
+        if (!newPrimaryDataSourceName.equals(originalPrimaryDataSourceName)) {
+            instanceContext.getEventBusContext().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName)));
+        }
+    }
+    
+    private void postReplicaDisabledEvent(final String databaseName, final String groupName,
+                                          final Map<String, DataSource> replicaDataSourceMap, final Collection<String> disabledDataSourceNames) {
+        int enabledReplicasCount = replicaDataSourceMap.size() - disabledDataSourceNames.size() - 1;
+        for (Entry<String, DataSource> entry : replicaDataSourceMap.entrySet()) {
+            StorageNodeDataSource replicaStorageNode = createReplicaStorageNode(loadReplicaStatus(entry.getValue()));
+            if (DataSourceState.ENABLED == replicaStorageNode.getStatus()) {
+                enabledReplicasCount += disabledDataSourceNames.contains(entry.getKey()) ? 1 : 0;
+                instanceContext.getEventBusContext().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), replicaStorageNode));
+                continue;
+            }
+            if (provider.getMinEnabledReplicas().isPresent() && 0 == provider.getMinEnabledReplicas().get()) {
+                instanceContext.getEventBusContext().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), replicaStorageNode));
+                continue;
+            }
+            if (enabledReplicasCount > provider.getMinEnabledReplicas().get()) {
+                enabledReplicasCount -= disabledDataSourceNames.contains(entry.getKey()) ? 0 : 1;
+                instanceContext.getEventBusContext().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), replicaStorageNode));
             }
         }
     }
     
-    private StorageNodeDataSource createStorageNodeDataSource(final ReplicaDataSourceStatus replicaStatus) {
-        return new StorageNodeDataSource(StorageNodeRole.MEMBER, replicaStatus.isOnline() ? StorageNodeStatus.ENABLED : StorageNodeStatus.DISABLED, replicaStatus.getReplicationDelayMilliseconds());
+    private StorageNodeDataSource createReplicaStorageNode(final ReplicaDataSourceStatus replicaStatus) {
+        return new StorageNodeDataSource(StorageNodeRole.MEMBER, replicaStatus.isOnline() ? DataSourceState.ENABLED : DataSourceState.DISABLED, replicaStatus.getReplicationDelayMilliseconds());
     }
     
     private ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
         try {
-            return databaseDiscoveryProviderAlgorithm.loadReplicaStatus(replicaDataSource);
-        } catch (SQLException ex) {
+            return provider.loadReplicaStatus(replicaDataSource);
+        } catch (final SQLException ex) {
             log.error("Load data source replica status error: ", ex);
             return new ReplicaDataSourceStatus(false, 0L);
         }

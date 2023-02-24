@@ -49,6 +49,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     public static void initShardingSphereDataSource() throws SQLException, IOException {
         if (null == dataSource) {
             dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
+            System.out.println(dataSource);
         }
     }
     

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -28,6 +27,7 @@ import java.util.Optional;
 /**
  * Sharding rule configuration converter.
  */
+// TODO Move to pipeline module
 public final class ShardingRuleConfigurationConverter {
     
     /**
@@ -37,8 +37,8 @@ public final class ShardingRuleConfigurationConverter {
      * @return sharding rule configuration
      * @throws IllegalStateException if there is no available sharding rule
      */
-    public static ShardingRuleConfiguration findAndConvertShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        return new YamlShardingRuleConfigurationSwapper().swapToObject(findYamlShardingRuleConfiguration(yamlRuleConfigs));
+    public static Optional<ShardingRuleConfiguration> findAndConvertShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
+        return findYamlShardingRuleConfiguration(yamlRuleConfigs).map(each -> new YamlShardingRuleConfigurationSwapper().swapToObject(each));
     }
     
     /**
@@ -48,9 +48,7 @@ public final class ShardingRuleConfigurationConverter {
      * @return YAML sharding rule configuration
      * @throws IllegalStateException if there is no available sharding rule
      */
-    public static YamlShardingRuleConfiguration findYamlShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        Optional<YamlRuleConfiguration> ruleConfig = yamlRuleConfigs.stream().filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst();
-        Preconditions.checkState(ruleConfig.isPresent(), "No available sharding rule.");
-        return (YamlShardingRuleConfiguration) ruleConfig.get();
+    public static Optional<YamlShardingRuleConfiguration> findYamlShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
+        return yamlRuleConfigs.stream().filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(each -> (YamlShardingRuleConfiguration) each);
     }
 }

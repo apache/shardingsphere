@@ -59,25 +59,6 @@ Yaml:
   providerType: Bitronix
 ```
 
-SpringBoot:
-
-```yaml
-spring:
-  shardingsphere:
-    props:
-      xa-transaction-manager-type: Bitronix
-```
-
-Spring Namespace:
-
-```xml
-<shardingsphere:data-source id="xxx" data-source-names="xxx" rule-refs="xxx">
-    <props>
-        <prop key="xa-transaction-manager-type">Bitronix</prop>
-    </props>
-</shardingsphere:data-source>
-```
-
 ### 配置 Bitronix （可省略）
 
 详情请参见 [Bitronix 官方文档](https://github.com/bitronix/btm/wiki) 。

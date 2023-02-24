@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.e2e.discovery.framework.container.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.AdapterContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtil;
 
 import java.util.HashMap;
 import java.util.Map;

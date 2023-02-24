@@ -19,11 +19,13 @@ package org.apache.shardingsphere.transaction.xa;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.core.ResourceDataSource;
+import org.apache.shardingsphere.transaction.exception.TransactionTimeoutException;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerProviderFactory;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.DataSource;
@@ -52,7 +54,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
-        xaTransactionManagerProvider = XATransactionManagerProviderFactory.getInstance(providerType);
+        xaTransactionManagerProvider = TypedSPILoader.getService(XATransactionManagerProvider.class, providerType);
         xaTransactionManagerProvider.init();
         Map<String, ResourceDataSource> resourceDataSources = getResourceDataSources(dataSources);
         resourceDataSources.forEach((key, value) -> cachedDataSources.put(value.getOriginalName(), newXATransactionDataSource(databaseTypes.get(key), value)));
@@ -101,9 +103,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     @Override
     @SneakyThrows({SystemException.class, NotSupportedException.class})
     public void begin(final int timeout) {
-        if (timeout < 0) {
-            throw new NotSupportedException("timeout should more than 0s");
-        }
+        ShardingSpherePreconditions.checkState(timeout >= 0, TransactionTimeoutException::new);
         TransactionManager transactionManager = xaTransactionManagerProvider.getTransactionManager();
         transactionManager.setTransactionTimeout(timeout);
         transactionManager.begin();
@@ -134,5 +134,10 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
         if (null != xaTransactionManagerProvider) {
             xaTransactionManagerProvider.close();
         }
+    }
+    
+    @Override
+    public boolean containsProviderType(final String providerType) {
+        return TypedSPILoader.contains(XATransactionManagerProvider.class, providerType);
     }
 }

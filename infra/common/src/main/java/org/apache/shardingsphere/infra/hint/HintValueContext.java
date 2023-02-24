@@ -21,17 +21,21 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Hint value context.
  */
 @Getter
 @Setter
+@ToString
 public final class HintValueContext {
     
     private final Multimap<String, Comparable<?>> shardingDatabaseValues = ArrayListMultimap.create();
     
     private final Multimap<String, Comparable<?>> shardingTableValues = ArrayListMultimap.create();
+    
+    private String dataSourceName = "";
     
     private boolean databaseShardingOnly;
     

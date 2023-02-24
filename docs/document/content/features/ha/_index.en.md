@@ -29,7 +29,5 @@ In most cases, high availability is used in conjunction with read/write splittin
 
 ## Related References
 
-[Java API](/en/user-manual/shardingsphere-jdbc/java-api/rules/ha)\
-[YAML Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/ha)\
-[Spring Boot Starter](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/ha)\
-[Spring Namespace](/en/user-manual/shardingsphere-jdbc/spring-namespace/rules/ha)
+[Java API](/en/user-manual/shardingsphere-jdbc/java-api/rules/ha)
+[YAML Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/ha)

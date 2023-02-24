@@ -18,38 +18,33 @@
 package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 
-@SuppressWarnings("unchecked")
 public final class AESEncryptAlgorithmTest {
     
     private StandardEncryptAlgorithm<Object, String> encryptAlgorithm;
     
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
-        encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("AES", createProperties()));
+        encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
     }
     
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("aes-key-value", "test");
-        return result;
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = EncryptAlgorithmInitializationException.class)
     public void assertCreateNewInstanceWithoutAESKey() {
-        EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("AES", new Properties()));
+        TypedSPILoader.getService(EncryptAlgorithm.class, "AES");
     }
     
     @Test

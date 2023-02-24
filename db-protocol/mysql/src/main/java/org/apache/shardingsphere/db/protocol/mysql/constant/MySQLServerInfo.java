@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

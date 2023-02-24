@@ -72,6 +72,6 @@ public final class PasswordEncryptionTest {
                 + "XaUZwZHdXjEme0/D8p8KBXdMipanZXwHdL+LOBSACj3/FwHn+6oZO2k02g80uofs\n"
                 + "zFdWMjpPVqVCqe85GRFzEY73wDYEItl0d+9a9OV3FFZqVgC2FLk3cD5qajPtyo6v\n"
                 + "UQIDAQAB\n"
-                + "-----END PUBLIC KEY-----";
+                + "-----END PUBLIC KEY-----\n";
     }
 }

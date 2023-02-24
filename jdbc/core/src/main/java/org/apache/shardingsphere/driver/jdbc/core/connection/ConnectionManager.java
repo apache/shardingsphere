@@ -25,6 +25,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.MethodInvocationRecorder;
 import org.apache.shardingsphere.driver.jdbc.core.ShardingSphereSavepoint;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -77,25 +79,29 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     
     private final Random random = new SecureRandom();
     
+    @Getter
+    private final ConnectionContext connectionContext;
+    
     public ConnectionManager(final String databaseName, final ContextManager contextManager) {
         dataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
         dataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
         physicalDataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
         connectionTransaction = createConnectionTransaction(databaseName, contextManager);
+        connectionContext = new ConnectionContext(this::getDataSourceNamesOfCachedConnections);
     }
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String databaseName, final ContextManager contextManager) {
-        TrafficRule trafficRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
-        MetaDataPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
-        if (trafficRule.getStrategyRules().isEmpty()) {
+        TrafficRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+        if (rule.getStrategyRules().isEmpty()) {
             return Collections.emptyMap();
         }
+        MetaDataPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
         String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName);
         Map<String, DataSourceProperties> dataSourcePropsMap = persistService.getDataSourceService().load(actualDatabaseName);
         Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = persistService.getGlobalRuleService().loadUsers();
-        Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, trafficRule.getLabels());
+        Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, rule.getLabels());
         return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, actualDatabaseName));
     }
     
@@ -127,13 +133,13 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     
     private ConnectionTransaction createConnectionTransaction(final String databaseName, final ContextManager contextManager) {
         TransactionType type = TransactionTypeHolder.get();
-        TransactionRule transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
-        return null == type ? new ConnectionTransaction(databaseName, transactionRule) : new ConnectionTransaction(databaseName, type, transactionRule);
+        TransactionRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        return null == type ? new ConnectionTransaction(databaseName, rule) : new ConnectionTransaction(databaseName, type, rule);
     }
     
     /**
      * Set auto commit.
-     * 
+     *
      * @param autoCommit auto commit
      * @throws SQLException SQL exception
      */
@@ -144,7 +150,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     
     /**
      * Commit.
-     * 
+     *
      * @throws SQLException SQL exception
      */
     public void commit() throws SQLException {
@@ -227,7 +233,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     
     /**
      * Get transaction isolation.
-     * 
+     *
      * @return transaction isolation level
      * @throws SQLException SQL exception
      */
@@ -259,7 +265,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     
     /**
      * Whether connection valid.
-     * 
+     *
      * @param timeout timeout
      * @return connection valid or not
      * @throws SQLException SQL exception
@@ -325,23 +331,24 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         if (1 == connectionSize) {
-            Connection connection = createConnection(dataSourceName, dataSource);
+            Connection connection = createConnection(dataSourceName, dataSource, connectionContext.getTransactionConnectionContext());
             methodInvocationRecorder.replay(connection);
             return Collections.singletonList(connection);
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(dataSourceName, dataSource, connectionSize);
+            return createConnections(dataSourceName, dataSource, connectionSize, connectionContext.getTransactionConnectionContext());
         }
         synchronized (dataSource) {
-            return createConnections(dataSourceName, dataSource, connectionSize);
+            return createConnections(dataSourceName, dataSource, connectionSize, connectionContext.getTransactionConnectionContext());
         }
     }
     
-    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize) throws SQLException {
+    private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize,
+                                               final TransactionConnectionContext transactionConnectionContext) throws SQLException {
         List<Connection> result = new ArrayList<>(connectionSize);
         for (int i = 0; i < connectionSize; i++) {
             try {
-                Connection connection = createConnection(dataSourceName, dataSource);
+                Connection connection = createConnection(dataSourceName, dataSource, transactionConnectionContext);
                 methodInvocationRecorder.replay(connection);
                 result.add(connection);
             } catch (final SQLException ex) {
@@ -354,8 +361,8 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
         return result;
     }
     
-    private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        Optional<Connection> connectionInTransaction = isRawJdbcDataSource(dataSourceName) ? connectionTransaction.getConnection(dataSourceName) : Optional.empty();
+    private Connection createConnection(final String dataSourceName, final DataSource dataSource, final TransactionConnectionContext transactionConnectionContext) throws SQLException {
+        Optional<Connection> connectionInTransaction = isRawJdbcDataSource(dataSourceName) ? connectionTransaction.getConnection(dataSourceName, transactionConnectionContext) : Optional.empty();
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
     }
     

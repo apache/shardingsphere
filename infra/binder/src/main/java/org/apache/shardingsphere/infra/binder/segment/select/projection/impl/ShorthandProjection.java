@@ -85,4 +85,9 @@ public final class ShorthandProjection implements Projection {
         }
         return result;
     }
+    
+    @Override
+    public Projection cloneWithOwner(final String ownerName) {
+        return new ShorthandProjection(ownerName, actualColumns.values());
+    }
 }

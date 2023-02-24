@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -35,7 +34,6 @@ public final class MySQLCommandPacketTypeLoader {
      * @return command packet type for MySQL
      */
     public static MySQLCommandPacketType getCommandPacketType(final MySQLPacketPayload payload) {
-        Preconditions.checkArgument(0 == payload.readInt1(), "Sequence ID of MySQL command packet must be `0`");
         return MySQLCommandPacketType.valueOf(payload.readInt1());
     }
 }

@@ -40,20 +40,17 @@ public final class MySQLErrPacket implements MySQLPacket {
     
     private static final String SQL_STATE_MARKER = "#";
     
-    private final int sequenceId;
-    
     private final int errorCode;
     
     private final String sqlState;
     
     private final String errorMessage;
     
-    public MySQLErrPacket(final int sequenceId, final VendorError vendorError, final Object... errorMessageArgs) {
-        this(sequenceId, vendorError.getVendorCode(), vendorError.getSqlState().getValue(), String.format(vendorError.getReason(), errorMessageArgs));
+    public MySQLErrPacket(final VendorError vendorError, final Object... errorMessageArgs) {
+        this(vendorError.getVendorCode(), vendorError.getSqlState().getValue(), String.format(vendorError.getReason(), errorMessageArgs));
     }
     
     public MySQLErrPacket(final MySQLPacketPayload payload) {
-        sequenceId = payload.readInt1();
         Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL ERR packet must be `0xff`.");
         errorCode = payload.readInt2();
         payload.readStringFix(1);
@@ -65,10 +62,8 @@ public final class MySQLErrPacket implements MySQLPacket {
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(HEADER);
         payload.writeInt2(errorCode);
-        if (0 != sequenceId) {
-            payload.writeStringFix(SQL_STATE_MARKER);
-            payload.writeStringFix(sqlState);
-        }
+        payload.writeStringFix(SQL_STATE_MARKER);
+        payload.writeStringFix(sqlState);
         payload.writeStringEOF(errorMessage);
     }
 }

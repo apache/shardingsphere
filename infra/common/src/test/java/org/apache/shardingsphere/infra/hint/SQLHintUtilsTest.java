@@ -63,4 +63,18 @@ public final class SQLHintUtilsTest {
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsAll(Arrays.asList("sharding_audit1", "sharding_audit2")));
     }
+    
+    @Test
+    public void assertGetSQLHintPropsWithDataSourceName() {
+        Properties actual = SQLHintUtils.getSQLHintProps("/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_0 */");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("DATA_SOURCE_NAME"), is("ds_0"));
+    }
+    
+    @Test
+    public void assertGetSQLHintPropsWithDataSourceNameAlias() {
+        Properties actual = SQLHintUtils.getSQLHintProps("/* ShardingSphere hint: dataSourceName=ds_0 */");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("dataSourceName"), is("ds_0"));
+    }
 }

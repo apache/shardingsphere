@@ -5,7 +5,7 @@ weight = 9
 
 ## Background
 
-ShardingSphere provides a variety of features, such as data sharding, read/write splitting, high availability, and data decryption. These features can be used independently or in combination. 
+ShardingSphere provides a variety of features, such as data sharding, read/write splitting, high availability, and data encryption. These features can be used independently or in combination. 
 Below, you will find the configuration samples based on JAVA API.
 
 ## Samples
@@ -72,7 +72,7 @@ private static Map<String, DatabaseDiscoveryHeartBeatConfiguration> createDiscov
     return result;
 }
 
-// Data decryption configuration
+// Data encryption configuration
 public EncryptRuleConfiguration createEncryptRuleConfiguration() {
     Properties props = new Properties();
     props.setProperty("aes-key-value", "123456");

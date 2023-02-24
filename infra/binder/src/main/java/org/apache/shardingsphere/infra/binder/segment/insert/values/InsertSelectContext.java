@@ -39,7 +39,7 @@ public final class InsertSelectContext {
     private final SelectStatementContext selectStatementContext;
     
     public InsertSelectContext(final SelectStatementContext selectStatementContext, final List<Object> params, final int parametersOffset) {
-        parameterCount = selectStatementContext.getSqlStatement().getParameterCount();
+        parameterCount = selectStatementContext.getSqlStatement().getParameterMarkerSegments().size();
         this.selectStatementContext = selectStatementContext;
         parameters = getParameters(params, parametersOffset);
     }

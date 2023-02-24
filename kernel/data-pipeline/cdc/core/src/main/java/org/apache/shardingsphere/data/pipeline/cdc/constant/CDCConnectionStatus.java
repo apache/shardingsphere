@@ -25,6 +25,4 @@ public enum CDCConnectionStatus {
     NOT_LOGGED_IN,
     
     LOGGED_IN,
-    
-    SUBSCRIBED
 }

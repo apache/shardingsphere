@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPIImpl
+org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI

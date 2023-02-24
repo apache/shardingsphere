@@ -38,12 +38,17 @@ public abstract class AbstractDropShardingRuleUpdater {
     public void dropUnusedAlgorithm(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().stream().map(each -> Arrays.asList(each.getTableShardingStrategy(), each.getDatabaseShardingStrategy()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).map(ShardingStrategyConfiguration::getShardingAlgorithmName).collect(Collectors.toSet());
-        inUsedAlgorithms.addAll(currentRuleConfig.getAutoTables().stream().map(each -> each.getShardingStrategy().getShardingAlgorithmName()).collect(Collectors.toSet()));
-        if (null != currentRuleConfig.getDefaultTableShardingStrategy()) {
-            inUsedAlgorithms.add(currentRuleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName());
-        }
+        inUsedAlgorithms.addAll(currentRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getDatabaseShardingStrategy()))
+                .map(each -> each.getDatabaseShardingStrategy().getShardingAlgorithmName()).collect(Collectors.toSet()));
+        inUsedAlgorithms.addAll(currentRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getTableShardingStrategy()))
+                .map(each -> each.getTableShardingStrategy().getShardingAlgorithmName()).collect(Collectors.toSet()));
+        inUsedAlgorithms.addAll(currentRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy()))
+                .map(each -> each.getShardingStrategy().getShardingAlgorithmName()).collect(Collectors.toSet()));
         if (null != currentRuleConfig.getDefaultDatabaseShardingStrategy()) {
             inUsedAlgorithms.add(currentRuleConfig.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName());
+        }
+        if (null != currentRuleConfig.getDefaultTableShardingStrategy()) {
+            inUsedAlgorithms.add(currentRuleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName());
         }
         Collection<String> unusedAlgorithms = currentRuleConfig.getShardingAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
         unusedAlgorithms.forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));

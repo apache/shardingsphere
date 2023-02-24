@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
-import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.sharding.exception.connection.CursorNameNotFoundException;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.CursorToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
@@ -43,9 +43,7 @@ public final class CursorTokenGenerator implements OptionalSQLTokenGenerator<SQL
     
     @Override
     public SQLToken generateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
-        Preconditions.checkArgument(sqlStatementContext instanceof CursorAvailable, "SQLStatementContext must implementation CursorAvailable interface.");
-        Preconditions.checkArgument(((CursorAvailable) sqlStatementContext).getCursorName().isPresent(), "Can not get cursor name from SQLStatementContext.");
-        CursorNameSegment cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().get();
+        CursorNameSegment cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().orElseThrow(CursorNameNotFoundException::new);
         return new CursorToken(cursorName.getStartIndex(), cursorName.getStopIndex(), cursorName.getIdentifier(), sqlStatementContext, shardingRule);
     }
 }

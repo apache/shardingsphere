@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.infra.util.spi.type.ordered.cache;
 
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedInterfaceFixture;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedInterfaceFixtureImpl;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedSPIFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedInterfaceFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedSPIFixtureImpl;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.ref.SoftReference;
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -35,25 +34,19 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class OrderedServicesCacheTest {
     
-    static {
-        ShardingSphereServiceLoader.register(OrderedSPIFixture.class);
-    }
-    
     @After
-    public void cleanCache() throws NoSuchFieldException, IllegalAccessException {
-        Field field = OrderedServicesCache.class.getDeclaredField("softCache");
-        field.setAccessible(true);
-        field.set(null, new SoftReference<>(new ConcurrentHashMap<>()));
+    public void cleanCache() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(OrderedServicesCache.class.getDeclaredField("cache"), OrderedServicesCache.class, new SoftReference<>(new ConcurrentHashMap<>()));
     }
     
     @Test
-    public void assertFindCachedServices() {
+    public void assertCacheServicesAndClear() {
         OrderedInterfaceFixture orderedInterfaceFixture = new OrderedInterfaceFixtureImpl();
         Collection<OrderedInterfaceFixture> customInterfaces = Collections.singleton(orderedInterfaceFixture);
         OrderedSPIFixture<?> cacheOrderedSPIFixture = new OrderedSPIFixtureImpl();
@@ -63,6 +56,8 @@ public final class OrderedServicesCacheTest {
         Optional<Map<?, ?>> actual = OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, customInterfaces);
         assertTrue(actual.isPresent());
         assertThat(actual.get().get(orderedInterfaceFixture), is(cacheOrderedSPIFixture));
+        OrderedServicesCache.clearCache();
+        assertFalse(OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, customInterfaces).isPresent());
     }
     
     @Test

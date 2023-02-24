@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
+import org.apache.shardingsphere.infra.instance.ComputeNodeData;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -80,7 +81,8 @@ public final class SessionConnectionListener implements ConnectionStateListener 
     
     private void reRegisterInstanceComputeNode() {
         ComputeNodeInstance instance = instanceContext.getInstance();
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instance.getCurrentInstanceId(), instance.getMetaData().getType()), instance.getMetaData().getAttributes());
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instance.getCurrentInstanceId(),
+                instance.getMetaData().getType()), YamlEngine.marshal(new ComputeNodeData(instance.getMetaData().getAttributes(), instance.getMetaData().getVersion())));
         repository.persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instance.getCurrentInstanceId()), YamlEngine.marshal(instance.getLabels()));
         repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instance.getCurrentInstanceId()), instance.getState().getCurrentState().name());
     }

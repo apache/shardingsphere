@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 
 import java.nio.charset.Charset;
 

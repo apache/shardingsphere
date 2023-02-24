@@ -34,18 +34,6 @@
     <alter-local-transaction-rule sql-case-id="alter-local-transaction-rule" />
     <alter-xa-transaction-rule sql-case-id="alter-xa-transaction-rule" />
     <alter-xa-transaction-rule sql-case-id="alter-xa-transaction-rule-without-quote-on-build-in-default-type-name-and-provider-type-name" />
-   
-    <create-traffic-rule sql-case-id="create-traffic-rule">
-        <rule name="sql_match_traffic">
-            <label>OLTP</label>
-            <traffic-algorithm algorithm-name="SQL_MATCH">
-                <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
-            </traffic-algorithm>
-            <load-balancer algorithm-name="RANDOM">
-                <property key="key" value="value" />
-            </load-balancer>
-        </rule>
-    </create-traffic-rule>
     
     <alter-traffic-rule sql-case-id="alter-traffic-rule">
         <rule name="sql_match_traffic">
@@ -58,22 +46,6 @@
             </load-balancer>
         </rule>
     </alter-traffic-rule>
-    
-    <drop-traffic-rule sql-case-id="drop-traffic-rule">
-        <name>rule_name</name>
-    </drop-traffic-rule>
-
-    <create-traffic-rule sql-case-id="create-traffic-rule-without-quote-on-build-in-traffic-algorithm-type-name-and-load-balancer-type-name">
-        <rule name="sql_match_traffic">
-            <label>OLTP</label>
-            <traffic-algorithm algorithm-name="SQL_MATCH">
-                <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
-            </traffic-algorithm>
-            <load-balancer algorithm-name="RANDOM">
-                <property key="key" value="value" />
-            </load-balancer>
-        </rule>
-    </create-traffic-rule>
 
     <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes" instance-id="instance_xa_recovery" key="XA_RECOVERY_NODES" value="instance_1" />
     <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes-with-multiple-values" instance-id="instance_xa_recovery_multiple" key="XA_RECOVERY_NODES" value="instance_1,instance_2" />
@@ -91,10 +63,6 @@
     </unlabel-compute-node>
     <unlabel-compute-node sql-case-id="unlabel-compute-node-without-label" instance-id="instance_unlabel_2">
     </unlabel-compute-node>
-    
-    <prepare-distsql sql-case-id="prepare-distsql" />
-    <apply-distsql sql-case-id="apply-distsql" />
-    <discard-distsql sql-case-id="discard-distsql" />
     
     <import-database-config sql-case-id="import-database-config">
         <file-path>/yaml/config-sharding.yaml</file-path>

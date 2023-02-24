@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
+import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show database discovery rules statement.
  */
+@Getter
 public final class ShowDatabaseDiscoveryRulesStatement extends ShowRulesStatement {
     
-    public ShowDatabaseDiscoveryRulesStatement(final DatabaseSegment database) {
+    private final String ruleName;
+    
+    public ShowDatabaseDiscoveryRulesStatement(final String ruleName, final DatabaseSegment database) {
         super(database);
+        this.ruleName = ruleName;
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.prepare;
 
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 
@@ -36,8 +37,9 @@ public interface ExecutionPrepareEngine<T> {
      *
      * @param routeContext route context
      * @param executionUnits execution units
+     * @param reportContext report context
      * @return execution group context
      * @throws SQLException SQL exception
      */
-    ExecutionGroupContext<T> prepare(RouteContext routeContext, Collection<ExecutionUnit> executionUnits) throws SQLException;
+    ExecutionGroupContext<T> prepare(RouteContext routeContext, Collection<ExecutionUnit> executionUnits, ExecutionGroupReportContext reportContext) throws SQLException;
 }

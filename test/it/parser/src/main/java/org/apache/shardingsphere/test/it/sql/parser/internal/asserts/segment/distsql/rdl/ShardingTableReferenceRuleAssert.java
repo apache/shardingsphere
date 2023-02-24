@@ -45,9 +45,11 @@ public final class ShardingTableReferenceRuleAssert {
         if (null == expected) {
             assertNull(assertContext.getText("Actual sharding table reference rule should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual sharding table reference rule should exist."), actual);
+            assertNotNull(assertContext.getText("Actual sharding reference table should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s sharding table reference rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getReference(), is(expected.getTableGroups()));
+            assertThat(assertContext.getText(String.format("`%s`'s sharding table reference rule name assertion error: ",
+                    actual.getClass().getName())), actual.getName(), is(expected.getName()));
         }
     }
 }

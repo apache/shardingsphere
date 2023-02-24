@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -59,9 +60,11 @@ public final class InsertValueTest {
         expressionSegments.add(positionalParameterMarkerExpressionSegment);
         expressionSegments.add(literalExpressionSegment);
         expressionSegments.add(complexExpressionSegment);
+        expressionSegments.add(new TypeCastExpression(0, 0, "$2::varchar::jsonb", new TypeCastExpression(0, 0, "$2::varchar",
+                new ParameterMarkerExpressionSegment(0, 0, 1, ParameterMarkerType.DOLLAR), "varchar"), "jsonb"));
         InsertValue insertValue = new InsertValue(expressionSegments);
         String actualToString = insertValue.toString();
-        String expectedToString = "(?, $1, 'literals', complexExpressionSegment)";
+        String expectedToString = "(?, $1, 'literals', complexExpressionSegment, $2::varchar::jsonb)";
         assertThat(actualToString, is(expectedToString));
     }
 }

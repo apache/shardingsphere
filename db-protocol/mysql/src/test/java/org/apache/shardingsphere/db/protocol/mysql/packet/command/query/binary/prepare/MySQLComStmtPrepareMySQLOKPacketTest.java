@@ -23,8 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -36,8 +34,7 @@ public final class MySQLComStmtPrepareMySQLOKPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLComStmtPrepareOKPacket actual = new MySQLComStmtPrepareOKPacket(1, 1, 0, 1, 0);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLComStmtPrepareOKPacket actual = new MySQLComStmtPrepareOKPacket(1, 0, 1, 0);
         actual.write(payload);
         verify(payload).writeInt1(0x00);
         verify(payload, times(2)).writeInt2(0);

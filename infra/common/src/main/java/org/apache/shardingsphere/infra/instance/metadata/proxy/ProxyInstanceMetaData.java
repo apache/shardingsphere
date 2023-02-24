@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.instance.metadata.proxy;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
@@ -37,17 +38,21 @@ public final class ProxyInstanceMetaData implements InstanceMetaData {
     
     private final int port;
     
+    private final String version;
+    
     public ProxyInstanceMetaData(final String id, final int port) {
         this.id = id;
         ip = IpUtils.getIp();
         this.port = port;
+        version = ShardingSphereVersion.VERSION;
     }
     
-    public ProxyInstanceMetaData(final String id, final String attributes) {
+    public ProxyInstanceMetaData(final String id, final String attributes, final String version) {
         this.id = id;
         String[] attributesList = attributes.split(DELIMITER);
         ip = attributesList[0];
         port = Integer.parseInt(attributesList[1]);
+        this.version = version;
     }
     
     @Override

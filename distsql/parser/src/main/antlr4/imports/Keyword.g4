@@ -135,6 +135,10 @@ DATABASE
     : D A T A B A S E
     ;
 
+LOGICAL
+    : L O G I C A L
+    ;
+
 SINGLE
     : S I N G L E
     ;
@@ -243,24 +247,8 @@ UNUSED
     : U N U S E D
     ;
 
-PREPARE
-    : P R E P A R E
-    ;
-
-DISTSQL
-    : D I S T S Q L
-    ;
-
-APPLY
-    : A P P L Y
-    ;
-
 DISCARD
     : D I S C A R D
-    ;
-
-SINGLE_TABLE
-    : S I N G L E UL_ T A B L E
     ;
 
 INFO
@@ -353,4 +341,12 @@ GOVERNANCE
 
 CENTER
     : C E N T E R
+    ;
+
+LIKE
+    : L I K E
+    ;
+
+NOT
+    : N O T
     ;

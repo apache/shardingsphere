@@ -44,14 +44,14 @@ public final class MySQLTimeBinaryProtocolValueTest {
     
     @Test
     public void assertReadWithZeroByte() throws SQLException {
-        assertThat(new MySQLTimeBinaryProtocolValue().read(payload), is(new Timestamp(0)));
+        assertThat(new MySQLTimeBinaryProtocolValue().read(payload, false), is(new Timestamp(0)));
     }
     
     @Test
     public void assertReadWithEightBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(8, 0, 10, 59, 0);
         Calendar actual = Calendar.getInstance();
-        actual.setTimeInMillis(((Timestamp) new MySQLTimeBinaryProtocolValue().read(payload)).getTime());
+        actual.setTimeInMillis(((Timestamp) new MySQLTimeBinaryProtocolValue().read(payload, false)).getTime());
         assertThat(actual.get(Calendar.HOUR_OF_DAY), is(10));
         assertThat(actual.get(Calendar.MINUTE), is(59));
         assertThat(actual.get(Calendar.SECOND), is(0));
@@ -61,7 +61,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
     public void assertReadWithTwelveBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(12, 0, 10, 59, 0);
         Calendar actual = Calendar.getInstance();
-        actual.setTimeInMillis(((Timestamp) new MySQLTimeBinaryProtocolValue().read(payload)).getTime());
+        actual.setTimeInMillis(((Timestamp) new MySQLTimeBinaryProtocolValue().read(payload, false)).getTime());
         assertThat(actual.get(Calendar.HOUR_OF_DAY), is(10));
         assertThat(actual.get(Calendar.MINUTE), is(59));
         assertThat(actual.get(Calendar.SECOND), is(0));
@@ -70,7 +70,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertReadWithIllegalArgument() throws SQLException {
         when(payload.readInt1()).thenReturn(100);
-        new MySQLTimeBinaryProtocolValue().read(payload);
+        new MySQLTimeBinaryProtocolValue().read(payload, false);
     }
     
     @Test

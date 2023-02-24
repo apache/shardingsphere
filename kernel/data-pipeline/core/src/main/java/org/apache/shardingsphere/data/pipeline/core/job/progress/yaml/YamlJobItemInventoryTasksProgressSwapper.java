@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,13 +55,13 @@ public final class YamlJobItemInventoryTasksProgressSwapper {
     private String[] getFinished(final JobItemInventoryTasksProgress progress) {
         return progress.getInventoryTaskProgressMap().entrySet().stream()
                 .filter(entry -> entry.getValue().getPosition() instanceof FinishedPosition)
-                .map(Map.Entry::getKey).toArray(String[]::new);
+                .map(Entry::getKey).toArray(String[]::new);
     }
     
     private Map<String, String> getUnfinished(final JobItemInventoryTasksProgress progress) {
         return progress.getInventoryTaskProgressMap().entrySet().stream()
                 .filter(entry -> !(entry.getValue().getPosition() instanceof FinishedPosition))
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getPosition().toString()));
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPosition().toString()));
     }
     
     /**
@@ -75,11 +76,11 @@ public final class YamlJobItemInventoryTasksProgressSwapper {
         }
         Map<String, InventoryTaskProgress> taskProgressMap = new LinkedHashMap<>();
         taskProgressMap.putAll(Arrays.stream(yamlProgress.getFinished()).collect(Collectors.toMap(key -> key, value -> new InventoryTaskProgress(new FinishedPosition()))));
-        taskProgressMap.putAll(yamlProgress.getUnfinished().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, getInventoryTaskProgressFunction())));
+        taskProgressMap.putAll(yamlProgress.getUnfinished().entrySet().stream().collect(Collectors.toMap(Entry::getKey, getInventoryTaskProgressFunction())));
         return new JobItemInventoryTasksProgress(taskProgressMap);
     }
     
-    private Function<Map.Entry<String, String>, InventoryTaskProgress> getInventoryTaskProgressFunction() {
+    private Function<Entry<String, String>, InventoryTaskProgress> getInventoryTaskProgressFunction() {
         return entry -> new InventoryTaskProgress(
                 Strings.isNullOrEmpty(entry.getValue()) ? new PlaceholderPosition() : PrimaryKeyPositionFactory.newInstance(entry.getValue()));
     }

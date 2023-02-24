@@ -17,20 +17,41 @@
 
 package org.apache.shardingsphere.data.pipeline.api.datanode;
 
+import com.google.common.base.Splitter;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Job data node entry.
  */
 @RequiredArgsConstructor
+@Getter
 public final class JobDataNodeEntry {
     
     private final String logicTableName;
     
     private final Collection<DataNode> dataNodes;
+    
+    /**
+     * Unmarshal from text.
+     *
+     * @param text marshalled entry
+     * @return entry
+     */
+    public static JobDataNodeEntry unmarshal(final String text) {
+        List<String> segments = Splitter.on(":").splitToList(text);
+        String logicTableName = segments.get(0);
+        List<DataNode> dataNodes = new LinkedList<>();
+        for (String each : Splitter.on(",").omitEmptyStrings().splitToList(segments.get(1))) {
+            dataNodes.add(new DataNode(each));
+        }
+        return new JobDataNodeEntry(logicTableName, dataNodes);
+    }
     
     /**
      * Marshal to text.

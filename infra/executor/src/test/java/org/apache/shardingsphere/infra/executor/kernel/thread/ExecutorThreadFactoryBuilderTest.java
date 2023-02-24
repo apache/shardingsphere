@@ -27,17 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class ExecutorThreadFactoryBuilderTest {
     
     @Test
-    public void assertBuild() {
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build();
-        Thread thread0 = threadFactory.newThread(() -> {
-        });
-        assertThat(thread0.getName(), is("ShardingSphere-0"));
-        Thread thread1 = threadFactory.newThread(() -> {
-        });
-        assertThat(thread1.getName(), is("ShardingSphere-1"));
-    }
-    
-    @Test
     public void assertBuildWithNameFormat() {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("test");
         Thread thread = threadFactory.newThread(() -> {

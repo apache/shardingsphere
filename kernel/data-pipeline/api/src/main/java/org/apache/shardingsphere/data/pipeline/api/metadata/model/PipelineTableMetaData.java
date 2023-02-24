@@ -63,25 +63,25 @@ public final class PipelineTableMetaData {
     }
     
     /**
-     * Get column metadata.
+     * Get column meta data.
      *
      * @param columnIndex the first column is 1, the second is 2, ...
-     * @return column metadata
+     * @return column meta data
      */
     public PipelineColumnMetaData getColumnMetaData(final int columnIndex) {
         return getColumnMetaData(columnNames.get(columnIndex - 1));
     }
     
     /**
-     * Get column metadata.
+     * Get column meta data.
      *
      * @param columnName column name
-     * @return column metadata
+     * @return column meta data
      */
     public PipelineColumnMetaData getColumnMetaData(final String columnName) {
         PipelineColumnMetaData result = columnMetaDataMap.get(columnName);
         if (null == result) {
-            log.warn("getColumnMetaData, can not get column metadata for column name '{}', columnNames={}", columnName, columnNames);
+            log.warn("Can not get column meta data for column name '{}', columnNames={}", columnName, columnNames);
         }
         return result;
     }

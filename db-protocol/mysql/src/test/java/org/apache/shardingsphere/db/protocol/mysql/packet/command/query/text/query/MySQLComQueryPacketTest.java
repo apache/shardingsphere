@@ -39,7 +39,6 @@ public final class MySQLComQueryPacketTest {
     public void assertNew() {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
         MySQLComQueryPacket actual = new MySQLComQueryPacket(payload, false);
-        assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getSql(), is("SELECT id FROM tbl"));
     }
     

@@ -21,7 +21,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -55,9 +54,6 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     private static final int MAX_NUMERIC_LETTER_CHAR = 255;
     
-    @Getter
-    private Properties props;
-    
     private int delta;
     
     private int mask;
@@ -68,7 +64,6 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         delta = createDelta(props);
         mask = createMask(props);
         start = createStart(props);
@@ -80,7 +75,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
             String delta = props.getProperty(DELTA);
             try {
                 return Integer.parseInt(delta);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "delta can only be a decimal number");
             }
         }
@@ -92,7 +87,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
             String mask = props.getProperty(MASK);
             try {
                 return Integer.parseInt(mask);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "mask can only be a decimal number");
             }
         }
@@ -104,7 +99,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
             String start = props.getProperty(START);
             try {
                 return Integer.parseInt(start);
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "start can only be a decimal number");
             }
         }
@@ -154,7 +149,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
         StringBuilder result = new StringBuilder(plainValue.length());
         for (char each : plainValue.toCharArray()) {
             char maskedChar = getMaskedChar(each);
-            if ('%' == maskedChar) {
+            if ('%' == maskedChar || '_' == maskedChar) {
                 result.append(each);
             } else {
                 result.append(maskedChar);
@@ -164,7 +159,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     }
     
     private char getMaskedChar(final char originalChar) {
-        if ('%' == originalChar) {
+        if ('%' == originalChar || '_' == originalChar) {
             return originalChar;
         }
         if (originalChar <= MAX_NUMERIC_LETTER_CHAR) {

@@ -41,7 +41,7 @@ public final class DistSQLStatementParserEngine {
         } catch (final ParseCancellationException | SQLParsingException ignored) {
             try {
                 return new FeaturedDistSQLStatementParserEngine().parse(sql);
-            } catch (SQLParsingException ignoredToo) {
+            } catch (final SQLParsingException ignoredToo) {
                 return new UtilityDistSQLStatementParserEngine().parse(sql);
             }
         }

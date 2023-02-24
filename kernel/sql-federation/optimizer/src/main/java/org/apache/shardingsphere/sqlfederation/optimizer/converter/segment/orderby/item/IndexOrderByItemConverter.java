@@ -20,11 +20,13 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orde
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlPostfixOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -36,10 +38,14 @@ public final class IndexOrderByItemConverter implements SQLSegmentConverter<Inde
     
     @Override
     public Optional<SqlNode> convert(final IndexOrderByItemSegment segment) {
-        SqlNode sqlNode = SqlLiteral.createExactNumeric(String.valueOf(segment.getColumnIndex()), SqlParserPos.ZERO);
+        SqlNode result = SqlLiteral.createExactNumeric(String.valueOf(segment.getColumnIndex()), SqlParserPos.ZERO);
         if (OrderDirection.DESC.equals(segment.getOrderDirection())) {
-            sqlNode = new SqlBasicCall(SqlStdOperatorTable.DESC, Collections.singletonList(sqlNode), SqlParserPos.ZERO);
+            result = new SqlBasicCall(SqlStdOperatorTable.DESC, Collections.singletonList(result), SqlParserPos.ZERO);
         }
-        return Optional.of(sqlNode);
+        if (segment.getNullsOrderType().isPresent()) {
+            SqlPostfixOperator nullsOrderType = NullsOrderType.FIRST.equals(segment.getNullsOrderType().get()) ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST;
+            result = new SqlBasicCall(nullsOrderType, Collections.singletonList(result), SqlParserPos.ZERO);
+        }
+        return Optional.of(result);
     }
 }

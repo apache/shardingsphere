@@ -42,7 +42,7 @@ public final class ShardingSphereDataJobWorker {
             if (WORKER_INITIALIZED.get()) {
                 return;
             }
-            boolean collectorEnabled = contextManager.getMetaDataContexts().getMetaData().getInternalProps().getValue(InternalConfigurationPropertyKey.PROXY_METADATA_COLLECTOR_ENABLED);
+            boolean collectorEnabled = contextManager.getMetaDataContexts().getMetaData().getInternalProps().getValue(InternalConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED);
             if (collectorEnabled) {
                 startScheduleThread(contextManager);
             }

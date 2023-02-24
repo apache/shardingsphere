@@ -29,21 +29,11 @@ public final class FeatureSQLExceptionTest {
     
     @SuppressWarnings("serial")
     @Test
-    public void assertNewFeatureSQLExceptionWithSingleDigitalForFeatureCode() {
+    public void assertToSQLException() {
         SQLException actual = new FeatureSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, "reason") {
         }.toSQLException();
         assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertThat(actual.getErrorCode(), is(20101));
-        assertThat(actual.getMessage(), is("reason"));
-    }
-    
-    @SuppressWarnings("serial")
-    @Test
-    public void assertNewFeatureSQLExceptionWithDoubleDigitalForFeatureCode() {
-        SQLException actual = new FeatureSQLException(XOpenSQLState.GENERAL_ERROR, 99, 10, "reason") {
-        }.toSQLException();
-        assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
-        assertThat(actual.getErrorCode(), is(29910));
         assertThat(actual.getMessage(), is("reason"));
     }
 }

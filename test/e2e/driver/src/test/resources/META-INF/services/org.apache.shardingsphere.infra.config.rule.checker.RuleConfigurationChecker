@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.driver.fixture.TestRuleConfigurationChecker
+org.apache.shardingsphere.test.e2e.driver.fixture.TestRuleConfigurationChecker

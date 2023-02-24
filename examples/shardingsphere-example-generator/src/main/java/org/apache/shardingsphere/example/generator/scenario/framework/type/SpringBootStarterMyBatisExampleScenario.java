@@ -41,8 +41,9 @@ public final class SpringBootStarterMyBatisExampleScenario implements FrameworkE
     
     @Override
     public Map<String, String> getResourceTemplateMap() {
-        Map<String, String> result = new HashMap<>(4, 1);
+        Map<String, String> result = new HashMap<>(5, 1);
         result.put("resources/properties/application.ftl", "application.properties");
+        result.put("resources/yaml/config.ftl", "config.yaml");
         result.put("resources/mappers/OrderItemMapper.ftl", "mappers/OrderItemMapper.xml");
         result.put("resources/mappers/OrderMapper.ftl", "mappers/OrderMapper.xml");
         result.put("resources/mappers/AddressMapper.ftl", "mappers/AddressMapper.xml");

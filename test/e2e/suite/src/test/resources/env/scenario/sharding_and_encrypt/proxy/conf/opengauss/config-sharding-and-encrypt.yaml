@@ -112,6 +112,33 @@ dataSources:
 rules:
 - !SHARDING
   tables:
+    t_order:
+      actualDataNodes: encrypt_ds_${0..9}.t_order_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: it_standard_fixture
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: it_standard_fixture
+    t_order_item:
+      actualDataNodes: encrypt_ds_${0..9}.t_order_item_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: it_standard_fixture
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: it_standard_fixture
+      keyGenerateStrategy:
+        column: item_id
+        keyGeneratorName: constant
+      auditStrategy:
+        auditorNames:
+          - auditor_constant
+        allowHintDisable: true
     t_user_item:
       actualDataNodes: encrypt_ds_${0..9}.t_user_item_${0..9}
       databaseStrategy:
@@ -176,6 +203,10 @@ rules:
           shardingAlgorithmName: table_inline_user_id
   bindingTables:
     - ref_0:t_user,t_user_item,t_user_details
+    - ref_1:t_order,t_order_item
+  broadcastTables:
+    - t_product_category
+    - t_country
 
   shardingAlgorithms:
     it_standard_fixture:
@@ -236,4 +267,14 @@ rules:
         pwd:
           plainColumn: plain_pwd
           cipherColumn: cipher_pwd
+          encryptorName: aes_encryptor
+    t_merchant:
+      columns:
+        business_code:
+          plainColumn: business_code_plain
+          cipherColumn: business_code_cipher
+          encryptorName: aes_encryptor
+        telephone:
+          plainColumn: telephone_plain
+          cipherColumn: telephone_cipher
           encryptorName: aes_encryptor

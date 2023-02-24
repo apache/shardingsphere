@@ -1,0 +1,47 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata data-nodes="expected_dataset.t_user">
+        <column name="user_id" type="numeric" />
+        <column name="user_name" type="varchar" />
+        <column name="password" type="varchar" />
+        <column name="email" type="varchar" />
+        <column name="telephone" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <row data-node="expected_dataset.t_user" values="10, zhangsan, 96e79218965eb72c92a549dd5a330112, ********@gmail.com, 123****8900, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="11, lisi, e3ceb5881a0a1fdaad01296d7554868d, ****@gmail.com, 123****8901, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="12, wangwu, 1a100d2c0dab19c4430e7d73762b3423, ******@gmail.com, 123****8902, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="13, zhaoliu, 73882ab1fa529d7273da0db6b49cc4f3, *******@gmail.com, 123****8903, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="14, zhuqi, 5b1b68a9abf4d2cd155c81a9225fd158, *****@gmail.com, 123****8904, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="15, liba, f379eaf3c831b04de153469d1bec345e, ****@gmail.com, 123****8905, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="16, wangjiu, f63f4fbc9f8c85d409f2f59f2b9e12d5, *******@gmail.com, 123****8906, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="17, zhuda, 21218cca77804d2ba1922c33e0151105, *****@gmail.com, 123****8907, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="18, suner, 52c69e3a57331081823331c4e69d3f2e, *****@gmail.com, 123****8908, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="19, zhousan, e10adc3949ba59abbe56e057f20f883e, *******@gmail.com, 123****8909, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="20, tom, 508df4cb2f4d8f80519256258cfb975f, ***@gmail.com, 123****8910, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="21, kobe, 5bd2026f128662763c532f2f4b6f2476, ****@gmail.com, 123****8911, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="22, jerry, e35cf7b66449df565f93c607d5a81d09, *****@gmail.com, 123****8912, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="23, james, ba00819f263287af1ff0100c5a323355, *****@gmail.com, 123****8913, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="24, wade, d6a9a933c8aafc51e55ac0662b6e4d4a, ****@gmail.com, 123****8914, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="25, rose, 670b14728ad9902aecba32e22fa4f6bd, ****@gmail.com, 123****8915, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="26, bosh, 00b7691d86d96aebd21dd9e138f90840, ****@gmail.com, 123****8916, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="27, jack, 731982a033a5cc815ac03c8504abb748, ****@gmail.com, 123****8917, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="28, jordan, abf156f3cf64496f9da2cabca68d95fe, ******@gmail.com, 123****8918, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="29, julie, 01c401bb1b2ba502df5a854be02ea4e9, *****@gmail.com, 123****8919, 2017-08-08" />
+</dataset>

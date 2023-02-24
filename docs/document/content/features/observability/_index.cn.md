@@ -12,13 +12,10 @@ APM（应用性能监控） 是通过对系统可观察性数据进行采集、�
 
 Apache ShardingSphere 并不负责如何采集、存储以及展示应用性能监控的相关数据，而是为应用监控系统提供必要的指标数据。 换句话说，Apache ShardingSphere 仅负责产生具有价值的数据，并通过标准协议或插件化的方式递交给相关系统。
 
-Tracing 用于获取 SQL 解析与 SQL 执行的链路跟踪信息。Apache ShardingSphere 默认提供了对 SkyWalking，Zipkin，Jaeger 和 OpenTelemetry 的支持，也支持用户通过插件化的方式开发自定义的 Tracing 组件。
-
-- 使用 Zipkin 和 Jaeger
-通过在agent配置文件中开启对应的插件，并配置好 Zipkin 或者 Jaeger 服务器信息即可。
+Tracing 用于获取 SQL 解析与 SQL 执行的链路跟踪信息。Apache ShardingSphere 默认提供了对 OpenTelemetry，SkyWalking 的支持，也支持用户通过插件化的方式开发自定义的 Tracing 组件。
 
 - 使用 OpenTelemetry
-OpenTelemetry 在 2019 年由 OpenTracing 和 OpenCencus 合并而来。 使用这种方式，只需要在 agent 配置文件中，根据 OpenTelemetry SDK 自动配置说明 ，填写合适的配置即可。
+OpenTelemetry 在 2019 年由 OpenTracing 和 OpenCencus 合并而来。 使用这种方式，只需要在 agent 配置文件中，根据 [OpenTelemetry SDK 自动配置说明](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure) ，填写合适的配置即可。可以导出数据到 Jaeger，Zipkin。
 
 - 使用 SkyWalking
 需要在 agent 配置中配置启用对应插件，并且需要同时配置使用 SkyWalking 的 apm-toolkit 工具。

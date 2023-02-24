@@ -1,6 +1,6 @@
 +++
 title = "DB Discovery"
-weight = 5
+weight = 4
 +++
 
 ## Storage unit Operation

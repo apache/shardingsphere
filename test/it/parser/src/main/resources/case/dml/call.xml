@@ -94,7 +94,7 @@
     <call sql-case-id="call_with_mixed_notation">
         <procedure-name name="p" start-index="5" stop-index="6" />
         <procedure-parameter>
-            <common-expression literal-text="null" start-index="7" stop-index="10" />
+            <literal-expression value="null" start-index="7" stop-index="10" />
         </procedure-parameter>
         <procedure-parameter>
             <literal-expression value="7" start-index="13" stop-index="13" />
@@ -107,7 +107,7 @@
     <call sql-case-id="call_with_mixed_notation_with_null">
         <procedure-name name="p" start-index="5" stop-index="6" />
         <procedure-parameter>
-            <common-expression literal-text="null" start-index="7" stop-index="10" />
+            <literal-expression value="null" start-index="7" stop-index="10" />
         </procedure-parameter>
         <procedure-parameter>
             <common-expression literal-text="c => 4" start-index="13" stop-index="18" />

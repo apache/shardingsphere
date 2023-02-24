@@ -123,7 +123,6 @@ EXISTS
     : E X I S T S
     ;  
 
-
 COUNT
     : C O U N T
     ;
@@ -178,4 +177,8 @@ FIXED_REPLICA_WEIGHT
 
 FIXED_PRIMARY
     : F I X E D UL_ P R I M A R Y
+    ;
+
+NOT
+    : N O T
     ;

@@ -21,9 +21,10 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.util.Attribute;
 import io.netty.util.concurrent.Promise;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.BinlogSyncChannelAlreadyClosedException;
-import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
@@ -33,14 +34,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -58,6 +62,7 @@ public final class MySQLClientTest {
     
     private MySQLClient mysqlClient;
     
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() throws InterruptedException {
         mysqlClient = new MySQLClient(new ConnectInfo(1, "host", 3306, "username", "password"));
@@ -69,55 +74,57 @@ public final class MySQLClientTest {
             return null;
         });
         when(channel.localAddress()).thenReturn(new InetSocketAddress("host", 3306));
+        when(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).thenReturn(mock(Attribute.class));
+        when(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).get()).thenReturn(new AtomicInteger());
     }
     
     @Test
-    public void assertConnect() throws NoSuchFieldException, IllegalAccessException {
+    public void assertConnect() throws ReflectiveOperationException {
         ServerInfo expected = new ServerInfo();
         mockChannelResponse(expected);
         mysqlClient.connect();
-        ServerInfo actual = ReflectionUtil.getFieldValue(mysqlClient, "serverInfo", ServerInfo.class);
+        ServerInfo actual = (ServerInfo) Plugins.getMemberAccessor().get(MySQLClient.class.getDeclaredField("serverInfo"), mysqlClient);
         assertThat(actual, is(expected));
     }
     
     @Test
-    public void assertExecute() throws NoSuchFieldException, IllegalAccessException {
-        mockChannelResponse(new MySQLOKPacket(0, 0));
-        ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
-        ReflectionUtil.setFieldValue(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
+    public void assertExecute() throws ReflectiveOperationException {
+        mockChannelResponse(new MySQLOKPacket(0));
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("eventLoopGroup"), mysqlClient, new NioEventLoopGroup(1));
         assertTrue(mysqlClient.execute(""));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
     @Test
-    public void assertExecuteUpdate() throws NoSuchFieldException, IllegalAccessException {
-        MySQLOKPacket expected = new MySQLOKPacket(0, 10, 0, 0);
-        ReflectionUtil.setFieldValue(expected, "affectedRows", 10);
+    public void assertExecuteUpdate() throws ReflectiveOperationException {
+        MySQLOKPacket expected = new MySQLOKPacket(10, 0, 0);
+        Plugins.getMemberAccessor().set(MySQLOKPacket.class.getDeclaredField("affectedRows"), expected, 10L);
         mockChannelResponse(expected);
-        ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
-        ReflectionUtil.setFieldValue(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("eventLoopGroup"), mysqlClient, new NioEventLoopGroup(1));
         assertThat(mysqlClient.executeUpdate(""), is(10));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
     @Test
-    public void assertExecuteQuery() throws NoSuchFieldException, IllegalAccessException {
+    public void assertExecuteQuery() throws ReflectiveOperationException {
         InternalResultSet expected = new InternalResultSet(null);
         mockChannelResponse(expected);
-        ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
-        ReflectionUtil.setFieldValue(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("eventLoopGroup"), mysqlClient, new NioEventLoopGroup(1));
         assertThat(mysqlClient.executeQuery(""), is(expected));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComQueryPacket.class));
     }
     
     @Test
-    public void assertSubscribeBelow56Version() throws NoSuchFieldException, IllegalAccessException {
+    public void assertSubscribeBelow56Version() throws ReflectiveOperationException {
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setServerVersion(new ServerVersion("5.5.0-log"));
-        ReflectionUtil.setFieldValue(mysqlClient, "serverInfo", serverInfo);
-        ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
-        ReflectionUtil.setFieldValue(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
-        mockChannelResponse(new MySQLOKPacket(0, 0));
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("serverInfo"), mysqlClient, serverInfo);
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("eventLoopGroup"), mysqlClient, new NioEventLoopGroup(1));
+        mockChannelResponse(new MySQLOKPacket(0));
         mysqlClient.subscribe("", 4L);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComRegisterSlaveCommandPacket.class));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComBinlogDumpCommandPacket.class));
@@ -127,13 +134,11 @@ public final class MySQLClientTest {
     private void mockChannelResponse(final Object response) {
         new Thread(() -> {
             while (true) {
-                Promise<Object> responseCallback = null;
+                Promise<Object> responseCallback;
                 try {
-                    responseCallback = ReflectionUtil.getFieldValue(mysqlClient, "responseCallback", Promise.class);
-                } catch (final NoSuchFieldException ex) {
+                    responseCallback = (Promise<Object>) Plugins.getMemberAccessor().get(MySQLClient.class.getDeclaredField("responseCallback"), mysqlClient);
+                } catch (final ReflectiveOperationException ex) {
                     throw new RuntimeException(ex);
-                } catch (final IllegalAccessException ex) {
-                    Thread.currentThread().interrupt();
                 }
                 if (null != responseCallback) {
                     responseCallback.setSuccess(response);
@@ -144,16 +149,16 @@ public final class MySQLClientTest {
     }
     
     @Test
-    public void assertCloseChannel() throws NoSuchFieldException, IllegalAccessException {
-        ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
+    public void assertCloseChannel() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
         mysqlClient.closeChannel();
         assertFalse(channel.isOpen());
     }
     
     @Test(expected = BinlogSyncChannelAlreadyClosedException.class)
-    public void assertPollFailed() throws NoSuchFieldException, IllegalAccessException {
-        ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
-        ReflectionUtil.setFieldValue(mysqlClient, "running", false);
+    public void assertPollFailed() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
+        Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("running"), mysqlClient, false);
         mysqlClient.poll();
     }
 }

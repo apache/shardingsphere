@@ -18,7 +18,6 @@ All built-in plugins are listed below in the form of `groupId:artifactId`.
 - `org.apache.shardingsphere:shardingsphere-opengauss-protocol`, the OpenGauss implementation of the database protocol
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-core`, used by ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-mysql`, a MySQL implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
-- `org.apache.shardingsphere:shardingsphere-proxy-frontend-reactive-mysql`, the `vertx-sql-client` implementation of MySQL for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-postgresql`, a PostgresSQL implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-opengauss`, an openGauss implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-backend`, the backend for ShardingSphere Proxy
@@ -55,6 +54,7 @@ For the core `org.apache.shardingsphere:shardingsphere-jdbc-core`, the following
   to https://github.com/apache/shardingsphere/issues/21223
 - `org.apache.shardingsphere:shardingsphere-readwrite-splitting-core`, read-write splitting core
 - `org.apache.shardingsphere:shardingsphere-db-discovery-core`, high availability core
+- `org.apache.shardingsphere:shardingsphere-mask-core`, data masking core
 - `org.apache.shardingsphere:shardingsphere-encrypt-core`, data encryption core
 - `org.apache.shardingsphere:shardingsphere-shadow-core`, shadow library core
 - `org.apache.shardingsphere:shardingsphere-sql-federation-core`, federation query executor core
@@ -69,6 +69,8 @@ and its dependent JARs from Maven Central.
 
 All optional plugins are listed below in the form of `groupId:artifactId`.
 
+- Standalone mode configuration information persistence definition
+  - `org.apache.shardingsphere:shardingsphere-standalone-mode-repository-jdbc-mysql`，MySQL based persistence
 - Cluster mode configuration information persistence definition
     - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-nacos`, Nacos based persistence
     - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-consul`, Consul based persistence

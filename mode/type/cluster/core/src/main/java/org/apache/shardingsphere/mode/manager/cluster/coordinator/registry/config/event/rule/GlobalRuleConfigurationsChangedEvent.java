@@ -31,5 +31,5 @@ import java.util.Collection;
 @Getter
 public final class GlobalRuleConfigurationsChangedEvent implements GovernanceEvent {
     
-    private final Collection<RuleConfiguration> ruleConfigurations;
+    private final Collection<RuleConfiguration> ruleConfigs;
 }
