@@ -23,10 +23,8 @@ import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update.UpdatableScalingRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
@@ -49,9 +47,6 @@ public final class RALBackendHandlerFactory {
         // TODO remove other updatable RAL backend handlers after the refactoring of RALBackendHandler is complete
         if (TypedSPILoader.contains(RALUpdater.class, sqlStatement.getClass().getName())) {
             return new UpdatableRALUpdaterBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
-        }
-        if (sqlStatement instanceof UpdatableScalingRALStatement) {
-            return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement, connectionSession);
         }
         return new UpdatableGlobalRuleRALBackendHandler(sqlStatement);
     }
