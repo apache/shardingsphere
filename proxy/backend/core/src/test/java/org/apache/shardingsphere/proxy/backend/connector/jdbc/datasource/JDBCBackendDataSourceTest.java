@@ -66,9 +66,9 @@ import static org.mockito.Mockito.when;
 
 public final class JDBCBackendDataSourceTest {
     
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-    
     private static final String DATA_SOURCE_PATTERN = "ds_%s";
+    
+    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
     
     @Before
     public void setUp() {
