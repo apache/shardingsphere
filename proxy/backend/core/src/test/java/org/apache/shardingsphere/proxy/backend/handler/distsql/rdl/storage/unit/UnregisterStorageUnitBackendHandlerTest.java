@@ -118,7 +118,6 @@ public final class UnregisterStorageUnitBackendHandlerTest {
         return result;
     }
     
-     
     public void assertExecute() throws SQLException {
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
