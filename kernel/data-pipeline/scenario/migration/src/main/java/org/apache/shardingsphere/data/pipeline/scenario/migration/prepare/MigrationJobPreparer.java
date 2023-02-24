@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumper
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
@@ -49,6 +50,7 @@ import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -175,10 +177,12 @@ public final class MigrationJobPreparer {
      * @param jobConfig job configuration
      */
     public void cleanup(final MigrationJobConfiguration jobConfig) {
-        try {
-            PipelineJobPreparerUtils.destroyPosition(jobConfig.getJobId(), jobConfig.getSource());
-        } catch (final SQLException ex) {
-            log.warn("job destroying failed", ex);
+        for (Entry<String, PipelineDataSourceConfiguration> entry : jobConfig.getSources().entrySet()) {
+            try {
+                PipelineJobPreparerUtils.destroyPosition(jobConfig.getJobId(), entry.getValue());
+            } catch (final SQLException ex) {
+                log.warn("job destroying failed, jobId={}, dataSourceName={}", jobConfig.getJobId(), entry.getKey(), ex);
+            }
         }
     }
 }
