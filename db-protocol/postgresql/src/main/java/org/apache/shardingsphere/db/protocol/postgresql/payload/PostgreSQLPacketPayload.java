@@ -70,7 +70,6 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
      * @return 2 byte fixed length integer
      */
     public int readInt2() {
-        System.out.println("byteBuf" + byteBuf);
         return byteBuf.readUnsignedShort();
     }
     
