@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.db.protocol.postgresql.payload;
 
 import io.netty.buffer.ByteBuf;
-import java.nio.ByteBuffer;
 import io.netty.buffer.CompositeByteBuf;
 import lombok.Getter;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 
@@ -56,12 +54,6 @@ public final class PostgreSQLPacketPayload implements PacketPayload {
      */
     public void writeInt1(final int value) {
         byteBuf.writeByte(value);
-    }
-    
-    public void writeUUID(final UUID uuid) {
-        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
     }
     
     /**

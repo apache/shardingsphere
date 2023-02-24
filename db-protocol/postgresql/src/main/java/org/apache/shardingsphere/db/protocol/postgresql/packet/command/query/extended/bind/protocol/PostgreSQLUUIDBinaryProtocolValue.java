@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import java.nio.ByteBuffer;
 import java.util.UUID;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -41,6 +40,6 @@ public final class PostgreSQLUUIDBinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeUUID((UUID) value);
+        payload.writeBytes((byte[]) value);
     }
 }
