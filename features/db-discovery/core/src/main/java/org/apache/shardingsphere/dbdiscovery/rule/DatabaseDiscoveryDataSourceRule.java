@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -129,9 +130,7 @@ public final class DatabaseDiscoveryDataSourceRule {
      * @return data source mapper
      */
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(1, 1);
-        result.put(groupName, getActualDataSourceNames());
-        return result;
+        return Collections.singletonMap(groupName, getActualDataSourceNames());
     }
     
     private Collection<String> getActualDataSourceNames() {

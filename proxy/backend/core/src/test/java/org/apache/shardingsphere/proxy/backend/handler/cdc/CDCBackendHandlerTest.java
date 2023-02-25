@@ -51,7 +51,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -85,9 +84,7 @@ public final class CDCBackendHandlerTest {
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         Set<ShardingSphereRule> shardingRule = Collections.singleton(mock(ShardingRule.class));
         when(database.getRuleMetaData().getRules()).thenReturn(shardingRule);
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        result.put("sharding_db", database);
-        return result;
+        return Collections.singletonMap("sharding_db", database);
     }
     
     @AfterClass

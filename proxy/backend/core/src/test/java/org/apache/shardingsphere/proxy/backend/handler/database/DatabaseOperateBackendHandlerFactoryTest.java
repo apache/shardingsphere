@@ -49,7 +49,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -147,9 +146,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        result.put("db", database);
-        return result;
+        return Collections.singletonMap("db", database);
     }
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
