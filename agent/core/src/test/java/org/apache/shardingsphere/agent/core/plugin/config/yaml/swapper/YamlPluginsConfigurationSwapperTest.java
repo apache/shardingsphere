@@ -94,28 +94,28 @@ public final class YamlPluginsConfigurationSwapperTest {
         return URLDecoder.decode(YamlPluginsConfigurationSwapper.class.getClassLoader().getResource("").getFile(), "UTF8");
     }
     
-    private void assertLogFixturePluginConfiguration(final PluginConfiguration config) {
-        assertNull(config.getHost());
-        assertNull(config.getPassword());
-        assertThat(config.getPort(), is(8080));
-        assertThat(config.getProps().size(), is(1));
-        assertThat(config.getProps().get("key"), is("value"));
+    private void assertLogFixturePluginConfiguration(final PluginConfiguration actual) {
+        assertNull(actual.getHost());
+        assertNull(actual.getPassword());
+        assertThat(actual.getPort(), is(8080));
+        assertThat(actual.getProps().size(), is(1));
+        assertThat(actual.getProps().get("key"), is("value"));
     }
     
-    private void assertMetricsPluginConfiguration(final PluginConfiguration config) {
-        assertThat(config.getHost(), is("localhost"));
-        assertThat(config.getPassword(), is("random"));
-        assertThat(config.getPort(), is(8081));
-        assertThat(config.getProps().size(), is(1));
-        assertThat(config.getProps().get("key"), is("value"));
+    private void assertMetricsPluginConfiguration(final PluginConfiguration actual) {
+        assertThat(actual.getHost(), is("localhost"));
+        assertThat(actual.getPassword(), is("random"));
+        assertThat(actual.getPort(), is(8081));
+        assertThat(actual.getProps().size(), is(1));
+        assertThat(actual.getProps().get("key"), is("value"));
     }
     
-    private void assertTracingPluginConfiguration(final PluginConfiguration config) {
-        assertThat(config.getHost(), is("localhost"));
-        assertThat(config.getPassword(), is("random"));
-        assertThat(config.getPort(), is(8082));
-        assertThat(config.getProps().size(), is(1));
-        assertThat(config.getProps().get("key"), is("value"));
+    private void assertTracingPluginConfiguration(final PluginConfiguration actual) {
+        assertThat(actual.getHost(), is("localhost"));
+        assertThat(actual.getPassword(), is("random"));
+        assertThat(actual.getPort(), is(8082));
+        assertThat(actual.getProps().size(), is(1));
+        assertThat(actual.getProps().get("key"), is("value"));
     }
     
     private Properties createProperties() {
