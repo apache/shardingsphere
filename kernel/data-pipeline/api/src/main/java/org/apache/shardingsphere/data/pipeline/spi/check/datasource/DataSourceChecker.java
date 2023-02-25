@@ -59,5 +59,6 @@ public interface DataSourceChecker extends TypedSPI {
      * @param logicTableNames logic table names
      */
     // TODO rename to common usage name
+    // TODO Merge schemaName and tableNames
     void checkTargetTable(Collection<? extends DataSource> dataSources, TableNameSchemaNameMapping tableNameSchemaNameMapping, Collection<String> logicTableNames);
 }

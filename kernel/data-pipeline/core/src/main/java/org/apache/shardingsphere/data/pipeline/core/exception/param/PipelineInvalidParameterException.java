@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.util;
+package org.apache.shardingsphere.data.pipeline.core.exception.param;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-public abstract class ProxyContextRestorer {
+/**
+ * Pipeline invalid parameter exception.
+ */
+public final class PipelineInvalidParameterException extends PipelineSQLException {
     
-    private ContextManager currentContextManager;
+    private static final long serialVersionUID = -2162309404414015630L;
     
-    @Before
-    public void recordCurrentContextManager() {
-        currentContextManager = ProxyContext.getInstance().getContextManager();
-    }
-    
-    @After
-    public void restorePreviousContextManager() {
-        ProxyContext.init(currentContextManager);
+    public PipelineInvalidParameterException(final String message) {
+        super(XOpenSQLState.INVALID_PARAMETER_VALUE, 5, String.format("There is invalid parameter value: %s.", message));
     }
 }

@@ -25,6 +25,7 @@ import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 public final class JobDataNodeEntryTest {
     
@@ -33,5 +34,21 @@ public final class JobDataNodeEntryTest {
         String actual = new JobDataNodeEntry("t_order", Arrays.asList(new DataNode("ds_0.t_order_0"), new DataNode("ds_0.t_order_1"))).marshal();
         String expected = "t_order:ds_0.t_order_0,ds_0.t_order_1";
         assertThat(actual, is(expected));
+    }
+    
+    @Test
+    public void assertUnmarshalWithSchema() {
+        JobDataNodeEntry actual = JobDataNodeEntry.unmarshal("t_order:ds_0.public.t_order_0,ds_1.test.t_order_1");
+        assertThat(actual.getLogicTableName(), is("t_order"));
+        assertNotNull(actual.getDataNodes());
+        assertThat(actual.getDataNodes().size(), is(2));
+        DataNode first = actual.getDataNodes().get(0);
+        assertThat(first.getDataSourceName(), is("ds_0"));
+        assertThat(first.getSchemaName(), is("public"));
+        assertThat(first.getTableName(), is("t_order_0"));
+        DataNode second = actual.getDataNodes().get(1);
+        assertThat(second.getDataSourceName(), is("ds_1"));
+        assertThat(second.getSchemaName(), is("test"));
+        assertThat(second.getTableName(), is("t_order_1"));
     }
 }

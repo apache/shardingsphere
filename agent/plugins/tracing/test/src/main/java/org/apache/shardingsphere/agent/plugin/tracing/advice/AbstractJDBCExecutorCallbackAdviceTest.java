@@ -38,7 +38,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -94,8 +93,7 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         Map<String, DataSourceMetaData> cachedDatasourceMetaData = (Map<String, DataSourceMetaData>) Plugins.getMemberAccessor()
                 .get(JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA"), mockedJDBCExecutorCallback);
         cachedDatasourceMetaData.put("mock_url", new MockDataSourceMetaData());
-        storageTypes = new LinkedHashMap<>(1, 1);
-        storageTypes.put(dataSourceName, new MySQLDatabaseType());
+        storageTypes = Collections.singletonMap(dataSourceName, new MySQLDatabaseType());
         Plugins.getMemberAccessor().set(JDBCExecutorCallback.class.getDeclaredField("storageTypes"), mockedJDBCExecutorCallback, storageTypes);
         targetObject = (TargetAdviceObject) mockedJDBCExecutorCallback;
     }

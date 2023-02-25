@@ -27,9 +27,11 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -44,9 +46,21 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ProxyContextTest extends ProxyContextRestorer {
+public final class ProxyContextTest {
     
     private static final String SCHEMA_PATTERN = "db_%s";
+    
+    private ContextManager currentContextManager;
+    
+    @Before
+    public void recordCurrentContextManager() {
+        currentContextManager = ProxyContext.getInstance().getContextManager();
+    }
+    
+    @After
+    public void restorePreviousContextManager() {
+        ProxyContext.init(currentContextManager);
+    }
     
     @Test
     public void assertInit() {
@@ -125,8 +139,6 @@ public final class ProxyContextTest extends ProxyContextRestorer {
     private Map<String, ShardingSphereDatabase> mockDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(new H2DatabaseType());
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        result.put("db", database);
-        return result;
+        return Collections.singletonMap("db", database);
     }
 }

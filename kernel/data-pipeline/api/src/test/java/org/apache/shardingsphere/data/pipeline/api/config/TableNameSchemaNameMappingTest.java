@@ -15,20 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.yaml.job;
+package org.apache.shardingsphere.data.pipeline.api.config;
 
-import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
-public final class YamlMigrationJobConfigurationSwapperTest {
+public final class TableNameSchemaNameMappingTest {
     
     @Test
-    public void assertSwapToObject() {
-        YamlMigrationJobConfiguration yamlJobConfig = new YamlMigrationJobConfiguration();
-        MigrationJobConfiguration actual = new YamlMigrationJobConfigurationSwapper().swapToObject(yamlJobConfig);
-        assertThat(actual.getJobShardingCount(), is(1));
+    public void assertConstructFromNull() {
+        new TableNameSchemaNameMapping(null);
+    }
+    
+    @Test
+    public void assertConstructFromValueNullMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put("t_order", null);
+        TableNameSchemaNameMapping mapping = new TableNameSchemaNameMapping(map);
+        assertNull(mapping.getSchemaName("t_order"));
+    }
+    
+    @Test
+    public void assertConstructFromMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put("t_order", "public");
+        TableNameSchemaNameMapping mapping = new TableNameSchemaNameMapping(map);
+        assertThat(mapping.getSchemaName("t_order"), is("public"));
     }
 }

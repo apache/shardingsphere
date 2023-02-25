@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.dialect;
+package org.apache.shardingsphere.data.pipeline.api.datanode;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.DialectDataTypeLoader;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.junit.Test;
 
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collections;
-import java.util.Map;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Oracle data type loader.
- */
-public final class OracleDataTypeLoader implements DialectDataTypeLoader {
+public final class DataNodeUtilTest {
     
-    @Override
-    public Map<String, Integer> load() throws SQLException {
-        return Collections.singletonMap("NUMBER", Types.NUMERIC);
+    @Test
+    public void assertFormatWithSchema() {
+        DataNode dataNode = new DataNode("ds_0.tbl_0");
+        dataNode.setSchemaName("public");
+        assertThat(DataNodeUtil.formatWithSchema(dataNode), is("ds_0.public.tbl_0"));
     }
     
-    @Override
-    public String getType() {
-        return "Oracle";
+    @Test
+    public void assertParseWithSchema() {
+        DataNode actual = DataNodeUtil.parseWithSchema("ds_0.public.tbl_0");
+        assertThat(actual.getDataSourceName(), is("ds_0"));
+        assertThat(actual.getSchemaName(), is("public"));
+        assertThat(actual.getTableName(), is("tbl_0"));
     }
 }

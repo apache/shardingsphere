@@ -25,42 +25,35 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJ
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Migration job configuration for YAML.
  */
 @Getter
 @Setter
-@ToString(exclude = {"source", "target"})
+@ToString(exclude = {"sources", "target"})
 public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfiguration {
     
     private String jobId;
     
-    private String sourceResourceName;
-    
     private String targetDatabaseName;
-    
-    private String sourceSchemaName;
     
     private String sourceDatabaseType;
     
     private String targetDatabaseType;
     
-    private String sourceTableName;
-    
-    private String targetTableName;
-    
-    private YamlPipelineDataSourceConfiguration source;
+    private Map<String, YamlPipelineDataSourceConfiguration> sources;
     
     private YamlPipelineDataSourceConfiguration target;
     
+    private List<String> targetTableNames;
+    
     /**
-     * Collection of each logic table's first data node.
-     * <p>
-     * If <pre>actualDataNodes: ds_${0..1}.t_order_${0..1}</pre> and <pre>actualDataNodes: ds_${0..1}.t_order_item_${0..1}</pre>,
-     * then value may be: {@code t_order:ds_0.t_order_0|t_order_item:ds_0.t_order_item_0}.
-     * </p>
+     * Map{logic table names, schema name}.
      */
+    private Map<String, String> targetTableSchemaMap;
+    
     private String tablesFirstDataNodes;
     
     private List<String> jobShardingDataNodes;
@@ -70,13 +63,13 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
     private int retryTimes = 3;
     
     /**
-     * Set source.
+     * Set sources.
      *
-     * @param source source configuration
+     * @param sources source configurations
      */
-    public void setSource(final YamlPipelineDataSourceConfiguration source) {
-        checkParameters(source);
-        this.source = source;
+    public void setSources(final Map<String, YamlPipelineDataSourceConfiguration> sources) {
+        sources.values().forEach(this::checkParameters);
+        this.sources = sources;
     }
     
     /**

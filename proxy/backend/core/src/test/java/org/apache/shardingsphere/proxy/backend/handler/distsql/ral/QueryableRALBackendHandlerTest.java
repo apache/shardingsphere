@@ -35,10 +35,10 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,34 +47,34 @@ import java.util.Map;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class QueryableRALBackendHandlerTest extends ProxyContextRestorer {
+public final class QueryableRALBackendHandlerTest {
     
     @Test(expected = NoDatabaseSelectedException.class)
     public void assertExecuteWithNoDatabase() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        QueryableRALBackendHandler handler = new QueryableRALBackendHandler(mock(ExportDatabaseConfigurationStatement.class), connectionSession);
         when(connectionSession.getDatabaseName()).thenReturn(null);
-        handler.execute();
+        new QueryableRALBackendHandler<>(mock(ExportDatabaseConfigurationStatement.class), connectionSession).execute();
     }
     
     @Test(expected = UnknownDatabaseException.class)
     public void assertExecuteWithUnknownDatabase() {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData();
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), metaData);
-        ContextManager contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
-        ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        QueryableRALBackendHandler handler = new QueryableRALBackendHandler(mock(ExportDatabaseConfigurationStatement.class), connectionSession);
         when(connectionSession.getDatabaseName()).thenReturn("unknown");
-        handler.execute();
+        ContextManager contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            new QueryableRALBackendHandler<>(mock(ExportDatabaseConfigurationStatement.class), connectionSession).execute();
+        }
     }
     
     @Test(expected = ServiceProviderNotFoundServerException.class)
     public void assertExecuteWithAbstractStatement() {
-        QueryableRALBackendHandler handler = new QueryableRALBackendHandler(mock(QueryableRALStatement.class), mock(ConnectionSession.class));
-        handler.execute();
+        new QueryableRALBackendHandler<>(mock(QueryableRALStatement.class), mock(ConnectionSession.class)).execute();
     }
     
     @Test

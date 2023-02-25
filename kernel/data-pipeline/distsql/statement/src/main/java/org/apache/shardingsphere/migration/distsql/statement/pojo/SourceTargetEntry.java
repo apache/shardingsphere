@@ -15,22 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.pojo;
+package org.apache.shardingsphere.migration.distsql.statement.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 
+import java.util.Objects;
+
+/**
+ * Source target entry.
+ */
 @RequiredArgsConstructor
 @Getter
-public final class CreateMigrationJobParameter {
-    
-    private final String sourceResourceName;
-    
-    private final String sourceSchemaName;
-    
-    private final String sourceTableName;
+public final class SourceTargetEntry {
     
     private final String targetDatabaseName;
     
+    private final DataNode source;
+    
     private final String targetTableName;
+    
+    @Override
+    public boolean equals(final Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (null == object || getClass() != object.getClass()) {
+            return false;
+        }
+        final SourceTargetEntry that = (SourceTargetEntry) object;
+        return source.equals(that.source) && targetTableName.equals(that.targetTableName);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(source, targetTableName);
+    }
 }

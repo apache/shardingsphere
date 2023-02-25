@@ -52,7 +52,6 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -245,8 +244,7 @@ public final class MySQLAuthenticationEngineTest {
     
     private ContextManager mockContextManager(final AuthorityRule rule) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>(1, 1);
-        databases.put("sharding_db", mock(ShardingSphereDatabase.class));
+        Map<String, ShardingSphereDatabase> databases = Collections.singletonMap("sharding_db", mock(ShardingSphereDatabase.class));
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases,
                 new ShardingSphereRuleMetaData(Collections.singleton(rule)), new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
