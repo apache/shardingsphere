@@ -33,13 +33,14 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -50,11 +51,14 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextRestorer {
+public final class UnregisterStorageUnitBackendHandlerTest {
+    
+    private MockedStatic<ProxyContext> proxyContext;
     
     @Mock
     private UnregisterStorageUnitStatement unregisterStorageUnitStatement;
@@ -93,17 +97,27 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test", database));
-        when(metaDataContexts.getMetaData().containsDatabase("test")).thenReturn(true);
-        contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(contextManager.getInstanceContext().getModeContextManager()).thenReturn(modeContextManager);
-        ProxyContext.init(contextManager);
+        contextManager = mockContextManager();
+        proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
+        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        proxyContext.when(() -> ProxyContext.getInstance().getDatabase("test")).thenReturn(database);
         unregisterStorageUnitBackendHandler = new UnregisterStorageUnitBackendHandler(unregisterStorageUnitStatement, connectionSession);
     }
     
-    @Test
+    @After
+    public void tearDown() {
+        proxyContext.close();
+    }
+    
+    private ContextManager mockContextManager() {
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test", database));
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getInstanceContext().getModeContextManager()).thenReturn(modeContextManager);
+        return result;
+    }
+    
     public void assertExecute() throws SQLException {
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -115,6 +129,7 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
     
     @Test(expected = MissingRequiredStorageUnitsException.class)
     public void assertStorageUnitNameNotExistedExecute() {
+        proxyContext.when(() -> ProxyContext.getInstance().getDatabase("test").getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
         unregisterStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
     }
     

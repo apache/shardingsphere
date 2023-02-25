@@ -29,14 +29,15 @@ import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigu
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.ParseDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
@@ -45,10 +46,14 @@ import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
+public final class ParseDistSQLHandlerTest {
+    
+    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
@@ -61,7 +66,12 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
     @Before
     public void setUp() {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(sqlParserRule)));
-        ProxyContext.init(contextManager);
+        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+    }
+    
+    @After
+    public void tearDown() {
+        proxyContext.close();
     }
     
     @Test
