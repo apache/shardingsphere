@@ -54,6 +54,6 @@ public final class Bootstrap {
         new BootstrapInitializer().init(yamlConfig, port, bootstrapArgs.getForce());
         Optional.ofNullable((Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
                 .ifPresent(cdcPort -> new CDCServer(addresses, cdcPort).start());
-        new ShardingSphereProxy().start(port, addresses);
+        new ShardingSphereProxy().start("/tmp/shardingsphere.sock");
     }
 }

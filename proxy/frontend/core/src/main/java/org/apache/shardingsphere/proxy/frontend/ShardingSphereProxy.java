@@ -28,6 +28,7 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.unix.DomainSocketAddress;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.SneakyThrows;
@@ -68,7 +69,24 @@ public final class ShardingSphereProxy {
             BackendExecutorContext.getInstance().getExecutorEngine().close();
         }
     }
-    
+
+    /**
+     * Start ShardingSphere-Proxy.
+     *
+     * @param socketPath socketPath
+     */
+    @SneakyThrows(InterruptedException.class)
+    public void start(final String socketPath) {
+        try {
+            List<ChannelFuture> futures = startDomainSocket(socketPath);
+            accept(futures);
+        } finally {
+            workerGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
+            BackendExecutorContext.getInstance().getExecutorEngine().close();
+        }
+    }
+
     private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
         createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
@@ -80,7 +98,16 @@ public final class ShardingSphereProxy {
         }
         return futures;
     }
-    
+
+    private List<ChannelFuture> startDomainSocket(final String socketPath) throws InterruptedException {
+        createEventLoopGroup();
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        initServerBootstrap(bootstrap);
+        List<ChannelFuture> result = new ArrayList<>();
+        result.add(bootstrap.bind(new DomainSocketAddress(socketPath)).sync());
+        return result;
+    }
+
     private void accept(final List<ChannelFuture> futures) throws InterruptedException {
         log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType());
         for (ChannelFuture future : futures) {
