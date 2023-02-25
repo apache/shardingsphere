@@ -98,9 +98,7 @@ public final class MigrationJobAPITest {
         props.put("jdbcUrl", jdbcUrl);
         props.put("username", "root");
         props.put("password", "root");
-        Map<String, DataSourceProperties> expect = new LinkedHashMap<>(1, 1);
-        expect.put("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props));
-        jobAPI.addMigrationSourceResources(expect);
+        jobAPI.addMigrationSourceResources(Collections.singletonMap("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props)));
     }
     
     @AfterClass

@@ -138,10 +138,9 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", Collections.emptyList(), "ha_heartbeat", "readwrite_ds_MGR");
-        Map<String, AlgorithmConfiguration> discoveryTypes = new LinkedHashMap<>(1, 1);
-        discoveryTypes.put("readwrite_ds_MGR", new AlgorithmConfiguration("readwrite_ds_MGR", new Properties()));
-        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats = new LinkedHashMap<>(1, 1);
-        discoveryHeartbeats.put("unused_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
+        Map<String, AlgorithmConfiguration> discoveryTypes = new HashMap<>(Collections.singletonMap("readwrite_ds_MGR", new AlgorithmConfiguration("readwrite_ds_MGR", new Properties())));
+        Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats = new HashMap<>(
+                Collections.singletonMap("unused_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())));
         return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), discoveryHeartbeats, discoveryTypes);
     }
     

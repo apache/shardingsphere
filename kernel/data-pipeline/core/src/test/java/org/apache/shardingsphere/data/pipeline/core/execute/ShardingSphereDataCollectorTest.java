@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.Test;
 
 import java.sql.Types;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -72,9 +72,7 @@ public final class ShardingSphereDataCollectorTest {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("logic_db");
-        Map<String, ShardingSphereDatabase> databases = new HashMap<>(1, 1);
-        databases.put("logic_db", database);
-        when(result.getDatabases()).thenReturn(databases);
+        when(result.getDatabases()).thenReturn(Collections.singletonMap("logic_db", database));
         when(result.getDatabase("logic_db")).thenReturn(database);
         when(result.containsDatabase("logic_db")).thenReturn(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);

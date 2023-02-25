@@ -108,14 +108,9 @@ public final class ConnectionManagerTest {
     
     private MetaDataPersistService mockMetaDataPersistService() {
         MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSourceService().load(DefaultDatabase.LOGIC_NAME)).thenReturn(createDataSourcePropertiesMap());
+        when(result.getDataSourceService().load(DefaultDatabase.LOGIC_NAME))
+                .thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties())));
         when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
-        return result;
-    }
-    
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(1, 1);
-        result.put(DefaultDatabase.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties()));
         return result;
     }
     
