@@ -51,10 +51,10 @@ public final class OpenTelemetrySQLParserEngineAdviceTest extends AbstractSQLPar
     
     @BeforeEach
     public void setup() {
-        parentSpan = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME).spanBuilder("parent").startSpan();
-        RootSpanContext.set(parentSpan);
         SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(testExporter)).build();
         OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).buildAndRegisterGlobal().getTracer(OpenTelemetryConstants.TRACER_NAME);
+        parentSpan = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME).spanBuilder("parent").startSpan();
+        RootSpanContext.set(parentSpan);
     }
     
     @AfterEach
