@@ -46,7 +46,7 @@ public final class RALBackendHandlerFactory {
         }
         // TODO remove other updatable RAL backend handlers after the refactoring of RALBackendHandler is complete
         if (TypedSPILoader.contains(RALUpdater.class, sqlStatement.getClass().getName())) {
-            return new UpdatableRALUpdaterBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
+            return new UpdatableRALBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
         }
         return new UpdatableGlobalRuleRALBackendHandler(sqlStatement);
     }
