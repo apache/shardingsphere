@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.advice;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
+import org.apache.shardingsphere.agent.plugin.tracing.AgentExtension;
 import org.apache.shardingsphere.agent.plugin.tracing.MockDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Connection;
@@ -43,7 +43,7 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(AgentRunner.class)
+@ExtendWith(AgentExtension.class)
 public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTestBase {
     
     @Getter
