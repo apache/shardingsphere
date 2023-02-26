@@ -248,8 +248,9 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
             Date data = (Date) parameter;
             DateString value = new DateString(data.toString());
             return rexBuilder.makeLiteral(value, typeFactory.createSqlType(SqlTypeName.DATE), true);
+        } else {
+            return rexBuilder.makeLiteral(parameter.toString(), typeFactory.createSqlType(SqlTypeName.VARCHAR), false);
         }
-        throw new OptimizationSQLRexNodeException(text);
     }
     
     @Override
