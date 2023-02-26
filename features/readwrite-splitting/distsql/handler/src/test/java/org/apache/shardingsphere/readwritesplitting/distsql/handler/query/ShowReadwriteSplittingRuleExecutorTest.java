@@ -82,6 +82,27 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
         assertThat(row.getCell(7), is("read_weight=2:1"));
     }
     
+    @Test
+    public void assertGetRowDataWithSpecifiedRuleName() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        when(rule.getExportData()).thenReturn(createExportedData());
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
+        RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, new ShowReadwriteSplittingRulesStatement("readwrite_ds", null));
+        assertThat(actual.size(), is(1));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        LocalDataQueryResultRow row = iterator.next();
+        assertThat(row.getCell(1), is("readwrite_ds"));
+        assertThat(row.getCell(2), is(""));
+        assertThat(row.getCell(3), is(""));
+        assertThat(row.getCell(4), is("ds_primary"));
+        assertThat(row.getCell(5), is("ds_slave_0,ds_slave_1"));
+        assertThat(row.getCell(6), is("random"));
+        assertThat(row.getCell(7), is("read_weight=2:1"));
+    }
+    
     private Map<String, Object> createExportedData() {
         Map<String, Object> result = new HashMap<>(2, 1);
         result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, Collections.emptyMap());
@@ -169,9 +190,7 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     private Map<String, Map<String, String>> exportDynamicDataSources() {
-        Map<String, Map<String, String>> result = new HashMap<>(1, 1);
-        result.put("readwrite_ds", getAutoAwareDataSources());
-        return result;
+        return Collections.singletonMap("readwrite_ds", getAutoAwareDataSources());
     }
     
     private Map<String, String> getAutoAwareDataSources() {

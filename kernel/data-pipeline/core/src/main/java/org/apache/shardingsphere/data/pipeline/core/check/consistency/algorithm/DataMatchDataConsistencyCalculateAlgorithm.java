@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -27,12 +28,18 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCheckUtils;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.BasicColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtil;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
+import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.math.BigDecimal;
@@ -45,11 +52,9 @@ import java.sql.SQLXML;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -68,10 +73,6 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     private int chunkSize;
     
-    private final Map<String, String> firstSQLCache = new ConcurrentHashMap<>();
-    
-    private final Map<String, String> laterSQLCache = new ConcurrentHashMap<>();
-    
     @Override
     public void init(final Properties props) {
         chunkSize = getChunkSize(props);
@@ -88,60 +89,102 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     @Override
     public Optional<DataConsistencyCalculatedResult> calculateChunk(final DataConsistencyCalculateParameter param) {
-        CalculatedResult previousCalculatedResult = (CalculatedResult) param.getPreviousCalculatedResult();
-        String sql = getQuerySQL(param);
-        try (
-                Connection connection = param.getDataSource().getConnection();
-                PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql))) {
-            preparedStatement.setFetchSize(chunkSize);
-            Object tableCheckPosition = param.getTableCheckPosition();
-            if (null == previousCalculatedResult) {
-                if (null == tableCheckPosition) {
-                    preparedStatement.setInt(1, chunkSize);
-                } else {
-                    preparedStatement.setObject(1, tableCheckPosition);
-                    preparedStatement.setInt(2, chunkSize);
-                }
-            } else {
-                preparedStatement.setObject(1, previousCalculatedResult.getMaxUniqueKeyValue().orElse(null));
-                preparedStatement.setInt(2, chunkSize);
-            }
+        CalculationContext calculationContext = getOrCreateCalculationContext(param);
+        try {
             Collection<Collection<Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                ColumnValueReader columnValueReader = TypedSPILoader.getService(ColumnValueReader.class, param.getDatabaseType());
-                while (resultSet.next()) {
-                    if (isCanceling()) {
-                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName());
-                    }
-                    ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-                    int columnCount = resultSetMetaData.getColumnCount();
-                    Collection<Object> record = new LinkedList<>();
-                    for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                        record.add(columnValueReader.readValue(resultSet, resultSetMetaData, columnIndex));
-                    }
-                    records.add(record);
-                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, param.getUniqueKey().getOrdinalPosition());
+            ColumnValueReader columnValueReader = PipelineTypedSPILoader.findDatabaseTypedService(ColumnValueReader.class, param.getDatabaseType())
+                    .orElseGet(() -> new BasicColumnValueReader(param.getDatabaseType()));
+            ResultSet resultSet = calculationContext.getResultSet();
+            while (resultSet.next()) {
+                if (isCanceling()) {
+                    throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName());
+                }
+                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+                int columnCount = resultSetMetaData.getColumnCount();
+                Collection<Object> record = new LinkedList<>();
+                for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                    record.add(columnValueReader.readValue(resultSet, resultSetMetaData, columnIndex));
+                }
+                records.add(record);
+                maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, param.getUniqueKey().getOrdinalPosition());
+                if (records.size() == chunkSize) {
+                    break;
                 }
             }
+            if (records.isEmpty()) {
+                calculationContext.close();
+            }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
-        } catch (final SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            calculationContext.close();
+            if (ex instanceof PipelineSQLException) {
+                throw (PipelineSQLException) ex;
+            }
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
         }
     }
     
+    private CalculationContext getOrCreateCalculationContext(final DataConsistencyCalculateParameter param) {
+        CalculationContext result = (CalculationContext) param.getCalculationContext();
+        if (null != result) {
+            return result;
+        }
+        try {
+            result = createCalculationContext(param);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
+        }
+        try {
+            fulfillCalculationContext(result, param);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            result.close();
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
+        }
+        return result;
+    }
+    
+    private CalculationContext createCalculationContext(final DataConsistencyCalculateParameter param) throws SQLException {
+        Connection connection = param.getDataSource().getConnection();
+        CalculationContext result = new CalculationContext(connection);
+        param.setCalculationContext(result);
+        return result;
+    }
+    
+    private void fulfillCalculationContext(final CalculationContext calculationContext, final DataConsistencyCalculateParameter param) throws SQLException {
+        String sql = getQuerySQL(param);
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType());
+        PreparedStatement preparedStatement = setCurrentStatement(JDBCStreamQueryUtil.generateStreamQueryPreparedStatement(databaseType, calculationContext.getConnection(), sql));
+        if (!(databaseType instanceof MySQLDatabaseType)) {
+            preparedStatement.setFetchSize(chunkSize);
+        }
+        calculationContext.setPreparedStatement(preparedStatement);
+        Object tableCheckPosition = param.getTableCheckPosition();
+        if (null != tableCheckPosition) {
+            preparedStatement.setObject(1, tableCheckPosition);
+        }
+        ResultSet resultSet = preparedStatement.executeQuery();
+        calculationContext.setResultSet(resultSet);
+    }
+    
     private String getQuerySQL(final DataConsistencyCalculateParameter param) {
-        PipelineSQLBuilder sqlBuilder = TypedSPILoader.getService(PipelineSQLBuilder.class, param.getDatabaseType());
+        if (null == param.getUniqueKey()) {
+            throw new UnsupportedOperationException("Data consistency of DATA_MATCH type not support table without unique key and primary key now");
+        }
+        PipelineSQLBuilder sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, param.getDatabaseType());
         String logicTableName = param.getLogicTableName();
         String schemaName = param.getSchemaName();
         String uniqueKey = param.getUniqueKey().getName();
-        String cacheKey = param.getDatabaseType() + "-" + (null != schemaName && TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType()).isSchemaAvailable()
-                ? schemaName + "." + logicTableName
-                : logicTableName);
-        if (null == param.getPreviousCalculatedResult() && null == param.getTableCheckPosition()) {
-            return firstSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, true));
+        if (null != param.getTableCheckPosition()) {
+            return sqlBuilder.buildQueryAllOrderingSQL(schemaName, logicTableName, uniqueKey, false);
         }
-        return laterSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, false));
+        return sqlBuilder.buildQueryAllOrderingSQL(schemaName, logicTableName, uniqueKey, true);
     }
     
     @Override
@@ -152,6 +195,26 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     @Override
     public Collection<String> getSupportedDatabaseTypes() {
         return SUPPORTED_DATABASE_TYPES;
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    private static final class CalculationContext implements AutoCloseable {
+        
+        private final Connection connection;
+        
+        @Setter
+        private volatile PreparedStatement preparedStatement;
+        
+        @Setter
+        private volatile ResultSet resultSet;
+        
+        @Override
+        public void close() {
+            CloseUtil.closeQuietly(resultSet);
+            CloseUtil.closeQuietly(preparedStatement);
+            CloseUtil.closeQuietly(connection);
+        }
     }
     
     @RequiredArgsConstructor

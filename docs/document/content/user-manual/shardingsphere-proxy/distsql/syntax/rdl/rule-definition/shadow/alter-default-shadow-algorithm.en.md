@@ -38,14 +38,14 @@ value ::=
 
 ### Supplement
 
-- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SIMPLE_HINT`.
+- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SQL_HINT`.
 
 ### Example
 
 - Alter default shadow algorithm
 
 ```sql
-ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
+ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SQL_HINT");
 ```
 
 ### Reserved word

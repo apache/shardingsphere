@@ -24,8 +24,8 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -42,19 +42,25 @@ import static org.junit.Assert.assertTrue;
 
 public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     
-    private PipelineDataSourceWrapper source;
+    private static PipelineDataSourceWrapper source;
     
-    private PipelineDataSourceWrapper target;
+    private static PipelineDataSourceWrapper target;
     
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         source = new PipelineDataSourceWrapper(createHikariDataSource("source_ds"), new H2DatabaseType());
         createTableAndInitData(source, "t_order_copy");
         target = new PipelineDataSourceWrapper(createHikariDataSource("target_ds"), new H2DatabaseType());
         createTableAndInitData(target, "t_order");
     }
     
-    private HikariDataSource createHikariDataSource(final String databaseName) {
+    @AfterClass
+    public static void tearDown() throws Exception {
+        source.close();
+        target.close();
+    }
+    
+    private static HikariDataSource createHikariDataSource(final String databaseName) {
         HikariDataSource result = new HikariDataSource();
         result.setJdbcUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", databaseName));
         result.setUsername("root");
@@ -66,7 +72,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
         return result;
     }
     
-    private void createTableAndInitData(final PipelineDataSourceWrapper dataSource, final String tableName) throws SQLException {
+    private static void createTableAndInitData(final PipelineDataSourceWrapper dataSource, final String tableName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             String sql = String.format("CREATE TABLE %s (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))", tableName);
             connection.createStatement().execute(sql);
@@ -114,15 +120,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
         assertThat(sourceCalculateResult.get(), is(targetCalculateResult.get()));
     }
     
-    private DataConsistencyCalculateParameter generateParameter(final PipelineDataSourceWrapper dataSource, final String logicTableName, final Object dataCheckPositionValue) {
+    private DataConsistencyCalculateParameter generateParameter(final PipelineDataSourceWrapper dataSource, final String logicTableName, final Object dataCheckPosition) {
         PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "integer", false, true, true);
         return new DataConsistencyCalculateParameter(dataSource, null, logicTableName, Collections.emptyList(),
-                "MySQL", "MySQL", uniqueKey, dataCheckPositionValue);
-    }
-    
-    @After
-    public void tearDown() throws Exception {
-        source.close();
-        target.close();
+                "H2", "H2", uniqueKey, dataCheckPosition);
     }
 }

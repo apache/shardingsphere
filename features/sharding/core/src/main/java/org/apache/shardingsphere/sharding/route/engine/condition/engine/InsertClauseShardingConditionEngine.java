@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueC
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -134,13 +132,10 @@ public final class InsertClauseShardingConditionEngine {
         }
     }
     
-    @SuppressWarnings("rawtypes")
-    private Comparable<?> getShardingValue(final SimpleExpressionSegment expressionSegment, final List<Object> params) {
-        Object result = expressionSegment instanceof ParameterMarkerExpressionSegment
+    private Object getShardingValue(final SimpleExpressionSegment expressionSegment, final List<Object> params) {
+        return expressionSegment instanceof ParameterMarkerExpressionSegment
                 ? params.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex())
                 : ((LiteralExpressionSegment) expressionSegment).getLiterals();
-        ShardingSpherePreconditions.checkState(result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding"));
-        return (Comparable) result;
     }
     
     private List<ShardingCondition> createShardingConditionsWithInsertSelect(final InsertStatementContext sqlStatementContext, final List<Object> params) {

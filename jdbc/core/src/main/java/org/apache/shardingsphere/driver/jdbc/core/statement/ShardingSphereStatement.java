@@ -197,12 +197,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private Optional<String> getInstanceIdAndSet(final QueryContext queryContext) {
-        Optional<String> result = connection.getConnectionContext().getTrafficInstanceId();
+        Optional<String> result = connection.getConnectionManager().getConnectionContext().getTrafficInstanceId();
         if (!result.isPresent()) {
             result = getInstanceId(queryContext);
         }
         if (connection.isHoldTransaction() && result.isPresent()) {
-            connection.getConnectionContext().setTrafficInstanceId(result.get());
+            connection.getConnectionManager().getConnectionContext().setTrafficInstanceId(result.get());
         }
         return result;
     }
@@ -480,7 +480,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private void checkSameDatabaseNameInTransaction(final SQLStatementContext<?> sqlStatementContext, final String connectionDatabaseName) {
-        if (!connection.getConnectionContext().getTransactionConnectionContext().isInTransaction()) {
+        if (!connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction()) {
             return;
         }
         if (sqlStatementContext instanceof TableAvailable) {
@@ -522,7 +522,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         ShardingSphereRuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
         ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName());
         SQLAuditEngine.audit(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, currentDatabase, null);
-        return kernelProcessor.generateExecutionContext(queryContext, currentDatabase, globalRuleMetaData, metaDataContexts.getMetaData().getProps(), connection.getConnectionContext());
+        return kernelProcessor.generateExecutionContext(queryContext, currentDatabase, globalRuleMetaData, metaDataContexts.getMetaData().getProps(),
+                connection.getConnectionManager().getConnectionContext());
     }
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext() throws SQLException {
@@ -538,7 +539,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private boolean isNeedImplicitCommitTransaction(final ExecutionContext executionContext) {
         ConnectionTransaction connectionTransaction = connection.getConnectionManager().getConnectionTransaction();
-        boolean isInTransaction = connection.getConnectionContext().getTransactionConnectionContext().isInTransaction();
+        boolean isInTransaction = connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction();
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
         return TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !isInTransaction && sqlStatement instanceof DMLStatement
                 && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1;
@@ -610,6 +611,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
             List<ResultSet> resultSets = getResultSets();
+            if (resultSets.isEmpty()) {
+                return currentResultSet;
+            }
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
             currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, executionContext);
         }
@@ -619,7 +623,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private List<ResultSet> getResultSets() throws SQLException {
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (Statement each : statements) {
-            result.add(each.getResultSet());
+            if (null != each.getResultSet()) {
+                result.add(each.getResultSet());
+            }
         }
         return result;
     }
@@ -636,7 +642,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()),
-                metaDataContexts.getMetaData().getProps(), connection.getConnectionContext());
+                metaDataContexts.getMetaData().getProps(), connection.getConnectionManager().getConnectionContext());
         return mergeEngine.merge(queryResults, executionContext.getSqlStatementContext());
     }
     

@@ -97,17 +97,9 @@ rules:
           plainColumn: plain_amount
           encryptorName: rewrite_normal_fixture
       queryWithCipherColumn: true
-    t_order:
-      columns:
-        CONTENT:
-          cipherColumn: CIPHER_CONTENT
-          plainColumn: PLAIN_CONTENT
-          encryptorName: rewrite_metadata_aware_fixture
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE
-    rewrite_metadata_aware_fixture:
-      type: REWRITE.METADATA_AWARE.FIXTURE
     rewrite_assisted_query_fixture:
       type: REWRITE.ASSISTED_QUERY.FIXTURE
     rewrite_like_query_fixture:

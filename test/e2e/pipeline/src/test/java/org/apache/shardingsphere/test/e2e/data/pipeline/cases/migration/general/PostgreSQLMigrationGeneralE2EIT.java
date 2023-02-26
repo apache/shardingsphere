@@ -101,14 +101,15 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         }
         List<String> lastJobIds = listJobId();
         assertThat(lastJobIds.size(), is(0));
-        assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT, PipelineBaseE2EIT.SCHEMA_NAME);
+        proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
+        assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT + 1, PipelineBaseE2EIT.SCHEMA_NAME);
         log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
     
     private void checkOrderMigration() throws SQLException, InterruptedException {
         startMigrationWithSchema(getSourceTableOrderName(), "t_order");
         startIncrementTask(new PostgreSQLIncrementTask(getSourceDataSource(), PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName(), 20));
-        String jobId = getJobIdByTableName(getSourceTableOrderName());
+        String jobId = getJobIdByTableName("ds_0.test." + getSourceTableOrderName());
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
         long recordId = new SnowflakeKeyGenerateAlgorithm().generateKey();
@@ -117,13 +118,13 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         startMigrationByJobId(jobId);
         // must refresh firstly, otherwise proxy can't get schema and table info
         proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
-        assertProxyOrderRecordExist(recordId, String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getTargetTableOrderName()));
+        assertProxyOrderRecordExist(String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getTargetTableOrderName()), recordId);
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }
     
     private void checkOrderItemMigration() throws SQLException, InterruptedException {
         startMigrationWithSchema("t_order_item", "t_order_item");
-        String jobId = getJobIdByTableName("t_order_item");
+        String jobId = getJobIdByTableName("ds_0.test.t_order_item");
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }

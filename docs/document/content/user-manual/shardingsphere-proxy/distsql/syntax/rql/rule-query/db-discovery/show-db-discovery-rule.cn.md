@@ -1,11 +1,11 @@
 +++
-title = "SHOW DB_DISCOVERY RULES"
+title = "SHOW DB_DISCOVERY RULE"
 weight = 2
 +++
 
 ### 描述
 
-`SHOW DB_DISCOVERY RULES` 语法用于查询指定逻辑库中的数据库发现规则。
+`SHOW DB_DISCOVERY RULE` 语法用于查询指定逻辑库中的指定数据库发现规则。
 
 ### 语法
 
@@ -13,7 +13,10 @@ weight = 2
 {{% tab name="语法" %}}
 ```sql
 ShowDatabaseDiscoveryRule::=
-  'SHOW' 'DB_DISCOVERY' 'RULES' ('FROM' databaseName)?
+  'SHOW' 'DB_DISCOVERY' ('RULE' ruleName | 'RULES') ('FROM' databaseName)?
+
+ruleName ::=
+  identifier
 
 databaseName ::=
   identifier
@@ -73,9 +76,41 @@ mysql> SHOW DB_DISCOVERY RULES;
 1 row in set (0.03 sec)
 ```
 
+- 查询指定逻辑库中的指定数据库发现规则
+
+```sql
+SHOW DB_DISCOVERY RULE group_0 FROM discovery_db;
+```
+
+```sql
+mysql> SHOW DB_DISCOVERY RULE group_0 FROM discovery_db;
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+| group_name | data_source_names | primary_data_source_name | discovery_type                                                                                    | discovery_heartbeat                                             |
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+| group_0    | ds_0,ds_1,ds_2    | ds_0                     | {name=group_0_MySQL.MGR, type=MySQL.MGR, props={group-name=558edd3c-02ec-11ea-9bb3-080027e39bd2}} | {name=group_0_heartbeat, props={keep-alive-cron=0/5 * * * * ?}} |
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+1 row in set (0.01 sec)
+```
+
+- 查询当前逻辑库中的指定数据库发现规则
+
+```sql
+SHOW DB_DISCOVERY RULE group_0;
+```
+
+```sql
+mysql> SHOW DB_DISCOVERY RULE group_0;
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+| group_name | data_source_names | primary_data_source_name | discovery_type                                                                                    | discovery_heartbeat                                             |
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+| group_0    | ds_0,ds_1,ds_2    | ds_0                     | {name=group_0_MySQL.MGR, type=MySQL.MGR, props={group-name=558edd3c-02ec-11ea-9bb3-080027e39bd2}} | {name=group_0_heartbeat, props={keep-alive-cron=0/5 * * * * ?}} |
++------------+-------------------+--------------------------+---------------------------------------------------------------------------------------------------+-----------------------------------------------------------------+
+1 row in set (0.03 sec)
+```
+
 ### 保留字
 
-`SHOW`、`DB_DISCOVERY`、`RULES`、`FROM`
+`SHOW`、`DB_DISCOVERY`、`RULE`、`RULES`、`FROM`
 
 ### 相关链接
 

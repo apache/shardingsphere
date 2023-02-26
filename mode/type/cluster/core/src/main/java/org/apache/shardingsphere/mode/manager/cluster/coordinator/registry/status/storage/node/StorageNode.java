@@ -55,12 +55,12 @@ public final class StorageNode {
     }
     
     /**
-     * Get storage node status path.
+     * Get storage node data source path.
      *
      * @param database cluster database
      * @return status path of storage node
      */
-    public static String getStatusPath(final QualifiedDatabase database) {
+    public static String getStorageNodeDataSourcePath(final QualifiedDatabase database) {
         return String.join("/", getRootPath(), database.toString());
     }
     

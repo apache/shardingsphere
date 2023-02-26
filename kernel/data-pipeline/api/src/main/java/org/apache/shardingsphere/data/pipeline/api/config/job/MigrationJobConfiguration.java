@@ -20,53 +20,42 @@ package org.apache.shardingsphere.data.pipeline.api.config.job;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Migration job configuration.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString(exclude = {"source", "target"})
+@ToString(exclude = {"sources", "target"})
 public final class MigrationJobConfiguration implements PipelineJobConfiguration {
     
     private final String jobId;
     
-    private final String sourceResourceName;
-    
     private final String targetDatabaseName;
-    
-    private final String sourceSchemaName;
-    
-    // TODO add targetSchemaName
     
     private final String sourceDatabaseType;
     
     private final String targetDatabaseType;
     
-    private final String sourceTableName;
-    
-    private final String targetTableName;
-    
-    private final PipelineDataSourceConfiguration source;
+    private final Map<String, PipelineDataSourceConfiguration> sources;
     
     private final PipelineDataSourceConfiguration target;
     
+    private final List<String> targetTableNames;
+    
     /**
-     * Collection of each logic table's first data node.
-     * <p>
-     * If <pre>actualDataNodes: ds_${0..1}.t_order_${0..1}</pre> and <pre>actualDataNodes: ds_${0..1}.t_order_item_${0..1}</pre>,
-     * then value may be: {@code t_order:ds_0.t_order_0|t_order_item:ds_0.t_order_item_0}.
-     * </p>
+     * Map{logic table names, schema name}.
      */
-    private final String tablesFirstDataNodes;
+    private final Map<String, String> targetTableSchemaMap;
     
-    private final List<String> jobShardingDataNodes;
+    private final JobDataNodeLine tablesFirstDataNodes;
     
-    private final PipelineColumnMetaData uniqueKeyColumn;
+    private final List<JobDataNodeLine> jobShardingDataNodes;
     
     private final int concurrency;
     
@@ -78,6 +67,6 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
      * @return job sharding count
      */
     public int getJobShardingCount() {
-        return 1;
+        return jobShardingDataNodes.size();
     }
 }

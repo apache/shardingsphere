@@ -29,7 +29,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -45,8 +45,7 @@ public final class MetaDataContextsTest {
     
     @Test
     public void assertGetDefaultMetaData() {
-        Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>(1, 1);
-        databases.put(DefaultDatabase.LOGIC_NAME, database);
+        Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties()));
         assertThat(new MetaDataContexts(mock(MetaDataPersistService.class), metaData).getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME), is(database));
     }

@@ -222,7 +222,7 @@ The text of each license is the standard Apache 2.0 license.
     avatica-core 1.22.0: https://calcite.apache.org/avatica, Apache 2.0
     avatica-metrics 1.22.0: https://calcite.apache.org/avatica, Apache 2.0
     auto-service-annotations 1.0: https://github.com/google/auto/tree/master/service, Apache 2.0
-    caffeine 2.9.3: https://github.com/ben-manes/caffeine, Apache 2.0
+    caffeine 3.1.2: https://github.com/ben-manes/caffeine, Apache 2.0
     calcite-core 1.32.0: https://calcite.apache.org, Apache 2.0
     calcite-linq4j 1.32.0: https://calcite.apache.org, Apache 2.0
     commons-codec 1.15: https://github.com/apache/commons-codec, Apache 2.0
@@ -260,28 +260,30 @@ The text of each license is the standard Apache 2.0 license.
     jackson-databind 2.13.4: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-dataformat-yaml 2.13.4: http://github.com/FasterXML/jackson, Apache 2.0
     jcl-over-slf4j 1.7.36: https://github.com/qos-ch/slf4j, Apache 2.0
-    jetcd-common 0.7.3: https://github.com/etcd-io/jetcd, Apache 2.0
-    jetcd-core 0.7.3: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-api 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-common 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-core 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
+    jetcd-grpc 0.7.5: https://github.com/etcd-io/jetcd, Apache 2.0
     json-path 2.7.0: https://github.com/jayway/JsonPath, Apache 2.0
     json-smart 2.4.7: https://www.minidev.net/, Apache 2.0
     json-simple 1.1.1: https://code.google.com/archive/p/json-simple/, Apache 2.0 
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
     log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
-    netty-buffer 4.1.86.Final: https://github.com/netty, Apache 2.0
-    netty-codec 4.1.86.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http 4.1.86.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http2 4.1.86.Final: https://github.com/netty, Apache 2.0
-    netty-codec-socks 4.1.86.Final: https://github.com/netty, Apache 2.0
-    netty-common 4.1.86.Final: https://github.com/netty, Apache 2.0
-    netty-handler 4.1.86.Final: https://github.com/netty, Apache 2.0
-    netty-handler-proxy 4.1.86.Final: https://github.com/netty, Apache 2.0
-    netty-resolver 4.1.86.Final: https://github.com/netty, Apache 2.0
-    netty-transport 4.1.86.Final: https://github.com/netty, Apache 2.0
-    netty-transport-classes-epoll 4.1.86.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.86.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.86.Final-linux-x86_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-unix-common 4.1.86.Final: https://github.com/netty, Apache 2.0
+    netty-buffer 4.1.87.Final: https://github.com/netty, Apache 2.0
+    netty-codec 4.1.87.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http 4.1.87.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http2 4.1.87.Final: https://github.com/netty, Apache 2.0
+    netty-codec-socks 4.1.87.Final: https://github.com/netty, Apache 2.0
+    netty-common 4.1.87.Final: https://github.com/netty, Apache 2.0
+    netty-handler 4.1.87.Final: https://github.com/netty, Apache 2.0
+    netty-handler-proxy 4.1.87.Final: https://github.com/netty, Apache 2.0
+    netty-resolver 4.1.87.Final: https://github.com/netty, Apache 2.0
+    netty-transport 4.1.87.Final: https://github.com/netty, Apache 2.0
+    netty-transport-classes-epoll 4.1.87.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.87.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.87.Final-linux-x86_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-unix-common 4.1.87.Final: https://github.com/netty, Apache 2.0
     perfmark-api 0.23.0: https://github.com/perfmark/perfmark, Apache 2.0
     proto-google-common-protos 2.0.1: https://github.com/googleapis/common-protos-java, Apache 2.0
     proj4j 1.1.5: https://github.com/locationtech/proj4j, Apache 2.0
@@ -290,8 +292,8 @@ The text of each license is the standard Apache 2.0 license.
     snakeyaml 1.33: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
     transmittable-thread-local 2.14.2: https://github.com/alibaba/transmittable-thread-local, Apache 2.0
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
-    zookeeper 3.8.0: https://github.com/apache/zookeeper, Apache 2.0
-    zookeeper-jute 3.8.0: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper 3.8.1: https://github.com/apache/zookeeper, Apache 2.0
+    zookeeper-jute 3.8.1: https://github.com/apache/zookeeper, Apache 2.0
 
 ========================================================================
 Apache 2.0 licenses
@@ -319,8 +321,8 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     janino 3.1.8: https://github.com/janino-compiler/janino, BSD-3-Clause
     opengauss-jdbc 3.1.0-og: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
     postgresql 42.4.1: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
-    protobuf-java 3.17.2: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
-    protobuf-java-util 3.17.2: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
+    protobuf-java 3.21.12: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
+    protobuf-java-util 3.21.12: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     jts-io-common 1.19.0: https://github.com/locationtech/jts, EDL 1.0
     jts-core 1.19.0: https://github.com/locationtech/jts, EDL 1.0
 

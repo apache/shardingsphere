@@ -156,7 +156,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
                 boolean updated = !Objects.equals(newValue, oldValue);
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(j + 1);
                 record.addColumn(new Column(columnMetaData.getName(),
-                        (columnMetaData.isPrimaryKey() && updated) ? handleValue(columnMetaData, oldValue) : null,
+                        handleValue(columnMetaData, oldValue),
                         handleValue(columnMetaData, newValue), updated, columnMetaData.isPrimaryKey()));
             }
             channel.pushRecord(record);

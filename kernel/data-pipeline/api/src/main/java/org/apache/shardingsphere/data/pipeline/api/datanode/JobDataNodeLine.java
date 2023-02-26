@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -29,9 +29,11 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
+// TODO Move to pipeline-core
 public final class JobDataNodeLine {
     
-    private final Collection<JobDataNodeEntry> entries;
+    // Need sequential collection
+    private final List<JobDataNodeEntry> entries;
     
     /**
      * Marshal to text.
@@ -39,7 +41,7 @@ public final class JobDataNodeLine {
      * @return marshaled text, format: entry1|entry2, e.g. t_order:ds_0.t_order_0,ds_0.t_order_1|t_order_item:ds_0.t_order_item_0,ds_0.t_order_item_1
      */
     public String marshal() {
-        StringBuilder result = new StringBuilder(entries.stream().mapToInt(JobDataNodeEntry::getMarshalledTextEstimatedLength).sum() + entries.size());
+        StringBuilder result = new StringBuilder();
         for (JobDataNodeEntry each : entries) {
             result.append(each.marshal()).append('|');
         }

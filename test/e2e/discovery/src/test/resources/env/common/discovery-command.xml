@@ -16,49 +16,106 @@
   -->
 
 <command>
+    <create-database>
+        <execute-sql>
+            CREATE DATABASE db_discovery;
+        </execute-sql>
+        <assertion-sql>
+            USE db_discovery;
+        </assertion-sql>
+    </create-database>
     <register-storage-unit>
-        REGISTER STORAGE UNIT ds_0 (
-        HOST="mysql_1",
-        PORT=3306,
-        DB="it_discovery_test",
-        USER="test_user",
-        PASSWORD="Test@123",
-        PROPERTIES("connectionTimeout"="5000")
-        ),ds_1 (
-        HOST="mysql_2",
-        PORT=3306,
-        DB="it_discovery_test",
-        USER="test_user",
-        PASSWORD="Test@123",
-        PROPERTIES("connectionTimeout"="5000")
-        ),ds_2 (
-        HOST="mysql_3",
-        PORT=3306,
-        DB="it_discovery_test",
-        USER="test_user",
-        PASSWORD="Test@123",
-        PROPERTIES("connectionTimeout"="5000")
-        ),ds_3 (
-        HOST="mysql_4",
-        PORT=3306,
-        DB="it_discovery_test",
-        USER="test_user",
-        PASSWORD="Test@123",
-        PROPERTIES("connectionTimeout"="5000")
-        );
+        <execute-sql>
+            REGISTER STORAGE UNIT ds_0 (
+            HOST="mysql_1",
+            PORT=3306,
+            DB="it_discovery_test",
+            USER="test_user",
+            PASSWORD="Test@123",
+            PROPERTIES("connectionTimeout"="5000")
+            ),ds_1 (
+            HOST="mysql_2",
+            PORT=3306,
+            DB="it_discovery_test",
+            USER="test_user",
+            PASSWORD="Test@123",
+            PROPERTIES("connectionTimeout"="5000")
+            ),ds_2 (
+            HOST="mysql_3",
+            PORT=3306,
+            DB="it_discovery_test",
+            USER="test_user",
+            PASSWORD="Test@123",
+            PROPERTIES("connectionTimeout"="5000")
+            ),ds_3 (
+            HOST="mysql_4",
+            PORT=3306,
+            DB="it_discovery_test",
+            USER="test_user",
+            PASSWORD="Test@123",
+            PROPERTIES("connectionTimeout"="5000")
+            );
+        </execute-sql>
+        <assertion-sql>
+            SHOW STORAGE UNITS;
+        </assertion-sql>
     </register-storage-unit>
 
     <create-discovery-rule>
-        CREATE DB_DISCOVERY RULE replica_ds (
-        STORAGE_UNITS(ds_0, ds_1, ds_2, ds_3),
-        TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='558edd3c-02ec-11ea-9bb3-080027e39bd2')),
-        HEARTBEAT(PROPERTIES('keep-alive-cron'='0/2 * * * * ?'))
-        );
+        <execute-sql>
+            CREATE DB_DISCOVERY RULE replica_ds (
+            STORAGE_UNITS(ds_0, ds_1, ds_2, ds_3),
+            TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='558edd3c-02ec-11ea-9bb3-080027e39bd2')),
+            HEARTBEAT(PROPERTIES('keep-alive-cron'='0/2 * * * * ?'))
+            );
+        </execute-sql>
+        <assertion-sql>
+            SHOW DB_DISCOVERY RULES replica_ds;
+        </assertion-sql>
     </create-discovery-rule>
 
     <create-readwrite-splitting-rule>
-        CREATE READWRITE_SPLITTING RULE readwrite_ds (
-        AUTO_AWARE_RESOURCE=replica_ds
-        );
+        <execute-sql>
+            CREATE READWRITE_SPLITTING RULE readwrite_ds (
+            AUTO_AWARE_RESOURCE=replica_ds
+            );
+        </execute-sql>
+        <assertion-sql>
+            SHOW READWRITE_SPLITTING RULES replica_ds;
+        </assertion-sql>
     </create-readwrite-splitting-rule>
+
+    <drop-database>
+        <execute-sql>
+            DROP DATABASE db_discovery;
+        </execute-sql>
+        <assertion-sql>
+            USE db_discovery;
+        </assertion-sql>
+    </drop-database>
+
+    <create-readwrite-splitting-database>
+        <execute-sql>
+            CREATE DATABASE readwrite_splitting_db;
+        </execute-sql>
+        <assertion-sql>
+            USE readwrite_splitting_db;
+        </assertion-sql>
+    </create-readwrite-splitting-database>
+
+    <register-single-storage-unit>
+        <execute-sql>
+            REGISTER STORAGE UNIT ds_3 (
+            HOST="mysql_4",
+            PORT=3306,
+            DB="it_discovery_test",
+            USER="test_user",
+            PASSWORD="Test@123",
+            PROPERTIES("connectionTimeout"="5000")
+            );
+        </execute-sql>
+        <assertion-sql>
+            SHOW STORAGE UNITS;
+        </assertion-sql>
+    </register-single-storage-unit>
 </command>

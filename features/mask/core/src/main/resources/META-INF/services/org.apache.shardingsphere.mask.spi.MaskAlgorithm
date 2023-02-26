@@ -27,3 +27,4 @@ org.apache.shardingsphere.mask.algorithm.replace.PersonalIdentityNumberRandomRep
 org.apache.shardingsphere.mask.algorithm.replace.MilitaryIdentityNumberRandomReplaceAlgorithm
 org.apache.shardingsphere.mask.algorithm.replace.LandlineNumberRandomAlgorithm
 org.apache.shardingsphere.mask.algorithm.replace.GenericTableRandomReplaceAlgorithm
+org.apache.shardingsphere.mask.algorithm.replace.UnifiedCreditCodeRandomReplaceAlgorithm

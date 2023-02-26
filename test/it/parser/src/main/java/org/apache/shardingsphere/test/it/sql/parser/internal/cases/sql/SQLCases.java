@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.jaxb.SQLCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.CaseTypedSQLBuilderFactory;
@@ -65,10 +66,14 @@ public final class SQLCases {
         Collection<InternalSQLParserTestParameter> result = new LinkedList<>();
         for (String each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
             if (databaseTypes.contains(each) && containsSQLCaseType(sqlCase, caseType)) {
-                result.add(new InternalSQLParserTestParameter(sqlCase.getId(), caseType, each));
+                result.add(new InternalSQLParserTestParameter(sqlCase.getId(), caseType, each, getVisitorType(sqlCase)));
             }
         }
         return result;
+    }
+    
+    private String getVisitorType(final SQLCase sqlCase) {
+        return Strings.isNullOrEmpty(sqlCase.getVisitorType()) ? "STATEMENT" : sqlCase.getVisitorType();
     }
     
     private Collection<String> getDatabaseTypes(final String databaseTypes) {

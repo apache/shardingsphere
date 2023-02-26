@@ -43,4 +43,7 @@ public final class SQLCase {
     
     @XmlAttribute(name = "case-types")
     private String caseTypes;
+    
+    @XmlAttribute(name = "visitor-type")
+    private String visitorType;
 }

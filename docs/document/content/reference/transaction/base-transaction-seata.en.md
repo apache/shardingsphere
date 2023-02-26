@@ -8,7 +8,6 @@ Seata have proxied `DataSource` interface in order to RPC with TC.
 Similarly, Apache ShardingSphere faced to `DataSource` interface to aggregate data sources too. 
 After Seata `DataSource` encapsulation, it is easy to put Seata AT transaction into Apache ShardingSphere sharding ecosystem.
 
-
 ![Seata BASE transaction](https://shardingsphere.apache.org/document/current/img/transaction/sharding-transaciton-base-seata-at-design.png)
 
 ## Init Seata Engine

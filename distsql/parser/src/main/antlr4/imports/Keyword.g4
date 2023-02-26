@@ -247,18 +247,6 @@ UNUSED
     : U N U S E D
     ;
 
-PREPARE
-    : P R E P A R E
-    ;
-
-DISTSQL
-    : D I S T S Q L
-    ;
-
-APPLY
-    : A P P L Y
-    ;
-
 DISCARD
     : D I S C A R D
     ;

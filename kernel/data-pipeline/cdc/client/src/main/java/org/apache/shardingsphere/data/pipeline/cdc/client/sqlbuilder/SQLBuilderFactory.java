@@ -23,7 +23,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder;
 public final class SQLBuilderFactory {
     
     /**
-     * Get sql builder.
+     * Get SQL builder.
      *
      * @param databaseType database type
      * @return SQL builder
@@ -32,6 +32,10 @@ public final class SQLBuilderFactory {
         switch (databaseType) {
             case "openGauss":
                 return new OpenGaussSQLBuilder();
+            case "MySQL":
+                return new MySQLSQLBuilder();
+            case "PostgreSQL":
+                return new PostgreSQLSQLBuilder();
             default:
                 throw new UnsupportedOperationException(String.format("Not supported %s now", databaseType));
         }

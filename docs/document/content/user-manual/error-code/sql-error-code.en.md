@@ -35,15 +35,16 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Syntax
 
-| SQL State | Vendor Code | Reason |
-| --------- | ----------- | ------ |
-| 42000     | 12000       | You have an error in your SQL syntax: %s |
-| 42000     | 12001       | Can not accept SQL type \`%s\`. |
-| 42000     | 12002       | SQL String can not be NULL or empty. |
-| 42000     | 12010       | Can not support variable \`%s\`. |
-| 42S02     | 12011       | Can not find column label \`%s\`. |
-| HV008     | 12020       | Column index \`%d\` is out of range. |
-| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported. |
+| SQL State | Vendor Code | Reason                                       |
+| --------- |-------------|----------------------------------------------|
+| 42000     | 12000       | You have an error in your SQL syntax: %s     |
+| 42000     | 12001       | Can not accept SQL type \`%s\`.              |
+| 42000     | 12002       | SQL String can not be NULL or empty.         |
+| 42000     | 12010       | Can not support variable \`%s\`.             |
+| 42S02     | 12011       | Can not find column label \`%s\`.            |
+| 42S02     | 12012       | Can not find driver url provider for \`%s`\. |
+| HV008     | 12020       | Column index \`%d\` is out of range.         |
+| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported.     |
 
 ### Connection
 
@@ -102,14 +103,14 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 ### Migration
 
 | SQL State | Vendor Code | Reason |
-| --------- | ----------- | ------ |
-| 44000     | 18002       | Altered process configuration does not exist. |
+| --------- |-------------| ------ |
+| 42S02     | 18002       | There is no rule in database \`%s\`. |
 | 44000     | 18003       | Mode configuration does not exist. |
 | 44000     | 18004       | Target database name is null. You could define it in DistSQL or select a database. |
+| 22023     | 18005       | There is invalid parameter value: `%s`. |
 | HY000     | 18020       | Failed to get DDL for table \`%s\`. |
 | 42S01     | 18030       | Duplicate storage unit names \`%s\`. |
 | 42S02     | 18031       | Storage units names \`%s\` do not exist. |
-| 0A000     | 18032       | Unsupported data type \`%s\` of unique key for pipeline job. |
 | HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\`. |
 | 08000     | 18051       | Data check table \`%s\` failed. |
 | 0A000     | 18052       | Unsupported pipeline database type \`%s\`. |
@@ -131,6 +132,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 18093       | Can not poll event because of binlog sync channel already closed. |
 | HY000     | 18095       | Can not find consistency check job of \`%s\`. |
 | HY000     | 18096       | Uncompleted consistency check job \`%s\` exists. |
+| HY000     | 18200       | Not find stream data source table. |
 
 ### DistSQL
 
@@ -177,7 +179,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY004     | 20021       | Found different types for sharding value \`%s\`.                                                                                 |
 | HY004     | 20022       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\`.                                                                  |
 | 44000     | 20023       | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                                  |
-| 44000     | 20024       | %s value must implements Comparable.                                                                                             |
+| 44000     | 20024       | %s value \`%s\` must implements Comparable.                                                                                             |
 | 0A000     | 20040       | Can not support operation \`%s\` with sharding table \`%s\`.                                                                     |
 | 44000     | 20041       | Can not update sharding value for table \`%s\`.                                                                                  |
 | 0A000     | 20042       | The CREATE VIEW statement contains unsupported query statement.                                                                  |
@@ -234,6 +236,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 44000     | 20382       | \`%s\` is not in MGR replication group member in database \`%s\`. |
 | 44000     | 20383       | Group name in MGR is not same with configured one \`%s\` in database \`%s\`. |
 | 42S01     | 20390       | MySQL Duplicate primary data source in database \`%s\`. |
+| 42S02     | 20391       | Primary data source not found in database \`%s\`. |
 
 ### SQL Dialect Translator
 

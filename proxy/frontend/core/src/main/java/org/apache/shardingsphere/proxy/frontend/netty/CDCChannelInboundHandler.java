@@ -30,14 +30,13 @@ import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CreateSubscriptionRequest.SubscriptionMode;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.DropSubscriptionRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequest.BasicBody;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartSubscriptionRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopSubscriptionRequest;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.DropStreamingRequestBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody.BasicBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreamingRequestBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopStreamingRequestBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
@@ -80,7 +79,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     public void channelInactive(final ChannelHandlerContext ctx) {
         CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
         if (null != connectionContext.getJobId()) {
-            backendHandler.stopSubscription(connectionContext.getJobId());
+            backendHandler.stopStreaming(connectionContext.getJobId());
         }
         ctx.channel().attr(CONNECTION_CONTEXT_KEY).set(null);
     }
@@ -112,33 +111,33 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             processLogin(ctx, request, connectionContext);
             return;
         }
-        switch (request.getRequestCase()) {
-            case CREATE_SUBSCRIPTION:
-                processCreateSubscription(ctx, request, connectionContext);
+        switch (request.getType()) {
+            case STREAM_DATA:
+                processStreamDataRequest(ctx, request, connectionContext);
                 break;
-            case START_SUBSCRIPTION:
-                processStartSubscription(ctx, request, connectionContext);
+            case ACK_STREAMING:
+                processAckStreamingRequest(ctx, request);
                 break;
-            case STOP_SUBSCRIPTION:
-                processStopSubscription(ctx, request, connectionContext);
+            case STOP_STREAMING:
+                processStopStreamingRequest(ctx, request, connectionContext);
                 break;
-            case DROP_SUBSCRIPTION:
-                processDropSubscription(ctx, request, connectionContext);
+            case START_STREAMING:
+                processStartStreamingRequest(ctx, request, connectionContext);
                 break;
-            case ACK_REQUEST:
-                processAckRequest(ctx, request);
+            case DROP_STREAMING:
+                processDropStreamingRequest(ctx, request, connectionContext);
                 break;
             default:
-                log.warn("Cannot handle this type of request {}", request);
+                log.warn("can't handle this type of request {}", request);
         }
     }
     
     private void processLogin(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
-        if (!request.hasLogin() || !request.getLogin().hasBasicBody()) {
+        if (!request.hasLoginRequestBody() || !request.getLoginRequestBody().hasBasicBody()) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Miss login request body")).addListener(ChannelFutureListener.CLOSE);
             return;
         }
-        BasicBody body = request.getLogin().getBasicBody();
+        BasicBody body = request.getLoginRequestBody().getBasicBody();
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Optional<ShardingSphereUser> user = authorityRule.findUser(new Grantee(body.getUsername(), getHostAddress(ctx)));
         if (user.isPresent() && Objects.equals(Hashing.sha256().hashBytes(user.get().getPassword().getBytes()).toString().toUpperCase(), body.getPassword())) {
@@ -164,69 +163,78 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         return socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();
     }
     
-    private void processCreateSubscription(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
-        if (!request.hasCreateSubscription()) {
-            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Miss create subscription request body"))
-                    .addListener(ChannelFutureListener.CLOSE);
+    private void processStreamDataRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
+        if (!request.hasStreamDataRequestBody()) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Miss stream data request body"));
             return;
         }
-        CreateSubscriptionRequest createSubscriptionRequest = request.getCreateSubscription();
-        if (createSubscriptionRequest.getTableNamesList().isEmpty() || createSubscriptionRequest.getDatabase().isEmpty() || createSubscriptionRequest.getSubscriptionName().isEmpty()
-                || createSubscriptionRequest.getSubscriptionMode() == SubscriptionMode.UNKNOWN) {
-            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal create subscription request parameter"));
+        StreamDataRequestBody requestBody = request.getStreamDataRequestBody();
+        if (requestBody.getDatabase().isEmpty()) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "database not allowed to be empty"));
             return;
         }
-        checkPrivileges(connectionContext.getCurrentUser().getGrantee(), createSubscriptionRequest.getDatabase());
-        CDCResponse response = backendHandler.createSubscription(request);
+        if (requestBody.getSourceSchemaTablesList().isEmpty()) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal stream data request parameter"));
+            return;
+        }
+        checkPrivileges(connectionContext.getCurrentUser().getGrantee(), requestBody.getDatabase());
+        CDCResponse response = backendHandler.streamData(request.getRequestId(), requestBody, connectionContext, ctx.channel());
         ctx.writeAndFlush(response);
     }
     
-    private void processStartSubscription(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
-        if (!request.hasStartSubscription()) {
-            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Miss start subscription request body"))
+    private void processAckStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request) {
+        if (!request.hasAckStreamingRequestBody()) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Miss ack request body")).addListener(ChannelFutureListener.CLOSE);
+            return;
+        }
+        AckStreamingRequestBody requestBody = request.getAckStreamingRequestBody();
+        if (requestBody.getAckId().isEmpty()) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal ack request parameter"));
+            return;
+        }
+        backendHandler.processAck(requestBody);
+    }
+    
+    private void processStartStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
+        if (!request.hasStartStreamingRequestBody()) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Miss start streaming request body"))
                     .addListener(ChannelFutureListener.CLOSE);
             return;
         }
-        StartSubscriptionRequest startSubscriptionRequest = request.getStartSubscription();
-        if (startSubscriptionRequest.getDatabase().isEmpty() || startSubscriptionRequest.getSubscriptionName().isEmpty()) {
-            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal start subscription request parameter"))
+        StartStreamingRequestBody requestBody = request.getStartStreamingRequestBody();
+        // TODO improve after cdc exception refactor
+        if (requestBody.getStreamingId().isEmpty()) {
+            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal start streaming request parameter"))
                     .addListener(ChannelFutureListener.CLOSE);
             return;
         }
-        checkPrivileges(connectionContext.getCurrentUser().getGrantee(), startSubscriptionRequest.getDatabase());
-        CDCResponse response = backendHandler.startSubscription(request, ctx.channel(), connectionContext);
+        String database = backendHandler.getDatabaseByJobId(requestBody.getStreamingId());
+        checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
+        CDCResponse response = backendHandler.startStreaming(request.getRequestId(), requestBody.getStreamingId(), connectionContext, ctx.channel());
         ctx.writeAndFlush(response);
     }
     
-    private void processStopSubscription(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
-        StopSubscriptionRequest stopSubscriptionRequest = request.getStopSubscription();
-        checkPrivileges(connectionContext.getCurrentUser().getGrantee(), stopSubscriptionRequest.getDatabase());
-        backendHandler.stopSubscription(connectionContext.getJobId());
+    private void processStopStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
+        StopStreamingRequestBody requestBody = request.getStopStreamingRequestBody();
+        String database = backendHandler.getDatabaseByJobId(requestBody.getStreamingId());
+        checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
+        backendHandler.stopStreaming(connectionContext.getJobId());
         connectionContext.setStatus(CDCConnectionStatus.LOGGED_IN);
+        connectionContext.setJobId(null);
         ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
     }
     
-    private void processDropSubscription(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
-        DropSubscriptionRequest dropSubscriptionRequest = request.getDropSubscription();
-        checkPrivileges(connectionContext.getCurrentUser().getGrantee(), dropSubscriptionRequest.getDatabase());
+    private void processDropStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
+        DropStreamingRequestBody requestBody = request.getDropStreamingRequestBody();
+        String database = backendHandler.getDatabaseByJobId(requestBody.getStreamingId());
+        checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
         try {
-            backendHandler.dropSubscription(connectionContext.getJobId());
+            backendHandler.dropStreaming(connectionContext.getJobId());
+            connectionContext.setStatus(CDCConnectionStatus.LOGGED_IN);
+            connectionContext.setJobId(null);
             ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
         } catch (final SQLException ex) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.SERVER_ERROR, ex.getMessage()));
         }
-    }
-    
-    private void processAckRequest(final ChannelHandlerContext ctx, final CDCRequest request) {
-        if (!request.hasAckRequest()) {
-            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Miss ack request body")).addListener(ChannelFutureListener.CLOSE);
-            return;
-        }
-        AckRequest ackRequest = request.getAckRequest();
-        if (ackRequest.getAckId().isEmpty()) {
-            ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal ack request parameter"));
-            return;
-        }
-        backendHandler.processAck(ackRequest);
     }
 }

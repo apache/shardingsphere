@@ -31,8 +31,6 @@
     <modules>
         <module>spi</module>
         <module>core</module>
-        <module>mysql</module>
-        <module>postgresql</module>
-        <module>opengauss</module>
+        <module>type</module>
     </modules>
 </project>

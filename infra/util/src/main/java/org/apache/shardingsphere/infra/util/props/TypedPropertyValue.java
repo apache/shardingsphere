@@ -58,7 +58,7 @@ public final class TypedPropertyValue {
     
     private Enum<?> getEnumValue(final TypedPropertyKey key, final String value) throws TypedPropertyValueException {
         try {
-            return (Enum<?>) key.getType().getMethod("valueOf", String.class).invoke(null, value);
+            return (Enum<?>) key.getType().getMethod("valueOf", String.class).invoke(null, value.toUpperCase());
         } catch (final ReflectiveOperationException | IllegalArgumentException ex) {
             throw new TypedPropertyValueException(key, value);
         }

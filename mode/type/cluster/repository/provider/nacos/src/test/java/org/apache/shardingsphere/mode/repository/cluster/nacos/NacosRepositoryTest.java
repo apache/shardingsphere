@@ -145,9 +145,7 @@ public final class NacosRepositoryTest {
         instance.setIp(ip);
         instance.setEphemeral(false);
         String key = "/test/children/keys/persistent/0";
-        Map<String, String> metaDataMap = new HashMap<>(1, 1);
-        metaDataMap.put(key, "value0");
-        instance.setMetadata(metaDataMap);
+        instance.setMetadata(new HashMap<>(Collections.singletonMap(key, "value0")));
         List<Instance> instances = new LinkedList<>();
         buildParentPath(key, instances);
         instances.add(instance);

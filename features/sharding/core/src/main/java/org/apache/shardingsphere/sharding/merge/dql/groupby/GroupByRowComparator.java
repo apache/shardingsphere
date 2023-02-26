@@ -51,9 +51,9 @@ public final class GroupByRowComparator implements Comparator<MemoryQueryResultR
     private int compare(final MemoryQueryResultRow o1, final MemoryQueryResultRow o2, final Collection<OrderByItem> orderByItems) {
         for (OrderByItem each : orderByItems) {
             Object orderValue1 = o1.getCell(each.getIndex());
-            ShardingSpherePreconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, () -> new NotImplementComparableValueException("Order by"));
+            ShardingSpherePreconditions.checkState(null == orderValue1 || orderValue1 instanceof Comparable, () -> new NotImplementComparableValueException("Order by", orderValue1));
             Object orderValue2 = o2.getCell(each.getIndex());
-            ShardingSpherePreconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, () -> new NotImplementComparableValueException("Order by"));
+            ShardingSpherePreconditions.checkState(null == orderValue2 || orderValue2 instanceof Comparable, () -> new NotImplementComparableValueException("Order by", orderValue2));
             int result = CompareUtil.compareTo((Comparable) orderValue1, (Comparable) orderValue2, each.getSegment().getOrderDirection(),
                     each.getSegment().getNullsOrderType(selectStatementContext.getDatabaseType().getType()), valueCaseSensitive.get(each.getIndex()));
             if (0 != result) {

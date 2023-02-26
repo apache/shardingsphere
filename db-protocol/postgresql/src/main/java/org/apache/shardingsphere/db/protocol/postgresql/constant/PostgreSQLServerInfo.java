@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 
 /**
  * ShardingSphere-Proxy's information for PostgreSQL.

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.util.expr;
 
 import groovy.lang.Closure;
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.TypeLiteral;
 import org.graalvm.polyglot.Value;
 
 import java.net.URL;
@@ -36,19 +37,16 @@ public class EspressoInlineExpressionParser {
     
     static {
         // https://github.com/oracle/graal/issues/4555 not yet closed
-        String javaHome = System.getenv("GRAALVM_HOME");
-        if (javaHome == null) {
-            javaHome = System.getenv("JAVA_HOME");
+        String javaHome = System.getenv("JAVA_HOME");
+        if (null == javaHome) {
+            throw new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!");
         }
-        if (javaHome == null) {
-            throw new RuntimeException("Failed to determine the system's environment variable GRAALVM_HOME or JAVA_HOME!");
-        }
-        System.setProperty("org.graalvm.home", javaHome);
         URL resource = Thread.currentThread().getContextClassLoader().getResource("espresso-need-libs");
         assert null != resource;
         String dir = resource.getPath();
         String javaClasspath = String.join(":", dir + "/groovy.jar", dir + "/guava.jar", dir + "/shardingsphere-infra-util.jar");
         POLYGLOT = Context.newBuilder().allowAllAccess(true)
+                .option("java.Properties.org.graalvm.home", javaHome)
                 .option("java.MultiThreaded", "true")
                 .option("java.Classpath", javaClasspath)
                 .build();
@@ -70,7 +68,7 @@ public class EspressoInlineExpressionParser {
         return POLYGLOT.getBindings("java")
                 .getMember("org.apache.shardingsphere.infra.util.expr.InlineExpressionParser")
                 .invokeMember("handlePlaceHolder", inlineExpression)
-                .as(String.class);
+                .asString();
     }
     
     /**
@@ -78,10 +76,10 @@ public class EspressoInlineExpressionParser {
      *
      * @return result list
      */
-    @SuppressWarnings("unchecked")
     public List<String> splitAndEvaluate() {
-        List<String> splitAndEvaluate = espressoInlineExpressionParser.invokeMember("splitAndEvaluate").as(List.class);
-        // GraalVM Truffle Espresso CE 22.3.1 has a different behavior for generic List than Hotspot.
+        List<String> splitAndEvaluate = espressoInlineExpressionParser.invokeMember("splitAndEvaluate").as(new TypeLiteral<List<String>>() {
+        });
+        // GraalVM Truffle Espresso 22.3.1 has a different behavior for generic List than Hotspot.
         return splitAndEvaluate.size() == 0 ? Collections.emptyList() : splitAndEvaluate;
     }
     

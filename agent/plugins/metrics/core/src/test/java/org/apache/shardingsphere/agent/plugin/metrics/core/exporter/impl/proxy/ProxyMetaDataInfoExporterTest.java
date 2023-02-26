@@ -17,17 +17,22 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.ProxyContextRestorer;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
+import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -37,9 +42,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class ProxyMetaDataInfoExporterTest extends ProxyContextRestorer {
+public final class ProxyMetaDataInfoExporterTest {
     
     @After
     public void reset() {
@@ -49,18 +55,31 @@ public final class ProxyMetaDataInfoExporterTest extends ProxyContextRestorer {
     
     @Test
     public void assertExportWithoutContextManager() {
-        ProxyContext.init(null);
-        assertFalse(new ProxyMetaDataInfoExporter().export("FIXTURE").isPresent());
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(null);
+            assertFalse(new ProxyMetaDataInfoExporter().export("FIXTURE").isPresent());
+        }
     }
     
     @Test
     public void assertExportWithContextManager() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.emptyMap());
-        // TODO mock schema_count and database_count
-        ProxyContext.init(contextManager);
-        Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyMetaDataInfoExporter().export("FIXTURE");
-        assertTrue(collector.isPresent());
-        assertThat(collector.get().toString(), is("schema_count=0, database_count=0"));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyMetaDataInfoExporter().export("FIXTURE");
+            assertTrue(collector.isPresent());
+            assertThat(collector.get().toString(), is("database_count=1, storage_unit_count=1"));
+        }
+    }
+    
+    private ContextManager mockContextManager() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("ds_0", mock(DataSource.class)));
+        ShardingSphereMetaData shardingSphereMetaData = mock(ShardingSphereMetaData.class);
+        when(shardingSphereMetaData.getDatabases()).thenReturn(Collections.singletonMap("sharding_db", database));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), shardingSphereMetaData);
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
     }
 }

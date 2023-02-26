@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.agent.common;
 
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.JDBCAgentTestUtils;
@@ -28,17 +30,25 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Basic integration test.
  */
+@Slf4j
 public abstract class BasePluginE2EIT {
+    
+    private static boolean hasSleep;
     
     @Before
     public void check() {
         Assume.assumeThat(E2ETestEnvironment.getInstance().isEnvironmentPrepared(), is(true));
+        Assume.assumeThat(E2ETestEnvironment.getInstance().isInitializationFailed(), is(false));
+        E2ETestEnvironment.getInstance().createDataSource();
+        assertNotNull(E2ETestEnvironment.getInstance().getDataSource());
     }
     
     @Test
@@ -58,5 +68,19 @@ public abstract class BasePluginE2EIT {
             JDBCAgentTestUtils.deleteOrderByOrderId(each, dataSource);
         }
         JDBCAgentTestUtils.createExecuteError(dataSource);
+        sleep();
+    }
+    
+    @SneakyThrows(InterruptedException.class)
+    private void sleep() {
+        if (!hasSleep) {
+            log.info("Waiting to collect data ...");
+            TimeUnit.MILLISECONDS.sleep(getSleepTime());
+            hasSleep = true;
+        }
+    }
+    
+    private Long getSleepTime() {
+        return Long.valueOf(E2ETestEnvironment.getInstance().getProps().getProperty("collect.data.wait.milliseconds", "0"));
     }
 }

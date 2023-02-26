@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.discovery.command;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.e2e.discovery.pojo.DistSQLCommandPOJO;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -30,15 +31,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class DiscoveryDistSQLCommand {
     
+    @XmlElement(name = "create-database")
+    @Getter
+    private DistSQLCommandPOJO createDatabase;
+    
     @XmlElement(name = "register-storage-unit")
     @Getter
-    private String registerStorageUnit;
+    private DistSQLCommandPOJO registerStorageUnits;
     
     @XmlElement(name = "create-discovery-rule")
     @Getter
-    private String createDiscoveryRule;
+    private DistSQLCommandPOJO createDiscoveryRule;
     
     @XmlElement(name = "create-readwrite-splitting-rule")
     @Getter
-    private String createReadwriteSplittingRule;
+    private DistSQLCommandPOJO createReadwriteSplittingRule;
+    
+    @XmlElement(name = "drop-database")
+    @Getter
+    private DistSQLCommandPOJO dropDatabase;
+    
+    @XmlElement(name = "create-readwrite-splitting-database")
+    @Getter
+    private DistSQLCommandPOJO createReadwriteSplittingDatabase;
+    
+    @XmlElement(name = "register-single-storage-unit")
+    @Getter
+    private DistSQLCommandPOJO registerSingleStorageUnit;
 }

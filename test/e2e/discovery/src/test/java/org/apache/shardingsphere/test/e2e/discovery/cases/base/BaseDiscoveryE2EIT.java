@@ -22,16 +22,19 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.discovery.build.DiscoveryRuleBuilder;
 import org.apache.shardingsphere.test.e2e.discovery.cases.DatabaseClusterEnvironment;
+import org.apache.shardingsphere.test.e2e.discovery.command.DiscoveryDistSQLCommand;
 import org.apache.shardingsphere.test.e2e.discovery.env.DiscoveryE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.discovery.framework.container.compose.BaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.discovery.framework.container.compose.DockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.discovery.framework.parameter.DiscoveryTestParameter;
+import org.awaitility.Awaitility;
+import org.awaitility.Durations;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,11 +42,9 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotEquals;
 
 @Getter(AccessLevel.PROTECTED)
 @Slf4j
@@ -59,12 +60,15 @@ public abstract class BaseDiscoveryE2EIT {
     
     private final DataSource proxyDataSource;
     
+    private final DiscoveryDistSQLCommand discoveryDistSQLCommand;
+    
     public BaseDiscoveryE2EIT(final DiscoveryTestParameter testParam) {
         databaseType = testParam.getDatabaseType();
         containerComposer = new DockerContainerComposer(testParam.getScenario(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
         containerComposer.start();
         mappedDataSources = containerComposer.getMappedDatasource();
         proxyDataSource = containerComposer.getProxyDatasource();
+        discoveryDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseDiscoveryE2EIT.class.getClassLoader().getResource("env/common/discovery-command.xml")), DiscoveryDistSQLCommand.class);
     }
     
     /**
@@ -73,7 +77,7 @@ public abstract class BaseDiscoveryE2EIT {
      * @throws SQLException SQL exception
      */
     public void initDiscoveryEnvironment() throws SQLException {
-        new DiscoveryRuleBuilder(proxyDataSource).buildDiscoveryEnvironment();
+        new DiscoveryRuleBuilder(discoveryDistSQLCommand, proxyDataSource).buildDiscoveryEnvironment();
     }
     
     /**
@@ -84,8 +88,7 @@ public abstract class BaseDiscoveryE2EIT {
     public void assertClosePrimaryDataSource(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
         String oldPrimaryDataSourceName = getPrimaryDataSourceName();
         closeDataSource(mgrEnvironment.getDataSources().get(oldPrimaryDataSourceName));
-        String newPrimaryDataSourceName = getPrimaryDataSourceName();
-        assertPrimaryDataSourceChanged(oldPrimaryDataSourceName, newPrimaryDataSourceName);
+        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> !oldPrimaryDataSourceName.equals(getPrimaryDataSourceName()));
         mgrEnvironment.getDataSources().remove(oldPrimaryDataSourceName);
     }
     
@@ -122,11 +125,6 @@ public abstract class BaseDiscoveryE2EIT {
                 Statement statement = connection.createStatement()) {
             statement.execute("SHUTDOWN");
         }
-        ThreadUtil.sleep(35, TimeUnit.SECONDS);
-    }
-    
-    private void assertPrimaryDataSourceChanged(final String oldPrimaryDataSourceName, final String newPrimaryDataSourceName) {
-        assertNotEquals(oldPrimaryDataSourceName, newPrimaryDataSourceName);
     }
     
     /**
@@ -138,8 +136,8 @@ public abstract class BaseDiscoveryE2EIT {
         mgrEnvironment.getDataSources().remove(getPrimaryDataSourceName());
         String closedRoutingDataSourceName = getCloseReplicationDataSourceName(mgrEnvironment);
         mgrEnvironment.getDataSources().remove(closedRoutingDataSourceName);
-        String routeDataSourceName = getRouteDataSourceName();
-        assertRouteDataSourceName(routeDataSourceName, Objects.requireNonNull(mgrEnvironment.getDataSources().entrySet().stream().findFirst().orElse(null)).getKey());
+        Awaitility.await().atMost(Durations.TWO_MINUTES)
+                .until(() -> getRouteDataSourceName().equals(Objects.requireNonNull(mgrEnvironment.getDataSources().entrySet().stream().findFirst().orElse(null)).getKey()));
     }
     
     private String getCloseReplicationDataSourceName(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
@@ -164,18 +162,69 @@ public abstract class BaseDiscoveryE2EIT {
         }
     }
     
-    private void assertRouteDataSourceName(final String actualRouteDataSourceName, final String expectedRouteDataSourceName) {
-        Preconditions.checkState(StringUtils.isNotBlank(actualRouteDataSourceName) && StringUtils.isNotBlank(expectedRouteDataSourceName));
-        assertThat(actualRouteDataSourceName, is(expectedRouteDataSourceName));
+    /**
+     * Drop database discovery database.
+     *
+     * @throws SQLException sql exception
+     */
+    public void dropDatabaseDiscoveryDatabase() throws SQLException {
+        try (
+                Connection connection = getProxyDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(discoveryDistSQLCommand.getDropDatabase().getExecuteSQL());
+            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertDropSQL(statement, discoveryDistSQLCommand.getDropDatabase().getAssertionSQL()));
+        }
+    }
+    
+    private boolean assertDropSQL(final Statement statement, final String assertionSQL) {
+        try (ResultSet resultSet = statement.executeQuery(assertionSQL)) {
+            return false;
+        } catch (final SQLException ignored) {
+            return true;
+        }
     }
     
     /**
-     * Assert close all replication data source.
-     * @param mgrEnvironment mgr environment
-     * @throws SQLException SQL Exception
+     * Create readwrite-splitting database.
+     *
+     * @throws SQLException sql exception
      */
-    public void assertCloseAllReplicationDataSource(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
-        closeDataSource(Objects.requireNonNull(mgrEnvironment.getDataSources().values().stream().findFirst().orElse(null)));
-        assertRouteDataSourceName(getRouteDataSourceName(), getPrimaryDataSourceName());
+    public void createReadWriteSplittingDatabase() throws SQLException {
+        try (
+                Connection connection = getProxyDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(discoveryDistSQLCommand.getCreateReadwriteSplittingDatabase().getExecuteSQL());
+            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertCreateSQL(statement, discoveryDistSQLCommand.getCreateReadwriteSplittingDatabase().getAssertionSQL()));
+        }
+    }
+    
+    private boolean assertCreateSQL(final Statement statement, final String assertionSQL) {
+        try (ResultSet resultSet = statement.executeQuery(assertionSQL)) {
+            return true;
+        } catch (final SQLException ignored) {
+            return false;
+        }
+    }
+    
+    /**
+     * Register single storage units.
+     *
+     * @throws SQLException sql exception
+     */
+    public void registerSingleStorageUnit() throws SQLException {
+        try (
+                Connection connection = getProxyDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(discoveryDistSQLCommand.getRegisterSingleStorageUnit().getExecuteSQL());
+            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertRDLDistSQL(statement, discoveryDistSQLCommand.getRegisterSingleStorageUnit().getAssertionSQL()));
+        }
+    }
+    
+    private boolean assertRDLDistSQL(final Statement statement, final String assertionSQL) {
+        try (ResultSet resultSet = statement.executeQuery(assertionSQL)) {
+            return resultSet.next();
+        } catch (final SQLException ignored) {
+            return false;
+        }
     }
 }
