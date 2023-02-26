@@ -31,12 +31,10 @@ import java.sql.SQLException;
 
 /**
  * Updatable RAL backend handler.
- * TODO replace UpdatableRALBackendHandler after its refactoring is complete
- * 
  */
 @RequiredArgsConstructor
 @Setter
-public final class UpdatableRALUpdaterBackendHandler<T extends UpdatableRALStatement> extends RALBackendHandler<T> {
+public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> extends RALBackendHandler<T> {
     
     private final UpdatableRALStatement sqlStatement;
     
