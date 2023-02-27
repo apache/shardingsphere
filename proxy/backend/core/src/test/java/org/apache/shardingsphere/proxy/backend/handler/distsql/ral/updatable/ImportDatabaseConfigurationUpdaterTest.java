@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -27,20 +26,12 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.DatabaseDiscoveryRuleConfigurationImportChecker;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.EncryptRuleConfigurationImportChecker;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.MaskRuleConfigurationImportChecker;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ReadwriteSplittingRuleConfigurationImportChecker;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShadowRuleConfigurationImportChecker;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -74,27 +65,6 @@ public final class ImportDatabaseConfigurationUpdaterTest {
     
     private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
     
-    @Mock
-    private DataSourcePropertiesValidateHandler validateHandler;
-    
-    @Mock
-    private ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker;
-    
-    @Mock
-    private ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigurationImportChecker;
-    
-    @Mock
-    private DatabaseDiscoveryRuleConfigurationImportChecker databaseDiscoveryRuleConfigurationImportChecker;
-    
-    @Mock
-    private EncryptRuleConfigurationImportChecker encryptRuleConfigurationImportChecker;
-    
-    @Mock
-    private ShadowRuleConfigurationImportChecker shadowRuleConfigurationImportChecker;
-    
-    @Mock
-    private MaskRuleConfigurationImportChecker maskRuleConfigurationImportChecker;
-    
     private ImportDatabaseConfigurationUpdater importDatabaseConfigurationUpdater;
     
     private final Map<String, String> featureMap = new HashMap<>(3, 1);
@@ -115,46 +85,36 @@ public final class ImportDatabaseConfigurationUpdaterTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertImportDatabaseExecutorForSharding() throws ReflectiveOperationException, SQLException {
+    public void assertImportDatabaseExecutorForSharding() throws SQLException {
         init(sharding);
-        Plugins.getMemberAccessor().set(importDatabaseConfigurationUpdater.getClass().getDeclaredField("shardingRuleConfigurationImportChecker"),
-                importDatabaseConfigurationUpdater, shardingRuleConfigurationImportChecker);
         importDatabaseConfigurationUpdater.executeUpdate(sharding,
                 new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(sharding))).getPath()));
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertImportDatabaseExecutorForReadwriteSplitting() throws ReflectiveOperationException, SQLException {
+    public void assertImportDatabaseExecutorForReadwriteSplitting() throws SQLException {
         init(readwriteSplitting);
-        Plugins.getMemberAccessor().set(importDatabaseConfigurationUpdater.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker"),
-                importDatabaseConfigurationUpdater, readwriteSplittingRuleConfigurationImportChecker);
         importDatabaseConfigurationUpdater.executeUpdate(readwriteSplitting,
                 new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(readwriteSplitting))).getPath()));
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertImportDatabaseExecutorForDatabaseDiscovery() throws ReflectiveOperationException, SQLException {
+    public void assertImportDatabaseExecutorForDatabaseDiscovery() throws SQLException {
         init(databaseDiscovery);
-        Plugins.getMemberAccessor().set(importDatabaseConfigurationUpdater.getClass().getDeclaredField("databaseDiscoveryRuleConfigurationImportChecker"),
-                importDatabaseConfigurationUpdater, databaseDiscoveryRuleConfigurationImportChecker);
         importDatabaseConfigurationUpdater.executeUpdate(databaseDiscovery,
                 new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(databaseDiscovery))).getPath()));
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertImportDatabaseExecutorForEncrypt() throws ReflectiveOperationException, SQLException {
+    public void assertImportDatabaseExecutorForEncrypt() throws SQLException {
         init(encrypt);
-        Plugins.getMemberAccessor().set(importDatabaseConfigurationUpdater.getClass().getDeclaredField("encryptRuleConfigurationImportChecker"),
-                importDatabaseConfigurationUpdater, encryptRuleConfigurationImportChecker);
         importDatabaseConfigurationUpdater.executeUpdate(encrypt,
                 new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(encrypt))).getPath()));
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertImportDatabaseExecutorForShadow() throws ReflectiveOperationException, SQLException {
+    public void assertImportDatabaseExecutorForShadow() throws SQLException {
         init(shadow);
-        Plugins.getMemberAccessor().set(importDatabaseConfigurationUpdater.getClass().getDeclaredField("shadowRuleConfigurationImportChecker"),
-                importDatabaseConfigurationUpdater, shadowRuleConfigurationImportChecker);
         importDatabaseConfigurationUpdater.executeUpdate(shadow,
                 new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(shadow))).getPath()));
     }
@@ -162,15 +122,13 @@ public final class ImportDatabaseConfigurationUpdaterTest {
     @Test(expected = IllegalStateException.class)
     public void assertImportDatabaseExecutorForMask() throws ReflectiveOperationException, SQLException {
         init(mask);
-        Plugins.getMemberAccessor().set(importDatabaseConfigurationUpdater.getClass().getDeclaredField("maskRuleConfigurationImportChecker"),
-                importDatabaseConfigurationUpdater, maskRuleConfigurationImportChecker);
         importDatabaseConfigurationUpdater.executeUpdate(mask,
                 new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(mask))).getPath()));
     }
     
-    private void init(final String feature) throws ReflectiveOperationException {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void init(final String feature) {
         importDatabaseConfigurationUpdater = new ImportDatabaseConfigurationUpdater();
-        Plugins.getMemberAccessor().set(importDatabaseConfigurationUpdater.getClass().getDeclaredField("validateHandler"), importDatabaseConfigurationUpdater, validateHandler);
         ContextManager contextManager = mockContextManager(feature);
         proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         proxyContext.when(() -> ProxyContext.getInstance().databaseExists(feature)).thenReturn(true);
