@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class MySQLBinaryColumnTypeTest {
     
@@ -51,9 +52,9 @@ public final class MySQLBinaryColumnTypeTest {
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BLOB), is(MySQLBinaryColumnType.MYSQL_TYPE_BLOB));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertValueOfJDBCIllegalArgument() {
-        MySQLBinaryColumnType.valueOfJDBCType(9999);
+        assertThrows(IllegalArgumentException.class, () -> MySQLBinaryColumnType.valueOfJDBCType(9999));
     }
     
     @Test
@@ -61,8 +62,8 @@ public final class MySQLBinaryColumnTypeTest {
         assertThat(MySQLBinaryColumnType.valueOf(MySQLBinaryColumnType.MYSQL_TYPE_DECIMAL.getValue()), is(MySQLBinaryColumnType.MYSQL_TYPE_DECIMAL));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertValueOfWithIllegalArgument() {
-        MySQLBinaryColumnType.valueOf(-1);
+        assertThrows(IllegalArgumentException.class, () -> MySQLBinaryColumnType.valueOf(-1));
     }
 }

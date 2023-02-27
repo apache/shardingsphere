@@ -19,10 +19,11 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.val
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.integer.MySQLTinyBinlogProtocolValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class MySQLBinlogProtocolValueFactoryTest {
     
@@ -31,8 +32,8 @@ public final class MySQLBinlogProtocolValueFactoryTest {
         assertThat(MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_TINY), instanceOf(MySQLTinyBinlogProtocolValue.class));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGetBinlogProtocolValueFailure() {
-        MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_GEOMETRY);
+        assertThrows(IllegalArgumentException.class, () -> MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_GEOMETRY));
     }
 }
