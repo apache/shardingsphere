@@ -156,10 +156,8 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         }
         List<PostgreSQLValueFormat> result = new ArrayList<>(resultFormatsLength);
         for (int i = 0; i < resultFormatsLength; i++) {
-            System.out.println("Test" + i);
             result.add(PostgreSQLValueFormat.valueOf(payload.readInt2()));
         }
-        System.out.println("outside readresult");
         return result;
     }
     
