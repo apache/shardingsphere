@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.distsql.export;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Exported storage node.
  */
-@Data
+@Getter
+@Setter
 public class ExportedStorageNode {
     
     private String ip;

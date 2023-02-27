@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.proxy.backend.distsql.export;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collection;
 
 /**
  * Exported cluster info.
  */
-@Data
+@Getter
+@Setter
 public class ExportedClusterInfo {
     
     private Collection<ExportedStorageNode> storageNodes;
