@@ -109,7 +109,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     private void checkOrderMigration() throws SQLException, InterruptedException {
         startMigrationWithSchema(getSourceTableOrderName(), "t_order");
         startIncrementTask(new PostgreSQLIncrementTask(getSourceDataSource(), PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName(), 20));
-        String jobId = getJobIdByTableName(getSourceTableOrderName());
+        String jobId = getJobIdByTableName("ds_0.test." + getSourceTableOrderName());
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
         long recordId = new SnowflakeKeyGenerateAlgorithm().generateKey();
@@ -124,7 +124,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     
     private void checkOrderItemMigration() throws SQLException, InterruptedException {
         startMigrationWithSchema("t_order_item", "t_order_item");
-        String jobId = getJobIdByTableName("t_order_item");
+        String jobId = getJobIdByTableName("ds_0.test.t_order_item");
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }

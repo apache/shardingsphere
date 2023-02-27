@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.util;
+package org.apache.shardingsphere.data.pipeline.api.datanode;
 
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.junit.Test;
 
-public abstract class ProxyContextRestorer {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class DataNodeUtilTest {
     
-    private ContextManager currentContextManager;
-    
-    @Before
-    public void recordCurrentContextManager() {
-        currentContextManager = ProxyContext.getInstance().getContextManager();
+    @Test
+    public void assertFormatWithSchema() {
+        DataNode dataNode = new DataNode("ds_0.tbl_0");
+        dataNode.setSchemaName("public");
+        assertThat(DataNodeUtil.formatWithSchema(dataNode), is("ds_0.public.tbl_0"));
     }
     
-    @After
-    public void restorePreviousContextManager() {
-        ProxyContext.init(currentContextManager);
+    @Test
+    public void assertParseWithSchema() {
+        DataNode actual = DataNodeUtil.parseWithSchema("ds_0.public.tbl_0");
+        assertThat(actual.getDataSourceName(), is("ds_0"));
+        assertThat(actual.getSchemaName(), is("public"));
+        assertThat(actual.getTableName(), is("tbl_0"));
     }
 }

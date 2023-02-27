@@ -17,14 +17,20 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.StatusCode;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter;
+import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.data.SpanData;
+import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
-import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.collector.OpenTelemetryCollector;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,15 +40,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class OpenTelemetryCommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
-    @ClassRule
-    public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
+    private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
+    
+    @BeforeEach
+    public void setup() {
+        SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(testExporter)).build();
+        OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).buildAndRegisterGlobal().getTracer(OpenTelemetryConstants.TRACER_NAME);
+    }
+    
+    @AfterEach
+    public void clean() {
+        GlobalOpenTelemetry.resetForTest();
+        testExporter.reset();
+    }
     
     @Test
     public void assertMethod() {
         OpenTelemetryCommandExecutorTaskAdvice advice = new OpenTelemetryCommandExecutorTaskAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, "OpenTelemetry");
         advice.afterMethod(getTargetObject(), null, new Object[]{}, null, "OpenTelemetry");
-        List<SpanData> spanItems = COLLECTOR.getSpanItems();
+        List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));
@@ -55,7 +72,7 @@ public final class OpenTelemetryCommandExecutorTaskAdviceTest extends AbstractCo
         OpenTelemetryCommandExecutorTaskAdvice advice = new OpenTelemetryCommandExecutorTaskAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, "OpenTelemetry");
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException(), "OpenTelemetry");
-        List<SpanData> spanItems = COLLECTOR.getSpanItems();
+        List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));

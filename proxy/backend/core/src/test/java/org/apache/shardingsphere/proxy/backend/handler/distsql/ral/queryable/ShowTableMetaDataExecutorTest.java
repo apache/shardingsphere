@@ -28,10 +28,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -44,35 +44,46 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class ShowTableMetaDataExecutorTest extends ProxyContextRestorer {
+public final class ShowTableMetaDataExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getSchema("db_name")).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db_name", database));
-        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("db_name")).thenReturn(true);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_name")).thenReturn(database);
-        ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getDatabaseName()).thenReturn("db_name");
         ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShardingSphereMetaData.class), connectionSession, createSqlStatement());
-        assertThat(actual.size(), is(2));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("db_name"));
-        assertThat(row.getCell(2), is("t_order"));
-        assertThat(row.getCell(3), is("COLUMN"));
-        assertThat(row.getCell(4), is("order_id"));
-        row = iterator.next();
-        assertThat(row.getCell(1), is("db_name"));
-        assertThat(row.getCell(2), is("t_order"));
-        assertThat(row.getCell(3), is("INDEX"));
-        assertThat(row.getCell(4), is("primary"));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("db_name")).thenReturn(true);
+            ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase("db_name");
+            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db_name")).thenReturn(database);
+            Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShardingSphereMetaData.class), connectionSession, createSqlStatement());
+            assertThat(actual.size(), is(2));
+            Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+            LocalDataQueryResultRow row = iterator.next();
+            assertThat(row.getCell(1), is("db_name"));
+            assertThat(row.getCell(2), is("t_order"));
+            assertThat(row.getCell(3), is("COLUMN"));
+            assertThat(row.getCell(4), is("order_id"));
+            row = iterator.next();
+            assertThat(row.getCell(1), is("db_name"));
+            assertThat(row.getCell(2), is("t_order"));
+            assertThat(row.getCell(3), is("INDEX"));
+            assertThat(row.getCell(4), is("primary"));
+        }
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getSchema("db_name")).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
+        when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db_name", database));
+        when(result.getMetaDataContexts().getMetaData().containsDatabase("db_name")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("db_name")).thenReturn(database);
+        return result;
     }
     
     @Test

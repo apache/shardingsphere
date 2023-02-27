@@ -46,6 +46,7 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CommitMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.DropMigrationCheckStatement;
@@ -62,11 +63,13 @@ import org.apache.shardingsphere.migration.distsql.statement.StartMigrationState
 import org.apache.shardingsphere.migration.distsql.statement.StopMigrationCheckStatement;
 import org.apache.shardingsphere.migration.distsql.statement.StopMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.UnregisterMigrationSourceStorageUnitStatement;
+import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -86,7 +89,9 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
         String sourceTableName = source.get(source.size() - 1);
         String targetDatabaseName = target.size() > 1 ? target.get(0) : null;
         String targetTableName = target.get(target.size() - 1);
-        return new MigrateTableStatement(sourceResourceName, sourceSchemaName, sourceTableName, targetDatabaseName, targetTableName);
+        SourceTargetEntry sourceTargetEntry = new SourceTargetEntry(targetDatabaseName, new DataNode(sourceResourceName, sourceTableName), targetTableName);
+        sourceTargetEntry.getSource().setSchemaName(sourceSchemaName);
+        return new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), targetDatabaseName);
     }
     
     @Override

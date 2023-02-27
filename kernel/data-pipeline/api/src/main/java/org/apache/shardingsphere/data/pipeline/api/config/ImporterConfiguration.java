@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString(exclude = "dataSourceConfig")
+@ToString(exclude = {"dataSourceConfig", "tableNameSchemaNameMapping"})
 public final class ImporterConfiguration {
     
     private final PipelineDataSourceConfiguration dataSourceConfig;

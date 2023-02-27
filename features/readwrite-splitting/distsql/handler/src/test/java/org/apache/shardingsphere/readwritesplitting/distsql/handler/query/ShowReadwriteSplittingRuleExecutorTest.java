@@ -190,9 +190,7 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     private Map<String, Map<String, String>> exportDynamicDataSources() {
-        Map<String, Map<String, String>> result = new HashMap<>(1, 1);
-        result.put("readwrite_ds", getAutoAwareDataSources());
-        return result;
+        return Collections.singletonMap("readwrite_ds", getAutoAwareDataSources());
     }
     
     private Map<String, String> getAutoAwareDataSources() {

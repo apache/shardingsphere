@@ -38,21 +38,23 @@ import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SetDistVariableUpdaterTest extends ProxyContextRestorer {
+public final class SetDistVariableUpdaterTest {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -77,52 +79,63 @@ public final class SetDistVariableUpdaterTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithConfigurationKey() {
-        ContextManager contextManager = mockContextManager();
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
-        updater.executeUpdate(connectionSession, statement);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
-        assertThat(actualValue.toString(), is("1024"));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            updater.executeUpdate(connectionSession, statement);
+            Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
+            assertThat(actualValue.toString(), is("1024"));
+            assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
+        }
     }
     
     @Test
     public void assertExecuteWithInternalConfigurationKey() {
-        ContextManager contextManager = mockContextManager();
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
-        updater.executeUpdate(connectionSession, statement);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getInternalProps().getProps().get("proxy-meta-data-collector-enabled");
-        assertThat(actualValue.toString(), is("false"));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getInternalProps().getValue(InternalConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED), is(false));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            updater.executeUpdate(connectionSession, statement);
+            Object actualValue = contextManager.getMetaDataContexts().getMetaData().getInternalProps().getProps().get("proxy-meta-data-collector-enabled");
+            assertThat(actualValue.toString(), is("false"));
+            assertThat(contextManager.getMetaDataContexts().getMetaData().getInternalProps().getValue(InternalConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED), is(false));
+        }
     }
     
     @Test
     public void assertExecuteWithSystemLogLevel() {
-        ContextManager contextManager = mockContextManager();
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debug");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
-        updater.executeUpdate(connectionSession, statement);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("system-log-level");
-        assertThat(actualValue.toString(), is("DEBUG"));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.DEBUG));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            updater.executeUpdate(connectionSession, statement);
+            Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("system-log-level");
+            assertThat(actualValue.toString(), is("DEBUG"));
+            assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.DEBUG));
+        }
     }
     
     @Test(expected = InvalidValueException.class)
     public void assertExecuteWithWrongSystemLogLevel() {
-        mockContextManager();
-        SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
-        updater.executeUpdate(connectionSession, statement);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");
+            SetDistVariableUpdater updater = new SetDistVariableUpdater();
+            updater.executeUpdate(connectionSession, statement);
+        }
     }
     
     private ContextManager mockContextManager() {
         StandaloneModeContextManager standaloneModeContextManager = new StandaloneModeContextManager();
-        ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()),
+        ContextManager result = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()),
                 new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), mock(WorkerIdGenerator.class),
                         new ModeConfiguration("Standalone", null), standaloneModeContextManager, mock(LockContext.class), new EventBusContext()));
-        standaloneModeContextManager.setContextManagerAware(contextManager);
-        ProxyContext.init(contextManager);
-        return contextManager;
+        standaloneModeContextManager.setContextManagerAware(result);
+        return result;
     }
 }

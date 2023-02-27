@@ -22,31 +22,36 @@ import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class SetInstanceStatusUpdaterTest extends ProxyContextRestorer {
+public final class SetInstanceStatusUpdaterTest {
     
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertExecuteWithNotNotClusterMode() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(false);
-        ProxyContext.init(contextManager);
-        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID"));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
+            updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID"));
+        }
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertExecuteWithNotExistsInstanceID() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
-        ProxyContext.init(contextManager);
-        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID"));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
+            updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID"));
+        }
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
@@ -54,9 +59,11 @@ public final class SetInstanceStatusUpdaterTest extends ProxyContextRestorer {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("instanceID");
-        ProxyContext.init(contextManager);
-        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID"));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
+            updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID"));
+        }
     }
     
     @Test(expected = UnsupportedSQLOperationException.class)
@@ -66,8 +73,10 @@ public final class SetInstanceStatusUpdaterTest extends ProxyContextRestorer {
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("currentInstance");
         when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").isPresent()).thenReturn(true);
         when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").get().getState().getCurrentState()).thenReturn(StateType.CIRCUIT_BREAK);
-        ProxyContext.init(contextManager);
-        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-        updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID"));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
+            updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID"));
+        }
     }
 }

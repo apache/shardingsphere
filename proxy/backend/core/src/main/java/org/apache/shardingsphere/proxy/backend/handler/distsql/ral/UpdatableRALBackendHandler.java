@@ -17,26 +17,38 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.SQLException;
 
 /**
  * Updatable RAL backend handler.
- * 
- * @param <T> type of RAL Statement
  */
-public abstract class UpdatableRALBackendHandler<T extends UpdatableRALStatement> extends RALBackendHandler<T> {
+@RequiredArgsConstructor
+@Setter
+public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> extends RALBackendHandler<T> {
     
+    private final UpdatableRALStatement sqlStatement;
+    
+    private final ConnectionSession connectionSession;
+    
+    @SuppressWarnings("unchecked")
     @Override
-    public final ResponseHeader execute() throws SQLException {
-        update(ProxyContext.getInstance().getContextManager());
-        return new UpdateResponseHeader(getSqlStatement());
+    public ResponseHeader execute() throws SQLException {
+        RALUpdater<T> updater = TypedSPILoader.getService(RALUpdater.class, sqlStatement.getClass().getName());
+        if (updater instanceof ConnectionSessionRequiredRALUpdater) {
+            ((ConnectionSessionRequiredRALUpdater<T>) updater).executeUpdate(connectionSession, (T) sqlStatement);
+        } else {
+            updater.executeUpdate(connectionSession.getDatabaseName(), (T) sqlStatement);
+        }
+        return new UpdateResponseHeader(sqlStatement);
     }
-    
-    protected abstract void update(ContextManager contextManager) throws SQLException;
 }

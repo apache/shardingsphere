@@ -133,7 +133,7 @@ public final class DataSourcePropertiesTest {
     }
     
     private Map<String, Object> createUserProperties(final String username) {
-        Map<String, Object> result = new LinkedHashMap<>(1, 1);
+        Map<String, Object> result = new LinkedHashMap<>(2, 1);
         result.put("username", username);
         result.put("dataSourceProperties", getDataSourceProperties());
         return result;

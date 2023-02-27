@@ -17,32 +17,26 @@
 
 package org.apache.shardingsphere.test.e2e.discovery.build;
 
-import org.apache.shardingsphere.test.e2e.discovery.cases.base.BaseDiscoveryE2EIT;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.discovery.command.DiscoveryDistSQLCommand;
 import org.awaitility.Awaitility;
 import org.awaitility.Durations;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Objects;
 
 /**
  * Build discovery rule.
  */
+@RequiredArgsConstructor
 public final class DiscoveryRuleBuilder {
     
     private final DiscoveryDistSQLCommand discoveryDistSQLCommand;
     
     private final DataSource proxyDataSource;
-    
-    public DiscoveryRuleBuilder(final DataSource proxyDataSource) {
-        this.proxyDataSource = proxyDataSource;
-        discoveryDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseDiscoveryE2EIT.class.getClassLoader().getResource("env/common/discovery-command.xml")), DiscoveryDistSQLCommand.class);
-    }
     
     /**
      *  build Discovery Environment.
@@ -85,7 +79,7 @@ public final class DiscoveryRuleBuilder {
     
     private void createReadwriteSplittingRule(final Statement statement) throws SQLException {
         statement.execute(discoveryDistSQLCommand.getCreateReadwriteSplittingRule().getExecuteSQL());
-        Awaitility.await().atMost(Durations.TWO_SECONDS).until(() -> assertResult0(statement, discoveryDistSQLCommand.getCreateReadwriteSplittingRule().getAssertionSQL()));
+        Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertResult0(statement, discoveryDistSQLCommand.getCreateReadwriteSplittingRule().getAssertionSQL()));
     }
     
     private boolean assertResult0(final Statement statement, final String assertionSQL) {
