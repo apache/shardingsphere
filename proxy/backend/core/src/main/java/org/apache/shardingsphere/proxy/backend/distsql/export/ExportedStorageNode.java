@@ -15,54 +15,25 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.proxy.backend.distsql.export;
 
-import Symbol, Keyword, Literals;
+import lombok.Getter;
+import lombok.Setter;
 
-literal
-    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
-    ;
-
-algorithmDefinition
-    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
-    ;
-
-algorithmTypeName
-    : STRING_
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP_ properties? RP_
-    ;
-
-properties
-    : property (COMMA_ property)*
-    ;
-
-property
-    : key=STRING_ EQ_ value=literal
-    ;
-
-databaseName
-    : IDENTIFIER_
-    ;
-
-schemaName
-    : IDENTIFIER_
-    ;
-
-tableName
-    : IDENTIFIER_
-    ;
-
-resourceName
-    : IDENTIFIER_
-    ;
-
-storageUnitName
-    : IDENTIFIER_
-    ;
-
-metadata
-    : STRING_
-    ;
+/**
+ * Exported storage node.
+ */
+@Getter
+@Setter
+public class ExportedStorageNode {
+    
+    private String ip;
+    
+    private String port;
+    
+    private String username;
+    
+    private String password;
+    
+    private String database;
+}

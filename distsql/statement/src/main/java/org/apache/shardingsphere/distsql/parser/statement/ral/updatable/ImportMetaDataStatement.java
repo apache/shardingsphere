@@ -15,54 +15,31 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
-import Symbol, Keyword, Literals;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
-literal
-    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
-    ;
+import java.util.Optional;
 
-algorithmDefinition
-    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
-    ;
-
-algorithmTypeName
-    : STRING_
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP_ properties? RP_
-    ;
-
-properties
-    : property (COMMA_ property)*
-    ;
-
-property
-    : key=STRING_ EQ_ value=literal
-    ;
-
-databaseName
-    : IDENTIFIER_
-    ;
-
-schemaName
-    : IDENTIFIER_
-    ;
-
-tableName
-    : IDENTIFIER_
-    ;
-
-resourceName
-    : IDENTIFIER_
-    ;
-
-storageUnitName
-    : IDENTIFIER_
-    ;
-
-metadata
-    : STRING_
-    ;
+/**
+ * Import meta data statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ImportMetaDataStatement extends UpdatableRALStatement {
+    
+    private final String metaDataValue;
+    
+    private final String filePath;
+    
+    /**
+     * Get file path.
+     *
+     * @return file path
+     */
+    public Optional<String> getFilePath() {
+        return Optional.ofNullable(filePath);
+    }
+}
