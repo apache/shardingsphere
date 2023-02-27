@@ -41,7 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RequiredArgsConstructor
 public final class MySQLXAVisitorTest {
     
-    private static Collection<Object[]> testUnits = new LinkedList<>();
+    private static final Collection<Object[]> testUnits = new LinkedList<>();
     
     static {
         testUnits.add(new Object[]{"xa_start", "XA START 0x6262,b'000',7", "START", "0x6262,b'000',7"});

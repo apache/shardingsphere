@@ -36,5 +36,5 @@ public final class RewriteAssertionsRootEntity {
     private String yamlRule;
     
     @XmlElement(name = "rewrite-assertion")
-    private Collection<RewriteAssertionEntity> assertions = new LinkedList<>();
+    private final Collection<RewriteAssertionEntity> assertions = new LinkedList<>();
 }

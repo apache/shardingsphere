@@ -60,7 +60,7 @@ public final class PrometheusPluginLifecycleServiceTest {
         try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
             proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
             pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString()))), true);
-            try (Socket socket = new Socket();) {
+            try (Socket socket = new Socket()) {
                 socket.connect(new InetSocketAddress("localhost", 8090));
             }
         }

@@ -43,7 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RequiredArgsConstructor
 public final class MySQLParameterizedTest {
     
-    private static Collection<String[]> testUnits = new LinkedList<>();
+    private static final Collection<String[]> testUnits = new LinkedList<>();
     
     static {
         testUnits.add(new String[]{"select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", "SELECT a + ? AS b, name n\n"

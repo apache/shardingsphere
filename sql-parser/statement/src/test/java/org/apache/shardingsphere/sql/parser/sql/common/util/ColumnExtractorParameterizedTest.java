@@ -39,7 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RequiredArgsConstructor
 public final class ColumnExtractorParameterizedTest {
     
-    private static Collection<ExpressionSegment> testUnits = new LinkedList<>();
+    private static final Collection<ExpressionSegment> testUnits = new LinkedList<>();
     
     private static final ColumnSegment COLUMN_SEGMENT = new ColumnSegment(35, 42, new IdentifierValue("order_item_id"));
     

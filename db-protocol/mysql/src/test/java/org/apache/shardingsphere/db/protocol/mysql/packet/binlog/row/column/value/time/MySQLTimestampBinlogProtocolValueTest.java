@@ -41,7 +41,7 @@ public final class MySQLTimestampBinlogProtocolValueTest {
     
     @Test
     public void assertRead() {
-        int currentSeconds = new Long(System.currentTimeMillis() / 1000).intValue();
+        int currentSeconds = Long.valueOf(System.currentTimeMillis() / 1000).intValue();
         when(payload.readInt4()).thenReturn(currentSeconds);
         assertThat(new MySQLTimestampBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.getSimpleDateFormat().format(new Timestamp(currentSeconds * 1000L))));
     }
