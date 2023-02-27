@@ -40,6 +40,7 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
         queryProps.setProperty("zeroDateTimeBehavior", getZeroDateTimeBehavior());
         queryProps.setProperty("noDatetimeStringSync", Boolean.TRUE.toString());
         queryProps.setProperty("jdbcCompliantTruncation", Boolean.FALSE.toString());
+        queryProps.setProperty("netTimeoutForStreamingResults", "600");
     }
     
     private String getZeroDateTimeBehavior() {

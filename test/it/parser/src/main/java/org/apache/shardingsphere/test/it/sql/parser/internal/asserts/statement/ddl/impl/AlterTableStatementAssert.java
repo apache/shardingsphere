@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.RenameIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -36,12 +37,14 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.col
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ColumnDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ColumnPositionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ConstraintDefinitionAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.IndexDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedChangeColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyColumnDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameIndexDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterTableStatementTestCase;
 
 import java.util.Collection;
@@ -50,10 +53,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -77,6 +80,7 @@ public final class AlterTableStatementAssert {
         assertModifyColumnDefinitions(assertContext, actual, expected);
         assertChangeColumnDefinitions(assertContext, actual, expected);
         assertDropColumns(assertContext, actual, expected);
+        assertRenameIndexDefinitions(assertContext, actual, expected);
         assertConvertTable(assertContext, actual, expected);
     }
     
@@ -193,5 +197,16 @@ public final class AlterTableStatementAssert {
             result.addAll(each.getColumns());
         }
         return result;
+    }
+    
+    private static void assertRenameIndexDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Rename index definitions size assertion error: "), actual.getRenameIndexDefinitions().size(), is(expected.getRenameIndexes().size()));
+        int count = 0;
+        for (RenameIndexDefinitionSegment each : actual.getRenameIndexDefinitions()) {
+            ExpectedRenameIndexDefinition expectedRenameIndexDefinition = expected.getRenameIndexes().get(count);
+            IndexDefinitionAssert.assertIs(assertContext, each.getIndexSegment(), expectedRenameIndexDefinition.getIndexDefinition());
+            IndexDefinitionAssert.assertIs(assertContext, each.getRenameIndexSegment(), expectedRenameIndexDefinition.getRenameIndexDefinition());
+            count++;
+        }
     }
 }
