@@ -22,7 +22,6 @@ import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import java.util.UUID;
-//import org.junit.runners.Parameterized.Parameters;
 
 import java.nio.charset.StandardCharsets;
 
