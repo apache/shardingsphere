@@ -38,7 +38,7 @@ public final class PostgreSQLDefaultSessionVariableHandlerTest {
     @Test
     public void assertHandleDiscard() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        TypedSPILoader.getService(PostgreSQLSessionVariableHandler.class, null).handle(connectionSession, "", "");
+        new PostgreSQLDefaultSessionVariableHandler().handle(connectionSession, "", "");
         verifyNoInteractions(connectionSession);
     }
     

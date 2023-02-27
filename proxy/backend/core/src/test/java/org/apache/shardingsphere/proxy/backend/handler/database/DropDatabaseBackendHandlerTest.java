@@ -27,13 +27,13 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
@@ -44,12 +44,15 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DropDatabaseBackendHandlerTest extends ProxyContextRestorer {
+public final class DropDatabaseBackendHandlerTest {
+    
+    private MockedStatic<ProxyContext> proxyContext;
     
     @Mock
     private ConnectionSession connectionSession;
@@ -57,29 +60,38 @@ public final class DropDatabaseBackendHandlerTest extends ProxyContextRestorer {
     @Mock
     private DropDatabaseStatement sqlStatement;
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private MetaDataContexts metaDataContexts;
-    
     private DropDatabaseBackendHandler handler;
     
     @Before
     public void setUp() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
+        ContextManager contextManager = mockContextManager();
+        proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
+        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        proxyContext.when(() -> ProxyContext.getInstance().databaseExists("test_db")).thenReturn(true);
+        proxyContext.when(() -> ProxyContext.getInstance().databaseExists("other_db")).thenReturn(true);
         handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
+    }
+    
+    private static ContextManager mockContextManager() {
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         databases.put("test_db", database);
         databases.put("other_db", database);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(databases);
         when(metaDataContexts.getMetaData().getDatabase("test_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getDatabase("other_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getDatabase("test_not_exist_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
-        when(ProxyContext.getInstance().databaseExists("test_db")).thenReturn(true);
-        when(ProxyContext.getInstance().databaseExists("other_db")).thenReturn(true);
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
+    }
+    
+    @After
+    public void tearDown() {
+        proxyContext.close();
     }
     
     @Test(expected = DatabaseDropNotExistsException.class)

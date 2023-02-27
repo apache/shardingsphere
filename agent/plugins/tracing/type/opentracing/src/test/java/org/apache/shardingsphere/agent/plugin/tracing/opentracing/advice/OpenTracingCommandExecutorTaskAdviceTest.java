@@ -27,9 +27,9 @@ import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExec
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.io.IOException;
@@ -39,8 +39,8 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class OpenTracingCommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
@@ -50,7 +50,7 @@ public final class OpenTracingCommandExecutorTaskAdviceTest extends AbstractComm
     
     private static Method executeCommandMethod;
     
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws ReflectiveOperationException {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(new MockTracer());
@@ -59,7 +59,7 @@ public final class OpenTracingCommandExecutorTaskAdviceTest extends AbstractComm
         executeCommandMethod = CommandExecutorTask.class.getDeclaredMethod("executeCommand", ChannelHandlerContext.class, PacketPayload.class);
     }
     
-    @Before
+    @BeforeEach
     public void reset() {
         tracer.reset();
     }

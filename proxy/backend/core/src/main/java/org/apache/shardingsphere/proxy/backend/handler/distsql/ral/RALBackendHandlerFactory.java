@@ -22,32 +22,16 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.update.UpdatableScalingRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.RefreshTableMetaDataHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * RAL backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RALBackendHandlerFactory {
-    
-    private static final Map<Class<? extends RALStatement>, Class<? extends RALBackendHandler<?>>> HANDLERS = new HashMap<>();
-    
-    static {
-        HANDLERS.put(RefreshTableMetaDataStatement.class, RefreshTableMetaDataHandler.class);
-    }
     
     /**
      * Create new instance of RAL backend handler.
@@ -62,30 +46,8 @@ public final class RALBackendHandlerFactory {
         }
         // TODO remove other updatable RAL backend handlers after the refactoring of RALBackendHandler is complete
         if (TypedSPILoader.contains(RALUpdater.class, sqlStatement.getClass().getName())) {
-            return new UpdatableRALUpdaterBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
+            return new UpdatableRALBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
         }
-        if (sqlStatement instanceof UpdatableScalingRALStatement) {
-            return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement, connectionSession);
-        }
-        if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
-            return new UpdatableGlobalRuleRALBackendHandler(sqlStatement);
-        }
-        return createRALBackendHandler(sqlStatement, connectionSession);
-    }
-    
-    private static RALBackendHandler<?> newInstance(final Class<? extends RALBackendHandler<?>> clazz) {
-        try {
-            return clazz.getDeclaredConstructor().newInstance();
-        } catch (final ReflectiveOperationException ex) {
-            throw new UnsupportedSQLOperationException(String.format("Can not find public constructor for class `%s`", clazz.getName()));
-        }
-    }
-    
-    private static RALBackendHandler<?> createRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
-        Class<? extends RALBackendHandler<?>> clazz = HANDLERS.get(sqlStatement.getClass());
-        ShardingSpherePreconditions.checkState(null != clazz, () -> new UnsupportedSQLOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getName())));
-        RALBackendHandler<?> result = newInstance(clazz);
-        result.init(sqlStatement, connectionSession);
-        return result;
+        return new UpdatableGlobalRuleRALBackendHandler(sqlStatement);
     }
 }

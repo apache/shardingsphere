@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.rule;
+package org.apache.shardingsphere.data.pipeline.core.exception.param;
 
-public interface CollectorRule {
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
+/**
+ * Pipeline invalid parameter exception.
+ */
+public final class PipelineInvalidParameterException extends PipelineSQLException {
     
-    /**
-     * Clean up the collector.
-     */
-    void cleanup();
+    private static final long serialVersionUID = -2162309404414015630L;
+    
+    public PipelineInvalidParameterException(final String message) {
+        super(XOpenSQLState.INVALID_PARAMETER_VALUE, 5, String.format("There is invalid parameter value: %s.", message));
+    }
 }

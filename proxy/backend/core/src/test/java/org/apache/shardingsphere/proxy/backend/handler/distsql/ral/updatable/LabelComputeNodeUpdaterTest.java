@@ -21,21 +21,22 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelCom
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
-public final class LabelComputeNodeUpdaterTest extends ProxyContextRestorer {
+public final class LabelComputeNodeUpdaterTest {
     
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertWithStandaloneMode() throws SQLException {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ProxyContext.init(contextManager);
-        LabelComputeNodeUpdater updater = new LabelComputeNodeUpdater();
-        updater.executeUpdate("foo", mock(LabelComputeNodeStatement.class));
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+            new LabelComputeNodeUpdater().executeUpdate("foo", mock(LabelComputeNodeStatement.class));
+        }
     }
 }

@@ -22,6 +22,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobTy
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -29,7 +31,7 @@ public final class PipelineJobIdUtilsTest {
     
     @Test
     public void assertParseJobType() {
-        MigrationJobId pipelineJobId = new MigrationJobId("ds_0", null, "t_order", "sharding_db", "t_order");
+        MigrationJobId pipelineJobId = new MigrationJobId(Collections.singletonList("t_order:ds_0.t_order_0,ds_0.t_order_1"), "sharding_db");
         String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
         JobType actualJobType = PipelineJobIdUtils.parseJobType(jobId);
         assertThat(actualJobType, instanceOf(MigrationJobType.class));

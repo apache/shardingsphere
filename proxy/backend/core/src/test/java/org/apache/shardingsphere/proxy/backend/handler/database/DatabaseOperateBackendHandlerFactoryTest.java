@@ -31,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
@@ -45,11 +44,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -59,10 +58,13 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContextRestorer {
+public final class DatabaseOperateBackendHandlerFactoryTest {
+    
+    private MockedStatic<ProxyContext> proxyContext;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
@@ -75,8 +77,15 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
+        proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
+        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        proxyContext.when(() -> ProxyContext.getInstance().databaseExists("db")).thenReturn(true);
         when(connectionSession.getDatabaseName()).thenReturn("db");
+    }
+    
+    @After
+    public void tearDown() {
+        proxyContext.close();
     }
     
     @Test
@@ -137,13 +146,10 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        result.put("db", database);
-        return result;
+        return Collections.singletonMap("db", database);
     }
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         MetaDataContexts metaDataContexts = isGovernance
                 ? mockMetaDataContexts()
                 : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
