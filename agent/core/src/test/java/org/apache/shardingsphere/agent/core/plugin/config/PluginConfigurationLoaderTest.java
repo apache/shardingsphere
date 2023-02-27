@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.plugin.config;
 
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public final class PluginConfigurationLoaderTest {
     
