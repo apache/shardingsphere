@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.agent.plugin.core.config.validator;
 
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class PluginConfigurationValidatorTest {
     
@@ -31,19 +31,16 @@ public final class PluginConfigurationValidatorTest {
     
     @Test
     public void assertValidateHostAndPortWhenHostIsEmpty() {
-        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class,
-                () -> PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("", 8080, "pwd", null)));
+        assertThrows(IllegalArgumentException.class, () -> PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("", 8080, "pwd", null)));
     }
     
     @Test
     public void assertValidateHostAndPortWhenHostIsNull() {
-        assertThrows("Hostname of foo_type is required", IllegalArgumentException.class,
-                () -> PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration(null, 8080, "pwd", null)));
+        assertThrows(IllegalArgumentException.class, () -> PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration(null, 8080, "pwd", null)));
     }
     
     @Test
     public void assertValidateHostAndPortWhenPortLessThanOne() {
-        assertThrows("Port `0` of foo_host must be a positive number", IllegalArgumentException.class,
-                () -> PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("localhost", 0, "pwd", null)));
+        assertThrows(IllegalArgumentException.class, () -> PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("localhost", 0, "pwd", null)));
     }
 }

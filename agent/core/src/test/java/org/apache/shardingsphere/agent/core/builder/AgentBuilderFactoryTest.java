@@ -21,14 +21,14 @@ import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.fixture.advice.BarAdvice;
 import org.apache.shardingsphere.fixture.advice.FooAdvice;
 import org.apache.shardingsphere.fixture.targeted.TargetObjectFixture;
-import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfiguration;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,7 +43,7 @@ public final class AgentBuilderFactoryTest {
     
     private static ResettableClassFileTransformer agent;
     
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         ByteBuddyAgent.install();
         AdvisorConfiguration advisorConfig = createAdvisorConfiguration();
@@ -67,7 +67,7 @@ public final class AgentBuilderFactoryTest {
         return result;
     }
     
-    @AfterClass
+    @AfterAll
     public static void destroy() {
         agent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
     }
