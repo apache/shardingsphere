@@ -22,15 +22,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Static mock settings.
  */
 @ExtendWith(MockitoExtension.class)
 @Inherited
-@Retention(RUNTIME)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface StaticMockSettings {
     
     /**
