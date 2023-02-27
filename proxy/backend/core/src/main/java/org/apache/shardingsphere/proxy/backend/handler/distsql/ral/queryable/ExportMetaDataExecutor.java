@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.handler.ral.query.DatabaseRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportMetaDataStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -69,7 +68,6 @@ public final class ExportMetaDataExecutor implements DatabaseRequiredQueryableRA
                 new LocalDataQueryResultRow(ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), exportedData));
     }
     
-    @SneakyThrows
     private String generateExportData(final ShardingSphereDatabase database) {
         ProxyContext proxyContext = ProxyContext.getInstance();
         ShardingSphereMetaData metaData = proxyContext.getContextManager().getMetaDataContexts().getMetaData();
