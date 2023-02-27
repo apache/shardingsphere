@@ -27,19 +27,16 @@ import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AdviceTestBase;
-import org.apache.shardingsphere.agent.plugin.tracing.rule.CollectorRule;
-import org.junit.rules.TestRule;
-import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.InitializationError;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
-public final class AgentRunner extends BlockJUnit4ClassRunner {
+public final class AgentExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
@@ -51,14 +48,8 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
             "org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine",
     };
     
-    private CollectorRule collectorRule;
-    
-    public AgentRunner(final Class<?> testClass) throws InitializationError {
-        super(testClass);
-    }
-    
     @Override
-    protected Statement withBeforeClasses(final Statement statement) {
+    public void beforeAll(final ExtensionContext context) {
         ByteBuddyAgent.install();
         Collection<String> classes = new HashSet<>(Arrays.asList(ENHANCEMENT_CLASSES));
         byteBuddyAgent = new AgentBuilder.Default()
@@ -75,47 +66,22 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
         // load them into current classloader
         classes.forEach(each -> {
             try {
-                Class<?> klass = Class.forName(each);
+                Class.forName(each);
             } catch (final ClassNotFoundException ignored) {
             }
         });
-        return super.withBeforeClasses(statement);
     }
     
     @Override
-    protected List<TestRule> classRules() {
-        List<TestRule> result = super.classRules();
-        collectorRule = result.stream().filter(each -> each instanceof CollectorRule).findFirst().map(optional -> (CollectorRule) optional).orElse(() -> {
-        });
-        return result;
-    }
-    
-    @Override
-    protected Statement withBefores(final FrameworkMethod method, final Object target, final Statement statement) {
-        if (target instanceof AdviceTestBase) {
-            ((AdviceTestBase) target).prepare();
-        }
-        return super.withBefores(method, target, statement);
-    }
-    
-    @Override
-    protected Statement withAfters(final FrameworkMethod method, final Object target, final Statement statement) {
-        return super.withAfters(method, target, new Statement() {
-            
-            @Override
-            public void evaluate() throws Throwable {
-                try {
-                    statement.evaluate();
-                } finally {
-                    collectorRule.cleanup();
-                }
-            }
-        });
-    }
-    
-    @Override
-    protected Statement withAfterClasses(final Statement statement) {
+    public void afterAll(final ExtensionContext context) {
         byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
-        return super.withAfterClasses(statement);
+    }
+    
+    @Override
+    public void beforeEach(final ExtensionContext context) {
+        Object testInstance = context.getRequiredTestInstance();
+        if (testInstance instanceof AdviceTestBase) {
+            ((AdviceTestBase) testInstance).prepare();
+        }
     }
 }

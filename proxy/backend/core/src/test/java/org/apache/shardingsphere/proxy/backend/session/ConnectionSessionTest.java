@@ -24,15 +24,14 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
@@ -43,14 +42,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ConnectionSessionTest extends ProxyContextRestorer {
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ContextManager contextManager;
+public final class ConnectionSessionTest {
     
     @Mock
     private BackendConnection backendConnection;
@@ -59,8 +57,6 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
     
     @Before
     public void setup() {
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mock(TransactionRule.class))));
-        ProxyContext.init(contextManager);
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, null);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
@@ -74,18 +70,30 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
     @Test(expected = SwitchTypeInTransactionException.class)
     public void assertFailedSwitchTransactionTypeWhileBegin() {
         connectionSession.setCurrentDatabase("db");
-        BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
-        transactionManager.begin();
-        connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA);
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            new BackendTransactionManager(backendConnection).begin();
+            connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA);
+        }
     }
     
     @Test
     public void assertSwitchSchemaWhileBegin() {
         connectionSession.setCurrentDatabase("db");
-        BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
-        transactionManager.begin();
-        connectionSession.setCurrentDatabase("newDB");
-        assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
+        ContextManager contextManager = mockContextManager();
+        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            new BackendTransactionManager(backendConnection).begin();
+            connectionSession.setCurrentDatabase("newDB");
+            assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
+        }
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mock(TransactionRule.class))));
+        return result;
     }
     
     @Test

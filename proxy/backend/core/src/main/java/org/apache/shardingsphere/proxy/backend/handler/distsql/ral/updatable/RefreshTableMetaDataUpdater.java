@@ -20,14 +20,15 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -36,38 +37,39 @@ import java.util.Map;
 /**
  * Refresh table meta data handler.
  */
-public final class RefreshTableMetaDataHandler extends UpdatableRALBackendHandler<RefreshTableMetaDataStatement> {
+public final class RefreshTableMetaDataUpdater implements ConnectionSessionRequiredRALUpdater<RefreshTableMetaDataStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager) {
-        String databaseName = getDatabaseName();
-        checkDataSources(databaseName, contextManager.getDataSourceMap(databaseName));
-        String schemaName = getSchemaName(databaseName);
-        if (getSqlStatement().getStorageUnitName().isPresent()) {
-            if (getSqlStatement().getTableName().isPresent()) {
-                contextManager.reloadTable(databaseName, schemaName, getSqlStatement().getStorageUnitName().get(), getSqlStatement().getTableName().get());
+    public void executeUpdate(final ConnectionSession connectionSession, final RefreshTableMetaDataStatement sqlStatement) {
+        String databaseName = getDatabaseName(connectionSession);
+        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+        checkDataSources(databaseName, contextManager.getDataSourceMap(databaseName), sqlStatement);
+        String schemaName = getSchemaName(databaseName, sqlStatement, connectionSession);
+        if (sqlStatement.getStorageUnitName().isPresent()) {
+            if (sqlStatement.getTableName().isPresent()) {
+                contextManager.reloadTable(databaseName, schemaName, sqlStatement.getStorageUnitName().get(), sqlStatement.getTableName().get());
             } else {
-                contextManager.reloadSchema(databaseName, schemaName, getSqlStatement().getStorageUnitName().get());
+                contextManager.reloadSchema(databaseName, schemaName, sqlStatement.getStorageUnitName().get());
             }
             return;
         }
-        if (getSqlStatement().getTableName().isPresent()) {
-            contextManager.reloadTable(databaseName, schemaName, getSqlStatement().getTableName().get());
+        if (sqlStatement.getTableName().isPresent()) {
+            contextManager.reloadTable(databaseName, schemaName, sqlStatement.getTableName().get());
         } else {
             contextManager.reloadDatabaseMetaData(databaseName);
         }
     }
     
-    private void checkDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
+    private void checkDataSources(final String databaseName, final Map<String, DataSource> dataSources, final RefreshTableMetaDataStatement sqlStatement) {
         ShardingSpherePreconditions.checkState(!dataSources.isEmpty(), () -> new EmptyStorageUnitException(databaseName));
-        if (getSqlStatement().getStorageUnitName().isPresent()) {
-            String storageUnitName = getSqlStatement().getStorageUnitName().get();
+        if (sqlStatement.getStorageUnitName().isPresent()) {
+            String storageUnitName = sqlStatement.getStorageUnitName().get();
             ShardingSpherePreconditions.checkState(dataSources.containsKey(storageUnitName), () -> new MissingRequiredStorageUnitsException(databaseName, Collections.singletonList(storageUnitName)));
         }
     }
     
-    private String getDatabaseName() {
-        String result = getConnectionSession().getDatabaseName();
+    private String getDatabaseName(final ConnectionSession connectionSession) {
+        String result = connectionSession.getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
@@ -77,9 +79,14 @@ public final class RefreshTableMetaDataHandler extends UpdatableRALBackendHandle
         return result;
     }
     
-    private String getSchemaName(final String databaseName) {
-        return getSqlStatement().getSchemaName().isPresent()
-                ? getSqlStatement().getSchemaName().get()
-                : DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getProtocolType(), databaseName);
+    private String getSchemaName(final String databaseName, final RefreshTableMetaDataStatement sqlStatement, final ConnectionSession connectionSession) {
+        return sqlStatement.getSchemaName().isPresent()
+                ? sqlStatement.getSchemaName().get()
+                : DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getProtocolType(), databaseName);
+    }
+    
+    @Override
+    public String getType() {
+        return RefreshTableMetaDataStatement.class.getName();
     }
 }

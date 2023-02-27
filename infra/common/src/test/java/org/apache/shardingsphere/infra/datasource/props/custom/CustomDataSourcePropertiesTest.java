@@ -33,7 +33,7 @@ public final class CustomDataSourcePropertiesTest {
     @Test
     public void assertGetProperties() {
         Map<String, Object> actual = new CustomDataSourceProperties(
-                createProperties(), Arrays.asList("username", "password", "closed"), Collections.singletonList("closed"), createPropertySynonyms()).getProperties();
+                createProperties(), Arrays.asList("username", "password", "closed"), Collections.singletonList("closed"), Collections.singletonMap("username", "user")).getProperties();
         assertThat(actual.size(), is(3));
         assertThat(actual.get("foo"), is("bar"));
         assertThat(((Properties) actual.get("fooProperties")).size(), is(2));
@@ -45,7 +45,7 @@ public final class CustomDataSourcePropertiesTest {
     }
     
     private Map<String, Object> createProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1);
         result.put("user", "root");
         result.put("password", "root");
         result.put("closed", false);
@@ -54,12 +54,6 @@ public final class CustomDataSourcePropertiesTest {
         result.put("fooProperties.foo2", "fooValue2");
         result.put("barProperties.bar1", "barValue1");
         result.put("barProperties.bar2", "barValue2");
-        return result;
-    }
-    
-    private Map<String, String> createPropertySynonyms() {
-        Map<String, String> result = new LinkedHashMap<>(1, 1);
-        result.put("username", "user");
         return result;
     }
 }
