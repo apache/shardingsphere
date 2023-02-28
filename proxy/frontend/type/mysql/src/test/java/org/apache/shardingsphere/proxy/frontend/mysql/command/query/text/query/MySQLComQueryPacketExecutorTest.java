@@ -51,7 +51,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.plugins.MemberAccessor;
+import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -70,6 +72,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class MySQLComQueryPacketExecutorTest {
     
     @Mock
