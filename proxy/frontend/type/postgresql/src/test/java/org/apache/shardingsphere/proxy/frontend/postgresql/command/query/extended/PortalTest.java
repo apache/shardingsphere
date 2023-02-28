@@ -53,14 +53,15 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -73,22 +74,20 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings({ProxyContext.class, ProxyBackendHandlerFactory.class})
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class PortalTest {
-    
-    private MockedStatic<ProxyContext> mockedProxyContext;
-    
-    private MockedStatic<ProxyBackendHandlerFactory> mockedProxyBackendHandlerFactory;
     
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
@@ -96,40 +95,31 @@ public final class PortalTest {
     @Mock
     private BackendConnection backendConnection;
     
-    @Before
-    public void setup() {
-        mockedProxyContext = mockProxyContext();
+    @BeforeEach
+    public void setup() throws SQLException {
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ShardingSphereDatabase database = mockDatabase();
+        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getDefaultDatabaseName()).thenReturn("db");
-        mockedProxyBackendHandlerFactory = mockProxyBackendHandlerFactory(connectionSession);
+        when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
+        when(ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), anyString(), any(SQLStatement.class), eq(connectionSession), any(HintValueContext.class)))
+                .thenReturn(proxyBackendHandler);
+        when(ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
     
-    private MockedStatic<ProxyBackendHandlerFactory> mockProxyBackendHandlerFactory(final ConnectionSession connectionSession) {
-        MockedStatic<ProxyBackendHandlerFactory> result = mockStatic(ProxyBackendHandlerFactory.class);
-        result.when(() -> ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), anyString(), any(SQLStatement.class), eq(connectionSession), any(HintValueContext.class)))
-                .thenReturn(proxyBackendHandler);
-        result.when(() -> ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         return result;
     }
     
-    private MockedStatic<ProxyContext> mockProxyContext() {
-        MockedStatic<ProxyContext> result = mockStatic(ProxyContext.class);
-        result.when(() -> ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
-        ContextManager mockedContextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
-        result.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(mockedContextManager);
-        when(mockedContextManager.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
-        result.when(() -> ProxyContext.getInstance().getDatabase("db")).thenReturn(database);
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        when(result.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         return result;
-    }
-    
-    @After
-    public void tearDown() {
-        mockedProxyContext.close();
-        mockedProxyBackendHandlerFactory.close();
     }
     
     @Test
@@ -176,8 +166,7 @@ public final class PortalTest {
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getSqlStatement()).thenReturn(new PostgreSQLSelectStatement());
-        PostgreSQLServerPreparedStatement preparedStatement =
-                new PostgreSQLServerPreparedStatement("", selectStatementContext, Collections.emptyList());
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", selectStatementContext, Collections.emptyList());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
         portal.bind();
@@ -196,8 +185,7 @@ public final class PortalTest {
         when(proxyBackendHandler.next()).thenReturn(false);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getSqlStatement()).thenReturn(new PostgreSQLInsertStatement());
-        PostgreSQLServerPreparedStatement preparedStatement =
-                new PostgreSQLServerPreparedStatement("", insertStatementContext, Collections.emptyList());
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", insertStatementContext, Collections.emptyList());
         Portal portal = new Portal("insert into t values (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
@@ -236,19 +224,17 @@ public final class PortalTest {
     }
     
     @SuppressWarnings("unchecked")
-    @Test(expected = IllegalStateException.class)
-    public void assertDescribeBeforeBind() throws SQLException {
+    @Test
+    public void assertDescribeBeforeBind() {
         PostgreSQLServerPreparedStatement preparedStatement = mock(PostgreSQLServerPreparedStatement.class);
-        when(preparedStatement.getSql()).thenReturn("");
         when(preparedStatement.getSqlStatementContext()).thenReturn(mock(SQLStatementContext.class));
-        new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection).describe();
+        assertThrows(IllegalStateException.class, () -> new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection).describe());
     }
     
     @Test
     public void assertClose() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new CommonSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList());
-        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
-        portal.close();
+        new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection).close();
         verify(backendConnection).unmarkResourceInUse(proxyBackendHandler);
         verify(proxyBackendHandler).close();
     }

@@ -43,16 +43,15 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.MySQLAuthenticationEngine;
-import org.junit.jupiter.api.AfterEach;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -75,19 +74,17 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public final class MySQLFrontendEngineTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-    
-    private final MySQLFrontendEngine engine = new MySQLFrontendEngine();
+    private MySQLFrontendEngine engine;
     
     @Mock
     private ChannelHandlerContext context;
@@ -100,13 +97,9 @@ public final class MySQLFrontendEngineTest {
     
     @BeforeEach
     public void setUp() throws ReflectiveOperationException {
+        engine = new MySQLFrontendEngine();
         Plugins.getMemberAccessor().set(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance(), 0);
         when(context.channel()).thenReturn(channel);
-    }
-    
-    @AfterEach
-    public void tearDown() {
-        proxyContext.close();
     }
     
     @Test
@@ -125,7 +118,7 @@ public final class MySQLFrontendEngineTest {
     public void assertAuthWhenLoginSuccess() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ContextManager contextManager = mockContextManager(new ShardingSphereUser("root", "", ""));
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(payload.readInt1()).thenReturn(1);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
@@ -141,7 +134,7 @@ public final class MySQLFrontendEngineTest {
     public void assertAuthWhenLoginFailure() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ContextManager contextManager = mockContextManager(new ShardingSphereUser("root", "error", ""));
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(payload.readInt1()).thenReturn(1);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
@@ -157,7 +150,7 @@ public final class MySQLFrontendEngineTest {
     public void assertErrorMsgWhenLoginFailure() throws UnknownHostException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ContextManager contextManager = mockContextManager(new ShardingSphereUser("root", "error", ""));
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(payload.readInt1()).thenReturn(1);
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());

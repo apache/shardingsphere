@@ -46,8 +46,10 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -59,56 +61,46 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class OpenGaussComBatchBindExecutorTest {
     
-    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("openGauss", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
+    private final ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine("openGauss", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
     
     @SuppressWarnings("rawtypes")
     @Test
     public void assertExecute() throws SQLException {
         String statement = "S_1";
         String sql = "insert into bmsql (id) values (?)";
-        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
+        SQLStatement sqlStatement = parserEngine.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ConnectionSession connectionSession = mockConnectionSession();
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statement, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, Collections.emptyList()));
-        OpenGaussComBatchBindExecutor executor = new OpenGaussComBatchBindExecutor(mockComBatchBindPacket(), connectionSession);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            Iterator<DatabasePacket<?>> actualPacketsIterator = executor.execute().iterator();
-            assertThat(actualPacketsIterator.next(), is(PostgreSQLBindCompletePacket.getInstance()));
-            assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLCommandCompletePacket.class));
-            assertFalse(actualPacketsIterator.hasNext());
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        Iterator<DatabasePacket<?>> actualPacketsIterator = new OpenGaussComBatchBindExecutor(mockComBatchBindPacket(), connectionSession).execute().iterator();
+        assertThat(actualPacketsIterator.next(), is(PostgreSQLBindCompletePacket.getInstance()));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLCommandCompletePacket.class));
+        assertFalse(actualPacketsIterator.hasNext());
     }
     
-    private static OpenGaussComBatchBindPacket mockComBatchBindPacket() {
-        OpenGaussComBatchBindPacket result = mock(OpenGaussComBatchBindPacket.class);
-        when(result.getStatementId()).thenReturn("S_1");
-        when(result.readParameterSets(anyList())).thenReturn(Collections.singletonList(Collections.singletonList(0)));
-        return result;
-    }
-    
-    private static ConnectionSession mockConnectionSession() throws SQLException {
+    private ConnectionSession mockConnectionSession() throws SQLException {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getConnectionContext()).thenReturn(new ConnectionContext());
-        when(result.getDatabaseName()).thenReturn("db");
-        when(result.getConnectionId()).thenReturn(1);
+        when(result.getDatabaseName()).thenReturn("foo_db");
         BackendConnection backendConnection = mock(BackendConnection.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getURL()).thenReturn("jdbc:opengauss://127.0.0.1/db");
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:opengauss://127.0.0.1/foo_db");
         when(backendConnection.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.getConnection()).thenReturn(connection);
@@ -121,18 +113,30 @@ public final class OpenGaussComBatchBindExecutorTest {
         return result;
     }
     
-    private static ContextManager mockContextManager() {
+    private OpenGaussComBatchBindPacket mockComBatchBindPacket() {
+        OpenGaussComBatchBindPacket result = mock(OpenGaussComBatchBindPacket.class);
+        when(result.getStatementId()).thenReturn("S_1");
+        when(result.readParameterSets(anyList())).thenReturn(Collections.singletonList(Collections.singletonList(0)));
+        return result;
+    }
+    
+    private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(result.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Arrays.asList(
                 new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()), new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
-        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new OpenGaussDatabaseType()));
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
+        ShardingSphereDatabase database = mockDatabase();
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        return result;
+    }
+    
+    private static ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("foo_ds"));
+        when(result.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", new OpenGaussDatabaseType()));
+        when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         return result;
     }
 }

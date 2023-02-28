@@ -34,13 +34,15 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.PostgreSQLComQueryExecutor;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 
@@ -48,11 +50,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class PostgreSQLCommandExecuteEngineTest {
     
     @Mock
@@ -67,7 +70,7 @@ public final class PostgreSQLCommandExecuteEngineTest {
     @Mock
     private ConnectionSession connectionSession;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
@@ -118,14 +121,12 @@ public final class PostgreSQLCommandExecuteEngineTest {
         when(queryCommandExecutor.getQueryRowPacket()).thenReturn(packet);
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
         ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class));
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            commandExecuteEngine.writeQueryData(channelHandlerContext, backendConnection, queryCommandExecutor, 0);
-            verify(resourceLock).doAwait();
-            verify(channelHandlerContext).write(packet);
-            verify(channelHandlerContext).write(isA(PostgreSQLCommandCompletePacket.class));
-            verify(channelHandlerContext).flush();
-            verify(channelHandlerContext).write(isA(PostgreSQLReadyForQueryPacket.class));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        commandExecuteEngine.writeQueryData(channelHandlerContext, backendConnection, queryCommandExecutor, 0);
+        verify(resourceLock).doAwait();
+        verify(channelHandlerContext).write(packet);
+        verify(channelHandlerContext).write(isA(PostgreSQLCommandCompletePacket.class));
+        verify(channelHandlerContext).flush();
+        verify(channelHandlerContext).write(isA(PostgreSQLReadyForQueryPacket.class));
     }
 }
