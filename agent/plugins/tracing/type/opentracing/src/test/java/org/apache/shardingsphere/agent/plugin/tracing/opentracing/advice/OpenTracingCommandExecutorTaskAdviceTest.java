@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
-import org.apache.shardingsphere.test.mock.MockResourceAutoReleaseExtension;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.BeforeAll;
@@ -54,7 +54,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({AgentExtension.class, MockResourceAutoReleaseExtension.class})
+@ExtendWith({AgentExtension.class, AutoMockExtension.class})
 @StaticMockSettings(ProxyContext.class)
 public final class OpenTracingCommandExecutorTaskAdviceTest {
     

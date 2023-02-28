@@ -29,9 +29,9 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mockStatic;
 
 /**
- * Mock resource auto release extension.
+ * Auto mock extension.
  */
-public final class MockResourceAutoReleaseExtension implements BeforeEachCallback, AfterEachCallback {
+public final class AutoMockExtension implements BeforeEachCallback, AfterEachCallback {
     
     private final Collection<MockedStatic<?>> mockedStatics = new LinkedList<>();
     

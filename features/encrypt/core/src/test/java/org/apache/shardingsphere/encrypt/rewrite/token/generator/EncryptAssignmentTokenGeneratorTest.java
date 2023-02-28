@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.Se
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
-import org.apache.shardingsphere.test.mock.MockResourceAutoReleaseExtension;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockResourceAutoReleaseExtension.class)
+@ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(InsertStatementHandler.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public final class EncryptAssignmentTokenGeneratorTest {

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwrite
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.test.mock.MockResourceAutoReleaseExtension;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockResourceAutoReleaseExtension.class)
+@ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(TypedSPILoader.class)
 public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
