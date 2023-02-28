@@ -9,7 +9,7 @@ chapter = true
 
 ## 1. Background
 
-Thanks to our continuous review of the [ShardingSphere](https://shardingsphere.apache.org/)’s community feedback that we use to develop features such as data sharding and read/write splitting, we found that some users create a large number of shards when using the data sharding feature.
+Thanks to our continuous review of the [ShardingSphere](https://shardingsphere.apache.org/)'s community feedback that we use to develop features such as data sharding and read/write splitting, we found that some users create a large number of shards when using the data sharding feature.
 
 In such cases, there can be 1,000 physical tables corresponding to a sharding logical table, which largely disturbs users.
 
@@ -19,15 +19,15 @@ However, if users are not familiar with Proxy, or write a `where` condition and 
 
 A full route can lower the performance of Proxy and even result in the failure of a reasonable request. Imagine that there are 1000 shards in a physical database, if they are executed in parallel, 1,000 connections are needed — and if in serial, the request can lead to a timeout. In this regard, community users requested whether the unreasonable request can be intercepted directly.
 
-We’ve considered the issue for a while. If we simply block the full-route operation, we just need to check it in the code and add a switch to the configuration file. On the other hand, if the user later needs to set a table to read-only or requires the update operation to carry a `limit`, does that mean we need to change the code and configuration again? This obviously goes against the pluggable logic of Proxy.
+We've considered the issue for a while. If we simply block the full-route operation, we just need to check it in the code and add a switch to the configuration file. On the other hand, if the user later needs to set a table to read-only or requires the update operation to carry a `limit`, does that mean we need to change the code and configuration again? This obviously goes against the pluggable logic of Proxy.
 
 In response to the above problems, the [recently released Apache ShardingSphere 5.2.0](https://faun.pub/apache-shardingsphere-5-2-0-is-released-bringing-new-cloud-native-possibilities-8d674d964a93?source=your_stories_page-------------------------------------) provides users with SQL audit for the sharding function. The audit can either be an interception operation or a statistical operation. Similar to the sharding and unique key generation algorithms, the audit algorithm is also plugin-oriented, user-defined, and configurable.
 
-Next, we will elaborate on the implementation logic for data sharding’s audit, with specific SQL examples.
+Next, we will elaborate on the implementation logic for data sharding's audit, with specific SQL examples.
 
 ## **2. Audit for sharding interface**
 
-The entrance to Apache ShardingSphere’s audit is in the `org.apache.shardingsphere.infra.executor.check.SQLCheckEngine` class, which will invoke the `check` method of the `SQLChecker` interface. Currently, ShardingSphere audit contains audit for permission (verify username and password) and audit for sharding.
+The entrance to Apache ShardingSphere's audit is in the `org.apache.shardingsphere.infra.executor.check.SQLCheckEngine` class, which will invoke the `check` method of the `SQLChecker` interface. Currently, ShardingSphere audit contains audit for permission (verify username and password) and audit for sharding.
 
 Here we focus on the parent interface implemented in `ShardingAuditChecker` of audit for sharding.
 
@@ -59,7 +59,7 @@ For this reason, we provide `Hint: disableAuditNames` to skip audit interception
 
 ## **3. Audit for sharding algorithm**
 
-The audit for sharding algorithm interface `org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm` is inherited from SPI class `ShardingSphereAlgorithm`. It inherits `type` and `props` properties and defines its own `check` method. If you‘re looking to customize your own audit algorithm, just implement the interface and add it to `INF.services`.
+The audit for sharding algorithm interface `org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm` is inherited from SPI class `ShardingSphereAlgorithm`. It inherits `type` and `props` properties and defines its own `check` method. If you're looking to customize your own audit algorithm, just implement the interface and add it to `INF.services`.
 
 ![img](https://shardingsphere.apache.org/blog/img/2022_10_14_ShardingSphere_5.2.0_Audit_for_sharding_intercepts_unreasonable_requests_in_multi-shards_scenarios3.png)
 
@@ -118,7 +118,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
 }
 ```
 
-Here we’d like to introduce another audit for sharding algorithm: `LimitRequiredShardingAuditAlgorithm`. This algorithm can intercept SQL without carrying `limit` in the `update` and `delete` operations.
+Here we'd like to introduce another audit for sharding algorithm: `LimitRequiredShardingAuditAlgorithm`. This algorithm can intercept SQL without carrying `limit` in the `update` and `delete` operations.
 
 As this algorithm is less universal, it is not currently integrated into Apache ShardingSphere. As you can see, it is very easy to implement a custom algorithm, which is why we need to design the audit for sharding framework. Thanks to its plugin-oriented architecture, ShardingSphere boasts great scalability.
 
@@ -237,7 +237,7 @@ CREATE SHARDING TABLE RULE # including AUDIT_STRATEGY
 
 This post introduced how audit for sharding works with specific examples. I believe you already have basic understanding of this function, and you can use it whenever you need or use custom algorithm.
 
-You are also welcome to submit general algorithms to the community. If you have any ideas you’d like to contribute or you encounter any issues with your ShardingSphere, feel free to post them on [GitHub](https://github.com/apache/shardingsphere).
+You are also welcome to submit general algorithms to the community. If you have any ideas you'd like to contribute or you encounter any issues with your ShardingSphere, feel free to post them on [GitHub](https://github.com/apache/shardingsphere).
 
 # Author
 
