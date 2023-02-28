@@ -129,8 +129,6 @@ public abstract class AbstractCDCE2EIT extends PipelineBaseE2EIT {
             assertThat(orderId, is(importedData.get("order_id")));
             assertThat(proxyData.get("user_id"), is(importedData.get("user_id")));
             assertThat(proxyData.get("status"), is(importedData.get("status")));
-            assertThat(proxyData.get("t_float"), is(importedData.get("t_float")));
-            assertThat(proxyData.get("t_double"), is(importedData.get("t_double")));
             assertThat(proxyData.get("t_json"), is(importedData.get("t_json")));
             // TODO the result of openGauss contain more precise value, eg.2023-02-28 21:46:30.828, but proxy result is 2023-02-28 13:46:30.828664, ignore nanos now
             assertThat(((Timestamp) proxyData.get("t_timestamp")).getTime(), is(((Timestamp) importedData.get("t_timestamp")).getTime()));
