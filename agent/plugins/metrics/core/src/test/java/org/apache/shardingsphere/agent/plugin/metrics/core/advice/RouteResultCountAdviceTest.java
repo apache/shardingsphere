@@ -25,8 +25,8 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.Met
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -40,7 +40,7 @@ public final class RouteResultCountAdviceTest {
     
     private final MetricConfiguration routedResultConfig = new MetricConfiguration("routed_result_total", MetricCollectorType.COUNTER, null, Arrays.asList("object", "name"));
     
-    @After
+    @AfterEach
     public void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(routedResultConfig, "FIXTURE")).reset();
     }
