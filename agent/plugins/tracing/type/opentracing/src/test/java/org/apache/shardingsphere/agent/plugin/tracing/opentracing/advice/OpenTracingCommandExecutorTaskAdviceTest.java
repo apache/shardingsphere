@@ -18,18 +18,27 @@
 package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.DefaultAttributeMap;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockSpan.LogEntry;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
+import org.apache.shardingsphere.agent.plugin.tracing.AgentExtension;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
+import org.apache.shardingsphere.test.mock.MockResourceAutoReleaseExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.io.IOException;
@@ -41,14 +50,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class OpenTracingCommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
+@ExtendWith({AgentExtension.class, MockResourceAutoReleaseExtension.class})
+@StaticMockSettings(ProxyContext.class)
+public final class OpenTracingCommandExecutorTaskAdviceTest {
     
     private static final OpenTracingCommandExecutorTaskAdvice ADVICE = new OpenTracingCommandExecutorTaskAdvice();
     
     private static MockTracer tracer;
     
     private static Method executeCommandMethod;
+    
+    private TargetAdviceObject targetObject;
     
     @BeforeAll
     public static void setup() throws ReflectiveOperationException {
@@ -62,11 +78,14 @@ public final class OpenTracingCommandExecutorTaskAdviceTest extends AbstractComm
     @BeforeEach
     public void reset() {
         tracer.reset();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.BASE, new DefaultAttributeMap());
+        Object executorTask = new CommandExecutorTask(null, connectionSession, null, null);
+        targetObject = (TargetAdviceObject) executorTask;
     }
     
     @Test
     public void assertMethod() {
-        TargetAdviceObject targetObject = getTargetObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, "OpenTracing");
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
@@ -79,7 +98,6 @@ public final class OpenTracingCommandExecutorTaskAdviceTest extends AbstractComm
     
     @Test
     public void assertExceptionHandle() {
-        TargetAdviceObject targetObject = getTargetObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, "OpenTracing");
         ADVICE.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException(), "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
