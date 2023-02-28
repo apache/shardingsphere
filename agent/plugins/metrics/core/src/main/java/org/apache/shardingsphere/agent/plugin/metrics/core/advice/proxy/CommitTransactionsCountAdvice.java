@@ -32,11 +32,11 @@ import java.util.Collections;
  */
 public final class CommitTransactionsCountAdvice implements InstanceMethodAdvice {
     
-    private final MetricConfiguration config = new MetricConfiguration("proxy_commit_transactions_total",
-            MetricCollectorType.COUNTER, "Total commit transactions of ShardingSphere-Proxy", Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_transactions_total",
+            MetricCollectorType.COUNTER, "Total transactions of ShardingSphere-Proxy", Collections.singletonList("type"), Collections.emptyMap());
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc();
+        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("commit");
     }
 }
