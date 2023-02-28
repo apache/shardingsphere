@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
@@ -36,12 +37,10 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -58,61 +57,60 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class MySQLMultiStatementsHandlerTest {
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ConnectionSession connectionSession;
-    
-    @Mock
-    private BackendConnection backendConnection;
-    
-    @Mock
-    private JDBCBackendStatement backendStatement;
-    
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ProxyContext proxyContext;
     
     @Test
     public void assertExecute() throws SQLException {
         String sql = "update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3";
-        when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
-        when(connectionSession.getStatementManager()).thenReturn(backendStatement);
+        ConnectionSession connectionSession = mockConnectionSession();
+        MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
+        assertThat(actual, instanceOf(UpdateResponseHeader.class));
+        UpdateResponseHeader actualHeader = (UpdateResponseHeader) actual;
+        assertThat(actualHeader.getUpdateCount(), is(3L));
+        assertThat(actualHeader.getLastInsertId(), is(0L));
+        assertThat(actualHeader.getSqlStatement(), is(expectedStatement));
+    }
+    
+    private ConnectionSession mockConnectionSession() throws SQLException {
+        ConnectionSession result = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabaseName()).thenReturn("foo_db");
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1/db");
-        when(backendConnection.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         Statement statement = mock(Statement.class);
-        when(backendStatement.createStorageResource(eq(connection), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class))).thenReturn(statement);
         when(statement.getConnection()).thenReturn(connection);
         when(statement.executeBatch()).thenReturn(new int[]{1, 1, 1});
-        MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);
-        try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
-            mockedStatic.when(ProxyContext::getInstance).thenReturn(proxyContext);
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getAllInstanceDataSourceNames())
-                    .thenReturn(Collections.singletonList("ds_0"));
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageTypes())
-                    .thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new MySQLDatabaseType());
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getRuleMetaData())
-                    .thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-            ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(
-                    Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
-                            new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
-            when(ProxyContext.getInstance()
-                    .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
-            ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
-            assertThat(actual, instanceOf(UpdateResponseHeader.class));
-            UpdateResponseHeader actualHeader = (UpdateResponseHeader) actual;
-            assertThat(actualHeader.getUpdateCount(), is(3L));
-            assertThat(actualHeader.getLastInsertId(), is(0L));
-            assertThat(actualHeader.getSqlStatement(), is(expectedStatement));
-        }
+        BackendConnection backendConnection = mock(BackendConnection.class);
+        when(backendConnection.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(result.getBackendConnection()).thenReturn(backendConnection);
+        JDBCBackendStatement backendStatement = mock(JDBCBackendStatement.class);
+        when(backendStatement.createStorageResource(eq(connection), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class))).thenReturn(statement);
+        when(result.getStatementManager()).thenReturn(backendStatement);
+        return result;
+    }
+    
+    private static ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getAllInstanceDataSourceNames())
+                .thenReturn(Collections.singletonList("foo_ds"));
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes())
+                .thenReturn(Collections.singletonMap("foo_ds", new MySQLDatabaseType()));
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData())
+                .thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(
+                Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
+                        new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
+        when(result.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
+        return result;
     }
 }
