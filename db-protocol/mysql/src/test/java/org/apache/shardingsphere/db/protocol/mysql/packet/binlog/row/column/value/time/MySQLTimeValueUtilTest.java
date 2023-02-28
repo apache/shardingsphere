@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.time;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 

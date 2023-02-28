@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.reset;
 
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLComStmtResetPacketTest {
     
     @Mock

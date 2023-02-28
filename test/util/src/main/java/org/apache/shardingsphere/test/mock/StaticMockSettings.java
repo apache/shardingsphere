@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.quit;
+package org.apache.shardingsphere.test.mock;
 
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.mockito.Mockito.verify;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Static mock settings.
+ */
 @ExtendWith(MockitoExtension.class)
-public final class MySQLComQuitPacketTest {
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+public @interface StaticMockSettings {
     
-    @Mock
-    private MySQLPacketPayload payload;
-    
-    @Test
-    public void assertWrite() {
-        MySQLComQuitPacket actual = new MySQLComQuitPacket();
-        actual.write(payload);
-        verify(payload).writeInt1(MySQLCommandPacketType.COM_QUIT.getValue());
-    }
+    /**
+     * Mock classes.
+     * 
+     * @return mock classes
+     */
+    Class<?>[] value();
 }
