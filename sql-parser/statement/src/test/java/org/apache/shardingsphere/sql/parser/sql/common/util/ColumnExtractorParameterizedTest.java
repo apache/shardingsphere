@@ -39,21 +39,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RequiredArgsConstructor
 public final class ColumnExtractorParameterizedTest {
     
-    private static final Collection<ExpressionSegment> testUnits = new LinkedList<>();
+    private static final Collection<ExpressionSegment> TEST_UNITS = new LinkedList<>();
     
     private static final ColumnSegment COLUMN_SEGMENT = new ColumnSegment(35, 42, new IdentifierValue("order_item_id"));
     
     static {
-        testUnits.add(new BinaryOperationExpression(0, 0, COLUMN_SEGMENT, null, null, null));
-        testUnits.add(new InExpression(0, 0, COLUMN_SEGMENT, null, false));
-        testUnits.add(new BetweenExpression(0, 0, COLUMN_SEGMENT, null, null, false));
+        TEST_UNITS.add(new BinaryOperationExpression(0, 0, COLUMN_SEGMENT, null, null, null));
+        TEST_UNITS.add(new InExpression(0, 0, COLUMN_SEGMENT, null, false));
+        TEST_UNITS.add(new BetweenExpression(0, 0, COLUMN_SEGMENT, null, null, false));
     }
     
     private final ExpressionSegment expression;
     
     @Parameters(name = "{0}")
     public static Collection<ExpressionSegment> getTestParameters() {
-        return testUnits;
+        return TEST_UNITS;
     }
     
     @Test

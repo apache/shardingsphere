@@ -43,20 +43,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RequiredArgsConstructor
 public final class MySQLParameterizedTest {
     
-    private static final Collection<String[]> testUnits = new LinkedList<>();
+    private static final Collection<String[]> TEST_UNITS = new LinkedList<>();
     
     static {
-        testUnits.add(new String[]{"select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", "SELECT a + ? AS b, name n\n"
+        TEST_UNITS.add(new String[]{"select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", "SELECT a + ? AS b, name n\n"
                 + "FROM table1 JOIN table2\n"
                 + "WHERE \n"
                 + "\tid = ?\n"
                 + "\tand name = ?;"});
-        testUnits.add(new String[]{"select_item_nums", "select id, name, age, sex, ss, yy from table1 where id=1", "SELECT id , name , age , \n"
+        TEST_UNITS.add(new String[]{"select_item_nums", "select id, name, age, sex, ss, yy from table1 where id=1", "SELECT id , name , age , \n"
                 + "\tsex , ss , yy \n"
                 + "FROM table1\n"
                 + "WHERE \n"
                 + "\tid = ?;"});
-        testUnits.add(new String[]{"select_with_subquery", "select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1", "SELECT id ,"
+        TEST_UNITS.add(new String[]{"select_with_subquery", "select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1", "SELECT id ,"
                 + " name , age , \n"
                 + "\tCOUNT(*) AS n, \n"
                 + "\t(\n"
@@ -69,7 +69,7 @@ public final class MySQLParameterizedTest {
                 + "FROM table1\n"
                 + "WHERE \n"
                 + "\tid = ?;"});
-        testUnits.add(new String[]{"select_where_num", "select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3", "SELECT id , name , age , \n"
+        TEST_UNITS.add(new String[]{"select_where_num", "select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3", "SELECT id , name , age , \n"
                 + "\tsex , ss , yy \n"
                 + "FROM table1\n"
                 + "WHERE \n"
@@ -79,7 +79,7 @@ public final class MySQLParameterizedTest {
                 + "\tand b = ?\n"
                 + "\tand c = ?\n"
                 + "\tand d = ?;"});
-        testUnits.add(new String[]{"alter_table", "ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;", ""
+        TEST_UNITS.add(new String[]{"alter_table", "ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;", ""
                 + "ALTER TABLE t_order\n"
                 + "\tADD column4 DATE,\n"
                 + "\tADD column5 DATETIME,\n"
@@ -88,7 +88,7 @@ public final class MySQLParameterizedTest {
                 + "\tMIN_ROWS 2,\n"
                 + "\tADD column6 TIMESTAMP,\n"
                 + "\tADD column7 TIME"});
-        testUnits.add(new String[]{"create_table", "CREATE TABLE IF NOT EXISTS `runoob_tbl`(\n"
+        TEST_UNITS.add(new String[]{"create_table", "CREATE TABLE IF NOT EXISTS `runoob_tbl`(\n"
                 + "`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
                 + "`runoob_title` VARCHAR(100) NOT NULL,\n"
                 + "`runoob_author` VARCHAR(40) NOT NULL,\n"
@@ -104,7 +104,7 @@ public final class MySQLParameterizedTest {
                         + "\t`submission_date` DATE,\n"
                         + "\tPRIMARY KEY (`runoob_id`)\n"
                         + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"});
-        testUnits.add(new String[]{"select_with_column",
+        TEST_UNITS.add(new String[]{"select_with_column",
                 "select id, name, age, count(table1.id) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1",
                 "SELECT id ,"
                         + " name , age , \n"
@@ -129,7 +129,7 @@ public final class MySQLParameterizedTest {
     
     @Parameters(name = "{0}")
     public static Collection<String[]> getTestParameters() {
-        return testUnits;
+        return TEST_UNITS;
     }
     
     @Test
