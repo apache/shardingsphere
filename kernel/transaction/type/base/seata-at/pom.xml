@@ -28,7 +28,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <seata.version>1.4.2</seata.version>
+        <seata.version>1.6.1</seata.version>
     </properties>
     
     <dependencies>
@@ -50,6 +50,12 @@
             <artifactId>seata-all</artifactId>
             <version>${seata.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
