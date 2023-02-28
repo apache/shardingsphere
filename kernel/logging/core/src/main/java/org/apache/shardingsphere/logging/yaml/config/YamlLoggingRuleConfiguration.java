@@ -19,7 +19,7 @@ package org.apache.shardingsphere.logging.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 
 import java.util.Collection;
@@ -30,7 +30,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class YamlLoggingRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlLoggingRuleConfiguration implements YamlGlobalRuleConfiguration {
     
     private Collection<YamlLoggerConfiguration> loggers = new LinkedList<>();
     

@@ -36,24 +36,28 @@ import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.Stan
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class ProxyStateExporterTest {
     
-    @After
+    @AfterEach
     public void reset() {
         MetricConfiguration config = new MetricConfiguration("proxy_state", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Collections.emptyList(), Collections.emptyMap());
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
@@ -61,22 +65,18 @@ public final class ProxyStateExporterTest {
     
     @Test
     public void assertExportWithoutContextManager() {
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(null);
-            assertFalse(new ProxyStateExporter().export("FIXTURE").isPresent());
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(null);
+        assertFalse(new ProxyStateExporter().export("FIXTURE").isPresent());
     }
     
     @Test
     public void assertExportWithContextManager() {
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getStateContext()).thenReturn(Optional.of(mock(StateContext.class, RETURNS_DEEP_STUBS)));
-            Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyStateExporter().export("FIXTURE");
-            assertTrue(collector.isPresent());
-            assertThat(collector.get().toString(), is("0"));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getStateContext()).thenReturn(Optional.of(mock(StateContext.class, RETURNS_DEEP_STUBS)));
+        Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyStateExporter().export("FIXTURE");
+        assertTrue(collector.isPresent());
+        assertThat(collector.get().toString(), is("0"));
     }
     
     private ContextManager mockContextManager() {

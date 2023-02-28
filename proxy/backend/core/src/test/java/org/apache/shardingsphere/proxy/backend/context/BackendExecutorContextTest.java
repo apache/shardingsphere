@@ -21,25 +21,26 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class BackendExecutorContextTest {
     
     @Test
     public void assertGetInstance() {
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(BackendExecutorContext.getInstance().getExecutorEngine()));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(BackendExecutorContext.getInstance().getExecutorEngine()));
     }
     
     private ContextManager mockContextManager() {

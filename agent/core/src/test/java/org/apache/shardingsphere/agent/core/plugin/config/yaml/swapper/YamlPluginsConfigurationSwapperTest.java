@@ -21,7 +21,7 @@ import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginCategoryConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -36,8 +36,8 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class YamlPluginsConfigurationSwapperTest {
     

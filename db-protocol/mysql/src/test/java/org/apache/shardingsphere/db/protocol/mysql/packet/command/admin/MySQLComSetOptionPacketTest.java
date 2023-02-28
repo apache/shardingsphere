@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.admin;
 
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 

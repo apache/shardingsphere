@@ -709,6 +709,14 @@
     
     <alter-table sql-case-id="alter_table_rename_index">
         <table name="t_order" start-index="12" stop-index="18" />
+        <rename-index>
+            <index-definition start-index="33" stop-index="47">
+                <index name="idx_column1_bak"/>
+            </index-definition>
+            <rename-index-definition start-index="52" stop-index="62">
+                <index name="idx_column1"/>   
+            </rename-index-definition>
+        </rename-index>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_composite_operate_columns">

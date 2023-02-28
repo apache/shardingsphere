@@ -87,6 +87,14 @@ importDatabaseConfiguration
     : IMPORT DATABASE CONFIGURATION FROM FILE filePath
     ;
 
+exportMetaData
+    : EXPORT METADATA (TO FILE filePath)?
+    ;
+
+importMetaData
+    : IMPORT METADATA (metaDataValue | FROM FILE filePath)
+    ;
+
 convertYamlConfiguration
     : CONVERT YAML CONFIGURATION FROM FILE filePath
     ;
@@ -136,6 +144,10 @@ confPath
     ;
 
 filePath
+    : STRING_
+    ;
+
+metaDataValue
     : STRING_
     ;
 

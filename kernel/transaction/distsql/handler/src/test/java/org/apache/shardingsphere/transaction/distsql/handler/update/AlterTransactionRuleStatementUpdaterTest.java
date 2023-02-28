@@ -19,6 +19,8 @@ package org.apache.shardingsphere.transaction.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
@@ -26,36 +28,34 @@ import org.apache.shardingsphere.transaction.distsql.handler.fixture.ShardingSph
 import org.apache.shardingsphere.transaction.distsql.parser.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mockStatic;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ShardingSphereServiceLoader.class)
 public final class AlterTransactionRuleStatementUpdaterTest {
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertExecuteWithXA() {
-        try (MockedStatic<ShardingSphereServiceLoader> shardingSphereServiceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
-            shardingSphereServiceLoader.when(
-                    () -> ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
-            AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
-            TransactionRuleConfiguration actual = updater.buildAlteredRuleConfiguration(createTransactionRuleConfiguration(), new AlterTransactionRuleStatement("XA",
-                    new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")))));
-            assertThat(actual.getDefaultType(), is("XA"));
-            assertThat(actual.getProviderType(), is("Atomikos"));
-            assertFalse(actual.getProps().isEmpty());
-            String props = PropertiesConverter.convert(actual.getProps());
-            assertTrue(props.contains("host=127.0.0.1"));
-            assertTrue(props.contains("databaseName=jbossts"));
-        }
+        when(ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
+        AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
+        TransactionRuleConfiguration actual = updater.buildAlteredRuleConfiguration(createTransactionRuleConfiguration(), new AlterTransactionRuleStatement("XA",
+                new TransactionProviderSegment("Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")))));
+        assertThat(actual.getDefaultType(), is("XA"));
+        assertThat(actual.getProviderType(), is("Atomikos"));
+        assertFalse(actual.getProps().isEmpty());
+        String props = PropertiesConverter.convert(actual.getProps());
+        assertTrue(props.contains("host=127.0.0.1"));
+        assertTrue(props.contains("databaseName=jbossts"));
     }
     
     @Test
