@@ -43,10 +43,6 @@ ALTER
     : A L T E R
     ;
 
-CLEAR
-    : C L E A R
-    ;
-
 DROP
     : D R O P
     ;
@@ -105,10 +101,6 @@ VARIABLE
 
 VARIABLES
     : V A R I A B L E S
-    ;
-
-HINT
-    : H I N T
     ;
 
 ENABLE

@@ -35,10 +35,6 @@ DROP
     : D R O P
     ;
 
-SET
-    : S E T
-    ;
-
 SHOW
     : S H O W
     ;
@@ -83,24 +79,12 @@ RULES
     : R U L E S
     ;
 
-SOURCE
-    : S O U R C E
-    ;
-
 RESOURCES
     : R E S O U R C E S
     ;
 
 STATUS
     : S T A T U S
-    ;
-
-HINT
-    : H I N T
-    ;
-
-CLEAR
-    : C L E A R
     ;
 
 ENABLE
