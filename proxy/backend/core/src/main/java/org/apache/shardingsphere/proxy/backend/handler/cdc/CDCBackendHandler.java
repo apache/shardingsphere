@@ -98,7 +98,8 @@ public final class CDCBackendHandler {
             tableNames = schemaTableNameMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
             schemaTableNameMap.forEach((k, v) -> v.forEach(tableName -> schemaTableNames.add(k.isEmpty() ? tableName : String.join(".", k, tableName))));
         } else {
-            tableNames = getTableNamesWithoutSchema(database, requestBody.getSourceSchemaTablesList());
+            schemaTableNames.addAll(getTableNamesWithoutSchema(database, requestBody.getSourceSchemaTablesList()));
+            tableNames = schemaTableNames;
         }
         if (tableNames.isEmpty()) {
             throw new NotFindStreamDataSourceTableException();

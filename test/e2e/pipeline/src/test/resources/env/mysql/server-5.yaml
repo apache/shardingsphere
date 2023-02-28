@@ -42,3 +42,4 @@ props:
   sql-show: false
   sql-federation-type: ADVANCED
   proxy-mysql-default-version: 5.7.22 
+  cdc-server-port: 33071 # CDC server port

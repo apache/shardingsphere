@@ -33,7 +33,7 @@
         t_text TEXT NULL,
         t_date date NULL,
         t_time TIME NULL,
-        t_timestmap timestamp NULL,
+        t_timestamp timestamp NULL,
         t_timestamptz timestamptz NULL,
         PRIMARY KEY ( order_id )
         )
@@ -71,7 +71,7 @@
         t_text,
         t_date,
         t_time,
-        t_timestmap,
+        t_timestamp,
         t_timestamptz)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     </full-insert-order>

@@ -161,8 +161,13 @@ public abstract class PipelineBaseE2EIT {
         }
         String jobTypeName = jobType.getTypeName();
         List<Map<String, Object>> jobList;
-        try (ResultSet resultSet = connection.createStatement().executeQuery(String.format("SHOW %s LIST", jobTypeName))) {
+        try {
+            // TODO Some jobs may not implement the show statement now, eg. CDC
+            ResultSet resultSet = connection.createStatement().executeQuery(String.format("SHOW %s LIST", jobTypeName));
             jobList = transformResultSetToList(resultSet);
+        } catch (final SQLException ex) {
+            log.warn("{} execute failed, message {}", String.format("SHOW %s LIST", jobTypeName), ex.getMessage());
+            return;
         }
         if (jobList.isEmpty()) {
             return;
@@ -224,6 +229,15 @@ public abstract class PipelineBaseE2EIT {
         return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
     }
     
+    protected int getActualDataSourcePort() {
+        if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
+            return storageContainer.getMappedPort();
+        } else {
+            return ENV.getActualDataSourceDefaultPort(databaseType);
+        }
+    }
+    
     protected abstract String getSourceTableOrderName();
     
     protected String getTargetTableOrderName() {
@@ -280,9 +294,7 @@ public abstract class PipelineBaseE2EIT {
         while (retryNumber <= 3) {
             try (Connection connection = proxyDataSource.getConnection()) {
                 ResultSet resultSet = connection.createStatement().executeQuery(sql);
-                List<Map<String, Object>> result = transformResultSetToList(resultSet);
-                log.info("proxy query for list, sql: {}, result: {}", sql, result);
-                return result;
+                return transformResultSetToList(resultSet);
             } catch (final SQLException ex) {
                 log.error("data access error", ex);
             }
@@ -292,7 +304,7 @@ public abstract class PipelineBaseE2EIT {
         throw new RuntimeException("can't get result from proxy");
     }
     
-    private List<Map<String, Object>> transformResultSetToList(final ResultSet resultSet) throws SQLException {
+    protected List<Map<String, Object>> transformResultSetToList(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columns = resultSetMetaData.getColumnCount();
         List<Map<String, Object>> result = new ArrayList<>();
