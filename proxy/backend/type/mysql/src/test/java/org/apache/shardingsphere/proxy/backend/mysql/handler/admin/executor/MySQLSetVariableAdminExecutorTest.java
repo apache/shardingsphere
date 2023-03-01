@@ -32,10 +32,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssig
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
-import org.junit.jupiter.api.AfterEach;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -43,30 +44,24 @@ import java.util.Collections;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class MySQLSetVariableAdminExecutorTest {
-    
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-    
-    @AfterEach
-    public void tearDown() {
-        proxyContext.close();
-    }
     
     @Test
     public void assertExecute() throws SQLException {
         SetStatement setStatement = prepareSetStatement();
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getDatabaseName()).thenReturn("db");
+        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         ContextManager contextManager = mockContextManager();
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         try (MockedConstruction<DatabaseConnector> mockConstruction = mockConstruction(DatabaseConnector.class)) {
             executor.execute(connectionSession);
             verify(mockConstruction.constructed().get(0)).execute();
@@ -94,8 +89,7 @@ public final class MySQLSetVariableAdminExecutorTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(mock(ShardingSphereDatabase.class));
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
                 .thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(false, new CacheOption(1, 1), new CacheOption(1, 1))))));
         return result;

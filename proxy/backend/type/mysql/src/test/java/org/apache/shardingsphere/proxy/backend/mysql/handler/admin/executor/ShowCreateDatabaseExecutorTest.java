@@ -22,15 +22,16 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -41,9 +42,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class ShowCreateDatabaseExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
@@ -54,16 +56,14 @@ public final class ShowCreateDatabaseExecutorTest {
         statement.setDatabaseName("db_0");
         ShowCreateDatabaseExecutor executor = new ShowCreateDatabaseExecutor(statement);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("db_0")).thenReturn(true);
-            executor.execute(mockConnectionSession());
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
-            int count = 0;
-            while (executor.getMergedResult().next()) {
-                assertThat(executor.getMergedResult().getValue(1, Object.class), is(String.format(DATABASE_PATTERN, count)));
-                count++;
-            }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists("db_0")).thenReturn(true);
+        executor.execute(mock(ConnectionSession.class));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+        int count = 0;
+        while (executor.getMergedResult().next()) {
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is(String.format(DATABASE_PATTERN, count)));
+            count++;
         }
     }
     
@@ -83,13 +83,6 @@ public final class ShowCreateDatabaseExecutorTest {
             when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
-        return result;
-    }
-    
-    private ConnectionSession mockConnectionSession() {
-        ConnectionSession result = mock(ConnectionSession.class);
-        when(result.getGrantee()).thenReturn(new Grantee("root", ""));
-        when(result.getDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         return result;
     }
 }
