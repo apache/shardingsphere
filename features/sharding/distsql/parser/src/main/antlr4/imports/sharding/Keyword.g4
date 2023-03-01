@@ -119,10 +119,6 @@ HINT
     : H I N T
     ;
 
-TABLE_VALUE
-    : T A B L E UL_ V A L U E
-    ;
-
 DEFAULT
     : D E F A U L T
     ;
