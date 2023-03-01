@@ -22,61 +22,56 @@ import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class SetInstanceStatusUpdaterTest {
     
-    @Test(expected = UnsupportedSQLOperationException.class)
+    @Test
     public void assertExecuteWithNotNotClusterMode() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getInstanceContext().isCluster()).thenReturn(false);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-            updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID"));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
+        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID")));
     }
     
-    @Test(expected = UnsupportedSQLOperationException.class)
+    @Test
     public void assertExecuteWithNotExistsInstanceID() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-            updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID"));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
+        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", new SetInstanceStatusStatement("ENABLE", "instanceID")));
     }
     
-    @Test(expected = UnsupportedSQLOperationException.class)
+    @Test
     public void assertExecuteWithCurrentUsingInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("instanceID");
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-            updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID"));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
+        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID")));
     }
     
-    @Test(expected = UnsupportedSQLOperationException.class)
+    @Test
     public void assertExecuteWithAlreadyDisableInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("currentInstance");
         when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").isPresent()).thenReturn(true);
         when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").get().getState().getCurrentState()).thenReturn(StateType.CIRCUIT_BREAK);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
-            updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID"));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
+        assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID")));
     }
 }

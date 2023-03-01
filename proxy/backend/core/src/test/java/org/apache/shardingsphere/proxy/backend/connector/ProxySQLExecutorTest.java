@@ -53,27 +53,28 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class ProxySQLExecutorTest {
-    
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -81,33 +82,30 @@ public final class ProxySQLExecutorTest {
     @Mock
     private BackendConnection backendConnection;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.XA);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class));
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     
-    @After
-    public void tearDown() {
-        proxyContext.close();
-    }
-    
-    @Test(expected = TableModifyInTransactionException.class)
+    @Test
     public void assertCheckExecutePrerequisitesWhenExecuteDDLInXATransaction() {
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createMySQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
-        new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseConnector.class)).checkExecutePrerequisites(executionContext);
+        assertThrows(TableModifyInTransactionException.class,
+                () -> new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseConnector.class)).checkExecutePrerequisites(executionContext));
     }
     
-    @Test(expected = TableModifyInTransactionException.class)
+    @Test
     public void assertCheckExecutePrerequisitesWhenExecuteTruncateInMySQLXATransaction() {
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createMySQLTruncateStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
-        new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseConnector.class)).checkExecutePrerequisites(executionContext);
+        assertThrows(TableModifyInTransactionException.class,
+                () -> new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseConnector.class)).checkExecutePrerequisites(executionContext));
     }
     
     @Test
@@ -141,12 +139,13 @@ public final class ProxySQLExecutorTest {
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseConnector.class)).checkExecutePrerequisites(executionContext);
     }
     
-    @Test(expected = TableModifyInTransactionException.class)
+    @Test
     public void assertCheckExecutePrerequisitesWhenExecuteDDLInPostgreSQLTransaction() {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createPostgreSQLCreateTableStatementContext(), "", Collections.emptyList()), Collections.emptyList(), mock(RouteContext.class));
-        new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseConnector.class)).checkExecutePrerequisites(executionContext);
+        assertThrows(TableModifyInTransactionException.class,
+                () -> new ProxySQLExecutor(JDBCDriverType.STATEMENT, backendConnection, mock(DatabaseConnector.class)).checkExecutePrerequisites(executionContext));
     }
     
     @Test

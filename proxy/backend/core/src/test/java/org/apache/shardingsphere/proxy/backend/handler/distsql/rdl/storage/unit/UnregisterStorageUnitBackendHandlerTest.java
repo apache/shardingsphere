@@ -35,13 +35,14 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -49,22 +50,16 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class UnregisterStorageUnitBackendHandlerTest {
-    
-    private MockedStatic<ProxyContext> proxyContext;
-    
-    @Mock
-    private UnregisterStorageUnitStatement unregisterStorageUnitStatement;
-    
-    @Mock
-    private ConnectionSession connectionSession;
     
     @Mock
     private ShardingSphereDatabase database;
@@ -89,62 +84,59 @@ public final class UnregisterStorageUnitBackendHandlerTest {
     @Mock
     private ModeContextManager modeContextManager;
     
-    private UnregisterStorageUnitBackendHandler unregisterStorageUnitBackendHandler;
+    private UnregisterStorageUnitBackendHandler handler;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         contextManager = mockContextManager();
-        proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        proxyContext.when(() -> ProxyContext.getInstance().getDatabase("test")).thenReturn(database);
-        unregisterStorageUnitBackendHandler = new UnregisterStorageUnitBackendHandler(unregisterStorageUnitStatement, connectionSession);
-    }
-    
-    @After
-    public void tearDown() {
-        proxyContext.close();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
+        handler = new UnregisterStorageUnitBackendHandler(mock(UnregisterStorageUnitStatement.class), mock(ConnectionSession.class));
     }
     
     private ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test", database));
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("foo_db", database));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(result.getInstanceContext().getModeContextManager()).thenReturn(modeContextManager);
         return result;
     }
     
+    @Test
     public void assertExecute() throws SQLException {
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false);
-        assertThat(unregisterStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
-        verify(modeContextManager).unregisterStorageUnits("test", unregisterStorageUnitStatement.getStorageUnitNames());
+        assertThat(handler.execute("foo_db", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
-    @Test(expected = MissingRequiredStorageUnitsException.class)
+    @Test
     public void assertStorageUnitNameNotExistedExecute() {
-        proxyContext.when(() -> ProxyContext.getInstance().getDatabase("test").getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
-        unregisterStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
+        when(ProxyContext.getInstance().getDatabase("foo_db").getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
+        assertThrows(MissingRequiredStorageUnitsException.class,
+                () -> handler.execute("foo_db", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false)));
     }
     
-    @Test(expected = StorageUnitInUsedException.class)
+    @Test
     public void assertStorageUnitNameInUseExecute() {
         when(ruleMetaData.findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
-        unregisterStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        assertThrows(StorageUnitInUsedException.class,
+                () -> handler.execute("foo_db", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false)));
     }
     
-    @Test(expected = StorageUnitInUsedException.class)
+    @Test
     public void assertStorageUnitNameInUseWithoutIgnoreSingleTables() {
         when(ruleMetaData.findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
@@ -153,8 +145,9 @@ public final class UnregisterStorageUnitBackendHandlerTest {
         when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
-        unregisterStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        assertThrows(StorageUnitInUsedException.class,
+                () -> handler.execute("foo_db", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false)));
     }
     
     @Test
@@ -166,26 +159,26 @@ public final class UnregisterStorageUnitBackendHandlerTest {
         when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true);
-        assertThat(unregisterStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
-        verify(modeContextManager).unregisterStorageUnits("test", unregisterStorageUnitStatement.getStorageUnitNames());
+        assertThat(handler.execute("foo_db", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
     @Test
     public void assertExecuteWithIfExists() throws SQLException {
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true);
-        assertThat(unregisterStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
-        verify(modeContextManager).unregisterStorageUnits("test", unregisterStorageUnitStatement.getStorageUnitNames());
+        assertThat(handler.execute("foo_db", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        verify(modeContextManager).unregisterStorageUnits("foo_db", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
-    @Test(expected = DistSQLException.class)
+    @Test
     public void assertStorageUnitNameInUseWithIfExists() {
         when(ruleMetaData.findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true);
-        unregisterStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement);
+        assertThrows(DistSQLException.class, () -> handler.execute("foo_db", unregisterStorageUnitStatement));
     }
 }
