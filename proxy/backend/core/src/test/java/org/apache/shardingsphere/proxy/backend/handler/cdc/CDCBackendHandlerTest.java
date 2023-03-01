@@ -41,10 +41,11 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,36 +61,28 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(PipelineContext.class)
 public final class CDCBackendHandlerTest {
-    
-    private static MockedStatic<PipelineContext> pipelineContextMocked;
     
     private final CDCBackendHandler handler = new CDCBackendHandler();
     
-    @BeforeClass
-    public static void beforeClass() {
+    @BeforeEach
+    public void setUp() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
-        pipelineContextMocked = mockStatic(PipelineContext.class);
-        pipelineContextMocked.when(PipelineContext::getContextManager).thenReturn(contextManager);
+        when(PipelineContext.getContextManager()).thenReturn(contextManager);
     }
     
     private static Map<String, ShardingSphereDatabase> getDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("sharding_db");
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         Set<ShardingSphereRule> shardingRule = Collections.singleton(mock(ShardingRule.class));
         when(database.getRuleMetaData().getRules()).thenReturn(shardingRule);
-        return Collections.singletonMap("sharding_db", database);
-    }
-    
-    @AfterClass
-    public static void afterClass() {
-        pipelineContextMocked.close();
+        return Collections.singletonMap("foo_db", database);
     }
     
     @Test
@@ -104,7 +97,7 @@ public final class CDCBackendHandlerTest {
         Map<String, ShardingSphereSchema> schemas = new HashMap<>();
         schemas.put("test", mockSchema());
         schemas.put("public", mockSchema());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new OpenGaussDatabaseType(), null, null, schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", new OpenGaussDatabaseType(), null, null, schemas);
         List<SchemaTable> schemaTables = Arrays.asList(SchemaTable.newBuilder().setSchema("public").setTable("t_order").build(),
                 SchemaTable.newBuilder().setSchema("test").setTable("*").build());
         Map<String, Collection<String>> expected = new HashMap<>();
@@ -139,8 +132,8 @@ public final class CDCBackendHandlerTest {
     @Test
     public void assertGetSchemaTableMapWithoutSchema() throws NoSuchMethodException {
         Map<String, ShardingSphereSchema> schemas = new HashMap<>();
-        schemas.put("sharding_db", mockSchema());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new MySQLDatabaseType(), null, null, schemas);
+        schemas.put("foo_db", mockSchema());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", new MySQLDatabaseType(), null, null, schemas);
         List<SchemaTable> schemaTables = Collections.singletonList(SchemaTable.newBuilder().setTable("*").build());
         Collection<String> actualWildcardTable = getSchemaTableMapWithoutSchemaResult(database, schemaTables);
         Set<String> expectedWildcardTable = new HashSet<>(Arrays.asList("t_order", "t_order_item"));

@@ -21,21 +21,24 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDataba
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class RefreshDatabaseMetaDataUpdaterTest {
     
-    @Test(expected = UnknownDatabaseException.class)
+    @Test
     public void assertExecuteWithNoDatabase() {
         RefreshDatabaseMetaDataUpdater updater = new RefreshDatabaseMetaDataUpdater();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-            updater.executeUpdate("foo", mock(RefreshDatabaseMetaDataStatement.class));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        assertThrows(UnknownDatabaseException.class, () -> updater.executeUpdate("foo_db", mock(RefreshDatabaseMetaDataStatement.class)));
     }
 }
