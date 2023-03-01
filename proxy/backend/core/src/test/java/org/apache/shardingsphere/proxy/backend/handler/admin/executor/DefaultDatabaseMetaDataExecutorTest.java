@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -33,13 +34,12 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -57,27 +57,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings({ProxyContext.class, SystemSchemaUtil.class})
 public final class DefaultDatabaseMetaDataExecutorTest {
-    
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
     
     private final Grantee grantee = new Grantee("root", "127.0.0.1");
     
     @Mock
     private ConnectionSession connectionSession;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         when(connectionSession.getGrantee()).thenReturn(grantee);
-    }
-    
-    @After
-    public void tearDown() {
-        proxyContext.close();
     }
     
     @Test
@@ -88,7 +81,7 @@ public final class DefaultDatabaseMetaDataExecutorTest {
         String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
         ShardingSphereDatabase database = createDatabase(expectedResultSetMap);
         ContextManager contextManager = mockContextManager(database);
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql);
         executor.execute(connectionSession);
         assertThat(executor.getRows().get(0).get("sn"), is("foo_ds"));
@@ -100,7 +93,7 @@ public final class DefaultDatabaseMetaDataExecutorTest {
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
         ShardingSphereDatabase database = createDatabase(Collections.singletonMap("support_ndb", "0"));
         ContextManager contextManager = mockContextManager(database);
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
@@ -143,8 +136,8 @@ public final class DefaultDatabaseMetaDataExecutorTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(Collections.singletonMap("auth_db", database),
                 new ShardingSphereRuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
-        proxyContext.when(() -> ProxyContext.getInstance().getDatabase("auth_db")).thenReturn(database);
-        proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
+        when(ProxyContext.getInstance().getDatabase("auth_db")).thenReturn(database);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
         return result;
     }
 }

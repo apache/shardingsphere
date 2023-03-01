@@ -31,12 +31,16 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.fixture.CallTimeRecordDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -58,22 +62,24 @@ import java.util.concurrent.Future;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class JDBCBackendDataSourceTest {
     
     private static final String DATA_SOURCE_PATTERN = "ds_%s";
     
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-    
-    @Before
+    @BeforeEach
     public void setUp() {
         ContextManager contextManager = mockContextManager();
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     
     private ContextManager mockContextManager() {
@@ -84,14 +90,8 @@ public final class JDBCBackendDataSourceTest {
         return result;
     }
     
-    @After
-    public void tearDown() {
-        proxyContext.close();
-    }
-    
     private Map<String, ShardingSphereDatabase> createDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("schema");
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(2, 1);
         storageTypes.put("ds_0", new H2DatabaseType());
         storageTypes.put("ds_1", new H2DatabaseType());
@@ -120,9 +120,9 @@ public final class JDBCBackendDataSourceTest {
         assertThat(actual.size(), is(5));
     }
     
-    @Test(expected = OverallConnectionNotEnoughException.class)
-    public void assertGetConnectionsFailed() throws SQLException {
-        new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY);
+    @Test
+    public void assertGetConnectionsFailed() {
+        assertThrows(OverallConnectionNotEnoughException.class, () -> new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY));
     }
     
     @Test
