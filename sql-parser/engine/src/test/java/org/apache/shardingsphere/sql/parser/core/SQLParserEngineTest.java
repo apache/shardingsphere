@@ -46,9 +46,9 @@ public final class SQLParserEngineTest {
                     }
                 });
         parseTreeCache.get("");
-        verify(sqlParserExecutor, times(1)).parse("");
+        verify(sqlParserExecutor).parse("");
         parseTreeCache.get("");
-        verify(sqlParserExecutor, times(1)).parse("");
+        verify(sqlParserExecutor).parse("");
         sqlParserExecutor.parse("");
         verify(sqlParserExecutor, times(2)).parse("");
     }

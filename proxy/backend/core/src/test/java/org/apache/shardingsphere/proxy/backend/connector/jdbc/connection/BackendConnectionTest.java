@@ -174,7 +174,7 @@ public final class BackendConnectionTest {
         Connection connection = prepareCachedConnections();
         cachedConnections.put("ignoredDataSourceName", connection);
         backendConnection.closeConnections(false);
-        verify(connection, times(1)).close();
+        verify(connection).close();
         assertTrue(cachedConnections.isEmpty());
         verifyConnectionPostProcessorsEmpty();
     }
@@ -192,7 +192,7 @@ public final class BackendConnectionTest {
         connectionSession.getTransactionStatus().setInTransaction(true);
         Connection connection = prepareCachedConnections();
         backendConnection.closeConnections(true);
-        verify(connection, times(1)).rollback();
+        verify(connection).rollback();
     }
     
     @Test
@@ -210,7 +210,7 @@ public final class BackendConnectionTest {
         when(connection.createStatement()).thenReturn(statement);
         JDBCBackendStatement backendStatement = (JDBCBackendStatement) connectionSession.getStatementManager();
         assertThat(backendStatement.createStorageResource(connection, ConnectionMode.MEMORY_STRICTLY, null, connectionSession.getProtocolType()), is(statement));
-        verify(connection, times(1)).createStatement();
+        verify(connection).createStatement();
     }
     
     @Test
