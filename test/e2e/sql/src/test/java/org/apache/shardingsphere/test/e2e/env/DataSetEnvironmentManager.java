@@ -220,7 +220,7 @@ public final class DataSetEnvironmentManager {
                 for (String each : tableNames) {
                     DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
                     DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", dialectDatabaseMetaData.getQuoteCharacter().wrap(each)))) {
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", dialectDatabaseMetaData.getQuoteCharacter().wrap(each)))) {
                         preparedStatement.execute();
                     }
                 }
