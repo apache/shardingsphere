@@ -36,7 +36,7 @@ public final class CDCJobConfiguration implements PipelineJobConfiguration {
     
     private final String jobId;
     
-    private final String database;
+    private final String databaseName;
     
     private final List<String> schemaTableNames;
     

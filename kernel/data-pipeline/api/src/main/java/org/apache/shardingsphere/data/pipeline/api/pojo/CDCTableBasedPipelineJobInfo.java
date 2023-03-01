@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.api.pojo;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Show streaming list statement.
+ * CDC table based pipeline job info.
  */
-public final class ShowStreamingListStatement extends QueryableScalingRALStatement {
+@Getter
+@RequiredArgsConstructor
+public class CDCTableBasedPipelineJobInfo implements PipelineJobInfo {
+    
+    private final PipelineJobMetaData jobMetaData;
+    
+    private final String databaseName;
+    
+    private final String schemaTableNames;
 }

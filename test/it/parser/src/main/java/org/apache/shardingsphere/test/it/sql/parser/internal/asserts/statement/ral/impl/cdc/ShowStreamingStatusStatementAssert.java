@@ -31,7 +31,7 @@ import static org.junit.Assert.assertNull;
 public final class ShowStreamingStatusStatementAssert {
     
     /**
-     * Assert show migration status statement is correct with expected parser result.
+     * Assert show streaming status statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual show migration status statement

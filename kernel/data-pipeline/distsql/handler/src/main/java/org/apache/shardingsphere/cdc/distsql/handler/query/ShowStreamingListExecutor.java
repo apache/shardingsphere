@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.cdc.distsql.handler.query;
 
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingListStatement;
-import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.CDCTableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -37,14 +38,14 @@ public final class ShowStreamingListExecutor implements QueryableRALExecutor<Sho
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingListStatement sqlStatement) {
         return jobAPI.list().stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
-                ((TableBasedPipelineJobInfo) each).getTable(), each.getJobMetaData().getJobItemCount(),
-                each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
-                each.getJobMetaData().getCreateTime(), each.getJobMetaData().getStopTime())).collect(Collectors.toList());
+                ((CDCTableBasedPipelineJobInfo) each).getDatabaseName(), ((CDCTableBasedPipelineJobInfo) each).getSchemaTableNames(),
+                each.getJobMetaData().getJobItemCount(), each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
+                each.getJobMetaData().getCreateTime(), Optional.ofNullable(each.getJobMetaData().getStopTime()).orElse(""))).collect(Collectors.toList());
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("id", "tables", "job_item_count", "active", "create_time", "stop_time");
+        return Arrays.asList("id", "database", "tables", "job_item_count", "active", "create_time", "stop_time");
     }
     
     @Override
