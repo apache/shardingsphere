@@ -23,6 +23,7 @@
 ######################################################################################################
 #
 #databaseName: hbase_db
+#
 #dataSourceCommon:
 #  fsDefaultFs: hdfs://test-hadoop
 #  hbaseRootDir: hdfs://test-hadoop/hbase
@@ -37,7 +38,6 @@
 #    hbaseClientOperationTimeout: 10000
 #  hbase_cluster_1:
 #    hbaseZookeeperQuorum: host01.dev-hbase.com:2181
-#    ignoreTables: test, the-temp-table
 #    hbaseClientOperationTimeout: 40000
 #props:
 #  meta-refresher-interval-seconds: 300

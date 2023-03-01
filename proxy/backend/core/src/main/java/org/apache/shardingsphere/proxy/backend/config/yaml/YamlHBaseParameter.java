@@ -44,9 +44,7 @@ public final class YamlHBaseParameter implements YamlConfiguration {
     
     private String hbaseZookeeperPropertyDataDir;
     
-    private String zookeeperZnodeParent;
-    
-    private String ignoreTables = "";
+    private String zookeeperZNodeParent;
     
     private String accessUser;
     

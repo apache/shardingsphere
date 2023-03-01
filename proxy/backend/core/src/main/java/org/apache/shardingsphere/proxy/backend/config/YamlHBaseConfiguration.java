@@ -21,19 +21,18 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlHBaseParameter;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Rule configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlProxyHBaseConfiguration implements YamlConfiguration {
+public final class YamlHBaseConfiguration implements YamlConfiguration {
+
+    private String databaseName;
     
     private Map<String, Object> dataSourceCommon;
     
@@ -41,16 +40,4 @@ public final class YamlProxyHBaseConfiguration implements YamlConfiguration {
     
     private Properties props;
     
-    /**
-     * get ignored tables.
-     * 
-     * @return a map contains tables.
-     */
-    public Map<String, List<String>> getIgnoreTables() {
-        Map<String, List<String>> result = new HashMap<>(dataSources.size());
-        for (Map.Entry<String, YamlHBaseParameter> entry : dataSources.entrySet()) {
-            result.put(entry.getKey(), Arrays.stream(entry.getValue().getIgnoreTables().split(",")).map(String::trim).collect(Collectors.toList()));
-        }
-        return result;
-    }
 }
