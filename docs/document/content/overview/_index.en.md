@@ -1,3 +1,4 @@
+![7563201](https://user-images.githubusercontent.com/62321204/222241113-34429823-0298-4cb4-b19e-88016f2cba0b.png)
 +++
 pre = "<b>1. </b>"
 title = "Overview"
@@ -192,7 +193,7 @@ We suggest using cluster mode in production environment.
 
 ## Roadmap
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_en.png)
+![Roadmap](httpsqw://shardingsphere.apache.org/document/current/img/roadmap_en.png)
 
 ## Get Involved
 
