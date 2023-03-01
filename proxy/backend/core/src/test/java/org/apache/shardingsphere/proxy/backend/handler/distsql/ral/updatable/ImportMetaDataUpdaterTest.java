@@ -29,17 +29,17 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,12 +47,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class ImportMetaDataUpdaterTest {
     
     private static final String METADATA_VALUE = "{\"storageNodes\":[{\"ip\":\"127.0.0.1\",\"port\":\"3306\",\"username\":\"root\",\"password\":\"\",\"database\":\"demo_ds_0\"}],"
@@ -61,47 +63,40 @@ public final class ImportMetaDataUpdaterTest {
     
     private final String empty = "empty_metadata";
     
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-    
     private ImportMetaDataUpdater importMetaDataUpdater;
     
     private final Map<String, String> featureMap = new HashMap<>(1, 1);
     
-    @Before
+    @BeforeEach
     public void setup() {
         featureMap.put(empty, "/conf/import/empty-metadata.json");
     }
     
-    @After
-    public void tearDown() {
-        proxyContext.close();
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertCheckImportEmptyMetaData() throws SQLException {
+    @Test
+    public void assertCheckImportEmptyMetaData() {
         init(null);
-        importMetaDataUpdater.executeUpdate(empty, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(empty))).getPath()));
+        assertThrows(IllegalStateException.class, () -> importMetaDataUpdater.executeUpdate(
+                empty, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(empty))).getPath())));
     }
     
-    @Test(expected = NullPointerException.class)
-    public void assertImportMetaDataFromJsonValue() throws SQLException {
+    @Test
+    public void assertImportMetaDataFromJsonValue() {
         init(empty);
-        importMetaDataUpdater.executeUpdate(empty, new ImportMetaDataStatement(METADATA_VALUE, null));
+        assertThrows(NullPointerException.class, () -> importMetaDataUpdater.executeUpdate(empty, new ImportMetaDataStatement(METADATA_VALUE, null)));
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertImportExistedMetaDataFromFile() throws SQLException {
+    @Test
+    public void assertImportExistedMetaDataFromFile() {
         init(empty);
-        importMetaDataUpdater.executeUpdate(empty,
-                new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(empty))).getPath()));
+        assertThrows(IllegalStateException.class, () -> importMetaDataUpdater.executeUpdate(
+                empty, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(empty))).getPath())));
     }
     
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void init(final String feature) {
         importMetaDataUpdater = new ImportMetaDataUpdater();
         ContextManager contextManager = mockContextManager(feature);
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        proxyContext.when(() -> ProxyContext.getInstance().databaseExists(feature)).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists(feature)).thenReturn(true);
     }
     
     private ContextManager mockContextManager(final String feature) {

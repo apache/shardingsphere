@@ -37,11 +37,10 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.jupiter.api.AfterEach;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -51,18 +50,11 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class QueryableRALBackendHandlerTest {
-    
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-    
-    @AfterEach
-    public void tearDown() {
-        proxyContext.close();
-    }
     
     @Test
     public void assertExecuteWithNoDatabase() {
@@ -78,7 +70,7 @@ public final class QueryableRALBackendHandlerTest {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn("unknown");
         ContextManager contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThrows(UnknownDatabaseException.class, () -> new QueryableRALBackendHandler<>(mock(ExportDatabaseConfigurationStatement.class), connectionSession).execute());
     }
     
@@ -94,9 +86,9 @@ public final class QueryableRALBackendHandlerTest {
         when(database.getSchema("db_name")).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db_name", database));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_name")).thenReturn(database);
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        proxyContext.when(() -> ProxyContext.getInstance().databaseExists("db_name")).thenReturn(true);
-        proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db_name")).thenReturn(database);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists("db_name")).thenReturn(true);
+        when(ProxyContext.getInstance().getDatabase("db_name")).thenReturn(database);
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getDatabaseName()).thenReturn("db_name");
         new QueryableRALBackendHandler<>(createSqlStatement(), connectionSession).execute();
