@@ -24,30 +24,34 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class ConnectionSessionTest {
     
     @Mock
@@ -55,7 +59,7 @@ public final class ConnectionSessionTest {
     
     private ConnectionSession connectionSession;
     
-    @Before
+    @BeforeEach
     public void setup() {
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, null);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
@@ -67,27 +71,23 @@ public final class ConnectionSessionTest {
         assertThat(connectionSession.getDatabaseName(), is("currentDatabase"));
     }
     
-    @Test(expected = SwitchTypeInTransactionException.class)
+    @Test
     public void assertFailedSwitchTransactionTypeWhileBegin() {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            new BackendTransactionManager(backendConnection).begin();
-            connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA);
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        new BackendTransactionManager(backendConnection).begin();
+        assertThrows(SwitchTypeInTransactionException.class, () -> connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA));
     }
     
     @Test
     public void assertSwitchSchemaWhileBegin() {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            new BackendTransactionManager(backendConnection).begin();
-            connectionSession.setCurrentDatabase("newDB");
-            assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        new BackendTransactionManager(backendConnection).begin();
+        connectionSession.setCurrentDatabase("newDB");
+        assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
     }
     
     private ContextManager mockContextManager() {
