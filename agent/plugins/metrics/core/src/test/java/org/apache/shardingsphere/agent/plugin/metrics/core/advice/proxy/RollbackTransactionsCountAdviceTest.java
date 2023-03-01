@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 
 public final class RollbackTransactionsCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("proxy_rollback_transactions_total", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_transactions_total", MetricCollectorType.COUNTER, null, Collections.singletonList("type"), Collections.emptyMap());
     
     private final RollbackTransactionsCountAdvice advice = new RollbackTransactionsCountAdvice();
     
@@ -46,6 +46,6 @@ public final class RollbackTransactionsCountAdviceTest {
     @Test
     public void assertMethod() {
         advice.beforeMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, "FIXTURE");
-        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("1"));
+        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("rollback=1"));
     }
 }
