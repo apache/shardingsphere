@@ -37,13 +37,15 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -58,10 +60,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class UnicastDatabaseBackendHandlerTest {
     
     private static final String EXECUTE_SQL = "SELECT 1 FROM user WHERE id = 1";
@@ -79,7 +82,7 @@ public final class UnicastDatabaseBackendHandlerTest {
     @Mock
     private DatabaseConnector databaseConnector;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         when(connectionSession.getDefaultDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         when(connectionSession.getBackendConnection()).thenReturn(mock(BackendConnection.class));
@@ -102,38 +105,34 @@ public final class UnicastDatabaseBackendHandlerTest {
     @Test
     public void assertExecuteDatabaseBackendHandler() throws SQLException {
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            ShardingSphereDatabase database = getDatabases().get("db_0");
-            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db_0")).thenReturn(database);
-            ResponseHeader actual = unicastDatabaseBackendHandler.execute();
-            assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ShardingSphereDatabase database = createDatabases().get("db_0");
+        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(database);
+        ResponseHeader actual = unicastDatabaseBackendHandler.execute();
+        assertThat(actual, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     public void assertDatabaseUsingStream() throws SQLException {
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            ShardingSphereDatabase database = getDatabases().get("db_0");
-            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db_0")).thenReturn(database);
-            unicastDatabaseBackendHandler.execute();
-            while (unicastDatabaseBackendHandler.next()) {
-                assertThat(unicastDatabaseBackendHandler.getRowData().getData().size(), is(1));
-            }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ShardingSphereDatabase database = createDatabases().get("db_0");
+        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(database);
+        unicastDatabaseBackendHandler.execute();
+        while (unicastDatabaseBackendHandler.next()) {
+            assertThat(unicastDatabaseBackendHandler.getRowData().getData().size(), is(1));
         }
     }
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+                new ShardingSphereMetaData(createDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabases() {
+    private Map<String, ShardingSphereDatabase> createDatabases() {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
