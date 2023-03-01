@@ -32,10 +32,10 @@ public final class PostgreSQLUUIDBinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
-        byte[] result = new byte[parameterValueLength];
-        UUID uuidFromBytes = UUID.nameUUIDFromBytes(result);
-        payload.getByteBuf().readBytes(result);
-        return uuidFromBytes;
+        byte[] uuidFromBytes = new byte[parameterValueLength];
+        UUID result = UUID.nameUUIDFromBytes(uuidFromBytes);
+        payload.getByteBuf().readBytes(uuidFromBytes);
+        return result;
     }
     
     @Override
