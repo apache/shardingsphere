@@ -43,6 +43,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 /**
  * E2E IT for different types of indexes, includes:
@@ -174,6 +175,6 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
         assertThat(getTargetTableRecordsCount(getSourceTableOrderName()), is(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT + 1));
         List<String> lastJobIds = listJobId();
-        assertThat(lastJobIds.size(), is(0));
+        assertTrue(lastJobIds.isEmpty());
     }
 }
