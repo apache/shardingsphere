@@ -88,10 +88,10 @@ public final class SelectInformationSchemataExecutorTest {
     
     @Test
     public void assertExecuteWithUnauthorizedDatabase() throws SQLException {
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         ContextManager contextManager = mockContextManager(createDatabase("no_auth_db"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("no_auth_db"));
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
         assertFalse(executor.getMergedResult().next());
@@ -102,12 +102,12 @@ public final class SelectInformationSchemataExecutorTest {
         Map<String, String> expectedResultSetMap = new HashMap<>(2, 1);
         expectedResultSetMap.put("SCHEMA_NAME", "foo_ds");
         expectedResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         ShardingSphereDatabase database = createDatabase(expectedResultSetMap);
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
         when(ProxyContext.getInstance().getDatabase("auth_db")).thenReturn(database);
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
         assertTrue(executor.getMergedResult().next());
@@ -118,10 +118,10 @@ public final class SelectInformationSchemataExecutorTest {
     
     @Test
     public void assertExecuteWithAuthorizedDatabaseAndEmptyResource() throws SQLException {
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         ContextManager contextManager = mockContextManager(createDatabase("auth_db"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
         assertTrue(executor.getMergedResult().next());
@@ -132,10 +132,10 @@ public final class SelectInformationSchemataExecutorTest {
     
     @Test
     public void assertExecuteWithoutDatabase() throws SQLException {
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.emptyList());
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }

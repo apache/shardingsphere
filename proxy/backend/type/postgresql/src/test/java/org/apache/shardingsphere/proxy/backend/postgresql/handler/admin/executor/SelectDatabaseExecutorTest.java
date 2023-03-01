@@ -71,11 +71,11 @@ public final class SelectDatabaseExecutorTest {
         ShardingSphereDatabase shardingDatabase = createShardingDatabase();
         ShardingSphereDatabase emptyDatabase = createEmptyDatabase();
         ContextManager contextManager = mockContextManager(shardingDatabase, emptyDatabase);
-        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Arrays.asList("sharding_db", "empty_db"));
         when(ProxyContext.getInstance().getDatabase("sharding_db")).thenReturn(shardingDatabase);
         when(ProxyContext.getInstance().getDatabase("empty_db")).thenReturn(emptyDatabase);
+        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
         executor.execute(mock(ConnectionSession.class));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(4));
         int count = 0;
@@ -100,9 +100,9 @@ public final class SelectDatabaseExecutorTest {
                 + "d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname "
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         ContextManager contextManager = mockContextManager(createEmptyDatabase());
-        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_db"));
+        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
         executor.execute(mock(ConnectionSession.class));
         while (executor.getMergedResult().next()) {
             assertThat(executor.getMergedResult().getValue(1, String.class), is("empty_db"));
@@ -113,9 +113,9 @@ public final class SelectDatabaseExecutorTest {
     public void assertSelectDatabaseWithoutDataSourceExecuteAndWithColumnProjectionSegment() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         ContextManager contextManager = mockContextManager(createEmptyDatabase());
-        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_db"));
+        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
         executor.execute(mock(ConnectionSession.class));
         while (executor.getMergedResult().next()) {
             assertThat(executor.getMergedResult().getValue(1, String.class), is(""));
@@ -129,9 +129,9 @@ public final class SelectDatabaseExecutorTest {
     public void assertSelectDatabaseInNoSchemaExecute() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         ContextManager contextManager = mockContextManager();
-        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.emptyList());
+        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
         executor.execute(mock(ConnectionSession.class));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }

@@ -61,12 +61,12 @@ public final class SelectTableExecutorTest {
     @Test
     public void assertExecute() throws SQLException {
         String sql = "SELECT c.oid, n.nspname AS schemaname, c.relname AS tablename from pg_tablespace";
-        SelectTableExecutor executor = new SelectTableExecutor(sql);
         ShardingSphereDatabase database = createDatabase();
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("public"));
         when(ProxyContext.getInstance().getDatabase("public")).thenReturn(database);
+        SelectTableExecutor executor = new SelectTableExecutor(sql);
         executor.execute(mock(ConnectionSession.class));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(3));
         int count = 0;
