@@ -114,6 +114,6 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
     }
     
     private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties props) {
-        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, "false", loadBalancer, props);
+        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, loadBalancer, props);
     }
 }

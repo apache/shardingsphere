@@ -57,7 +57,6 @@ public final class ReadwriteSplittingStrategyFactory {
     private static DynamicReadwriteSplittingStrategy createDynamicReadwriteSplittingStrategy(final DynamicReadwriteSplittingStrategyConfiguration dynamicConfig,
                                                                                              final Collection<ShardingSphereRule> builtRules) {
         Optional<ShardingSphereRule> dynamicDataSourceStrategy = builtRules.stream().filter(each -> each instanceof DynamicDataSourceContainedRule).findFirst();
-        boolean allowWriteDataSourceQuery = Strings.isNullOrEmpty(dynamicConfig.getWriteDataSourceQueryEnabled()) ? Boolean.TRUE : Boolean.parseBoolean(dynamicConfig.getWriteDataSourceQueryEnabled());
-        return new DynamicReadwriteSplittingStrategy(dynamicConfig.getAutoAwareDataSourceName(), allowWriteDataSourceQuery, (DynamicDataSourceContainedRule) dynamicDataSourceStrategy.get());
+        return new DynamicReadwriteSplittingStrategy(dynamicConfig.getAutoAwareDataSourceName(), (DynamicDataSourceContainedRule) dynamicDataSourceStrategy.get());
     }
 }

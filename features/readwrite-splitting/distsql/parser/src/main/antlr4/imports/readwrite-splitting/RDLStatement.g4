@@ -40,7 +40,7 @@ staticReadwriteSplittingRuleDefinition
     ;
 
 dynamicReadwriteSplittingRuleDefinition
-    : AUTO_AWARE_RESOURCE EQ_ resourceName (COMMA_ WRITE_DATA_SOURCE_QUERY_ENABLED EQ_ writeDataSourceQueryEnabled)?
+    : AUTO_AWARE_RESOURCE EQ_ resourceName
     ;
 
 ruleName

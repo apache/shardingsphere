@@ -40,7 +40,7 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
         readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds",
                 new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, "");
         readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds", null,
-                new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds", "false"), "");
+                new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds"), "");
     }
     
     @Test
