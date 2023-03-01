@@ -38,14 +38,16 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLDropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropDatabaseStatement;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -54,17 +56,17 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class DatabaseOperateBackendHandlerFactoryTest {
-    
-    private MockedStatic<ProxyContext> proxyContext;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
@@ -72,20 +74,18 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     @Mock
     private ConnectionSession connectionSession;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        proxyContext.when(() -> ProxyContext.getInstance().databaseExists("db")).thenReturn(true);
-        when(connectionSession.getDatabaseName()).thenReturn("db");
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
     }
     
     @After
     public void tearDown() {
-        proxyContext.close();
+        setGovernanceMetaDataContexts(false);
     }
     
     @Test
@@ -116,7 +116,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     private void assertExecuteDropDatabaseContext(final DropDatabaseStatement sqlStatement) throws SQLException {
-        sqlStatement.setDatabaseName("db");
+        sqlStatement.setDatabaseName("foo_db");
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
@@ -133,7 +133,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     public void assertExecuteCreateDatabaseContextWithException(final CreateDatabaseStatement sqlStatement) {
-        sqlStatement.setDatabaseName("db");
+        sqlStatement.setDatabaseName("foo_db");
         setGovernanceMetaDataContexts(true);
         try {
             DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession);
@@ -146,20 +146,18 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("db", database);
+        return Collections.singletonMap("foo_db", database);
     }
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
-        MetaDataContexts metaDataContexts = isGovernance
-                ? mockMetaDataContexts()
-                : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
+        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
     }
     
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        when(result.getMetaData().getDatabase("db").getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
-        when(result.getMetaData().getDatabase("db").getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        when(result.getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
+        when(result.getMetaData().getDatabase("foo_db").getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         return result;
     }
     
@@ -173,13 +171,8 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(DropDatabaseStatement.class), mock(ConnectionSession.class)), instanceOf(DropDatabaseBackendHandler.class));
     }
     
-    @Test(expected = UnsupportedSQLOperationException.class)
+    @Test
     public void assertDatabaseOperateBackendHandlerFactoryThrowUnsupportedOperationException() {
-        DatabaseOperateBackendHandlerFactory.newInstance(mock(AlterDatabaseStatement.class), mock(ConnectionSession.class));
-    }
-    
-    @After
-    public void setDown() {
-        setGovernanceMetaDataContexts(false);
+        assertThrows(UnsupportedSQLOperationException.class, () -> DatabaseOperateBackendHandlerFactory.newInstance(mock(AlterDatabaseStatement.class), mock(ConnectionSession.class)));
     }
 }

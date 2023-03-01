@@ -28,9 +28,11 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefi
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -40,31 +42,29 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class RuleDefinitionBackendHandlerTest {
     
     @Test
     public void assertExecute() throws SQLException {
         ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
-        connectionSession.setCurrentDatabase("test");
+        connectionSession.setCurrentDatabase("foo_db");
         ShardingSphereDatabase database = mockDatabase();
         ContextManager contextManager = mockContextManager(database);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("test")).thenReturn(true);
-            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("test")).thenReturn(database);
-            ResponseHeader response = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), connectionSession).execute();
-            assertThat(response, instanceOf(UpdateResponseHeader.class));
-            assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
+        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
+        ResponseHeader response = new RuleDefinitionBackendHandler<>(new CreateFixtureRuleStatement(), connectionSession).execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
+        assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("test")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         return result;
     }
     

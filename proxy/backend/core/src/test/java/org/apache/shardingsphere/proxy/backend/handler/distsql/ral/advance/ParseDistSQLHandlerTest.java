@@ -31,14 +31,13 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.ParseDist
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -46,14 +45,12 @@ import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mockStatic;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class ParseDistSQLHandlerTest {
-    
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
@@ -63,20 +60,15 @@ public final class ParseDistSQLHandlerTest {
     @Mock
     private ConnectionSession connectionSession;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(sqlParserRule)));
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-    }
-    
-    @After
-    public void tearDown() {
-        proxyContext.close();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     
     @Test
     public void assertGetRowDataForMySQL() throws SQLException {
-        String sql = "select * from t_order";
+        String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         ParseStatement parseStatement = new ParseStatement(sql);
         ParseDistSQLHandler parseDistSQLHandler = new ParseDistSQLHandler();
@@ -90,7 +82,7 @@ public final class ParseDistSQLHandlerTest {
     
     @Test
     public void assertGetRowDataForPostgreSQL() throws SQLException {
-        String sql = "select * from t_order";
+        String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         ParseStatement parseStatement = new ParseStatement(sql);
         ParseDistSQLHandler parseDistSQLHandler = new ParseDistSQLHandler();
@@ -101,13 +93,13 @@ public final class ParseDistSQLHandlerTest {
         assertThat(JsonParser.parseString(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getLast().toString()), is(JsonParser.parseString(new Gson().toJson(statement))));
     }
     
-    @Test(expected = SQLParsingException.class)
+    @Test
     public void assertExecute() throws SQLException {
         String sql = "wrong sql";
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         ParseStatement parseStatement = new ParseStatement(sql);
         ParseDistSQLHandler parseDistSQLHandler = new ParseDistSQLHandler();
         parseDistSQLHandler.init(parseStatement, connectionSession);
-        parseDistSQLHandler.execute();
+        assertThrows(SQLParsingException.class, parseDistSQLHandler::execute);
     }
 }
