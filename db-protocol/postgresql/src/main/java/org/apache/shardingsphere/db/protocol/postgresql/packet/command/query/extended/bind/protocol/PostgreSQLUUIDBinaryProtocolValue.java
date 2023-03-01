@@ -27,7 +27,7 @@ public final class PostgreSQLUUIDBinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public int getColumnLength(final Object value) {
-        return (value.toString()).length();
+        return value.toString().length();
     }
     
     @Override
