@@ -28,7 +28,6 @@ execute
     | setDistVariable
     | showDistVariable
     | showDistVariables
-    | clearHint
     | enableComputeNode
     | disableComputeNode
     | showComputeNodes
