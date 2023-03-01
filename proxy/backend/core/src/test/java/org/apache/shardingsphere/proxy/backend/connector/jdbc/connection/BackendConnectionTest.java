@@ -216,14 +216,12 @@ public final class BackendConnectionTest {
     @Test
     public void assertGetConnectionsAndReplaySessionVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
-        List<Connection> actualConnections;
         ProxyContext proxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance()).thenReturn(proxyContext);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
-        when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class)))
-                .thenReturn(Collections.singletonList(connection));
-        actualConnections = backendConnection.getConnections("", 1, ConnectionMode.CONNECTION_STRICTLY);
+        when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        List<Connection> actualConnections = backendConnection.getConnections("", 1, ConnectionMode.CONNECTION_STRICTLY);
         Connection actualConnection = actualConnections.get(0);
         verify(actualConnection.createStatement()).execute("SET key=value");
     }
