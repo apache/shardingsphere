@@ -64,8 +64,8 @@ public final class DataSourceXAResourceRecoveryHelperTest {
         XAResource[] xaResources = recoveryHelper.getXAResources();
         assertThat(xaResources.length, is(1));
         assertThat(xaResources[0], sameInstance(recoveryHelper));
-        verify(xaConnection, times(1)).getXAResource();
-        verify(xaDataSource, times(1)).getXAConnection();
+        verify(xaConnection).getXAResource();
+        verify(xaDataSource).getXAConnection();
     }
     
     @Test
@@ -83,7 +83,7 @@ public final class DataSourceXAResourceRecoveryHelperTest {
     public void assertDelegateRecover() throws XAException, SQLException {
         recoveryHelper.getXAResources();
         recoveryHelper.recover(XAResource.TMSTARTRSCAN);
-        verify(xaResource, times(1)).recover(XAResource.TMSTARTRSCAN);
+        verify(xaResource).recover(XAResource.TMSTARTRSCAN);
         verify(xaConnection, times(0)).close();
     }
     
@@ -99,62 +99,62 @@ public final class DataSourceXAResourceRecoveryHelperTest {
     public void assertDelegateStart() throws XAException {
         recoveryHelper.getXAResources();
         recoveryHelper.start(null, 0);
-        verify(xaResource, times(1)).start(null, 0);
+        verify(xaResource).start(null, 0);
     }
     
     @Test
     public void assertDelegateEnd() throws XAException {
         recoveryHelper.getXAResources();
         recoveryHelper.end(null, 0);
-        verify(xaResource, times(1)).end(null, 0);
+        verify(xaResource).end(null, 0);
     }
     
     @Test
     public void assertDelegatePrepare() throws XAException {
         recoveryHelper.getXAResources();
         recoveryHelper.prepare(null);
-        verify(xaResource, times(1)).prepare(null);
+        verify(xaResource).prepare(null);
     }
     
     @Test
     public void assertDelegateCommit() throws XAException {
         recoveryHelper.getXAResources();
         recoveryHelper.commit(null, true);
-        verify(xaResource, times(1)).commit(null, true);
+        verify(xaResource).commit(null, true);
     }
     
     @Test
     public void assertDelegateRollback() throws XAException {
         recoveryHelper.getXAResources();
         recoveryHelper.rollback(null);
-        verify(xaResource, times(1)).rollback(null);
+        verify(xaResource).rollback(null);
     }
     
     @Test
     public void assertDelegateIsSameRM() throws XAException {
         recoveryHelper.getXAResources();
         recoveryHelper.isSameRM(null);
-        verify(xaResource, times(1)).isSameRM(null);
+        verify(xaResource).isSameRM(null);
     }
     
     @Test
     public void assertDelegateForget() throws XAException {
         recoveryHelper.getXAResources();
         recoveryHelper.forget(null);
-        verify(xaResource, times(1)).forget(null);
+        verify(xaResource).forget(null);
     }
     
     @Test
     public void assertDelegateGetTransactionTimeout() throws XAException {
         recoveryHelper.getXAResources();
         recoveryHelper.getTransactionTimeout();
-        verify(xaResource, times(1)).getTransactionTimeout();
+        verify(xaResource).getTransactionTimeout();
     }
     
     @Test
     public void assertDelegateSetTransactionTimeout() throws XAException {
         recoveryHelper.getXAResources();
         recoveryHelper.setTransactionTimeout(0);
-        verify(xaResource, times(1)).setTransactionTimeout(0);
+        verify(xaResource).setTransactionTimeout(0);
     }
 }

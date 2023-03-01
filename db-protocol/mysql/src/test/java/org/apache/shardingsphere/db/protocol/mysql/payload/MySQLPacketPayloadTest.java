@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -282,7 +281,7 @@ public final class MySQLPacketPayloadTest {
     @Test
     public void assertWriteReserved() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeReserved(10);
-        verify(byteBuf, times(1)).writeZero(10);
+        verify(byteBuf).writeZero(10);
     }
     
     @Test
