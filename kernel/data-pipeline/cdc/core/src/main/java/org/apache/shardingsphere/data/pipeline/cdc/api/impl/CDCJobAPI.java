@@ -43,6 +43,8 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrement
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobMetaData;
+import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.StreamDataParameter;
@@ -270,12 +272,12 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     @Override
-    public PipelineJobConfiguration getJobConfiguration(final String jobId) {
+    public CDCJobConfiguration getJobConfiguration(final String jobId) {
         return getJobConfiguration(getElasticJobConfigPOJO(jobId));
     }
     
     @Override
-    protected PipelineJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
+    protected CDCJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
         return new YamlCDCJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
     }
     
@@ -286,7 +288,12 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     @Override
     protected PipelineJobInfo getJobInfo(final String jobId) {
-        throw new UnsupportedOperationException();
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        PipelineJobMetaData jobMetaData = new PipelineJobMetaData(jobId, !jobConfigPOJO.isDisabled(),
+                jobConfigPOJO.getShardingTotalCount(), jobConfigPOJO.getProps().getProperty("create_time"), jobConfigPOJO.getProps().getProperty("stop_time"), jobConfigPOJO.getJobParameter());
+        CDCJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
+        List<String> tableNames = jobConfig.getSchemaTableNames().stream().map(each -> String.join(".", jobConfig.getDatabase(), each)).collect(Collectors.toList());
+        return new TableBasedPipelineJobInfo(jobMetaData, String.join(", ", tableNames));
     }
     
     @Override
