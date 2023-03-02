@@ -58,7 +58,8 @@ public abstract class InternalUnsupportedSQLParserIT {
         }
         
         private Collection<Arguments> getTestParameters(final Collection<String> databaseTypes) {
-            return SQL_CASES.generateTestParameters(databaseTypes).stream().map(each -> Arguments.of(each.getSqlCaseId(), each.getSqlCaseType(), each.getDatabaseType())).collect(Collectors.toList());
+            return SQL_CASES.generateTestParameters(databaseTypes).stream()
+                    .map(each -> Arguments.arguments(each.getSqlCaseId(), each.getSqlCaseType(), each.getDatabaseType())).collect(Collectors.toList());
         }
     }
 }

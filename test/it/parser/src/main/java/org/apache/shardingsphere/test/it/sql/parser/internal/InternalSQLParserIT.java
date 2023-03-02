@@ -78,7 +78,7 @@ public abstract class InternalSQLParserIT {
             Collection<Arguments> result = new LinkedList<>();
             for (InternalSQLParserTestParameter each : SQL_CASES.generateTestParameters(Arrays.stream(databaseTypes).collect(Collectors.toSet()))) {
                 if (!isPlaceholderWithoutParameter(each)) {
-                    result.add(Arguments.of(each.getSqlCaseId(), each.getSqlCaseType(), each.getDatabaseType(), each.getVisitorType()));
+                    result.add(Arguments.arguments(each.getSqlCaseId(), each.getSqlCaseType(), each.getDatabaseType(), each.getVisitorType()));
                 }
             }
             return result;
