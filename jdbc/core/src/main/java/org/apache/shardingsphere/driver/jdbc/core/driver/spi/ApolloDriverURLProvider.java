@@ -22,20 +22,16 @@ import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingsphereDriverURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereDriverURLProvider;
 
 import java.nio.charset.StandardCharsets;
-
-import static org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereDriverURLManager.parseURL;
 
 /**
  * Apollo driver URL provider.
  */
-public final class ApolloDriverURLProvider implements ShardingsphereDriverURLProvider {
+public final class ApolloDriverURLProvider implements ShardingSphereDriverURLProvider {
     
     private static final String APOLLO_TYPE = "apollo:";
-    
-    private static final String APOLLO_NAMESPACE = "namespace";
     
     @Override
     public boolean accept(final String url) {
@@ -44,8 +40,9 @@ public final class ApolloDriverURLProvider implements ShardingsphereDriverURLPro
     
     @Override
     public byte[] getContent(final String url) {
-        String namespace = parseURL(url).getProperty(APOLLO_NAMESPACE);
-        Preconditions.checkArgument(!namespace.isEmpty(), "Configuration file is required in ShardingSphere driver URL.");
+        String configPath = url.substring("jdbc:shardingsphere:".length(), url.contains("?") ? url.indexOf("?") : url.length());
+        String namespace = configPath.substring(APOLLO_TYPE.length());
+        Preconditions.checkArgument(!namespace.isEmpty(), "Apollo namespace is required in ShardingSphere driver URL.");
         ConfigFile configFile = ConfigService.getConfigFile(namespace, ConfigFileFormat.YAML);
         return configFile.getContent().getBytes(StandardCharsets.UTF_8);
     }

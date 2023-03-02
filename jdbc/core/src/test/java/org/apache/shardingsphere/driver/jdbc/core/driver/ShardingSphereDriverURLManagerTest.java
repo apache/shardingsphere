@@ -17,15 +17,26 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
+import com.ctrip.framework.apollo.ConfigFile;
+import com.ctrip.framework.apollo.ConfigService;
+import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.DriverURLProviderNotFoundException;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ConfigService.class)
 public final class ShardingSphereDriverURLManagerTest {
     
     private final int fooDriverConfigLength = 999;
@@ -48,9 +59,13 @@ public final class ShardingSphereDriverURLManagerTest {
         assertThat(actual.length, is(fooDriverConfigLength));
     }
     
-    @Test
-    public void assertParseUrl() {
-        Properties actual = ShardingSphereDriverURLManager.parseURL("jdbc:shardingsphere:apollo:")
-        assertThat(actual.length, is(fooDriverConfigLength));
+    @org.junit.jupiter.api.Test
+    public void assertToApolloConfigurationFile() {
+        ConfigFile configFile = mock(ConfigFile.class);
+        when(configFile.getContent()).thenReturn("config content");
+        when(ConfigService.getConfigFile(Mockito.anyString(), Mockito.any(ConfigFileFormat.class))).thenReturn(configFile);
+        String url = "jdbc:shardingsphere:apollo:namespace";
+        byte[] content = ShardingSphereDriverURLManager.getContent(url);
+        assertThat("config content".getBytes(StandardCharsets.UTF_8), is(content));
     }
 }
