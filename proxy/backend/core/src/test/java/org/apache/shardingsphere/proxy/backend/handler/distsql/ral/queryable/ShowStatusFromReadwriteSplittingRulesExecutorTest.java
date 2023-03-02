@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -38,8 +37,10 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Sho
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,12 +51,13 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     
     private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
@@ -76,21 +78,15 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutorTest {
         when(connectionSession.getDatabaseName()).thenReturn("readwrite_db");
         ShowStatusFromReadwriteSplittingRulesExecutor executor = new ShowStatusFromReadwriteSplittingRulesExecutor();
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("readwrite_db")).thenReturn(true);
-            Collection<LocalDataQueryResultRow> actual = executor.getRows(mockMetaData(), connectionSession,
-                    new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null));
-            assertThat(actual.size(), is(0));
-            assertFalse(actual.iterator().hasNext());
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists("readwrite_db")).thenReturn(true);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockMetaData(), connectionSession,
+                new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null));
+        assertTrue(actual.isEmpty());
     }
     
     private ContextManager mockContextManager() {
-        ClusterPersistRepository clusterPersistRepository = mock(ZookeeperRepository.class);
-        MetaDataPersistService persistService = new MetaDataPersistService(clusterPersistRepository);
-        when(clusterPersistRepository.getChildrenKeys("/nodes/storage_nodes")).thenReturn(Collections.singletonList("ds"));
-        when(clusterPersistRepository.getDirectly("/nodes/storage_nodes/ds")).thenReturn("");
+        MetaDataPersistService persistService = new MetaDataPersistService(mock(ZookeeperRepository.class));
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, mockMetaData());
         return new ContextManager(metaDataContexts, mock(InstanceContext.class, RETURNS_DEEP_STUBS));
     }

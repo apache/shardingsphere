@@ -89,6 +89,8 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Using `mock` should follow following specifications:
    - Using `mock` when unit tests need to connect to an environment;
    - Using `mock` when unit tests contain objects that are not easy to build, for example, objects that are more than two layers nested and unrelated to the test.
+   - When mocking static methods or constructors, it is recommended to use the testing framework's `AutoMockExtension` and `StaticMockSettings` to release resources automatically; If using Mockito's `mockStatic` and `mockConstruction` methods, please use `try-with-resource` or close them in the cleanup method to avoid resource leaks.
+   - When verifying only one invocation, there is no need to use `times(1)` parameter, please use the single-argument method of `verify`.
 
 ## Contributor Covenant G4 Code of Conduct
 

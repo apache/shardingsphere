@@ -31,11 +31,12 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.After;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -52,19 +53,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class ExportMetaDataExecutorTest {
     
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-    
     private final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-    
-    @After
-    public void tearDown() {
-        proxyContext.close();
-    }
     
     @Test
     public void assertGetColumns() {
@@ -77,11 +72,10 @@ public final class ExportMetaDataExecutorTest {
     }
     
     @Test
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void assertExecuteWithEmptyMetaData() {
         ContextManager contextManager = mockEmptyContextManager();
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
         when(database.getName()).thenReturn("empty_metadata");
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
         when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
@@ -103,11 +97,10 @@ public final class ExportMetaDataExecutorTest {
     }
     
     @Test
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void assertExecute() throws SQLException {
         when(database.getName()).thenReturn("normal_db");
         ContextManager contextManager = mockContextManager();
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(database, new ExportMetaDataStatement(null));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();

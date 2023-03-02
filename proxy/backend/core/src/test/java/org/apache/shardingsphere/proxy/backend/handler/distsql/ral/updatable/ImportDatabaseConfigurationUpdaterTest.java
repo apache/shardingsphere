@@ -27,15 +27,13 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,12 +41,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class ImportDatabaseConfigurationUpdaterTest {
     
     private final String sharding = "sharding_db";
@@ -63,13 +62,11 @@ public final class ImportDatabaseConfigurationUpdaterTest {
     
     private final String mask = "mask_db";
     
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-    
     private ImportDatabaseConfigurationUpdater importDatabaseConfigurationUpdater;
     
     private final Map<String, String> featureMap = new HashMap<>(3, 1);
     
-    @Before
+    @BeforeEach
     public void setup() {
         featureMap.put(sharding, "/conf/import/config-sharding.yaml");
         featureMap.put(readwriteSplitting, "/conf/import/config-readwrite-splitting.yaml");
@@ -79,59 +76,53 @@ public final class ImportDatabaseConfigurationUpdaterTest {
         featureMap.put(mask, "/conf/import/config-mask.yaml");
     }
     
-    @After
-    public void tearDown() {
-        proxyContext.close();
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertImportDatabaseExecutorForSharding() throws SQLException {
+    @Test
+    public void assertImportDatabaseExecutorForSharding() {
         init(sharding);
-        importDatabaseConfigurationUpdater.executeUpdate(sharding,
-                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(sharding))).getPath()));
+        assertThrows(IllegalStateException.class, () -> importDatabaseConfigurationUpdater.executeUpdate(sharding,
+                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(sharding))).getPath())));
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertImportDatabaseExecutorForReadwriteSplitting() throws SQLException {
+    @Test
+    public void assertImportDatabaseExecutorForReadwriteSplitting() {
         init(readwriteSplitting);
-        importDatabaseConfigurationUpdater.executeUpdate(readwriteSplitting,
-                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(readwriteSplitting))).getPath()));
+        assertThrows(IllegalStateException.class, () -> importDatabaseConfigurationUpdater.executeUpdate(readwriteSplitting,
+                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(readwriteSplitting))).getPath())));
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertImportDatabaseExecutorForDatabaseDiscovery() throws SQLException {
+    @Test
+    public void assertImportDatabaseExecutorForDatabaseDiscovery() {
         init(databaseDiscovery);
-        importDatabaseConfigurationUpdater.executeUpdate(databaseDiscovery,
-                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(databaseDiscovery))).getPath()));
+        assertThrows(IllegalStateException.class, () -> importDatabaseConfigurationUpdater.executeUpdate(databaseDiscovery,
+                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(databaseDiscovery))).getPath())));
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertImportDatabaseExecutorForEncrypt() throws SQLException {
+    @Test
+    public void assertImportDatabaseExecutorForEncrypt() {
         init(encrypt);
-        importDatabaseConfigurationUpdater.executeUpdate(encrypt,
-                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(encrypt))).getPath()));
+        assertThrows(IllegalStateException.class, () -> importDatabaseConfigurationUpdater.executeUpdate(encrypt,
+                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(encrypt))).getPath())));
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertImportDatabaseExecutorForShadow() throws SQLException {
+    @Test
+    public void assertImportDatabaseExecutorForShadow() {
         init(shadow);
-        importDatabaseConfigurationUpdater.executeUpdate(shadow,
-                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(shadow))).getPath()));
+        assertThrows(IllegalStateException.class, () -> importDatabaseConfigurationUpdater.executeUpdate(shadow,
+                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(shadow))).getPath())));
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertImportDatabaseExecutorForMask() throws ReflectiveOperationException, SQLException {
+    @Test
+    public void assertImportDatabaseExecutorForMask() {
         init(mask);
-        importDatabaseConfigurationUpdater.executeUpdate(mask,
-                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(mask))).getPath()));
+        assertThrows(IllegalStateException.class, () -> importDatabaseConfigurationUpdater.executeUpdate(mask,
+                new ImportDatabaseConfigurationStatement(Objects.requireNonNull(ImportDatabaseConfigurationUpdaterTest.class.getResource(featureMap.get(mask))).getPath())));
     }
     
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void init(final String feature) {
         importDatabaseConfigurationUpdater = new ImportDatabaseConfigurationUpdater();
         ContextManager contextManager = mockContextManager(feature);
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        proxyContext.when(() -> ProxyContext.getInstance().databaseExists(feature)).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists(feature)).thenReturn(true);
     }
     
     private ContextManager mockContextManager(final String feature) {

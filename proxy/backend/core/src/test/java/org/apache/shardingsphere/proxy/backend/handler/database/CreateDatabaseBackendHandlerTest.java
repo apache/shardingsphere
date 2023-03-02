@@ -24,24 +24,25 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class CreateDatabaseBackendHandlerTest {
     
     @Mock
@@ -49,47 +50,41 @@ public final class CreateDatabaseBackendHandlerTest {
     
     private CreateDatabaseBackendHandler handler;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         handler = new CreateDatabaseBackendHandler(statement);
     }
     
     @Test
     public void assertExecuteCreateNewDatabase() throws SQLException {
-        when(statement.getDatabaseName()).thenReturn("other_db");
+        when(statement.getDatabaseName()).thenReturn("bar_db");
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test(expected = DatabaseCreateExistsException.class)
-    public void assertExecuteCreateExistDatabase() throws SQLException {
-        when(statement.getDatabaseName()).thenReturn("test_db");
+    @Test
+    public void assertExecuteCreateExistDatabase() {
+        when(statement.getDatabaseName()).thenReturn("foo_db");
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("test_db")).thenReturn(true);
-            assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
+        assertThrows(DatabaseCreateExistsException.class, () -> handler.execute());
     }
     
     @Test
     public void assertExecuteCreateExistDatabaseWithIfNotExists() throws SQLException {
-        when(statement.getDatabaseName()).thenReturn("test_db");
+        when(statement.getDatabaseName()).thenReturn("foo_db");
         when(statement.isIfNotExists()).thenReturn(true);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     private static ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", mock(ShardingSphereDatabase.class)));
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class)));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
     }

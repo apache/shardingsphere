@@ -41,7 +41,7 @@ loadBalancers:
 ## Shadow DB
 
 ```yaml
-loadBalancers:
+shadowAlgorithms:
   # shadowAlgorithmName is specified by users, and its property has to be consistent with that of shadowAlgorithmNames in shadow DB rules.
   <shadowAlgorithmName>:
     # type and props, please refer to the built-in shadow DB algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/shadow/

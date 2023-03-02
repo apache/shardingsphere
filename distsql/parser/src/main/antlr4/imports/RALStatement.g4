@@ -47,10 +47,6 @@ showComputeNodes
     : SHOW COMPUTE NODES
     ;
 
-clearHint
-    : CLEAR HINT
-    ;
-
 refreshDatabaseMetadata
     : REFRESH DATABASE METADATA databaseName? FROM GOVERNANCE CENTER
     ;

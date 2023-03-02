@@ -40,8 +40,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 @Slf4j
@@ -100,7 +99,7 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         commitMigrationByJobId(jobId);
         List<String> lastJobIds = listJobId();
-        assertThat(lastJobIds.size(), is(0));
+        assertTrue(lastJobIds.isEmpty());
         log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
 }

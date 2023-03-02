@@ -24,9 +24,6 @@ execute
     | alterReadwriteSplittingRule
     | dropReadwriteSplittingRule
     | showReadwriteSplittingRules
-    | setReadwriteSplittingHintSource
-    | showReadwriteSplittingHintStatus
-    | clearReadwriteSplittingHint
     | alterReadwriteSplittingStorageUnitStatus
     | showStatusFromReadwriteSplittingRules
     | countReadwriteSplittingRule

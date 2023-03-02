@@ -81,7 +81,6 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
         Optional<AlgorithmConfiguration> loadBalancer = Optional.ofNullable(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
         return new LocalDataQueryResultRow(name,
                 getAutoAwareDataSourceName(dataSourceRuleConfig),
-                getWriteDataSourceQueryEnabled(dataSourceRuleConfig),
                 getWriteDataSourceName(dataSourceRuleConfig, exportDataSources),
                 getReadDataSourceNames(dataSourceRuleConfig, exportDataSources),
                 loadBalancer.map(AlgorithmConfiguration::getType).orElse(""),
@@ -97,10 +96,6 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
         return null == dataSourceRuleConfig.getDynamicStrategy() ? "" : dataSourceRuleConfig.getDynamicStrategy().getAutoAwareDataSourceName();
     }
     
-    private String getWriteDataSourceQueryEnabled(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
-        return null == dataSourceRuleConfig.getDynamicStrategy() ? "" : dataSourceRuleConfig.getDynamicStrategy().getWriteDataSourceQueryEnabled();
-    }
-    
     private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
         return null == exportDataSources ? dataSourceRuleConfig.getStaticStrategy().getWriteDataSourceName() : exportDataSources.get(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME);
     }
@@ -113,8 +108,7 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "auto_aware_data_source_name", "write_data_source_query_enabled",
-                "write_storage_unit_name", "read_storage_unit_names", "load_balancer_type", "load_balancer_props");
+        return Arrays.asList("name", "auto_aware_data_source_name", "write_storage_unit_name", "read_storage_unit_names", "load_balancer_type", "load_balancer_props");
     }
     
     @Override

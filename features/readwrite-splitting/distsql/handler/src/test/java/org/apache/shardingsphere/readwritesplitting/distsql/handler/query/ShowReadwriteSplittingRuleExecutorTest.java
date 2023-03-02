@@ -75,11 +75,10 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("readwrite_ds"));
         assertThat(row.getCell(2), is(""));
-        assertThat(row.getCell(3), is(""));
-        assertThat(row.getCell(4), is("ds_primary"));
-        assertThat(row.getCell(5), is("ds_slave_0,ds_slave_1"));
-        assertThat(row.getCell(6), is("random"));
-        assertThat(row.getCell(7), is("read_weight=2:1"));
+        assertThat(row.getCell(3), is("ds_primary"));
+        assertThat(row.getCell(4), is("ds_slave_0,ds_slave_1"));
+        assertThat(row.getCell(5), is("random"));
+        assertThat(row.getCell(6), is("read_weight=2:1"));
     }
     
     @Test
@@ -96,11 +95,10 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("readwrite_ds"));
         assertThat(row.getCell(2), is(""));
-        assertThat(row.getCell(3), is(""));
-        assertThat(row.getCell(4), is("ds_primary"));
-        assertThat(row.getCell(5), is("ds_slave_0,ds_slave_1"));
-        assertThat(row.getCell(6), is("random"));
-        assertThat(row.getCell(7), is("read_weight=2:1"));
+        assertThat(row.getCell(3), is("ds_primary"));
+        assertThat(row.getCell(4), is("ds_slave_0,ds_slave_1"));
+        assertThat(row.getCell(5), is("random"));
+        assertThat(row.getCell(6), is("read_weight=2:1"));
     }
     
     private Map<String, Object> createExportedData() {
@@ -132,11 +130,10 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("readwrite_ds"));
         assertThat(row.getCell(2), is(""));
-        assertThat(row.getCell(3), is(""));
-        assertThat(row.getCell(4), is("write_ds"));
-        assertThat(row.getCell(5), is("read_ds_0,read_ds_1"));
+        assertThat(row.getCell(3), is("write_ds"));
+        assertThat(row.getCell(4), is("read_ds_0,read_ds_1"));
+        assertThat(row.getCell(5), is(""));
         assertThat(row.getCell(6), is(""));
-        assertThat(row.getCell(7), is(""));
     }
     
     private RuleConfiguration createRuleConfigurationWithoutLoadBalancer() {
@@ -160,22 +157,20 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("readwrite_ds"));
         assertThat(row.getCell(2), is("rd_rs"));
-        assertThat(row.getCell(3), is("false"));
-        assertThat(row.getCell(4), is("write_ds"));
-        assertThat(row.getCell(5), is("read_ds_0,read_ds_1"));
+        assertThat(row.getCell(3), is("write_ds"));
+        assertThat(row.getCell(4), is("read_ds_0,read_ds_1"));
+        assertThat(row.getCell(5), is(""));
         assertThat(row.getCell(6), is(""));
-        assertThat(row.getCell(7), is(""));
     }
     
     @Test
     public void assertGetColumnNames() {
         RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(7));
+        assertThat(columns.size(), is(6));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("name"));
         assertThat(iterator.next(), is("auto_aware_data_source_name"));
-        assertThat(iterator.next(), is("write_data_source_query_enabled"));
         assertThat(iterator.next(), is("write_storage_unit_name"));
         assertThat(iterator.next(), is("read_storage_unit_names"));
         assertThat(iterator.next(), is("load_balancer_type"));
@@ -212,7 +207,7 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
     
     private RuleConfiguration createRuleConfigurationWithAutoAwareDataSource() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", null,
-                new DynamicReadwriteSplittingStrategyConfiguration("rd_rs", "false"), "");
+                new DynamicReadwriteSplittingStrategyConfiguration("rd_rs"), "");
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), null);
     }
 }

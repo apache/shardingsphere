@@ -2062,6 +2062,32 @@
             </expression-item>
         </order-by>
     </select>
+    
+    <select sql-case-id="select_with_insert_function">
+        <from>
+            <simple-table name="t_order" start-index="50" stop-index="56" />
+        </from>
+        <projections start-index="7" stop-index="43">
+            <expression-projection text="INSERT(phone, 4, 3, '***')" alias="phone" start-index="7" stop-index="43">
+                <expr>
+                    <function function-name="INSERT" text="INSERT(phone, 4, 3, '***')" start-index="7" stop-index="32">
+                        <parameter>
+                            <column name="phone" start-index="14" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="4" start-index="21" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="3" start-index="24" stop-index="24" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="***" start-index="27" stop-index="31" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 
     <select sql-case-id="select_with_regular_function">
         <from>

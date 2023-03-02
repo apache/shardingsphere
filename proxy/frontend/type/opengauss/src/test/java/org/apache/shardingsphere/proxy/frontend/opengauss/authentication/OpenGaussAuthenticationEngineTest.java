@@ -40,37 +40,34 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class OpenGaussAuthenticationEngineTest {
-    
-    private final String username = "root";
-    
-    private final String password = "sharding";
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext channelHandlerContext;
     
     @SuppressWarnings("unchecked")
-    @Before
+    @BeforeEach
     public void setup() {
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
     }
@@ -90,7 +87,7 @@ public final class OpenGaussAuthenticationEngineTest {
         assertFalse(actual.isFinished());
     }
     
-    @Test(expected = EmptyUsernameException.class)
+    @Test
     public void assertUserNotSet() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512), StandardCharsets.UTF_8);
         payload.writeInt4(64);
@@ -98,13 +95,11 @@ public final class OpenGaussAuthenticationEngineTest {
         payload.writeStringNul("client_encoding");
         payload.writeStringNul("UTF8");
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            new OpenGaussAuthenticationEngine().authenticate(channelHandlerContext, payload);
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertThrows(EmptyUsernameException.class, () -> new OpenGaussAuthenticationEngine().authenticate(channelHandlerContext, payload));
     }
     
-    @Test(expected = ProtocolViolationException.class)
+    @Test
     public void assertAuthenticateWithNonPasswordMessage() {
         OpenGaussAuthenticationEngine authenticationEngine = new OpenGaussAuthenticationEngine();
         setAlreadyReceivedStartupMessage(authenticationEngine);
@@ -112,15 +107,13 @@ public final class OpenGaussAuthenticationEngineTest {
         payload.writeInt1('F');
         payload.writeInt8(0);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            authenticationEngine.authenticate(channelHandlerContext, payload);
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertThrows(ProtocolViolationException.class, () -> authenticationEngine.authenticate(channelHandlerContext, payload));
     }
     
     private ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(Collections.emptyMap(), buildGlobalRuleMetaData(new ShardingSphereUser(username, password, "")), mock(ConfigurationProperties.class)));
+                new ShardingSphereMetaData(Collections.emptyMap(), buildGlobalRuleMetaData(new ShardingSphereUser("root", "sharding", "")), mock(ConfigurationProperties.class)));
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;

@@ -20,3 +20,5 @@ org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationJobStatus
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationCheckStatusExecutor
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationSourceStorageUnitsExecutor
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationCheckAlgorithmsExecutor
+org.apache.shardingsphere.cdc.distsql.handler.query.ShowStreamingListExecutor
+org.apache.shardingsphere.cdc.distsql.handler.query.ShowStreamingJobStatusExecutor

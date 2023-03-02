@@ -50,49 +50,44 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgor
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class DistSQLBackendHandlerFactoryTest {
-    
-    private MockedStatic<ProxyContext> proxyContext;
     
     @Mock
     private ConnectionSession connectionSession;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         ShardingSphereDatabase database = mockDatabase();
         ContextManager contextManager = mockContextManager(database);
-        proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        proxyContext.when(() -> ProxyContext.getInstance().databaseExists("db")).thenReturn(true);
-        proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db")).thenReturn(database);
-        when(connectionSession.getDatabaseName()).thenReturn("db");
-    }
-    
-    @After
-    public void tearDown() {
-        proxyContext.close();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
+        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
+        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -113,8 +108,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     private MetaDataContexts mockMetaDataContexts(final ShardingSphereDatabase database) {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().containsDatabase("db")).thenReturn(true);
-        when(result.getMetaData().getDatabase("db")).thenReturn(database);
+        when(result.getMetaData().getDatabase("foo_db")).thenReturn(database);
         return result;
     }
     
@@ -125,7 +119,7 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     @Test
     public void assertExecuteShardingTableRuleContext() throws SQLException {
-        when(ProxyContext.getInstance().getDatabase("db").getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(ProxyContext.getInstance().getDatabase("foo_db").getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         assertThat(RDLBackendHandlerFactory.newInstance(mock(CreateShardingTableRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
@@ -194,9 +188,9 @@ public final class DistSQLBackendHandlerFactoryTest {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(UnregisterStorageUnitStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
-    public void assertExecuteDropReadwriteSplittingRuleContext() throws SQLException {
-        assertThat(RDLBackendHandlerFactory.newInstance(mock(DropReadwriteSplittingRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+    @Test
+    public void assertExecuteDropReadwriteSplittingRuleContext() {
+        assertThrows(MissingRequiredRuleException.class, () -> RDLBackendHandlerFactory.newInstance(mock(DropReadwriteSplittingRuleStatement.class), connectionSession).execute());
     }
     
     @Test
@@ -204,9 +198,9 @@ public final class DistSQLBackendHandlerFactoryTest {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(CreateReadwriteSplittingRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
-    public void assertExecuteAlterReadwriteSplittingRuleContext() throws SQLException {
-        assertThat(RDLBackendHandlerFactory.newInstance(mock(AlterReadwriteSplittingRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+    @Test
+    public void assertExecuteAlterReadwriteSplittingRuleContext() {
+        assertThrows(MissingRequiredRuleException.class, () -> RDLBackendHandlerFactory.newInstance(mock(AlterReadwriteSplittingRuleStatement.class), connectionSession).execute());
     }
     
     @Test
@@ -216,13 +210,13 @@ public final class DistSQLBackendHandlerFactoryTest {
     
     private void mockShardingSphereRuleMetaData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("db");
+        when(database.getName()).thenReturn("foo_db");
         when(database.getResourceMetaData()).thenReturn(mock(ShardingSphereResourceMetaData.class));
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         ShadowRuleConfiguration ruleConfig = mockShadowRuleConfiguration();
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(ruleConfig));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db")).thenReturn(database);
+        when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
     }
     
     private ShadowRuleConfiguration mockShadowRuleConfiguration() {

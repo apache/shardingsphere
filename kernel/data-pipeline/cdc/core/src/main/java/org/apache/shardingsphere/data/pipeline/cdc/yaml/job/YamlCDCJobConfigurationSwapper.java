@@ -42,7 +42,7 @@ public final class YamlCDCJobConfigurationSwapper implements YamlConfigurationSw
     public YamlCDCJobConfiguration swapToYamlConfiguration(final CDCJobConfiguration data) {
         YamlCDCJobConfiguration result = new YamlCDCJobConfiguration();
         result.setJobId(data.getJobId());
-        result.setDatabase(data.getDatabase());
+        result.setDatabaseName(data.getDatabaseName());
         result.setSchemaTableNames(data.getSchemaTableNames());
         result.setFull(data.isFull());
         result.setSourceDatabaseType(data.getSourceDatabaseType());
@@ -72,7 +72,7 @@ public final class YamlCDCJobConfigurationSwapper implements YamlConfigurationSw
         YamlSinkConfiguration yamlSinkConfig = yamlConfig.getSinkConfig();
         SinkConfiguration sinkConfig = new SinkConfiguration(CDCSinkType.valueOf(yamlSinkConfig.getSinkType()), yamlSinkConfig.getProps());
         JobDataNodeLine tablesFirstDataNodes = null == yamlConfig.getTablesFirstDataNodes() ? null : JobDataNodeLine.unmarshal(yamlConfig.getTablesFirstDataNodes());
-        return new CDCJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabase(), yamlConfig.getSchemaTableNames(), yamlConfig.isFull(), yamlConfig.getSourceDatabaseType(),
+        return new CDCJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabaseName(), yamlConfig.getSchemaTableNames(), yamlConfig.isFull(), yamlConfig.getSourceDatabaseType(),
                 (ShardingSpherePipelineDataSourceConfiguration) dataSourceConfigSwapper.swapToObject(yamlConfig.getDataSourceConfiguration()), tablesFirstDataNodes,
                 jobShardingDataNodes, yamlConfig.isDecodeWithTX(), sinkConfig, yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }
