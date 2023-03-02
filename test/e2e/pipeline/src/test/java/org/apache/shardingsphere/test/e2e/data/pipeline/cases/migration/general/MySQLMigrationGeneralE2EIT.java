@@ -30,45 +30,30 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTyp
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(Parameterized.class)
 @Slf4j
 public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
-    private final PipelineTestParameter testParam;
-    
     public MySQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
-        this.testParam = testParam;
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<PipelineTestParameter> getTestParameters() {
-        Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
-            return result;
-        }
-        MySQLDatabaseType databaseType = new MySQLDatabaseType();
-        for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(databaseType)) {
-            result.add(new PipelineTestParameter(databaseType, each, "env/scenario/general/mysql.xml"));
-        }
-        return result;
     }
     
     @Override
@@ -76,8 +61,10 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         return "t_order_copy";
     }
     
-    @Test
-    public void assertMigrationSuccess() throws SQLException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
         log.info("assertMigrationSuccess testParam:{}", testParam);
         initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         addMigrationProcessConfig();
@@ -113,6 +100,10 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
     
+    private static boolean isEnabled() {
+        return PipelineBaseE2EIT.ENV.getItEnvType() != PipelineEnvTypeEnum.NONE;
+    }
+    
     private void assertMigrationSuccessById(final String jobId, final String algorithmType) throws SQLException, InterruptedException {
         List<Map<String, Object>> jobStatus = waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         for (Map<String, Object> each : jobStatus) {
@@ -120,5 +111,15 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             assertThat(Integer.parseInt(each.get("inventory_finished_percentage").toString()), is(100));
         }
         assertCheckMigrationSuccess(jobId, algorithmType);
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            MySQLDatabaseType databaseType = new MySQLDatabaseType();
+            return PipelineBaseE2EIT.ENV.listStorageContainerImages(databaseType).stream()
+                    .map(each -> Arguments.of(new PipelineTestParameter(databaseType, each, "env/scenario/general/mysql.xml"))).collect(Collectors.toList()).stream();
+        }
     }
 }
