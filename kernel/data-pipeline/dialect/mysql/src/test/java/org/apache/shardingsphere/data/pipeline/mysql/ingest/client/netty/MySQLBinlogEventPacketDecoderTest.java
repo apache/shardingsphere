@@ -48,6 +48,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -89,7 +90,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
         byteBuf.writeBytes(StringUtil.decodeHexDump("000000000004010000002c0000000000000020001a9100000000000062696e6c6f672e3030303032394af65c24"));
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
-        assertThat(decodedEvents.size(), is(0));
+        assertTrue(decodedEvents.isEmpty());
         assertThat(binlogContext.getFileName(), is("binlog.000029"));
     }
     
@@ -100,7 +101,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
                 + "000000000013000d0008000000000400040000006100041a08000000080808020000000a0a0a2a2a001234000a280140081396"));
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
-        assertThat(decodedEvents.size(), is(0));
+        assertTrue(decodedEvents.isEmpty());
         assertThat(binlogContext.getChecksumLength(), is(4));
     }
     
