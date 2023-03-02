@@ -28,12 +28,12 @@ public final class YamlJobOffsetInfoSwapper implements YamlConfigurationSwapper<
     @Override
     public YamlJobOffsetInfo swapToYamlConfiguration(final JobOffsetInfo data) {
         YamlJobOffsetInfo result = new YamlJobOffsetInfo();
-        result.setGlobalPreparedFlag(data.isTargetSchemaTableCreated());
+        result.setTargetSchemaTableCreated(data.isTargetSchemaTableCreated());
         return result;
     }
     
     @Override
     public JobOffsetInfo swapToObject(final YamlJobOffsetInfo yamlConfig) {
-        return new JobOffsetInfo(yamlConfig.isGlobalPreparedFlag());
+        return new JobOffsetInfo(yamlConfig.isTargetSchemaTableCreated());
     }
 }

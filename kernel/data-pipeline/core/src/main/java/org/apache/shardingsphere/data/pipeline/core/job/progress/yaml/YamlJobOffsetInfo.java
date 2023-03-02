@@ -28,5 +28,5 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlJobOffsetInfo implements YamlConfiguration {
     
-    private boolean globalPreparedFlag;
+    private boolean targetSchemaTableCreated;
 }
