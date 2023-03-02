@@ -47,17 +47,17 @@ public final class ShowMigrationJobStatusExecutor implements QueryableRALExecuto
     
     private LocalDataQueryResultRow generateResultRow(final InventoryIncrementalJobItemInfo jobItemInfo, final long currentTimeMillis) {
         InventoryIncrementalJobItemProgress jobItemProgress = jobItemInfo.getJobItemProgress();
-        if (null != jobItemProgress) {
-            String incrementalIdleSeconds = "";
-            if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
-                long latestActiveTimeMillis = Math.max(jobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
-                incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
-            }
-            return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(),
-                    jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(),
-                    incrementalIdleSeconds, jobItemInfo.getErrorMessage());
+        if (null == jobItemProgress) {
+            return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), "", "", "", "", "", "", jobItemInfo.getErrorMessage());
         }
-        return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), "", "", "", "", "", "", jobItemInfo.getErrorMessage());
+        String incrementalIdleSeconds = "";
+        if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
+            long latestActiveTimeMillis = Math.max(jobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
+            incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
+        }
+        return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(),
+                jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(),
+                incrementalIdleSeconds, jobItemInfo.getErrorMessage());
     }
     
     @Override

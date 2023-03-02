@@ -32,4 +32,10 @@ public final class TableBasedPipelineJobInfo implements PipelineJobInfo {
     private final String databaseName;
     
     private final String table;
+    
+    public TableBasedPipelineJobInfo(final PipelineJobMetaData jobMetaData, final String table) {
+        this.jobMetaData = jobMetaData;
+        this.table = table;
+        this.databaseName = null;
+    }
 }
