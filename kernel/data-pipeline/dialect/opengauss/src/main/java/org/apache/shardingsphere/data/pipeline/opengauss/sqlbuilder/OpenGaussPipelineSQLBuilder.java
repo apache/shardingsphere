@@ -88,6 +88,12 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     }
     
     @Override
+    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
+        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
+        return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
+    }
+    
+    @Override
     public String getType() {
         return "openGauss";
     }

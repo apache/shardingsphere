@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.connector.sane.opengauss.OpenGaussSaneQueryResultEngine
+org.apache.shardingsphere.proxy.backend.opengauss.connector.sane.OpenGaussSaneQueryResultEngine

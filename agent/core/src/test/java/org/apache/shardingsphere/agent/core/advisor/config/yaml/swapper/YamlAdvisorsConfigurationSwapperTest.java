@@ -23,7 +23,7 @@ import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfigur
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvisorsConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlAdviceFixture;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlTargetObjectFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.ArrayList;

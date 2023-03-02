@@ -186,7 +186,7 @@ public final class ShardingRouteCacheableChecker {
     
     private static boolean isConditionTypeCacheable(final ShardingConditionValue conditionValue) {
         if (conditionValue instanceof ListShardingConditionValue<?>) {
-            for (Comparable<?> eachValue : ((ListShardingConditionValue<?>) conditionValue).getValues()) {
+            for (Object eachValue : ((ListShardingConditionValue<?>) conditionValue).getValues()) {
                 if (!(eachValue instanceof Number)) {
                     return false;
                 }

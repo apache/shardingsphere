@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -32,13 +33,13 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -58,28 +59,18 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class DefaultDatabaseMetaDataExecutorTest extends ProxyContextRestorer {
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings({ProxyContext.class, SystemSchemaUtil.class})
+public final class DefaultDatabaseMetaDataExecutorTest {
     
     private final Grantee grantee = new Grantee("root", "127.0.0.1");
     
     @Mock
     private ConnectionSession connectionSession;
     
-    @Before
+    @BeforeEach
     public void setUp() {
-        ProxyContext.init(mockContextManager());
         when(connectionSession.getGrantee()).thenReturn(grantee);
-    }
-    
-    private ContextManager mockContextManager() {
-        AuthorityRule authorityRule = mock(AuthorityRule.class);
-        when(authorityRule.findPrivileges(grantee)).thenReturn(Optional.of(new DatabasePermittedPrivileges(Collections.singleton("auth_db"))));
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(new HashMap<>(),
-                new ShardingSphereRuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties())));
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
-        return result;
     }
     
     @Test
@@ -87,8 +78,10 @@ public final class DefaultDatabaseMetaDataExecutorTest extends ProxyContextResto
         Map<String, String> expectedResultSetMap = new HashMap<>(2, 1);
         expectedResultSetMap.put("sn", "foo_ds");
         expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("auth_db", createDatabase(expectedResultSetMap));
         String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
+        ShardingSphereDatabase database = createDatabase(expectedResultSetMap);
+        ContextManager contextManager = mockContextManager(database);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql);
         executor.execute(connectionSession);
         assertThat(executor.getRows().get(0).get("sn"), is("foo_ds"));
@@ -97,8 +90,10 @@ public final class DefaultDatabaseMetaDataExecutorTest extends ProxyContextResto
     
     @Test
     public void assertExecuteWithDefaultValue() throws SQLException {
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("auth_db", createDatabase(Collections.singletonMap("support_ndb", "0")));
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
+        ShardingSphereDatabase database = createDatabase(Collections.singletonMap("support_ndb", "0"));
+        ContextManager contextManager = mockContextManager(database);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql);
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
@@ -131,6 +126,18 @@ public final class DefaultDatabaseMetaDataExecutorTest extends ProxyContextResto
         }
         when(result.next()).thenReturn(true, false);
         when(result.getMetaData().getColumnCount()).thenReturn(expectedResultSetMap.size());
+        return result;
+    }
+    
+    private ContextManager mockContextManager(final ShardingSphereDatabase database) {
+        AuthorityRule authorityRule = mock(AuthorityRule.class);
+        when(authorityRule.findPrivileges(grantee)).thenReturn(Optional.of(new DatabasePermittedPrivileges(Collections.singleton("auth_db"))));
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(Collections.singletonMap("auth_db", database),
+                new ShardingSphereRuleMetaData(Collections.singleton(authorityRule)), new ConfigurationProperties(new Properties())));
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(ProxyContext.getInstance().getDatabase("auth_db")).thenReturn(database);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
         return result;
     }
 }

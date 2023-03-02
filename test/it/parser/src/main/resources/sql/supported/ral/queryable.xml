@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="show-dist-variable" value="SHOW DIST VARIABLE WHERE NAME = CACHED_CONNECTIONS" db-types="ShardingSphere" />
+    <sql-case id="show-dist-variable" value="SHOW DIST VARIABLE WHERE NAME = 'CACHED_CONNECTIONS'" db-types="ShardingSphere" />
     <sql-case id="show-dist-variables" value="SHOW DIST VARIABLES" db-types="ShardingSphere" />
     
     <sql-case id="show-status-from-readwrite-splitting-rules" value="SHOW STATUS FROM READWRITE_SPLITTING RULES" db-types="ShardingSphere" />
@@ -35,5 +35,6 @@
     <sql-case id="show-compute-node-mode" value="SHOW COMPUTE NODE MODE" db-types="ShardingSphere" />
     
     <sql-case id="export-database-config" value="EXPORT DATABASE CONFIGURATION FROM database_name" db-types="ShardingSphere" />
+    <sql-case id="export-metadata" value="EXPORT METADATA" db-types="ShardingSphere" />
     <sql-case id="convert-yaml-config" value="CONVERT YAML CONFIGURATION FROM FILE '/yaml/config-sharding.yaml'" db-types="ShardingSphere" />
 </sql-cases>

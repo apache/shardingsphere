@@ -18,84 +18,94 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.executor.SelectTableExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRestorer {
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+public final class DatabaseAdminQueryBackendHandlerTest {
     
     private DatabaseAdminQueryBackendHandler handler;
     
-    @Before
+    @BeforeEach
     public void before() throws SQLException {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
-        ContextManager contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
-        ProxyContext.init(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getDatabaseName()).thenReturn("db");
-        SelectTableExecutor executor = mock(SelectTableExecutor.class, RETURNS_DEEP_STUBS);
-        MergedResult mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow("demo_ds_0", "demo_ds_1")));
-        when(executor.getMergedResult()).thenReturn(mergedResult);
+        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
+        DatabaseAdminQueryExecutor executor = mock(DatabaseAdminQueryExecutor.class, RETURNS_DEEP_STUBS);
+        when(executor.getMergedResult()).thenReturn(new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow("ds_0", "ds_1"))));
         when(executor.getQueryResultMetaData().getColumnCount()).thenReturn(1);
         handler = new DatabaseAdminQueryBackendHandler(connectionSession, executor);
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabases() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("db");
-        when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        result.put("db", database);
-        return result;
-    }
-    
     @Test
     public void assertExecute() throws SQLException {
-        assertThat(((QueryResponseHeader) handler.execute()).getQueryHeaders().size(), is(1));
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
+            assertThat(((QueryResponseHeader) handler.execute()).getQueryHeaders().size(), is(1));
+        }
     }
     
     @Test
     public void assertNext() throws SQLException {
-        handler.execute();
-        assertTrue(handler.next());
-        assertFalse(handler.next());
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
+            handler.execute();
+            assertTrue(handler.next());
+            assertFalse(handler.next());
+        }
     }
     
     @Test
     public void assertGetRowData() throws SQLException {
-        handler.execute();
-        assertTrue(handler.next());
-        assertThat(handler.getRowData().getData().size(), is(1));
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+            typedSPILoader.when(() -> TypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(mock(QueryHeaderBuilder.class));
+            handler.execute();
+            assertTrue(handler.next());
+            assertThat(handler.getRowData().getData().size(), is(1));
+        }
+    }
+    
+    private ContextManager mockContextManager() {
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(
+                Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class)), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+        return new ContextManager(metaDataContexts, mock(InstanceContext.class));
     }
 }

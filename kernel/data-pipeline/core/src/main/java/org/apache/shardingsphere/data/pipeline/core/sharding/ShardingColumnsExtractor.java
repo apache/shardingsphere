@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,7 +49,11 @@ public final class ShardingColumnsExtractor {
      * @return sharding columns map
      */
     public Map<LogicTableName, Set<String>> getShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs, final Set<LogicTableName> logicTableNames) {
-        ShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
+        Optional<ShardingRuleConfiguration> shardingRuleConfigOptional = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
+        if (!shardingRuleConfigOptional.isPresent()) {
+            return Collections.emptyMap();
+        }
+        ShardingRuleConfiguration shardingRuleConfig = shardingRuleConfigOptional.get();
         Set<String> defaultDatabaseShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultDatabaseShardingStrategy());
         Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultTableShardingStrategy());
         Map<LogicTableName, Set<String>> result = new ConcurrentHashMap<>();

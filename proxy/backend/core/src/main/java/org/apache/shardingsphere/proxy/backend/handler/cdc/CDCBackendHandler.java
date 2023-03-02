@@ -98,7 +98,8 @@ public final class CDCBackendHandler {
             tableNames = schemaTableNameMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
             schemaTableNameMap.forEach((k, v) -> v.forEach(tableName -> schemaTableNames.add(k.isEmpty() ? tableName : String.join(".", k, tableName))));
         } else {
-            tableNames = getTableNamesWithoutSchema(database, requestBody.getSourceSchemaTablesList());
+            schemaTableNames.addAll(getTableNamesWithoutSchema(database, requestBody.getSourceSchemaTablesList()));
+            tableNames = schemaTableNames;
         }
         if (tableNames.isEmpty()) {
             throw new NotFindStreamDataSourceTableException();
@@ -176,13 +177,13 @@ public final class CDCBackendHandler {
     }
     
     /**
-     * Get database by job id.
+     * Get database name by job id.
      *
      * @param jobId job id
      * @return database
      */
-    public String getDatabaseByJobId(final String jobId) {
-        return ((CDCJobConfiguration) jobAPI.getJobConfiguration(jobId)).getDatabase();
+    public String getDatabaseNameByJobId(final String jobId) {
+        return jobAPI.getJobConfiguration(jobId).getDatabaseName();
     }
     
     /**
@@ -196,7 +197,7 @@ public final class CDCBackendHandler {
      */
     // TODO not return CDCResponse
     public CDCResponse startStreaming(final String requestId, final String jobId, final CDCConnectionContext connectionContext, final Channel channel) {
-        CDCJobConfiguration cdcJobConfig = (CDCJobConfiguration) jobAPI.getJobConfiguration(jobId);
+        CDCJobConfiguration cdcJobConfig = jobAPI.getJobConfiguration(jobId);
         if (null == cdcJobConfig) {
             return CDCResponseGenerator.failed(jobId, CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, String.format("the %s job config doesn't exist", jobId));
         }
@@ -204,11 +205,11 @@ public final class CDCBackendHandler {
         // TODO, ensure that there is only one consumer at a time, job config disable may not be updated when the program is forced to close
         jobConfigPOJO.setDisabled(false);
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
-        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabase());
+        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabaseName());
         Comparator<DataRecord> dataRecordComparator = cdcJobConfig.isDecodeWithTX()
                 ? DataRecordComparatorGenerator.generatorIncrementalComparator(database.getProtocolType())
                 : null;
-        CDCJob job = new CDCJob(new SocketSinkImporterConnector(channel, cdcJobConfig.getDatabase(), cdcJobConfig.getJobShardingCount(), cdcJobConfig.getSchemaTableNames(), dataRecordComparator));
+        CDCJob job = new CDCJob(new SocketSinkImporterConnector(channel, cdcJobConfig.getDatabaseName(), cdcJobConfig.getJobShardingCount(), cdcJobConfig.getSchemaTableNames(), dataRecordComparator));
         PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
         job.setJobBootstrap(oneOffJobBootstrap);

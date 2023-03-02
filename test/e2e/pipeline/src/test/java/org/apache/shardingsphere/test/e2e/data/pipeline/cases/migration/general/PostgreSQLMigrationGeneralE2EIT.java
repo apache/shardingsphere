@@ -41,8 +41,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 @Slf4j
@@ -100,7 +99,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
             commitMigrationByJobId(each);
         }
         List<String> lastJobIds = listJobId();
-        assertThat(lastJobIds.size(), is(0));
+        assertTrue(lastJobIds.isEmpty());
         proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
         assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT + 1, PipelineBaseE2EIT.SCHEMA_NAME);
         log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
@@ -109,7 +108,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     private void checkOrderMigration() throws SQLException, InterruptedException {
         startMigrationWithSchema(getSourceTableOrderName(), "t_order");
         startIncrementTask(new PostgreSQLIncrementTask(getSourceDataSource(), PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName(), 20));
-        String jobId = getJobIdByTableName(getSourceTableOrderName());
+        String jobId = getJobIdByTableName("ds_0.test." + getSourceTableOrderName());
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
         long recordId = new SnowflakeKeyGenerateAlgorithm().generateKey();
@@ -124,7 +123,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     
     private void checkOrderItemMigration() throws SQLException, InterruptedException {
         startMigrationWithSchema("t_order_item", "t_order_item");
-        String jobId = getJobIdByTableName("t_order_item");
+        String jobId = getJobIdByTableName("ds_0.test.t_order_item");
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }

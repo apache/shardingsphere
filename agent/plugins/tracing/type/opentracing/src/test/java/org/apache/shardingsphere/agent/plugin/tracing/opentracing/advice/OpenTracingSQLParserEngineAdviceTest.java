@@ -24,9 +24,9 @@ import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecuto
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class OpenTracingSQLParserEngineAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
@@ -46,7 +46,7 @@ public final class OpenTracingSQLParserEngineAdviceTest extends AbstractJDBCExec
     
     private static Method parserMethod;
     
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws ReflectiveOperationException {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(new MockTracer());
@@ -55,7 +55,7 @@ public final class OpenTracingSQLParserEngineAdviceTest extends AbstractJDBCExec
         parserMethod = ShardingSphereSQLParserEngine.class.getDeclaredMethod("parse", String.class, boolean.class);
     }
     
-    @Before
+    @BeforeEach
     public void reset() {
         tracer.reset();
     }

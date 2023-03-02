@@ -23,7 +23,7 @@ import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlPoint
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlPointcutParameterConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlAdviceFixture;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlTargetObjectFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class YamlAdvisorsConfigurationLoaderTest {
     

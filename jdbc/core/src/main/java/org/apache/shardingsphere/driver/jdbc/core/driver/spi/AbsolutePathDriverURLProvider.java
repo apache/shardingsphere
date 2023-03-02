@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.driver.spi;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingsphereDriverURLProvider;
+import org.apache.shardingsphere.driver.jdbc.core.driver.ShardingSphereDriverURLProvider;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,7 +34,7 @@ import java.util.Objects;
 /**
  * Absolute path driver URL provider.
  */
-public final class AbsolutePathDriverURLProvider implements ShardingsphereDriverURLProvider {
+public final class AbsolutePathDriverURLProvider implements ShardingSphereDriverURLProvider {
     
     private static final String PATH_TYPE = "absolutepath:";
     

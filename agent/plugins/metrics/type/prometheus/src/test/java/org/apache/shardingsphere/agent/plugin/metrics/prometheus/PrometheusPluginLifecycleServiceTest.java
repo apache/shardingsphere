@@ -31,34 +31,47 @@ import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.Stan
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class PrometheusPluginLifecycleServiceTest extends ProxyContextRestorer {
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+public final class PrometheusPluginLifecycleServiceTest {
     
     private final PrometheusPluginLifecycleService pluginLifecycleService = new PrometheusPluginLifecycleService();
     
-    @After
+    @AfterEach
     public void close() {
         pluginLifecycleService.close();
     }
     
     @Test
     public void assertStart() throws IOException {
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString()))), true);
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress("localhost", 8090));
+        }
+    }
+    
+    private static ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         InstanceContext instanceContext = new InstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null),
                 mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
-        ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
-        pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString()))), true);
-        new Socket().connect(new InetSocketAddress("localhost", 8090));
+        return new ContextManager(metaDataContexts, instanceContext);
     }
 }

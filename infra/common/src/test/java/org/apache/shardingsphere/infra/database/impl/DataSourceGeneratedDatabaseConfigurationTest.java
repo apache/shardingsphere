@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -78,8 +77,6 @@ public final class DataSourceGeneratedDatabaseConfigurationTest {
     private Map<String, DataSourceConfiguration> createDataSources() {
         PoolConfiguration poolConfig = new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties());
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(new ConnectionConfiguration("jdbc:mock://127.0.0.1/normal_db", "root", ""), poolConfig);
-        Map<String, DataSourceConfiguration> result = new HashMap<>(1, 1);
-        result.put("normal_db", dataSourceConfig);
-        return result;
+        return Collections.singletonMap("normal_db", dataSourceConfig);
     }
 }

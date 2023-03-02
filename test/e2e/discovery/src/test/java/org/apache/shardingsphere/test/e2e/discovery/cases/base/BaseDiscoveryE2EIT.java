@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.discovery.build.DiscoveryRuleBuilder;
 import org.apache.shardingsphere.test.e2e.discovery.cases.DatabaseClusterEnvironment;
+import org.apache.shardingsphere.test.e2e.discovery.command.DiscoveryDistSQLCommand;
 import org.apache.shardingsphere.test.e2e.discovery.env.DiscoveryE2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.discovery.framework.container.compose.BaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.discovery.framework.container.compose.DockerContainerComposer;
@@ -33,6 +34,7 @@ import org.awaitility.Awaitility;
 import org.awaitility.Durations;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -58,12 +60,15 @@ public abstract class BaseDiscoveryE2EIT {
     
     private final DataSource proxyDataSource;
     
+    private final DiscoveryDistSQLCommand discoveryDistSQLCommand;
+    
     public BaseDiscoveryE2EIT(final DiscoveryTestParameter testParam) {
         databaseType = testParam.getDatabaseType();
         containerComposer = new DockerContainerComposer(testParam.getScenario(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
         containerComposer.start();
         mappedDataSources = containerComposer.getMappedDatasource();
         proxyDataSource = containerComposer.getProxyDatasource();
+        discoveryDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseDiscoveryE2EIT.class.getClassLoader().getResource("env/common/discovery-command.xml")), DiscoveryDistSQLCommand.class);
     }
     
     /**
@@ -72,7 +77,7 @@ public abstract class BaseDiscoveryE2EIT {
      * @throws SQLException SQL exception
      */
     public void initDiscoveryEnvironment() throws SQLException {
-        new DiscoveryRuleBuilder(proxyDataSource).buildDiscoveryEnvironment();
+        new DiscoveryRuleBuilder(discoveryDistSQLCommand, proxyDataSource).buildDiscoveryEnvironment();
     }
     
     /**
@@ -131,7 +136,7 @@ public abstract class BaseDiscoveryE2EIT {
         mgrEnvironment.getDataSources().remove(getPrimaryDataSourceName());
         String closedRoutingDataSourceName = getCloseReplicationDataSourceName(mgrEnvironment);
         mgrEnvironment.getDataSources().remove(closedRoutingDataSourceName);
-        Awaitility.await().atMost(Durations.ONE_MINUTE)
+        Awaitility.await().atMost(Durations.TWO_MINUTES)
                 .until(() -> getRouteDataSourceName().equals(Objects.requireNonNull(mgrEnvironment.getDataSources().entrySet().stream().findFirst().orElse(null)).getKey()));
     }
     
@@ -158,12 +163,68 @@ public abstract class BaseDiscoveryE2EIT {
     }
     
     /**
-     * Assert close all replication data source.
-     * @param mgrEnvironment mgr environment
-     * @throws SQLException SQL Exception
+     * Drop database discovery database.
+     *
+     * @throws SQLException sql exception
      */
-    public void assertCloseAllReplicationDataSource(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
-        closeDataSource(Objects.requireNonNull(mgrEnvironment.getDataSources().values().stream().findFirst().orElse(null)));
-        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> getRouteDataSourceName().equals(getPrimaryDataSourceName()));
+    public void dropDatabaseDiscoveryDatabase() throws SQLException {
+        try (
+                Connection connection = getProxyDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(discoveryDistSQLCommand.getDropDatabase().getExecuteSQL());
+            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertDropSQL(statement, discoveryDistSQLCommand.getDropDatabase().getAssertionSQL()));
+        }
+    }
+    
+    private boolean assertDropSQL(final Statement statement, final String assertionSQL) {
+        try (ResultSet resultSet = statement.executeQuery(assertionSQL)) {
+            return false;
+        } catch (final SQLException ignored) {
+            return true;
+        }
+    }
+    
+    /**
+     * Create readwrite-splitting database.
+     *
+     * @throws SQLException sql exception
+     */
+    public void createReadWriteSplittingDatabase() throws SQLException {
+        try (
+                Connection connection = getProxyDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(discoveryDistSQLCommand.getCreateReadwriteSplittingDatabase().getExecuteSQL());
+            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertCreateSQL(statement, discoveryDistSQLCommand.getCreateReadwriteSplittingDatabase().getAssertionSQL()));
+        }
+    }
+    
+    private boolean assertCreateSQL(final Statement statement, final String assertionSQL) {
+        try (ResultSet resultSet = statement.executeQuery(assertionSQL)) {
+            return true;
+        } catch (final SQLException ignored) {
+            return false;
+        }
+    }
+    
+    /**
+     * Register single storage units.
+     *
+     * @throws SQLException sql exception
+     */
+    public void registerSingleStorageUnit() throws SQLException {
+        try (
+                Connection connection = getProxyDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(discoveryDistSQLCommand.getRegisterSingleStorageUnit().getExecuteSQL());
+            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertRDLDistSQL(statement, discoveryDistSQLCommand.getRegisterSingleStorageUnit().getAssertionSQL()));
+        }
+    }
+    
+    private boolean assertRDLDistSQL(final Statement statement, final String assertionSQL) {
+        try (ResultSet resultSet = statement.executeQuery(assertionSQL)) {
+            return resultSet.next();
+        } catch (final SQLException ignored) {
+            return false;
+        }
     }
 }

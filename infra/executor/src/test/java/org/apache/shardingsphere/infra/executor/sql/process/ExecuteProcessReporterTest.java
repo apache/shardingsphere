@@ -24,43 +24,38 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 
-import java.util.Collections;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ShowProcessListManager.class)
 public final class ExecuteProcessReporterTest {
     
-    private MockedStatic<ShowProcessListManager> mockedStatic;
-    
+    @Mock
     private ShowProcessListManager showProcessListManager;
     
-    private final ExecuteProcessReporter reporter = new ExecuteProcessReporter();
-    
-    @Before
+    @BeforeEach
     public void setUp() {
-        mockedStatic = mockStatic(ShowProcessListManager.class);
-        showProcessListManager = mock(ShowProcessListManager.class);
-        mockedStatic.when(ShowProcessListManager::getInstance).thenReturn(showProcessListManager);
+        when(ShowProcessListManager.getInstance()).thenReturn(showProcessListManager);
     }
     
     @Test
     public void assertReport() {
-        QueryContext queryContext = new QueryContext(null, null, null);
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
-        reporter.report(queryContext, executionGroupContext, ExecuteProcessStatusEnum.START);
-        verify(showProcessListManager, times(1)).putProcessContext(eq(executionGroupContext.getReportContext().getExecutionID()), any());
+        new ExecuteProcessReporter().report(new QueryContext(null, null, null), executionGroupContext, ExecuteProcessStatusEnum.START);
+        verify(showProcessListManager).putProcessContext(eq(executionGroupContext.getReportContext().getExecutionID()), any());
     }
     
     @SuppressWarnings("unchecked")
@@ -75,25 +70,16 @@ public final class ExecuteProcessReporterTest {
     @Test
     public void assertReportUnit() {
         SQLExecutionUnit sqlExecutionUnit = mock(SQLExecutionUnit.class);
-        ExecutionUnit executionUnit = mock(ExecutionUnit.class);
-        when(sqlExecutionUnit.getExecutionUnit()).thenReturn(executionUnit);
-        ExecuteProcessContext executeProcessContext = mock(ExecuteProcessContext.class);
-        when(executeProcessContext.getProcessUnits()).thenReturn(Collections.emptyMap());
-        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(executeProcessContext);
-        reporter.report("foo_id", sqlExecutionUnit, ExecuteProcessStatusEnum.DONE);
-        verify(showProcessListManager, times(1)).getProcessContext(eq("foo_id"));
+        when(sqlExecutionUnit.getExecutionUnit()).thenReturn(mock(ExecutionUnit.class));
+        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ExecuteProcessContext.class));
+        new ExecuteProcessReporter().report("foo_id", sqlExecutionUnit, ExecuteProcessStatusEnum.DONE);
+        verify(showProcessListManager).getProcessContext("foo_id");
     }
     
     @Test
     public void assertReportClean() {
-        ExecuteProcessContext executeProcessContext = mock(ExecuteProcessContext.class);
-        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(executeProcessContext);
-        reporter.reportClean("foo_id");
-        verify(showProcessListManager, times(1)).removeProcessStatement(eq("foo_id"));
-    }
-    
-    @After
-    public void tearDown() {
-        mockedStatic.close();
+        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ExecuteProcessContext.class));
+        new ExecuteProcessReporter().reportClean("foo_id");
+        verify(showProcessListManager).removeProcessStatement("foo_id");
     }
 }

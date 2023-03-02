@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -71,8 +72,8 @@ public final class EncryptRuleConfigurationImportChecker {
         Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
         configuration.getTables().forEach(each -> columns.addAll(each.getColumns()));
         Collection<String> notExistedEncryptors = columns.stream().map(EncryptColumnRuleConfiguration::getEncryptorName).collect(Collectors.toList());
-        notExistedEncryptors.addAll(columns.stream().map(EncryptColumnRuleConfiguration::getLikeQueryEncryptorName).collect(Collectors.toList()));
-        notExistedEncryptors.addAll(columns.stream().map(EncryptColumnRuleConfiguration::getAssistedQueryEncryptorName).collect(Collectors.toList()));
+        notExistedEncryptors.addAll(columns.stream().map(EncryptColumnRuleConfiguration::getLikeQueryEncryptorName).filter(Objects::nonNull).collect(Collectors.toList()));
+        notExistedEncryptors.addAll(columns.stream().map(EncryptColumnRuleConfiguration::getAssistedQueryEncryptorName).filter(Objects::nonNull).collect(Collectors.toList()));
         Collection<String> encryptors = configuration.getEncryptors().keySet();
         notExistedEncryptors.removeIf(encryptors::contains);
         ShardingSpherePreconditions.checkState(notExistedEncryptors.isEmpty(), () -> new MissingRequiredAlgorithmException(databaseName, notExistedEncryptors));

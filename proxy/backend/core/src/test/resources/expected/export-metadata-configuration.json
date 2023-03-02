@@ -1,0 +1,1 @@
+{"storageNodes":[],"metaData":{"databases":{},"props":"props:\n  sql-show: true\n","rules":"rules:\n- !AUTHORITY\n  privilege:\n    type: ALL_PERMITTED\n  users:\n  - authenticationMethodName: ''\n    password: root\n    user: root@%\n"}}

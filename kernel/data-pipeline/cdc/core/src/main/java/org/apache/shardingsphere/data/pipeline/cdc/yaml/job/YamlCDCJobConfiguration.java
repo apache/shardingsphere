@@ -34,7 +34,7 @@ public final class YamlCDCJobConfiguration implements YamlPipelineJobConfigurati
     
     private String jobId;
     
-    private String database;
+    private String databaseName;
     
     private List<String> schemaTableNames;
     

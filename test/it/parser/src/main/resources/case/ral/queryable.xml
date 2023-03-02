@@ -40,6 +40,7 @@
     <export-database-config sql-case-id="export-database-config">
         <database name="database_name" start-index="28" stop-index="40" />
     </export-database-config>
+    <export-metadata sql-case-id="export-metadata" />
     <convert-yaml-config sql-case-id="convert-yaml-config">
         <file-path>/yaml/config-sharding.yaml</file-path>
     </convert-yaml-config>

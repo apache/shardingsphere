@@ -16,11 +16,18 @@
 
 ALTER USER test_user NOSUPERUSER;
 ALTER USER test_user REPLICATION;
+
+DROP DATABASE IF EXISTS pipeline_it_0;
+DROP DATABASE IF EXISTS pipeline_it_1;
+DROP DATABASE IF EXISTS pipeline_it_2;
+DROP DATABASE IF EXISTS pipeline_it_3;
+DROP DATABASE IF EXISTS pipeline_it_4;
 CREATE DATABASE pipeline_it_0;
 CREATE DATABASE pipeline_it_1;
 CREATE DATABASE pipeline_it_2;
 CREATE DATABASE pipeline_it_3;
 CREATE DATABASE pipeline_it_4;
+
 -- TODO remove unnecessary permissions
 GRANT CREATE, CONNECT ON DATABASE pipeline_it_0 TO test_user;
 GRANT CREATE, CONNECT ON DATABASE pipeline_it_1 TO test_user;

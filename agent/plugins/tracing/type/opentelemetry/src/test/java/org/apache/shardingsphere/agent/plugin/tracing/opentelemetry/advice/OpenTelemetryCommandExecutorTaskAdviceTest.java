@@ -17,32 +17,71 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice;
 
+import io.netty.util.DefaultAttributeMap;
+import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.StatusCode;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter;
+import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.data.SpanData;
-import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
+import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
+import org.apache.shardingsphere.agent.plugin.tracing.AgentExtension;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
-import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.collector.OpenTelemetryCollector;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class OpenTelemetryCommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
+@ExtendWith({AgentExtension.class, AutoMockExtension.class})
+@StaticMockSettings(ProxyContext.class)
+public final class OpenTelemetryCommandExecutorTaskAdviceTest {
     
-    @ClassRule
-    public static final OpenTelemetryCollector COLLECTOR = new OpenTelemetryCollector();
+    private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
+    
+    private TargetAdviceObject targetObject;
+    
+    @BeforeEach
+    public void setup() {
+        SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(testExporter)).build();
+        OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).buildAndRegisterGlobal().getTracer(OpenTelemetryConstants.TRACER_NAME);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.BASE, new DefaultAttributeMap());
+        Object executorTask = new CommandExecutorTask(null, connectionSession, null, null);
+        targetObject = (TargetAdviceObject) executorTask;
+    }
+    
+    @AfterEach
+    public void clean() {
+        GlobalOpenTelemetry.resetForTest();
+        testExporter.reset();
+    }
     
     @Test
     public void assertMethod() {
         OpenTelemetryCommandExecutorTaskAdvice advice = new OpenTelemetryCommandExecutorTaskAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{}, "OpenTelemetry");
-        advice.afterMethod(getTargetObject(), null, new Object[]{}, null, "OpenTelemetry");
-        List<SpanData> spanItems = COLLECTOR.getSpanItems();
+        advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
+        advice.afterMethod(targetObject, null, new Object[]{}, null, "OpenTelemetry");
+        List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));
@@ -53,9 +92,9 @@ public final class OpenTelemetryCommandExecutorTaskAdviceTest extends AbstractCo
     @Test
     public void assertExceptionHandle() {
         OpenTelemetryCommandExecutorTaskAdvice advice = new OpenTelemetryCommandExecutorTaskAdvice();
-        advice.beforeMethod(getTargetObject(), null, new Object[]{}, "OpenTelemetry");
-        advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException(), "OpenTelemetry");
-        List<SpanData> spanItems = COLLECTOR.getSpanItems();
+        advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
+        advice.onThrowing(targetObject, null, new Object[]{}, new IOException(), "OpenTelemetry");
+        List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));

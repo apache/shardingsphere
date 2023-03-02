@@ -164,7 +164,6 @@ services:
 | proxy_meta_data_info              | GAUGE_METRIC_FAMILY | ShardingSphere-Proxy 元数据信息，database_count：逻辑库数量，storage_unit_count：存储节点数量 |
 | proxy_current_connections         | GAUGE               | ShardingSphere-Proxy 的当前连接数                                               |
 | proxy_requests_total              | COUNTER             | ShardingSphere-Proxy 的接受请求总数                                              |
-| proxy_commit_transactions_total   | COUNTER             | ShardingSphere-Proxy 的事务提交总数                                              |
-| proxy_rollback_transactions_total | COUNTER             | ShardingSphere-Proxy 的事务回滚总数                                              |
+| proxy_transactions_total          | COUNTER             | ShardingSphere-Proxy 的事务总数，按 commit，rollback 分类                      |
 | proxy_execute_latency_millis      | HISTOGRAM           | ShardingSphere-Proxy 的执行耗时毫秒直方图                                           |
 | proxy_execute_errors_total        | COUNTER             | ShardingSphere-Proxy 的执行异常总数                                              |

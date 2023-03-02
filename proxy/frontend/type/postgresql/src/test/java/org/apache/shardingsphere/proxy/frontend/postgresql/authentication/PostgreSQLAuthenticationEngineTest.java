@@ -43,16 +43,16 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
-import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl.PostgreSQLMD5PasswordAuthenticator;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -61,14 +61,16 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestorer {
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+public final class PostgreSQLAuthenticationEngineTest {
     
     private final String username = "root";
     
@@ -78,16 +80,9 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
     private ChannelHandlerContext channelHandlerContext;
     
     @SuppressWarnings("unchecked")
-    @Before
+    @BeforeEach
     public void setup() {
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
-        mockInitProxyContext();
-    }
-    
-    private void mockInitProxyContext() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
-        ProxyContext.init(contextManager);
     }
     
     @Test
@@ -100,24 +95,28 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         assertFalse(actual.isFinished());
     }
     
-    @Test(expected = EmptyUsernameException.class)
+    @Test
     public void assertUserNotSet() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512), StandardCharsets.UTF_8);
         payload.writeInt4(64);
         payload.writeInt4(196608);
         payload.writeStringNul("client_encoding");
         payload.writeStringNul("UTF8");
-        new PostgreSQLAuthenticationEngine().authenticate(channelHandlerContext, payload);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertThrows(EmptyUsernameException.class, () -> new PostgreSQLAuthenticationEngine().authenticate(channelHandlerContext, payload));
     }
     
-    @Test(expected = ProtocolViolationException.class)
+    @Test
     public void assertAuthenticateWithNonPasswordMessage() {
         PostgreSQLAuthenticationEngine authenticationEngine = new PostgreSQLAuthenticationEngine();
         setAlreadyReceivedStartupMessage(authenticationEngine);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 16), StandardCharsets.UTF_8);
         payload.writeInt1('F');
         payload.writeInt8(0);
-        authenticationEngine.authenticate(channelHandlerContext, payload);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertThrows(ProtocolViolationException.class, () -> authenticationEngine.authenticate(channelHandlerContext, payload));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -130,9 +129,9 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         assertLogin(password);
     }
     
-    @Test(expected = InvalidPasswordException.class)
+    @Test
     public void assertLoginFailed() {
-        assertLogin("wrong" + password);
+        assertThrows(InvalidPasswordException.class, () -> assertLogin("wrong" + password));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -145,6 +144,8 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         payload.writeStringNul("client_encoding");
         payload.writeStringNul("UTF8");
         PostgreSQLAuthenticationEngine engine = new PostgreSQLAuthenticationEngine();
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         AuthenticationResult actual = engine.authenticate(channelHandlerContext, payload);
         assertFalse(actual.isFinished());
         assertThat(actual.getUsername(), is(username));
@@ -159,15 +160,19 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
         payload.writeInt4(4 + md5Digest.length() + 1);
         payload.writeStringNul(md5Digest);
         MetaDataContexts metaDataContexts = getMetaDataContexts(new ShardingSphereUser(username, password, ""));
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
         actual = engine.authenticate(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {
         return new UnpooledHeapByteBuf(UnpooledByteBufAllocator.DEFAULT, initialCapacity, maxCapacity);
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mock(AuthorityRule.class))));
+        return result;
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
