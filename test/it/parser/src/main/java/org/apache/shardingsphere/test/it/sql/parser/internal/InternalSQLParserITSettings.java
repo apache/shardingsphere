@@ -15,11 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.it.sqlserver.internal;
+package org.apache.shardingsphere.test.it.sql.parser.internal;
 
-import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-@InternalSQLParserITSettings("SQLServer")
-public final class InternalSQLServerParserIT extends InternalSQLParserIT {
+/**
+ * Internal SQL parser integrate test settings.
+ */
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+public @interface InternalSQLParserITSettings {
+    
+    /**
+     * Get to be tested database types.
+     * 
+     * @return to be tested database types
+     */
+    String[] value();
 }
