@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.pojo;
+package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * CDC table based pipeline job info.
+ * Job offset info.
  */
-@Getter
 @RequiredArgsConstructor
-public class CDCTableBasedPipelineJobInfo implements PipelineJobInfo {
+@Getter
+public final class JobOffsetInfo {
     
-    private final PipelineJobMetaData jobMetaData;
-    
-    private final String databaseName;
-    
-    private final String schemaTableNames;
+    private final boolean targetSchemaTableCreated;
 }
