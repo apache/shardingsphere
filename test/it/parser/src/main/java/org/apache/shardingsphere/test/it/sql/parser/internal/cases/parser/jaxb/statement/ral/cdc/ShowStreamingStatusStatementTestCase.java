@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-import java.util.List;
-import java.util.Map;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Stream data parameter.
+ * Show streaming status statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class StreamDataParameter {
+@Setter
+public final class ShowStreamingStatusStatementTestCase extends SQLParserTestCase {
     
-    private final String databaseName;
-    
-    private final List<String> schemaTableNames;
-    
-    private final boolean full;
-    
-    private final Map<String, List<DataNode>> dataNodesMap;
-    
-    private final boolean decodeWithTX;
+    @XmlElement(name = "job-id")
+    private String jobId;
 }

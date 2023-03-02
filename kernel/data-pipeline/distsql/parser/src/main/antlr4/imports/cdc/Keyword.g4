@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
+lexer grammar Keyword;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
+import Alphabet;
 
-import java.util.List;
-import java.util.Map;
+WS
+    : [ \t\r\n] + ->skip
+    ;
 
-/**
- * Stream data parameter.
- */
-@RequiredArgsConstructor
-@Getter
-public final class StreamDataParameter {
-    
-    private final String databaseName;
-    
-    private final List<String> schemaTableNames;
-    
-    private final boolean full;
-    
-    private final Map<String, List<DataNode>> dataNodesMap;
-    
-    private final boolean decodeWithTX;
-}
+SHOW
+    : S H O W
+    ;
+
+STREAMING
+    : S T R E A M I N G
+    ;
+
+LIST
+    : L I S T
+    ;
+
+STATUS
+    : S T A T U S
+    ;

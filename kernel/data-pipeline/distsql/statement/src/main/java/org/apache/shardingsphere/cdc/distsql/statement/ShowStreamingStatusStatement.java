@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
+package org.apache.shardingsphere.cdc.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-
-import java.util.List;
-import java.util.Map;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
- * Stream data parameter.
+ * Show streaming status statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StreamDataParameter {
+public final class ShowStreamingStatusStatement extends QueryableScalingRALStatement {
     
-    private final String databaseName;
-    
-    private final List<String> schemaTableNames;
-    
-    private final boolean full;
-    
-    private final Map<String, List<DataNode>> dataNodesMap;
-    
-    private final boolean decodeWithTX;
+    private final String jobId;
 }

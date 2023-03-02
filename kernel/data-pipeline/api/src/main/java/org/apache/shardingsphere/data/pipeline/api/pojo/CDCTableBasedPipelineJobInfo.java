@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
+package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-
-import java.util.List;
-import java.util.Map;
 
 /**
- * Stream data parameter.
+ * CDC table based pipeline job info.
  */
-@RequiredArgsConstructor
 @Getter
-public final class StreamDataParameter {
+@RequiredArgsConstructor
+public class CDCTableBasedPipelineJobInfo implements PipelineJobInfo {
+    
+    private final PipelineJobMetaData jobMetaData;
     
     private final String databaseName;
     
-    private final List<String> schemaTableNames;
-    
-    private final boolean full;
-    
-    private final Map<String, List<DataNode>> dataNodesMap;
-    
-    private final boolean decodeWithTX;
+    private final String schemaTableNames;
 }

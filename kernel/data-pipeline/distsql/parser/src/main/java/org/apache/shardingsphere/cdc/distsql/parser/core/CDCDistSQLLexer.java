@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.api.pojo;
+package org.apache.shardingsphere.cdc.distsql.parser.core;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-
-import java.util.List;
-import java.util.Map;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.CDCDistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * Stream data parameter.
+ * SQL lexer for CDC DistSQL.
  */
-@RequiredArgsConstructor
-@Getter
-public final class StreamDataParameter {
+public final class CDCDistSQLLexer extends CDCDistSQLStatementLexer implements SQLLexer {
     
-    private final String databaseName;
-    
-    private final List<String> schemaTableNames;
-    
-    private final boolean full;
-    
-    private final Map<String, List<DataNode>> dataNodesMap;
-    
-    private final boolean decodeWithTX;
+    public CDCDistSQLLexer(final CharStream input) {
+        super(input);
+    }
 }
