@@ -29,10 +29,12 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.Abstract
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,10 +42,11 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * E2E IT for different types of indexes, includes:
@@ -52,7 +55,6 @@ import static org.junit.Assert.assertTrue;
  * 3) multiple columns primary key, first column type is VARCHAR.
  * 4) multiple columns unique key, first column type is BIGINT.
  */
-@RunWith(Parameterized.class)
 @Slf4j
 public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
@@ -66,29 +68,14 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         super(testParam);
     }
     
-    @Parameters(name = "{0}")
-    public static Collection<PipelineTestParameter> getTestParameters() {
-        Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
-            return result;
-        }
-        List<String> mysqlVersion = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
-        if (!mysqlVersion.isEmpty()) {
-            result.add(new PipelineTestParameter(new MySQLDatabaseType(), mysqlVersion.get(0), "env/common/none.xml"));
-        }
-        List<String> postgresqlVersion = PipelineBaseE2EIT.ENV.listStorageContainerImages(new PostgreSQLDatabaseType());
-        if (!postgresqlVersion.isEmpty()) {
-            result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), postgresqlVersion.get(0), "env/common/none.xml"));
-        }
-        return result;
-    }
-    
     @Override
     protected String getSourceTableOrderName() {
         return "t_order";
     }
     
-    @Test
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertNoUniqueKeyMigrationSuccess() throws SQLException, InterruptedException {
         String sql;
         String consistencyCheckAlgorithmType;
@@ -105,7 +92,9 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         assertMigrationSuccess(sql, "user_id", new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
-    @Test
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertMultiPrimaryKeyMigrationSuccess() throws SQLException, InterruptedException {
         String sql;
         String consistencyCheckAlgorithmType;
@@ -118,7 +107,9 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         assertMigrationSuccess(sql, "user_id", new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
-    @Test
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertMultiUniqueKeyMigrationSuccess() throws SQLException, InterruptedException {
         String sql;
         String consistencyCheckAlgorithmType;
@@ -131,7 +122,9 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         assertMigrationSuccess(sql, "user_id", new SnowflakeKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
-    @Test
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess() throws SQLException, InterruptedException {
         String sql;
         String consistencyCheckAlgorithmType;
@@ -174,7 +167,27 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         commitMigrationByJobId(jobId);
         proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
         assertThat(getTargetTableRecordsCount(getSourceTableOrderName()), is(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT + 1));
-        List<String> lastJobIds = listJobId();
-        assertTrue(lastJobIds.isEmpty());
+        assertTrue(listJobId().isEmpty());
+    }
+    
+    private static boolean isEnabled() {
+        return PipelineBaseE2EIT.ENV.getItEnvType() != PipelineEnvTypeEnum.NONE;
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            Collection<Arguments> result = new LinkedList<>();
+            List<String> mysqlVersion = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
+            if (!mysqlVersion.isEmpty()) {
+                result.add(Arguments.of(new PipelineTestParameter(new MySQLDatabaseType(), mysqlVersion.get(0), "env/common/none.xml")));
+            }
+            List<String> postgresqlVersion = PipelineBaseE2EIT.ENV.listStorageContainerImages(new PostgreSQLDatabaseType());
+            if (!postgresqlVersion.isEmpty()) {
+                result.add(Arguments.of(new PipelineTestParameter(new PostgreSQLDatabaseType(), postgresqlVersion.get(0), "env/common/none.xml")));
+            }
+            return result.stream();
+        }
     }
 }
