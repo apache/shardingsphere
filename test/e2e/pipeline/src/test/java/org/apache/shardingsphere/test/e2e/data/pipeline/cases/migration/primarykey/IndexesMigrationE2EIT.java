@@ -142,6 +142,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         } else {
             return;
         }
+        // TODO Insert binary string in VARBINARY column. But KeyGenerateAlgorithm.generateKey() require returning Comparable, and byte[] is not Comparable
         assertMigrationSuccess(sql, "order_id", new UUIDKeyGenerateAlgorithm(), consistencyCheckAlgorithmType);
     }
     
