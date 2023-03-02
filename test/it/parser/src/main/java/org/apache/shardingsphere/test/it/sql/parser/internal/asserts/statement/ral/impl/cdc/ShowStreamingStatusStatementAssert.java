@@ -34,8 +34,8 @@ public final class ShowStreamingStatusStatementAssert {
      * Assert show streaming status statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show migration status statement
-     * @param expected expected show migration status statement test case
+     * @param actual actual show streaming status statement
+     * @param expected expected show streaming status statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowStreamingStatusStatement actual, final ShowStreamingStatusStatementTestCase expected) {
         if (null == expected) {

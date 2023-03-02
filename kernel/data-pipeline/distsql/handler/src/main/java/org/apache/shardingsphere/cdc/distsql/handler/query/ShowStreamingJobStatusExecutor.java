@@ -42,23 +42,23 @@ public final class ShowStreamingJobStatusExecutor implements QueryableRALExecuto
         InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(PipelineJobAPI.class, "CDC");
         List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(sqlStatement.getJobId());
         long currentTimeMillis = System.currentTimeMillis();
-        return jobItemInfos.stream().map(each -> {
-            LocalDataQueryResultRow row;
-            InventoryIncrementalJobItemProgress jobItemProgress = each.getJobItemProgress();
-            if (null != jobItemProgress) {
-                String incrementalIdleSeconds = "";
-                if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
-                    long latestActiveTimeMillis = Math.max(each.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
-                    incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
-                }
-                row = new LocalDataQueryResultRow(each.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(),
-                        jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), each.getInventoryFinishedPercentage(),
-                        incrementalIdleSeconds, each.getErrorMessage());
-            } else {
-                row = new LocalDataQueryResultRow(each.getShardingItem(), "", "", "", "", "", "", each.getErrorMessage());
+        return jobItemInfos.stream().map(each -> generateResultRow(each, currentTimeMillis)).collect(Collectors.toList());
+    }
+    
+    // TODO currently result are the same as the migration, maybe optimized later
+    private LocalDataQueryResultRow generateResultRow(final InventoryIncrementalJobItemInfo jobItemInfo, final long currentTimeMillis) {
+        InventoryIncrementalJobItemProgress jobItemProgress = jobItemInfo.getJobItemProgress();
+        if (null != jobItemProgress) {
+            String incrementalIdleSeconds = "";
+            if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
+                long latestActiveTimeMillis = Math.max(jobItemInfo.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
+                incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
             }
-            return row;
-        }).collect(Collectors.toList());
+            return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), jobItemProgress.getDataSourceName(), jobItemProgress.getStatus(),
+                    jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(), jobItemProgress.getProcessedRecordsCount(), jobItemInfo.getInventoryFinishedPercentage(),
+                    incrementalIdleSeconds, jobItemInfo.getErrorMessage());
+        }
+        return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), "", "", "", "", "", "", jobItemInfo.getErrorMessage());
     }
     
     @Override

@@ -31,8 +31,7 @@ import java.util.Map;
 @Getter
 public final class StreamDataParameter {
     
-    // TODO rename to databaseName
-    private final String database;
+    private final String databaseName;
     
     private final List<String> schemaTableNames;
     

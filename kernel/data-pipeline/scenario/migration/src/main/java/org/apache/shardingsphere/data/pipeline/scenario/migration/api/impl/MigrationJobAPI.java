@@ -229,7 +229,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         List<String> sourceTables = new LinkedList<>();
         getJobConfiguration(jobConfigPOJO).getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes()
                 .forEach(dataNode -> sourceTables.add(DataNodeUtil.formatWithSchema(dataNode)))));
-        return new TableBasedPipelineJobInfo(jobMetaData, String.join(",", sourceTables));
+        return new TableBasedPipelineJobInfo(jobMetaData, "", String.join(",", sourceTables));
     }
     
     @Override

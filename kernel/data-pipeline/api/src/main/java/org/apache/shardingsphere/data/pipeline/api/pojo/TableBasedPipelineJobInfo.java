@@ -29,5 +29,7 @@ public final class TableBasedPipelineJobInfo implements PipelineJobInfo {
     
     private final PipelineJobMetaData jobMetaData;
     
+    private final String databaseName;
+    
     private final String table;
 }
