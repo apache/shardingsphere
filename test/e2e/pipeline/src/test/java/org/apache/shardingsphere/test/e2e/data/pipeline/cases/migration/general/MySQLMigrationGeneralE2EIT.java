@@ -107,7 +107,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             commitMigrationByJobId(each);
         }
         List<String> lastJobIds = listJobId();
-        assertThat(lastJobIds.size(), is(0));
+        assertTrue(lastJobIds.isEmpty());
         proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
         assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT, "");
         log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
