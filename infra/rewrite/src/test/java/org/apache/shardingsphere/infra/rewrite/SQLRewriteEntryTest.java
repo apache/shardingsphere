@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
@@ -58,7 +58,7 @@ public final class SQLRewriteEntryTest {
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
                 database, new ShardingSphereRuleMetaData(Collections.singleton(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()))), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
-        GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext,
+        GenericSQLRewriteResult sqlRewriteResult = (GenericSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(CommonSQLStatementContext.class), routeContext,
                 mock(ConnectionContext.class));
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getSql(), is("SELECT ?"));
         assertThat(sqlRewriteResult.getSqlRewriteUnit().getParameters(), is(Collections.singletonList(1)));
@@ -76,7 +76,7 @@ public final class SQLRewriteEntryTest {
         RouteUnit secondRouteUnit = mock(RouteUnit.class);
         when(secondRouteUnit.getDataSourceMapper()).thenReturn(new RouteMapper("ds", "ds_1"));
         routeContext.getRouteUnits().addAll(Arrays.asList(firstRouteUnit, secondRouteUnit));
-        RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(SQLStatementContext.class), routeContext,
+        RouteSQLRewriteResult sqlRewriteResult = (RouteSQLRewriteResult) sqlRewriteEntry.rewrite("SELECT ?", Collections.singletonList(1), mock(CommonSQLStatementContext.class), routeContext,
                 mock(ConnectionContext.class));
         assertThat(sqlRewriteResult.getSqlRewriteUnits().size(), is(2));
     }
