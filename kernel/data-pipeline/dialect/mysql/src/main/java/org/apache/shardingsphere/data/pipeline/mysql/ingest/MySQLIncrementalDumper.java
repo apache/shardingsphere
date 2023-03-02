@@ -36,6 +36,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTable
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractRowsEvent;
@@ -46,11 +47,13 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRo
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ConnectInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.MySQLDataTypeHandler;
+import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.Optional;
@@ -176,6 +179,12 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private Serializable handleValue(final PipelineColumnMetaData columnMetaData, final Serializable value) {
+        if (value instanceof MySQLBinaryString) {
+            if (PipelineJdbcUtils.isBinaryColumn(columnMetaData.getDataType())) {
+                return ((MySQLBinaryString) value).getBytes();
+            }
+            return new String(((MySQLBinaryString) value).getBytes(), Charset.defaultCharset());
+        }
         Optional<MySQLDataTypeHandler> dataTypeHandler = TypedSPILoader.findService(MySQLDataTypeHandler.class, columnMetaData.getDataTypeName());
         return dataTypeHandler.isPresent() ? dataTypeHandler.get().handle(value) : value;
     }
