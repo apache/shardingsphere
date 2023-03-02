@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.DriverURLProviderNotFoundException;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * ShardingSphere driver URL manager.
@@ -38,5 +44,41 @@ public final class ShardingSphereDriverURLManager {
             }
         }
         throw new DriverURLProviderNotFoundException(url);
+    }
+    
+    /**
+     * parse the url and get the parameters of the url.
+     * @param url the driver url
+     * @return the parameters of the url
+     */
+    public static Properties parseURL(final String url) {
+        Properties result = new Properties();
+        int index = url.indexOf("?");
+        if (-1 == index) {
+            return result;
+        }
+        String paramString = url.substring(index + 1);
+        StringTokenizer queryParams = new StringTokenizer(paramString, "&");
+        while (queryParams.hasMoreTokens()) {
+            String parameterValuePair = queryParams.nextToken();
+            int indexOfEquals = StringUtils.indexOfIgnoreCase(parameterValuePair, "=", 0);
+            String parameter = null;
+            String value = null;
+            if (indexOfEquals == -1) {
+                continue;
+            }
+            parameter = parameterValuePair.substring(0, indexOfEquals);
+            if (indexOfEquals + 1 < parameterValuePair.length()) {
+                value = parameterValuePair.substring(indexOfEquals + 1);
+            }
+            if (value != null && value.length() > 0 && parameter.length() > 0) {
+                try {
+                    result.put(parameter, URLDecoder.decode(value, "UTF-8"));
+                } catch (UnsupportedEncodingException | NoSuchMethodError e) {
+                    result.put(parameter, URLDecoder.decode(value));
+                }
+            }
+        }
+        return result;
     }
 }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.exception.syntax.DriverURLProviderN
 import org.junit.Test;
 
 import java.util.Objects;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,6 +45,12 @@ public final class ShardingSphereDriverURLManagerTest {
     public void assertToAbsolutePathConfigurationFile() {
         String absolutePath = Objects.requireNonNull(ShardingSphereDriverURLManagerTest.class.getClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
         byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absolutePath);
+        assertThat(actual.length, is(fooDriverConfigLength));
+    }
+    
+    @Test
+    public void assertParseUrl() {
+        Properties actual = ShardingSphereDriverURLManager.parseURL("jdbc:shardingsphere:apollo:")
         assertThat(actual.length, is(fooDriverConfigLength));
     }
 }
