@@ -128,4 +128,5 @@ ShardingSphere 驱动 URL 提供器
     <groupId>com.ctrip.framework.apollo</groupId>
     <artifactId>apollo-client</artifactId>
     <version>${apollo.version}</version>
+</dependency>
 ```

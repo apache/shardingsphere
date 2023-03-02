@@ -111,4 +111,5 @@ When you use the Apollo loader, you need to add the corresponding apollo pom dep
     <groupId>com.ctrip.framework.apollo</groupId>
     <artifactId>apollo-client</artifactId>
     <version>${apollo.version}</version>
+</dependency>
 ```
