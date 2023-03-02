@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +31,7 @@ import java.io.Serializable;
  * So this customized class object will be returned on parsing.</p>
  */
 @RequiredArgsConstructor
+@EqualsAndHashCode
 @Getter
 public final class MySQLBinaryString implements Serializable {
     
