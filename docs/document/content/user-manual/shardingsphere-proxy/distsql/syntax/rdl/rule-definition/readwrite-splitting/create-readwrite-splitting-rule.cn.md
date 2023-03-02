@@ -25,7 +25,7 @@ staticReadwriteSplittingDefinition ::=
     'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')'
 
 dynamicReadwriteSplittingDefinition ::=
-    'AUTO_AWARE_RESOURCE' '=' resourceName (',' 'WRITE_DATA_SOURCE_QUERY_ENABLED' '=' ('TRUE' | 'FALSE'))?
+    'AUTO_AWARE_RESOURCE' '=' resourceName
 
 loadBalancerDefinition ::=
     'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
@@ -84,8 +84,7 @@ CREATE READWRITE_SPLITTING RULE ms_group_0 (
 
 ```sql
 CREATE READWRITE_SPLITTING RULE ms_group_1 (
-    AUTO_AWARE_RESOURCE=group_0,
-    WRITE_DATA_SOURCE_QUERY_ENABLED=false,
+    AUTO_AWARE_RESOURCE=group_0
     TYPE(NAME="random")
 );
 ```
@@ -106,15 +105,14 @@ CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_0 (
 
 ```sql
 CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_1 (
-    AUTO_AWARE_RESOURCE=group_0,
-    WRITE_DATA_SOURCE_QUERY_ENABLED=false,
+    AUTO_AWARE_RESOURCE=group_0
     TYPE(NAME="random")
 );
 ```
 
 ### 保留字
 
-`CREATE`、`READWRITE_SPLITTING`、`RULE`、`WRITE_STORAGE_UNIT`、`READ_STORAGE_UNITS`、`AUTO_AWARE_RESOURCE`、`WRITE_DATA_SOURCE_QUERY_ENABLED`
+`CREATE`、`READWRITE_SPLITTING`、`RULE`、`WRITE_STORAGE_UNIT`、`READ_STORAGE_UNITS`、`AUTO_AWARE_RESOURCE`
 、`TYPE`、`NAME`、`PROPERTIES`、`TRUE`、`FALSE`
 
 ### 相关链接

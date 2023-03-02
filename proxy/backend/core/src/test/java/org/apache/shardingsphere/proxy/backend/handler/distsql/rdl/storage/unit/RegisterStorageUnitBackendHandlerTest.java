@@ -72,8 +72,7 @@ public final class RegisterStorageUnitBackendHandlerTest {
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
         handler = new RegisterStorageUnitBackendHandler(mock(RegisterStorageUnitStatement.class), connectionSession);
-        Plugins.getMemberAccessor().set(
-                handler.getClass().getDeclaredField("validateHandler"), handler, mock(DataSourcePropertiesValidateHandler.class));
+        Plugins.getMemberAccessor().set(handler.getClass().getDeclaredField("validateHandler"), handler, mock(DataSourcePropertiesValidateHandler.class));
     }
     
     @Test

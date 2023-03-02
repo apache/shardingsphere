@@ -20,29 +20,30 @@ package org.apache.shardingsphere.proxy.backend.mysql.connector.jdbc.statement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class MySQLStatementMemoryStrictlyFetchSizeSetterTest {
     
     @Test
     public void assertSetFetchSize() throws SQLException {
         Statement statement = mock(Statement.class);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            new MySQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
-            verify(statement).setFetchSize(Integer.MIN_VALUE);
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        new MySQLStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
+        verify(statement).setFetchSize(Integer.MIN_VALUE);
     }
     
     private static ContextManager mockContextManager() {
