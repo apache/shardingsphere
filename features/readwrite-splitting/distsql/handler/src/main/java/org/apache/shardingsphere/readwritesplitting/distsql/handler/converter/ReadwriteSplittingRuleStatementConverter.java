@@ -62,7 +62,7 @@ public final class ReadwriteSplittingRuleStatementConverter {
     private static ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfiguration(final ReadwriteSplittingRuleSegment segment,
                                                                                                    final String loadBalancerName, final boolean isAutoAware) {
         return isAutoAware ? new ReadwriteSplittingDataSourceRuleConfiguration(segment.getName(), null,
-                new DynamicReadwriteSplittingStrategyConfiguration(segment.getAutoAwareResource(), segment.getWriteDataSourceQueryEnabled()), loadBalancerName)
+                new DynamicReadwriteSplittingStrategyConfiguration(segment.getAutoAwareResource()), loadBalancerName)
                 : new ReadwriteSplittingDataSourceRuleConfiguration(segment.getName(),
                         new StaticReadwriteSplittingStrategyConfiguration(segment.getWriteDataSource(), new ArrayList<>(segment.getReadDataSources())), null, loadBalancerName);
     }

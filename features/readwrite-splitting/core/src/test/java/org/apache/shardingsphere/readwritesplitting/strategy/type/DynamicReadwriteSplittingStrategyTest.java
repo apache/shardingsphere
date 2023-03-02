@@ -30,7 +30,7 @@ public final class DynamicReadwriteSplittingStrategyTest {
     
     @Test
     public void assertGetDataSourceMapper() {
-        DynamicReadwriteSplittingStrategy dynamicReadwriteSplittingStrategy = new DynamicReadwriteSplittingStrategy("database_discovery_ds", true, mock(DynamicDataSourceContainedRule.class));
+        DynamicReadwriteSplittingStrategy dynamicReadwriteSplittingStrategy = new DynamicReadwriteSplittingStrategy("database_discovery_ds", mock(DynamicDataSourceContainedRule.class));
         assertThat(dynamicReadwriteSplittingStrategy.getAllDataSources(), is(Collections.singletonList("database_discovery_ds")));
     }
 }

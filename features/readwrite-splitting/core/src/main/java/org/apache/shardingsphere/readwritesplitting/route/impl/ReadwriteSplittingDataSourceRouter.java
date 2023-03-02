@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
-import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
@@ -54,7 +53,7 @@ public final class ReadwriteSplittingDataSourceRouter {
     }
     
     private boolean isPrimaryRoute(final SQLStatementContext<?> sqlStatementContext) {
-        return isWriteRouteStatement(sqlStatementContext) || isHintWriteRouteOnly(sqlStatementContext) || isAllowWriteDataSourceQuery();
+        return isWriteRouteStatement(sqlStatementContext) || isHintWriteRouteOnly(sqlStatementContext);
     }
     
     private boolean isWriteRouteStatement(final SQLStatementContext<?> sqlStatementContext) {
@@ -72,10 +71,5 @@ public final class ReadwriteSplittingDataSourceRouter {
     
     private boolean isHintWriteRouteOnly(final SQLStatementContext<?> sqlStatementContext) {
         return HintManager.isWriteRouteOnly() || (sqlStatementContext instanceof CommonSQLStatementContext && ((CommonSQLStatementContext<?>) sqlStatementContext).isHintWriteRouteOnly());
-    }
-    
-    private boolean isAllowWriteDataSourceQuery() {
-        return rule.getEnabledReplicaDataSources().isEmpty() && (rule.getReadwriteSplittingStrategy() instanceof DynamicReadwriteSplittingStrategy)
-                && ((DynamicReadwriteSplittingStrategy) rule.getReadwriteSplittingStrategy()).isAllowWriteDataSourceQuery();
     }
 }
