@@ -30,27 +30,28 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTyp
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
-import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
+@RunWith(Parameterized.class)
 @Slf4j
 public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
+    private final PipelineTestParameter testParam;
+    
     public PostgreSQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
+        this.testParam = testParam;
     }
     
     @Override
@@ -58,10 +59,23 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         return "t_order_copy";
     }
     
-    @ParameterizedTest(name = "{0}")
-    @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
+    @Parameters(name = "{0}")
+    public static Collection<PipelineTestParameter> getTestParameters() {
+        Collection<PipelineTestParameter> result = new LinkedList<>();
+        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
+            return result;
+        }
+        for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
+            result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), each, "env/scenario/general/postgresql.xml"));
+        }
+        for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
+            result.add(new PipelineTestParameter(new OpenGaussDatabaseType(), each, "env/scenario/general/postgresql.xml"));
+        }
+        return result;
+    }
+    
+    @Test
+    public void assertMigrationSuccess() throws SQLException, InterruptedException {
         log.info("assertMigrationSuccess testParam:{}", testParam);
         initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         addMigrationProcessConfig();
@@ -112,24 +126,5 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         String jobId = getJobIdByTableName("ds_0.test.t_order_item");
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
-    }
-    
-    private static boolean isEnabled() {
-        return PipelineBaseE2EIT.ENV.getItEnvType() != PipelineEnvTypeEnum.NONE;
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            Collection<Arguments> result = new LinkedList<>();
-            for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
-                result.add(Arguments.of(new PipelineTestParameter(new PostgreSQLDatabaseType(), each, "env/scenario/general/postgresql.xml")));
-            }
-            for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
-                result.add(Arguments.of(new PipelineTestParameter(new OpenGaussDatabaseType(), each, "env/scenario/general/postgresql.xml")));
-            }
-            return result.stream();
-        }
     }
 }

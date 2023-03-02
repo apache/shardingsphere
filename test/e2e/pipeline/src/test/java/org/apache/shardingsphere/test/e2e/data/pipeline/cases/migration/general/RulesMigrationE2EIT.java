@@ -26,19 +26,16 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.Abstract
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
-import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -48,6 +45,7 @@ import static org.hamcrest.Matchers.is;
  * 1) no any rule.
  * 2) only encrypt rule.
  */
+@RunWith(Parameterized.class)
 @Slf4j
 public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     
@@ -55,21 +53,31 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
         super(testParam);
     }
     
+    @Parameters(name = "{0}")
+    public static Collection<PipelineTestParameter> getTestParameters() {
+        Collection<PipelineTestParameter> result = new LinkedList<>();
+        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
+            return result;
+        }
+        List<String> versions = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
+        if (versions.isEmpty()) {
+            return result;
+        }
+        result.add(new PipelineTestParameter(new MySQLDatabaseType(), versions.get(0), "env/scenario/primary_key/text_primary_key/mysql.xml"));
+        return result;
+    }
+    
     @Override
     protected String getSourceTableOrderName() {
         return "t_order";
     }
     
-    @ParameterizedTest(name = "{0}")
-    @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @Test
     public void assertNoRuleMigrationSuccess() throws Exception {
         assertMigrationSuccess(null);
     }
     
-    @ParameterizedTest(name = "{0}")
-    @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @Test
     public void assertOnlyEncryptRuleMigrationSuccess() throws Exception {
         assertMigrationSuccess(() -> {
             createTargetOrderTableEncryptRule();
@@ -96,20 +104,5 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
         commitMigrationByJobId(jobId);
         proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
         assertThat(getTargetTableRecordsCount(getSourceTableOrderName()), is(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT));
-    }
-    
-    private static boolean isEnabled() {
-        return PipelineBaseE2EIT.ENV.getItEnvType() != PipelineEnvTypeEnum.NONE && !PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType()).isEmpty();
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            Collection<Arguments> result = new LinkedList<>();
-            List<String> versions = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
-            result.add(Arguments.of(new PipelineTestParameter(new MySQLDatabaseType(), versions.get(0), "env/scenario/primary_key/text_primary_key/mysql.xml")));
-            return result.stream();
-        }
     }
 }
