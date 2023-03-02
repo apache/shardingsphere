@@ -152,6 +152,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             if (configSources.containsKey(dataSourceName)) {
                 continue;
             }
+            ShardingSpherePreconditions.checkState(metaDataDataSource.containsKey(dataSourceName),
+                    () -> new PipelineInvalidParameterException(dataSourceName + " doesn't exist. Run `SHOW MIGRATION SOURCE STORAGE UNITS;` to verify it."));
             Map<String, Object> sourceDataSourceProps = swapper.swapToMap(metaDataDataSource.get(dataSourceName));
             StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
             configSources.put(dataSourceName, buildYamlPipelineDataSourceConfiguration(sourceDataSourceConfig.getType(), sourceDataSourceConfig.getParameter()));
