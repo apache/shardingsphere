@@ -608,6 +608,13 @@
                 <artifactId>truffle-api</artifactId>
                 <version>${truffle-api.version}</version>
             </dependency>
+            
+            <dependency>
+                <groupId>com.ctrip.framework.apollo</groupId>
+                <artifactId>apollo-client</artifactId>
+                <version>${apollo-client.version}</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
