@@ -67,6 +67,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -308,6 +309,8 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) TypedSPILoader.getService(
                 PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(parentJobId).getTypeName());
         result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
+        result.setCheckFailedTableNames(checkJobResult.entrySet().stream().filter(each -> !each.getValue().isIgnored() && !each.getValue().isMatched())
+                .map(Entry::getKey).collect(Collectors.joining(",")));
         return result;
     }
     
