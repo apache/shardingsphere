@@ -23,15 +23,17 @@ import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.DriverURLProviderNotFoundException;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,9 +43,9 @@ public final class ShardingSphereDriverURLManagerTest {
     
     private final int fooDriverConfigLength = 999;
     
-    @Test(expected = DriverURLProviderNotFoundException.class)
+    @Test
     public void assertNewConstructorWithEmptyURL() {
-        ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:");
+        assertThrows(DriverURLProviderNotFoundException.class, () -> ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:"));
     }
     
     @Test
@@ -59,11 +61,11 @@ public final class ShardingSphereDriverURLManagerTest {
         assertThat(actual.length, is(fooDriverConfigLength));
     }
     
-    @org.junit.jupiter.api.Test
+    @Test
     public void assertToApolloConfigurationFile() {
         ConfigFile configFile = mock(ConfigFile.class);
         when(configFile.getContent()).thenReturn("config content");
-        when(ConfigService.getConfigFile(Mockito.anyString(), Mockito.any(ConfigFileFormat.class))).thenReturn(configFile);
+        when(ConfigService.getConfigFile(anyString(), any(ConfigFileFormat.class))).thenReturn(configFile);
         String url = "jdbc:shardingsphere:apollo:namespace";
         byte[] content = ShardingSphereDriverURLManager.getContent(url);
         assertThat("config content".getBytes(StandardCharsets.UTF_8), is(content));

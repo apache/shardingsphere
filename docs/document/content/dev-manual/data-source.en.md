@@ -104,7 +104,7 @@ ShardingSphere driver URL provider
 
 ### Notice
 
-When you use the Apollo loader, you need to add the corresponding apollo pom dependency, currently available at version `1.9.0`, as follows:
+When you use the Apollo driver url provider, you need to add the corresponding apollo pom dependency, currently available at version `1.9.0`, as follows:
 
 ```xml
 <dependency>

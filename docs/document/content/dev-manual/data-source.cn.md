@@ -121,7 +121,7 @@ ShardingSphere 驱动 URL 提供器
 
 ### 注意
 
-当您使用 Apollo 加载器时，需要添加对应的 apollo 的pom依赖，目前适配的版本为 `1.9.0` , 如下：
+当您使用 Apollo 加载器时，需要添加对应的 apollo 的 pom 依赖，目前适配的版本为 `1.9.0` , 如下：
 
 ```xml
 <dependency>
