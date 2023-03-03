@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -54,7 +55,8 @@ public abstract class InternalUnsupportedSQLParserIT {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             InternalSQLParserITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(InternalSQLParserITSettings.class);
-            return null == settings ? Stream.empty() : getTestParameters(Arrays.asList(settings.value())).stream();
+            Preconditions.checkNotNull(settings, "Annotation InternalSQLParserITSettings is required.");
+            return getTestParameters(Arrays.asList(settings.value())).stream();
         }
         
         private Collection<Arguments> getTestParameters(final Collection<String> databaseTypes) {

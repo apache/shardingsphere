@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -66,9 +67,8 @@ public abstract class ExternalSQLParserIT {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             ExternalSQLParserITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(ExternalSQLParserITSettings.class);
-            return null == settings
-                    ? Stream.empty()
-                    : getTestParameters(settings).stream().map(each -> Arguments.of(each.getSqlCaseId(), each.getDatabaseType(), each.getSql(), each.getReportType()));
+            Preconditions.checkNotNull(settings, "Annotation ExternalSQLParserITSettings is required.");
+            return getTestParameters(settings).stream().map(each -> Arguments.of(each.getSqlCaseId(), each.getDatabaseType(), each.getSql(), each.getReportType()));
         }
         
         private Collection<ExternalSQLParserTestParameter> getTestParameters(final ExternalSQLParserITSettings settings) {
