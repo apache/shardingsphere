@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class PostgreSQLArrayColumnTypeTest {
     
@@ -29,8 +30,8 @@ public final class PostgreSQLArrayColumnTypeTest {
         assertThat(PostgreSQLArrayColumnType.getTypeOid("_int4"), is(1007));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGetTypeOidFailed() {
-        PostgreSQLArrayColumnType.getTypeOid("not_exist_type");
+        assertThrows(IllegalArgumentException.class, () -> PostgreSQLArrayColumnType.getTypeOid("not_exist_type"));
     }
 }

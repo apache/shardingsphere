@@ -19,10 +19,11 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
 import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -37,10 +38,10 @@ public final class PostgreSQLCommandPacketTypeLoaderTest {
         assertThat(PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload), is(PostgreSQLCommandPacketType.SIMPLE_QUERY));
     }
     
-    @Test(expected = PostgreSQLProtocolException.class)
+    @Test
     public void assertGetCommandPacketTypeError() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class, RETURNS_DEEP_STUBS);
         when(payload.getByteBuf().getByte(anyInt())).thenReturn((byte) 'a');
-        PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload);
+        assertThrows(PostgreSQLProtocolException.class, () -> PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload));
     }
 }
