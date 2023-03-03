@@ -36,7 +36,7 @@ public final class ClusterLockDeletedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Collection<String> getWatchingKeys(final String databaseName) {
-        return Collections.singleton(String.format(GlobalLockDefinition.KEY_PATTERN, "cluster_lock"));
+        return Collections.singleton(new GlobalLockDefinition("cluster_lock").getLockKey());
     }
     
     @Override
