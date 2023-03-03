@@ -17,22 +17,25 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string;
 
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
-import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 
 /**
- * VARCHAR / VAR_STRING type value of MySQL binlog protocol.
+ * MySQL binary string.
+ *
+ * <p>Since MySQL replication protocol handles BINARY/VARBINARY column as MYSQL_TYPE_VARCHAR(15),
+ * and MySQLBinlogProtocolValue.read parameters have no real column metadata.
+ * So this customized class object will be returned on parsing.</p>
  */
-public final class MySQLVarcharBinlogProtocolValue implements MySQLBinlogProtocolValue {
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@Getter
+public final class MySQLBinaryString implements Serializable {
     
-    private static final int VARCHAR_LENGTH_META_POINT = 256;
+    private static final long serialVersionUID = 2448062591593788665L;
     
-    @Override
-    public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        byte[] bytes = payload.readStringFixByBytes(VARCHAR_LENGTH_META_POINT > columnDef.getColumnMeta() ? payload.getByteBuf().readUnsignedByte() : payload.getByteBuf().readUnsignedShortLE());
-        return new MySQLBinaryString(bytes);
-    }
+    private final byte[] bytes;
 }

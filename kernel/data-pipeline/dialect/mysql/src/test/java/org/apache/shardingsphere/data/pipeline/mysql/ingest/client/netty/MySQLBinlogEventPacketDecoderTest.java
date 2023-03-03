@@ -31,6 +31,7 @@ import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
+import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -129,7 +130,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
         assertThat(decodedEvents.size(), is(1));
         assertThat(decodedEvents.get(0), instanceOf(WriteRowsEvent.class));
         WriteRowsEvent actual = (WriteRowsEvent) decodedEvents.get(0);
-        assertThat(actual.getAfterRows().get(0), is(new Serializable[]{1L, 1, "SUCCESS", null}));
+        assertThat(actual.getAfterRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("SUCCESS".getBytes()), null}));
     }
     
     @Test
@@ -145,8 +146,8 @@ public final class MySQLBinlogEventPacketDecoderTest {
         assertThat(decodedEvents.size(), is(1));
         assertThat(decodedEvents.get(0), instanceOf(UpdateRowsEvent.class));
         UpdateRowsEvent actual = (UpdateRowsEvent) decodedEvents.get(0);
-        assertThat(actual.getBeforeRows().get(0), is(new Serializable[]{1L, 1, "SUCCESS", null}));
-        assertThat(actual.getAfterRows().get(0), is(new Serializable[]{1L, 1, "updated", null}));
+        assertThat(actual.getBeforeRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("SUCCESS".getBytes()), null}));
+        assertThat(actual.getAfterRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("updated".getBytes()), null}));
     }
     
     @Test
@@ -161,7 +162,7 @@ public final class MySQLBinlogEventPacketDecoderTest {
         assertThat(decodedEvents.size(), is(1));
         assertThat(decodedEvents.get(0), instanceOf(DeleteRowsEvent.class));
         DeleteRowsEvent actual = (DeleteRowsEvent) decodedEvents.get(0);
-        assertThat(actual.getBeforeRows().get(0), is(new Serializable[]{1L, 1, "SUCCESS", null}));
+        assertThat(actual.getBeforeRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("SUCCESS".getBytes()), null}));
     }
     
     @Test
