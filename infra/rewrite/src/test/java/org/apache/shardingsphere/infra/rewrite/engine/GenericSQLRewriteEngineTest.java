@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.engine;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -41,7 +41,7 @@ public final class GenericSQLRewriteEngineTest {
         DatabaseType databaseType = mock(DatabaseType.class);
         SQLTranslatorRule rule = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration());
         GenericSQLRewriteResult actual = new GenericSQLRewriteEngine(rule, databaseType, Collections.singletonMap("ds_0", databaseType)).rewrite(new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList(), mock(ConnectionContext.class)));
+                Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList(), mock(ConnectionContext.class)));
         assertThat(actual.getSqlRewriteUnit().getSql(), is("SELECT 1"));
         assertThat(actual.getSqlRewriteUnit().getParameters(), is(Collections.emptyList()));
     }
@@ -50,7 +50,7 @@ public final class GenericSQLRewriteEngineTest {
     public void assertRewriteStorageTypeIsEmpty() {
         SQLTranslatorRule rule = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration());
         GenericSQLRewriteResult actual = new GenericSQLRewriteEngine(rule, mock(DatabaseType.class), Collections.emptyMap()).rewrite(new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList(), mock(ConnectionContext.class)));
+                Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList(), mock(ConnectionContext.class)));
         assertThat(actual.getSqlRewriteUnit().getSql(), is("SELECT 1"));
         assertThat(actual.getSqlRewriteUnit().getParameters(), is(Collections.emptyList()));
     }

@@ -17,28 +17,27 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
-import java.util.Collection;
 import java.util.Collections;
 
 /**
  * Default session variable handler.
  */
 @Slf4j
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class DefaultSessionVariableHandler implements SessionVariableHandler {
     
-    private final Collection<String> replayedSessionVariables;
-    
-    protected DefaultSessionVariableHandler(final String databaseType) {
-        replayedSessionVariables = TypedSPILoader.findService(ReplayedSessionVariablesProvider.class, databaseType).map(ReplayedSessionVariablesProvider::getVariables).orElse(Collections.emptySet());
-    }
+    private final String databaseType;
     
     @Override
     public final void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
-        if (replayedSessionVariables.contains(variableName)) {
+        if (TypedSPILoader.findService(ReplayedSessionVariablesProvider.class, databaseType).map(ReplayedSessionVariablesProvider::getVariables).orElseGet(Collections::emptySet)
+                .contains(variableName)) {
             connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
         } else {
             log.debug("Set statement {} = {} was discarded.", variableName, assignValue);

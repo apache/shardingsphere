@@ -32,8 +32,10 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -49,13 +51,14 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class SelectDatabaseExecutorTest {
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
@@ -68,29 +71,27 @@ public final class SelectDatabaseExecutorTest {
         ShardingSphereDatabase shardingDatabase = createShardingDatabase();
         ShardingSphereDatabase emptyDatabase = createEmptyDatabase();
         ContextManager contextManager = mockContextManager(shardingDatabase, emptyDatabase);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Arrays.asList("sharding_db", "empty_db"));
+        when(ProxyContext.getInstance().getDatabase("sharding_db")).thenReturn(shardingDatabase);
+        when(ProxyContext.getInstance().getDatabase("empty_db")).thenReturn(emptyDatabase);
         SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Arrays.asList("sharding_db", "empty_db"));
-            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("sharding_db")).thenReturn(shardingDatabase);
-            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("empty_db")).thenReturn(emptyDatabase);
-            executor.execute(mock(ConnectionSession.class));
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(4));
-            int count = 0;
-            while (executor.getMergedResult().next()) {
-                count++;
-                if ("sharding_db".equals(executor.getMergedResult().getValue(1, String.class))) {
-                    assertThat(executor.getMergedResult().getValue(2, String.class), is("postgres"));
-                    assertThat(executor.getMergedResult().getValue(3, String.class), is("-1"));
-                } else if ("empty_db".equals(executor.getMergedResult().getValue(1, String.class))) {
-                    assertThat(executor.getMergedResult().getValue(2, String.class), is(""));
-                    assertThat(executor.getMergedResult().getValue(3, String.class), is(""));
-                } else {
-                    fail("expected : `sharding_db` or `empty_db`");
-                }
+        executor.execute(mock(ConnectionSession.class));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(4));
+        int count = 0;
+        while (executor.getMergedResult().next()) {
+            count++;
+            if ("sharding_db".equals(executor.getMergedResult().getValue(1, String.class))) {
+                assertThat(executor.getMergedResult().getValue(2, String.class), is("postgres"));
+                assertThat(executor.getMergedResult().getValue(3, String.class), is("-1"));
+            } else if ("empty_db".equals(executor.getMergedResult().getValue(1, String.class))) {
+                assertThat(executor.getMergedResult().getValue(2, String.class), is(""));
+                assertThat(executor.getMergedResult().getValue(3, String.class), is(""));
+            } else {
+                fail("expected : `sharding_db` or `empty_db`");
             }
-            assertThat(count, is(2));
         }
+        assertThat(count, is(2));
     }
     
     @Test
@@ -99,14 +100,12 @@ public final class SelectDatabaseExecutorTest {
                 + "d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname "
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         ContextManager contextManager = mockContextManager(createEmptyDatabase());
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_db"));
         SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_db"));
-            executor.execute(mock(ConnectionSession.class));
-            while (executor.getMergedResult().next()) {
-                assertThat(executor.getMergedResult().getValue(1, String.class), is("empty_db"));
-            }
+        executor.execute(mock(ConnectionSession.class));
+        while (executor.getMergedResult().next()) {
+            assertThat(executor.getMergedResult().getValue(1, String.class), is("empty_db"));
         }
     }
     
@@ -114,17 +113,15 @@ public final class SelectDatabaseExecutorTest {
     public void assertSelectDatabaseWithoutDataSourceExecuteAndWithColumnProjectionSegment() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         ContextManager contextManager = mockContextManager(createEmptyDatabase());
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_db"));
         SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_db"));
-            executor.execute(mock(ConnectionSession.class));
-            while (executor.getMergedResult().next()) {
-                assertThat(executor.getMergedResult().getValue(1, String.class), is(""));
-                assertThat(executor.getMergedResult().getValue(2, String.class), is("empty_db"));
-                assertThat(executor.getMergedResult().getValue(3, String.class), is(""));
-                assertThat(executor.getMergedResult().getValue(4, String.class), is(""));
-            }
+        executor.execute(mock(ConnectionSession.class));
+        while (executor.getMergedResult().next()) {
+            assertThat(executor.getMergedResult().getValue(1, String.class), is(""));
+            assertThat(executor.getMergedResult().getValue(2, String.class), is("empty_db"));
+            assertThat(executor.getMergedResult().getValue(3, String.class), is(""));
+            assertThat(executor.getMergedResult().getValue(4, String.class), is(""));
         }
     }
     
@@ -132,13 +129,11 @@ public final class SelectDatabaseExecutorTest {
     public void assertSelectDatabaseInNoSchemaExecute() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.emptyList());
         SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.emptyList());
-            executor.execute(mock(ConnectionSession.class));
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
-        }
+        executor.execute(mock(ConnectionSession.class));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }
     
     private static ContextManager mockContextManager(final ShardingSphereDatabase... databases) {

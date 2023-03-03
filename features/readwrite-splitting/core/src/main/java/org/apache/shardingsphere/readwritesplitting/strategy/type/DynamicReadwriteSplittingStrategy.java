@@ -36,8 +36,6 @@ public final class DynamicReadwriteSplittingStrategy implements ReadwriteSplitti
     
     private final String autoAwareDataSourceName;
     
-    private final boolean allowWriteDataSourceQuery;
-    
     private final DynamicDataSourceContainedRule dynamicDataSource;
     
     @Override

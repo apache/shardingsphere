@@ -18,24 +18,8 @@
 package org.apache.shardingsphere.test.it.sql.parser.it.mysql.external;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserTestParameter;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.ExternalSQLParserTestParameterLoader;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.impl.GitHubTestParameterLoadStrategy;
-import org.junit.runners.Parameterized.Parameters;
+import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserITSettings;
 
-import java.net.URI;
-import java.util.Collection;
-
+@ExternalSQLParserITSettings(value = "MySQL", caseURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t", resultURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r")
 public final class ExternalMySQLParserIT extends ExternalSQLParserIT {
-    
-    public ExternalMySQLParserIT(final ExternalSQLParserTestParameter testParam) {
-        super(testParam);
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<ExternalSQLParserTestParameter> getTestParameters() {
-        String caseURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t";
-        String resultURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r";
-        return new ExternalSQLParserTestParameterLoader(new GitHubTestParameterLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), "MySQL", "CSV");
-    }
 }

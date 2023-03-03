@@ -149,6 +149,7 @@
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
         <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
+        <apollo-client.version>1.9.0</apollo-client.version>
     </properties>
     
     <dependencyManagement>
@@ -606,6 +607,13 @@
                 <groupId>org.graalvm.truffle</groupId>
                 <artifactId>truffle-api</artifactId>
                 <version>${truffle-api.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>com.ctrip.framework.apollo</groupId>
+                <artifactId>apollo-client</artifactId>
+                <version>${apollo-client.version}</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

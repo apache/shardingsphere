@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.context;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -38,8 +38,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 public final class SQLRewriteContextTest {
     
     @Mock
-    private SQLStatementContext<?> sqlStatementContext;
+    private CommonSQLStatementContext<?> sqlStatementContext;
     
     @Mock
     private SQLToken sqlToken;

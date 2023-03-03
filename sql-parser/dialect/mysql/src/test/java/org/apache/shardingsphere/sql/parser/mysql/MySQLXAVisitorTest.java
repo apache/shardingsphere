@@ -41,16 +41,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RequiredArgsConstructor
 public final class MySQLXAVisitorTest {
     
-    private static Collection<Object[]> testUnits = new LinkedList<>();
+    private static final Collection<Object[]> TEST_UNITS = new LinkedList<>();
     
     static {
-        testUnits.add(new Object[]{"xa_start", "XA START 0x6262,b'000',7", "START", "0x6262,b'000',7"});
-        testUnits.add(new Object[]{"xa_begin", "XA BEGIN 0x6262,b'000',7", "BEGIN", "0x6262,b'000',7"});
-        testUnits.add(new Object[]{"xa_end", "XA END 0x6262,b'000',7", "END", "0x6262,b'000',7"});
-        testUnits.add(new Object[]{"xa_prepare", "XA PREPARE 0x6262,b'000',7", "PREPARE", "0x6262,b'000',7"});
-        testUnits.add(new Object[]{"xa_commit", "XA COMMIT 0x6262,b'000',7", "COMMIT", "0x6262,b'000',7"});
-        testUnits.add(new Object[]{"xa_rollback", "XA ROLLBACK 0x6262,b'000',7", "ROLLBACK", "0x6262,b'000',7"});
-        testUnits.add(new Object[]{"xa_recover", "XA RECOVER", "RECOVER", null});
+        TEST_UNITS.add(new Object[]{"xa_start", "XA START 0x6262,b'000',7", "START", "0x6262,b'000',7"});
+        TEST_UNITS.add(new Object[]{"xa_begin", "XA BEGIN 0x6262,b'000',7", "BEGIN", "0x6262,b'000',7"});
+        TEST_UNITS.add(new Object[]{"xa_end", "XA END 0x6262,b'000',7", "END", "0x6262,b'000',7"});
+        TEST_UNITS.add(new Object[]{"xa_prepare", "XA PREPARE 0x6262,b'000',7", "PREPARE", "0x6262,b'000',7"});
+        TEST_UNITS.add(new Object[]{"xa_commit", "XA COMMIT 0x6262,b'000',7", "COMMIT", "0x6262,b'000',7"});
+        TEST_UNITS.add(new Object[]{"xa_rollback", "XA ROLLBACK 0x6262,b'000',7", "ROLLBACK", "0x6262,b'000',7"});
+        TEST_UNITS.add(new Object[]{"xa_recover", "XA RECOVER", "RECOVER", null});
     }
     
     private final String caseId;
@@ -63,7 +63,7 @@ public final class MySQLXAVisitorTest {
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> getTestParameters() {
-        return testUnits;
+        return TEST_UNITS;
     }
     
     @Test

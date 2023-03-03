@@ -342,13 +342,17 @@ public abstract class PipelineBaseE2EIT {
     }
     
     protected void assertProxyOrderRecordExist(final String tableName, final Object orderId) {
-        boolean recordExist = false;
         String sql;
         if (orderId instanceof String) {
             sql = String.format("SELECT 1 FROM %s WHERE order_id = '%s'", tableName, orderId);
         } else {
             sql = String.format("SELECT 1 FROM %s WHERE order_id = %s", tableName, orderId);
         }
+        assertProxyOrderRecordExist(sql);
+    }
+    
+    protected void assertProxyOrderRecordExist(final String sql) {
+        boolean recordExist = false;
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> result = queryForListWithLog(sql);
             recordExist = !result.isEmpty();

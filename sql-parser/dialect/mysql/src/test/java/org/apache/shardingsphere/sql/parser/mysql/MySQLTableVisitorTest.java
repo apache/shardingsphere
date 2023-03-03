@@ -43,15 +43,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RequiredArgsConstructor
 public final class MySQLTableVisitorTest {
     
-    private static Collection<Object[]> testUnits = new LinkedList<>();
+    private static final Collection<Object[]> TEST_UNITS = new LinkedList<>();
     
     static {
-        testUnits.add(new Object[]{"select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", 2, 3});
-        testUnits.add(new Object[]{"select_item_nums", "select id, name, age, sex, ss, yy from table1 where id=1", 1, 6});
-        testUnits.add(new Object[]{"select_with_subquery", "select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1", 2, 5});
-        testUnits.add(new Object[]{"select_where_num", "select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3", 1, 10});
-        testUnits.add(new Object[]{"alter_table", "ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;", 1, 4});
-        testUnits.add(new Object[]{"create_table", "CREATE TABLE IF NOT EXISTS `runoob_tbl`(\n"
+        TEST_UNITS.add(new Object[]{"select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", 2, 3});
+        TEST_UNITS.add(new Object[]{"select_item_nums", "select id, name, age, sex, ss, yy from table1 where id=1", 1, 6});
+        TEST_UNITS.add(new Object[]{"select_with_subquery", "select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1", 2, 5});
+        TEST_UNITS.add(new Object[]{"select_where_num", "select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3", 1, 10});
+        TEST_UNITS.add(new Object[]{"alter_table", "ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;", 1, 4});
+        TEST_UNITS.add(new Object[]{"create_table", "CREATE TABLE IF NOT EXISTS `runoob_tbl`(\n"
                 + "`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
                 + "`runoob_title` VARCHAR(100) NOT NULL,\n"
                 + "`runoob_author` VARCHAR(40) NOT NULL,\n"
@@ -72,7 +72,7 @@ public final class MySQLTableVisitorTest {
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> getTestParameters() {
-        return testUnits;
+        return TEST_UNITS;
     }
     
     @Test

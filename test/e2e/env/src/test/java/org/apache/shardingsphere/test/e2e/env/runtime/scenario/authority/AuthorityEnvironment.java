@@ -31,7 +31,7 @@ import java.util.LinkedList;
 public final class AuthorityEnvironment {
     
     @XmlElement(name = "sqlset")
-    private Collection<AuthoritySQLSet> sqlSets = new LinkedList<>();
+    private final Collection<AuthoritySQLSet> sqlSets = new LinkedList<>();
     
     /**
      * Get init SQLs of this database type.

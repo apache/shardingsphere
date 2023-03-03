@@ -123,8 +123,8 @@ public final class SQLHintUtils {
         if (containsPropertyKey(hintProperties, SQLHintPropertiesKey.USE_TRAFFIC_KEY)) {
             result.setUseTraffic(Boolean.parseBoolean(getProperty(hintProperties, SQLHintPropertiesKey.USE_TRAFFIC_KEY)));
         }
-        if (containsPropertyKey(hintProperties, SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY)) {
-            result.setSkipEncryptRewrite(Boolean.parseBoolean(getProperty(hintProperties, SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY)));
+        if (containsPropertyKey(hintProperties, SQLHintPropertiesKey.SKIP_SQL_REWRITE_KEY)) {
+            result.setSkipSQLRewrite(Boolean.parseBoolean(getProperty(hintProperties, SQLHintPropertiesKey.SKIP_SQL_REWRITE_KEY)));
         }
         if (containsPropertyKey(hintProperties, SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY)) {
             result.setDisableAuditNames(getProperty(hintProperties, SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY));

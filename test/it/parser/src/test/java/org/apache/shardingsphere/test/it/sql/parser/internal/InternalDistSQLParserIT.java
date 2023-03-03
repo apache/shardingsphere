@@ -17,21 +17,6 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
-import java.util.Collection;
-
-@RunWith(Parameterized.class)
+@InternalSQLParserITSettings("ShardingSphere")
 public final class InternalDistSQLParserIT extends InternalSQLParserIT {
-    
-    public InternalDistSQLParserIT(final InternalSQLParserTestParameter testParam) {
-        super(testParam);
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<InternalSQLParserTestParameter> getTestParameters() {
-        return getTestParameters("ShardingSphere");
-    }
 }
