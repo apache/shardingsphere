@@ -49,15 +49,15 @@ public final class SQLHintExtractorTest {
     }
     
     @Test
-    public void assertSQLHintSkipEncryptRewrite() {
+    public void assertSQLHintSkipSQLRewrite() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SKIP_ENCRYPT_REWRITE=true */", 0, 0)));
-        assertTrue(new SQLHintExtractor(statement).isHintSkipEncryptRewrite());
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */", 0, 0)));
+        assertTrue(new SQLHintExtractor(statement).isHintSkipSQLRewrite());
     }
     
     @Test
-    public void assertSQLHintSkipEncryptRewriteWithCommentString() {
-        assertTrue(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: SKIP_ENCRYPT_REWRITE=true */").isHintSkipEncryptRewrite());
+    public void assertSQLHintSkipSQLRewriteWithCommentString() {
+        assertTrue(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */").isHintSkipSQLRewrite());
     }
     
     @Test

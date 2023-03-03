@@ -15,11 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.it.sqlserver.internal;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
-import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-@InternalSQLParserITSettings("SQLServer")
-public final class InternalSQLServerParserIT extends InternalSQLParserIT {
+/**
+ * Yaml job offset info.
+ */
+@Getter
+@Setter
+public final class YamlJobOffsetInfo implements YamlConfiguration {
+    
+    private boolean targetSchemaTableCreated;
 }

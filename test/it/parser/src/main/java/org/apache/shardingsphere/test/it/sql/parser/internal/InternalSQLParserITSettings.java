@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.pojo;
+package org.apache.shardingsphere.test.it.sql.parser.internal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
- * CDC table based pipeline job info.
+ * Internal SQL parser integrate test settings.
  */
-@Getter
-@RequiredArgsConstructor
-public class CDCTableBasedPipelineJobInfo implements PipelineJobInfo {
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+public @interface InternalSQLParserITSettings {
     
-    private final PipelineJobMetaData jobMetaData;
-    
-    private final String databaseName;
-    
-    private final String schemaTableNames;
+    /**
+     * Get to be tested database types.
+     * 
+     * @return to be tested database types
+     */
+    String[] value();
 }

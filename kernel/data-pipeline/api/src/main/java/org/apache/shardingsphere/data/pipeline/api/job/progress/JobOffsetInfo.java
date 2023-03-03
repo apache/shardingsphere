@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin;
+package org.apache.shardingsphere.data.pipeline.api.job.progress;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * FunctionWithException interface.
+ * Job offset info.
  */
-@FunctionalInterface
-public interface FunctionWithException<T, E extends Exception> {
+@RequiredArgsConstructor
+@Getter
+public final class JobOffsetInfo {
     
-    /**
-     * Apply function.
-     *
-     * @param t param
-     * @throws E exception
-     */
-    void apply(T t) throws E;
+    private final boolean targetSchemaTableCreated;
 }

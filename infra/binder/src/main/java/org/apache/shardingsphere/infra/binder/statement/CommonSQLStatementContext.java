@@ -96,4 +96,13 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     public boolean isHintWriteRouteOnly() {
         return sqlHintExtractor.isHintWriteRouteOnly();
     }
+    
+    /**
+     * Judge whether hint skip sql rewrite or not.
+     *
+     * @return whether hint skip sql rewrite or not
+     */
+    public boolean isHintSkipSQLRewrite() {
+        return sqlHintExtractor.isHintSkipSQLRewrite();
+    }
 }
