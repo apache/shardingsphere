@@ -15,15 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.it.postgresql.external;
+package org.apache.shardingsphere.test.mock;
 
-import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserITSettings;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExternalSQLParserITSettings(value = "PostgreSQL", caseURL = ExternalPostgreSQLParserIT.CASE_URL, resultURL = ExternalPostgreSQLParserIT.RESULT_URL)
-public final class ExternalPostgreSQLParserIT extends ExternalSQLParserIT {
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/**
+ * Construction mock settings.
+ */
+@ExtendWith(MockitoExtension.class)
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ConstructionMockSettings {
     
-    static final String CASE_URL = "https://github.com/postgres/postgres/tree/master/src/test/regress/sql";
-    
-    static final String RESULT_URL = "https://github.com/postgres/postgres/tree/master/src/test/regress/expected";
+    /**
+     * Mock classes.
+     * 
+     * @return mock classes
+     */
+    Class<?>[] value();
 }
