@@ -192,10 +192,7 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         parameter.setDatabase("sharding_db");
         // TODO add full=false test case later
         parameter.setFull(true);
-        String schema = "";
-        if (getDatabaseType().isSchemaAvailable()) {
-            schema = "test";
-        }
+        String schema = getDatabaseType().isSchemaAvailable() ? "test" : "";
         parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable(getSourceTableOrderName()).setSchema(schema).build()));
         parameter.setDatabaseType(getDatabaseType().getType());
         CompletableFuture.runAsync(() -> new CDCClient(parameter).start(), executor).whenComplete((unused, throwable) -> {
