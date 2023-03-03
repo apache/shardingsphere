@@ -60,11 +60,6 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
             } else {
                 updateOrderByPrimaryKey(orderId);
             }
-            Object orderItemPrimaryKey = insertOrderItem();
-            String updateSql = String.format("UPDATE %s SET status = ? WHERE item_id = ?", getTableNameWithSchema("t_order_item"));
-            DataSourceExecuteUtil.execute(dataSource, updateSql, new Object[]{"updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey});
-            String deleteSql = String.format("DELETE FROM %s WHERE item_id = ?", getTableNameWithSchema("t_order_item"));
-            DataSourceExecuteUtil.execute(dataSource, deleteSql, new Object[]{orderItemPrimaryKey});
             executeCount++;
         }
         log.info("PostgreSQL increment task runnable execute successfully.");
@@ -78,15 +73,6 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         log.info("insert order sql:{}", insertSQL);
         DataSourceExecuteUtil.execute(dataSource, insertSQL, orderInsertDate);
         return orderInsertDate[0];
-    }
-    
-    private Object insertOrderItem() {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
-        Object[] orderInsertItemDate = new Object[]{KEY_GENERATE_ALGORITHM.generateKey(), PipelineCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
-        String insertSql = String.format("INSERT INTO %s(item_id,order_id,user_id,status) VALUES(?,?,?,?)", getTableNameWithSchema("t_order_item"));
-        DataSourceExecuteUtil.execute(dataSource, insertSql, orderInsertItemDate);
-        return orderInsertItemDate[0];
     }
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {

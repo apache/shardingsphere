@@ -39,10 +39,6 @@
         )
     </create-table-order>
     
-    <create-table-index>
-        CREATE INDEX "idx_user_id" ON test.t_order ( user_id );
-    </create-table-index>
-    
     <create-table-order-item>
         CREATE TABLE test.t_order_item (
         item_id int8 NOT NULL,

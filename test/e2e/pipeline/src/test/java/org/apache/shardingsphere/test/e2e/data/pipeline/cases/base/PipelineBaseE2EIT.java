@@ -22,10 +22,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
@@ -143,6 +147,17 @@ public abstract class PipelineBaseE2EIT {
         cleanUpDataSource();
     }
     
+    protected String appendExtraParam(final String jdbcUrl) {
+        String result = jdbcUrl;
+        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
+            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
+        }
+        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType()) || DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified")));
+        }
+        return result;
+    }
+    
     private void cleanUpProxyDatabase(final Connection connection) {
         if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
             return;
@@ -159,10 +174,9 @@ public abstract class PipelineBaseE2EIT {
         if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
             return;
         }
-        String jobTypeName = jobType.getTypeName();
+        String jobTypeName = jobType instanceof CDCJobType ? "STREAMING" : jobType.getTypeName();
         List<Map<String, Object>> jobList;
         try {
-            // TODO Some jobs may not implement the show statement now, eg. CDC
             ResultSet resultSet = connection.createStatement().executeQuery(String.format("SHOW %s LIST", jobTypeName));
             jobList = transformResultSetToList(resultSet);
         } catch (final SQLException ex) {
@@ -204,17 +218,6 @@ public abstract class PipelineBaseE2EIT {
         proxyExecuteWithLog(distSQL, 2);
     }
     
-    protected String appendExtraParam(final String jdbcUrl) {
-        String result = jdbcUrl;
-        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
-            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
-        }
-        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType()) || DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
-            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified")));
-        }
-        return result;
-    }
-    
     protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
         if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(storageContainerIndex);
@@ -227,15 +230,6 @@ public abstract class PipelineBaseE2EIT {
     
     protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
         return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
-    }
-    
-    protected int getActualDataSourcePort() {
-        if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
-            return storageContainer.getMappedPort();
-        } else {
-            return ENV.getActualDataSourceDefaultPort(databaseType);
-        }
     }
     
     protected abstract String getSourceTableOrderName();
@@ -382,5 +376,20 @@ public abstract class PipelineBaseE2EIT {
         String tableName = Strings.isNullOrEmpty(schema) ? "t_order" : String.format("%s.t_order", schema);
         int recordsCount = getTargetTableRecordsCount(tableName);
         assertTrue("actual count " + recordsCount, recordsCount > tableInitRows);
+    }
+    
+    protected DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
+        String dataSourceConfigText = queryForListWithLog("EXPORT DATABASE CONFIGURATION").get(0).get("result").toString();
+        if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
+            String sourceUrl = String.join(":", storageContainer.getNetworkAliases().get(0), Integer.toString(storageContainer.getExposedPort()));
+            String targetUrl = String.join(":", storageContainer.getHost(), Integer.toString(storageContainer.getMappedPort()));
+            dataSourceConfigText = dataSourceConfigText.replace(sourceUrl, targetUrl);
+        }
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(dataSourceConfigText, YamlRootConfiguration.class);
+        for (Map<String, Object> each : rootConfig.getDataSources().values()) {
+            each.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
+        }
+        return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
     }
 }
