@@ -26,7 +26,6 @@ import java.util.Properties;
 
 /**
  * Transaction rule configuration.
- * 
  */
 @RequiredArgsConstructor
 @Getter
