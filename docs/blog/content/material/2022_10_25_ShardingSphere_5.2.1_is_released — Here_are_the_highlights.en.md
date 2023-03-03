@@ -73,7 +73,8 @@ try (HintManager hintManager = HintManager.getInstance();
     hintManager.addTableShardingValue("t_order", 2);
     try (ResultSet rs = preparedStatement.executeQuery()) {
         while (rs.next()) {
-            // ...        }
+            // ...        
+        }
     }
 }
 ```
@@ -84,8 +85,10 @@ Nevertheless, the Hint-based method will transform Proxy's thread processing mod
 
 ```java
 -- For the current connection, add sharding values yy to table xx. xx: logical table name; yy: database sharding value
-ADD SHARDING HINT DATABASE_VALUE t_order= 100;-- For the current connection, add sharding values yy to table xx. xx: logical table name; yy: table sharding value
-ADD SHARDING HINT TABLE_VALUE t_order = 100;-- For the current connection, clear sharding hint settings
+ADD SHARDING HINT DATABASE_VALUE t_order= 100;
+-- For the current connection, add sharding values yy to table xx. xx: logical table name; yy: table sharding value
+ADD SHARDING HINT TABLE_VALUE t_order = 100;
+-- For the current connection, clear sharding hint settings
 CLEAR SHARDING HINT;
 ```
 
