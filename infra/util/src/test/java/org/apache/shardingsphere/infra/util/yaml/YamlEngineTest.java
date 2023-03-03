@@ -109,9 +109,8 @@ public final class YamlEngineTest {
         actual.setName("test");
         YamlShortcutsConfigurationFixture actualAnother = new YamlShortcutsConfigurationFixture();
         actualAnother.setName("test");
-        StringBuilder res = new StringBuilder("- !FIXTURE");
-        res.append(System.lineSeparator()).append("  name: test").append(System.lineSeparator()).append("- !FIXTURE")
-                .append(System.lineSeparator()).append("  name: test").append(System.lineSeparator());
-        assertThat(YamlEngine.marshal(Arrays.asList(actual, actualAnother)), is(res.toString()));
+        String res = "- !FIXTURE" + System.lineSeparator() + "  name: test" + System.lineSeparator() + "- !FIXTURE"
+                + System.lineSeparator() + "  name: test" + System.lineSeparator();
+        assertThat(YamlEngine.marshal(Arrays.asList(actual, actualAnother)), is(res));
     }
 }

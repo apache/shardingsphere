@@ -31,7 +31,7 @@ public final class KeyGenerateStrategySegment implements ASTNode {
     
     private final String keyGenerateColumn;
     
-    private Optional<String> keyGenerateAlgorithmName;
+    private final Optional<String> keyGenerateAlgorithmName;
     
     private AlgorithmSegment keyGenerateAlgorithmSegment;
     
