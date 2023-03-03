@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state;
+package org.apache.shardingsphere.infra.state.instance;
 
 /**
- * State type.
+ * Instance state type.
  */
-public enum StateType {
+public enum InstanceStateType {
     
     OK, CIRCUIT_BREAK, LOCK
 }

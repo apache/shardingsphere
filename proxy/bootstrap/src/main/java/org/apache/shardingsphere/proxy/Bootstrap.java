@@ -41,7 +41,7 @@ public final class Bootstrap {
     
     /**
      * Main entrance.
-     *
+     * 
      * @param args startup arguments
      * @throws IOException IO exception
      * @throws SQLException SQL exception

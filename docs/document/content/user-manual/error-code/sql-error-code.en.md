@@ -48,15 +48,16 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Connection
 
-| SQL State | Vendor Code | Reason |
-| --------- | ----------- | ------ |
-| 08000     | 13000       | Can not register driver, reason is: %s |
-| 01000     | 13010       | Circuit break open, the request has been ignored. |
-| 01000     | 13011       | The current instance is read-only, Not allowed write traffic. |
+| SQL State | Vendor Code | Reason                                                                                                                                                                                                                      |
+|-----------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 08000     | 13000       | Can not register driver, reason is: %s                                                                                                                                                                                      |
+| 01000     | 13010       | Circuit break open, the request has been ignored.                                                                                                                                                                           |
+| 01000     | 13011       | The cluster status is read-only.                                                                                                                                                                                            |
+| 01000     | 13012       | The cluster status is unavailable.                                                                                                                                                                                          |
 | 08000     | 13020       | Can not get %d connections one time, partition succeed connection(%d) have released. Please consider increasing the \`maxPoolSize\` of the data sources or decreasing the \`max-connections-size-per-query\` in properties. |
-| 08000     | 13030       | Connection has been closed. |
-| 08000     | 13031       | Result set has been closed. |
-| HY000     | 13090       | Load datetime from database failed, reason: %s |
+| 08000     | 13030       | Connection has been closed.                                                                                                                                                                                                 |
+| 08000     | 13031       | Result set has been closed.                                                                                                                                                                                                 |
+| HY000     | 13090       | Load datetime from database failed, reason: %s                                                                                                                                                                              |
 
 ### Transaction
 

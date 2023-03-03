@@ -15,19 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.exception;
+package org.apache.shardingsphere.infra.state.cluster;
 
-import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.Getter;
 
 /**
- * Read only exception.
+ * Cluster state context.
  */
-public final class ReadOnlyException extends ConnectionSQLException {
+public final class ClusterStateContext {
     
-    private static final long serialVersionUID = 6339672680026286798L;
+    @Getter
+    private ClusterStateType currentState = ClusterStateType.OK;
     
-    public ReadOnlyException() {
-        super(XOpenSQLState.GENERAL_WARNING, 11, "The current instance is read-only, Not allowed write traffic.");
+    /**
+     * Switch state.
+     * 
+     * @param status status
+     */
+    public void switchState(final ClusterStateType status) {
+        if (currentState == status) {
+            return;
+        }
+        if (currentState != ClusterStateType.OK && ClusterStateType.OK != status) {
+            throw new IllegalStateException("Cluster is locked");
+        }
+        currentState = status;
     }
 }

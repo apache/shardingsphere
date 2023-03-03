@@ -342,3 +342,15 @@ LIKE
 NOT
     : N O T
     ;
+
+LOCK
+    : L O C K
+    ;
+
+CLUSTER
+    : C L U S T E R
+    ;
+
+LOCK_STRATEGY
+    : L O C K UL_ S T R A T E G Y
+    ;

@@ -103,6 +103,10 @@ alterMigrationRule
     : ALTER MIGRATION RULE inventoryIncrementalRule?
     ;
 
+lockCluster
+    : LOCK CLUSTER WITH lockStrategy
+    ;
+
 inventoryIncrementalRule
     : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
     ;
@@ -169,6 +173,10 @@ refreshScope
 
 fromSegment
     : FROM STORAGE UNIT storageUnitName (SCHEMA schemaName)?
+    ;
+
+lockStrategy
+    : LOCK_STRATEGY LP_ algorithmDefinition RP_
     ;
 
 label
