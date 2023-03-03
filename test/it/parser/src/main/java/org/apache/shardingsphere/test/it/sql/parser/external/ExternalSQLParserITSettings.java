@@ -36,7 +36,7 @@ public @interface ExternalSQLParserITSettings {
     String value();
     
     /**
-     * Get test case URL
+     * Get test case URL.
      * 
      * @return test case URL
      */
