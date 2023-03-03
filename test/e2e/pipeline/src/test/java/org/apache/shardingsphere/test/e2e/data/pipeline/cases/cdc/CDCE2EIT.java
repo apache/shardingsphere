@@ -58,6 +58,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -71,6 +72,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * MySQL CDC E2E IT.
@@ -79,15 +81,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Slf4j
 public final class CDCE2EIT extends PipelineBaseE2EIT {
     
-    private static final String REGISTER_STORAGE_UNIT_SQL = "REGISTER STORAGE UNIT ds_0 ( URL='${ds0}', USER='${user}', PASSWORD='${password}'),"
-            + "ds_1 ( URL='${ds1}', USER='${user}', PASSWORD='${password}')";
-    
-    private static final String CREATE_SHARDING_RULE_SQL = "CREATE SHARDING TABLE RULE t_order("
-            + "STORAGE_UNITS(ds_0,ds_1),"
+    private static final String CREATE_SHARDING_RULE_SQL = String.format("CREATE SHARDING TABLE RULE t_order("
+            + "STORAGE_UNITS(%s,%s),"
             + "SHARDING_COLUMN=user_id,"
             + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='4')),"
             + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake'))"
-            + ")";
+            + ")", DS_0, DS_1);
     
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     
@@ -122,7 +121,9 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         // make sure the program time zone same with the database server at CI.
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         initEnvironment(getDatabaseType(), new CDCJobType());
-        registerStorageUnit();
+        for (String each : Arrays.asList(DS_0, DS_1)) {
+            registerStorageUnit(each);
+        }
         createOrderTableRule();
         try (Connection connection = getProxyDataSource().getConnection()) {
             initSchemaAndTable(connection);
@@ -163,15 +164,7 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         SingleTableInventoryDataConsistencyChecker checker = new SingleTableInventoryDataConsistencyChecker("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
                 primaryKeyMetaData, metaDataLoader, null, progressContext);
         DataConsistencyCheckResult checkResult = checker.check(new DataMatchDataConsistencyCalculateAlgorithm());
-        System.out.println(checkResult);
-    }
-    
-    private void registerStorageUnit() throws SQLException {
-        String registerStorageUnitTemplate = REGISTER_STORAGE_UNIT_SQL.replace("${user}", getUsername())
-                .replace("${password}", getPassword())
-                .replace("${ds0}", appendExtraParam(getActualJdbcUrlTemplate(DS_0, true)))
-                .replace("${ds1}", appendExtraParam(getActualJdbcUrlTemplate(DS_1, true)));
-        addResource(registerStorageUnitTemplate);
+        assertTrue(checkResult.isMatched());
     }
     
     private void createOrderTableRule() throws SQLException {
@@ -209,7 +202,6 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
             if (null != throwable) {
                 log.error("cdc client sync failed, ", throwable);
             }
-            throw new RuntimeException(throwable);
         });
     }
     

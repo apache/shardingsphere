@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
@@ -92,6 +91,8 @@ public abstract class PipelineBaseE2EIT {
     protected static final String DS_4 = "pipeline_it_4";
     
     protected static final int TABLE_INIT_ROW_COUNT = 3000;
+    
+    private static final String REGISTER_STORAGE_UNIT_SQL = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')";
     
     @Rule
     @Getter(AccessLevel.NONE)
@@ -174,7 +175,7 @@ public abstract class PipelineBaseE2EIT {
         if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
             return;
         }
-        String jobTypeName = jobType instanceof CDCJobType ? "STREAMING" : jobType.getTypeName();
+        String jobTypeName = jobType.getTypeName();
         List<Map<String, Object>> jobList;
         try {
             ResultSet resultSet = connection.createStatement().executeQuery(String.format("SHOW %s LIST", jobTypeName));
@@ -214,6 +215,15 @@ public abstract class PipelineBaseE2EIT {
         ThreadUtil.sleep(2, TimeUnit.SECONDS);
     }
     
+    protected void registerStorageUnit(final String storageUnitName) throws SQLException {
+        String registerStorageUnitTemplate = REGISTER_STORAGE_UNIT_SQL.replace("${ds}", storageUnitName)
+                .replace("${user}", getUsername())
+                .replace("${password}", getPassword())
+                .replace("${url}", appendExtraParam(getActualJdbcUrlTemplate(storageUnitName, true)));
+        proxyExecuteWithLog(registerStorageUnitTemplate, 2);
+    }
+    
+    // TODO Use registerStorageUnit instead, and remove the method
     protected void addResource(final String distSQL) throws SQLException {
         proxyExecuteWithLog(distSQL, 2);
     }
@@ -378,15 +388,18 @@ public abstract class PipelineBaseE2EIT {
         assertTrue("actual count " + recordsCount, recordsCount > tableInitRows);
     }
     
+    // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
     protected DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
         String dataSourceConfigText = queryForListWithLog("EXPORT DATABASE CONFIGURATION").get(0).get("result").toString();
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(dataSourceConfigText, YamlRootConfiguration.class);
         if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
             String sourceUrl = String.join(":", storageContainer.getNetworkAliases().get(0), Integer.toString(storageContainer.getExposedPort()));
             String targetUrl = String.join(":", storageContainer.getHost(), Integer.toString(storageContainer.getMappedPort()));
-            dataSourceConfigText = dataSourceConfigText.replace(sourceUrl, targetUrl);
+            for (Map<String, Object> each : rootConfig.getDataSources().values()) {
+                each.put("url", each.get("url").toString().replaceFirst(sourceUrl, targetUrl));
+            }
         }
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(dataSourceConfigText, YamlRootConfiguration.class);
         for (Map<String, Object> each : rootConfig.getDataSources().values()) {
             each.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
         }
