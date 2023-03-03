@@ -56,7 +56,7 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     
     @Override
     protected void doPrepare(final PipelineJobItemContext jobItemContext) {
-        jobPreparer.prepare((CDCJobItemContext) jobItemContext);
+        jobPreparer.initTasks((CDCJobItemContext) jobItemContext);
     }
     
     @Override

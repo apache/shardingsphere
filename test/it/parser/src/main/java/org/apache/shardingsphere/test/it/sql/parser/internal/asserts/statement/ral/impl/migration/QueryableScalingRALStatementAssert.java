@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingListStatement;
+import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckStatusStatement;
@@ -26,6 +28,8 @@ import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListSt
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationSourceStorageUnitsStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.cdc.ShowStreamingListStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.cdc.ShowStreamingStatusStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationCheckAlgorithmsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationCheckStatusStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationListStatementAssert;
@@ -33,6 +37,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.r
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationStatusStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowMigrationListStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc.ShowStreamingListStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc.ShowStreamingStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationCheckStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationSourceStorageUnitsStatementTestCase;
@@ -63,6 +69,10 @@ public final class QueryableScalingRALStatementAssert {
             ShowMigrationStatusStatementAssert.assertIs(assertContext, (ShowMigrationStatusStatement) actual, (ShowMigrationStatusStatementTestCase) expected);
         } else if (actual instanceof ShowMigrationSourceStorageUnitsStatement) {
             ShowMigrationSourceStorageUnitsStatementAssert.assertIs(assertContext, (ShowMigrationSourceStorageUnitsStatement) actual, (ShowMigrationSourceStorageUnitsStatementTestCase) expected);
+        } else if (actual instanceof ShowStreamingListStatement) {
+            ShowStreamingListStatementAssert.assertIs(assertContext, (ShowStreamingListStatement) actual, (ShowStreamingListStatementTestCase) expected);
+        } else if (actual instanceof ShowStreamingStatusStatement) {
+            ShowStreamingStatusStatementAssert.assertIs(assertContext, (ShowStreamingStatusStatement) actual, (ShowStreamingStatusStatementTestCase) expected);
         }
     }
 }

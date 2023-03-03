@@ -21,43 +21,41 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class GranteeTest {
     
     @Test
     public void assertGetUsername() {
-        Grantee grantee = new Grantee("foo", "");
-        assertThat(grantee.getUsername(), is("foo"));
+        assertThat(new Grantee("foo", "").getUsername(), is("foo"));
     }
     
     @Test
     public void assertGetHostname() {
-        Grantee grantee = new Grantee("name", "%");
-        Grantee grantee1 = new Grantee("name", "");
-        assertThat(grantee.getHostname(), is("%"));
-        assertThat(grantee1.getHostname(), is("%"));
+        assertThat(new Grantee("name", "%").getHostname(), is("%"));
+        assertThat(new Grantee("name", "").getHostname(), is("%"));
     }
     
     @Test
     public void assertEquals() {
         Grantee grantee = new Grantee("name", "%");
-        Grantee grantee1 = new Grantee("name", "");
-        Grantee grantee2 = new Grantee("name", "127.0.0.1");
-        assertTrue(grantee.equals(grantee1));
-        assertTrue(grantee.equals(grantee2));
-        assertFalse(grantee.equals(new Object()));
+        assertThat(grantee, is(new Grantee("name", "")));
+        assertThat(grantee, is(new Grantee("name", "127.0.0.1")));
     }
     
     @Test
-    public void assertHashCode() {
-        Grantee grantee = new Grantee("name", "%");
-        Grantee grantee1 = new Grantee("name", "");
-        Grantee grantee2 = new Grantee("name", "127.0.0.1");
-        assertThat(grantee.hashCode(), is(grantee1.hashCode()));
-        assertThat(grantee1.hashCode(), not(grantee2.hashCode()));
+    public void assertNotEquals() {
+        assertThat(new Grantee("name", "%"), not(new Object()));
+    }
+    
+    @Test
+    public void assertSameHashCode() {
+        assertThat(new Grantee("name", "%").hashCode(), is(new Grantee("name", "").hashCode()));
+    }
+    
+    @Test
+    public void assertDifferentHashCode() {
+        assertThat(new Grantee("name", "").hashCode(), not(new Grantee("name", "127.0.0.1").hashCode()));
     }
     
     @Test

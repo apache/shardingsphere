@@ -57,7 +57,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
         when(dataSourceConfig.getName()).thenReturn("readwrite_ds");
-        when(dataSourceConfig.getDynamicStrategy()).thenReturn(new DynamicReadwriteSplittingStrategyConfiguration("ds0", "false"));
+        when(dataSourceConfig.getDynamicStrategy()).thenReturn(new DynamicReadwriteSplittingStrategyConfiguration("ds0"));
         when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
         return result;
     }

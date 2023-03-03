@@ -54,9 +54,9 @@ public final class SQLParserEngineTest {
                 });
         Plugins.getMemberAccessor().set(sqlParserEngine.getClass().getDeclaredField("parseTreeCache"), sqlParserEngine, parseTreeCache);
         sqlParserEngine.parse(SQL, true);
-        verify(sqlParserExecutor, times(1)).parse(SQL);
+        verify(sqlParserExecutor).parse(SQL);
         sqlParserEngine.parse(SQL, true);
-        verify(sqlParserExecutor, times(1)).parse(SQL);
+        verify(sqlParserExecutor).parse(SQL);
         sqlParserEngine.parse(SQL, false);
         verify(sqlParserExecutor, times(2)).parse(SQL);
     }

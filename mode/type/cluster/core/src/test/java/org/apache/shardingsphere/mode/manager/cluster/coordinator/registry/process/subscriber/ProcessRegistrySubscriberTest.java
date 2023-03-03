@@ -33,7 +33,6 @@ import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +58,6 @@ public final class ProcessRegistrySubscriberTest {
         when(repository.getDirectly(any())).thenReturn(null);
         ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
         processRegistrySubscriber.loadShowProcessListData(showProcessListRequestEvent);
-        verify(repository, times(1)).persist(any(), any());
+        verify(repository).persist(any(), any());
     }
 }

@@ -34,9 +34,4 @@ public final class ExternalSQLParserTestParameter {
     private final String sql;
     
     private final String reportType;
-    
-    @Override
-    public String toString() {
-        return String.format("%s (%s) -> %s", sqlCaseId, databaseType, sql);
-    }
 }

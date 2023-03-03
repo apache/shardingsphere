@@ -17,23 +17,9 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.it.mysql.internal;
 
+import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalUnsupportedSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
-import java.util.Collection;
-
-@RunWith(Parameterized.class)
+@InternalSQLParserITSettings("MySQL")
 public final class InternalUnsupportedMySQLParserIT extends InternalUnsupportedSQLParserIT {
-    
-    public InternalUnsupportedMySQLParserIT(final InternalSQLParserTestParameter testParam) {
-        super(testParam);
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<InternalSQLParserTestParameter> getTestParameters() {
-        return getTestParameters("MySQL");
-    }
 }

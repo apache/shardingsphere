@@ -22,14 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserTestParameter;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.summary.FileSummary;
-import org.apache.shardingsphere.test.it.sql.parser.external.env.SQLParserExternalITEnvironment;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,9 +52,6 @@ public final class ExternalSQLParserTestParameterLoader {
      * @return loaded test parameters
      */
     public Collection<ExternalSQLParserTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
-        if (!SQLParserExternalITEnvironment.getInstance().isSqlParserITEnabled()) {
-            return Collections.emptyList();
-        }
         Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
         Map<String, FileSummary> sqlCaseFileSummaries = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
         Map<String, FileSummary> resultFileSummaries = loadStrategy.loadSQLCaseFileSummaries(resultURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));

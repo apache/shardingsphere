@@ -43,7 +43,7 @@ public final class TrafficExecutorTest {
             when(executionUnit.getStorageResource()).thenReturn(statement);
             trafficExecutor.execute(executionUnit, Statement::executeQuery);
         }
-        verify(statement, times(1)).close();
+        verify(statement).close();
         verify(statement, times(0)).getConnection();
     }
 }

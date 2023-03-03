@@ -85,7 +85,7 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.singletonMap("ms_group", "ds_0")));
         when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
-        ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("readwrite_ds", "ha_group", "false", "TEST", new Properties());
+        ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("readwrite_ds", "ha_group", "TEST", new Properties());
         updater.checkSQLStatement(database, new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment)), createCurrentRuleConfiguration());
     }
     
