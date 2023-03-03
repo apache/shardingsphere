@@ -17,56 +17,53 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import lombok.RequiredArgsConstructor;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.time.LocalTime;
-import java.util.Arrays;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
 public final class PostgreSQLTextTimeUtilsTest {
     
-    private final String input;
-    
-    private final LocalTime expected;
-    
-    @Parameters(name = "{0}")
-    public static Iterable<Object[]> textValues() {
-        return Arrays.asList(
-                new Object[]{"2323", LocalTime.of(23, 23, 0)},
-                new Object[]{"23:23", LocalTime.of(23, 23, 0)},
-                new Object[]{"232323", LocalTime.of(23, 23, 23)},
-                new Object[]{"23:23:23", LocalTime.of(23, 23, 23)},
-                new Object[]{"23:23:23.1", LocalTime.of(23, 23, 23, 100_000_000)},
-                new Object[]{"23:23:23.12", LocalTime.of(23, 23, 23, 120_000_000)},
-                new Object[]{"23:23:23.123", LocalTime.of(23, 23, 23, 123_000_000)},
-                new Object[]{"23:23:23.123+08", LocalTime.of(23, 23, 23, 123_000_000)},
-                new Object[]{"23:23:23.123+08", LocalTime.of(23, 23, 23, 123_000_000)},
-                new Object[]{"23:23:23.12345", LocalTime.of(23, 23, 23, 123_450_000)},
-                new Object[]{"23:23:23.12345+0800", LocalTime.of(23, 23, 23, 123_450_000)},
-                new Object[]{"23:23:23.12345+0800", LocalTime.of(23, 23, 23, 123_450_000)},
-                new Object[]{"23:23:23.12345+08:00:00", LocalTime.of(23, 23, 23, 123_450_000)},
-                new Object[]{"23:23:23.12345+08:00:00", LocalTime.of(23, 23, 23, 123_450_000)},
-                new Object[]{"23:23:23.12345+08:00:00", LocalTime.of(23, 23, 23, 123_450_000)},
-                new Object[]{"23:23:23.123456", LocalTime.of(23, 23, 23, 123_456_000)},
-                new Object[]{"23:23:23.1234567", LocalTime.of(23, 23, 23, 123_456_700)},
-                new Object[]{"23:23:23.12345678", LocalTime.of(23, 23, 23, 123_456_780)},
-                new Object[]{"23:23:23.123456789", LocalTime.of(23, 23, 23, 123_456_789)},
-                new Object[]{"23:23:23.123456 +08:00", LocalTime.of(23, 23, 23, 123_456_000)},
-                new Object[]{"23:23:23.123456 -08:00", LocalTime.of(23, 23, 23, 123_456_000)},
-                new Object[]{"23:23:23.123456789 +08:00", LocalTime.of(23, 23, 23, 123_456_789)},
-                new Object[]{"23:23:23.123456", LocalTime.of(23, 23, 23, 123_456_000)});
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertParse(final String input, final LocalTime expected) {
+        assertThat(PostgreSQLTextTimeUtils.parse(input), is(expected));
     }
     
-    @Test
-    public void assertParse() {
-        assertThat(PostgreSQLTextTimeUtils.parse(input), is(expected));
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of("2323", LocalTime.of(23, 23, 0)),
+                    Arguments.of("23:23", LocalTime.of(23, 23, 0)),
+                    Arguments.of("232323", LocalTime.of(23, 23, 23)),
+                    Arguments.of("23:23:23", LocalTime.of(23, 23, 23)),
+                    Arguments.of("23:23:23.1", LocalTime.of(23, 23, 23, 100_000_000)),
+                    Arguments.of("23:23:23.12", LocalTime.of(23, 23, 23, 120_000_000)),
+                    Arguments.of("23:23:23.123", LocalTime.of(23, 23, 23, 123_000_000)),
+                    Arguments.of("23:23:23.123+08", LocalTime.of(23, 23, 23, 123_000_000)),
+                    Arguments.of("23:23:23.123+08", LocalTime.of(23, 23, 23, 123_000_000)),
+                    Arguments.of("23:23:23.12345", LocalTime.of(23, 23, 23, 123_450_000)),
+                    Arguments.of("23:23:23.12345+0800", LocalTime.of(23, 23, 23, 123_450_000)),
+                    Arguments.of("23:23:23.12345+0800", LocalTime.of(23, 23, 23, 123_450_000)),
+                    Arguments.of("23:23:23.12345+08:00:00", LocalTime.of(23, 23, 23, 123_450_000)),
+                    Arguments.of("23:23:23.12345+08:00:00", LocalTime.of(23, 23, 23, 123_450_000)),
+                    Arguments.of("23:23:23.12345+08:00:00", LocalTime.of(23, 23, 23, 123_450_000)),
+                    Arguments.of("23:23:23.123456", LocalTime.of(23, 23, 23, 123_456_000)),
+                    Arguments.of("23:23:23.1234567", LocalTime.of(23, 23, 23, 123_456_700)),
+                    Arguments.of("23:23:23.12345678", LocalTime.of(23, 23, 23, 123_456_780)),
+                    Arguments.of("23:23:23.123456789", LocalTime.of(23, 23, 23, 123_456_789)),
+                    Arguments.of("23:23:23.123456 +08:00", LocalTime.of(23, 23, 23, 123_456_000)),
+                    Arguments.of("23:23:23.123456 -08:00", LocalTime.of(23, 23, 23, 123_456_000)),
+                    Arguments.of("23:23:23.123456789 +08:00", LocalTime.of(23, 23, 23, 123_456_789)),
+                    Arguments.of("23:23:23.123456", LocalTime.of(23, 23, 23, 123_456_000)));
+        }
     }
 }
