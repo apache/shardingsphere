@@ -50,12 +50,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.jupiter.api.AfterEach;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Map;
@@ -69,22 +68,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class MySQLAdminExecutorCreatorTest {
-    
-    private final MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
     
     @SuppressWarnings("rawtypes")
     @Mock
     private SQLStatementContext sqlStatementContext;
-    
-    @AfterEach
-    public void tearDown() {
-        proxyContext.close();
-    }
     
     @Test
     public void assertCreateWithMySQLShowFunctionStatus() {
@@ -256,8 +248,8 @@ public final class MySQLAdminExecutorCreatorTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", mock(DatabaseType.class), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         Map<String, ShardingSphereDatabase> result = Collections.singletonMap("db_0", database);
         initProxyContext(result);
-        proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
-        proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db_0")).thenReturn(database);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
+        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(database);
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
         when(mySQLSelectStatement.getFrom()).thenReturn(null);
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
@@ -274,8 +266,8 @@ public final class MySQLAdminExecutorCreatorTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", mock(DatabaseType.class), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         Map<String, ShardingSphereDatabase> result = Collections.singletonMap("db_0", database);
         initProxyContext(result);
-        proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
-        proxyContext.when(() -> ProxyContext.getInstance().getDatabase("db_0")).thenReturn(database);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
+        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(database);
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
         when(mySQLSelectStatement.getFrom()).thenReturn(null);
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
@@ -342,7 +334,7 @@ public final class MySQLAdminExecutorCreatorTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     
     @Test

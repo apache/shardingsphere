@@ -29,74 +29,68 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class RefreshTableMetaDataUpdaterTest {
     
-    @Test(expected = NoDatabaseSelectedException.class)
-    public void assertNoDatabaseSelected() throws SQLException {
-        UpdatableRALBackendHandler backendHandler = new UpdatableRALBackendHandler(new RefreshTableMetaDataStatement(), mock(ConnectionSession.class));
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-            backendHandler.execute();
-        }
+    @Test
+    public void assertNoDatabaseSelected() {
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        UpdatableRALBackendHandler<?> backendHandler = new UpdatableRALBackendHandler<>(new RefreshTableMetaDataStatement(), mock(ConnectionSession.class));
+        assertThrows(NoDatabaseSelectedException.class, backendHandler::execute);
     }
     
-    @Test(expected = UnknownDatabaseException.class)
-    public void assertUnknownDatabaseException() throws SQLException {
-        UpdatableRALBackendHandler backendHandler = new UpdatableRALBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("not_existed_db"));
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-            backendHandler.execute();
-        }
+    @Test
+    public void assertUnknownDatabaseException() {
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        UpdatableRALBackendHandler<?> backendHandler = new UpdatableRALBackendHandler<>(new RefreshTableMetaDataStatement(), mockConnectionSession("not_existed_db"));
+        assertThrows(UnknownDatabaseException.class, backendHandler::execute);
     }
     
-    @Test(expected = EmptyStorageUnitException.class)
-    public void assertEmptyResource() throws SQLException {
-        UpdatableRALBackendHandler backendHandler = new UpdatableRALBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("sharding_db"));
+    @Test
+    public void assertEmptyResource() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getDataSourceMap("sharding_db")).thenReturn(Collections.emptyMap());
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("sharding_db")).thenReturn(true);
-            backendHandler.execute();
-        }
+        when(contextManager.getDataSourceMap("foo_db")).thenReturn(Collections.emptyMap());
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
+        UpdatableRALBackendHandler<?> backendHandler = new UpdatableRALBackendHandler<>(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));
+        assertThrows(EmptyStorageUnitException.class, backendHandler::execute);
     }
     
-    @Test(expected = MissingRequiredStorageUnitsException.class)
-    public void assertMissingRequiredResources() throws SQLException {
-        UpdatableRALBackendHandler backendHandler = new UpdatableRALBackendHandler(new RefreshTableMetaDataStatement("t_order", "ds_1", null), mockConnectionSession("sharding_db"));
+    @Test
+    public void assertMissingRequiredResources() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getDataSourceMap("sharding_db")).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("sharding_db")).thenReturn(true);
-            backendHandler.execute();
-        }
+        when(contextManager.getDataSourceMap("foo_db")).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
+        UpdatableRALBackendHandler<?> backendHandler = new UpdatableRALBackendHandler<>(new RefreshTableMetaDataStatement("t_order", "ds_1", null), mockConnectionSession("foo_db"));
+        assertThrows(MissingRequiredStorageUnitsException.class, backendHandler::execute);
     }
     
     @Test
     public void assertUpdate() throws SQLException {
-        UpdatableRALBackendHandler backendHandler = new UpdatableRALBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("sharding_db"));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getDataSourceMap("sharding_db")).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().databaseExists("sharding_db")).thenReturn(true);
-            ResponseHeader actual = backendHandler.execute();
-            assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        }
+        when(contextManager.getDataSourceMap("foo_db")).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
+        UpdatableRALBackendHandler<?> backendHandler = new UpdatableRALBackendHandler<>(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db"));
+        ResponseHeader actual = backendHandler.execute();
+        assertThat(actual, instanceOf(UpdateResponseHeader.class));
     }
     
     private static ConnectionSession mockConnectionSession(final String databaseName) {

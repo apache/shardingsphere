@@ -68,12 +68,12 @@ public final class SQLHintExtractor {
     }
     
     /**
-     * Judge whether hint skip encrypt rewrite or not.
+     * Judge whether hint skip sql rewrite or not.
      *
-     * @return whether hint skip encrypt rewrite or not
+     * @return whether hint skip sql rewrite or not
      */
-    public boolean isHintSkipEncryptRewrite() {
-        return hintValueContext.isSkipEncryptRewrite();
+    public boolean isHintSkipSQLRewrite() {
+        return hintValueContext.isSkipSQLRewrite();
     }
     
     /**

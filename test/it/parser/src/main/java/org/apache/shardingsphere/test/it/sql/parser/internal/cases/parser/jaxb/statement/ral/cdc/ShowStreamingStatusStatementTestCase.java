@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * FunctionWithException interface.
+ * Show streaming status statement test case.
  */
-@FunctionalInterface
-public interface FunctionWithException<T, E extends Exception> {
+@Getter
+@Setter
+public final class ShowStreamingStatusStatementTestCase extends SQLParserTestCase {
     
-    /**
-     * Apply function.
-     *
-     * @param t param
-     * @throws E exception
-     */
-    void apply(T t) throws E;
+    @XmlElement(name = "job-id")
+    private String jobId;
 }

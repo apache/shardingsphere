@@ -19,11 +19,10 @@
     <metadata>
         <column name="name" />
         <column name="auto_aware_data_source_name" />
-        <column name="write_data_source_query_enabled" />
         <column name="write_storage_unit_name" />
         <column name="read_storage_unit_names" />
         <column name="load_balancer_type" />
         <column name="load_balancer_props" />
     </metadata>
-    <row values="readwrite_ds| | | ds_0| ds_0| RANDOM| " />
+    <row values="readwrite_ds| | ds_0| ds_0| RANDOM| " />
 </dataset>

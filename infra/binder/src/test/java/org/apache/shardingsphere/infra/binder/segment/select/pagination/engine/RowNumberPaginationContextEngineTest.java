@@ -91,7 +91,7 @@ public final class RowNumberPaginationContextEngineTest {
         AndPredicate andPredicate = new AndPredicate();
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
         BinaryOperationExpression predicateSegment = new BinaryOperationExpression(0, 0, left, null, null, null);
-        andPredicate.getPredicates().addAll(Collections.singleton(predicateSegment));
+        andPredicate.getPredicates().add(predicateSegment);
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(Collections.emptyList(), projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());

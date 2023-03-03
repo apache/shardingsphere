@@ -51,7 +51,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -82,8 +82,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutorTest {
         when(ProxyContext.getInstance().databaseExists("readwrite_db")).thenReturn(true);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockMetaData(), connectionSession,
                 new ShowStatusFromReadwriteSplittingRulesStatement(new DatabaseSegment(1, 1, new IdentifierValue("readwrite_db")), null));
-        assertThat(actual.size(), is(0));
-        assertFalse(actual.iterator().hasNext());
+        assertTrue(actual.isEmpty());
     }
     
     private ContextManager mockContextManager() {

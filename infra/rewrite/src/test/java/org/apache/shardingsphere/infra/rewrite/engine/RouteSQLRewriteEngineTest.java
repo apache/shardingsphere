@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.engine;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -50,7 +50,7 @@ public final class RouteSQLRewriteEngineTest {
     @Test
     public void assertRewriteWithStandardParameterBuilder() {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), "SELECT ?", Collections.singletonList(1), mock(ConnectionContext.class));
+                Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(CommonSQLStatementContext.class), "SELECT ?", Collections.singletonList(1), mock(ConnectionContext.class));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(routeUnit);

@@ -17,23 +17,9 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.it.sqlserver.internal;
 
+import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalUnsupportedSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
-import java.util.Collection;
-
-@RunWith(Parameterized.class)
+@InternalSQLParserITSettings("SQLServer")
 public final class InternalUnsupportedSQLServerParserIT extends InternalUnsupportedSQLParserIT {
-    
-    public InternalUnsupportedSQLServerParserIT(final InternalSQLParserTestParameter testParam) {
-        super(testParam);
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<InternalSQLParserTestParameter> getTestParameters() {
-        return getTestParameters("SQLServer");
-    }
 }
