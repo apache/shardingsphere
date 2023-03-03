@@ -17,21 +17,42 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
- * External SQL parser test parameter.
+ * External SQL parser integrate test settings.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ExternalSQLParserTestParameter {
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ExternalSQLParserITSettings {
     
-    private final String sqlCaseId;
+    /**
+     * Get to be tested database types.
+     * 
+     * @return to be tested database types
+     */
+    String value();
     
-    private final String databaseType;
+    /**
+     * Get test case URL.
+     * 
+     * @return test case URL
+     */
+    String caseURL();
     
-    private final String sql;
+    /**
+     * Get test case result URL.
+     * 
+     * @return test case result URL
+     */
+    String resultURL();
     
-    private final String reportType;
+    /**
+     * Report type.
+     * 
+     * @return get report type
+     */
+    String reportType() default "CSV";
 }
