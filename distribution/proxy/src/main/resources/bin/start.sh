@@ -103,6 +103,7 @@ unset -v PORT
 unset -v ADDRESSES
 unset -v CONF_PATH
 unset -v FORCE
+unset -v SOCKET_FILE
 
 print_usage() {
     echo "usage:"
@@ -119,6 +120,7 @@ print_usage() {
     echo "-c  Path to config directory of ShardingSphere-Proxy, default is 'conf'"
     echo "-f  Force start ShardingSphere-Proxy"
     echo "-g  Enable agent if shardingsphere-agent deployed in 'agent' directory"
+    echo "-s  The socket file to use for connection."
     exit 0
 }
 
@@ -170,8 +172,8 @@ if [ $# == 0 ]; then
     CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
 fi
 
-if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] || [[ $1 == -f ]] ; then
-    while getopts ":a:p:c:f" opt
+if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] || [[ $1 == -f ]] || [[ $1 == -s ]]; then
+    while getopts ":a:p:c:f:s:" opt
     do
         case $opt in
         a)
@@ -186,6 +188,9 @@ if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] || [[ $1 == -f ]] ; then
         f)
           echo "The force param is true"
           FORCE=true;;
+        s)
+          echo "The socket file is $OPTARG"
+          SOCKET_FILE=$OPTARG;;
         ?)
           print_usage;;
         esac
@@ -216,6 +221,10 @@ fi
 
 if [ -z "$FORCE" ]; then
     FORCE=false
+fi
+
+if [ "$SOCKET_FILE" ]; then
+    ADDRESSES="${ADDRESSES},${SOCKET_FILE}"
 fi
 
 CLASS_PATH=${CONF_PATH}:${CLASS_PATH}

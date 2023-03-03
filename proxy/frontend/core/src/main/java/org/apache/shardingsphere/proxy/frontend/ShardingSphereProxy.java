@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend;
 
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -24,7 +25,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollDomainSocketChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerDomainSocketChannel;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -71,15 +74,14 @@ public final class ShardingSphereProxy {
     }
 
     /**
-     * Start ShardingSphere-Proxy.
+     * Start ShardingSphere-Proxy with unix domain socket.
      *
      * @param socketPath socketPath
      */
     @SneakyThrows(InterruptedException.class)
     public void start(final String socketPath) {
         try {
-            List<ChannelFuture> futures = startDomainSocket(socketPath);
-            accept(futures);
+            startDomainSocket(socketPath);
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
@@ -99,13 +101,13 @@ public final class ShardingSphereProxy {
         return futures;
     }
 
-    private List<ChannelFuture> startDomainSocket(final String socketPath) throws InterruptedException {
+    private void startDomainSocket(final String socketPath) throws InterruptedException {
+        log.info("DomainSocket Starting {}", socketPath);
         createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
-        initServerBootstrap(bootstrap);
-        List<ChannelFuture> result = new ArrayList<>();
-        result.add(bootstrap.bind(new DomainSocketAddress(socketPath)).sync());
-        return result;
+        initServerBootstrapNew(bootstrap);
+        ChannelFuture channelFuture = bootstrap.bind(new DomainSocketAddress(socketPath)).sync();
+        channelFuture.channel().closeFuture().sync();
     }
 
     private void accept(final List<ChannelFuture> futures) throws InterruptedException {
@@ -127,8 +129,30 @@ public final class ShardingSphereProxy {
     
     private void initServerBootstrap(final ServerBootstrap bootstrap) {
         Integer backLog = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG);
+
         bootstrap.group(bossGroup, workerGroup)
                 .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
+                .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
+                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .option(ChannelOption.SO_REUSEADDR, true)
+                .option(ChannelOption.SO_BACKLOG, backLog)
+                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                .childOption(ChannelOption.TCP_NODELAY, true)
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
+    }
+
+    private void initServerBootstrap(final Bootstrap bootstrap) {
+        bootstrap.group(new EpollEventLoopGroup())
+                .channel(EpollDomainSocketChannel.class)
+                .handler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
+    }
+
+    private void initServerBootstrapNew(final ServerBootstrap bootstrap) {
+        Integer backLog = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG);
+
+        bootstrap.group(bossGroup, workerGroup)
+                .channel(EpollServerDomainSocketChannel.class)
                 .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .option(ChannelOption.SO_REUSEADDR, true)

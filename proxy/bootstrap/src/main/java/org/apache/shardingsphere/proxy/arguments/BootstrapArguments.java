@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.proxy.arguments;
 
+import com.google.common.net.InetAddresses;
 import lombok.RequiredArgsConstructor;
 
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Bootstrap arguments.
@@ -71,7 +75,24 @@ public final class BootstrapArguments {
      * @return address list
      */
     public List<String> getAddresses() {
-        return args.length < 3 ? Collections.singletonList(DEFAULT_BIND_ADDRESS) : Arrays.asList(args[2].split(","));
+        if (args.length < 3) {
+            return Collections.singletonList(DEFAULT_BIND_ADDRESS);
+        }
+        List<String> addresses = Arrays.asList(args[2].split(","));
+        return addresses.stream().filter(InetAddresses::isInetAddress).collect(Collectors.toList());
+    }
+
+    /**
+     * Get unix domain socket path.
+     *
+     * @return socket path
+     */
+    public Optional<String> getSocketPath() {
+        if (args.length < 3) {
+            return Optional.empty();
+        }
+        List<String> addresses = Arrays.asList(args[2].split(","));
+        return addresses.stream().filter(address -> !InetAddresses.isInetAddress(address)).filter(this::isValidPath).findFirst();
     }
     
     /**
@@ -96,5 +117,14 @@ public final class BootstrapArguments {
             result.append('/');
         }
         return result.toString();
+    }
+
+    private boolean isValidPath(String path) {
+        try {
+            Paths.get(path);
+        } catch (InvalidPathException | NullPointerException ex) {
+            return false;
+        }
+        return true;
     }
 }
