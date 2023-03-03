@@ -15,29 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.config;
+package org.apache.shardingsphere.proxy.backend.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlHBaseParameter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 /**
- * Rule configuration for YAML.
+ * HBase Operation exception.
  */
+@AllArgsConstructor
 @Getter
-@Setter
-public final class YamlHBaseConfiguration implements YamlConfiguration {
+public class HBaseOperationException extends RuntimeException {
     
-    private String databaseName;
+    private static final long serialVersionUID = -2361593557266150170L;
     
-    private Map<String, Object> dataSourceCommon;
-    
-    private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
-    
-    private Properties props;
-    
+    private final String errorInfo;
 }

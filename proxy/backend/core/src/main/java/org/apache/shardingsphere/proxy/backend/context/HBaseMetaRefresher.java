@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.config;
+package org.apache.shardingsphere.proxy.backend.context;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlHBaseParameter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.proxy.backend.exception.HBaseOperationException;
 
 /**
- * Rule configuration for YAML.
+ * background thread to refresh meta data.
  */
-@Getter
-@Setter
-public final class YamlHBaseConfiguration implements YamlConfiguration {
+@AllArgsConstructor
+@Slf4j
+public class HBaseMetaRefresher implements Runnable {
     
-    private String databaseName;
+    private final HBaseContext context;
     
-    private Map<String, Object> dataSourceCommon;
-    
-    private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
-    
-    private Properties props;
-    
+    @Override
+    public void run() {
+        try {
+            context.getConnections().forEach(context::loadTablesFromHBase);
+        } catch (HBaseOperationException e) {
+            // ignored
+        }
+    }
 }

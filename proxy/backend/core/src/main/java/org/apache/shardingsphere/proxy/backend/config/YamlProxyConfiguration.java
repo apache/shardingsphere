@@ -34,4 +34,6 @@ public final class YamlProxyConfiguration {
     private final YamlProxyServerConfiguration serverConfiguration;
     
     private final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations;
+    
+    private final Map<String, YamlHBaseConfiguration> hBaseConfigurations;
 }
