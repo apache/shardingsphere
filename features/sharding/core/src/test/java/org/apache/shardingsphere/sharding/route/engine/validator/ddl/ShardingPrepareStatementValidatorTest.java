@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,12 +56,13 @@ public final class ShardingPrepareStatementValidatorTest {
     @Mock
     private RouteContext routeContext;
     
-    @Test(expected = EmptyShardingRouteResultException.class)
+    @Test
     public void assertPostValidatePrepareWithEmptyRouteResultForPostgreSQL() {
         PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         when(routeContext.getRouteUnits()).thenReturn(Collections.emptyList());
-        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), new HintValueContext(),
-                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
+        assertThrows(EmptyShardingRouteResultException.class,
+                () -> new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), new HintValueContext(),
+                        Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
@@ -74,7 +76,7 @@ public final class ShardingPrepareStatementValidatorTest {
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = UnsupportedPrepareRouteToSameDataSourceException.class)
+    @Test
     public void assertPostValidatePrepareWithSameDataSourceForPostgreSQL() {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
@@ -83,7 +85,7 @@ public final class ShardingPrepareStatementValidatorTest {
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_1"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
-        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), new HintValueContext(),
-                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
+        assertThrows(UnsupportedPrepareRouteToSameDataSourceException.class, () -> new ShardingPrepareStatementValidator().postValidate(
+                shardingRule, new PrepareStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
 }

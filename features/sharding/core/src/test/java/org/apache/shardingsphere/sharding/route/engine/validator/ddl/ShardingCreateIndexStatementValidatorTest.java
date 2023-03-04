@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -63,16 +64,18 @@ public final class ShardingCreateIndexStatementValidatorTest {
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
     
-    @Test(expected = NoSuchTableException.class)
+    @Test
     public void assertPreValidateCreateIndexWhenTableNotExistIndexNotExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         when(database.getSchema("public").containsTable("t_order")).thenReturn(false);
-        new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertThrows(NoSuchTableException.class,
+                () -> new ShardingCreateIndexStatementValidator().preValidate(
+                        shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
-    @Test(expected = DuplicatedIndexException.class)
+    @Test
     public void assertPreValidateCreateIndexWhenTableExistIndexExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
@@ -81,7 +84,9 @@ public final class ShardingCreateIndexStatementValidatorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(database.getSchema("public").containsIndex("t_order", "t_order_index")).thenReturn(true);
-        new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertThrows(DuplicatedIndexException.class,
+                () -> new ShardingCreateIndexStatementValidator().preValidate(
+                        shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -96,17 +101,19 @@ public final class ShardingCreateIndexStatementValidatorTest {
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
     
-    @Test(expected = NoSuchTableException.class)
+    @Test
     public void assertPreValidateCreateIndexWithoutIndexNameWhenTableNotExistIndexNotExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setGeneratedIndexStartIndex(10);
         when(database.getSchema("public").containsTable("t_order")).thenReturn(false);
-        new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertThrows(NoSuchTableException.class,
+                () -> new ShardingCreateIndexStatementValidator().preValidate(
+                        shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
-    @Test(expected = DuplicatedIndexException.class)
+    @Test
     public void assertPreValidateCreateIndexWithoutIndexNameWhenTableExistIndexExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
@@ -116,6 +123,8 @@ public final class ShardingCreateIndexStatementValidatorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(database.getSchema("public").containsIndex("t_order", "content_idx")).thenReturn(true);
-        new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertThrows(DuplicatedIndexException.class,
+                () -> new ShardingCreateIndexStatementValidator().preValidate(
+                        shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
 }

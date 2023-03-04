@@ -35,6 +35,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AlterShardingTableReferenceRuleStatementUpdaterTest {
@@ -42,19 +43,22 @@ public final class AlterShardingTableReferenceRuleStatementUpdaterTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckWithoutCurrentRuleConfig() {
-        new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("foo", "t_order,t_order_item"), null);
+        assertThrows(MissingRequiredRuleException.class,
+                () -> new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("foo", "t_order,t_order_item"), null));
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckWithNotExistedRule() {
-        new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("notExisted", "t_1,t_2"), createCurrentRuleConfiguration());
+        assertThrows(MissingRequiredRuleException.class,
+                () -> new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("notExisted", "t_1,t_2"), createCurrentRuleConfiguration()));
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckWithNotExistedTables() {
-        new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("reference_0", "t_3,t_4"), createCurrentRuleConfiguration());
+        assertThrows(MissingRequiredRuleException.class,
+                () -> new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("reference_0", "t_3,t_4"), createCurrentRuleConfiguration()));
     }
     
     @Test
