@@ -51,6 +51,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -113,13 +114,13 @@ public final class InsertClauseShardingConditionEngineTest {
         assertThat(shardingConditions.get(0).getValues().size(), is(1));
     }
     
-    @Test(expected = InsertColumnsAndValuesMismatchedException.class)
+    @Test
     public void assertCreateShardingConditionsInsertStatementWithMismatchColumns() {
         InsertValueContext insertValueContext = new InsertValueContext(Arrays.asList(new LiteralExpressionSegment(0, 10, "1"), new LiteralExpressionSegment(0, 10, "1")), Collections.emptyList(), 0);
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
         when(shardingRule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
         when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_col1"));
-        shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
+        assertThrows(InsertColumnsAndValuesMismatchedException.class, () -> shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList()));
     }
     
     @Test

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,9 +54,9 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
         when(database.getName()).thenReturn("test");
     }
     
-    @Test(expected = MissingRequiredAlgorithmException.class)
+    @Test
     public void assertExecuteWithNotExist() {
-        updater.checkSQLStatement(database, createSQLStatement("uuid_key_generator"), new ShardingRuleConfiguration());
+        assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, createSQLStatement("uuid_key_generator"), new ShardingRuleConfiguration()));
     }
     
     @Test
@@ -72,12 +73,12 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
         assertTrue(currentRuleConfig.getKeyGenerators().isEmpty());
     }
     
-    @Test(expected = AlgorithmInUsedException.class)
+    @Test
     public void assertExecuteWithUsed() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("UUID", null));
         currentRuleConfig.getAutoTables().add(createShardingAutoTableRuleConfiguration());
-        updater.checkSQLStatement(database, createSQLStatement("uuid_key_generator"), currentRuleConfig);
+        assertThrows(AlgorithmInUsedException.class, () -> updater.checkSQLStatement(database, createSQLStatement("uuid_key_generator"), currentRuleConfig));
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {

@@ -47,6 +47,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ConditionValueBetweenOperatorGeneratorTest {
@@ -93,13 +94,13 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertTrue(rangeShardingConditionValue.getParameterMarkerIndexes().isEmpty());
     }
     
-    @Test(expected = ClassCastException.class)
+    @Test
     public void assertGenerateErrorConditionValue() {
         int between = 1;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
         BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
-        generator.generate(value, column, new LinkedList<>(), timeServiceRule);
+        assertThrows(ClassCastException.class, () -> generator.generate(value, column, new LinkedList<>(), timeServiceRule));
     }
     
     @SuppressWarnings("unchecked")

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,9 +54,9 @@ public final class DropShardingAuditorStatementUpdaterTest {
         when(database.getName()).thenReturn("test");
     }
     
-    @Test(expected = MissingRequiredAlgorithmException.class)
+    @Test
     public void assertExecuteWithNotExist() {
-        updater.checkSQLStatement(database, createSQLStatement("sharding_key_required_auditor"), new ShardingRuleConfiguration());
+        assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, createSQLStatement("sharding_key_required_auditor"), new ShardingRuleConfiguration()));
     }
     
     @Test
@@ -72,12 +73,12 @@ public final class DropShardingAuditorStatementUpdaterTest {
         assertTrue(currentRuleConfig.getAuditors().isEmpty());
     }
     
-    @Test(expected = AlgorithmInUsedException.class)
+    @Test
     public void assertExecuteWithUsed() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", null));
         currentRuleConfig.getAutoTables().add(createShardingAutoTableRuleConfiguration());
-        updater.checkSQLStatement(database, createSQLStatement("sharding_key_required_auditor"), currentRuleConfig);
+        assertThrows(AlgorithmInUsedException.class, () -> updater.checkSQLStatement(database, createSQLStatement("sharding_key_required_auditor"), currentRuleConfig));
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {

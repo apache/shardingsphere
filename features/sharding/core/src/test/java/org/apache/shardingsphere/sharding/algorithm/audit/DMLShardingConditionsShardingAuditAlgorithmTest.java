@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -81,12 +82,12 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
         shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), mock(ShardingSphereRuleMetaData.class), database);
     }
     
-    @Test(expected = SQLAuditException.class)
+    @Test
     public void assertEmptyShardingConditionsCheck() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(rule)));
         when(rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(false);
         when(rule.isShardingTable("t_order")).thenReturn(true);
-        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), mock(ShardingSphereRuleMetaData.class), database);
+        assertThrows(SQLAuditException.class, () -> shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), mock(ShardingSphereRuleMetaData.class), database));
     }
 }
