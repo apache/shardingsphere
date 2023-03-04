@@ -157,8 +157,6 @@ public final class ShardingRuleStatementCheckerTest {
         autoTableRuleSegment.setShardingColumn("product_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("not_exist", PropertiesBuilder.build(new Property("", ""))));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
-        ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
-        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("complex", PropertiesBuilder.build(new Property("", ""))));
         assertThrows(InvalidAlgorithmConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
