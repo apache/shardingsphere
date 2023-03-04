@@ -929,7 +929,13 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     @Override
     public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
+        FunctionSegment result= new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
+        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr(1)));
+        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr(2)));
+        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr(3)));
+        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr(4)));
+        return result;
     }
     
     @Override

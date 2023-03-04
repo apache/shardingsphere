@@ -156,10 +156,11 @@ public final class SQLNodeConverterEngineIT {
         SUPPORTED_SQL_CASE_IDS.add("select_natural_full_join");
         SUPPORTED_SQL_CASE_IDS.add("select_order_by_for_nulls_first");
         SUPPORTED_SQL_CASE_IDS.add("select_order_by_for_nulls_last");
+        SUPPORTED_SQL_CASE_IDS.add("select_char");
     }
     // CHECKSTYLE:ON
     
-    private final String sqlCaseId;
+    public String sqlCaseId;
     
     private final String databaseType;
     

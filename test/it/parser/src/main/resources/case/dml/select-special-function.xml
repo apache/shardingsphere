@@ -106,10 +106,26 @@
         </projections>
     </select>
     <select sql-case-id="select_char">
-        <projections start-index="7" stop-index="29">
-            <expression-projection text="CHAR(77,121,83,81,'76')" start-index="7" stop-index="29">
+        <projections start-index="7" stop-index="44">
+            <expression-projection text="CHAR(77,121,83,81,'76')" start-index="7" stop-index="44">
                 <expr>
-                    <function function-name="CHAR" start-index="7" stop-index="29" text="CHAR(77,121,83,81,'76')" />
+                    <function function-name="CHAR" start-index="7" stop-index="44" text="CHAR(77,121,83,81,'76')" >
+                            <parameter>
+                                <literal-expression value="77" start-index="12" stop-index="13" />
+                            </parameter>
+                    <parameter>
+                        <literal-expression value="121" start-index="15" stop-index="17" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="83" start-index="20" stop-index="21" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="81" start-index="24" stop-index="25" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="'76'" start-index="29" stop-index="32" />
+                    </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
