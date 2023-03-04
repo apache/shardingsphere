@@ -40,7 +40,7 @@ searchArgs
     ;
 
 constant
-    : INTEGER_ | STRING_ | PLACEHOLDER_ | DATE_
+    : INTEGER_ | STRING_ | PLACEHOLDER_ | DATE_ | string_zh
     ;
 
 cast
@@ -68,7 +68,16 @@ argRangeList
     ;
 
 type
-    : BIGINT | INTEGER | VARCHAR | DATE
+    : BIGINT | INTEGER | VARCHAR | DATE | VARCHAR_ZH
+    ;
+
+
+string_zh
+    : UTF_ STRING_
+    ;
+
+VARCHAR_ZH
+    : VARCHAR (('\\'. | '""' | ~('"'| '\\' | ','))* | ('\\'. | '\'\'' | ~('\'' | '\\' | ','))*)
     ;
 
 WS

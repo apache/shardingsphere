@@ -293,7 +293,9 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     }
     
     private SqlString createSQLString(final ShardingSphereTable table, final TranslatableScanNodeExecutorContext scanContext, final SqlDialect sqlDialect) {
-        return new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(table, scanContext)).asStatement().toSqlString(sqlDialect);
+        String conditionSql = new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(table, scanContext))
+                .asStatement().toSqlString(sqlDialect).getSql().replace("u&'\\", "'\\u");
+        return new SqlString(sqlDialect, conditionSql);
     }
     
     private void setParameters(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {

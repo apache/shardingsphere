@@ -158,7 +158,7 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     }
     
     private RexNode makeCastInputRef(final String sign, final Integer index) {
-        if ("VARCHAR".equals(sign)) {
+        if (sign.contains("VARCHAR")) {
             return rexBuilder.makeInputRef(typeFactory.createJavaType(String.class), index);
         } else if ("INTEGER".equals(sign)) {
             return rexBuilder.makeInputRef(typeFactory.createJavaType(Integer.class), index);
@@ -231,6 +231,10 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
         }
         if (null != ctx.PLACEHOLDER_()) {
             return makeLiteral(ctx.PLACEHOLDER_().getText());
+        }
+        if (null != ctx.string_zh().STRING_()) {
+            String literalValue = ctx.string_zh().STRING_().getText().replace("\"", "").replace("'", "");
+            return rexBuilder.makeLiteral(literalValue, typeFactory.createSqlType(SqlTypeName.VARCHAR), false);
         }
         throw new OptimizationSQLRexNodeException(ctx.getText());
     }
