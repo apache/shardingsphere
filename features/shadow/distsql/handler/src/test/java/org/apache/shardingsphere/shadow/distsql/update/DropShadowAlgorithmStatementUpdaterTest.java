@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowAlgorithmStatementUpdater;
@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,9 +43,9 @@ public final class DropShadowAlgorithmStatementUpdaterTest {
     
     private final DropShadowAlgorithmStatementUpdater updater = new DropShadowAlgorithmStatementUpdater();
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertExecuteWithoutAlgorithmNameInMetaData() {
-        updater.checkSQLStatement(database, createSQLStatement("ruleSegment"), null);
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("ruleSegment"), null));
     }
     
     @Test
