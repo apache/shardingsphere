@@ -22,18 +22,19 @@ import org.junit.Test;
 
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class ShadowValueValidatorTest {
     
-    @Test(expected = UnsupportedShadowColumnTypeException.class)
+    @Test
     public void assertValidateDateType() {
-        ShadowValueValidator.validate("tbl", "col", new Date());
+        assertThrows(UnsupportedShadowColumnTypeException.class, () -> ShadowValueValidator.validate("tbl", "col", new Date()));
     }
     
-    @Test(expected = UnsupportedShadowColumnTypeException.class)
+    @Test
     public void assertValidateEnumType() {
-        ShadowValueValidator.validate("tbl", "col", mock(Enum.class));
+        assertThrows(UnsupportedShadowColumnTypeException.class, () -> ShadowValueValidator.validate("tbl", "col", mock(Enum.class)));
     }
     
     @Test

@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -44,9 +45,9 @@ public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
     
     private final DropDefaultShadowAlgorithmStatementUpdater updater = new DropDefaultShadowAlgorithmStatementUpdater();
     
-    @Test(expected = MissingRequiredAlgorithmException.class)
+    @Test
     public void assertCheckWithoutDefaultAlgorithm() {
-        updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(false), currentConfig);
+        assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(false), currentConfig));
     }
     
     @Test
