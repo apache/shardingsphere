@@ -22,10 +22,11 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredDBDiscoveryConfigurationException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,11 +49,11 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = MissingRequiredDBDiscoveryConfigurationException.class)
+    @Test
     public void assertInvalidCheck() {
         DatabaseDiscoveryRuleConfiguration config = getInvalidConfiguration();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
+        assertThrows(MissingRequiredDBDiscoveryConfigurationException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
     private DatabaseDiscoveryRuleConfiguration getInvalidConfiguration() {
