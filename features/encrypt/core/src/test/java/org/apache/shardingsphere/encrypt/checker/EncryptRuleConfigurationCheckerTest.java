@@ -29,6 +29,7 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,11 +52,11 @@ public final class EncryptRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = EncryptEncryptorNotFoundException.class)
+    @Test
     public void assertCheckWhenConfigInvalidCipherColumn() {
         EncryptRuleConfiguration config = createInvalidCipherColumnConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
+        assertThrows(EncryptEncryptorNotFoundException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
     private EncryptRuleConfiguration createInvalidCipherColumnConfig() {
@@ -67,11 +68,11 @@ public final class EncryptRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = EncryptEncryptorNotFoundException.class)
+    @Test
     public void assertCheckWhenConfigInvalidAssistColumn() {
         EncryptRuleConfiguration config = createInvalidAssistColumnConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
+        assertThrows(EncryptEncryptorNotFoundException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
     private EncryptRuleConfiguration createInvalidAssistColumnConfig() {
@@ -84,11 +85,11 @@ public final class EncryptRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = EncryptEncryptorNotFoundException.class)
+    @Test
     public void assertCheckWhenConfigInvalidLikeColumn() {
         EncryptRuleConfiguration config = createInvalidLikeColumnConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
+        assertThrows(EncryptEncryptorNotFoundException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
     private EncryptRuleConfiguration createInvalidLikeColumnConfig() {

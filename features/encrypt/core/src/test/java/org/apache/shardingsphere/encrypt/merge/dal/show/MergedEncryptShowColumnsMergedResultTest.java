@@ -40,6 +40,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -118,14 +119,15 @@ public final class MergedEncryptShowColumnsMergedResultTest {
         assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).wasNull());
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCalendarValue() throws SQLException {
-        createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getCalendarValue(1, Date.class, Calendar.getInstance());
+    @Test
+    public void assertGetCalendarValue() {
+        assertThrows(SQLFeatureNotSupportedException.class,
+                () -> createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getCalendarValue(1, Date.class, Calendar.getInstance()));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetInputStream() throws SQLException {
-        createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getInputStream(1, "asc");
+    @Test
+    public void assertGetInputStream() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).getInputStream(1, "asc"));
     }
     
     private MergedEncryptShowColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final EncryptRule encryptRule) {

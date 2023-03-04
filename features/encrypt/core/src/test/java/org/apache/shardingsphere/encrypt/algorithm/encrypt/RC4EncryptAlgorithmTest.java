@@ -33,6 +33,7 @@ import java.util.stream.IntStream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class RC4EncryptAlgorithmTest {
@@ -55,9 +56,10 @@ public final class RC4EncryptAlgorithmTest {
         assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
-    @Test(expected = EncryptAlgorithmInitializationException.class)
+    @Test
     public void assertKeyIsToLong() {
-        encryptAlgorithm.init(PropertiesBuilder.build(new Property("rc4-key-value", IntStream.range(0, 100).mapToObj(each -> "test").collect(Collectors.joining()))));
+        assertThrows(EncryptAlgorithmInitializationException.class,
+                () -> encryptAlgorithm.init(PropertiesBuilder.build(new Property("rc4-key-value", IntStream.range(0, 100).mapToObj(each -> "test").collect(Collectors.joining())))));
     }
     
     @Test
