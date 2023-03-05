@@ -33,6 +33,8 @@ public final class ConsistencyCheckJobItemInfo {
     
     private Boolean checkSuccess;
     
+    private String checkFailedTableNames;
+    
     private int finishedPercentage;
     
     private long remainingSeconds;

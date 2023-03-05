@@ -37,6 +37,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -63,14 +64,14 @@ public final class ShardingCopyStatementValidatorTest {
         new ShardingCopyStatementValidator().preValidate(shardingRule, new CopyStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
     
-    @Test(expected = UnsupportedShardingOperationException.class)
+    @Test
     public void assertPreValidateCopyWithShardingTableForPostgreSQL() {
-        assertPreValidateCopyTable(new PostgreSQLCopyStatement());
+        assertThrows(UnsupportedShardingOperationException.class, () -> assertPreValidateCopyTable(new PostgreSQLCopyStatement()));
     }
     
-    @Test(expected = UnsupportedShardingOperationException.class)
+    @Test
     public void assertPreValidateCopyWithShardingTableForOpenGauss() {
-        assertPreValidateCopyTable(new OpenGaussCopyStatement());
+        assertThrows(UnsupportedShardingOperationException.class, () -> assertPreValidateCopyTable(new OpenGaussCopyStatement()));
     }
     
     private void assertPreValidateCopyTable(final CopyStatement sqlStatement) {

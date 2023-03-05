@@ -27,6 +27,6 @@ public final class CDCJobType extends AbstractJobType {
     public static final String TYPE_CODE = "03";
     
     public CDCJobType() {
-        super("CDC", TYPE_CODE);
+        super("STREAMING", TYPE_CODE);
     }
 }

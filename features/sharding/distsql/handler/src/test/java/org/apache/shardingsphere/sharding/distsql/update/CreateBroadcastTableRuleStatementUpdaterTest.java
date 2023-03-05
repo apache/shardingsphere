@@ -35,6 +35,7 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateBroadcastTableRuleStatementUpdaterTest {
@@ -56,11 +57,11 @@ public final class CreateBroadcastTableRuleStatementUpdaterTest {
         assertTrue(currentRuleConfig.getBroadcastTables().contains("t_2"));
     }
     
-    @Test(expected = DuplicateRuleException.class)
+    @Test
     public void assertCheckDuplicatedBroadcastTable() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Arrays.asList("t_order", "t_address"));
-        updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentRuleConfig));
     }
     
     @Test

@@ -33,6 +33,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class TelephoneRandomReplaceAlgorithmTest {
@@ -67,8 +68,8 @@ public final class TelephoneRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask("13012345678"), not("13012345678"));
     }
     
-    @Test(expected = MaskAlgorithmInitializationException.class)
+    @Test
     public void assertInitWhenConfigNotNumberProps() {
-        maskAlgorithm.init(PropertiesBuilder.build(new Property("network-numbers", "130, x130, 155,1702")));
+        assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build(new Property("network-numbers", "130, x130, 155,1702"))));
     }
 }

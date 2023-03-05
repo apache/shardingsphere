@@ -20,6 +20,10 @@ package org.apache.shardingsphere.test.it.sql.parser.it.mysql.external;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserITSettings;
 
-@ExternalSQLParserITSettings(value = "MySQL", caseURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t", resultURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r")
+@ExternalSQLParserITSettings(value = "MySQL", caseURL = ExternalMySQLParserIT.CASE_URL, resultURL = ExternalMySQLParserIT.RESULT_URL)
 public final class ExternalMySQLParserIT extends ExternalSQLParserIT {
+    
+    static final String CASE_URL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t";
+    
+    static final String RESULT_URL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r";
 }

@@ -38,6 +38,7 @@ import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
@@ -47,9 +48,9 @@ public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
     
     private final CreateShardingTableReferenceRuleStatementUpdater updater = new CreateShardingTableReferenceRuleStatementUpdater();
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithoutCurrentTableRule() {
-        updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), new ShardingRuleConfiguration());
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), new ShardingRuleConfiguration()));
     }
     
     private CreateShardingTableReferenceRuleStatement createSQLStatement(final boolean ifNotExists, final String name, final String reference) {
@@ -58,9 +59,9 @@ public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
         return new CreateShardingTableReferenceRuleStatement(ifNotExists, segments);
     }
     
-    @Test(expected = DuplicateRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithDuplicateTables() {
-        updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), getCurrentRuleConfig());
+        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), getCurrentRuleConfig()));
     }
     
     @Test

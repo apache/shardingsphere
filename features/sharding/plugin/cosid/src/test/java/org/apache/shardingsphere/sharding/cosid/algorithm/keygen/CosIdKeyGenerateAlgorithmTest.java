@@ -40,6 +40,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.Assert.assertThrows;
 
 public final class CosIdKeyGenerateAlgorithmTest {
     
@@ -62,10 +63,10 @@ public final class CosIdKeyGenerateAlgorithmTest {
         assertThat(algorithm.generateKey(), is(2L));
     }
     
-    @Test(expected = NotFoundIdGeneratorException.class)
+    @Test
     public void assertGenerateKeyWhenIdProviderIsEmpty() {
         DefaultIdGeneratorProvider.INSTANCE.clear();
-        TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID").generateKey();
+        assertThrows(NotFoundIdGeneratorException.class, () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID").generateKey());
     }
     
     @Test

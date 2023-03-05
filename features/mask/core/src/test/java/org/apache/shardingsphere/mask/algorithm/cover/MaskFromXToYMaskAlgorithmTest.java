@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public final class MaskFromXToYMaskAlgorithmTest {
     
@@ -51,18 +52,21 @@ public final class MaskFromXToYMaskAlgorithmTest {
         assertThat(maskAlgorithm.mask("abc1"), is("abc*"));
     }
     
-    @Test(expected = MaskAlgorithmInitializationException.class)
+    @Test
     public void assertInitWhenFromXIsEmpty() {
-        new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*")));
+        assertThrows(MaskAlgorithmInitializationException.class,
+                () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*"))));
     }
     
-    @Test(expected = MaskAlgorithmInitializationException.class)
+    @Test
     public void assertInitWhenToYIsEmpty() {
-        new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", ""), new Property("replace-char", "*")));
+        assertThrows(MaskAlgorithmInitializationException.class,
+                () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", ""), new Property("replace-char", "*"))));
     }
     
-    @Test(expected = MaskAlgorithmInitializationException.class)
+    @Test
     public void assertInitWhenReplaceCharIsEmpty() {
-        new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", "")));
+        assertThrows(MaskAlgorithmInitializationException.class,
+                () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", ""))));
     }
 }

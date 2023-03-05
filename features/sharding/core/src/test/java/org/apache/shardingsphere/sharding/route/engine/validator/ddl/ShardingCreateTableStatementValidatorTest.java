@@ -50,6 +50,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -66,39 +67,39 @@ public final class ShardingCreateTableStatementValidatorTest {
     @Mock
     private RouteContext routeContext;
     
-    @Test(expected = TableExistsException.class)
+    @Test
     public void assertPreValidateCreateTableForMySQL() {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertPreValidateCreateTable(sqlStatement, "sharding_db");
+        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
     }
     
-    @Test(expected = TableExistsException.class)
+    @Test
     public void assertPreValidateCreateTableForOracle() {
         OracleCreateTableStatement sqlStatement = new OracleCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertPreValidateCreateTable(sqlStatement, "sharding_db");
+        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
     }
     
-    @Test(expected = TableExistsException.class)
+    @Test
     public void assertPreValidateCreateTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertPreValidateCreateTable(sqlStatement, "public");
+        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "public"));
     }
     
-    @Test(expected = TableExistsException.class)
+    @Test
     public void assertPreValidateCreateTableForSQL92() {
         SQL92CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertPreValidateCreateTable(sqlStatement, "sharding_db");
+        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
     }
     
-    @Test(expected = TableExistsException.class)
+    @Test
     public void assertPreValidateCreateTableForSQLServer() {
         SQLServerCreateTableStatement sqlStatement = new SQLServerCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertPreValidateCreateTable(sqlStatement, "sharding_db");
+        assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
     }
     
     private void assertPreValidateCreateTable(final CreateTableStatement sqlStatement, final String schemaName) {
@@ -143,7 +144,7 @@ public final class ShardingCreateTableStatementValidatorTest {
                 new CreateTableStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingDDLRouteException.class)
+    @Test
     public void assertPostValidateCreateTableWithDifferentRouteResultShardingTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
@@ -152,8 +153,8 @@ public final class ShardingCreateTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule,
-                new CreateTableStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
+        assertThrows(ShardingDDLRouteException.class, () -> new ShardingCreateTableStatementValidator().postValidate(shardingRule,
+                new CreateTableStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
@@ -170,7 +171,7 @@ public final class ShardingCreateTableStatementValidatorTest {
                 new CreateTableStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingDDLRouteException.class)
+    @Test
     public void assertPostValidateCreateTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
@@ -179,7 +180,7 @@ public final class ShardingCreateTableStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingCreateTableStatementValidator().postValidate(shardingRule,
-                new CreateTableStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
+        assertThrows(ShardingDDLRouteException.class, () -> new ShardingCreateTableStatementValidator().postValidate(shardingRule,
+                new CreateTableStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
 }

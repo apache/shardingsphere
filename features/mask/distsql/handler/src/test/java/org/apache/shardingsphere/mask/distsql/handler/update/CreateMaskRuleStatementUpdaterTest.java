@@ -40,6 +40,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,14 +51,14 @@ public final class CreateMaskRuleStatementUpdaterTest {
     
     private final CreateMaskRuleStatementUpdater updater = new CreateMaskRuleStatementUpdater();
     
-    @Test(expected = DuplicateRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithDuplicateMaskRule() {
-        updater.checkSQLStatement(database, createDuplicatedSQLStatement(false, "MD5"), getCurrentRuleConfig());
+        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createDuplicatedSQLStatement(false, "MD5"), getCurrentRuleConfig()));
     }
     
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    @Test
     public void assertCheckSQLStatementWithInvalidAlgorithm() {
-        updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null);
+        assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
     @Test

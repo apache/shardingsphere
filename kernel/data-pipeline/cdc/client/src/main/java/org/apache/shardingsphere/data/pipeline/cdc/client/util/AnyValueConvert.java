@@ -37,7 +37,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.NullValue;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalTime;
 
 /**
@@ -105,6 +104,8 @@ public final class AnyValueConvert {
     }
     
     private static Timestamp converProtobufTimestamp(final com.google.protobuf.Timestamp timestamp) {
-        return new Timestamp(Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos()).toEpochMilli());
+        Timestamp result = new Timestamp(timestamp.getSeconds() * 1000);
+        result.setNanos(timestamp.getNanos());
+        return result;
     }
 }

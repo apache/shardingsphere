@@ -30,6 +30,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class AESEncryptAlgorithmTest {
@@ -42,9 +43,9 @@ public final class AESEncryptAlgorithmTest {
         encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
     }
     
-    @Test(expected = EncryptAlgorithmInitializationException.class)
+    @Test
     public void assertCreateNewInstanceWithoutAESKey() {
-        TypedSPILoader.getService(EncryptAlgorithm.class, "AES");
+        assertThrows(EncryptAlgorithmInitializationException.class, () -> TypedSPILoader.getService(EncryptAlgorithm.class, "AES"));
     }
     
     @Test

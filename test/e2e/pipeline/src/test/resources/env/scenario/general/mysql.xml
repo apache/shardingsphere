@@ -22,7 +22,7 @@
         `status` varchar ( 255 ) NULL,
         `t_mediumint` mediumint NULL,
         `t_smallint` smallint NULL,
-        `t_tinyint` tinyint ( 1 ) NULL,
+        `t_tinyint` tinyint ( 3 ) NULL,
         `t_unsigned_int` int UNSIGNED NULL,
         `t_unsigned_mediumint` mediumint UNSIGNED NULL,
         `t_unsigned_smallint` smallint UNSIGNED NULL,

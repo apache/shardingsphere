@@ -30,10 +30,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.ConstructionMockSettings;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -43,11 +43,11 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
+@ConstructionMockSettings(DatabaseConnector.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public final class DatabaseBackendHandlerFactoryTest {
     
@@ -76,10 +76,8 @@ public final class DatabaseBackendHandlerFactoryTest {
         ConnectionSession connectionSession = mockConnectionSession();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        try (MockedConstruction<DatabaseConnector> ignored = mockConstruction(DatabaseConnector.class)) {
-            DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList()), connectionSession, false);
-            assertThat(actual, instanceOf(DatabaseConnector.class));
-        }
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList()), connectionSession, false);
+        assertThat(actual, instanceOf(DatabaseConnector.class));
     }
     
     private static SQLStatementContext<SQLStatement> mockSQLStatementContext() {

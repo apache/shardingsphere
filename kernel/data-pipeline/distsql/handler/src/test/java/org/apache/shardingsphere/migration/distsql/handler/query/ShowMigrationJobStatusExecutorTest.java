@@ -17,29 +17,46 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.junit.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ShowMigrationJobStatusExecutorTest {
     
+    private final ShowMigrationJobStatusExecutor executor = new ShowMigrationJobStatusExecutor();
+    
     @Test
     public void assertGetColumnNames() {
-        ShowMigrationJobStatusExecutor executor = new ShowMigrationJobStatusExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(8));
+        assertThat(columns.size(), is(9));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("item"));
         assertThat(iterator.next(), is("data_source"));
+        assertThat(iterator.next(), is("tables"));
         assertThat(iterator.next(), is("status"));
         assertThat(iterator.next(), is("active"));
         assertThat(iterator.next(), is("processed_records_count"));
         assertThat(iterator.next(), is("inventory_finished_percentage"));
         assertThat(iterator.next(), is("incremental_idle_seconds"));
         assertThat(iterator.next(), is("error_message"));
+    }
+    
+    @Test
+    @SneakyThrows(ReflectiveOperationException.class)
+    @SuppressWarnings("unchecked")
+    public void assertGenerateResultRowWithNullJobItemProgress() {
+        InventoryIncrementalJobItemInfo jobItemInfo = new InventoryIncrementalJobItemInfo(0, "t_order", null, System.currentTimeMillis(), 0, null);
+        LocalDataQueryResultRow row = executor.generateResultRow(jobItemInfo, System.currentTimeMillis());
+        List<Object> actual = (List<Object>) Plugins.getMemberAccessor().get(LocalDataQueryResultRow.class.getDeclaredField("data"), row);
+        assertThat(actual.size(), is(executor.getColumnNames().size()));
     }
 }

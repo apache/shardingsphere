@@ -59,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -79,7 +80,7 @@ public final class ShardingUpdateStatementValidatorTest {
         new ShardingUpdateStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class));
     }
     
-    @Test(expected = DMLWithMultipleShardingTablesException.class)
+    @Test
     public void assertPreValidateWhenUpdateMultipleTables() {
         UpdateStatement updateStatement = createUpdateStatement();
         JoinTableSegment joinTableSegment = new JoinTableSegment();
@@ -90,7 +91,8 @@ public final class ShardingUpdateStatementValidatorTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
-        new ShardingUpdateStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class));
+        assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateStatementValidator().preValidate(
+                shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -115,17 +117,18 @@ public final class ShardingUpdateStatementValidatorTest {
                 Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), createSingleRouteContext());
     }
     
-    @Test(expected = UnsupportedUpdatingShardingValueException.class)
+    @Test
     public void assertPostValidateWhenUpdateShardingColumnWithDifferentRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
-        new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), new HintValueContext(),
-                Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), createFullRouteContext());
+        assertThrows(UnsupportedUpdatingShardingValueException.class,
+                () -> new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()), new HintValueContext(),
+                        Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), createFullRouteContext()));
     }
     
     private void mockShardingRuleForUpdateShardingColumn() {
         TableRule tableRule = mock(TableRule.class);
         when(tableRule.getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
-        when(tableRule.getActualTableNames("ds_1")).thenReturn(Collections.singletonList("user"));
+        when(tableRule.getActualTableNames("ds_1")).thenReturn(Collections.singleton("user"));
         when(shardingRule.findShardingColumn("id", "user")).thenReturn(Optional.of("id"));
         when(shardingRule.getTableRule("user")).thenReturn(tableRule);
         StandardShardingStrategyConfiguration databaseStrategyConfig = mock(StandardShardingStrategyConfiguration.class);
@@ -141,14 +144,14 @@ public final class ShardingUpdateStatementValidatorTest {
     
     private RouteContext createSingleRouteContext() {
         RouteContext result = new RouteContext();
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("user", "user"))));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("user", "user"))));
         return result;
     }
     
     private RouteContext createFullRouteContext() {
         RouteContext result = new RouteContext();
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("user", "user"))));
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("user", "user"))));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("user", "user"))));
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singleton(new RouteMapper("user", "user"))));
         return result;
     }
     
@@ -158,8 +161,7 @@ public final class ShardingUpdateStatementValidatorTest {
         List<ColumnSegment> columns = new LinkedList<>();
         columns.add(new ColumnSegment(0, 0, new IdentifierValue("id")));
         AssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, 1));
-        result.setSetAssignment(
-                new SetAssignmentSegment(0, 0, Collections.singletonList(assignment)));
+        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singleton(assignment)));
         return result;
     }
 }

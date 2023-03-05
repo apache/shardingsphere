@@ -32,6 +32,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -46,11 +47,11 @@ public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     
     private final CreateDefaultShadowAlgorithmStatementUpdater updater = new CreateDefaultShadowAlgorithmStatementUpdater();
     
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    @Test
     public void assertExecuteWithInvalidAlgorithm() {
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
         when(statement.getShadowAlgorithmSegment()).thenReturn(new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", PropertiesBuilder.build(new Property("type", "value")))));
-        updater.checkSQLStatement(database, statement, currentConfig);
+        assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.checkSQLStatement(database, statement, currentConfig));
     }
     
     @Test
