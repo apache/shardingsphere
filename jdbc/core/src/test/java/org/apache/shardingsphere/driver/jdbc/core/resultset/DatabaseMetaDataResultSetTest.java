@@ -431,7 +431,6 @@ public final class DatabaseMetaDataResultSetTest {
     @Test
     public void assertOperationWithClose() throws SQLException {
         databaseMetaDataResultSet.close();
-        databaseMetaDataResultSet.next();
-        assertThrows(SQLException.class, () -> databaseMetaDataResultSet.getObject(1));
+        assertThrows(SQLException.class, () -> databaseMetaDataResultSet.next());
     }
 }
