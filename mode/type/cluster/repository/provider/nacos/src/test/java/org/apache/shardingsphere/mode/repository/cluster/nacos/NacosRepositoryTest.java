@@ -58,6 +58,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -336,16 +337,16 @@ public final class NacosRepositoryTest {
         verify(client).shutDown();
     }
     
-    @Test(expected = ClusterPersistRepositoryException.class)
+    @Test
     public void assertPersistNotAvailable() {
-        REPOSITORY.persist("/test/children/keys/persistent/1", "value4");
+        assertThrows(ClusterPersistRepositoryException.class, () -> REPOSITORY.persist("/test/children/keys/persistent/1", "value4"));
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertExceededMaximum() {
         ServiceMetaData ephemeralService = serviceController.getEphemeralService();
         ephemeralService.setPort(new AtomicInteger(Integer.MAX_VALUE));
-        REPOSITORY.persistEphemeral("/key2", "value");
+        assertThrows(IllegalStateException.class, () -> REPOSITORY.persistEphemeral("/key2", "value"));
     }
     
     private VoidAnswer2<String, EventListener> getListenerAnswer(final Instance preInstance, final Event event) {
