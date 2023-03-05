@@ -26,11 +26,11 @@ import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.parser.statement.CreateMaskRuleStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,10 +40,10 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class CreateMaskRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
