@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -75,15 +76,15 @@ public final class MySQLDataSourceCheckerTest {
         verify(preparedStatement).executeQuery();
     }
     
-    @Test(expected = PrepareJobWithoutEnoughPrivilegeException.class)
+    @Test
     public void assertCheckPrivilegeLackPrivileges() {
-        new MySQLDataSourceChecker().checkPrivilege(dataSources);
+        assertThrows(PrepareJobWithoutEnoughPrivilegeException.class, () -> new MySQLDataSourceChecker().checkPrivilege(dataSources));
     }
     
-    @Test(expected = PrepareJobWithCheckPrivilegeFailedException.class)
+    @Test
     public void assertCheckPrivilegeFailure() throws SQLException {
         when(resultSet.next()).thenThrow(new SQLException(""));
-        new MySQLDataSourceChecker().checkPrivilege(dataSources);
+        assertThrows(PrepareJobWithCheckPrivilegeFailedException.class, () -> new MySQLDataSourceChecker().checkPrivilege(dataSources));
     }
     
     @Test
@@ -94,16 +95,16 @@ public final class MySQLDataSourceCheckerTest {
         verify(preparedStatement, times(3)).executeQuery();
     }
     
-    @Test(expected = PrepareJobWithInvalidSourceDataSourceException.class)
+    @Test
     public void assertCheckVariableWithWrongVariable() throws SQLException {
         when(resultSet.next()).thenReturn(true, true);
         when(resultSet.getString(2)).thenReturn("OFF", "ROW");
-        new MySQLDataSourceChecker().checkVariable(dataSources);
+        assertThrows(PrepareJobWithInvalidSourceDataSourceException.class, () -> new MySQLDataSourceChecker().checkVariable(dataSources));
     }
     
-    @Test(expected = PrepareJobWithCheckPrivilegeFailedException.class)
+    @Test
     public void assertCheckVariableFailure() throws SQLException {
         when(resultSet.next()).thenThrow(new SQLException(""));
-        new MySQLDataSourceChecker().checkVariable(dataSources);
+        assertThrows(PrepareJobWithCheckPrivilegeFailedException.class, () -> new MySQLDataSourceChecker().checkVariable(dataSources));
     }
 }

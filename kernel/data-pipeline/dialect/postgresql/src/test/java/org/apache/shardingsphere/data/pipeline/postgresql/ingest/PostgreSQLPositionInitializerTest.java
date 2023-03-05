@@ -35,6 +35,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -85,12 +86,12 @@ public final class PostgreSQLPositionInitializerTest {
         assertThat(actual.getLogSequenceNumber().get(), is(LogSequenceNumber.valueOf(POSTGRESQL_10_LSN)));
     }
     
-    @Test(expected = RuntimeException.class)
+    @Test
     public void assertGetCurrentPositionThrowException() throws SQLException {
         mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);
-        new PostgreSQLPositionInitializer().init(dataSource, "");
+        assertThrows(RuntimeException.class, () -> new PostgreSQLPositionInitializer().init(dataSource, ""));
     }
     
     @SneakyThrows(SQLException.class)

@@ -40,6 +40,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,10 +57,10 @@ public final class MySQLNegotiatePackageDecoderTest {
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertDecodeUnsupportedProtocolVersion() {
         MySQLNegotiatePackageDecoder commandPacketDecoder = new MySQLNegotiatePackageDecoder();
-        commandPacketDecoder.decode(channelHandlerContext, byteBuf, null);
+        assertThrows(IllegalArgumentException.class, () -> commandPacketDecoder.decode(channelHandlerContext, byteBuf, null));
     }
     
     @Test

@@ -32,9 +32,10 @@ import javax.transaction.xa.XAResource;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -81,10 +82,10 @@ public final class BitronixRecoveryResourceTest {
         verify(xaConnection, times(0)).close();
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertRecoveryWhenSQLExceptionIsThrown() throws SQLException {
         when(xaDataSource.getXAConnection()).thenThrow(new SQLException());
-        bitronixRecoveryResource.startRecovery();
+        assertThrows(SQLException.class, () -> bitronixRecoveryResource.startRecovery());
     }
     
     @Test

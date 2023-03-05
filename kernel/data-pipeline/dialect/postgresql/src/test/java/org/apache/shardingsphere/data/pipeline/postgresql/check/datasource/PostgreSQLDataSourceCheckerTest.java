@@ -32,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
@@ -83,12 +84,12 @@ public final class PostgreSQLDataSourceCheckerTest {
         verify(resultSet, atLeastOnce()).getString("rolreplication");
     }
     
-    @Test(expected = PrepareJobWithoutEnoughPrivilegeException.class)
+    @Test
     public void asserCheckNoPrivilege() throws SQLException {
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
         when(resultSet.getString("rolsuper")).thenReturn("f");
         when(resultSet.getString("rolreplication")).thenReturn("f");
-        dataSourceChecker.checkPrivilege(Collections.singletonList(dataSource));
+        assertThrows(PrepareJobWithoutEnoughPrivilegeException.class, () -> dataSourceChecker.checkPrivilege(Collections.singletonList(dataSource)));
         verify(resultSet, atLeastOnce()).getString("rolreplication");
     }
 }

@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -94,27 +95,27 @@ public final class PipelineDataSourceWrapperTest {
         assertThat(actual, is(parentLogger));
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertSetLoginTimeoutFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLoginTimeout(LOGIN_TIMEOUT);
-        new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).setLoginTimeout(LOGIN_TIMEOUT);
+        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).setLoginTimeout(LOGIN_TIMEOUT));
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertSetLogWriterFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLogWriter(printWriter);
-        new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).setLogWriter(printWriter);
+        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).setLogWriter(printWriter));
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertCloseExceptionFailure() throws Exception {
         doThrow(new Exception("")).when((AutoCloseable) dataSource).close();
-        new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).close();
+        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).close());
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertCloseSQLExceptionFailure() throws Exception {
         doThrow(new SQLException("")).when((AutoCloseable) dataSource).close();
-        new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).close();
+        assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).close());
     }
 }

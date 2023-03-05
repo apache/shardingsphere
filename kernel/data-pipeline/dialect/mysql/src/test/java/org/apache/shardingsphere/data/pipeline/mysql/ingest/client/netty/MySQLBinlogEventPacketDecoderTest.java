@@ -49,6 +49,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -76,13 +77,13 @@ public final class MySQLBinlogEventPacketDecoderTest {
                 new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR), new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL));
     }
     
-    @Test(expected = RuntimeException.class)
+    @Test
     public void assertDecodeWithPacketError() {
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeByte(1);
         byteBuf.writeByte(255);
         byteBuf.writeBytes(new byte[20]);
-        binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, null);
+        assertThrows(RuntimeException.class, () -> binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, null));
     }
     
     @Test

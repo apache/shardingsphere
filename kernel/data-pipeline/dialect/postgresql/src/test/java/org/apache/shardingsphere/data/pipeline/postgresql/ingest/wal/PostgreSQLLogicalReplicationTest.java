@@ -37,6 +37,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -86,10 +87,10 @@ public final class PostgreSQLLogicalReplicationTest {
         verify(chainedLogicalStreamBuilder).start();
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     @SneakyThrows(SQLException.class)
     public void assertCreateReplicationStreamFailure() {
         when(connection.unwrap(PGConnection.class)).thenThrow(new SQLException(""));
-        logicalReplication.createReplicationStream(connection, "", new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
+        assertThrows(SQLException.class, () -> logicalReplication.createReplicationStream(connection, "", new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))));
     }
 }

@@ -54,6 +54,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class SeataATShardingSphereTransactionManagerTest {
@@ -136,10 +137,10 @@ public final class SeataATShardingSphereTransactionManagerTest {
         assertResult();
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertCommitWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
-        seataTransactionManager.commit(false);
+        assertThrows(IllegalStateException.class, () -> seataTransactionManager.commit(false));
     }
     
     @Test
@@ -150,10 +151,10 @@ public final class SeataATShardingSphereTransactionManagerTest {
         assertResult();
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertRollbackWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
-        seataTransactionManager.rollback();
+        assertThrows(IllegalStateException.class, seataTransactionManager::rollback);
     }
     
     private void assertResult() {

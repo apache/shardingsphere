@@ -41,6 +41,7 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -85,9 +86,9 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
         return result;
     }
     
-    @Test(expected = PipelineTableDataConsistencyCheckLoadingFailedException.class)
+    @Test
     public void assertCalculateFailed() throws SQLException {
         when(connection.prepareStatement(anyString())).thenThrow(new SQLException());
-        new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter);
+        assertThrows(PipelineTableDataConsistencyCheckLoadingFailedException.class, () -> new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter));
     }
 }

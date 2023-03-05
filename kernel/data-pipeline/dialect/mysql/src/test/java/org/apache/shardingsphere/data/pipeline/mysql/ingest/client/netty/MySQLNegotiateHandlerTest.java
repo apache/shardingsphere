@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -94,9 +95,9 @@ public final class MySQLNegotiateHandlerTest {
         verify(authResultCallback).setSuccess(serverInfo);
     }
     
-    @Test(expected = RuntimeException.class)
+    @Test
     public void assertChannelReadErrorPacket() {
         MySQLErrPacket errorPacket = new MySQLErrPacket(MySQLVendorError.ER_NO_DB_ERROR);
-        mysqlNegotiateHandler.channelRead(channelHandlerContext, errorPacket);
+        assertThrows(RuntimeException.class, () -> mysqlNegotiateHandler.channelRead(channelHandlerContext, errorPacket));
     }
 }
