@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.transaction;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class ConnectionSavepointManagerTest {
     
     private static final String SAVE_POINT = "SavePoint";
@@ -43,7 +43,7 @@ public final class ConnectionSavepointManagerTest {
     @Mock
     private Savepoint savepoint;
     
-    @Before
+    @BeforeEach
     public void setup() throws SQLException {
         when(connection.setSavepoint(SAVE_POINT)).thenReturn(savepoint);
     }

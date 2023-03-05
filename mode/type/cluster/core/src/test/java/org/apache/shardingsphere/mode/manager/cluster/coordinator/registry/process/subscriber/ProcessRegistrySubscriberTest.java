@@ -23,11 +23,11 @@ import org.apache.shardingsphere.mode.manager.cluster.process.subscriber.Process
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class ProcessRegistrySubscriberTest {
     
     @Mock
@@ -46,7 +46,7 @@ public final class ProcessRegistrySubscriberTest {
     
     private ProcessRegistrySubscriber processRegistrySubscriber;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         processRegistrySubscriber = new ProcessRegistrySubscriber(repository, eventBusContext);
     }

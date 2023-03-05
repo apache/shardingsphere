@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.mode.lock;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class GlobalLockContextTest {
     
     private final GlobalLockDefinition lockDefinition = new GlobalLockDefinition("foo_lock");
@@ -37,7 +37,7 @@ public final class GlobalLockContextTest {
     
     private GlobalLockContext lockContext;
     
-    @Before
+    @BeforeEach
     public void init() {
         lockContext = new GlobalLockContext(lockPersistService);
     }

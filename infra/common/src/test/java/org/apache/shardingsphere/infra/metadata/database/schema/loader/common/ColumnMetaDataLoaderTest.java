@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class ColumnMetaDataLoaderTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -59,7 +59,7 @@ public final class ColumnMetaDataLoaderTest {
     @Mock
     private ResultSetMetaData resultSetMetaData;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         when(connection.getCatalog()).thenReturn("catalog");
         when(connection.getMetaData().getPrimaryKeys("catalog", null, "tbl")).thenReturn(primaryResultSet);
