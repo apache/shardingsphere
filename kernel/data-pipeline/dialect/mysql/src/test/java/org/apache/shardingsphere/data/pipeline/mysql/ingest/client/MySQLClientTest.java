@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -155,10 +156,10 @@ public final class MySQLClientTest {
         assertFalse(channel.isOpen());
     }
     
-    @Test(expected = BinlogSyncChannelAlreadyClosedException.class)
+    @Test
     public void assertPollFailed() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("running"), mysqlClient, false);
-        mysqlClient.poll();
+        assertThrows(BinlogSyncChannelAlreadyClosedException.class, () -> mysqlClient.poll());
     }
 }
