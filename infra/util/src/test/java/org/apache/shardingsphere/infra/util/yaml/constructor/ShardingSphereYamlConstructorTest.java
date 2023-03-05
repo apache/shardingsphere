@@ -27,8 +27,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 public final class ShardingSphereYamlConstructorTest {
     
@@ -49,10 +50,10 @@ public final class ShardingSphereYamlConstructorTest {
         assertNotNull(actual.getCustomizedClass());
     }
     
-    @Test(expected = ConstructorException.class)
+    @Test
     public void assertToObjectWithNotAcceptClass() throws IOException {
         try (InputStream inputStream = ShardingSphereYamlConstructorTest.class.getClassLoader().getResourceAsStream("yaml/accepted-class.yaml")) {
-            new Yaml(new ShardingSphereYamlConstructor(Object.class)).loadAs(inputStream, Object.class);
+            assertThrows(ConstructorException.class, () -> new Yaml(new ShardingSphereYamlConstructor(Object.class)).loadAs(inputStream, Object.class));
         }
     }
 }

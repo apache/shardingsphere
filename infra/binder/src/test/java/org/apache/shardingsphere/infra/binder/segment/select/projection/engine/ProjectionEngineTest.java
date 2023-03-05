@@ -68,6 +68,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -202,14 +203,15 @@ public final class ProjectionEngineTest {
         assertThat(iterator.next(), is(new ColumnProjection("t_customer", "customer_id", null)));
     }
     
-    @Test(expected = SchemaNotFoundException.class)
+    @Test
     public void assertCreateProjectionWithNotExistedSchema() {
         SimpleTableSegment tableSegment = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
         OwnerSegment ownerSegment = mock(OwnerSegment.class, RETURNS_DEEP_STUBS);
         when(tableSegment.getOwner()).thenReturn(Optional.of(ownerSegment));
         when(ownerSegment.getIdentifier().getValue()).thenReturn("public");
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
-        new ProjectionEngine(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(tableSegment, shorthandProjectionSegment);
+        assertThrows(SchemaNotFoundException.class, () -> new ProjectionEngine(
+                DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(tableSegment, shorthandProjectionSegment));
     }
     
     @Test

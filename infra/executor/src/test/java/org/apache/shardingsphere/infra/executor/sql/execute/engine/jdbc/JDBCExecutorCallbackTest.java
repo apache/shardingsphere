@@ -47,6 +47,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -119,8 +120,8 @@ public final class JDBCExecutorCallbackTest {
         assertThat(callback.execute(units, false), is(Collections.emptyList()));
     }
     
-    @Test(expected = SQLException.class)
-    public void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() throws SQLException {
+    @Test
+    public void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() {
         JDBCExecutorCallback<Object> callback =
                 new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"),
                         Collections.singletonMap("ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), mock(SelectStatement.class), true) {
@@ -135,6 +136,6 @@ public final class JDBCExecutorCallbackTest {
                         return Optional.empty();
                     }
                 };
-        callback.execute(units, true);
+        assertThrows(SQLException.class, () -> callback.execute(units, true));
     }
 }
