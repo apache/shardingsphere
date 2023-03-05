@@ -20,11 +20,13 @@ package org.apache.shardingsphere.transaction.xa.bitronix.manager;
 import bitronix.tm.internal.XAResourceHolderState;
 import bitronix.tm.resource.common.XAResourceHolder;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
@@ -33,14 +35,15 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class BitronixRecoveryResourceTest {
     
     @Mock
@@ -57,7 +60,7 @@ public final class BitronixRecoveryResourceTest {
     
     private BitronixRecoveryResource bitronixRecoveryResource;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         when(singleXAResource.getResourceName()).thenReturn("ds1");
         when(xaDataSource.getXAConnection()).thenReturn(xaConnection);

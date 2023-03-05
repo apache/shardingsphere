@@ -19,20 +19,20 @@ package org.apache.shardingsphere.transaction.base.seata.at;
 
 import io.seata.core.context.RootContext;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class SeataTransactionalSQLExecutionHookTest {
     
     private final SeataTransactionalSQLExecutionHook executionHook = new SeataTransactionalSQLExecutionHook();
@@ -40,7 +40,7 @@ public final class SeataTransactionalSQLExecutionHookTest {
     @Mock
     private DataSourceMetaData dataSourceMetaData;
     
-    @After
+    @AfterEach
     public void tearDown() {
         RootContext.unbind();
     }

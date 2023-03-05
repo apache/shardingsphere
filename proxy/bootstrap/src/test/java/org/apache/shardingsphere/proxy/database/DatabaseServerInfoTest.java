@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.database;
 
 import org.apache.shardingsphere.proxy.exception.DatabaseServerLoadingServerException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.DataSource;
 import java.sql.DatabaseMetaData;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class DatabaseServerInfoTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
