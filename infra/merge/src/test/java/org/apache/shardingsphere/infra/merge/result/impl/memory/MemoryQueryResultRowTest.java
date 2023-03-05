@@ -25,6 +25,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,14 +47,14 @@ public final class MemoryQueryResultRowTest {
         assertThat(memoryResultSetRow.getCell(1).toString(), is("value"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGetCellWithNegativeColumnIndex() {
-        memoryResultSetRow.getCell(-1);
+        assertThrows(IllegalArgumentException.class, () -> memoryResultSetRow.getCell(-1));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGetCellWithColumnIndexOutOfRange() {
-        memoryResultSetRow.getCell(2);
+        assertThrows(IllegalArgumentException.class, () -> memoryResultSetRow.getCell(2));
     }
     
     @Test
@@ -62,13 +63,13 @@ public final class MemoryQueryResultRowTest {
         assertThat(memoryResultSetRow.getCell(1).toString(), is("new"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertSetCellWithNegativeColumnIndex() {
-        memoryResultSetRow.setCell(-1, "new");
+        assertThrows(IllegalArgumentException.class, () -> memoryResultSetRow.setCell(-1, "new"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertSetCellWithColumnIndexOutOfRange() {
-        memoryResultSetRow.setCell(2, "new");
+        assertThrows(IllegalArgumentException.class, () -> memoryResultSetRow.setCell(2, "new"));
     }
 }

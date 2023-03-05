@@ -29,6 +29,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class TypedPropertiesTest {
@@ -70,7 +71,7 @@ public final class TypedPropertiesTest {
         assertThat(actual.getValue(TypedPropertyKeyFixture.STRING_VALUE), is("value"));
     }
     
-    @Test(expected = TypedPropertiesServerException.class)
+    @Test
     public void assertGetInvalidValue() {
         Properties props = PropertiesBuilder.build(
                 new Property(TypedPropertyKeyFixture.BOOLEAN_VALUE.getKey(), "test"),
@@ -78,6 +79,6 @@ public final class TypedPropertiesTest {
                 new Property(TypedPropertyKeyFixture.INT_VALUE.getKey(), "test"),
                 new Property(TypedPropertyKeyFixture.INT_OBJECT_VALUE.getKey(), "test"),
                 new Property(TypedPropertyKeyFixture.LONG_VALUE.getKey(), "test"));
-        new TypedPropertiesFixture(props);
+        assertThrows(TypedPropertiesServerException.class, () -> new TypedPropertiesFixture(props));
     }
 }
