@@ -30,6 +30,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,10 +40,10 @@ public final class DatabaseServerInfoTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
     
-    @Test(expected = DatabaseServerLoadingServerException.class)
+    @Test
     public void assertNewInstanceFailure() throws SQLException {
         when(dataSource.getConnection()).thenThrow(SQLException.class);
-        new DatabaseServerInfo(dataSource);
+        assertThrows(DatabaseServerLoadingServerException.class, () -> new DatabaseServerInfo(dataSource));
     }
     
     @Test

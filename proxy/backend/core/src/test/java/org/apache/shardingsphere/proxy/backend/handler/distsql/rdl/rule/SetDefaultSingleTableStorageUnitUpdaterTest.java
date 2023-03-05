@@ -34,6 +34,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -54,9 +55,9 @@ public final class SetDefaultSingleTableStorageUnitUpdaterTest {
         when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
     }
     
-    @Test(expected = MissingRequiredStorageUnitsException.class)
+    @Test
     public void assertCheckWithInvalidResource() {
-        updater.checkSQLStatement(database, new SetDefaultSingleTableStorageUnitStatement("ds_1"), currentConfig);
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> updater.checkSQLStatement(database, new SetDefaultSingleTableStorageUnitStatement("ds_1"), currentConfig));
     }
     
     @Test
