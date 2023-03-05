@@ -588,17 +588,13 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertQueryWithNull() throws SQLException {
-        try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(null)) {
-            assertThrows(SQLException.class, preparedStatement::executeQuery);
-        }
+    public void assertQueryWithNull() {
+        assertThrows(SQLException.class, () -> getShardingSphereDataSource().getConnection().prepareStatement(null));
     }
     
     @Test
-    public void assertQueryWithEmptyString() throws SQLException {
-        try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement("")) {
-            assertThrows(SQLException.class, preparedStatement::executeQuery);
-        }
+    public void assertQueryWithEmptyString() {
+        assertThrows(SQLException.class, () -> getShardingSphereDataSource().getConnection().prepareStatement(""));
     }
     
     @Test

@@ -201,17 +201,13 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertQueryWithNull() throws SQLException {
-        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(null)) {
-            assertThrows(SQLException.class, preparedStatement::executeQuery);
-        }
+    public void assertQueryWithNull() {
+        assertThrows(SQLException.class, () -> getEncryptConnection().prepareStatement(null));
     }
     
     @Test
-    public void assertQueryWithEmptyString() throws SQLException {
-        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement("")) {
-            assertThrows(SQLException.class, preparedStatement::executeQuery);
-        }
+    public void assertQueryWithEmptyString() {
+        assertThrows(SQLException.class, () -> getEncryptConnection().prepareStatement(""));
     }
     
     @Test

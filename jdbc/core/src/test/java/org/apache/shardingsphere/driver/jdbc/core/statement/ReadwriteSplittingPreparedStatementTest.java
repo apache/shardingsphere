@@ -37,17 +37,13 @@ import static org.junit.Assert.assertTrue;
 public final class ReadwriteSplittingPreparedStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
     
     @Test
-    public void assertQueryWithNull() throws SQLException {
-        try (PreparedStatement preparedStatement = getReadwriteSplittingDataSource().getConnection().prepareStatement(null)) {
-            assertThrows(SQLException.class, preparedStatement::executeQuery);
-        }
+    public void assertQueryWithNull() {
+        assertThrows(SQLException.class, () -> getReadwriteSplittingDataSource().getConnection().prepareStatement(null));
     }
     
     @Test
-    public void assertQueryWithEmptyString() throws SQLException {
-        try (PreparedStatement preparedStatement = getReadwriteSplittingDataSource().getConnection().prepareStatement("")) {
-            assertThrows(SQLException.class, preparedStatement::executeQuery);
-        }
+    public void assertQueryWithEmptyString() {
+        assertThrows(SQLException.class, () -> getReadwriteSplittingDataSource().getConnection().prepareStatement(""));
     }
     
     @Test
