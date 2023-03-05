@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -86,10 +87,10 @@ public final class AbstractDataSourceCheckerTest {
         verify(dataSource).getConnection();
     }
     
-    @Test(expected = PrepareJobWithInvalidConnectionException.class)
+    @Test
     public void assertCheckConnectionFailed() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException("error"));
-        dataSourceChecker.checkConnection(dataSources);
+        assertThrows(PrepareJobWithInvalidConnectionException.class, () -> dataSourceChecker.checkConnection(dataSources));
     }
     
     @Test
@@ -100,12 +101,13 @@ public final class AbstractDataSourceCheckerTest {
         dataSourceChecker.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order"));
     }
     
-    @Test(expected = PrepareJobWithTargetTableNotEmptyException.class)
+    @Test
     public void assertCheckTargetTableFailed() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
-        dataSourceChecker.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order"));
+        assertThrows(PrepareJobWithTargetTableNotEmptyException.class,
+                () -> dataSourceChecker.checkTargetTable(dataSources, new TableNameSchemaNameMapping(Collections.emptyMap()), Collections.singletonList("t_order")));
     }
 }

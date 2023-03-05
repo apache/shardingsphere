@@ -30,6 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class ManualBitSetTest {
@@ -53,11 +54,11 @@ public final class ManualBitSetTest {
         assertThat(bitSet.getEndIndex(0L, 5), is(1034L));
     }
     
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void assertGetEndIndexFailure() {
         ManualBitSet bitSet = new ManualBitSet();
         IntStream.range(0, 10).filter(each -> each % 2 == 1).forEach(bitSet::set);
-        bitSet.getEndIndex(0L, 10);
+        assertThrows(IndexOutOfBoundsException.class, () -> bitSet.getEndIndex(0L, 10));
     }
     
     @Test
