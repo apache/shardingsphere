@@ -40,6 +40,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -415,22 +416,21 @@ public final class DatabaseMetaDataResultSetTest {
         assertThat(databaseMetaDataResultSet.getFetchSize(), is(3));
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetObjectOutOfIndexRange() throws SQLException {
         databaseMetaDataResultSet.next();
-        databaseMetaDataResultSet.getObject(9);
+        assertThrows(SQLException.class, () -> databaseMetaDataResultSet.getObject(9));
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetObjectInvalidLabel() throws SQLException {
         databaseMetaDataResultSet.next();
-        databaseMetaDataResultSet.getObject("Invalid");
+        assertThrows(SQLException.class, () -> databaseMetaDataResultSet.getObject("Invalid"));
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertOperationWithClose() throws SQLException {
         databaseMetaDataResultSet.close();
-        databaseMetaDataResultSet.next();
-        databaseMetaDataResultSet.getObject(1);
+        assertThrows(SQLException.class, () -> databaseMetaDataResultSet.next());
     }
 }
