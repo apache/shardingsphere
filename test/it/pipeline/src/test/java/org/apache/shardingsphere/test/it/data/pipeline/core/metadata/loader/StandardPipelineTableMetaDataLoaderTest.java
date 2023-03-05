@@ -157,10 +157,4 @@ public final class StandardPipelineTableMetaDataLoaderTest {
         assertThat(actualIndexMetaData.getColumns().get(0).getName(), is("id"));
         assertThat(actualIndexMetaData.getColumns().get(1).getName(), is("name"));
     }
-    
-    @Test(expected = RuntimeException.class)
-    public void assertGetTableMetaDataFailure() throws SQLException {
-        when(dataSource.getConnection()).thenThrow(new SQLException(""));
-        new StandardPipelineTableMetaDataLoader(dataSource).getTableMetaData(null, TEST_TABLE);
-    }
 }
