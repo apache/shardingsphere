@@ -46,6 +46,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -108,26 +109,24 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         verify(preparedStatement2).executeBatch();
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException ex = new SQLException("");
         when(preparedStatement.executeBatch()).thenThrow(ex);
         setExecutionGroups(Collections.singletonList(preparedStatement));
-        actual.executeBatch(sqlStatementContext);
+        assertThrows(SQLException.class, () -> actual.executeBatch(sqlStatementContext));
         verify(preparedStatement).executeBatch();
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException ex = new SQLException("");
         when(preparedStatement1.executeBatch()).thenThrow(ex);
         setExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2));
-        actual.executeBatch(sqlStatementContext);
-        verify(preparedStatement1).executeBatch();
-        verify(preparedStatement2).executeBatch();
+        assertThrows(SQLException.class, () -> actual.executeBatch(sqlStatementContext));
     }
     
     private void setExecutionGroups(final List<PreparedStatement> preparedStatements) {

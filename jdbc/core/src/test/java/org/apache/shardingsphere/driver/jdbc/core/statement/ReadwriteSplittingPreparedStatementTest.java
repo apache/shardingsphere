@@ -31,21 +31,22 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class ReadwriteSplittingPreparedStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertQueryWithNull() throws SQLException {
         try (PreparedStatement preparedStatement = getReadwriteSplittingDataSource().getConnection().prepareStatement(null)) {
-            preparedStatement.executeQuery();
+            assertThrows(SQLException.class, preparedStatement::executeQuery);
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertQueryWithEmptyString() throws SQLException {
         try (PreparedStatement preparedStatement = getReadwriteSplittingDataSource().getConnection().prepareStatement("")) {
-            preparedStatement.executeQuery();
+            assertThrows(SQLException.class, preparedStatement::executeQuery);
         }
     }
     

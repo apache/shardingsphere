@@ -31,6 +31,7 @@ import java.sql.Statement;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class EncryptPreparedStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
@@ -199,17 +200,17 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertQueryWithNull() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(null)) {
-            preparedStatement.executeQuery();
+            assertThrows(SQLException.class, preparedStatement::executeQuery);
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertQueryWithEmptyString() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement("")) {
-            preparedStatement.executeQuery();
+            assertThrows(SQLException.class, preparedStatement::executeQuery);
         }
     }
     

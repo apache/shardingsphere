@@ -30,13 +30,14 @@ import java.sql.Statement;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereDriverTest {
     
-    @Test(expected = SQLException.class)
-    public void assertConnectWithInvalidURL() throws SQLException {
-        DriverManager.getConnection("jdbc:invalid:xxx");
+    @Test
+    public void assertConnectWithInvalidURL() {
+        assertThrows(SQLException.class, () -> DriverManager.getConnection("jdbc:invalid:xxx"));
     }
     
     @Test
