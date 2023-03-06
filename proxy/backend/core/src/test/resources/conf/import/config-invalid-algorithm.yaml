@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
-databaseName: shadow_db
+databaseName: sharding_db
 
 dataSources:
-  ds:
+  ds_0:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
     username: root
     password:
@@ -27,7 +27,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 1
-  shadow_ds:
+  ds_1:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
     username: root
     password:
@@ -38,52 +38,49 @@ dataSources:
     minPoolSize: 1
 
 rules:
-  - !SHADOW
-    dataSources:
-      shadowDataSource:
-        productionDataSourceName: ds
-        shadowDataSourceName: shadow_ds
+  - !SHARDING
     tables:
       t_order:
-        dataSourceNames:
-          - shadowDataSource
-        shadowAlgorithmNames:
-          - user_id_insert_match_algorithm
-          - user_id_select_match_algorithm
+        actualDataNodes: ds_${0..1}.t_order_${0..1}
+        tableStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: t_order_inline
+        keyGenerateStrategy:
+          column: order_id
+          keyGeneratorName: snowflake
       t_order_item:
-        dataSourceNames:
-          - shadowDataSource
-        shadowAlgorithmNames:
-          - user_id_insert_match_algorithm
-          - user_id_update_match_algorithm
-          - user_id_select_match_algorithm
-      t_address:
-        dataSourceNames:
-          - shadowDataSource
-        shadowAlgorithmNames:
-          - user_id_insert_match_algorithm
-          - user_id_select_match_algorithm
-          - sql_hint_algorithm
-    shadowAlgorithms:
-      user_id_insert_match_algorithm:
-        type: REGEX_MATCH
+        actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+        tableStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: t_order_item_inline
+        keyGenerateStrategy:
+          column: order_item_id
+          keyGeneratorName: snowflake
+    bindingTables:
+      - t_order,t_order_item
+    defaultDatabaseStrategy:
+      standard:
+        shardingColumn: user_id
+        shardingAlgorithmName: database_inline
+    defaultTableStrategy:
+      none:
+
+    shardingAlgorithms:
+      database_inline:
+        type: INLINE_ERROR
         props:
-          operation: insert
-          column: user_id
-          regex: "[1]"
-      user_id_update_match_algorithm:
-        type: REGEX_MATCH
+          algorithm-expression: ds_${user_id % 2}
+      t_order_inline:
+        type: INLINE_ERROR
         props:
-          operation: update
-          column: user_id
-          regex: "[1]"
-      user_id_select_match_algorithm:
-        type: REGEX_MATCH
+          algorithm-expression: t_order_${order_id % 2}
+      t_order_item_inline:
+        type: INLINE_ERROR
         props:
-          operation: select
-          column: user_id
-          regex: "[1]"
-      sql_hint_algorithm:
-        type: SQL_HINT
-        props:
-          foo: bar
+          algorithm-expression: t_order_item_${order_id % 2}
+
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE_ERROR
