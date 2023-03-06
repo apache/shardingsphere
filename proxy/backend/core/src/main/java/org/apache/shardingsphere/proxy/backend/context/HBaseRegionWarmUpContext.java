@@ -78,7 +78,7 @@ public final class HBaseRegionWarmUpContext {
             log.error(String.format("table: %s warm up error, getRegionLocator execute error reason is  %s", tableName, e));
         }
     }
-
+    
     /**
      * Init statistics info.
      * @param startWarmUpTime start warm up time

@@ -29,6 +29,10 @@ public final class HBaseTaskExecutorManager implements Closeable {
     
     private final ThreadPoolExecutor executorService;
     
+    /**
+     * HBase task executor manager.
+     * @param poolSize pool size
+     */
     public HBaseTaskExecutorManager(final int poolSize) {
         executorService = getExecutorService(poolSize);
     }
@@ -50,7 +54,7 @@ public final class HBaseTaskExecutorManager implements Closeable {
     }
     
     /**
-     * close
+     * Close executor.
      */
     public void close() {
         executorService.shutdown();
