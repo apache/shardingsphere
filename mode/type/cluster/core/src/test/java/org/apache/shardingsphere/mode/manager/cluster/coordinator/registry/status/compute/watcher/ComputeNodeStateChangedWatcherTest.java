@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
 
-import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
@@ -38,9 +38,9 @@ public final class ComputeNodeStateChangedWatcherTest {
     @Test
     public void assertCreateEventWhenDisabled() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", StateType.CIRCUIT_BREAK.name(), Type.ADDED));
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", InstanceState.CIRCUIT_BREAK.name(), Type.ADDED));
         assertTrue(actual.isPresent());
-        assertThat(((StateEvent) actual.get()).getStatus(), is(StateType.CIRCUIT_BREAK.name()));
+        assertThat(((StateEvent) actual.get()).getStatus(), is(InstanceState.CIRCUIT_BREAK.name()));
         assertThat(((StateEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
     }
     

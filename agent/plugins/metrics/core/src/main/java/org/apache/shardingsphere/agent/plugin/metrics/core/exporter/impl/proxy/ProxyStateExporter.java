@@ -22,7 +22,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeM
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
-import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Collections;
@@ -41,7 +41,7 @@ public final class ProxyStateExporter implements MetricsExporter {
         if (null == ProxyContext.getInstance().getContextManager()) {
             return Optional.empty();
         }
-        Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
+        Optional<InstanceStateContext> stateContext = ProxyContext.getInstance().getInstanceStateContext();
         if (!stateContext.isPresent()) {
             return Optional.empty();
         }

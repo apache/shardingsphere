@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
 
@@ -95,11 +95,11 @@ public final class ProxyContext {
     }
     
     /**
-     * Get state context.
+     * Get instance state context.
      * 
-     * @return state context
+     * @return instance state context
      */
-    public Optional<StateContext> getStateContext() {
+    public Optional<InstanceStateContext> getInstanceStateContext() {
         return null == contextManager.getInstanceContext() ? Optional.empty() : Optional.ofNullable(contextManager.getInstanceContext().getInstance().getState());
     }
 }

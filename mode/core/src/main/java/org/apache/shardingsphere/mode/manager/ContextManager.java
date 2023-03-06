@@ -48,6 +48,8 @@ import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
@@ -81,6 +83,8 @@ public final class ContextManager implements AutoCloseable {
     private final InstanceContext instanceContext;
     
     private final ExecutorEngine executorEngine;
+    
+    private final ClusterStateContext clusterStateContext = new ClusterStateContext();
     
     public ContextManager(final MetaDataContexts metaDataContexts, final InstanceContext instanceContext) {
         this.metaDataContexts = metaDataContexts;
@@ -669,6 +673,18 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         metaDataContexts.getShardingSphereData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName).getRows().removeIf(each -> uniqueKey.equals(each.getUniqueKey()));
+    }
+    
+    /**
+     * Update cluster state.
+     *
+     * @param status status
+     */
+    public void updateClusterState(final String status) {
+        try {
+            clusterStateContext.switchState(ClusterState.valueOf(status));
+        } catch (IllegalArgumentException ignore) {
+        }
     }
     
     @Override
