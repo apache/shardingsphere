@@ -15,4 +15,4 @@
   ~ limitations under the License.
   -->
 
-SELECT '${schemaName}.${tableName}'::REGCLASS::OID AS tid;
+SELECT '${schemaName}."${tableName}"'::REGCLASS::OID AS tid;

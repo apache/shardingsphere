@@ -20,7 +20,7 @@
 <#if fillfactor!false || parallel_workers!false || toast_tuple_target!false || (autovacuum_custom!false && add_vacuum_settings_in_sql!false) || autovacuum_enabled == 't' || autovacuum_enabled == 'f' || (toast_autovacuum!false && add_vacuum_settings_in_sql!false) || toast_autovacuum_enabled == 't' || toast_autovacuum_enabled == 'f' >
     <#assign with_clause = true>
 </#if>
-CREATE <#if relpersistence!false >UNLOGGED </#if>TABLE IF NOT EXISTS ${schema}.${name}
+CREATE <#if relpersistence!false >UNLOGGED </#if>TABLE IF NOT EXISTS ${schema}."${name}"
 <#if typname?? >
 OF ${typname }
 </#if>
@@ -103,13 +103,13 @@ toast.${opt.name} = ${opt.value}<#assign add_comma=true></#if>
 TABLESPACE ${spcname };
 </#if>
 <#if description?? >
-COMMENT ON TABLE ${schema}.${name}
+COMMENT ON TABLE ${schema}."${name}"
 IS '${description}';
 </#if>
 <#if columns?? && columns?size gt 0 >
 <#list columns as c >
 <#if c.description?? >
-COMMENT ON COLUMN ${schema}.${name}.${c.name}
+COMMENT ON COLUMN ${schema}."${name}".${c.name}
 IS '${c.description}';
 </#if>
 </#list>

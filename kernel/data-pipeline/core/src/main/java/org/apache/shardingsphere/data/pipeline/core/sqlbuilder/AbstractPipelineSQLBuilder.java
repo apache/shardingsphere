@@ -102,8 +102,12 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         if (TypedSPILoader.getService(DatabaseType.class, getType()).isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(quote(schemaName)).append(".");
         }
-        result.append(quote(tableName));
+        result.append(forceQuote(tableName));
         return result.toString();
+    }
+    
+    private String forceQuote(final String item) {
+        return getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString();
     }
     
     @Override

@@ -95,7 +95,7 @@ public final class NativeContainerComposer extends BaseContainerComposer {
         try (ResultSet resultSet = connection.createStatement().executeQuery(String.format(queryAllTables, schema))) {
             List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
             for (String each : actualTableNames) {
-                connection.createStatement().executeUpdate(String.format("drop table %s.%s", schema, each));
+                connection.createStatement().executeUpdate(String.format("drop table %s.\"%s\"", schema, each));
             }
         }
     }

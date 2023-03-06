@@ -16,7 +16,7 @@
   -->
 
 <#import "../../../macro/constraints.ftl" as CONSTRAINTS>
-CREATE <#if relpersistence!false >UNLOGGED </#if>TABLE IF NOT EXISTS ${schema}.${name}
+CREATE <#if relpersistence!false >UNLOGGED </#if>TABLE IF NOT EXISTS ${schema}."${name}"
 <#if typname?? >
 OF ${typname }
 </#if>
@@ -85,13 +85,13 @@ TABLESPACE ${spcname };
 );
 </#if>
 <#if description?? >
-COMMENT ON TABLE ${schema}.${name}
+COMMENT ON TABLE ${schema}."${name}"
 IS '${description}';
 </#if>
 <#if columns?? && columns?size gt 0 >
 <#list columns as c >
 <#if c.description?? >
-COMMENT ON COLUMN ${schema}.${name}.${c.name}
+COMMENT ON COLUMN ${schema}."${name}".${c.name}
 IS '${c.description}';
 </#if>
 </#list>

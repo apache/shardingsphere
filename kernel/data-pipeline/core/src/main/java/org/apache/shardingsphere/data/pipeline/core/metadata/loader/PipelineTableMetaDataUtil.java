@@ -47,7 +47,7 @@ public final class PipelineTableMetaDataUtil {
      */
     public static List<PipelineColumnMetaData> getUniqueKeyColumns(final String schemaName, final String tableName, final PipelineTableMetaDataLoader metaDataLoader) {
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, tableName);
-        ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new SplitPipelineJobByRangeException(tableName, "Can not get table meta data"));
+        ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new SplitPipelineJobByRangeException(tableName, "Can not get table meta data for table " + tableName));
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
         if (primaryKeys.size() > 0) {
             return primaryKeys.stream().map(tableMetaData::getColumnMetaData).collect(Collectors.toList());
