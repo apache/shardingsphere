@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.transaction.xa.atomikos.manager;
 
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.XADataSource;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class AtomikosXARecoverableResourceTest {
     
     @Mock
@@ -38,7 +38,7 @@ public final class AtomikosXARecoverableResourceTest {
     @Mock
     private XADataSource xaDataSource;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         when(singleXAResource.getResourceName()).thenReturn("ds1");
     }

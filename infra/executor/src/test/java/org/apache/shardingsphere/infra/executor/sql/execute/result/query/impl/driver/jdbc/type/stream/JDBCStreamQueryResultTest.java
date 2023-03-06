@@ -31,9 +31,10 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -194,11 +195,11 @@ public final class JDBCStreamQueryResultTest {
         verify(resultSet).getTimestamp(1, calendar);
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetCalendarValueWithUnsupportedType() throws SQLException {
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
         queryResult.next();
-        queryResult.getCalendarValue(1, Object.class, Calendar.getInstance());
+        assertThrows(SQLException.class, () -> queryResult.getCalendarValue(1, Object.class, Calendar.getInstance()));
     }
     
     @Test
@@ -229,11 +230,11 @@ public final class JDBCStreamQueryResultTest {
         verify(resultSet).getBinaryStream(1);
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetInputStreamWithUnsupportedType() throws SQLException {
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
         queryResult.next();
-        queryResult.getInputStream(1, "Unsupported Type");
+        assertThrows(SQLException.class, () -> queryResult.getInputStream(1, "Unsupported Type"));
     }
     
     @Test

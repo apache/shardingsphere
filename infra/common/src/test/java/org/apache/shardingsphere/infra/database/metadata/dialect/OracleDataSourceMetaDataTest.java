@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public final class OracleDataSourceMetaDataTest {
     
@@ -109,9 +110,9 @@ public final class OracleDataSourceMetaDataTest {
         assertThat(actual.getSchema(), is("test"));
     }
     
-    @Test(expected = UnrecognizedDatabaseURLException.class)
+    @Test
     public void assertNewConstructorFailure() {
-        new OracleDataSourceMetaData("jdbc:oracle:xxxxxxxx", "test");
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> new OracleDataSourceMetaData("jdbc:oracle:xxxxxxxx", "test"));
     }
     
     @Test

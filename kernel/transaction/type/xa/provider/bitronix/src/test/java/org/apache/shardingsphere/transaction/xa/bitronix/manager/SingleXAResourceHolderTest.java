@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.transaction.xa.bitronix.manager;
 
+import bitronix.tm.resource.common.ResourceBean;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import javax.transaction.xa.XAResource;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import bitronix.tm.resource.common.ResourceBean;
-import javax.transaction.xa.XAResource;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class SingleXAResourceHolderTest {
     
     @Mock
@@ -40,7 +41,7 @@ public final class SingleXAResourceHolderTest {
     
     private SingleXAResourceHolder singleXAResourceHolder;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         singleXAResourceHolder = new SingleXAResourceHolder(xaResource, resourceBean);
     }

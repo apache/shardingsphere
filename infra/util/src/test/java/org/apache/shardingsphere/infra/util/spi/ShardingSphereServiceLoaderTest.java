@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.util.spi;
 
 import org.apache.shardingsphere.infra.util.spi.fixture.empty.EmptySPIFixture;
 import org.apache.shardingsphere.infra.util.spi.fixture.multiton.MultitonSPIFixture;
-import org.apache.shardingsphere.infra.util.spi.fixture.singleton.SingletonSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.fixture.multiton.impl.MultitonSPIFixtureImpl;
+import org.apache.shardingsphere.infra.util.spi.fixture.singleton.SingletonSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.fixture.singleton.impl.SingletonSPIFixtureImpl;
 import org.junit.Test;
 
@@ -30,18 +30,19 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereServiceLoaderTest {
     
-    @Test(expected = NullPointerException.class)
+    @Test
     public void assertGetServiceInstancesWithNullValue() {
-        ShardingSphereServiceLoader.getServiceInstances(null);
+        assertThrows(NullPointerException.class, () -> ShardingSphereServiceLoader.getServiceInstances(null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGetServiceInstancesWithNoInterface() {
-        ShardingSphereServiceLoader.getServiceInstances(Object.class);
+        assertThrows(IllegalArgumentException.class, () -> ShardingSphereServiceLoader.getServiceInstances(Object.class));
     }
     
     @Test

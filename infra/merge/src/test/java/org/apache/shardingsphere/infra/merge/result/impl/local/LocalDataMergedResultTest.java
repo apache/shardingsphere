@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.merge.result.impl.local;
 
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
 import java.util.Collections;
@@ -27,8 +26,9 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class LocalDataMergedResultTest {
@@ -57,11 +57,11 @@ public final class LocalDataMergedResultTest {
         assertThat(actual.getCalendarValue(1, Object.class, Calendar.getInstance()), is(new Date(0L)));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetInputStream() throws SQLException {
+    @Test
+    public void assertGetInputStream() {
         List<Object> row = Collections.singletonList("value");
         LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(row)));
-        actual.getInputStream(1, "Ascii");
+        assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getInputStream(1, "Ascii"));
     }
     
     @Test

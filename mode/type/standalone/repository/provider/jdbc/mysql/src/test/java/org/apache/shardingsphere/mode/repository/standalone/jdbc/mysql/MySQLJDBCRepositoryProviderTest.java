@@ -21,13 +21,13 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MySQLJDBCRepositoryProviderTest {
     
     @Mock
@@ -60,7 +60,7 @@ public class MySQLJDBCRepositoryProviderTest {
     
     private final JDBCRepository repository = new JDBCRepository();
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         construction = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(connection));
         when(connection.createStatement()).thenReturn(mock(Statement.class));
@@ -68,7 +68,7 @@ public class MySQLJDBCRepositoryProviderTest {
                 new Property("username", "sa"), new Property("password", ""), new Property("provider", "MySQL")));
     }
     
-    @After
+    @AfterEach
     public void stop() {
         repository.close();
         construction.close();
