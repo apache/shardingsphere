@@ -52,7 +52,7 @@ public final class LockClusterUpdater implements RALUpdater<LockClusterStatement
     
     private void checkState() {
         ClusterState currentState = ProxyContext.getInstance().getContextManager().getClusterStateContext().getCurrentState();
-        ShardingSpherePreconditions.checkState(ClusterState.OK== currentState, () -> new IllegalStateException("Cluster is already locked"));
+        ShardingSpherePreconditions.checkState(ClusterState.OK == currentState, () -> new IllegalStateException("Cluster is already locked"));
     }
     
     private void checkAlgorithm(final LockClusterStatement sqlStatement) {
