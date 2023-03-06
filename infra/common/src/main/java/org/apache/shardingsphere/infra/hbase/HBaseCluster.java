@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.hbase;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Connection;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-public class HBaseCluster {
+public final class HBaseCluster {
     
     private final String clusterName;
     

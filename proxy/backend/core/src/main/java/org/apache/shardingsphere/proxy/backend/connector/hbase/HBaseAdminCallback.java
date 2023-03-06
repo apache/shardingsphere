@@ -21,7 +21,7 @@ import org.apache.hadoop.hbase.client.Admin;
 import java.io.IOException;
 
 /**
- * call back for HBase operation.
+ * Call back for HBase operation.
  *
  * @param <T> return type.
  */
@@ -30,9 +30,9 @@ public interface HBaseAdminCallback<T> {
     /**
      * do operation in HBase.
      *
-     * @param admin execute in HBase Table.
-     * @return result.
-     * @throws IOException exception.
+     * @param admin execute in HBase Table
+     * @return result
+     * @throws IOException exception
      *
      */
     T executeInHBase(Admin admin) throws IOException;

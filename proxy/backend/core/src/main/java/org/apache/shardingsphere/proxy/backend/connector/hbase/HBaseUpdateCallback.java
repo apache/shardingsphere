@@ -21,16 +21,15 @@ import org.apache.hadoop.hbase.client.Table;
 import java.io.IOException;
 
 /**
- * call back for HBase operation.
+ * Call back for HBase operation.
  */
 public interface HBaseUpdateCallback {
     
     /**
-     * do operation in HBase.
+     * Do operation in HBase.
      *
-     * @param table execute in HBase Table.
-     * @throws IOException exception.
-     *
+     * @param table execute in HBase Table
+     * @throws IOException exception
      */
     void executeInHBase(Table table) throws IOException;
     

@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * background executor.
+ * Background executor.
  */
 @Getter
 public class HBaseBackgroundExecutorManager implements Closeable {
@@ -43,9 +43,9 @@ public class HBaseBackgroundExecutorManager implements Closeable {
     }
     
     /**
-     * submit background task.
-     * @param runnable background task.
-     * @param interval Running interval.
+     * Submit background task.
+     * @param runnable background task
+     * @param interval Running interval
      */
     public void submit(final Runnable runnable, final int interval) {
         executorService.scheduleWithFixedDelay(runnable, interval, interval, TimeUnit.SECONDS);

@@ -27,18 +27,17 @@ import org.apache.shardingsphere.proxy.backend.exception.HBaseOperationException
 import java.io.IOException;
 
 /**
- * execute HBase operation.
+ * Execute HBase operation.
  */
 @Slf4j
 public final class HBaseExecutor {
     
     /**
-     * do operation in HBase, wrapper HBase Exception.
+     * Do operation in HBase, wrapper HBase Exception.
      * <p>If we need cache Table, do that in here.</p>
      *
-     * @param tableName tableName.
+     * @param tableName tableName
      * @param operation operation
-     *
      */
     public static void executeUpdate(final String tableName, final HBaseUpdateCallback operation) {
         TableName backendTableName = TableName.valueOf(tableName);
@@ -58,14 +57,13 @@ public final class HBaseExecutor {
     }
     
     /**
-     * do operation in HBase, wrapper HBase Exception.
+     * Do operation in HBase, wrapper HBase Exception.
      * <p>If we need cache Table, do that in here.</p>
      *
-     * @param tableName tableName.
+     * @param tableName tableName
      * @param operation operation
-     * @param <R> Result Type.
-     *
-     * @return result.
+     * @param <R> Result Type
+     * @return result
      */
     public static <R> R executeQuery(final String tableName, final HBaseQueryCallback<R> operation) {
         TableName backendTableName = TableName.valueOf(tableName);
@@ -83,13 +81,12 @@ public final class HBaseExecutor {
     }
     
     /**
-     * do operation in HBase, wrapper HBase Exception.
+     * Do operation in HBase, wrapper HBase Exception.
      * <p>If we need cache Table, do that in here.</p>
      *
-     * @param connection HBase Connection.
+     * @param connection HBase connection
      * @param operation operation
-     * @param <R> Result Type.
-     *
+     * @param <R> Result Type
      * @return result.
      */
     public static <R> R executeAdmin(final Connection connection, final HBaseAdminCallback<R> operation) {

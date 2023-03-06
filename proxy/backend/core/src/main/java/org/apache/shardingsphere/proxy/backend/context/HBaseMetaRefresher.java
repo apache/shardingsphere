@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.proxy.backend.exception.HBaseOperationException;
 
 /**
- * background thread to refresh meta data.
+ * background thread to refresh metadata.
  */
 @AllArgsConstructor
 @Slf4j

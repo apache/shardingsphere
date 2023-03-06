@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * HBase Operation exception.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-public class HBaseOperationException extends RuntimeException {
+public final class HBaseOperationException extends RuntimeException {
     
     private static final long serialVersionUID = -2361593557266150170L;
     

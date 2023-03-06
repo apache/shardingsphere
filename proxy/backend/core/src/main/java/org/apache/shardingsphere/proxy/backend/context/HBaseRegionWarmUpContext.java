@@ -20,17 +20,18 @@ package org.apache.shardingsphere.proxy.backend.context;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.shardingsphere.infra.hbase.HBaseCluster;
 import org.apache.shardingsphere.proxy.backend.connector.hbase.HBaseTaskExecutorManager;
-import org.apache.shardingsphere.proxy.backend.exception.HBaseOperationException;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * HBase region warn up context.
+ */
 @Getter
 @Slf4j
-public class HBaseRegionWarmUpContext {
+public final class HBaseRegionWarmUpContext {
     
     private static final HBaseRegionWarmUpContext INSTANCE = new HBaseRegionWarmUpContext();
     
@@ -45,14 +46,14 @@ public class HBaseRegionWarmUpContext {
     /**
      * Get instance of HBase context.
      *
-     * @return instance of HBase context.
+     * @return instance of HBase context
      */
     public static HBaseRegionWarmUpContext getInstance() {
         return INSTANCE;
     }
     
     /**
-     * init.
+     * Init.
      * @param poolSize mul execute size
      */
     public void init(final int poolSize) {
@@ -60,7 +61,7 @@ public class HBaseRegionWarmUpContext {
     }
     
     /**
-     * submit region warm up task.
+     * Submit region warm up task.
      * @param tableName tableName
      * @param hbaseCluster hbaseCluster
      */
@@ -77,28 +78,9 @@ public class HBaseRegionWarmUpContext {
             log.error(String.format("table: %s warm up error, getRegionLocator execute error reason is  %s", tableName, e));
         }
     }
-    
+
     /**
-     * load one table region info.
-     * @param tableName tableName
-     * @param connection hbase connection
-     */
-    public void loadRegionInfo(final String tableName, final Connection connection) {
-        HBaseRegionWarmUpContext.getInstance().addExecuteCount();
-        try {
-            if (connection == null) {
-                return;
-            }
-            RegionLocator regionLocator = connection.getRegionLocator(TableName.valueOf(tableName));
-            regionLocator.getAllRegionLocations();
-            log.info(String.format("reload table %s region info", tableName));
-        } catch (IOException e) {
-            throw new HBaseOperationException(String.format("table: %s warm up error, getRegionLocator execute error reason is  %s", tableName, e));
-        }
-    }
-    
-    /**
-     * init statistics info.
+     * Init statistics info.
      * @param startWarmUpTime start warm up time
      */
     public void initStatisticsInfo(final long startWarmUpTime) {
@@ -106,14 +88,14 @@ public class HBaseRegionWarmUpContext {
     }
     
     /**
-     * execute count add one.
+     * Execute count add one.
      */
     public void addExecuteCount() {
         this.executeCount.incrementAndGet();
     }
     
     /**
-     * all need warm up table add one.
+     * All need warm up table add one.
      */
     public void addNeedWarmCount() {
         this.tableCount.incrementAndGet();
@@ -135,7 +117,7 @@ public class HBaseRegionWarmUpContext {
     }
     
     /**
-     * clear statistics info.
+     * Clear statistics info.
      */
     public void clear() {
         this.tableCount.set(0);

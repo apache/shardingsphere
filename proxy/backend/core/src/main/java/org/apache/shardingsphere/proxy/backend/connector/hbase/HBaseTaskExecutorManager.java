@@ -22,7 +22,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class HBaseTaskExecutorManager implements Closeable {
+/**
+ * HBase task executor manager.
+ */
+public final class HBaseTaskExecutorManager implements Closeable {
     
     private final ThreadPoolExecutor executorService;
     
@@ -39,15 +42,15 @@ public class HBaseTaskExecutorManager implements Closeable {
     }
     
     /**
-     * submit task.
-     * @param runnable task.
+     * Submit task.
+     * @param runnable task
      */
     public void submit(final Runnable runnable) {
         executorService.submit(runnable);
     }
     
     /**
-     * close.
+     * close
      */
     public void close() {
         executorService.shutdown();

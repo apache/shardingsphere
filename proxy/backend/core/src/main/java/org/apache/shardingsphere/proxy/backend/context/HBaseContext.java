@@ -69,15 +69,15 @@ public final class HBaseContext implements AutoCloseable {
     /**
      * Get instance of HBase context.
      *
-     * @return instance of HBase context.
+     * @return instance of HBase context
      */
     public static HBaseContext getInstance() {
         return INSTANCE;
     }
     
     /**
-     * init hbase context.
-     * @param connections A connection for per HBase cluster.
+     * Init hbase context.
+     * @param connections A connection for per HBase cluster
      */
     public void init(final Map<String, Connection> connections) {
         this.connections = new ArrayList<>(connections.size());
@@ -97,7 +97,7 @@ public final class HBaseContext implements AutoCloseable {
     }
     
     /**
-     * get warmUpThreadSize.
+     * Get warmUpThreadSize.
      * @return warmUpThreadSize, 0 < warmUpThreadSize <= 30
      */
     private int getWarmUpThreadSize() {
@@ -110,8 +110,8 @@ public final class HBaseContext implements AutoCloseable {
     }
     
     /**
-     * load tables from HBase database.
-     * @param hbaseCluster hbase cluster object.
+     * Load tables from HBase database.
+     * @param hbaseCluster hbase cluster object
      */
     public synchronized void loadTablesFromHBase(final HBaseCluster hbaseCluster) {
         HTableDescriptor[] hTableDescriptor = HBaseExecutor.executeAdmin(hbaseCluster.getConnection(), Admin::listTables);
@@ -146,18 +146,18 @@ public final class HBaseContext implements AutoCloseable {
     }
     
     /**
-     * is table exists.
-     * @param tableName tableName.
-     * @return result.
+     * Is table exists.
+     * @param tableName tableName
+     * @return result
      */
     public boolean isTableExists(final String tableName) {
         return tableConnectionMap.containsKey(tableName);
     }
     
     /**
-     * get connection via cluster name.
-     * @param clusterName cluster name.
-     * @return HBase Connection.
+     * Get connection via cluster name.
+     * @param clusterName cluster name
+     * @return HBase Connection
      */
     public Connection getConnectionByClusterName(final String clusterName) {
         Optional<HBaseCluster> cluster = connections.stream().filter(each -> each.getClusterName().equalsIgnoreCase(clusterName)).findFirst();

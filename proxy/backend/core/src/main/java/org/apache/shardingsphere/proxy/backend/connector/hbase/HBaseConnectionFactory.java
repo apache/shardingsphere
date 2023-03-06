@@ -30,20 +30,21 @@ import org.apache.shardingsphere.proxy.backend.exception.HBaseOperationException
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * HBase Connection Factory.
+ * HBase connection factory.
  */
 public class HBaseConnectionFactory {
     
     /**
-     * create HBase connection.
-     * @param yamlProxyHBaseConfiguration HBase config.
-     * @return A connection for per HBase cluster.
+     * Create HBase connection.
+     * @param yamlProxyHBaseConfiguration HBase config
+     * @return A connection for per HBase cluster
      */
     public static Map<String, Connection> createHBaseConnections(final YamlHBaseConfiguration yamlProxyHBaseConfiguration) {
         Map<String, Connection> result = new LinkedHashMap<>(yamlProxyHBaseConfiguration.getDataSources().size());
-        for (Map.Entry<String, YamlHBaseParameter> entry : yamlProxyHBaseConfiguration.getDataSources().entrySet()) {
+        for (Entry<String, YamlHBaseParameter> entry : yamlProxyHBaseConfiguration.getDataSources().entrySet()) {
             result.put(entry.getKey(), createConnection(entry.getValue()));
         }
         return result;
@@ -67,16 +68,16 @@ public class HBaseConnectionFactory {
     }
     
     private static Configuration createConfiguration(final YamlHBaseParameter parameter) {
-        Configuration config = HBaseConfiguration.create();
-        config.set("fs.defaultFS", parameter.getFsDefaultFs());
-        config.set("hbase.rootdir", parameter.getHbaseRootDir());
-        config.setLong("hbase.rpc.timeout", parameter.getHbaseRpcTimeout());
-        config.setLong("hbase.client.operation.timeout", parameter.getHbaseClientOperationTimeout());
-        config.setLong("hbase.client.scanner.timeout.period", parameter.getHbaseClientScannerTimeoutPeriod());
-        config.set("hbase.zookeeper.property.dataDir", parameter.getHbaseZookeeperPropertyDataDir());
-        config.set("hbase.zookeeper.quorum", parameter.getHbaseZookeeperQuorum());
-        config.set("zookeeper.znode.parent", parameter.getZookeeperZNodeParent());
-        config.setInt("hbase.client.ipc.pool.size", parameter.getIpcPoolSize());
-        return config;
+        Configuration result = HBaseConfiguration.create();
+        result.set("fs.defaultFS", parameter.getFsDefaultFs());
+        result.set("hbase.rootdir", parameter.getHbaseRootDir());
+        result.setLong("hbase.rpc.timeout", parameter.getHbaseRpcTimeout());
+        result.setLong("hbase.client.operation.timeout", parameter.getHbaseClientOperationTimeout());
+        result.setLong("hbase.client.scanner.timeout.period", parameter.getHbaseClientScannerTimeoutPeriod());
+        result.set("hbase.zookeeper.property.dataDir", parameter.getHbaseZookeeperPropertyDataDir());
+        result.set("hbase.zookeeper.quorum", parameter.getHbaseZookeeperQuorum());
+        result.set("zookeeper.znode.parent", parameter.getZookeeperZNodeParent());
+        result.setInt("hbase.client.ipc.pool.size", parameter.getIpcPoolSize());
+        return result;
     }
 }
