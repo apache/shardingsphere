@@ -21,8 +21,8 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportMe
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ExportMetaDataStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Export meta data statement assert.
@@ -39,9 +39,9 @@ public final class ExportMetaDataStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final ExportMetaDataStatement actual,
                                 final ExportMetaDataStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
         }
     }
 }

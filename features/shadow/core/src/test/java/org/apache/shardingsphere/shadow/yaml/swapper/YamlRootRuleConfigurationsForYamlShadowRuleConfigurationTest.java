@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class YamlRootRuleConfigurationsForYamlShadowRuleConfigurationTest {

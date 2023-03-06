@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class FilePluginE2EIT extends BasePluginE2EIT {
     
@@ -35,7 +35,7 @@ public final class FilePluginE2EIT extends BasePluginE2EIT {
     @Test
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
-        assertTrue(String.format("The file `%s` does not exist", LogLoader.getLogFilePath()), LogLoader.getLogFile().exists());
+        assertTrue(LogLoader.getLogFile().exists(), String.format("The file `%s` does not exist", LogLoader.getLogFilePath()));
         Collection<String> expectedLogRegexs = getExpectedLogRegex();
         expectedLogRegexs.forEach(ContentAssert::assertIs);
     }
