@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.state.impl;
 
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.proxy.backend.exception.ReadOnlyException;
 import org.apache.shardingsphere.proxy.backend.state.spi.ProxyClusterState;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
 /**
  * ReadOnly proxy state.
@@ -31,13 +34,14 @@ public final class ReadOnlyProxyState implements ProxyClusterState {
     
     @Override
     public void check(final SQLStatement sqlStatement) {
-        if (isWriteStatement(sqlStatement)) {
+        if (isUnsupportedStatement(sqlStatement)) {
             throw new ReadOnlyException();
         }
     }
     
-    private boolean isWriteStatement(final SQLStatement sqlStatement) {
-        return !(sqlStatement instanceof SelectStatement) && !(sqlStatement instanceof ShowStatement) && !(sqlStatement instanceof MySQLShowDatabasesStatement);
+    private boolean isUnsupportedStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof InsertStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement || sqlStatement instanceof DDLStatement
+                || sqlStatement instanceof UpdatableRALStatement || sqlStatement instanceof RDLStatement;
     }
     
     @Override
