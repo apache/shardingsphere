@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.metadata;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -31,6 +32,7 @@ public class IdentifierName {
     
     private final String original;
     
+    @Getter(AccessLevel.PROTECTED)
     private final String lowercase;
     
     public IdentifierName(final String identifierName) {
