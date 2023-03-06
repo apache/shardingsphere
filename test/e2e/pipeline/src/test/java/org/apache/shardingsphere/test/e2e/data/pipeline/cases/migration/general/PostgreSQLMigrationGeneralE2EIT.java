@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobTy
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.PostgreSQLIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
@@ -62,13 +61,13 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     @Parameters(name = "{0}")
     public static Collection<PipelineTestParameter> getTestParameters() {
         Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
+        if (ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
-        for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
+        for (String each : ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
             result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), each, "env/scenario/general/postgresql.xml"));
         }
-        for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
+        for (String each : ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
             result.add(new PipelineTestParameter(new OpenGaussDatabaseType(), each, "env/scenario/general/postgresql.xml"));
         }
         return result;
@@ -79,16 +78,16 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         log.info("assertMigrationSuccess testParam:{}", testParam);
         initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
         addMigrationProcessConfig();
-        createSourceSchema(PipelineBaseE2EIT.SCHEMA_NAME);
+        createSourceSchema(SCHEMA_NAME);
         createSourceOrderTable();
         createSourceOrderItemTable();
-        createSourceTableIndexList(PipelineBaseE2EIT.SCHEMA_NAME);
-        createSourceCommentOnList(PipelineBaseE2EIT.SCHEMA_NAME);
+        createSourceTableIndexList(SCHEMA_NAME);
+        createSourceCommentOnList(SCHEMA_NAME);
         addMigrationSourceResource();
         addMigrationTargetResource();
         createTargetOrderTableRule();
         createTargetOrderItemTableRule();
-        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
+        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), TABLE_INIT_ROW_COUNT);
         log.info("init data begin: {}", LocalDateTime.now());
         DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
@@ -101,23 +100,23 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         List<String> lastJobIds = listJobId();
         assertTrue(lastJobIds.isEmpty());
         proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
-        assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT + 1, PipelineBaseE2EIT.SCHEMA_NAME);
+        assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT + 1, SCHEMA_NAME);
         log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
     
     private void checkOrderMigration() throws SQLException, InterruptedException {
         startMigrationWithSchema(getSourceTableOrderName(), "t_order");
-        startIncrementTask(new PostgreSQLIncrementTask(getSourceDataSource(), PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName(), 20));
+        startIncrementTask(new PostgreSQLIncrementTask(getSourceDataSource(), SCHEMA_NAME, getSourceTableOrderName(), 20));
         String jobId = getJobIdByTableName("ds_0.test." + getSourceTableOrderName());
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
         long recordId = new SnowflakeKeyGenerateAlgorithm().generateKey();
         sourceExecuteWithLog(
-                String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName()), recordId, 1, "afterStop"));
+                String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", String.join(".", SCHEMA_NAME, getSourceTableOrderName()), recordId, 1, "afterStop"));
         startMigrationByJobId(jobId);
         // must refresh firstly, otherwise proxy can't get schema and table info
         proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
-        assertProxyOrderRecordExist(String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getTargetTableOrderName()), recordId);
+        assertProxyOrderRecordExist(String.join(".", SCHEMA_NAME, getTargetTableOrderName()), recordId);
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }
     

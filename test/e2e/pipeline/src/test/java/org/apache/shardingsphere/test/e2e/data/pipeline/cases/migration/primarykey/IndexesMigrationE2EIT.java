@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
@@ -71,14 +70,14 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @Parameters(name = "{0}")
     public static Collection<PipelineTestParameter> getTestParameters() {
         Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
+        if (ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
-        List<String> mysqlVersion = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
+        List<String> mysqlVersion = ENV.listStorageContainerImages(new MySQLDatabaseType());
         if (!mysqlVersion.isEmpty()) {
             result.add(new PipelineTestParameter(new MySQLDatabaseType(), mysqlVersion.get(0), "env/common/none.xml"));
         }
-        List<String> postgresqlVersion = PipelineBaseE2EIT.ENV.listStorageContainerImages(new PostgreSQLDatabaseType());
+        List<String> postgresqlVersion = ENV.listStorageContainerImages(new PostgreSQLDatabaseType());
         if (!postgresqlVersion.isEmpty()) {
             result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), postgresqlVersion.get(0), "env/common/none.xml"));
         }

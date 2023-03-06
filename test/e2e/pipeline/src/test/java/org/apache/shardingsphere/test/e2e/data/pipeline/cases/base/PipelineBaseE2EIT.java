@@ -276,7 +276,7 @@ public abstract class PipelineBaseE2EIT {
     }
     
     protected void proxyExecuteWithLog(final String sql, final int sleepSeconds) throws SQLException {
-        log.info("proxy execute :{}", sql);
+        log.info("proxy execute: {}", sql);
         try (Connection connection = proxyDataSource.getConnection()) {
             connection.createStatement().execute(sql);
         }

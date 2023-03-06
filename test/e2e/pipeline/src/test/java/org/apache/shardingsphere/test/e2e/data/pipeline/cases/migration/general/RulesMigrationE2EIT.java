@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
@@ -56,10 +55,10 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     @Parameters(name = "{0}")
     public static Collection<PipelineTestParameter> getTestParameters() {
         Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
+        if (ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
-        List<String> versions = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
+        List<String> versions = ENV.listStorageContainerImages(new MySQLDatabaseType());
         if (versions.isEmpty()) {
             return result;
         }
@@ -89,7 +88,7 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
         initEnvironment(getDatabaseType(), new MigrationJobType());
         createSourceOrderTable();
         try (Connection connection = getSourceDataSource().getConnection()) {
-            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, new UUIDKeyGenerateAlgorithm(), getSourceTableOrderName(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
+            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, new UUIDKeyGenerateAlgorithm(), getSourceTableOrderName(), TABLE_INIT_ROW_COUNT);
         }
         addMigrationSourceResource();
         addMigrationTargetResource();
@@ -103,6 +102,6 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         commitMigrationByJobId(jobId);
         proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
-        assertThat(getTargetTableRecordsCount(getSourceTableOrderName()), is(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT));
+        assertThat(getTargetTableRecordsCount(getSourceTableOrderName()), is(TABLE_INIT_ROW_COUNT));
     }
 }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.MySQLIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
@@ -61,11 +60,11 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     @Parameters(name = "{0}")
     public static Collection<PipelineTestParameter> getTestParameters() {
         Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
+        if (ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
-        for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(databaseType)) {
+        for (String each : ENV.listStorageContainerImages(databaseType)) {
             result.add(new PipelineTestParameter(databaseType, each, "env/scenario/general/mysql.xml"));
         }
         return result;
@@ -88,7 +87,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         createTargetOrderTableRule();
         createTargetOrderTableEncryptRule();
         createTargetOrderItemTableRule();
-        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
+        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), TABLE_INIT_ROW_COUNT);
         log.info("init data begin: {}", LocalDateTime.now());
         DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
@@ -109,7 +108,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         List<String> lastJobIds = listJobId();
         assertTrue(lastJobIds.isEmpty());
         proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
-        assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT, "");
+        assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "");
         log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
     
