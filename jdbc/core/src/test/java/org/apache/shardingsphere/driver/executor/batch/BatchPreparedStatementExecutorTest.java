@@ -18,55 +18,128 @@
 package org.apache.shardingsphere.driver.executor.batch;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.executor.AbstractBaseExecutorTest;
+import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
+import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecutorTest {
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+public final class BatchPreparedStatementExecutorTest {
     
     private static final String SQL = "DELETE FROM table_x WHERE id=?";
     
-    private BatchPreparedStatementExecutor actual;
+    private final ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithCPU();
+    
+    private BatchPreparedStatementExecutor executor;
     
     @Mock
     private SQLStatementContext<?> sqlStatementContext;
     
-    @Override
+    @BeforeEach
     public void setUp() throws SQLException {
-        super.setUp();
-        actual = spy(new BatchPreparedStatementExecutor(getConnection().getContextManager().getMetaDataContexts(),
-                new JDBCExecutor(getExecutorEngine(), getConnection().getConnectionManager().getConnectionContext()),
-                DefaultDatabase.LOGIC_NAME));
+        SQLExecutorExceptionHandler.setExceptionThrown(true);
+        TransactionTypeHolder.set(TransactionType.LOCAL);
+        ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), mock(JDBCContext.class));
+        executor = new BatchPreparedStatementExecutor(
+                connection.getContextManager().getMetaDataContexts(), new JDBCExecutor(executorEngine, connection.getConnectionManager().getConnectionContext()), "foo_db");
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = mockMetaDataContexts();
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getDataSourceMap("foo_db")).thenReturn(mockDataSourceMap());
+        return result;
+    }
+    
+    private MetaDataContexts mockMetaDataContexts() {
+        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(mockTransactionRule(), new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build())));
+        when(result.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(result.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes())
+                .thenReturn(Collections.singletonMap("ds_0", TypedSPILoader.getService(DatabaseType.class, "H2")));
+        ShardingSphereRuleMetaData databaseRuleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockShardingRule()));
+        when(result.getMetaData().getDatabase("foo_db").getRuleMetaData()).thenReturn(databaseRuleMetaData);
+        return result;
+    }
+    
+    private TransactionRule mockTransactionRule() {
+        TransactionRule result = mock(TransactionRule.class);
+        when(result.getResource()).thenReturn(new ShardingSphereTransactionManagerEngine());
+        return result;
+    }
+    
+    private ShardingRule mockShardingRule() {
+        ShardingRule result = mock(ShardingRule.class);
+        when(result.isNeedAccumulate(any())).thenReturn(true);
+        return result;
+    }
+    
+    private Map<String, DataSource> mockDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        result.put("ds_0", dataSource);
+        result.put("ds_1", dataSource);
+        return result;
+    }
+    
+    @AfterEach
+    public void tearDown() {
+        executorEngine.close();
+        TransactionTypeHolder.clear();
     }
     
     @Test
@@ -74,7 +147,7 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{0, 0});
         setExecutionGroups(Collections.singletonList(preparedStatement));
-        assertThat(actual.executeBatch(sqlStatementContext), is(new int[]{0, 0}));
+        assertThat(executor.executeBatch(sqlStatementContext), is(new int[]{0, 0}));
     }
     
     @Test
@@ -82,18 +155,8 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{10, 20});
         setExecutionGroups(Collections.singletonList(preparedStatement));
-        assertThat(actual.executeBatch(sqlStatementContext), is(new int[]{10, 20}));
+        assertThat(executor.executeBatch(sqlStatementContext), is(new int[]{10, 20}));
         verify(preparedStatement).executeBatch();
-    }
-    
-    private PreparedStatement getPreparedStatement() throws SQLException {
-        PreparedStatement result = mock(PreparedStatement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(result.getConnection()).thenReturn(connection);
-        return result;
     }
     
     @Test
@@ -103,31 +166,35 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
         when(preparedStatement1.executeBatch()).thenReturn(new int[]{10, 20});
         when(preparedStatement2.executeBatch()).thenReturn(new int[]{20, 40});
         setExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2));
-        assertThat(actual.executeBatch(sqlStatementContext), is(new int[]{30, 60}));
+        assertThat(executor.executeBatch(sqlStatementContext), is(new int[]{30, 60}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException ex = new SQLException("");
         when(preparedStatement.executeBatch()).thenThrow(ex);
         setExecutionGroups(Collections.singletonList(preparedStatement));
-        actual.executeBatch(sqlStatementContext);
+        assertThrows(SQLException.class, () -> executor.executeBatch(sqlStatementContext));
         verify(preparedStatement).executeBatch();
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException ex = new SQLException("");
         when(preparedStatement1.executeBatch()).thenThrow(ex);
         setExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2));
-        actual.executeBatch(sqlStatementContext);
-        verify(preparedStatement1).executeBatch();
-        verify(preparedStatement2).executeBatch();
+        assertThrows(SQLException.class, () -> executor.executeBatch(sqlStatementContext));
+    }
+    
+    private PreparedStatement getPreparedStatement() throws SQLException {
+        PreparedStatement result = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
+        when(result.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        return result;
     }
     
     private void setExecutionGroups(final List<PreparedStatement> preparedStatements) {
@@ -140,17 +207,16 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
             batchExecutionUnit.mapAddBatchCount(0);
             batchExecutionUnit.mapAddBatchCount(1);
             batchExecutionUnits.add(batchExecutionUnit);
-            executionUnits.add(new JDBCExecutionUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))),
-                    ConnectionMode.MEMORY_STRICTLY, each));
+            executionUnits.add(new JDBCExecutionUnit(new ExecutionUnit("ds_0", new SQLUnit(SQL, Collections.singletonList(1))), ConnectionMode.MEMORY_STRICTLY, each));
         }
         setFields(executionGroups, batchExecutionUnits);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setFields(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final Collection<BatchExecutionUnit> batchExecutionUnits) {
-        Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("executionGroupContext"), actual, new ExecutionGroupContext<>(executionGroups,
+        Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("executionGroupContext"), executor, new ExecutionGroupContext<>(executionGroups,
                 new ExecutionGroupReportContext("logic_db")));
-        Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("batchExecutionUnits"), actual, batchExecutionUnits);
-        Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("batchCount"), actual, 2);
+        Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("batchExecutionUnits"), executor, batchExecutionUnits);
+        Plugins.getMemberAccessor().set(BatchPreparedStatementExecutor.class.getDeclaredField("batchCount"), executor, 2);
     }
 }

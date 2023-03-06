@@ -31,6 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class EncryptTableTest {
     
@@ -62,9 +63,9 @@ public final class EncryptTableTest {
         assertNotNull(encryptTable.getLogicColumnByCipherColumn("cipherColumn"));
     }
     
-    @Test(expected = EncryptLogicColumnNotFoundException.class)
+    @Test
     public void assertGetLogicColumnByCipherColumnWhenNotFind() {
-        encryptTable.getLogicColumnByCipherColumn("invalidColumn");
+        assertThrows(EncryptLogicColumnNotFoundException.class, () -> encryptTable.getLogicColumnByCipherColumn("invalidColumn"));
     }
     
     @Test
@@ -72,9 +73,9 @@ public final class EncryptTableTest {
         assertNotNull(encryptTable.getLogicColumnByPlainColumn("plainColumn"));
     }
     
-    @Test(expected = EncryptLogicColumnNotFoundException.class)
+    @Test
     public void assertGetLogicColumnByPlainColumnWhenNotFind() {
-        encryptTable.getLogicColumnByPlainColumn("invalidColumn");
+        assertThrows(EncryptLogicColumnNotFoundException.class, () -> encryptTable.getLogicColumnByPlainColumn("invalidColumn"));
     }
     
     @Test

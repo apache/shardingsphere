@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,12 +43,13 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -59,68 +60,78 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     private final AlterReadwriteSplittingRuleStatementUpdater updater = new AlterReadwriteSplittingRuleStatementUpdater();
     
-    @Before
+    @BeforeEach
     public void before() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithoutCurrentRule() {
-        updater.checkSQLStatement(database, createSQLStatement("TEST"), null);
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("TEST"), null));
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithoutToBeAlteredRules() {
-        updater.checkSQLStatement(database, createSQLStatement("TEST"), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        assertThrows(MissingRequiredRuleException.class,
+                () -> updater.checkSQLStatement(database, createSQLStatement("TEST"), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
-    @Test(expected = MissingRequiredStorageUnitsException.class)
+    @Test
     public void assertCheckSQLStatementWithoutExistedResources() {
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Collections.singleton("read_ds_0"));
-        updater.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration());
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> updater.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration()));
     }
     
-    @Test(expected = MissingRequiredStorageUnitsException.class)
+    @Test
     public void assertCheckSQLStatementWithoutExistedAutoAwareResources() {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.singletonMap("ms_group", "ds_0")));
         when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("readwrite_ds", "ha_group", "TEST", new Properties());
-        updater.checkSQLStatement(database, new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment)), createCurrentRuleConfiguration());
+        assertThrows(MissingRequiredStorageUnitsException.class,
+                () -> updater.checkSQLStatement(database, new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment)), createCurrentRuleConfiguration()));
     }
     
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    @Test
     public void assertCheckSQLStatementWithoutToBeAlteredLoadBalancers() {
         when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
-        updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration());
+        assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
     }
     
-    @Test(expected = InvalidRuleConfigurationException.class)
+    @Test
     public void assertCheckSQLStatementWithDuplicateWriteResourceNamesInStatement() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        updater.checkSQLStatement(database, createSQLStatementWithDuplicateWriteResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST"), createCurrentRuleConfigurationWithMultipleRules());
+        assertThrows(InvalidRuleConfigurationException.class,
+                () -> updater.checkSQLStatement(database,
+                        createSQLStatementWithDuplicateWriteResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST"), createCurrentRuleConfigurationWithMultipleRules()));
     }
     
-    @Test(expected = InvalidRuleConfigurationException.class)
+    @Test
     public void assertCheckSQLStatementWithDuplicateWriteResourceNames() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        updater.checkSQLStatement(database, createSQLStatement("readwrite_ds_0", "ds_write_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfigurationWithMultipleRules());
+        assertThrows(InvalidRuleConfigurationException.class,
+                () -> updater.checkSQLStatement(database,
+                        createSQLStatement("readwrite_ds_0", "ds_write_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfigurationWithMultipleRules()));
     }
     
-    @Test(expected = InvalidRuleConfigurationException.class)
+    @Test
     public void assertCheckSQLStatementWithDuplicateReadResourceNamesInStatement() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        updater.checkSQLStatement(database, createSQLStatementWithDuplicateReadResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST"), createCurrentRuleConfigurationWithMultipleRules());
+        assertThrows(InvalidRuleConfigurationException.class,
+                () -> updater.checkSQLStatement(database,
+                        createSQLStatementWithDuplicateReadResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST"), createCurrentRuleConfigurationWithMultipleRules()));
     }
     
-    @Test(expected = InvalidRuleConfigurationException.class)
+    @Test
     public void assertCheckSQLStatementWithDuplicateReadResourceNames() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        updater.checkSQLStatement(database, createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0_0", "read_ds_0_1"), "TEST"), createCurrentRuleConfigurationWithMultipleRules());
+        assertThrows(InvalidRuleConfigurationException.class,
+                () -> updater.checkSQLStatement(database,
+                        createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0_0", "read_ds_0_1"), "TEST"), createCurrentRuleConfigurationWithMultipleRules()));
     }
     
     private AlterReadwriteSplittingRuleStatement createSQLStatement(final String loadBalancerTypeName) {

@@ -46,9 +46,9 @@ public final class ShowMigrationCheckStatusExecutor implements QueryableRALExecu
         return result;
     }
     
-    private LocalDataQueryResultRow convert(final ConsistencyCheckJobItemInfo info) {
+    LocalDataQueryResultRow convert(final ConsistencyCheckJobItemInfo info) {
         String checkResult = null == info.getCheckSuccess() ? "" : info.getCheckSuccess().toString();
-        return new LocalDataQueryResultRow(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult,
+        return new LocalDataQueryResultRow(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult, Optional.ofNullable(info.getCheckFailedTableNames()).orElse(""),
                 String.valueOf(info.getFinishedPercentage()), info.getRemainingSeconds(),
                 Optional.ofNullable(info.getCheckBeginTime()).orElse(""), Optional.ofNullable(info.getCheckEndTime()).orElse(""),
                 info.getDurationSeconds(), Optional.ofNullable(info.getErrorMessage()).orElse(""));
@@ -56,7 +56,7 @@ public final class ShowMigrationCheckStatusExecutor implements QueryableRALExecu
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("tables", "result", "finished_percentage", "remaining_seconds", "check_begin_time", "check_end_time", "duration_seconds", "error_message");
+        return Arrays.asList("tables", "result", "check_failed_tables", "finished_percentage", "remaining_seconds", "check_begin_time", "check_end_time", "duration_seconds", "error_message");
     }
     
     @Override

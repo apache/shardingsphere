@@ -20,12 +20,14 @@ package org.apache.shardingsphere.test.mock;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 
 /**
@@ -35,8 +37,15 @@ public final class AutoMockExtension implements BeforeEachCallback, AfterEachCal
     
     private final Collection<MockedStatic<?>> mockedStatics = new LinkedList<>();
     
+    private final Collection<MockedConstruction<?>> mockedConstructions = new LinkedList<>();
+    
     @Override
     public void beforeEach(final ExtensionContext context) {
+        mockStatics(context);
+        mockConstructions(context);
+    }
+    
+    private void mockStatics(final ExtensionContext context) {
         StaticMockSettings staticMockSettings = context.getRequiredTestClass().getAnnotation(StaticMockSettings.class);
         if (null != staticMockSettings) {
             for (Class<?> each : staticMockSettings.value()) {
@@ -45,11 +54,32 @@ public final class AutoMockExtension implements BeforeEachCallback, AfterEachCal
         }
     }
     
+    private void mockConstructions(final ExtensionContext context) {
+        ConstructionMockSettings constructionMockSettings = context.getRequiredTestClass().getAnnotation(ConstructionMockSettings.class);
+        if (null != constructionMockSettings) {
+            for (Class<?> each : constructionMockSettings.value()) {
+                mockedConstructions.add(mockConstruction(each));
+            }
+        }
+    }
+    
     @Override
     public void afterEach(final ExtensionContext context) {
+        cleanMockedStatics();
+        cleanMockedConstructions();
+    }
+    
+    private void cleanMockedStatics() {
         for (MockedStatic<?> each : mockedStatics) {
             each.close();
         }
         mockedStatics.clear();
+    }
+    
+    private void cleanMockedConstructions() {
+        for (MockedConstruction<?> each : mockedConstructions) {
+            each.close();
+        }
+        mockedConstructions.clear();
     }
 }

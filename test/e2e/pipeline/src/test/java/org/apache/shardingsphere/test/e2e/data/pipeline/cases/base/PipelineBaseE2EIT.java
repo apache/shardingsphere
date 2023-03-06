@@ -24,8 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
@@ -89,6 +92,8 @@ public abstract class PipelineBaseE2EIT {
     
     protected static final int TABLE_INIT_ROW_COUNT = 3000;
     
+    private static final String REGISTER_STORAGE_UNIT_SQL = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')";
+    
     @Rule
     @Getter(AccessLevel.NONE)
     public PipelineWatcher pipelineWatcher;
@@ -143,6 +148,17 @@ public abstract class PipelineBaseE2EIT {
         cleanUpDataSource();
     }
     
+    protected String appendExtraParam(final String jdbcUrl) {
+        String result = jdbcUrl;
+        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
+            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
+        }
+        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType()) || DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified")));
+        }
+        return result;
+    }
+    
     private void cleanUpProxyDatabase(final Connection connection) {
         if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
             return;
@@ -161,8 +177,12 @@ public abstract class PipelineBaseE2EIT {
         }
         String jobTypeName = jobType.getTypeName();
         List<Map<String, Object>> jobList;
-        try (ResultSet resultSet = connection.createStatement().executeQuery(String.format("SHOW %s LIST", jobTypeName))) {
+        try {
+            ResultSet resultSet = connection.createStatement().executeQuery(String.format("SHOW %s LIST", jobTypeName));
             jobList = transformResultSetToList(resultSet);
+        } catch (final SQLException ex) {
+            log.warn("{} execute failed, message {}", String.format("SHOW %s LIST", jobTypeName), ex.getMessage());
+            return;
         }
         if (jobList.isEmpty()) {
             return;
@@ -195,19 +215,17 @@ public abstract class PipelineBaseE2EIT {
         ThreadUtil.sleep(2, TimeUnit.SECONDS);
     }
     
-    protected void addResource(final String distSQL) throws SQLException {
-        proxyExecuteWithLog(distSQL, 2);
+    protected void registerStorageUnit(final String storageUnitName) throws SQLException {
+        String registerStorageUnitTemplate = REGISTER_STORAGE_UNIT_SQL.replace("${ds}", storageUnitName)
+                .replace("${user}", getUsername())
+                .replace("${password}", getPassword())
+                .replace("${url}", appendExtraParam(getActualJdbcUrlTemplate(storageUnitName, true)));
+        proxyExecuteWithLog(registerStorageUnitTemplate, 2);
     }
     
-    protected String appendExtraParam(final String jdbcUrl) {
-        String result = jdbcUrl;
-        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
-            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
-        }
-        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType()) || DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
-            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified")));
-        }
-        return result;
+    // TODO Use registerStorageUnit instead, and remove the method
+    protected void addResource(final String distSQL) throws SQLException {
+        proxyExecuteWithLog(distSQL, 2);
     }
     
     protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
@@ -280,9 +298,7 @@ public abstract class PipelineBaseE2EIT {
         while (retryNumber <= 3) {
             try (Connection connection = proxyDataSource.getConnection()) {
                 ResultSet resultSet = connection.createStatement().executeQuery(sql);
-                List<Map<String, Object>> result = transformResultSetToList(resultSet);
-                log.info("proxy query for list, sql: {}, result: {}", sql, result);
-                return result;
+                return transformResultSetToList(resultSet);
             } catch (final SQLException ex) {
                 log.error("data access error", ex);
             }
@@ -292,7 +308,7 @@ public abstract class PipelineBaseE2EIT {
         throw new RuntimeException("can't get result from proxy");
     }
     
-    private List<Map<String, Object>> transformResultSetToList(final ResultSet resultSet) throws SQLException {
+    protected List<Map<String, Object>> transformResultSetToList(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columns = resultSetMetaData.getColumnCount();
         List<Map<String, Object>> result = new ArrayList<>();
@@ -374,5 +390,23 @@ public abstract class PipelineBaseE2EIT {
         String tableName = Strings.isNullOrEmpty(schema) ? "t_order" : String.format("%s.t_order", schema);
         int recordsCount = getTargetTableRecordsCount(tableName);
         assertTrue("actual count " + recordsCount, recordsCount > tableInitRows);
+    }
+    
+    // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
+    protected DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
+        String dataSourceConfigText = queryForListWithLog("EXPORT DATABASE CONFIGURATION").get(0).get("result").toString();
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(dataSourceConfigText, YamlRootConfiguration.class);
+        if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
+            String sourceUrl = String.join(":", storageContainer.getNetworkAliases().get(0), Integer.toString(storageContainer.getExposedPort()));
+            String targetUrl = String.join(":", storageContainer.getHost(), Integer.toString(storageContainer.getMappedPort()));
+            for (Map<String, Object> each : rootConfig.getDataSources().values()) {
+                each.put("url", each.get("url").toString().replaceFirst(sourceUrl, targetUrl));
+            }
+        }
+        for (Map<String, Object> each : rootConfig.getDataSources().values()) {
+            each.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
+        }
+        return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
     }
 }

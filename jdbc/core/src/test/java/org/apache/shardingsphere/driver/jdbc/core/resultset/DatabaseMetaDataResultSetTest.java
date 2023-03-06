@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
@@ -38,13 +40,15 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class DatabaseMetaDataResultSetTest {
     
     private static final String TABLE_NAME_COLUMN_LABEL = "TABLE_NAME";
@@ -90,7 +94,7 @@ public final class DatabaseMetaDataResultSetTest {
     
     private DatabaseMetaDataResultSet databaseMetaDataResultSet;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException, MalformedURLException {
         url = new URL("http://apache.org/");
         mockResultSetMetaData();
@@ -415,22 +419,21 @@ public final class DatabaseMetaDataResultSetTest {
         assertThat(databaseMetaDataResultSet.getFetchSize(), is(3));
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetObjectOutOfIndexRange() throws SQLException {
         databaseMetaDataResultSet.next();
-        databaseMetaDataResultSet.getObject(9);
+        assertThrows(SQLException.class, () -> databaseMetaDataResultSet.getObject(9));
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertGetObjectInvalidLabel() throws SQLException {
         databaseMetaDataResultSet.next();
-        databaseMetaDataResultSet.getObject("Invalid");
+        assertThrows(SQLException.class, () -> databaseMetaDataResultSet.getObject("Invalid"));
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertOperationWithClose() throws SQLException {
         databaseMetaDataResultSet.close();
-        databaseMetaDataResultSet.next();
-        databaseMetaDataResultSet.getObject(1);
+        assertThrows(SQLException.class, () -> databaseMetaDataResultSet.next());
     }
 }

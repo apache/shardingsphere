@@ -35,12 +35,12 @@ import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourc
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -58,7 +58,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class DataSourceImporterTest {
     
     private static final String TABLE_NAME = "test_table";
@@ -83,7 +83,7 @@ public final class DataSourceImporterTest {
     
     private DataSourceImporter jdbcImporter;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         ImporterConnector importerConnector = new DataSourceImporterConnector(dataSourceManager);
         jdbcImporter = new DataSourceImporter(mockImporterConfiguration(), importerConnector, channel, new FixtureInventoryIncrementalJobItemContext());

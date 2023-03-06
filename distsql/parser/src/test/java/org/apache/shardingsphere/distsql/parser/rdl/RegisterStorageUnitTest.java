@@ -20,15 +20,15 @@ package org.apache.shardingsphere.distsql.parser.rdl;
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
-public class RegisterStorageUnitTest {
+@ExtendWith(MockitoExtension.class)
+public final class RegisterStorageUnitTest {
     
     @Test
     public void assertRegisterStorageUnitSpecialCharacters() {

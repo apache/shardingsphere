@@ -17,60 +17,57 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import lombok.RequiredArgsConstructor;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
 public final class PostgreSQLTextTimestampUtilsTest {
     
-    private final String input;
-    
-    private final Timestamp expected;
-    
-    @Parameters(name = "{0}")
-    public static Iterable<Object[]> textValues() {
-        return Arrays.asList(
-                new Object[]{"20211012 2323", Timestamp.valueOf("2021-10-12 23:23:00")},
-                new Object[]{"20211012 23:23", Timestamp.valueOf("2021-10-12 23:23:00")},
-                new Object[]{"20211012 232323", Timestamp.valueOf("2021-10-12 23:23:23")},
-                new Object[]{"2021-10-12 23:23:23", Timestamp.valueOf("2021-10-12 23:23:23")},
-                new Object[]{"2021-10-12 23:23:23.1", Timestamp.valueOf("2021-10-12 23:23:23.1")},
-                new Object[]{"2021-10-12 23:23:23.12", Timestamp.valueOf("2021-10-12 23:23:23.12")},
-                new Object[]{"2021-10-12 23:23:23.123", Timestamp.valueOf("2021-10-12 23:23:23.123")},
-                new Object[]{"2021-10-12 23:23:23.123+08", Timestamp.valueOf("2021-10-12 23:23:23.123")},
-                new Object[]{"2021-10-12T23:23:23.123+08", Timestamp.valueOf("2021-10-12 23:23:23.123")},
-                new Object[]{"2021-10-12 23:23:23.12345", Timestamp.valueOf("2021-10-12 23:23:23.12345")},
-                new Object[]{"2021-10-12 23:23:23.12345+0800", Timestamp.valueOf("2021-10-12 23:23:23.12345")},
-                new Object[]{"20211012 23:23:23.12345+0800", Timestamp.valueOf("2021-10-12 23:23:23.12345")},
-                new Object[]{"2021-10-12 23:23:23.12345+08:00:00", Timestamp.valueOf("2021-10-12 23:23:23.12345")},
-                new Object[]{"211012 23:23:23.12345+08:00:00", Timestamp.valueOf("2021-10-12 23:23:23.12345")},
-                new Object[]{"10/12/21 23:23:23.12345+08:00:00", Timestamp.valueOf("2021-10-12 23:23:23.12345")},
-                new Object[]{"2021-10-12 23:23:23.123456", Timestamp.valueOf("2021-10-12 23:23:23.123456")},
-                new Object[]{"2021-10-12 23:23:23.1234567", Timestamp.valueOf("2021-10-12 23:23:23.1234567")},
-                new Object[]{"2021-10-12 23:23:23.12345678", Timestamp.valueOf("2021-10-12 23:23:23.12345678")},
-                new Object[]{"2021-10-12 23:23:23.123456789", Timestamp.valueOf("2021-10-12 23:23:23.123456789")},
-                new Object[]{"2021-10-12 23:23:23.123456 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456")},
-                // TODO The following 4 cases are related to user.timezone of test environment
-                // new Object[]{"2021-10-12 23:23:23.1234567 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.1234567")},
-                // new Object[]{"2021-10-12 23:23:23.12345678 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.12345678")},
-                // new Object[]{"2021-10-12 23:23:23.123456789+08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")},
-                // new Object[]{"2021-10-12 23:23:23.123456789 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")},
-                new Object[]{"2021-10-12 23:23:23.123456 -08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456")},
-                new Object[]{"2021-3-3 23:23:23.123456", Timestamp.valueOf("2021-03-03 23:23:23.123456")});
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertGetLocalDateTimeNoExceptionOccurs(final String input, final Timestamp expected) {
+        assertThat(PostgreSQLTextTimestampUtils.parse(input), is(expected));
     }
     
-    @Test
-    public void assertGetLocalDateTimeNoExceptionOccurs() {
-        assertThat(PostgreSQLTextTimestampUtils.parse(input), is(expected));
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of("20211012 2323", Timestamp.valueOf("2021-10-12 23:23:00")),
+                    Arguments.of("20211012 23:23", Timestamp.valueOf("2021-10-12 23:23:00")),
+                    Arguments.of("20211012 232323", Timestamp.valueOf("2021-10-12 23:23:23")),
+                    Arguments.of("2021-10-12 23:23:23", Timestamp.valueOf("2021-10-12 23:23:23")),
+                    Arguments.of("2021-10-12 23:23:23.1", Timestamp.valueOf("2021-10-12 23:23:23.1")),
+                    Arguments.of("2021-10-12 23:23:23.12", Timestamp.valueOf("2021-10-12 23:23:23.12")),
+                    Arguments.of("2021-10-12 23:23:23.123", Timestamp.valueOf("2021-10-12 23:23:23.123")),
+                    Arguments.of("2021-10-12 23:23:23.123+08", Timestamp.valueOf("2021-10-12 23:23:23.123")),
+                    Arguments.of("2021-10-12T23:23:23.123+08", Timestamp.valueOf("2021-10-12 23:23:23.123")),
+                    Arguments.of("2021-10-12 23:23:23.12345", Timestamp.valueOf("2021-10-12 23:23:23.12345")),
+                    Arguments.of("2021-10-12 23:23:23.12345+0800", Timestamp.valueOf("2021-10-12 23:23:23.12345")),
+                    Arguments.of("20211012 23:23:23.12345+0800", Timestamp.valueOf("2021-10-12 23:23:23.12345")),
+                    Arguments.of("2021-10-12 23:23:23.12345+08:00:00", Timestamp.valueOf("2021-10-12 23:23:23.12345")),
+                    Arguments.of("211012 23:23:23.12345+08:00:00", Timestamp.valueOf("2021-10-12 23:23:23.12345")),
+                    Arguments.of("10/12/21 23:23:23.12345+08:00:00", Timestamp.valueOf("2021-10-12 23:23:23.12345")),
+                    Arguments.of("2021-10-12 23:23:23.123456", Timestamp.valueOf("2021-10-12 23:23:23.123456")),
+                    Arguments.of("2021-10-12 23:23:23.1234567", Timestamp.valueOf("2021-10-12 23:23:23.1234567")),
+                    Arguments.of("2021-10-12 23:23:23.12345678", Timestamp.valueOf("2021-10-12 23:23:23.12345678")),
+                    Arguments.of("2021-10-12 23:23:23.123456789", Timestamp.valueOf("2021-10-12 23:23:23.123456789")),
+                    Arguments.of("2021-10-12 23:23:23.123456 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456")),
+                    // TODO The following 4 cases are related to user.timezone of test environment
+                    // Arguments.of("2021-10-12 23:23:23.1234567 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.1234567")),
+                    // Arguments.of("2021-10-12 23:23:23.12345678 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.12345678")),
+                    // Arguments.of("2021-10-12 23:23:23.123456789+08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")),
+                    // Arguments.of("2021-10-12 23:23:23.123456789 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")),
+                    Arguments.of("2021-10-12 23:23:23.123456 -08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456")),
+                    Arguments.of("2021-3-3 23:23:23.123456", Timestamp.valueOf("2021-03-03 23:23:23.123456")));
+        }
     }
 }

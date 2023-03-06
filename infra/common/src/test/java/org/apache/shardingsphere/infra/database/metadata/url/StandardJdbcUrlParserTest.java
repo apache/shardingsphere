@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class StandardJdbcUrlParserTest {
@@ -77,9 +78,9 @@ public final class StandardJdbcUrlParserTest {
         assertTrue(actual.getQueryProperties().isEmpty());
     }
     
-    @Test(expected = UnrecognizedDatabaseURLException.class)
+    @Test
     public void assertParseIncorrectURL() {
-        new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
     }
     
     @Test

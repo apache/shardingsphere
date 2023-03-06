@@ -27,11 +27,11 @@ import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSeg
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,9 +41,10 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class CreateEncryptRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -51,17 +52,17 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     private final CreateEncryptRuleStatementUpdater updater = new CreateEncryptRuleStatementUpdater();
     
-    @Test(expected = DuplicateRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithDuplicateEncryptRule() {
-        updater.checkSQLStatement(database, createSQLStatement(false, "MD5"), getCurrentRuleConfig());
+        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "MD5"), getCurrentRuleConfig()));
     }
     
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    @Test
     public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
-        updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null);
+        assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
-    @Test(expected = InvalidRuleConfigurationException.class)
+    @Test
     public void assertCheckSQLStatementWithIncompleteDataType() {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 "int varchar(10)", null, null, null, null, new AlgorithmSegment("test", new Properties()),
@@ -69,7 +70,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
                 new AlgorithmSegment("CHAR_DIGEST_LIKE", new Properties()), null);
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
         CreateEncryptRuleStatement statement = new CreateEncryptRuleStatement(false, Collections.singleton(ruleSegment));
-        updater.checkSQLStatement(database, statement, null);
+        assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, statement, null));
     }
     
     @Test

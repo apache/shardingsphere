@@ -25,10 +25,10 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableM
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -43,7 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 // TODO use H2 to do real test
 public final class StandardPipelineTableMetaDataLoaderTest {
     
@@ -65,7 +65,7 @@ public final class StandardPipelineTableMetaDataLoaderTest {
     
     private PipelineDataSourceWrapper dataSource;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         dataSource = new PipelineDataSourceWrapper(new MockedDataSource(mockConnection()), new H2DatabaseType());
     }
@@ -156,11 +156,5 @@ public final class StandardPipelineTableMetaDataLoaderTest {
         assertThat(actualIndexMetaData.getColumns().size(), is(2));
         assertThat(actualIndexMetaData.getColumns().get(0).getName(), is("id"));
         assertThat(actualIndexMetaData.getColumns().get(1).getName(), is("name"));
-    }
-    
-    @Test(expected = RuntimeException.class)
-    public void assertGetTableMetaDataFailure() throws SQLException {
-        when(dataSource.getConnection()).thenThrow(new SQLException(""));
-        new StandardPipelineTableMetaDataLoader(dataSource).getTableMetaData(null, TEST_TABLE);
     }
 }

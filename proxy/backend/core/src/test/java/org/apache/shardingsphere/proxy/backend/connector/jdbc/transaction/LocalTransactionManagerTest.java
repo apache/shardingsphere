@@ -19,15 +19,16 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,7 +38,8 @@ import java.util.List;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class LocalTransactionManagerTest {
     
     @Mock
@@ -54,7 +56,7 @@ public final class LocalTransactionManagerTest {
     
     private LocalTransactionManager localTransactionManager;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
@@ -78,16 +80,14 @@ public final class LocalTransactionManagerTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertCommit() {
+    public void assertCommit() throws SQLException {
         localTransactionManager.commit();
         verify(transactionStatus).isRollbackOnly();
         verify(connection).commit();
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertRollback() {
+    public void assertRollback() throws SQLException {
         localTransactionManager.rollback();
         verify(transactionStatus).isInTransaction();
         verify(connection).rollback();

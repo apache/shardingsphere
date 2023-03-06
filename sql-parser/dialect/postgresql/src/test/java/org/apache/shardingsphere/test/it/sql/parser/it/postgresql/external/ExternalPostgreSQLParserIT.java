@@ -20,7 +20,10 @@ package org.apache.shardingsphere.test.it.sql.parser.it.postgresql.external;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserITSettings;
 
-@ExternalSQLParserITSettings(value = "PostgreSQL",
-        caseURL = "https://github.com/postgres/postgres/tree/master/src/test/regress/sql", resultURL = "https://github.com/postgres/postgres/tree/master/src/test/regress/expected")
+@ExternalSQLParserITSettings(value = "PostgreSQL", caseURL = ExternalPostgreSQLParserIT.CASE_URL, resultURL = ExternalPostgreSQLParserIT.RESULT_URL)
 public final class ExternalPostgreSQLParserIT extends ExternalSQLParserIT {
+    
+    static final String CASE_URL = "https://github.com/postgres/postgres/tree/master/src/test/regress/sql";
+    
+    static final String RESULT_URL = "https://github.com/postgres/postgres/tree/master/src/test/regress/expected";
 }

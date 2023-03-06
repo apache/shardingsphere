@@ -39,34 +39,38 @@ import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class ClassBasedShardingAlgorithmTest {
     
-    @Test(expected = ShardingAlgorithmInitializationException.class)
+    @Test
     public void assertInitWithNullStrategy() {
-        TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED");
+        assertThrows(ShardingAlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertInitWithWrongStrategy() {
-        TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "wrong")));
+        assertThrows(IllegalArgumentException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "wrong"))));
     }
     
-    @Test(expected = ShardingAlgorithmInitializationException.class)
+    @Test
     public void assertInitWithNullClass() {
-        TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "standard")));
+        assertThrows(ShardingAlgorithmInitializationException.class,
+                () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "standard"))));
     }
     
-    @Test(expected = ClassNotFoundException.class)
+    @Test
     public void assertInitWithUndefinedClass() {
-        TypedSPILoader.getService(ShardingAlgorithm.class,
-                "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "standard"), new Property("algorithmClassName", "org.apache.shardingsphere.sharding.UndefinedClass")));
+        assertThrows(ClassNotFoundException.class,
+                () -> TypedSPILoader.getService(ShardingAlgorithm.class,
+                        "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "standard"), new Property("algorithmClassName", "org.apache.shardingsphere.sharding.UndefinedClass"))));
     }
     
-    @Test(expected = ShardingAlgorithmClassImplementationException.class)
+    @Test
     public void assertInitWithMismatchStrategy() {
-        TypedSPILoader.getService(ShardingAlgorithm.class,
-                "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "standard"), new Property("algorithmClassName", ClassBasedComplexKeysShardingAlgorithmFixture.class.getName())));
+        assertThrows(ShardingAlgorithmClassImplementationException.class,
+                () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED",
+                        PropertiesBuilder.build(new Property("strategy", "standard"), new Property("algorithmClassName", ClassBasedComplexKeysShardingAlgorithmFixture.class.getName()))));
     }
     
     @Test
