@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
 import org.apache.shardingsphere.test.e2e.agent.file.loader.LogLoader;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -31,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class FilePluginE2EIT extends BasePluginE2EIT {
     
-    @SneakyThrows(IOException.class)
     @Test
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
