@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.spi;
+package org.apache.shardingsphere.proxy.backend.state.spi;
 
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Cluster lock strategy.
+ * Proxy cluster state.
  */
-public interface ClusterLockStrategy extends TypedSPI {
+public interface ProxyClusterState extends TypedSPI {
     
     /**
-     * Lock cluster.
+     * Check sql statement.
+     * 
+     * @param sqlStatement sql statement
      */
-    void lock();
+    void check(SQLStatement sqlStatement);
 }

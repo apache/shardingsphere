@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.algorithm.lock.ClusterWriteLockStrategy
-org.apache.shardingsphere.proxy.backend.algorithm.lock.ClusterReadWriteLockStrategy
+org.apache.shardingsphere.proxy.backend.lock.impl.ClusterWriteLockStrategy
+org.apache.shardingsphere.proxy.backend.lock.impl.ClusterReadWriteLockStrategy

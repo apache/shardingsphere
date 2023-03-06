@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.spi.ClusterLockStrategy;
+import org.apache.shardingsphere.proxy.backend.lock.spi.ClusterLockStrategy;
 
 /**
  * Lock cluster updater.

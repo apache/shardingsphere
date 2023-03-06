@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.state.impl;
 
 import org.apache.shardingsphere.proxy.backend.exception.ReadOnlyException;
-import org.apache.shardingsphere.proxy.backend.spi.ProxyClusterState;
+import org.apache.shardingsphere.proxy.backend.state.spi.ProxyClusterState;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
