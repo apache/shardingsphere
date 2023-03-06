@@ -43,9 +43,9 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 @Slf4j
-public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
+public final class BranchDBMigrationE2EIT extends AbstractMigrationE2EIT {
     
-    public MariaDBMigrationE2EIT(final PipelineTestParameter testParam) {
+    public BranchDBMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
     }
     
