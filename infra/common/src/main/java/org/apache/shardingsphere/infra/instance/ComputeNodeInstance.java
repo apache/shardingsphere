@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.instance;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.state.StateContext;
-import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,7 +34,7 @@ public final class ComputeNodeInstance {
     
     private final InstanceMetaData metaData;
     
-    private final StateContext state = new StateContext();
+    private final InstanceStateContext state = new InstanceStateContext();
     
     private Collection<String> labels = new LinkedList<>();
     
@@ -63,7 +63,7 @@ public final class ComputeNodeInstance {
      * @param status status
      */
     public void switchState(final String status) {
-        state.switchState(StateType.CIRCUIT_BREAK, StateType.CIRCUIT_BREAK.name().equals(status));
+        state.switchState(InstanceState.CIRCUIT_BREAK, InstanceState.CIRCUIT_BREAK.name().equals(status));
     }
     
     /**
