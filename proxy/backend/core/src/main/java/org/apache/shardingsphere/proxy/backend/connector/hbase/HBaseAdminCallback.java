@@ -28,7 +28,7 @@ import java.io.IOException;
 public interface HBaseAdminCallback<T> {
     
     /**
-     * do operation in HBase.
+     * Do operation in HBase.
      *
      * @param admin execute in HBase Table
      * @return result
