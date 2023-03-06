@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -43,9 +43,9 @@ public final class AlgorithmAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final ExpectedAlgorithm expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual algorithm should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual algorithm should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual algorithm should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual algorithm should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s algorithm segment assertion error: ", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProperties());
         }

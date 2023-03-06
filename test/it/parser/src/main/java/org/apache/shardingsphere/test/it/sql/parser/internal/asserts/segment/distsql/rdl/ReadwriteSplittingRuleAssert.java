@@ -25,8 +25,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.dis
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -44,9 +44,9 @@ public final class ReadwriteSplittingRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ReadwriteSplittingRuleSegment actual, final ExceptedReadwriteSplittingRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual readwrite splitting rule should not exit."), actual);
+            assertNull(actual, assertContext.getText("Actual readwrite splitting rule should not exit."));
         } else {
-            assertNotNull(assertContext.getText("Actual readwrite splitting rule should exit."), actual);
+            assertNotNull(actual, assertContext.getText("Actual readwrite splitting rule should exit."));
             assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",

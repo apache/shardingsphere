@@ -20,7 +20,7 @@ package org.apache.shardingsphere.traffic.algorithm.traffic.transaction;
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public final class FirstSQLTrafficAlgorithmTest {
     

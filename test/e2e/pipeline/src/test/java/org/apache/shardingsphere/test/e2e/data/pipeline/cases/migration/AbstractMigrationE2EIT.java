@@ -39,8 +39,8 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter
 @Slf4j
@@ -163,7 +163,7 @@ public abstract class AbstractMigrationE2EIT extends PipelineBaseE2EIT {
         log.info("check job results: {}", resultList);
         assertFalse(resultList.isEmpty());
         for (Map<String, Object> each : resultList) {
-            assertTrue(String.format("%s check result is false", each.get("tables")), Boolean.parseBoolean(each.get("result").toString()));
+            assertTrue(Boolean.parseBoolean(each.get("result").toString()), String.format("%s check result is false", each.get("tables")));
             assertThat("finished_percentage is not 100", each.get("finished_percentage").toString(), is("100"));
         }
     }

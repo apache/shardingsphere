@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.net.URL;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Scenario common path.
@@ -42,7 +42,7 @@ public final class ScenarioCommonPath {
      */
     public void checkFolderExist() {
         String scenarioDirectory = String.join("/", ROOT_PATH, scenario);
-        assertNotNull(String.format("Scenario folder `%s` must exist.", scenarioDirectory), ScenarioCommonPath.class.getClassLoader().getResource(scenarioDirectory));
+        assertNotNull(ScenarioCommonPath.class.getClassLoader().getResource(scenarioDirectory), String.format("Scenario folder `%s` must exist.", scenarioDirectory));
     }
     
     /**
@@ -66,7 +66,7 @@ public final class ScenarioCommonPath {
     private String getFile(final String fileName) {
         String path = String.join("/", ROOT_PATH, scenario, fileName);
         URL url = ScenarioCommonPath.class.getClassLoader().getResource(path);
-        assertNotNull(String.format("File `%s` must exist.", path), url);
+        assertNotNull(url, String.format("File `%s` must exist.", path));
         return url.getFile();
     }
 }

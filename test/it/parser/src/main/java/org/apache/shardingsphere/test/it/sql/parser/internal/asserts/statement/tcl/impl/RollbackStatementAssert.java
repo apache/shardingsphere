@@ -24,9 +24,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.RollbackStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Rollback statement assert.
@@ -43,9 +43,9 @@ public final class RollbackStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RollbackStatement actual, final RollbackStatementTestCase expected) {
         if (null == expected.getSavepointName()) {
-            assertFalse(assertContext.getText("Actual savepoint name should not exist."), actual.getSavepointName().isPresent());
+            assertFalse(actual.getSavepointName().isPresent(), assertContext.getText("Actual savepoint name should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual savepoint name should exist."), actual.getSavepointName().isPresent());
+            assertTrue(actual.getSavepointName().isPresent(), assertContext.getText("Actual savepoint name should exist."));
             assertThat(assertContext.getText("Savepoint name assertion error."), actual.getSavepointName().get(), is(expected.getSavepointName()));
         }
     }

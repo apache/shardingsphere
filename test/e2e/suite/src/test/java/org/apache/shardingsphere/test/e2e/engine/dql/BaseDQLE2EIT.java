@@ -45,8 +45,8 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseDQLE2EIT extends SingleE2EIT {
@@ -130,17 +130,17 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
         ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
         ResultSetMetaData expectedMetaData = expectedResultSet.getMetaData();
         while (actualResultSet.next()) {
-            assertTrue("Size of actual result set is different with size of expected result set.", expectedResultSet.next());
+            assertTrue(expectedResultSet.next(), "Size of actual result set is different with size of expected result set.");
             assertRow(actualResultSet, actualMetaData, expectedResultSet, expectedMetaData);
         }
-        assertFalse("Size of actual result set is different with size of expected result set.", expectedResultSet.next());
+        assertFalse(expectedResultSet.next(), "Size of actual result set is different with size of expected result set.");
     }
     
     private void assertRows(final ResultSet actual, final Collection<String> notAssertionColumns, final List<DataSetRow> expected) throws SQLException {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
-            assertTrue("Size of actual result set is different with size of expected dat set rows.", rowCount < expected.size());
+            assertTrue(rowCount < expected.size(), "Size of actual result set is different with size of expected dat set rows.");
             DataSetRow expectedRow = getExpectedRowAndRemoveMayNotExistRow(actual, notAssertionColumns, actualMetaData, expected, rowCount);
             assertRow(actual, notAssertionColumns, actualMetaData, expectedRow);
             rowCount++;

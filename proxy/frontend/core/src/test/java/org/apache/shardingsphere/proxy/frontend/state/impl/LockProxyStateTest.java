@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.state.impl;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.Test;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class LockProxyStateTest {
     

@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedColumnPosition;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -54,10 +54,10 @@ public final class ColumnPositionAssert {
         }
         assertThat(assertContext.getText("Column change position name assertion error: "), actualColumn, is(expectColumn));
         if (actual instanceof ColumnAfterPositionSegment) {
-            assertNotNull(assertContext.getText("Assignments should exist."), expected.getColumn());
+            assertNotNull(expected.getColumn(), assertContext.getText("Assignments should exist."));
             assertThat(assertContext.getText("Column change position after name assertion error: "), actual.getColumnName().getIdentifier().getValue(), is(expected.getColumn().getName()));
         } else {
-            assertNull(assertContext.getText("Assignments should not exist."), expected.getColumn());
+            assertNull(expected.getColumn(), assertContext.getText("Assignments should not exist."));
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }

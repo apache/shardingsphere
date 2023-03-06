@@ -51,9 +51,9 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Projection assert.
@@ -122,9 +122,9 @@ public final class ProjectionAssert {
     
     private static void assertShorthandProjection(final SQLCaseAssertContext assertContext, final ShorthandProjectionSegment actual, final ExpectedShorthandProjection expected) {
         if (null == expected.getOwner()) {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+            assertFalse(actual.getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
+            assertTrue(actual.getOwner().isPresent(), assertContext.getText("Actual owner should exist."));
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
         }
     }
@@ -133,9 +133,9 @@ public final class ProjectionAssert {
         IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Column projection");
         assertThat(assertContext.getText("Column projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
         if (null == expected.getOwner()) {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
+            assertFalse(actual.getColumn().getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
+            assertTrue(actual.getColumn().getOwner().isPresent(), assertContext.getText("Actual owner should exist."));
             OwnerAssert.assertIs(assertContext, actual.getColumn().getOwner().get(), expected.getOwner());
         }
     }
