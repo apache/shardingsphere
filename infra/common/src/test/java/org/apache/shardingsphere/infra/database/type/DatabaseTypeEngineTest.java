@@ -43,6 +43,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -93,11 +94,11 @@ public final class DatabaseTypeEngineTest {
         assertThat(DatabaseTypeEngine.getStorageType(dataSources).getType(), is("H2"));
     }
     
-    @Test(expected = SQLWrapperException.class)
+    @Test
     public void assertGetStorageTypeWhenGetConnectionError() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenThrow(SQLException.class);
-        DatabaseTypeEngine.getStorageType(Collections.singleton(dataSource));
+        assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(Collections.singleton(dataSource)));
     }
     
     @Test

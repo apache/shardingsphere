@@ -27,8 +27,9 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,9 +37,9 @@ public final class StreamMergedResultTest {
     
     private final TestStreamMergedResult streamMergedResult = new TestStreamMergedResult();
     
-    @Test(expected = SQLException.class)
-    public void assertGetCurrentQueryResultIfNull() throws SQLException {
-        streamMergedResult.getCurrentQueryResult();
+    @Test
+    public void assertGetCurrentQueryResultIfNull() {
+        assertThrows(SQLException.class, streamMergedResult::getCurrentQueryResult);
     }
     
     @Test

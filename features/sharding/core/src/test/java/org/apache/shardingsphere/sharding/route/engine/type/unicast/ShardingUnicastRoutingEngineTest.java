@@ -36,8 +36,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingUnicastRoutingEngineTest {
@@ -80,13 +81,10 @@ public final class ShardingUnicastRoutingEngineTest {
         assertThat(actual.getRouteUnits().size(), is(1));
     }
     
-    @Test(expected = ShardingTableRuleNotFoundException.class)
+    @Test
     public void assertRouteForWithNoIntersection() {
-        Set<String> tables = new HashSet<>(3, 1);
-        tables.add("t_order");
-        tables.add("t_config");
-        tables.add("t_product");
-        new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), tables, new ConnectionContext()).route(shardingRule);
+        assertThrows(ShardingTableRuleNotFoundException.class,
+                () -> new ShardingUnicastRoutingEngine(mock(SQLStatementContext.class), Arrays.asList("t_order", "t_config", "t_product"), new ConnectionContext()).route(shardingRule));
     }
     
     @Test

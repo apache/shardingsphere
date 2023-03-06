@@ -22,9 +22,10 @@ import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigu
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public final class YamlUserSwapperTest {
     
@@ -65,11 +66,11 @@ public final class YamlUserSwapperTest {
         assertThat(actual.getPassword(), is("foo_pwd"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertSwapToObjectWithEmptyUsername() {
         YamlUserConfiguration user = new YamlUserConfiguration();
         user.setUser("@127.0.0.1");
-        new YamlUserSwapper().swapToObject(user);
+        assertThrows(IllegalArgumentException.class, () -> new YamlUserSwapper().swapToObject(user));
     }
     
     @Test

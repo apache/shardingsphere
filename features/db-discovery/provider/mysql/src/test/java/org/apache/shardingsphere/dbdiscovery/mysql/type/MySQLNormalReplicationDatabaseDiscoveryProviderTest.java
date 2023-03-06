@@ -24,7 +24,7 @@ import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,16 +35,18 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class MySQLNormalReplicationDatabaseDiscoveryProviderTest {
     
-    @Test(expected = PrimaryDataSourceNotFoundException.class)
-    public void assertCheckEnvironmentNoPrimaryDataSource() throws SQLException {
-        new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Collections.singleton(mockDataSourceForReplicationInstances("ON")));
+    @Test
+    public void assertCheckEnvironmentNoPrimaryDataSource() {
+        assertThrows(PrimaryDataSourceNotFoundException.class,
+                () -> new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Collections.singleton(mockDataSourceForReplicationInstances("ON"))));
     }
     
     @Test
@@ -52,10 +54,11 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderTest {
         new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Collections.singleton(mockDataSourceForReplicationInstances("OFF")));
     }
     
-    @Test(expected = DuplicatePrimaryDataSourceException.class)
-    public void assertCheckEnvironmentHasManyPrimaryDataSources() throws SQLException {
-        new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Arrays.asList(mockDataSourceForReplicationInstances("OFF"),
-                mockDataSourceForReplicationInstances("OFF")));
+    @Test
+    public void assertCheckEnvironmentHasManyPrimaryDataSources() {
+        assertThrows(DuplicatePrimaryDataSourceException.class,
+                () -> new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Arrays.asList(mockDataSourceForReplicationInstances("OFF"),
+                        mockDataSourceForReplicationInstances("OFF"))));
     }
     
     @Test

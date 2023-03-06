@@ -36,6 +36,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -57,13 +58,13 @@ public final class SQLRouteEngineTest {
         assertTrue(routeUnit.getTableMappers().isEmpty());
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void assertRouteFailure() {
         QueryContext queryContext = new QueryContext(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(new RouteRuleFixture()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema",
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
-        new SQLRouteEngine(Collections.singleton(new RouteFailureRuleFixture()),
-                new ConfigurationProperties(new Properties())).route(new ConnectionContext(), queryContext, mock(ShardingSphereRuleMetaData.class), database);
+        assertThrows(UnsupportedOperationException.class, () -> new SQLRouteEngine(Collections.singleton(new RouteFailureRuleFixture()),
+                new ConfigurationProperties(new Properties())).route(new ConnectionContext(), queryContext, mock(ShardingSphereRuleMetaData.class), database));
     }
 }

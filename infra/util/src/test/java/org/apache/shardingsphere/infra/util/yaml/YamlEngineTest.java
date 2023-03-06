@@ -32,6 +32,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 public final class YamlEngineTest {
     
@@ -87,7 +88,7 @@ public final class YamlEngineTest {
         assertThat(YamlEngine.marshal(actual), is("name: test" + System.lineSeparator()));
     }
     
-    @Test(expected = ConstructorException.class)
+    @Test
     public void assertUnmarshalInvalidYaml() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/accepted-class.yaml");
         assertNotNull(url);
@@ -100,7 +101,7 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append(System.lineSeparator());
             }
         }
-        YamlEngine.unmarshal(yamlContent.toString(), Object.class);
+        assertThrows(ConstructorException.class, () -> YamlEngine.unmarshal(yamlContent.toString(), Object.class));
     }
     
     @Test

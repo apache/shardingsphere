@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnShadowAlgorithmTest {
     
@@ -37,10 +38,10 @@ public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnSha
         createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
     
-    @Test(expected = UnsupportedShadowColumnTypeException.class)
+    @Test
     public void assertExceptionCase() {
         ColumnValueMatchedShadowAlgorithm shadowAlgorithm = (ColumnValueMatchedShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class,
                 "VALUE_MATCH", PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("value", "1")));
-        createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
+        assertThrows(UnsupportedShadowColumnTypeException.class, () -> createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each))));
     }
 }

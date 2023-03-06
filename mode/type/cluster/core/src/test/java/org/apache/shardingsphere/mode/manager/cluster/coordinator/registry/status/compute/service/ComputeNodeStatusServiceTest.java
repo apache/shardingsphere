@@ -28,10 +28,12 @@ import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +46,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class ComputeNodeStatusServiceTest {
     
     @Mock
@@ -113,10 +116,8 @@ public final class ComputeNodeStatusServiceTest {
     public void assertLoadAllComputeNodeInstances() {
         when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Collections.singletonList("foo_instance_3307"));
         when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Collections.singletonList("foo_instance_3308"));
-        when(repository.getDirectly("/nodes/compute_nodes/online/jdbc/foo_instance_3307"))
-                .thenReturn(YamlEngine.marshal(new ComputeNodeData("127.0.0.1@3307", "foo_version")));
-        when(repository.getDirectly("/nodes/compute_nodes/online/proxy/foo_instance_3308"))
-                .thenReturn(YamlEngine.marshal(new ComputeNodeData("127.0.0.1@3308", "foo_version")));
+        when(repository.getDirectly("/nodes/compute_nodes/online/jdbc/foo_instance_3307")).thenReturn(YamlEngine.marshal(new ComputeNodeData("127.0.0.1@3307", "foo_version")));
+        when(repository.getDirectly("/nodes/compute_nodes/online/proxy/foo_instance_3308")).thenReturn(YamlEngine.marshal(new ComputeNodeData("127.0.0.1@3308", "foo_version")));
         List<ComputeNodeInstance> actual = new ArrayList<>(new ComputeNodeStatusService(repository).loadAllComputeNodeInstances());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getMetaData().getId(), is("foo_instance_3307"));

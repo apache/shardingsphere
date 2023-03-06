@@ -38,6 +38,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class InlineShardingAlgorithmTest {
@@ -60,11 +61,12 @@ public final class InlineShardingAlgorithmTest {
                 PropertiesBuilder.build(new Property("algorithm-expression", "t_order_$->{(order_id % 4).abs()}"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString())));
     }
     
-    @Test(expected = MismatchedInlineShardingAlgorithmExpressionAndColumnException.class)
+    @Test
     public void assertDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
-        inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "non_existent_column1", DATA_NODE_INFO, 0));
+        assertThrows(MismatchedInlineShardingAlgorithmExpressionAndColumnException.class,
+                () -> inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "non_existent_column1", DATA_NODE_INFO, 0)));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

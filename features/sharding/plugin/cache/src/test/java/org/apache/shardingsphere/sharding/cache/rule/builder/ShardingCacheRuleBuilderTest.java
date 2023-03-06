@@ -32,6 +32,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingCacheRuleBuilderTest {
@@ -48,9 +49,9 @@ public final class ShardingCacheRuleBuilderTest {
         assertThat(actualShardingCacheRule.getShardingRule(), is(expectedShardingRule));
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertBuildShardingCacheRuleWithoutShardingRule() {
-        new ShardingCacheRuleBuilder().build(null, "", Collections.emptyMap(), Collections.emptyList(), null);
+        assertThrows(IllegalStateException.class, () -> new ShardingCacheRuleBuilder().build(null, "", Collections.emptyMap(), Collections.emptyList(), null));
     }
     
     @Test

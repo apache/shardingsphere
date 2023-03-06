@@ -20,12 +20,12 @@ package org.apache.shardingsphere.transaction.xa.bitronix.manager;
 import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.resource.ResourceRegistrar;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
@@ -34,13 +34,13 @@ import javax.transaction.Transaction;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class BitronixXATransactionManagerProviderTest {
     
     private final BitronixXATransactionManagerProvider transactionManagerProvider = new BitronixXATransactionManagerProvider();
@@ -51,7 +51,7 @@ public final class BitronixXATransactionManagerProviderTest {
     @Mock
     private XADataSource xaDataSource;
     
-    @Before
+    @BeforeEach
     public void setUp() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(BitronixXATransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider, transactionManager);
     }

@@ -21,11 +21,13 @@ import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -34,12 +36,14 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class PostgreSQLDataRowPacketTest {
     
     @Mock
@@ -48,7 +52,7 @@ public final class PostgreSQLDataRowPacketTest {
     @Mock
     private SQLXML sqlxml;
     
-    @Before
+    @BeforeEach
     public void setup() {
         when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
     }
@@ -88,11 +92,11 @@ public final class PostgreSQLDataRowPacketTest {
         verify(payload).writeBytes(valueBytes);
     }
     
-    @Test(expected = RuntimeException.class)
+    @Test
     public void assertWriteWithSQLXML4Error() throws SQLException {
         when(sqlxml.getString()).thenThrow(new SQLException("mock"));
         PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(sqlxml));
-        actual.write(payload);
+        assertThrows(RuntimeException.class, () -> actual.write(payload));
         verify(payload, times(0)).writeStringEOF(any());
     }
     

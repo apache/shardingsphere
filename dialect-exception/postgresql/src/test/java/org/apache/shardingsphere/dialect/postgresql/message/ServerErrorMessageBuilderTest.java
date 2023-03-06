@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.dialect.postgresql.message;
 
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.postgresql.util.ServerErrorMessage;
 
 import static org.hamcrest.CoreMatchers.is;

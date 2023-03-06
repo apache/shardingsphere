@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -48,9 +49,9 @@ public final class WrapperAdapterTest {
         assertThat(wrapperAdapter.unwrap(Object.class), is(wrapperAdapter));
     }
     
-    @Test(expected = SQLException.class)
-    public void assertUnwrapFailure() throws SQLException {
-        wrapperAdapter.unwrap(String.class);
+    @Test
+    public void assertUnwrapFailure() {
+        assertThrows(SQLException.class, () -> wrapperAdapter.unwrap(String.class));
     }
     
     @Test

@@ -21,8 +21,9 @@ import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURL
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 
 public final class SQL92DataSourceMetaDataTest {
     
@@ -35,8 +36,8 @@ public final class SQL92DataSourceMetaDataTest {
         assertNull(actual.getSchema());
     }
     
-    @Test(expected = UnrecognizedDatabaseURLException.class)
+    @Test
     public void assertNewConstructorFailure() {
-        new SQL92DataSourceMetaData("xxx:xxxx:xxxxxxxx");
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> new SQL92DataSourceMetaData("xxx:xxxx:xxxxxxxx"));
     }
 }

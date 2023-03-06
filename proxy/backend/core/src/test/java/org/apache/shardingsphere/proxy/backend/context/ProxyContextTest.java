@@ -41,6 +41,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -83,17 +84,17 @@ public final class ProxyContextTest {
         assertFalse(ProxyContext.getInstance().databaseExists("db_1"));
     }
     
-    @Test(expected = NoDatabaseSelectedException.class)
+    @Test
     public void assertGetDatabaseWithNull() {
-        assertNull(ProxyContext.getInstance().getDatabase(null));
+        assertThrows(NoDatabaseSelectedException.class, () -> assertNull(ProxyContext.getInstance().getDatabase(null)));
     }
     
-    @Test(expected = NoDatabaseSelectedException.class)
+    @Test
     public void assertGetDatabaseWithEmptyString() {
-        assertNull(ProxyContext.getInstance().getDatabase(""));
+        assertThrows(NoDatabaseSelectedException.class, () -> assertNull(ProxyContext.getInstance().getDatabase("")));
     }
     
-    @Test(expected = NoDatabaseSelectedException.class)
+    @Test
     public void assertGetDatabaseWhenNotExisted() {
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -101,7 +102,7 @@ public final class ProxyContextTest {
                 new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        ProxyContext.getInstance().getDatabase("db1");
+        assertThrows(NoDatabaseSelectedException.class, () -> ProxyContext.getInstance().getDatabase("db1"));
     }
     
     @Test

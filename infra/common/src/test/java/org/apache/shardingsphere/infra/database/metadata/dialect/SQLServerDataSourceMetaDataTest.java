@@ -23,6 +23,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public final class SQLServerDataSourceMetaDataTest {
     
@@ -77,8 +78,8 @@ public final class SQLServerDataSourceMetaDataTest {
         assertNull(actual.getSchema());
     }
     
-    @Test(expected = UnrecognizedDatabaseURLException.class)
+    @Test
     public void assertNewConstructorFailure() {
-        new SQLServerDataSourceMetaData("jdbc:sqlserver:xxxxxxxx");
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> new SQLServerDataSourceMetaData("jdbc:sqlserver:xxxxxxxx"));
     }
 }

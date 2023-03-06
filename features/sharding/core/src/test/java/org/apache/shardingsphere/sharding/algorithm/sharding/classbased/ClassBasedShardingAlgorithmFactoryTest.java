@@ -27,12 +27,14 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class ClassBasedShardingAlgorithmFactoryTest {
     
-    @Test(expected = ShardingAlgorithmClassImplementationException.class)
+    @Test
     public void assertNewInstanceWithUnAssignableFrom() {
-        ClassBasedShardingAlgorithmFactory.newInstance(ClassBasedHintShardingAlgorithmFixture.class.getName(), StandardShardingAlgorithm.class, new Properties());
+        assertThrows(ShardingAlgorithmClassImplementationException.class,
+                () -> ClassBasedShardingAlgorithmFactory.newInstance(ClassBasedHintShardingAlgorithmFixture.class.getName(), StandardShardingAlgorithm.class, new Properties()));
     }
     
     @Test
