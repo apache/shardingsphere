@@ -33,8 +33,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateType;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateType;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -144,23 +144,23 @@ public final class StateChangedSubscriberTest {
     
     @Test
     public void assertResetClusterStatus() {
-        ClusterLockDeletedEvent mockLockDeletedEvent = new ClusterLockDeletedEvent(ClusterStateType.OK);
+        ClusterLockDeletedEvent mockLockDeletedEvent = new ClusterLockDeletedEvent(ClusterState.OK);
         subscriber.renew(mockLockDeletedEvent);
-        assertThat(contextManager.getClusterStateContext().getCurrentState(), is(ClusterStateType.OK));
+        assertThat(contextManager.getClusterStateContext().getCurrentState(), is(ClusterState.OK));
     }
     
     @Test
     public void assertRenewClusterStatus() {
         ClusterStateEvent mockClusterStateEvent = new ClusterStateEvent("READ_ONLY");
         subscriber.renew(mockClusterStateEvent);
-        assertThat(contextManager.getClusterStateContext().getCurrentState(), is(ClusterStateType.READ_ONLY));
+        assertThat(contextManager.getClusterStateContext().getCurrentState(), is(ClusterState.READ_ONLY));
     }
     
     @Test
     public void assertRenewInstanceStatus() {
-        StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), InstanceStateType.OK.name());
+        StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), InstanceState.OK.name());
         subscriber.renew(mockStateEvent);
-        assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(InstanceStateType.OK));
+        assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
     }
     
     @Test

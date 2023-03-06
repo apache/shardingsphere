@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateType;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 
 /**
  * Cluster status changed event.
@@ -28,5 +28,5 @@ import org.apache.shardingsphere.infra.state.cluster.ClusterStateType;
 @Getter
 public final class ClusterStatusChangedEvent {
     
-    private final ClusterStateType state;
+    private final ClusterState state;
 }

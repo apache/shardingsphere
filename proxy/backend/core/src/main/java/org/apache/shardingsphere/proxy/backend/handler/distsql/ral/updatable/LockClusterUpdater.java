@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgo
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LockClusterStatement;
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateType;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -51,8 +51,8 @@ public final class LockClusterUpdater implements RALUpdater<LockClusterStatement
     }
     
     private void checkState() {
-        ClusterStateType currentState = ProxyContext.getInstance().getContextManager().getClusterStateContext().getCurrentState();
-        ShardingSpherePreconditions.checkState(currentState == ClusterStateType.OK, () -> new IllegalStateException("Cluster is already locked"));
+        ClusterState currentState = ProxyContext.getInstance().getContextManager().getClusterStateContext().getCurrentState();
+        ShardingSpherePreconditions.checkState(ClusterState.OK== currentState, () -> new IllegalStateException("Cluster is already locked"));
     }
     
     private void checkAlgorithm(final LockClusterStatement sqlStatement) {

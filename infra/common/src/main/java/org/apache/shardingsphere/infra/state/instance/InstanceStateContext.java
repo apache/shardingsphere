@@ -27,19 +27,19 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  */
 public final class InstanceStateContext {
     
-    private final Deque<InstanceStateType> currentState = new ConcurrentLinkedDeque<>(Collections.singleton(InstanceStateType.OK));
+    private final Deque<InstanceState> currentState = new ConcurrentLinkedDeque<>(Collections.singleton(InstanceState.OK));
     
     /**
      * Switch state.
      * 
-     * @param type state type
-     * @param on true if state type is valid, false if not
+     * @param state state
+     * @param on true if state is valid, false if not
      */
-    public void switchState(final InstanceStateType type, final boolean on) {
+    public void switchState(final InstanceState state, final boolean on) {
         if (on) {
-            currentState.push(type);
+            currentState.push(state);
         } else {
-            if (getCurrentState().equals(type)) {
+            if (getCurrentState().equals(state)) {
                 recoverState();
             }
         }
@@ -52,9 +52,9 @@ public final class InstanceStateContext {
     /**
      * Get current state.
      * 
-     * @return current state type
+     * @return current state
      */
-    public InstanceStateType getCurrentState() {
-        return Optional.ofNullable(currentState.peek()).orElse(InstanceStateType.OK);
+    public InstanceState getCurrentState() {
+        return Optional.ofNullable(currentState.peek()).orElse(InstanceState.OK);
     }
 }

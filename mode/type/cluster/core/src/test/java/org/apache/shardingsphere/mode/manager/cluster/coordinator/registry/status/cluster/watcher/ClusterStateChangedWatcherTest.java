@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.watcher;
 
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateType;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -35,24 +35,24 @@ public final class ClusterStateChangedWatcherTest {
     @Test
     public void assertCreateEventWhenReadOnly() {
         Optional<GovernanceEvent> actual = new ClusterStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterStateType.READ_ONLY.name(), Type.UPDATED));
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.READ_ONLY.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((ClusterStateEvent) actual.get()).getStatus(), is(ClusterStateType.READ_ONLY.name()));
+        assertThat(((ClusterStateEvent) actual.get()).getStatus(), is(ClusterState.READ_ONLY.name()));
     }
     
     @Test
     public void assertCreateEventWhenUnavailable() {
         Optional<GovernanceEvent> actual = new ClusterStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterStateType.UNAVAILABLE.name(), Type.UPDATED));
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.UNAVAILABLE.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((ClusterStateEvent) actual.get()).getStatus(), is(ClusterStateType.UNAVAILABLE.name()));
+        assertThat(((ClusterStateEvent) actual.get()).getStatus(), is(ClusterState.UNAVAILABLE.name()));
     }
     
     @Test
     public void assertCreateEventWhenEnabled() {
         Optional<GovernanceEvent> actual = new ClusterStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterStateType.OK.name(), Type.UPDATED));
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.OK.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
-        assertThat(((ClusterStateEvent) actual.get()).getStatus(), is(ClusterStateType.OK.name()));
+        assertThat(((ClusterStateEvent) actual.get()).getStatus(), is(ClusterState.OK.name()));
     }
 }

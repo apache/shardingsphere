@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.state.cluster;
 
 /**
- * Cluster state type.
+ * Cluster state.
  */
-public enum ClusterStateType {
+public enum ClusterState {
     
     OK, READ_ONLY, UNAVAILABLE
 }

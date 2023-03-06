@@ -25,20 +25,20 @@ import lombok.Getter;
 public final class ClusterStateContext {
     
     @Getter
-    private ClusterStateType currentState = ClusterStateType.OK;
+    private ClusterState currentState = ClusterState.OK;
     
     /**
      * Switch state.
      * 
-     * @param status status
+     * @param state state
      */
-    public void switchState(final ClusterStateType status) {
-        if (currentState == status) {
+    public void switchState(final ClusterState state) {
+        if (currentState == state) {
             return;
         }
-        if (currentState != ClusterStateType.OK && ClusterStateType.OK != status) {
+        if (ClusterState.OK != currentState && ClusterState.OK != state) {
             throw new IllegalStateException("Cluster is locked");
         }
-        currentState = status;
+        currentState = state;
     }
 }

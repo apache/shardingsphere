@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.service;
 
 import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateType;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public final class ClusterStatusServiceTest {
     public void assertPersistClusterState() {
         ClusterStatusService clusterStatusService = new ClusterStatusService(repository);
         clusterStatusService.persistClusterState(new ClusterStateContext());
-        verify(repository).persist(ComputeNode.getClusterStatusNodePath(), ClusterStateType.OK.name());
+        verify(repository).persist(ComputeNode.getClusterStatusNodePath(), ClusterState.OK.name());
     }
     
     @Test

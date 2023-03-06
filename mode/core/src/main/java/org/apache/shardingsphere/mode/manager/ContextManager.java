@@ -49,7 +49,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRul
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateType;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
@@ -676,13 +676,13 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Update cluster status.
+     * Update cluster state.
      *
      * @param status status
      */
-    public void updateClusterStatus(final String status) {
+    public void updateClusterState(final String status) {
         try {
-            clusterStateContext.switchState(ClusterStateType.valueOf(status));
+            clusterStateContext.switchState(ClusterState.valueOf(status));
         } catch (IllegalArgumentException ignore) {
         }
     }

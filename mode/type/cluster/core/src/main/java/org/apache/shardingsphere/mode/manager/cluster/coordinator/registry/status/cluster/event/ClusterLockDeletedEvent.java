@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateType;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
@@ -29,5 +29,5 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 @Getter
 public final class ClusterLockDeletedEvent implements GovernanceEvent {
     
-    private final ClusterStateType state;
+    private final ClusterState state;
 }

@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateType;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
@@ -210,8 +210,8 @@ public final class ProxyBackendHandlerFactory {
         if (sqlStatement instanceof DCLStatement || sqlStatement instanceof FlushStatement || sqlStatement instanceof MySQLShowCreateUserStatement) {
             throw new UnsupportedSQLOperationException("Unsupported operation");
         }
-        ClusterStateType clusterCurrentState = ProxyContext.getInstance().getContextManager().getClusterStateContext().getCurrentState();
-        if (clusterCurrentState != ClusterStateType.OK) {
+        ClusterState clusterCurrentState = ProxyContext.getInstance().getContextManager().getClusterStateContext().getCurrentState();
+        if (ClusterState.OK != clusterCurrentState) {
             TypedSPILoader.getService(ProxyClusterState.class, clusterCurrentState.name()).check(sqlStatement);
         }
     }

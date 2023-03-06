@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateType;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -63,7 +63,7 @@ public final class ComputeNodeInstance {
      * @param status status
      */
     public void switchState(final String status) {
-        state.switchState(InstanceStateType.CIRCUIT_BREAK, InstanceStateType.CIRCUIT_BREAK.name().equals(status));
+        state.switchState(InstanceState.CIRCUIT_BREAK, InstanceState.CIRCUIT_BREAK.name().equals(status));
     }
     
     /**

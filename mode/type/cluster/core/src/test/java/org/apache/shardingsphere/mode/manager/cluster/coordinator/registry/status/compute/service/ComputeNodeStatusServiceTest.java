@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateType;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -74,7 +74,7 @@ public final class ComputeNodeStatusServiceTest {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
         computeNodeStatusService.persistInstanceState(instanceId, new InstanceStateContext());
-        verify(repository).persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), InstanceStateType.OK.name());
+        verify(repository).persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), InstanceState.OK.name());
     }
     
     @Test

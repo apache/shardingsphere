@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.state;
 
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateType;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,23 +30,23 @@ public final class InstanceStateContextTest {
     
     @Test
     public void assertSwitchStateWithCircuitBreakOn() {
-        instanceStateContext.switchState(InstanceStateType.CIRCUIT_BREAK, true);
-        assertThat(instanceStateContext.getCurrentState(), is(InstanceStateType.CIRCUIT_BREAK));
-        instanceStateContext.switchState(InstanceStateType.CIRCUIT_BREAK, false);
+        instanceStateContext.switchState(InstanceState.CIRCUIT_BREAK, true);
+        assertThat(instanceStateContext.getCurrentState(), is(InstanceState.CIRCUIT_BREAK));
+        instanceStateContext.switchState(InstanceState.CIRCUIT_BREAK, false);
     }
     
     @Test
     public void assertSwitchStateWithCircuitBreakOff() {
-        instanceStateContext.switchState(InstanceStateType.CIRCUIT_BREAK, false);
-        assertThat(instanceStateContext.getCurrentState(), is(InstanceStateType.OK));
+        instanceStateContext.switchState(InstanceState.CIRCUIT_BREAK, false);
+        assertThat(instanceStateContext.getCurrentState(), is(InstanceState.OK));
     }
     
     @Test
     public void assertSwitchStateWithMultiState() {
-        instanceStateContext.switchState(InstanceStateType.CIRCUIT_BREAK, true);
-        instanceStateContext.switchState(InstanceStateType.LOCK, true);
-        assertThat(instanceStateContext.getCurrentState(), is(InstanceStateType.LOCK));
-        instanceStateContext.switchState(InstanceStateType.LOCK, false);
-        assertThat(instanceStateContext.getCurrentState(), is(InstanceStateType.CIRCUIT_BREAK));
+        instanceStateContext.switchState(InstanceState.CIRCUIT_BREAK, true);
+        instanceStateContext.switchState(InstanceState.LOCK, true);
+        assertThat(instanceStateContext.getCurrentState(), is(InstanceState.LOCK));
+        instanceStateContext.switchState(InstanceState.LOCK, false);
+        assertThat(instanceStateContext.getCurrentState(), is(InstanceState.CIRCUIT_BREAK));
     }
 }

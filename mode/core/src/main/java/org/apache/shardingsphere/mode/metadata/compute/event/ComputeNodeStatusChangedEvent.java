@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.metadata.compute.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateType;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 
 /**
  * Compute node status changed event.
@@ -30,5 +30,5 @@ public final class ComputeNodeStatusChangedEvent {
     
     private final String instanceId;
     
-    private final InstanceStateType state;
+    private final InstanceState state;
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.state;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.state.instance.InstanceStateType;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -37,12 +37,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyStateContext {
     
-    private static final Map<InstanceStateType, ProxyState> STATES = new ConcurrentHashMap<>(3, 1);
+    private static final Map<InstanceState, ProxyState> STATES = new ConcurrentHashMap<>(3, 1);
     
     static {
-        STATES.put(InstanceStateType.OK, new OKProxyState());
-        STATES.put(InstanceStateType.LOCK, new LockProxyState());
-        STATES.put(InstanceStateType.CIRCUIT_BREAK, new CircuitBreakProxyState());
+        STATES.put(InstanceState.OK, new OKProxyState());
+        STATES.put(InstanceState.LOCK, new LockProxyState());
+        STATES.put(InstanceState.CIRCUIT_BREAK, new CircuitBreakProxyState());
     }
     
     /**

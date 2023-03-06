@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LockClusterStatement;
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateType;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -52,7 +52,7 @@ public final class LockClusterUpdaterTest {
     public void assertExecuteWithLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
-        when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterStateType.UNAVAILABLE);
+        when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.UNAVAILABLE);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         LockClusterUpdater updater = new LockClusterUpdater();
         assertThrows(IllegalStateException.class, () -> updater.executeUpdate("foo", new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()))));
@@ -62,7 +62,7 @@ public final class LockClusterUpdaterTest {
     public void assertExecuteWithWrongAlgorithm() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
-        when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterStateType.OK);
+        when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         LockClusterUpdater updater = new LockClusterUpdater();
         assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.executeUpdate("foo", new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()))));

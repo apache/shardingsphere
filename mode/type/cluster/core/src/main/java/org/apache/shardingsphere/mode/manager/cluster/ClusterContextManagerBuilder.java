@@ -101,7 +101,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void loadClusterStatus(final RegistryCenter registryCenter, final ContextManager contextManager) {
         registryCenter.persistClusterState(contextManager);
-        contextManager.updateClusterStatus(registryCenter.getClusterStatusService().loadClusterStatus());
+        contextManager.updateClusterState(registryCenter.getClusterStatusService().loadClusterStatus());
     }
     
     @Override

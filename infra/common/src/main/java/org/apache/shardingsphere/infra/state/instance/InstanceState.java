@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.state.instance;
 
 /**
- * Instance state type.
+ * Instance state.
  */
-public enum InstanceStateType {
+public enum InstanceState {
     
     OK, CIRCUIT_BREAK, LOCK
 }
