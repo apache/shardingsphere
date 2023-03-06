@@ -35,7 +35,7 @@ public final class OpenGaussPipelineSQLBuilderTest {
     @Test
     public void assertBuildInsertSQL() {
         String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t1"));
-        assertThat(actual, is("INSERT INTO t1(id,c0,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c0=EXCLUDED.c0,c1=EXCLUDED.c1,c2=EXCLUDED.c2,c3=EXCLUDED.c3"));
+        assertThat(actual, is("INSERT INTO \"t1\"(id,c0,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c0=EXCLUDED.c0,c1=EXCLUDED.c1,c2=EXCLUDED.c2,c3=EXCLUDED.c3"));
     }
     
     private DataRecord mockDataRecord(final String tableName) {
@@ -63,6 +63,6 @@ public final class OpenGaussPipelineSQLBuilderTest {
     @Test
     public void assertBuilderDropSQLWithoutKeyword() {
         String actualDropSQL = sqlBuilder.buildDropSQL("test_normal", "t_order");
-        assertThat(actualDropSQL, is("DROP TABLE IF EXISTS test_normal.t_order"));
+        assertThat(actualDropSQL, is("DROP TABLE IF EXISTS test_normal.\"t_order\""));
     }
 }

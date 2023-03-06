@@ -86,13 +86,13 @@ public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
     public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
-        return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM %s", quote(column), quote(tableName)));
+        return Optional.of(String.format("SELECT BIT_XOR(CAST(CRC32(%s) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM %s", quote(column), getQualifiedTableName(schemaName, tableName)));
     }
     
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
         return Optional.of(String.format("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = '%s'",
-                getQualifiedTableName(schemaName, tableName)));
+                quote(tableName)));
     }
     
     @Override

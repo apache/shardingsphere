@@ -37,7 +37,7 @@ public final class PostgreSQLPipelineSQLBuilderTest {
     @Test
     public void assertBuildInsertSQL() {
         String actual = sqlBuilder.buildInsertSQL("schema1", mockDataRecord());
-        assertThat(actual, is("INSERT INTO schema1.t_order(order_id,user_id,status) VALUES(?,?,?) ON CONFLICT (order_id)"
+        assertThat(actual, is("INSERT INTO schema1.\"t_order\"(order_id,user_id,status) VALUES(?,?,?) ON CONFLICT (order_id)"
                 + " DO UPDATE SET user_id=EXCLUDED.user_id,status=EXCLUDED.status"));
     }
     
@@ -64,6 +64,6 @@ public final class PostgreSQLPipelineSQLBuilderTest {
     @Test
     public void assertBuilderDropSQLWithoutKeyword() {
         String actualDropSQL = sqlBuilder.buildDropSQL("test_normal", "t_order");
-        assertThat(actualDropSQL, is("DROP TABLE IF EXISTS test_normal.t_order"));
+        assertThat(actualDropSQL, is("DROP TABLE IF EXISTS test_normal.\"t_order\""));
     }
 }
