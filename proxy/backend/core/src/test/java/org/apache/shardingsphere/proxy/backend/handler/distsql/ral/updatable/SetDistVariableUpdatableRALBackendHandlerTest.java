@@ -36,6 +36,7 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class SetDistVariableUpdatableRALBackendHandlerTest {
@@ -76,17 +77,17 @@ public final class SetDistVariableUpdatableRALBackendHandlerTest {
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
     
-    @Test(expected = UnsupportedVariableException.class)
-    public void assertSwitchTransactionTypeFailed() throws SQLException {
+    @Test
+    public void assertSwitchTransactionTypeFailed() {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("transaction_type", "XXX"), connectionSession);
-        handler.execute();
+        assertThrows(UnsupportedVariableException.class, handler::execute);
     }
     
-    @Test(expected = UnsupportedVariableException.class)
-    public void assertNotSupportedVariable() throws SQLException {
+    @Test
+    public void assertNotSupportedVariable() {
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("@@session", "XXX"), connectionSession);
-        handler.execute();
+        assertThrows(UnsupportedVariableException.class, handler::execute);
     }
     
     @Test

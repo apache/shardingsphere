@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class ResourceDataSourceTest {
@@ -48,8 +49,8 @@ public final class ResourceDataSourceTest {
         return pattern.matcher(resourceId).matches();
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertDataSourceNameOnlyFailure() {
-        new ResourceDataSource(DATA_SOURCE_NAME, new MockedDataSource());
+        assertThrows(IllegalStateException.class, () -> new ResourceDataSource(DATA_SOURCE_NAME, new MockedDataSource()));
     }
 }

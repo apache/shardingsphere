@@ -24,11 +24,13 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -46,7 +48,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class XATransactionDataSourceTest {
     
     @Mock
@@ -58,7 +61,7 @@ public final class XATransactionDataSourceTest {
     @Mock
     private Transaction transaction;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SystemException {
         when(xaTransactionManagerProvider.getTransactionManager()).thenReturn(transactionManager);
         when(transactionManager.getTransaction()).thenReturn(transaction);
@@ -101,6 +104,5 @@ public final class XATransactionDataSourceTest {
         XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         transactionDataSource.close();
         verify(xaTransactionManagerProvider).removeRecoveryResource(anyString(), any(XADataSource.class));
-        
     }
 }

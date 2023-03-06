@@ -26,21 +26,22 @@ import java.sql.Statement;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class ReadwriteSplittingStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertQueryWithNull() throws SQLException {
         try (Statement statement = getReadwriteSplittingDataSource().getConnection().createStatement()) {
-            statement.executeQuery(null);
+            assertThrows(SQLException.class, () -> statement.executeQuery(null));
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertQueryWithEmptyString() throws SQLException {
         try (Statement statement = getReadwriteSplittingDataSource().getConnection().createStatement()) {
-            statement.executeQuery("");
+            assertThrows(SQLException.class, () -> statement.executeQuery(""));
         }
     }
     

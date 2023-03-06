@@ -23,17 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class HintManagerTest {
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertGetInstanceTwice() {
         try {
             HintManager.getInstance();
-            HintManager.getInstance();
+            assertThrows(IllegalStateException.class, HintManager::getInstance);
         } finally {
             HintManager.clear();
         }

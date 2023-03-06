@@ -40,6 +40,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class ResultSetUtilTest {
@@ -93,9 +94,9 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue(1, Float.class), is(Float.valueOf("1")));
     }
     
-    @Test(expected = UnsupportedDataTypeConversionException.class)
-    public void assertConvertNumberValueError() throws SQLException {
-        ResultSetUtil.convertValue(1, Date.class);
+    @Test
+    public void assertConvertNumberValueError() {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtil.convertValue(1, Date.class));
     }
     
     @Test
@@ -113,9 +114,9 @@ public final class ResultSetUtilTest {
         assertThat(ResultSetUtil.convertValue(null, Date.class), is((Object) null));
     }
     
-    @Test(expected = SQLException.class)
-    public void assertConvertNullType() throws SQLException {
-        ResultSetUtil.convertValue(null, null);
+    @Test
+    public void assertConvertNullType() {
+        assertThrows(SQLException.class, () -> ResultSetUtil.convertValue(null, null));
     }
     
     @Test
@@ -149,10 +150,10 @@ public final class ResultSetUtilTest {
         assertThat(url, is(new URL(urlString)));
     }
     
-    @Test(expected = UnsupportedDataTypeConversionException.class)
-    public void assertConvertURLValueError() throws SQLException {
+    @Test
+    public void assertConvertURLValueError() {
         String urlString = "no-exist:shardingsphere.apache.org/";
-        ResultSetUtil.convertValue(urlString, URL.class);
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtil.convertValue(urlString, URL.class));
     }
     
     @Test
@@ -173,13 +174,13 @@ public final class ResultSetUtilTest {
         assertThat(bigDecimal, is(BigDecimal.valueOf(12.24)));
     }
     
-    @Test(expected = UnsupportedDataTypeConversionException.class)
+    @Test
     public void assertConvertBigDecimalValueError() {
-        ResultSetUtil.convertBigDecimalValue(new Date(), true, 2);
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtil.convertBigDecimalValue(new Date(), true, 2));
     }
     
-    @Test(expected = UnsupportedDataTypeConversionException.class)
-    public void assertConvertDateValueError() throws SQLException {
-        ResultSetUtil.convertValue(new Date(), int.class);
+    @Test
+    public void assertConvertDateValueError() {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtil.convertValue(new Date(), int.class));
     }
 }

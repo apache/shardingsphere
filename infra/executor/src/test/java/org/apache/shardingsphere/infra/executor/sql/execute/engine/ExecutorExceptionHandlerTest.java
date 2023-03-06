@@ -24,6 +24,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import java.sql.SQLException;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class ExecutorExceptionHandlerTest {
@@ -33,17 +34,17 @@ public final class ExecutorExceptionHandlerTest {
         ((ThreadLocal<?>) Plugins.getMemberAccessor().get(SQLExecutorExceptionHandler.class.getDeclaredField("IS_EXCEPTION_THROWN"), SQLExecutorExceptionHandler.class)).remove();
     }
     
-    @Test(expected = SQLException.class)
-    public void assertHandleExceptionWithoutSet() throws SQLException {
+    @Test
+    public void assertHandleExceptionWithoutSet() {
         assertTrue(SQLExecutorExceptionHandler.isExceptionThrown());
-        SQLExecutorExceptionHandler.handleException(new SQLException(""));
+        assertThrows(SQLException.class, () -> SQLExecutorExceptionHandler.handleException(new SQLException("")));
     }
     
-    @Test(expected = SQLException.class)
-    public void assertHandleExceptionWhenExceptionThrownIsTrue() throws SQLException {
+    @Test
+    public void assertHandleExceptionWhenExceptionThrownIsTrue() {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
         assertTrue(SQLExecutorExceptionHandler.isExceptionThrown());
-        SQLExecutorExceptionHandler.handleException(new SQLException(""));
+        assertThrows(SQLException.class, () -> SQLExecutorExceptionHandler.handleException(new SQLException("")));
     }
     
     @Test

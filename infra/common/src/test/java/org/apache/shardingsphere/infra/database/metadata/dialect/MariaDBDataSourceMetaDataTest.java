@@ -23,6 +23,7 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 public final class MariaDBDataSourceMetaDataTest {
@@ -49,8 +50,8 @@ public final class MariaDBDataSourceMetaDataTest {
         assertThat(actual.getQueryProperties().getProperty("useSSL"), is(Boolean.FALSE.toString()));
     }
     
-    @Test(expected = UnrecognizedDatabaseURLException.class)
+    @Test
     public void assertNewConstructorFailure() {
-        new MariaDBDataSourceMetaData("jdbc:mariadb:xxxxxxxx");
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> new MariaDBDataSourceMetaData("jdbc:mariadb:xxxxxxxx"));
     }
 }

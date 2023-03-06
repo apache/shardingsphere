@@ -21,11 +21,13 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static org.junit.Assert.assertThrows;
+
 public final class ShardingSpherePreconditionsTest {
     
-    @Test(expected = SQLException.class)
-    public void assertCheckStateToThrowsException() throws SQLException {
-        ShardingSpherePreconditions.checkState(false, SQLException::new);
+    @Test
+    public void assertCheckStateToThrowsException() {
+        assertThrows(SQLException.class, () -> ShardingSpherePreconditions.checkState(false, SQLException::new));
     }
     
     @Test
@@ -33,9 +35,9 @@ public final class ShardingSpherePreconditionsTest {
         ShardingSpherePreconditions.checkState(true, SQLException::new);
     }
     
-    @Test(expected = SQLException.class)
-    public void assertCheckNotNullToThrowsException() throws SQLException {
-        ShardingSpherePreconditions.checkNotNull(null, SQLException::new);
+    @Test
+    public void assertCheckNotNullToThrowsException() {
+        assertThrows(SQLException.class, () -> ShardingSpherePreconditions.checkNotNull(null, SQLException::new));
     }
     
     @Test
