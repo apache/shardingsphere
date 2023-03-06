@@ -56,4 +56,3 @@ rules:
           order_id:
             cipherColumn: order_cipher
             encryptorName: md5_encryptor
-

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -40,6 +42,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -51,58 +54,92 @@ public final class ImportDatabaseConfigurationUpdaterTest {
     private ImportDatabaseConfigurationUpdater importDatabaseConfigUpdater;
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertImportDatabaseExecutorForSharding() {
+    public void assertImportDatabaseExecutorForSharding() throws SQLException {
         String databaseName = "sharding_db";
         init(databaseName);
         importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-sharding.yaml")));
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertImportDatabaseExecutorForReadwriteSplitting() {
+    public void assertImportDatabaseExecutorForReadwriteSplitting() throws SQLException {
         String databaseName = "readwrite_splitting_db";
         init(databaseName);
         importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-readwrite-splitting.yaml")));
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertImportDatabaseExecutorForDatabaseDiscovery() {
+    public void assertImportDatabaseExecutorForDatabaseDiscovery() throws SQLException {
         String databaseName = "database_discovery_db";
         init(databaseName);
         importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-database-discovery.yaml")));
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertImportDatabaseExecutorForEncrypt() {
+    public void assertImportDatabaseExecutorForEncrypt() throws SQLException {
         String databaseName = "encrypt_db";
         init(databaseName);
         importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-encrypt.yaml")));
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertImportDatabaseExecutorForShadow() {
+    public void assertImportDatabaseExecutorForShadow() throws SQLException {
         String databaseName = "shadow_db";
         init(databaseName);
         importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-shadow.yaml")));
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertImportDatabaseExecutorForMask() {
+    public void assertImportDatabaseExecutorForMask() throws SQLException {
         String databaseName = "mask_db";
         init(databaseName);
         importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-mask.yaml")));
+    }
+    
+    @Test
+    public void assertImportExistedDatabase() {
+        String databaseName = "sharding_db";
+        init(databaseName);
+        when(ProxyContext.getInstance().databaseExists(databaseName)).thenReturn(true);
+        assertThrows(IllegalStateException.class, () -> importDatabaseConfigUpdater.executeUpdate(databaseName,
+                new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-sharding.yaml"))));
+    }
+    
+    @Test
+    public void assertImportEmptyDatabaseName() {
+        String databaseName = "sharding_db";
+        init(databaseName);
+        assertThrows(NullPointerException.class, () -> importDatabaseConfigUpdater.executeUpdate(databaseName,
+                new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-empty-database-name.yaml"))));
+    }
+    
+    @Test
+    public void assertImportEmptyDataSource() {
+        String databaseName = "sharding_db";
+        init(databaseName);
+        assertThrows(IllegalStateException.class, () -> importDatabaseConfigUpdater.executeUpdate(databaseName,
+                new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-empty-data-source.yaml"))));
+    }
+    
+    @Test
+    public void assertImportDuplicatedLogicTable() {
+        String databaseName = "sharding_db";
+        init(databaseName);
+        assertThrows(DuplicateRuleException.class, () -> importDatabaseConfigUpdater.executeUpdate(databaseName,
+                new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-duplicated-logic-table.yaml"))));
+    }
+    
+    @Test
+    public void assertImportInvalidAlgorithm() {
+        String databaseName = "sharding_db";
+        init(databaseName);
+        assertThrows(InvalidAlgorithmConfigurationException.class, () -> importDatabaseConfigUpdater.executeUpdate(databaseName,
+                new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-invalid-algorithm.yaml"))));
     }
     
     @SneakyThrows({IllegalAccessException.class, NoSuchFieldException.class})
     private void init(final String databaseName) {
         ContextManager contextManager = mockContextManager(databaseName);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().databaseExists(databaseName)).thenReturn(false);
         importDatabaseConfigUpdater = new ImportDatabaseConfigurationUpdater();
         YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
         Plugins.getMemberAccessor().set(importDatabaseConfigUpdater.getClass().getDeclaredField("databaseConfigImportExecutor"), importDatabaseConfigUpdater, databaseConfigImportExecutor);
