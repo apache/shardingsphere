@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Background executor.
  */
 @Getter
-public class HBaseBackgroundExecutorManager implements Closeable {
+public final class HBaseBackgroundExecutorManager implements Closeable {
     
     private final ScheduledExecutorService executorService;
     

@@ -35,7 +35,7 @@ import java.util.Map.Entry;
 /**
  * HBase connection factory.
  */
-public class HBaseConnectionFactory {
+public final class HBaseConnectionFactory {
     
     /**
      * Create HBase connection.

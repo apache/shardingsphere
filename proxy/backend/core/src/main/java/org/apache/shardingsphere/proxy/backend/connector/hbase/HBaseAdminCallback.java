@@ -23,7 +23,7 @@ import java.io.IOException;
 /**
  * Call back for HBase operation.
  *
- * @param <T> return type.
+ * @param <T> return type
  */
 public interface HBaseAdminCallback<T> {
     

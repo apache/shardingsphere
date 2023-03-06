@@ -39,17 +39,17 @@ public enum HBasePropertyKey implements TypedPropertyKey {
     MAX_SCAN_LIMIT_SIZE("max-scan-limit-size", String.valueOf(5000), long.class),
     
     /**
-     * warm up thread num.
+     * Warm up thread num.
      */
     WARM_UP_THREAD_NUM("warm-up-thread-num", String.valueOf(1), int.class),
     
     /**
-     * is sync warm up.
+     * Is sync warm up.
      */
     IS_SYNC_WARM_UP("is-sync-warm-up", String.valueOf(true), boolean.class),
     
     /**
-     * hbase execute out time.
+     * HBase execute out time.
      */
     EXECUTE_TIME_OUT("execute-time-out", String.valueOf(2000), Long.class);
     
