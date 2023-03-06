@@ -32,6 +32,9 @@ public final class Bootstrap {
      * @param args args
      */
     public static void main(final String[] args) {
+        // Pay attention to the time zone, to avoid the problem of incorrect time zone, it is best to ensure that the time zone of the program is consistent with the time zone of the database server
+        // and mysql-connector-java 5.x version will ignore serverTimezone jdbc parameter and use the default time zone in the program
+        // TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         ImportDataSourceParameter importDataSourceParam = new ImportDataSourceParameter("jdbc:opengauss://localhost:5432/cdc_db?stringtype=unspecified", "gaussdb", "Root@123");
         StartCDCClientParameter parameter = new StartCDCClientParameter(importDataSourceParam);
         parameter.setAddress("127.0.0.1");

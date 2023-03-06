@@ -39,6 +39,13 @@ public abstract class BaseContainerComposer implements Startable {
     public abstract String getProxyJdbcUrl(String databaseName);
     
     /**
+     * Get proxy CDC port.
+     *
+     * @return proxy port
+     */
+    public abstract int getProxyCDCPort();
+    
+    /**
      * Clean up database.
      *
      * @param databaseName database name

@@ -49,8 +49,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -153,7 +153,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         assertThat(actual, is(expected));
     }
     
-    @Test(expected = SnowflakeClockMoveBackException.class)
+    @Test
     public void assertGenerateKeyWithClockCallBackBeyondTolerateTime() {
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
@@ -162,11 +162,13 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
         setLastMilliseconds(algorithm, timeService.getCurrentMillis() + 2);
-        List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
+        assertThrows(SnowflakeClockMoveBackException.class, () -> batchGenerate(algorithm));
+    }
+    
+    private static void batchGenerate(final KeyGenerateAlgorithm algorithm) {
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
-            actual.add(algorithm.generateKey());
+            algorithm.generateKey();
         }
-        assertThat(actual.size(), not(10));
     }
     
     @Test
@@ -197,32 +199,32 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
         Plugins.getMemberAccessor().set(SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("sequence"), algorithm, value);
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertSetWorkerIdFailureWhenNegative() {
         SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
         InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(-1),
                 new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
-        algorithm.setInstanceContext(instanceContext);
-        algorithm.generateKey();
+        assertThrows(IllegalArgumentException.class, () -> algorithm.setInstanceContext(instanceContext));
     }
     
-    @Test(expected = KeyGenerateAlgorithmInitializationException.class)
+    @Test
     public void assertSetMaxVibrationOffsetFailureWhenNegative() {
-        TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "-1"))).generateKey();
+        assertThrows(KeyGenerateAlgorithmInitializationException.class,
+                () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "-1"))).generateKey());
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertSetWorkerIdFailureWhenOutOfRange() {
         SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
         InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE),
                 new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
-        algorithm.setInstanceContext(instanceContext);
-        algorithm.generateKey();
+        assertThrows(IllegalArgumentException.class, () -> algorithm.setInstanceContext(instanceContext));
     }
     
-    @Test(expected = KeyGenerateAlgorithmInitializationException.class)
+    @Test
     public void assertSetMaxVibrationOffsetFailureWhenOutOfRange() {
-        TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "4096"))).generateKey();
+        assertThrows(KeyGenerateAlgorithmInitializationException.class,
+                () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "4096"))).generateKey());
     }
     
     @Test

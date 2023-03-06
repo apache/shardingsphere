@@ -37,6 +37,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -86,11 +87,11 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
-    @Test(expected = ShardingRouteAlgorithmException.class)
+    @Test
     public void assertRouteByErrorShardingTableStrategy() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createErrorShardingConditions("t_order"),
                 mock(SQLStatementContext.class), new HintValueContext());
-        standardRoutingEngine.route(createErrorShardingRule());
+        assertThrows(ShardingRouteAlgorithmException.class, () -> standardRoutingEngine.route(createErrorShardingRule()));
     }
     
     @Test

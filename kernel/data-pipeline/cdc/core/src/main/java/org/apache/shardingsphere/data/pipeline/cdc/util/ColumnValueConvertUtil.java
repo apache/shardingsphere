@@ -138,6 +138,10 @@ public final class ColumnValueConvertUtil {
     }
     
     private static com.google.protobuf.Timestamp converToProtobufTimestamp(final Date timestamp) {
+        if (timestamp instanceof Timestamp) {
+            Timestamp value = (Timestamp) timestamp;
+            return com.google.protobuf.Timestamp.newBuilder().setSeconds(value.getTime() / 1000).setNanos(value.getNanos()).build();
+        }
         long millis = timestamp.getTime();
         return com.google.protobuf.Timestamp.newBuilder().setSeconds(millis / 1000).setNanos((int) ((millis % 1000) * 1000000)).build();
     }

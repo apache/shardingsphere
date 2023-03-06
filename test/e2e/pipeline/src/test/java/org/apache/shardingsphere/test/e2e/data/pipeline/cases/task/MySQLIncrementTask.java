@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
-import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
 
 import javax.sql.DataSource;
@@ -30,6 +29,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
 @Slf4j
+// TODO merge MySQL,PostgreSQL increment task
 public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private final DataSource dataSource;
@@ -52,8 +52,6 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
                 setNullToOrderFields(orderPrimaryKey);
                 updateOrderByPrimaryKey(orderPrimaryKey);
             }
-            Object orderItemPrimaryKey = insertOrderItem();
-            DataSourceExecuteUtil.execute(dataSource, "UPDATE t_order_item SET status = ? WHERE item_id = ?", new Object[]{"updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey});
             executeCount++;
         }
         log.info("MySQL increment task runnable execute successfully.");
@@ -65,14 +63,6 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
                 random.nextInt(1, 99), "中文测试"};
         DataSourceExecuteUtil.execute(dataSource, String.format("INSERT INTO %s (order_id,user_id,t_unsigned_int,status) VALUES (?, ?, ?, ?)", orderTableName), orderInsertDate);
         return orderInsertDate[0];
-    }
-    
-    private Object insertOrderItem() {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        String status = 0 == random.nextInt() % 2 ? null : "NOT-NULL";
-        Object[] orderInsertItemDate = new Object[]{primaryKeyGenerateAlgorithm.generateKey(), PipelineCaseHelper.generateSnowflakeKey(), random.nextInt(0, 6), status};
-        DataSourceExecuteUtil.execute(dataSource, "INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?, ?, ?, ?)", orderInsertItemDate);
-        return orderInsertItemDate[0];
     }
     
     private void updateOrderByPrimaryKey(final Object primaryKey) {

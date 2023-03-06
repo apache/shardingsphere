@@ -40,6 +40,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DropShardingAlgorithmStatementUpdaterTest {
@@ -49,9 +50,9 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     
     private final DropShardingAlgorithmStatementUpdater updater = new DropShardingAlgorithmStatementUpdater();
     
-    @Test(expected = MissingRequiredAlgorithmException.class)
+    @Test
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, new DropShardingAlgorithmStatement(false, Collections.emptyList()), null);
+        assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, new DropShardingAlgorithmStatement(false, Collections.emptyList()), null));
     }
     
     @Test
@@ -60,9 +61,9 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(database, dropShardingAlgorithmStatement, null);
     }
     
-    @Test(expected = MissingRequiredAlgorithmException.class)
+    @Test
     public void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration());
+        assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration()));
     }
     
     @Test
@@ -70,14 +71,14 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(database, createSQLStatementWithIfExists("t_order"), new ShardingRuleConfiguration());
     }
     
-    @Test(expected = AlgorithmInUsedException.class)
+    @Test
     public void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration());
+        assertThrows(AlgorithmInUsedException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration()));
     }
     
-    @Test(expected = AlgorithmInUsedException.class)
+    @Test
     public void assertCheckSQLStatementWithBindingTableRuleWithIfExists() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatementWithIfExists("t_order_tb_inline"), createCurrentRuleConfiguration());
+        assertThrows(AlgorithmInUsedException.class, () -> updater.checkSQLStatement(database, createSQLStatementWithIfExists("t_order_tb_inline"), createCurrentRuleConfiguration()));
     }
     
     @Test

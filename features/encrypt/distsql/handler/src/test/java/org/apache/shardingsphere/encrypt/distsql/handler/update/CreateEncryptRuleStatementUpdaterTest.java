@@ -42,6 +42,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateEncryptRuleStatementUpdaterTest {
@@ -51,17 +52,17 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     private final CreateEncryptRuleStatementUpdater updater = new CreateEncryptRuleStatementUpdater();
     
-    @Test(expected = DuplicateRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithDuplicateEncryptRule() {
-        updater.checkSQLStatement(database, createSQLStatement(false, "MD5"), getCurrentRuleConfig());
+        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "MD5"), getCurrentRuleConfig()));
     }
     
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    @Test
     public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
-        updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null);
+        assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
-    @Test(expected = InvalidRuleConfigurationException.class)
+    @Test
     public void assertCheckSQLStatementWithIncompleteDataType() {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 "int varchar(10)", null, null, null, null, new AlgorithmSegment("test", new Properties()),
@@ -69,7 +70,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
                 new AlgorithmSegment("CHAR_DIGEST_LIKE", new Properties()), null);
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
         CreateEncryptRuleStatement statement = new CreateEncryptRuleStatement(false, Collections.singleton(ruleSegment));
-        updater.checkSQLStatement(database, statement, null);
+        assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, statement, null));
     }
     
     @Test
