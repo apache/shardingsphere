@@ -61,22 +61,22 @@
         </output>
     </create-table-generator-assertion>
 
-    <create-table-generator-assertion id="t_order_item">
-        <input table="t_order_item">
+    <create-table-generator-assertion id="T_ORDER_ITEM">
+        <input table="T_ORDER_ITEM">
             <sql>
-                CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
+                CREATE TABLE "T_ORDER_ITEM" (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
             </sql>
         </input>
         <output version="default">
             <sql>
-                CREATE TABLE IF NOT EXISTS public."t_order_item"
+                CREATE TABLE IF NOT EXISTS public."T_ORDER_ITEM"
                 (
                 item_id integer NOT NULL,
                 order_id integer NOT NULL,
                 user_id integer NOT NULL,
                 status character varying(45) COLLATE pg_catalog."default",
                 creation_date date,
-                CONSTRAINT t_order_item_pkey PRIMARY KEY (
+                CONSTRAINT T_ORDER_ITEM_pkey PRIMARY KEY (
                 item_id)
                 )
                 TABLESPACE pg_default
@@ -84,14 +84,14 @@
         </output>
         <output version="10">
             <sql>
-                CREATE TABLE IF NOT EXISTS public."t_order_item"
+                CREATE TABLE IF NOT EXISTS public."T_ORDER_ITEM"
                 (
                 item_id integer NOT NULL,
                 order_id integer NOT NULL,
                 user_id integer NOT NULL,
                 status character varying(45) COLLATE pg_catalog."default",
                 creation_date date,
-                CONSTRAINT t_order_item_pkey PRIMARY KEY (
+                CONSTRAINT T_ORDER_ITEM_pkey PRIMARY KEY (
                 item_id))
                 WITH (OIDS = FALSE)
                 TABLESPACE pg_default
@@ -99,14 +99,14 @@
         </output>
         <output version="11">
             <sql>
-                CREATE TABLE IF NOT EXISTS public."t_order_item"
+                CREATE TABLE IF NOT EXISTS public."T_ORDER_ITEM"
                 (
                 item_id integer NOT NULL,
                 order_id integer NOT NULL,
                 user_id integer NOT NULL,
                 status character varying(45) COLLATE pg_catalog."default",
                 creation_date date,
-                CONSTRAINT t_order_item_pkey PRIMARY KEY (
+                CONSTRAINT T_ORDER_ITEM_pkey PRIMARY KEY (
                 item_id))
                 WITH (OIDS = FALSE)
                 TABLESPACE pg_default
