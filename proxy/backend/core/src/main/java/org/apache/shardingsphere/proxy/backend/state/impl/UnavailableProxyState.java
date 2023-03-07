@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.state.impl;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportMetaDataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.proxy.backend.exception.UnavailableException;
 import org.apache.shardingsphere.proxy.backend.state.spi.ProxyClusterState;
@@ -42,7 +43,7 @@ public final class UnavailableProxyState implements ProxyClusterState {
     
     private boolean isSupportedStatement(final SQLStatement sqlStatement) {
         return sqlStatement instanceof ImportMetaDataStatement || sqlStatement instanceof ShowStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof RQLStatement
-                || sqlStatement instanceof MySQLShowDatabasesStatement || sqlStatement instanceof MySQLUseStatement;
+                || sqlStatement instanceof UnlockClusterStatement || sqlStatement instanceof MySQLShowDatabasesStatement || sqlStatement instanceof MySQLUseStatement;
     }
     
     @Override

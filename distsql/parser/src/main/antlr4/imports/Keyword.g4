@@ -347,6 +347,10 @@ LOCK
     : L O C K
     ;
 
+UNLOCK
+    : U N L O C K
+    ;
+
 CLUSTER
     : C L U S T E R
     ;

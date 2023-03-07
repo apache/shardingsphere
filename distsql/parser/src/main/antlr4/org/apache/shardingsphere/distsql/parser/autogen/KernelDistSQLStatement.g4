@@ -52,5 +52,6 @@ execute
     | showMigrationRule
     | alterMigrationRule
     | lockCluster
+    | unlockCluster
     ) SEMI?
     ;
