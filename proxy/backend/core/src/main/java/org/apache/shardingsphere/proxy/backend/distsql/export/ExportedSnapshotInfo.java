@@ -24,7 +24,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 /**
- * Exported storage node.
+ * Exported snapshot info.
  */
 @Getter
 @Setter
