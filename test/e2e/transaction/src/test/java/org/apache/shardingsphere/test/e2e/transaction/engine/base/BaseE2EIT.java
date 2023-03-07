@@ -162,7 +162,7 @@ public abstract class BaseE2EIT {
         if (TransactionTestConstants.MYSQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
             addParametersByVersions(ENV.getMysqlVersions(), testParams, currentTestCaseInfo);
         } else if (TransactionTestConstants.POSTGRESQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
-            addParametersByVersions(ENV.getPostgresVersions(), testParams, currentTestCaseInfo);
+            addParametersByVersions(ENV.getPostgresqlVersions(), testParams, currentTestCaseInfo);
         } else if (TransactionTestConstants.OPENGAUSS.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
             addParametersByVersions(ENV.getOpenGaussVersions(), testParams, currentTestCaseInfo);
         }

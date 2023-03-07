@@ -33,9 +33,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Postgres column properties appender.
+ * Column properties appender for PostgreSQL.
  */
-public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLAdapter {
+public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQLDDLAdapter {
     
     private static final Pattern LENGTH_PRECISION_PATTERN = Pattern.compile("(\\d+),(\\d+)");
     
@@ -45,13 +45,13 @@ public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLA
     
     private static final String ATT_OPTION_SPLIT = "=";
     
-    public PostgresColumnPropertiesAppender(final Connection connection, final int majorVersion, final int minorVersion) {
+    public PostgreSQLColumnPropertiesAppender(final Connection connection, final int majorVersion, final int minorVersion) {
         super(connection, majorVersion, minorVersion);
     }
     
     /**
      * Append column properties.
-     * 
+     *
      * @param context create table sql context
      */
     @SneakyThrows(SQLException.class)

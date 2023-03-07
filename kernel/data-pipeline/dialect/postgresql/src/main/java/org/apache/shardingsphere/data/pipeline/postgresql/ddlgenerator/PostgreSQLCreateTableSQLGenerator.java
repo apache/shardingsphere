@@ -49,9 +49,9 @@ public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGe
     }
     
     private Map<String, Object> loadMaterials(final String tableName, final String schemaName, final Connection connection, final int majorVersion, final int minorVersion) throws SQLException {
-        Map<String, Object> result = new PostgresTablePropertiesLoader(connection, tableName, schemaName, majorVersion, minorVersion).load();
-        new PostgresColumnPropertiesAppender(connection, majorVersion, minorVersion).append(result);
-        new PostgresConstraintsPropertiesAppender(connection, majorVersion, minorVersion).append(result);
+        Map<String, Object> result = new PostgreSQLTablePropertiesLoader(connection, tableName, schemaName, majorVersion, minorVersion).load();
+        new PostgreSQLColumnPropertiesAppender(connection, majorVersion, minorVersion).append(result);
+        new PostgreSQLConstraintsPropertiesAppender(connection, majorVersion, minorVersion).append(result);
         formatColumns(result);
         return result;
     }
@@ -61,7 +61,7 @@ public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGe
     }
     
     private String generateCreateIndexSQL(final Connection connection, final int majorVersion, final int minorVersion, final Map<String, Object> materials) throws SQLException {
-        return new PostgresIndexSQLGenerator(connection, majorVersion, minorVersion).generate(materials);
+        return new PostgreSQLIndexSQLGenerator(connection, majorVersion, minorVersion).generate(materials);
     }
     
     @SuppressWarnings("unchecked")

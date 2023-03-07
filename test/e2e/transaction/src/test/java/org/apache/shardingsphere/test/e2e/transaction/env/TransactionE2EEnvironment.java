@@ -50,7 +50,7 @@ public final class TransactionE2EEnvironment {
     
     private final List<String> mysqlVersions;
     
-    private final List<String> postgresVersions;
+    private final List<String> postgresqlVersions;
     
     private final List<String> openGaussVersions;
     
@@ -66,7 +66,7 @@ public final class TransactionE2EEnvironment {
         props = loadProperties();
         itEnvType = TransactionE2EEnvTypeEnum.valueOf(props.getProperty("transaction.it.env.type", TransactionE2EEnvTypeEnum.NONE.name()).toUpperCase());
         mysqlVersions = splitProperty("transaction.it.docker.mysql.version");
-        postgresVersions = splitProperty("transaction.it.docker.postgresql.version");
+        postgresqlVersions = splitProperty("transaction.it.docker.postgresql.version");
         openGaussVersions = splitProperty("transaction.it.docker.opengauss.version");
         needToRunTestCases = splitProperty("transaction.it.env.cases");
         allowTransactionTypes = splitProperty("transaction.it.env.transtypes");
