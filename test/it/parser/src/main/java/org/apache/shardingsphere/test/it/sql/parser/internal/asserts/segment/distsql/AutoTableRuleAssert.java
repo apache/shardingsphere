@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Auto table rule assert.
@@ -44,16 +44,16 @@ public final class AutoTableRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AutoTableRuleSegment actual, final ExpectedAutoTableRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual auto table rule should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual auto table rule should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual auto table rule should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual auto table rule should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getLogicTable(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getDataSourceNodes(), is(expected.getDataSources()));
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getShardingColumn(), is(expected.getTableStrategyColumn()));
-            assertNotNull(assertContext.getText("key generate should exist."), actual.getKeyGenerateStrategySegment());
+            assertNotNull(actual.getKeyGenerateStrategySegment(), assertContext.getText("key generate should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getKeyGenerateStrategySegment().getKeyGenerateColumn(), is(expected.getKeyGenerateStrategyColumn()));
             AlgorithmAssert.assertIs(assertContext, actual.getShardingAlgorithmSegment(), expected.getTableStrategy());

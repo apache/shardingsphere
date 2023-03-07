@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state;
+package org.apache.shardingsphere.infra.state.instance;
 
 import java.util.Collections;
 import java.util.Deque;
@@ -23,23 +23,23 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
- * State context.
+ * Instance state context.
  */
-public final class StateContext {
+public final class InstanceStateContext {
     
-    private final Deque<StateType> currentState = new ConcurrentLinkedDeque<>(Collections.singleton(StateType.OK));
+    private final Deque<InstanceState> currentState = new ConcurrentLinkedDeque<>(Collections.singleton(InstanceState.OK));
     
     /**
      * Switch state.
-     *
-     * @param type state type
-     * @param on true if state type is valid, false if not
+     * 
+     * @param state state
+     * @param on true if state is valid, false if not
      */
-    public void switchState(final StateType type, final boolean on) {
+    public void switchState(final InstanceState state, final boolean on) {
         if (on) {
-            currentState.push(type);
+            currentState.push(state);
         } else {
-            if (getCurrentState().equals(type)) {
+            if (getCurrentState().equals(state)) {
                 recoverState();
             }
         }
@@ -52,9 +52,9 @@ public final class StateContext {
     /**
      * Get current state.
      * 
-     * @return current state type
+     * @return current state
      */
-    public StateType getCurrentState() {
-        return Optional.ofNullable(currentState.peek()).orElse(StateType.OK);
+    public InstanceState getCurrentState() {
+        return Optional.ofNullable(currentState.peek()).orElse(InstanceState.OK);
     }
 }

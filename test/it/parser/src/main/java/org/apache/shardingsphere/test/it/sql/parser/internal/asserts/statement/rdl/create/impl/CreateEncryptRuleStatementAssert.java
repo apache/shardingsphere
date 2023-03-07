@@ -30,8 +30,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -49,9 +49,9 @@ public final class CreateEncryptRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateEncryptRuleStatement actual, final CreateEncryptRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
             assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(expected.isIfNotExists()));
             assertEncryptRules(assertContext, actual.getRules(), expected.getRules());
         }
@@ -59,9 +59,9 @@ public final class CreateEncryptRuleStatementAssert {
     
     private static void assertEncryptRules(final SQLCaseAssertContext assertContext, final Collection<EncryptRuleSegment> actual, final List<ExpectedEncryptRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual encrypt rule should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual encrypt rule should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual encrypt rule should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual encrypt rule should exist."));
             assertThat(assertContext.getText(String.format("Actual encrypt rule size should be %s , but it was %s",
                     expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;

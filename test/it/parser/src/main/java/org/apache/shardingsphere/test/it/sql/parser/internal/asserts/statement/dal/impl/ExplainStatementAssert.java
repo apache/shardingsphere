@@ -27,8 +27,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.tab
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ExplainStatementTestCase;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Explain statement assert.
@@ -45,24 +45,24 @@ public final class ExplainStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ExplainStatement actual, final ExplainStatementTestCase expected) {
         if (null != expected.getSelectClause()) {
-            assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
+            assertTrue(actual.getStatement().isPresent(), assertContext.getText("Actual statement should exist."));
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getSelectClause());
         } else if (null != expected.getUpdateClause()) {
-            assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
+            assertTrue(actual.getStatement().isPresent(), assertContext.getText("Actual statement should exist."));
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getUpdateClause());
         } else if (null != expected.getInsertClause()) {
-            assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
+            assertTrue(actual.getStatement().isPresent(), assertContext.getText("Actual statement should exist."));
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getInsertClause());
         } else if (null != expected.getDeleteClause()) {
-            assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
+            assertTrue(actual.getStatement().isPresent(), assertContext.getText("Actual statement should exist."));
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getDeleteClause());
         } else if (null != expected.getCreateTableAsSelectClause()) {
-            assertTrue(assertContext.getText("Actual statement should exist."), actual.getStatement().isPresent());
+            assertTrue(actual.getStatement().isPresent(), assertContext.getText("Actual statement should exist."));
             SQLStatementAssert.assertIs(assertContext, actual.getStatement().get(), expected.getCreateTableAsSelectClause());
         } else if (actual instanceof MySQLExplainStatement && null != expected.getTable()) {
             mysqlExplainStatementAssert(assertContext, (MySQLExplainStatement) actual, expected);
         } else {
-            assertFalse(assertContext.getText("Actual statement should not exist."), actual.getStatement().isPresent());
+            assertFalse(actual.getStatement().isPresent(), assertContext.getText("Actual statement should not exist."));
         }
     }
     
@@ -72,10 +72,10 @@ public final class ExplainStatementAssert {
             if (actual.getColumnWild().isPresent()) {
                 ColumnAssert.assertIs(assertContext, actual.getColumnWild().get(), expected.getColumn());
             } else {
-                assertFalse(assertContext.getText("Actual column wild should not exist."), actual.getColumnWild().isPresent());
+                assertFalse(actual.getColumnWild().isPresent(), assertContext.getText("Actual column wild should not exist."));
             }
         } else {
-            assertFalse(assertContext.getText("Actual table should not exist."), actual.getTable().isPresent());
+            assertFalse(actual.getTable().isPresent(), assertContext.getText("Actual table should not exist."));
         }
     }
 }

@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryHeartbeatStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -43,9 +43,9 @@ public final class DropDatabaseDiscoveryHeartbeatStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropDatabaseDiscoveryHeartbeatStatement actual, final DropDatabaseDiscoveryHeartbeatStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
             assertThat(assertContext.getText("database discovery heartbeat assertion error: "), actual.getNames(), is(expected.getHeartbeats()));
             assertThat(assertContext.getText("database discovery heartbeat assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }

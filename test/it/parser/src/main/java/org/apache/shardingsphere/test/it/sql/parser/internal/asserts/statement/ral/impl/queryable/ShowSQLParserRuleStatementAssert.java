@@ -21,8 +21,8 @@ import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowS
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowSQLParserRuleStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Show SQL parser rule statement assert.
@@ -38,9 +38,9 @@ public final class ShowSQLParserRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowSQLParserRuleStatement actual, final ShowSQLParserRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
         }
     }
 }

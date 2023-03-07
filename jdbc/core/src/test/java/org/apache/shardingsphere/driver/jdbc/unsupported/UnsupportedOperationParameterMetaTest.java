@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import java.sql.SQLFeatureNotSupportedException;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class UnsupportedOperationParameterMetaTest {

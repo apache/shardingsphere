@@ -54,10 +54,10 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Alter table statement assert.
@@ -87,12 +87,12 @@ public final class AlterTableStatementAssert {
     private static void assertConvertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
         Optional<ConvertTableDefinitionSegment> convertTable = actual.getConvertTableDefinition();
         if (null == expected.getConvertTable()) {
-            assertFalse(assertContext.getText("Actual convert table segment should not exist."), convertTable.isPresent());
+            assertFalse(convertTable.isPresent(), assertContext.getText("Actual convert table segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual convert table segment should exist."), convertTable.isPresent());
+            assertTrue(convertTable.isPresent(), assertContext.getText("Actual convert table segment should exist."));
             CharsetAssert.assertIs(assertContext, convertTable.get().getCharsetName(), expected.getConvertTable().getCharsetName());
             if (null == expected.getConvertTable().getCollateExpression()) {
-                assertNull(assertContext.getText("Actual collate expression should not exist."), convertTable.get().getCollateValue());
+                assertNull(convertTable.get().getCollateValue(), assertContext.getText("Actual collate expression should not exist."));
             } else {
                 ExpressionAssert.assertExpression(assertContext, convertTable.get().getCollateValue(), expected.getConvertTable().getCollateExpression().getCollateName());
             }
@@ -103,9 +103,9 @@ public final class AlterTableStatementAssert {
     private static void assertRenameTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
         Optional<SimpleTableSegment> tableSegment = actual.getRenameTable();
         if (null == expected.getRenameTable()) {
-            assertFalse(assertContext.getText("Actual table segment should not exist."), tableSegment.isPresent());
+            assertFalse(tableSegment.isPresent(), assertContext.getText("Actual table segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual table segment should exist."), tableSegment.isPresent());
+            assertTrue(tableSegment.isPresent(), assertContext.getText("Actual table segment should exist."));
             TableAssert.assertIs(assertContext, tableSegment.get(), expected.getRenameTable());
         }
     }
@@ -121,10 +121,10 @@ public final class AlterTableStatementAssert {
             ExpectedAddColumnDefinition expectedAddColumnDefinition = expected.getAddColumns().get(count);
             assertColumnDefinitions(assertContext, each.getColumnDefinitions(), expectedAddColumnDefinition.getColumnDefinitions());
             if (each.getColumnPosition().isPresent()) {
-                assertNotNull(assertContext.getText("Column position should exist."), expectedAddColumnDefinition.getColumnPosition());
+                assertNotNull(expectedAddColumnDefinition.getColumnPosition(), assertContext.getText("Column position should exist."));
                 ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), expectedAddColumnDefinition.getColumnPosition());
             } else {
-                assertNull(assertContext.getText("Column position should not exist."), expectedAddColumnDefinition.getColumnPosition());
+                assertNull(expectedAddColumnDefinition.getColumnPosition(), assertContext.getText("Column position should not exist."));
             }
             count++;
         }
@@ -153,10 +153,10 @@ public final class AlterTableStatementAssert {
             ExpectedModifyColumnDefinition expectedModifyColumnDefinition = expected.getModifyColumns().get(count);
             ColumnDefinitionAssert.assertIs(assertContext, each.getColumnDefinition(), expectedModifyColumnDefinition.getColumnDefinition());
             if (each.getColumnPosition().isPresent()) {
-                assertNotNull(assertContext.getText("Column position should exist."), expectedModifyColumnDefinition.getColumnPosition());
+                assertNotNull(expectedModifyColumnDefinition.getColumnPosition(), assertContext.getText("Column position should exist."));
                 ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), expectedModifyColumnDefinition.getColumnPosition());
             } else {
-                assertNull(assertContext.getText("Column position should not exist."), expectedModifyColumnDefinition.getColumnPosition());
+                assertNull(expectedModifyColumnDefinition.getColumnPosition(), assertContext.getText("Column position should not exist."));
             }
             count++;
         }
@@ -169,10 +169,10 @@ public final class AlterTableStatementAssert {
             ExpectedChangeColumnDefinition expectedChangeColumnDefinition = expected.getChangeColumns().get(count);
             ColumnDefinitionAssert.assertIs(assertContext, each.getColumnDefinition(), expectedChangeColumnDefinition.getColumnDefinition());
             if (each.getColumnPosition().isPresent()) {
-                assertNotNull(assertContext.getText("Column position should exist."), expectedChangeColumnDefinition.getColumnPosition());
+                assertNotNull(expectedChangeColumnDefinition.getColumnPosition(), assertContext.getText("Column position should exist."));
                 ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), expectedChangeColumnDefinition.getColumnPosition());
             } else {
-                assertNull(assertContext.getText("Column position should not exist."), expectedChangeColumnDefinition.getColumnPosition());
+                assertNull(expectedChangeColumnDefinition.getColumnPosition(), assertContext.getText("Column position should not exist."));
             }
             if (null != each.getPreviousColumn()) {
                 ColumnAssert.assertIs(assertContext, each.getPreviousColumn(), expectedChangeColumnDefinition.getPreviousColumn());

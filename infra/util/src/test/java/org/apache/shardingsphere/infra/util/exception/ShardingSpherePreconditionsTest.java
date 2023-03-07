@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class ShardingSpherePreconditionsTest {
     

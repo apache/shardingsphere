@@ -24,12 +24,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.charset.ExpectedCharsetName;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Charset assert.
@@ -46,9 +44,9 @@ public final class CharsetAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CharsetNameSegment actual, final ExpectedCharsetName expected) {
         if (null == expected) {
-            assertFalse(assertContext.getText("Actual charset name should not exist."), Optional.ofNullable(actual).isPresent());
+            assertNull(actual, assertContext.getText("Actual charset name should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual charset name should exist."), Optional.ofNullable(actual).isPresent());
+            assertNotNull(actual, assertContext.getText("Actual charset name should exist."));
             assertThat(assertContext.getText("charset name assertion error. "), actual.getName(), is(expected.getName()));
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }

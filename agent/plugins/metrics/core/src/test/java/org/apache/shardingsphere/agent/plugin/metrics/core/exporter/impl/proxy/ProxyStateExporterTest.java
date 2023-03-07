@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
@@ -73,7 +73,7 @@ public final class ProxyStateExporterTest {
     public void assertExportWithContextManager() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        when(ProxyContext.getInstance().getStateContext()).thenReturn(Optional.of(mock(StateContext.class, RETURNS_DEEP_STUBS)));
+        when(ProxyContext.getInstance().getInstanceStateContext()).thenReturn(Optional.of(mock(InstanceStateContext.class, RETURNS_DEEP_STUBS)));
         Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyStateExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
         assertThat(collector.get().toString(), is("0"));

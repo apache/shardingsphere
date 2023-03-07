@@ -21,8 +21,8 @@ import org.apache.shardingsphere.authority.distsql.parser.statement.ShowAuthorit
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowAuthorityRuleStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Show authority rule statement assert.
@@ -38,9 +38,9 @@ public final class ShowAuthorityRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowAuthorityRuleStatement actual, final ShowAuthorityRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
         }
     }
 }

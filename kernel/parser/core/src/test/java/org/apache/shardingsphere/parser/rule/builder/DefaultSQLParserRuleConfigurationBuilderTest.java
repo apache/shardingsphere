@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.parser.rule.builder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.Matchers.is;
 
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;

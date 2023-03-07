@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public final class CacheEvictedSubscriberTest {
     

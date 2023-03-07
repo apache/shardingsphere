@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jaeger;
 
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
@@ -30,12 +30,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
 
-@Slf4j
 @RunWith(Parameterized.class)
+@RequiredArgsConstructor
+@Slf4j
 public final class JaegerPluginE2EIT extends BasePluginE2EIT {
     
     private final SpanTestCase spanTestCase;
@@ -43,10 +43,6 @@ public final class JaegerPluginE2EIT extends BasePluginE2EIT {
     private Properties props;
     
     private String url;
-    
-    public JaegerPluginE2EIT(final SpanTestCase spanTestCase) {
-        this.spanTestCase = spanTestCase;
-    }
     
     @Parameters
     public static Collection<SpanTestCase> getTestParameters() {
@@ -59,7 +55,6 @@ public final class JaegerPluginE2EIT extends BasePluginE2EIT {
         url = props.getProperty("jaeger.url");
     }
     
-    @SneakyThrows(IOException.class)
     @Test
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();

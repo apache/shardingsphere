@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.RenameTableStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Rename table statement assert.
@@ -44,9 +44,9 @@ public final class RenameTableStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RenameTableStatement actual, final RenameTableStatementTestCase expected) {
         if (null == expected.getRenames()) {
-            assertNull(assertContext.getText("Actual rename table segment should exist."), actual.getRenameTables());
+            assertNull(actual.getRenameTables(), assertContext.getText("Actual rename table segment should exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual rename table segment should exist."), actual.getRenameTables());
+            assertNotNull(actual.getRenameTables(), assertContext.getText("Actual rename table segment should exist."));
             int count = 0;
             for (RenameTableDefinitionSegment each : actual.getRenameTables()) {
                 SQLSegmentAssert.assertIs(assertContext, each, expected.getRenames().get(count));

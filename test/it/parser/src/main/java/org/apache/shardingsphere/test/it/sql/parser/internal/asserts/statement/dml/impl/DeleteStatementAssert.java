@@ -42,10 +42,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Delete statement assert.
@@ -72,16 +72,16 @@ public final class DeleteStatementAssert {
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         Optional<WithSegment> withSegment = DeleteStatementHandler.getWithSegment(actual);
         if (null == expected.getWithClause()) {
-            assertFalse(assertContext.getText("Actual with segment should not exist."), withSegment.isPresent());
+            assertFalse(withSegment.isPresent(), assertContext.getText("Actual with segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual with segment should exist."), withSegment.isPresent());
+            assertTrue(withSegment.isPresent(), assertContext.getText("Actual with segment should exist."));
             WithClauseAssert.assertIs(assertContext, withSegment.get(), expected.getWithClause());
         }
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         if (null != expected.getTables() && !expected.getTables().isEmpty()) {
-            assertNotNull(assertContext.getText("Actual table segment should exist."), actual.getTable());
+            assertNotNull(actual.getTable(), assertContext.getText("Actual table segment should exist."));
             List<SimpleTableSegment> actualTableSegments = new LinkedList<>();
             if (actual.getTable() instanceof SimpleTableSegment) {
                 actualTableSegments.add((SimpleTableSegment) actual.getTable());
@@ -91,28 +91,28 @@ public final class DeleteStatementAssert {
             }
             TableAssert.assertIs(assertContext, actualTableSegments, expected.getTables());
         } else if (null != expected.getSubqueryTable()) {
-            assertNotNull(assertContext.getText("Actual subquery table segment should exist."), actual.getTable());
+            assertNotNull(actual.getTable(), assertContext.getText("Actual subquery table segment should exist."));
             TableAssert.assertIs(assertContext, (SubqueryTableSegment) actual.getTable(), expected.getSubqueryTable());
         } else {
-            assertNull(assertContext.getText("Actual table should not exist."), actual.getTable());
+            assertNull(actual.getTable(), assertContext.getText("Actual table should not exist."));
         }
     }
     
     private static void assertOutput(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         Optional<OutputSegment> outputSegment = DeleteStatementHandler.getOutputSegment(actual);
         if (null == expected.getOutputClause()) {
-            assertFalse(assertContext.getText("Actual output segment should not exist."), outputSegment.isPresent());
+            assertFalse(outputSegment.isPresent(), assertContext.getText("Actual output segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual output segment should exist."), outputSegment.isPresent());
+            assertTrue(outputSegment.isPresent(), assertContext.getText("Actual output segment should exist."));
             OutputClauseAssert.assertIs(assertContext, outputSegment.get(), expected.getOutputClause());
         }
     }
     
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         if (null == expected.getWhereClause()) {
-            assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
+            assertFalse(actual.getWhere().isPresent(), assertContext.getText("Actual where segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
+            assertTrue(actual.getWhere().isPresent(), assertContext.getText("Actual where segment should exist."));
             WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
         }
     }
@@ -120,9 +120,9 @@ public final class DeleteStatementAssert {
     private static void assertOrderByClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         Optional<OrderBySegment> orderBySegment = DeleteStatementHandler.getOrderBySegment(actual);
         if (null == expected.getOrderByClause()) {
-            assertFalse(assertContext.getText("Actual order by segment should not exist."), orderBySegment.isPresent());
+            assertFalse(orderBySegment.isPresent(), assertContext.getText("Actual order by segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual order by segment should exist."), orderBySegment.isPresent());
+            assertTrue(orderBySegment.isPresent(), assertContext.getText("Actual order by segment should exist."));
             OrderByClauseAssert.assertIs(assertContext, orderBySegment.get(), expected.getOrderByClause());
         }
     }
@@ -130,9 +130,9 @@ public final class DeleteStatementAssert {
     private static void assertLimitClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         Optional<LimitSegment> limitSegment = DeleteStatementHandler.getLimitSegment(actual);
         if (null == expected.getLimitClause()) {
-            assertFalse(assertContext.getText("Actual limit segment should not exist."), limitSegment.isPresent());
+            assertFalse(limitSegment.isPresent(), assertContext.getText("Actual limit segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual limit segment should exist."), limitSegment.isPresent());
+            assertTrue(limitSegment.isPresent(), assertContext.getText("Actual limit segment should exist."));
             LimitClauseAssert.assertRowCount(assertContext, limitSegment.get().getRowCount().orElse(null), expected.getLimitClause().getRowCount());
             SQLSegmentAssert.assertIs(assertContext, limitSegment.get(), expected.getLimitClause());
         }
