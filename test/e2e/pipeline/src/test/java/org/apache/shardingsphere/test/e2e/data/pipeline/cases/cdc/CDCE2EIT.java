@@ -39,8 +39,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.MySQLIncrementTask;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.PostgreSQLIncrementTask;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.IncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
@@ -130,18 +129,15 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         }
         Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(getDatabaseType(), 20);
         log.info("init data begin: {}", LocalDateTime.now());
-        DataSourceExecuteUtil.execute(getProxyDataSource(), getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
+        String insertOrderTableSql = getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName());
+        DataSourceExecuteUtil.execute(getProxyDataSource(), insertOrderTableSql, dataPair.getLeft());
         log.info("init data end: {}", LocalDateTime.now());
         try (Connection connection = DriverManager.getConnection(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword())) {
             initSchemaAndTable(connection);
         }
         startCDCClient();
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !queryForListWithLog("SHOW STREAMING LIST").isEmpty());
-        if (getDatabaseType() instanceof MySQLDatabaseType) {
-            startIncrementTask(new MySQLIncrementTask(getProxyDataSource(), getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), 20));
-        } else {
-            startIncrementTask(new PostgreSQLIncrementTask(getProxyDataSource(), PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName(), 20));
-        }
+        startIncrementTask(new IncrementalTask(getProxyDataSource(), getSourceTableOrderName(), insertOrderTableSql, new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
         getIncreaseTaskThread().join(10000);
         List<Map<String, Object>> actualProxyList;
         try (Connection connection = getProxyDataSource().getConnection()) {

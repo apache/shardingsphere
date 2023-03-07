@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.PostgreSQLIncrementTask;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.IncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
@@ -90,9 +90,13 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         createTargetOrderItemTableRule();
         Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
         log.info("init data begin: {}", LocalDateTime.now());
-        DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
+        String insertOrderSql = getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName());
+        DataSourceExecuteUtil.execute(getSourceDataSource(), insertOrderSql, dataPair.getLeft());
         DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
+        startMigrationWithSchema(getSourceTableOrderName(), "t_order");
+        startIncrementTask(new IncrementalTask(getSourceDataSource(), String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName()), insertOrderSql,
+                new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
         checkOrderMigration();
         checkOrderItemMigration();
         for (String each : listJobId()) {
@@ -106,8 +110,6 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     }
     
     private void checkOrderMigration() throws SQLException, InterruptedException {
-        startMigrationWithSchema(getSourceTableOrderName(), "t_order");
-        startIncrementTask(new PostgreSQLIncrementTask(getSourceDataSource(), PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName(), 20));
         String jobId = getJobIdByTableName("ds_0.test." + getSourceTableOrderName());
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
