@@ -30,9 +30,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Comment statement assert.
@@ -55,7 +55,7 @@ public final class CommentStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
         if (null == expected.getTable()) {
-            assertNull(assertContext.getText("Actual table should not exist."), actual.getTable());
+            assertNull(actual.getTable(), assertContext.getText("Actual table should not exist."));
         } else {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
@@ -63,7 +63,7 @@ public final class CommentStatementAssert {
     
     private static void assertColumn(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
         if (null == expected.getColumn()) {
-            assertNull(assertContext.getText("Actual column should not exist."), actual.getColumn());
+            assertNull(actual.getColumn(), assertContext.getText("Actual column should not exist."));
         } else {
             ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
         }
@@ -72,9 +72,9 @@ public final class CommentStatementAssert {
     private static void assertIndexType(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
         Optional<IndexTypeSegment> indexTypeSegment = CommentStatementHandler.getIndexType(actual);
         if (null == expected.getIndexType()) {
-            assertFalse(assertContext.getText("Actual index type should not exist."), indexTypeSegment.isPresent());
+            assertFalse(indexTypeSegment.isPresent(), assertContext.getText("Actual index type should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual index type should exist"), indexTypeSegment.isPresent());
+            assertTrue(indexTypeSegment.isPresent(), assertContext.getText("Actual index type should exist"));
             IndexTypeAssert.assertIs(assertContext, indexTypeSegment.get(), expected.getIndexType());
         }
     }

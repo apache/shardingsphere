@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import java.net.URL;
 import java.util.Optional;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Scenario data path.
@@ -68,7 +68,7 @@ public final class ScenarioDataPath {
     private String getFile(final Type type, final String fileName) {
         String path = String.join("/", getBasicPath(type), fileName);
         URL url = ScenarioDataPath.class.getClassLoader().getResource(path);
-        assertNotNull(String.format("File `%s` must exist.", path), url);
+        assertNotNull(url, String.format("File `%s` must exist.", path));
         return url.getFile();
     }
     
@@ -83,7 +83,7 @@ public final class ScenarioDataPath {
         String initSQLFileName = String.join("-", "01", type.name().toLowerCase(), BASIC_INIT_SQL_FILE);
         String initSQLResourceFile = String.join("/", getInitSQLResourcePath(type, databaseType), initSQLFileName);
         URL url = ScenarioDataPath.class.getClassLoader().getResource(initSQLResourceFile);
-        assertNotNull(String.format("File `%s` must exist.", initSQLResourceFile), url);
+        assertNotNull(url, String.format("File `%s` must exist.", initSQLResourceFile));
         return url.getFile();
     }
     
@@ -111,7 +111,7 @@ public final class ScenarioDataPath {
     private String getActualDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
         String resourceFile = getActualDatabaseInitSQLResourceFile(databaseName, databaseType);
         URL url = ScenarioDataPath.class.getClassLoader().getResource(resourceFile);
-        assertNotNull(String.format("File `%s` must exist.", resourceFile), url);
+        assertNotNull(url, String.format("File `%s` must exist.", resourceFile));
         return url.getFile();
     }
     

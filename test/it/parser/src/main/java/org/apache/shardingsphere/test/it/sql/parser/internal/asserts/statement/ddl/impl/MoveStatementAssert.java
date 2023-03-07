@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.cur
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.MoveStatementTestCase;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Move statement assert.
@@ -54,9 +54,9 @@ public final class MoveStatementAssert {
     
     private static void assertDirection(final SQLCaseAssertContext assertContext, final MoveStatement actual, final MoveStatementTestCase expected) {
         if (null == expected.getDirection()) {
-            assertFalse(assertContext.getText("Actual direction segment should not exist."), actual.getDirection().isPresent());
+            assertFalse(actual.getDirection().isPresent(), assertContext.getText("Actual direction segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual direction segment should exist."), actual.getDirection().isPresent());
+            assertTrue(actual.getDirection().isPresent(), assertContext.getText("Actual direction segment should exist."));
             DirectionSegmentAssert.assertIs(assertContext, actual.getDirection().get(), expected.getDirection());
         }
     }

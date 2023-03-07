@@ -31,8 +31,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Drop index statement assert.
@@ -55,9 +55,9 @@ public final class DropIndexStatementAssert {
     private static void assertTables(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(actual);
         if (null == expected.getTable()) {
-            assertFalse(assertContext.getText("Actual table segment should not exist."), simpleTableSegment.isPresent());
+            assertFalse(simpleTableSegment.isPresent(), assertContext.getText("Actual table segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual table segment should exist."), simpleTableSegment.isPresent());
+            assertTrue(simpleTableSegment.isPresent(), assertContext.getText("Actual table segment should exist."));
             TableAssert.assertIs(assertContext, simpleTableSegment.get(), expected.getTable());
         }
     }

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropTableStatement;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class DropTableStatementHandlerTest {
     

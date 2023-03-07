@@ -20,13 +20,13 @@ package org.apache.shardingsphere.proxy.frontend.state;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.impl.CircuitBreakProxyState;
-import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.impl.LockProxyState;
+import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,23 +37,24 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyStateContext {
     
-    private static final Map<StateType, ProxyState> STATES = new ConcurrentHashMap<>(3, 1);
+    private static final Map<InstanceState, ProxyState> STATES = new ConcurrentHashMap<>(3, 1);
     
     static {
-        STATES.put(StateType.OK, new OKProxyState());
-        STATES.put(StateType.LOCK, new LockProxyState());
-        STATES.put(StateType.CIRCUIT_BREAK, new CircuitBreakProxyState());
+        STATES.put(InstanceState.OK, new OKProxyState());
+        STATES.put(InstanceState.LOCK, new LockProxyState());
+        STATES.put(InstanceState.CIRCUIT_BREAK, new CircuitBreakProxyState());
     }
     
     /**
      * Execute command.
-     *  @param context channel handler context
+     * 
+     * @param context channel handler context
      * @param message message
      * @param databaseProtocolFrontendEngine database protocol frontend engine
      * @param connectionSession connection session
      */
     public static void execute(final ChannelHandlerContext context, final Object message,
                                final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final ConnectionSession connectionSession) {
-        ProxyContext.getInstance().getStateContext().ifPresent(optional -> STATES.get(optional.getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, connectionSession));
+        ProxyContext.getInstance().getInstanceStateContext().ifPresent(optional -> STATES.get(optional.getCurrentState()).execute(context, message, databaseProtocolFrontendEngine, connectionSession));
     }
 }

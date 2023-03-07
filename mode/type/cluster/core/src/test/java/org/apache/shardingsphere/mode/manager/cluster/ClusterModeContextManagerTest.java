@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
 import java.util.Map;

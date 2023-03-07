@@ -30,9 +30,9 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Mask rule assert.
@@ -49,9 +49,9 @@ public final class MaskRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MaskRuleSegment actual, final ExpectedMaskRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual mask rule should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual mask rule should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual mask rule should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual mask rule should exist."));
             assertThat(assertContext.getText("mask rule assertion error: "), actual.getTableName(), is(expected.getName()));
             assertMaskColumns(assertContext, actual.getColumns(), expected.getColumns());
         }
@@ -59,9 +59,9 @@ public final class MaskRuleAssert {
     
     private static void assertMaskColumns(final SQLCaseAssertContext assertContext, final Collection<MaskColumnSegment> actual, final List<ExpectedMaskColumn> expected) {
         if (expected.isEmpty()) {
-            assertNull(assertContext.getText("Actual mask column should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual mask column should not exist."));
         } else {
-            assertFalse(assertContext.getText("Actual mask column should exist."), actual.isEmpty());
+            assertFalse(actual.isEmpty(), assertContext.getText("Actual mask column should exist."));
             assertThat(assertContext.getText(String.format("Actual mask column size should be %s, but it was %s.", expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
             for (MaskColumnSegment each : actual) {

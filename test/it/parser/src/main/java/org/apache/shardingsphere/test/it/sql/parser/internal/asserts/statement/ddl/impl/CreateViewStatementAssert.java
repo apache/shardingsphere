@@ -27,8 +27,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Create view statement assert.
@@ -55,9 +55,9 @@ public final class CreateViewStatementAssert {
     
     private static void assertViewDefinition(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
         if (null == expected.getViewDefinition()) {
-            assertNull("actual view definition should not exist", actual.getViewDefinition());
+            assertNull(actual.getViewDefinition(), "actual view definition should not exist");
         } else {
-            assertNotNull("actual view definition should exist", actual.getViewDefinition());
+            assertNotNull(actual.getViewDefinition(), "actual view definition should exist");
             assertThat(assertContext.getText(String.format("`%s`'s view definition assertion error: ", actual.getClass().getSimpleName())), actual.getViewDefinition(),
                     is(expected.getViewDefinition()));
         }
@@ -65,9 +65,9 @@ public final class CreateViewStatementAssert {
     
     private static void assertSelect(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
         if (null == expected.getSelectStatement()) {
-            assertNull("actual select statement should not exist", actual.getSelect());
+            assertNull(actual.getSelect(), "actual select statement should not exist");
         } else {
-            assertNotNull("actual select statement should exist", actual.getSelect());
+            assertNotNull(actual.getSelect(), "actual select statement should exist");
             SelectStatementAssert.assertIs(assertContext, actual.getSelect(), expected.getSelectStatement());
         }
     }

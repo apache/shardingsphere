@@ -17,20 +17,25 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.GlobalLockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.ShardingSphereSchemaDataRegistrySubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.service.ClusterStatusService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.subscriber.ClusterStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.service.ComputeNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber.ComputeNodeStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.StorageNodeStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.process.subscriber.ProcessRegistrySubscriber;
+import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
@@ -48,6 +53,9 @@ public final class RegistryCenter {
     
     @Getter
     private final StorageNodeStatusService storageNodeStatusService;
+    
+    @Getter
+    private final ClusterStatusService clusterStatusService;
     
     @Getter
     private final ComputeNodeStatusService computeNodeStatusService;
@@ -71,6 +79,7 @@ public final class RegistryCenter {
         this.instanceMetaData = instanceMetaData;
         this.databaseConfigs = databaseConfigs;
         storageNodeStatusService = new StorageNodeStatusService(repository);
+        clusterStatusService = new ClusterStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
         globalLockPersistService = new GlobalLockPersistService(initDistributedLockHolder(repository));
         listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDatabaseName());
@@ -88,6 +97,7 @@ public final class RegistryCenter {
     
     private void createSubscribers(final ClusterPersistRepository repository) {
         new ComputeNodeStatusSubscriber(this, repository);
+        new ClusterStatusSubscriber(repository, eventBusContext);
         new StorageNodeStatusSubscriber(repository, eventBusContext);
         new ProcessRegistrySubscriber(repository, eventBusContext);
         new ShardingSphereSchemaDataRegistrySubscriber(repository, globalLockPersistService, eventBusContext);
@@ -103,5 +113,16 @@ public final class RegistryCenter {
         computeNodeStatusService.persistInstanceLabels(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getLabels());
         computeNodeStatusService.persistInstanceState(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getState());
         listenerFactory.watchListeners();
+    }
+    
+    /**
+     * Persist cluster state.
+     *
+     * @param contextManager context manager
+     */
+    public void persistClusterState(final ContextManager contextManager) {
+        if (Strings.isNullOrEmpty(repository.getDirectly(ComputeNode.getClusterStatusNodePath()))) {
+            clusterStatusService.persistClusterState(contextManager.getClusterStateContext());
+        }
     }
 }

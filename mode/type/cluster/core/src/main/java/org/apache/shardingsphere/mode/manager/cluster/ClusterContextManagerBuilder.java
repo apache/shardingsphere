@@ -92,10 +92,16 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+        loadClusterStatus(registryCenter, contextManager);
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
         new ContextManagerSubscriberFacade(persistService, registryCenter, contextManager);
         registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
+    }
+    
+    private void loadClusterStatus(final RegistryCenter registryCenter, final ContextManager contextManager) {
+        registryCenter.persistClusterState(contextManager);
+        contextManager.updateClusterState(registryCenter.getClusterStatusService().loadClusterStatus());
     }
     
     @Override

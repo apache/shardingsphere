@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.DropShardingAlgorithmStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -42,7 +42,7 @@ public final class DropShardingAlgorithmStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingAlgorithmStatement actual, final DropShardingAlgorithmStatementTestCase expected) {
         if (null == expected.getNames()) {
-            assertNull(assertContext.getText("Actual algorithm should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual algorithm should not exist."));
         } else {
             assertThat(assertContext.getText("Algorithm names assertion error: "), actual.getNames(), is(expected.getNames()));
             assertThat(assertContext.getText("Contains exist clause assertion error: "), actual.isIfExists(), is(expected.isIfExists()));

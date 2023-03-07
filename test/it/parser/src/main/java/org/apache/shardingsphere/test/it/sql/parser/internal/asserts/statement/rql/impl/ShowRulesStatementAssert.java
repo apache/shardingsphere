@@ -27,8 +27,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.S
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Show rules statement assert.
@@ -50,9 +50,9 @@ public final class ShowRulesStatementAssert {
     
     private static void assertIs(final SQLCaseAssertContext assertContext, final ShowRulesStatement actual, final DatabaseContainedTestCase expected) {
         if (null == expected.getDatabase()) {
-            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
+            assertFalse(actual.getDatabase().isPresent(), assertContext.getText("Actual database should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
+            assertTrue(actual.getDatabase().isPresent(), assertContext.getText("Actual database should exist."));
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
         }
     }
