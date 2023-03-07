@@ -33,8 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,7 +55,7 @@ public final class EncryptInsertOnUpdateTokenGeneratorTest {
     
     private EncryptInsertOnUpdateTokenGenerator generator;
     
-    @Before
+    @BeforeEach
     public void setup() {
         generator = new EncryptInsertOnUpdateTokenGenerator();
         generator.setEncryptRule(mockEncryptRule());
