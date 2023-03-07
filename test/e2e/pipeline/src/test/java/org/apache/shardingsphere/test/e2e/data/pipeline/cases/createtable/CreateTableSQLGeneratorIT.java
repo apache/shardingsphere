@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.createtable;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtil;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -38,6 +39,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.im
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,6 +89,8 @@ public final class CreateTableSQLGeneratorIT {
     
     private final CreateTableSQLGeneratorAssertionsRootEntity rootEntity;
     
+    private final DataSource dataSource;
+    
     public CreateTableSQLGeneratorIT(final PipelineTestParameter testParam) {
         this.testParam = testParam;
         rootEntity = JAXB.unmarshal(
@@ -99,9 +104,18 @@ public final class CreateTableSQLGeneratorIT {
         } else {
             storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);
         }
-        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(), "",
-                storageContainerConfig);
-        storageContainer.start();
+        if (ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
+            storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(), "",
+                    storageContainerConfig);
+            storageContainer.start();
+            dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
+        } else {
+            storageContainer = null;
+            String jdbcUrl = DataSourceEnvironment.getURL(testParam.getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), DEFAULT_DATABASE);
+            String username = ENV.getActualDataSourceUsername(databaseType);
+            String password = ENV.getActualDataSourcePassword(databaseType);
+            dataSource = StorageContainerUtil.generateDataSource(jdbcUrl, username, password);
+        }
     }
     
     @Parameters(name = "{0}")
@@ -110,13 +124,13 @@ public final class CreateTableSQLGeneratorIT {
         if (ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
-        for (String each : ENV.getPostgresVersions()) {
+        for (String each : ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
             result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), each, String.join("/", PARENT_PATH, POSTGRES_CASE_FILE_PATH)));
         }
-        for (String each : ENV.getMysqlVersions()) {
+        for (String each : ENV.listStorageContainerImages(new MySQLDatabaseType())) {
             result.add(new PipelineTestParameter(new MySQLDatabaseType(), each, String.join("/", PARENT_PATH, MYSQL_CASE_FILE_PATH)));
         }
-        for (String each : ENV.getOpenGaussVersions()) {
+        for (String each : ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
             result.add(new PipelineTestParameter(new OpenGaussDatabaseType(), each, String.join("/", PARENT_PATH, OPEN_GAUSS_CASE_FILE_PATH)));
         }
         return result;
@@ -125,7 +139,6 @@ public final class CreateTableSQLGeneratorIT {
     @Test
     public void assertGenerateCreateTableSQL() throws SQLException {
         log.info("generate create table sql, test parameter: {}", testParam);
-        DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -162,6 +175,11 @@ public final class CreateTableSQLGeneratorIT {
     
     @After
     public void stopContainer() {
-        storageContainer.stop();
+        if (dataSource instanceof AutoCloseable) {
+            CloseUtil.closeQuietly((AutoCloseable) dataSource);
+        }
+        if (null != storageContainer) {
+            storageContainer.stop();
+        }
     }
 }
