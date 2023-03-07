@@ -24,7 +24,7 @@
         </input>
         <output version="default">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order
+                CREATE TABLE IF NOT EXISTS public."t_order"
                 (
                 order_id integer NOT NULL,
                 user_id integer NOT NULL,
@@ -37,7 +37,7 @@
         </output>
         <output version="10">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order
+                CREATE TABLE IF NOT EXISTS public."t_order"
                 (
                 order_id integer NOT NULL,
                 user_id integer NOT NULL,
@@ -49,7 +49,7 @@
         </output>
         <output version="11">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order
+                CREATE TABLE IF NOT EXISTS public."t_order"
                 (
                 order_id integer NOT NULL,
                 user_id integer NOT NULL,
@@ -69,7 +69,7 @@
         </input>
         <output version="default">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order_item
+                CREATE TABLE IF NOT EXISTS public."t_order_item"
                 (
                 item_id integer NOT NULL,
                 order_id integer NOT NULL,
@@ -84,7 +84,7 @@
         </output>
         <output version="10">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order_item
+                CREATE TABLE IF NOT EXISTS public."t_order_item"
                 (
                 item_id integer NOT NULL,
                 order_id integer NOT NULL,
@@ -99,7 +99,7 @@
         </output>
         <output version="11">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order_item
+                CREATE TABLE IF NOT EXISTS public."t_order_item"
                 (
                 item_id integer NOT NULL,
                 order_id integer NOT NULL,
@@ -122,7 +122,7 @@
         </input>
         <output version="default">
             <sql>
-                CREATE UNLOGGED TABLE IF NOT EXISTS public.t_log
+                CREATE UNLOGGED TABLE IF NOT EXISTS public."t_log"
                 (
                 id integer
                 ,
@@ -133,7 +133,7 @@
         </output>
         <output version="10">
             <sql>
-                CREATE UNLOGGED TABLE IF NOT EXISTS public.t_log
+                CREATE UNLOGGED TABLE IF NOT EXISTS public."t_log"
                 (
                 id integer
                 ,
@@ -146,7 +146,7 @@
         </output>
         <output version="11">
             <sql>
-                CREATE UNLOGGED TABLE IF NOT EXISTS public.t_log
+                CREATE UNLOGGED TABLE IF NOT EXISTS public."t_log"
                 (
                 id integer
                 ,

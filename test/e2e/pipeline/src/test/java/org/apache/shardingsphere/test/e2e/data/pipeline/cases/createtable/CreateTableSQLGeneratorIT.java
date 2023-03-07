@@ -30,6 +30,7 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGen
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorOutputEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.NativeContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
@@ -139,6 +140,9 @@ public final class CreateTableSQLGeneratorIT {
     @Test
     public void assertGenerateCreateTableSQL() throws SQLException {
         log.info("generate create table sql, test parameter: {}", testParam);
+        if (ENV.getItEnvType() == PipelineEnvTypeEnum.NATIVE) {
+            new NativeContainerComposer(testParam.getDatabaseType()).cleanUpDatabase(DEFAULT_DATABASE);
+        }
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
