@@ -106,7 +106,7 @@ public final class IncrementalTask extends BaseIncrementTask {
     }
     
     private String buildUpdateSql(final List<String> columnNames, final String placeholder) {
-        StringBuilder sql = new StringBuilder("UPDATE `%s` SET ");
+        StringBuilder sql = new StringBuilder("UPDATE %s SET ");
         for (String each : columnNames) {
             sql.append(each).append("=").append(placeholder).append(",");
         }
