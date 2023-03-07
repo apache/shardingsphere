@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.infra.lock.LockContext;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
  * Unlock cluster updater.
  */
 @RequiredArgsConstructor
-@Setter
 public final class UnlockClusterUpdater implements RALUpdater<UnlockClusterStatement> {
     
     @Override
@@ -46,7 +44,7 @@ public final class UnlockClusterUpdater implements RALUpdater<UnlockClusterState
         LockContext lockContext = contextManager.getInstanceContext().getLockContext();
         lockContext.unlock(new GlobalLockDefinition("cluster_lock"));
         contextManager.getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.OK));
-        // TODO unlock csn if locked
+        // TODO unlock snapshot info if locked
     }
     
     private void checkMode() {
@@ -56,7 +54,7 @@ public final class UnlockClusterUpdater implements RALUpdater<UnlockClusterState
     
     private void checkState() {
         ClusterState currentState = ProxyContext.getInstance().getContextManager().getClusterStateContext().getCurrentState();
-        ShardingSpherePreconditions.checkState(ClusterState.OK != currentState, () -> new IllegalStateException("Cluster does not locked"));
+        ShardingSpherePreconditions.checkState(ClusterState.OK != currentState, () -> new IllegalStateException("Cluster is not locked"));
     }
     
     @Override
