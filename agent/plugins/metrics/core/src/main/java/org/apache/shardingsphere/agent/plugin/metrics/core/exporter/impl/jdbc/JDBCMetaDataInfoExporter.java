@@ -43,7 +43,7 @@ import java.util.Optional;
 public final class JDBCMetaDataInfoExporter implements MetricsExporter {
     
     private final MetricConfiguration config = new MetricConfiguration("jdbc_meta_data_info",
-            MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-JDBC. database_count is logic number of databases; storage_unit_count is number of storage units",
+            MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-JDBC",
             Arrays.asList("database", "type"), Collections.emptyMap());
     
     @Override

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollecto
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.apache.shardingsphere.driver.ShardingSphereDriver;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.DriverManager;
@@ -39,10 +39,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class JDBCMetaDataInfoExporterTest {
     
-    @BeforeEach
-    public void reset() {
+    @AfterEach
+    public void reset() throws SQLException {
         MetricConfiguration config = new MetricConfiguration("jdbc_meta_data_info",
-                MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-JDBC. database_count is logic number of databases; storage_unit_count is number of storage units",
+                MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-JDBC",
                 Arrays.asList("database", "type"), Collections.emptyMap());
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
@@ -58,7 +58,7 @@ public final class JDBCMetaDataInfoExporterTest {
     
     @Test
     public void assertExportWithoutShardingSphereDriver() {
-        Optional<GaugeMetricFamilyMetricsCollector> collector = new JDBCStateExporter().export("FIXTURE");
+        Optional<GaugeMetricFamilyMetricsCollector> collector = new JDBCMetaDataInfoExporter().export("FIXTURE");
         assertFalse(collector.isPresent());
     }
 }
