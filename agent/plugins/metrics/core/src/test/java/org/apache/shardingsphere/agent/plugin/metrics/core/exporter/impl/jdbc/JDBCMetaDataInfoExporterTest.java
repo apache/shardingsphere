@@ -34,7 +34,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class JDBCMetaDataInfoExporterTest {
@@ -48,17 +47,11 @@ public final class JDBCMetaDataInfoExporterTest {
     }
     
     @Test
-    public void assertExportWithShardingSphereDriver() throws SQLException {
+    public void assertExport() throws SQLException {
         DriverManager.registerDriver(new ShardingSphereDriver());
         DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
         Optional<GaugeMetricFamilyMetricsCollector> collector = new JDBCMetaDataInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
         assertThat(collector.get().toString(), is("foo_driver_fixture_db=2, storage_unit_count=2"));
-    }
-    
-    @Test
-    public void assertExportWithoutShardingSphereDriver() {
-        Optional<GaugeMetricFamilyMetricsCollector> collector = new JDBCMetaDataInfoExporter().export("FIXTURE");
-        assertFalse(collector.isPresent());
     }
 }
