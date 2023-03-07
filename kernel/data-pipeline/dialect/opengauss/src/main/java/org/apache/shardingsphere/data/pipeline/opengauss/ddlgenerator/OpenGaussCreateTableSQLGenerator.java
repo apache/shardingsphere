@@ -33,7 +33,7 @@ import java.util.Collection;
  */
 public final class OpenGaussCreateTableSQLGenerator implements CreateTableSQLGenerator {
     
-    private static final String SELECT_TABLE_DEF_SQL = "SELECT * FROM pg_get_tabledef('%s.%s')";
+    private static final String SELECT_TABLE_DEF_SQL = "SELECT * FROM pg_get_tabledef('%s.\"%s\"')";
     
     private static final String COLUMN_LABEL = "pg_get_tabledef";
     

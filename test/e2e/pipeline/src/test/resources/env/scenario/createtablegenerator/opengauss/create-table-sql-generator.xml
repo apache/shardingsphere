@@ -40,10 +40,10 @@
         </output>
     </create-table-generator-assertion>
 
-    <create-table-generator-assertion id="t_order_item">
-        <input table="t_order_item">
+    <create-table-generator-assertion id="T_ORDER_ITEM">
+        <input table="T_ORDER_ITEM">
             <sql>
-                CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
+                CREATE TABLE "T_ORDER_ITEM" (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
             </sql>
         </input>
         <output version="default">
@@ -51,7 +51,7 @@
                 SET search_path = public
             </sql>
             <sql>
-                CREATE TABLE t_order_item (
+                CREATE TABLE "T_ORDER_ITEM" (
                 item_id integer NOT NULL,
                 order_id integer NOT NULL,
                 user_id integer NOT NULL,
@@ -61,7 +61,7 @@
                 WITH (orientation=row, compression=no)
             </sql>
             <sql>
-                ALTER TABLE t_order_item ADD CONSTRAINT t_order_item_pkey PRIMARY KEY (item_id)
+                ALTER TABLE "T_ORDER_ITEM" ADD CONSTRAINT "T_ORDER_ITEM_pkey" PRIMARY KEY (item_id)
             </sql>
         </output>
     </create-table-generator-assertion>
