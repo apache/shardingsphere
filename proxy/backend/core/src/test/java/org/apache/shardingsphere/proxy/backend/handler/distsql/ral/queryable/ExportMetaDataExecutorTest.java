@@ -81,7 +81,7 @@ public final class ExportMetaDataExecutorTest {
         when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ExportMetaDataStatement sqlStatement = new ExportMetaDataStatement(null);
-        Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(database, sqlStatement);
+        Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(3), is("{\"storageNodes\":[],\"metaData\":{\"databases\":{\"empty_metadata\":\"databaseName: null\\ndataSources:\\nrules:\\n\"},\"props\":\"\",\"rules\":\"\"}}"));
@@ -101,7 +101,7 @@ public final class ExportMetaDataExecutorTest {
         when(database.getName()).thenReturn("normal_db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(database, new ExportMetaDataStatement(null));
+        Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), new ExportMetaDataStatement(null));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(3), is(loadExpectedRow()));

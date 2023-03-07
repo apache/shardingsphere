@@ -91,6 +91,10 @@ importMetaData
     : IMPORT METADATA (metaDataValue | FROM FILE filePath)
     ;
 
+exportStorageNodes
+    : EXPORT STORAGE NODES (TO FILE filePath)?
+    ;
+
 convertYamlConfiguration
     : CONVERT YAML CONFIGURATION FROM FILE filePath
     ;
