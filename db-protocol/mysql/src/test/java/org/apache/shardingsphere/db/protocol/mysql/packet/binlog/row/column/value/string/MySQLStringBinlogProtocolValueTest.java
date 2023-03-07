@@ -83,8 +83,8 @@ public final class MySQLStringBinlogProtocolValueTest {
         columnDef.setColumnMeta(MySQLBinaryColumnType.MYSQL_TYPE_STRING.getValue() << 8);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedByte()).thenReturn((short) expected.length());
-        when(payload.readStringFix(expected.length())).thenReturn(expected);
-        assertThat(new MySQLStringBinlogProtocolValue().read(columnDef, payload), is(expected));
+        when(payload.readStringFixByBytes(expected.length())).thenReturn(expected.getBytes());
+        assertThat(new MySQLStringBinlogProtocolValue().read(columnDef, payload), is(expected.getBytes()));
     }
     
     @Test
@@ -93,8 +93,8 @@ public final class MySQLStringBinlogProtocolValueTest {
         columnDef.setColumnMeta((MySQLBinaryColumnType.MYSQL_TYPE_STRING.getValue() ^ ((256 & 0x300) >> 4)) << 8);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedShortLE()).thenReturn(expected.length());
-        when(payload.readStringFix(expected.length())).thenReturn(expected);
-        assertThat(new MySQLStringBinlogProtocolValue().read(columnDef, payload), is(expected));
+        when(payload.readStringFixByBytes(expected.length())).thenReturn(expected.getBytes());
+        assertThat(new MySQLStringBinlogProtocolValue().read(columnDef, payload), is(expected.getBytes()));
     }
     
     @Test
