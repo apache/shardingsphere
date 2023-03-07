@@ -39,7 +39,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.IncrementalTask;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
@@ -137,7 +137,7 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         }
         startCDCClient();
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !queryForListWithLog("SHOW STREAMING LIST").isEmpty());
-        startIncrementTask(new IncrementalTask(getProxyDataSource(), getSourceTableOrderName(), insertOrderTableSql, new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
+        startIncrementTask(new E2EIncrementalTask(getProxyDataSource(), getSourceTableOrderName(), insertOrderTableSql, new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
         getIncreaseTaskThread().join(10000);
         List<Map<String, Object>> actualProxyList;
         try (Connection connection = getProxyDataSource().getConnection()) {

@@ -30,6 +30,7 @@ public final class OpenGaussJdbcQueryPropertiesExtension implements JdbcQueryPro
     
     @Override
     public Properties extendQueryProperties() {
+        queryProps.setProperty("extra_float_digits", "3");
         return queryProps;
     }
     
