@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ass
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedOnDuplicateKeyColumns;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -44,7 +44,7 @@ public final class OnDuplicateKeyColumnsAssert {
      * @param expected expected on duplicate key columns
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final OnDuplicateKeyColumnsSegment actual, final ExpectedOnDuplicateKeyColumns expected) {
-        assertNotNull(assertContext.getText("On duplicate key columns should exist."), expected);
+        assertNotNull(expected, assertContext.getText("On duplicate key columns should exist."));
         assertThat(assertContext.getText("On duplicate key columns size assertion error: "), actual.getColumns().size(), is(expected.getAssignments().size()));
         int count = 0;
         for (AssignmentSegment each : actual.getColumns()) {

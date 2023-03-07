@@ -27,7 +27,7 @@ import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Metric meta data assert.
@@ -46,9 +46,9 @@ public final class MetricMetadataAssert {
                 ? expected.getMetricName().replace("_total", "")
                 : expected.getMetricName();
         assertThat(String.format("Metric `%s` status is not success, error is `%s`", expected.getMetricName(), actual.getError()), actual.getStatus(), is("success"));
-        assertFalse(String.format("Metric `%s` is empty.", expected.getMetricName()), actual.getData().isEmpty());
+        assertFalse(actual.getData().isEmpty(), String.format("Metric `%s` is empty.", expected.getMetricName()));
         Collection<Metric> metrics = actual.getData().get(metricName);
-        assertFalse(String.format("Metric `%s` is empty.", expected.getMetricName()), metrics.isEmpty());
+        assertFalse(metrics.isEmpty(), String.format("Metric `%s` is empty.", expected.getMetricName()));
         for (Metric each : metrics) {
             assertThat(String.format("Metric `%s` is not `%s` type", expected.getMetricName(), expected.getMetricType()), each.getType(), is(expected.getMetricType()));
         }

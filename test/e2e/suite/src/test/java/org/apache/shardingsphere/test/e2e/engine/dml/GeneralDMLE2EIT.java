@@ -34,7 +34,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
@@ -83,7 +83,7 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     
     private int executeForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse("Not a DML statement.", statement.execute(getSQL()));
+            assertFalse(statement.execute(getSQL()), "Not a DML statement.");
             return statement.getUpdateCount();
         }
     }
@@ -93,7 +93,7 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertFalse("Not a DML statement.", preparedStatement.execute());
+            assertFalse(preparedStatement.execute(), "Not a DML statement.");
             return preparedStatement.getUpdateCount();
         }
     }

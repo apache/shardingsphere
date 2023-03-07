@@ -40,7 +40,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(Parameterized.class)
 @Slf4j

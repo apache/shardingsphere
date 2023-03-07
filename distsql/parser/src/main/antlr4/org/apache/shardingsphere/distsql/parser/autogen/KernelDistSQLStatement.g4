@@ -51,5 +51,6 @@ execute
     | convertYamlConfiguration
     | showMigrationRule
     | alterMigrationRule
+    | lockCluster
     ) SEMI?
     ;

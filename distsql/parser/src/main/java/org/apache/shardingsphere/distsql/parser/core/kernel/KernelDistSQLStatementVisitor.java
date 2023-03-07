@@ -37,6 +37,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InstanceIdContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InventoryIncrementalRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LabelComputeNodeContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LockClusterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertyContext;
@@ -87,6 +88,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInv
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelComputeNodeStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetaDataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
@@ -355,6 +357,11 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     private AlgorithmSegment getAlgorithmSegment(final RateLimiterContext ctx) {
         return null == ctx ? null : (AlgorithmSegment) visit(ctx);
+    }
+    
+    @Override
+    public ASTNode visitLockCluster(final LockClusterContext ctx) {
+        return new LockClusterStatement((AlgorithmSegment) visitAlgorithmDefinition(ctx.lockStrategy().algorithmDefinition()));
     }
     
     @Override

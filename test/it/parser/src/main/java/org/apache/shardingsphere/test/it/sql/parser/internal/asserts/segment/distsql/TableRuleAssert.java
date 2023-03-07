@@ -25,8 +25,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.dis
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedTableRule;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -44,9 +44,9 @@ public final class TableRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TableRuleSegment actual, final ExpectedTableRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual table rule should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual table rule should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual table rule should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual table rule should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getLogicTable(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),

@@ -24,11 +24,10 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public final class KernelSQLExceptionTest {
     
-    @SuppressWarnings("serial")
     @Test
     public void assertToSQLException() {
         SQLException actual = new KernelSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, "reason") {
@@ -39,7 +38,6 @@ public final class KernelSQLExceptionTest {
         assertNull(actual.getCause());
     }
     
-    @SuppressWarnings("serial")
     @Test
     public void assertToSQLExceptionWithCause() {
         Exception cause = new RuntimeException("test");

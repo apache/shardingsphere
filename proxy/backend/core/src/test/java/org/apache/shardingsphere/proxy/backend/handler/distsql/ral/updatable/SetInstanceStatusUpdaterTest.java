@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetInstanceStatusStatement;
-import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -69,7 +69,7 @@ public final class SetInstanceStatusUpdaterTest {
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("currentInstance");
         when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").isPresent()).thenReturn(true);
-        when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").get().getState().getCurrentState()).thenReturn(StateType.CIRCUIT_BREAK);
+        when(contextManager.getInstanceContext().getComputeNodeInstanceById("instanceID").get().getState().getCurrentState()).thenReturn(InstanceState.CIRCUIT_BREAK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
         assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", new SetInstanceStatusStatement("DISABLE", "instanceID")));

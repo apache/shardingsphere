@@ -36,7 +36,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

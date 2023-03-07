@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.state;
+package org.apache.shardingsphere.proxy.backend.state.spi;
+
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * State type.
+ * Proxy cluster state.
  */
-public enum StateType {
+public interface ProxyClusterState extends TypedSPI {
     
-    OK, CIRCUIT_BREAK, LOCK
+    /**
+     * Check sql statement.
+     * 
+     * @param sqlStatement sql statement
+     */
+    void check(SQLStatement sqlStatement);
 }

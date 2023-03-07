@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -51,9 +51,9 @@ public final class ShadowRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShadowRuleSegment actual, final ExpectedShadowRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual shadow rule should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual shadow rule should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual shadow rule should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual shadow rule should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s shadow rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getShadow(), is(expected.getShadow()));
             assertThat(assertContext.getText(String.format("`%s`'s shadow rule segment assertion error: ",

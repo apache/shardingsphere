@@ -25,8 +25,8 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ConfigurationPropertiesTest {
     
@@ -34,15 +34,15 @@ public final class ConfigurationPropertiesTest {
     public void assertGetValue() {
         ConfigurationProperties actual = new ConfigurationProperties(createProperties());
         assertThat(actual.getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.DEBUG));
-        assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
-        assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
+        assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(20));
-        assertTrue(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED));
+        assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE), is("ORIGINAL"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE), is("PostgreSQL"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(20));
-        assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
+        assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE), is(BackendExecutorType.OLTP));
@@ -79,15 +79,15 @@ public final class ConfigurationPropertiesTest {
     public void assertGetDefaultValue() {
         ConfigurationProperties actual = new ConfigurationProperties(new Properties());
         assertThat(actual.getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.INFO));
-        assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
-        assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
+        assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
+        assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(0));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(1));
-        assertFalse(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED));
+        assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE), is("NONE"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE), is(""));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(128));
-        assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
+        assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE), is(-1));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE), is(0));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE), is(BackendExecutorType.OLAP));

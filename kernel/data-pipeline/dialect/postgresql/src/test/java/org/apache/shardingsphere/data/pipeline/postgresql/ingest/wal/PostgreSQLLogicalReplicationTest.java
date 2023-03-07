@@ -36,7 +36,7 @@ import org.postgresql.replication.fluent.logical.ChainedLogicalStreamBuilder;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;

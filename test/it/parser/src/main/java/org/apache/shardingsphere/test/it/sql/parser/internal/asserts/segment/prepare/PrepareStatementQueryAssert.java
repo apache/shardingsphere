@@ -28,8 +28,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.UpdateStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.query.ExpectedPrepareStatementQuery;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Prepare statement query assert.
@@ -54,36 +54,36 @@ public final class PrepareStatementQueryAssert {
     
     private static void assertSelect(final SQLCaseAssertContext assertContext, final PrepareStatementQuerySegment actual, final ExpectedPrepareStatementQuery expected) {
         if (null == expected.getSelectClause()) {
-            assertFalse(assertContext.getText("Actual select statement should not exist."), actual.getSelect().isPresent());
+            assertFalse(actual.getSelect().isPresent(), assertContext.getText("Actual select statement should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual select statement should exist."), actual.getSelect().isPresent());
+            assertTrue(actual.getSelect().isPresent(), assertContext.getText("Actual select statement should exist."));
             SelectStatementAssert.assertIs(assertContext, actual.getSelect().get(), expected.getSelectClause());
         }
     }
     
     private static void assertInsert(final SQLCaseAssertContext assertContext, final PrepareStatementQuerySegment actual, final ExpectedPrepareStatementQuery expected) {
         if (null == expected.getInsertClause()) {
-            assertFalse(assertContext.getText("Actual insert statement should not exist."), actual.getInsert().isPresent());
+            assertFalse(actual.getInsert().isPresent(), assertContext.getText("Actual insert statement should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual insert statement should exist."), actual.getInsert().isPresent());
+            assertTrue(actual.getInsert().isPresent(), assertContext.getText("Actual insert statement should exist."));
             InsertStatementAssert.assertIs(assertContext, actual.getInsert().get(), expected.getInsertClause());
         }
     }
     
     private static void assertUpdate(final SQLCaseAssertContext assertContext, final PrepareStatementQuerySegment actual, final ExpectedPrepareStatementQuery expected) {
         if (null == expected.getUpdateClause()) {
-            assertFalse(assertContext.getText("Actual update statement should not exist."), actual.getUpdate().isPresent());
+            assertFalse(actual.getUpdate().isPresent(), assertContext.getText("Actual update statement should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual update statement should exist."), actual.getUpdate().isPresent());
+            assertTrue(actual.getUpdate().isPresent(), assertContext.getText("Actual update statement should exist."));
             UpdateStatementAssert.assertIs(assertContext, actual.getUpdate().get(), expected.getUpdateClause());
         }
     }
     
     private static void assertDelete(final SQLCaseAssertContext assertContext, final PrepareStatementQuerySegment actual, final ExpectedPrepareStatementQuery expected) {
         if (null == expected.getDeleteClause()) {
-            assertFalse(assertContext.getText("Actual delete statement should not exist."), actual.getDelete().isPresent());
+            assertFalse(actual.getDelete().isPresent(), assertContext.getText("Actual delete statement should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual delete statement should exist."), actual.getDelete().isPresent());
+            assertTrue(actual.getDelete().isPresent(), assertContext.getText("Actual delete statement should exist."));
             DeleteStatementAssert.assertIs(assertContext, actual.getDelete().get(), expected.getDeleteClause());
         }
     }

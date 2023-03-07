@@ -46,8 +46,8 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Table assert.
@@ -102,9 +102,9 @@ public final class TableAssert {
         IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getIdentifier(), expected, "Table");
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
         if (null == expected.getOwner()) {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+            assertFalse(actual.getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
+            assertTrue(actual.getOwner().isPresent(), assertContext.getText("Actual owner should exist."));
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
@@ -176,7 +176,7 @@ public final class TableAssert {
     
     private static void assertJoinType(final SQLCaseAssertContext assertContext, final String actual, final String expected) {
         if (Strings.isNullOrEmpty(expected)) {
-            assertTrue(assertContext.getText("Actual join-type should not exist."), Strings.isNullOrEmpty(actual));
+            assertTrue(Strings.isNullOrEmpty(actual), assertContext.getText("Actual join-type should not exist."));
         } else {
             assertThat(assertContext.getText("Actual join-type should exist."), actual, is(expected));
         }

@@ -29,8 +29,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Alter shadow rule statement assert.
@@ -47,18 +47,18 @@ public final class AlterShadowRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterShadowRuleStatement actual, final AlterShadowRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
             assertShadowRule(assertContext, actual.getRules(), expected.getRules());
         }
     }
     
     private static void assertShadowRule(final SQLCaseAssertContext assertContext, final Collection<ShadowRuleSegment> actual, final List<ExpectedShadowRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual shadow rule should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual shadow rule should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual shadow rule should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual shadow rule should exist."));
             int count = 0;
             for (ShadowRuleSegment tableRuleSegment : actual) {
                 ExpectedShadowRule expectedTableRule = expected.get(count);

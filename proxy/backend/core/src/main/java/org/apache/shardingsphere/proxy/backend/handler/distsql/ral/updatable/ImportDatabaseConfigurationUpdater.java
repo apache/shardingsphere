@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDa
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.proxy.backend.util.ImportUtils;
+import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +33,8 @@ import java.sql.SQLException;
  */
 public final class ImportDatabaseConfigurationUpdater implements RALUpdater<ImportDatabaseConfigurationStatement> {
     
+    private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
+    
     @Override
     public void executeUpdate(final String databaseName, final ImportDatabaseConfigurationStatement sqlStatement) throws SQLException {
         File file = new File(sqlStatement.getFilePath());
@@ -42,7 +44,7 @@ public final class ImportDatabaseConfigurationUpdater implements RALUpdater<Impo
         } catch (final IOException ex) {
             throw new FileIOException(ex);
         }
-        ImportUtils.importDatabaseConfig(yamlConfig);
+        databaseConfigImportExecutor.importDatabaseConfiguration(yamlConfig);
     }
     
     @Override
