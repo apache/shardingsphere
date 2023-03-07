@@ -37,7 +37,7 @@ public class ClusterWriteLockStrategy implements ClusterLockStrategy {
         LockContext lockContext = contextManager.getInstanceContext().getLockContext();
         if (lockContext.tryLock(new GlobalLockDefinition("cluster_lock"), -1)) {
             contextManager.getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.READ_ONLY));
-            // TODO lock csn
+            // TODO lock snapshot info
         }
     }
     

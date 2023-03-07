@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.state.impl;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.proxy.backend.exception.ReadOnlyException;
 import org.apache.shardingsphere.proxy.backend.state.spi.ProxyClusterState;
@@ -41,7 +42,7 @@ public final class ReadOnlyProxyState implements ProxyClusterState {
     
     private boolean isUnsupportedStatement(final SQLStatement sqlStatement) {
         return sqlStatement instanceof InsertStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement || sqlStatement instanceof DDLStatement
-                || sqlStatement instanceof UpdatableRALStatement || sqlStatement instanceof RDLStatement;
+                || sqlStatement instanceof UpdatableRALStatement && !(sqlStatement instanceof UnlockClusterStatement) || sqlStatement instanceof RDLStatement;
     }
     
     @Override

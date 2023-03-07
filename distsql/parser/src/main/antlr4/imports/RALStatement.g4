@@ -107,6 +107,10 @@ lockCluster
     : LOCK CLUSTER WITH lockStrategy
     ;
 
+unlockCluster
+    : UNLOCK CLUSTER
+    ;
+
 inventoryIncrementalRule
     : LP_ readDefinition? (COMMA_? writeDefinition)? (COMMA_? streamChannel)? RP_
     ;
