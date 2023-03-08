@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.nanoid.algorithm.keygen;
 
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

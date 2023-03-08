@@ -19,8 +19,7 @@ package org.apache.shardingsphere.sharding.route.strategy.type.none;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,17 +28,12 @@ import java.util.HashSet;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public final class NoneShardingStrategyTest {
     
-    private NoneShardingStrategy noneShardingStrategy;
-    
-    @Before
-    public void setUp() {
-        noneShardingStrategy = new NoneShardingStrategy();
-    }
+    private final NoneShardingStrategy noneShardingStrategy = new NoneShardingStrategy();
     
     @Test
     public void assertGetShardingAlgorithm() {

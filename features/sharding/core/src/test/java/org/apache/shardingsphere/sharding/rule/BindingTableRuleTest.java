@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rule;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.ActualTableNotFoundException;
 import org.apache.shardingsphere.sharding.exception.metadata.BindingTableNotFoundException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;

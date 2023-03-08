@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +40,7 @@ public final class ShardingInsertValuesTokenTest {
     
     private RouteUnit routeUnit;
     
-    @Before
+    @BeforeEach
     public void setup() {
         shardingInsertValuesToken = new ShardingInsertValuesToken(0, 2);
         RouteMapper routeMapper = new RouteMapper("logic_ds", "actual_ds");
