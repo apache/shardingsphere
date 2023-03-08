@@ -57,8 +57,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public final class ImportMetaDataUpdaterTest {
     
-    private static final String METADATA_VALUE = "{\"storageNodes\":[{\"ip\":\"127.0.0.1\",\"port\":\"3306\",\"username\":\"root\",\"password\":\"\",\"database\":\"demo_ds_0\"}],"
-            + "\"metaData\":{\"databases\":{\"sharding_db\":\"databaseName: sharding_db\\ndataSources:\\nrules:\\n\"},\"props\":\"props:\\n  system-log-level: INFO\\n  sql-show: false\\n\","
+    private static final String METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"sharding_db\":\"databaseName: sharding_db\\ndataSources:\\nrules:\\n\"},"
+            + "\"props\":\"props:\\n  system-log-level: INFO\\n  sql-show: false\\n\","
             + "\"rules\":\"rules:\\n- !AUTHORITY\\n  privilege:\\n    type: ALL_PERMITTED\\n  users:\\n  - authenticationMethodName: ''\\n    password: root\\n    user: root@%\\n\"}}";
     
     private final String empty = "empty_metadata";

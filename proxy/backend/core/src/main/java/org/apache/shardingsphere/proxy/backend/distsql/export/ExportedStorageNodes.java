@@ -21,16 +21,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
+
 /**
- * Exported cluster info.
+ * Exported storage nodes.
  */
 @Getter
 @Setter
-public class ExportedClusterInfo {
+public class ExportedStorageNodes {
     
-    @JsonProperty("meta_data")
-    private ExportedMetaData metaData;
-    
-    @JsonProperty("snapshot_info")
-    private ExportedSnapshotInfo snapshotInfo;
+    @JsonProperty("storage_nodes")
+    private Collection<ExportedStorageNode> storageNodes;
 }

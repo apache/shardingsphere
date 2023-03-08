@@ -21,16 +21,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 /**
- * Exported cluster info.
+ * Exported snapshot info.
  */
 @Getter
 @Setter
-public class ExportedClusterInfo {
+public class ExportedSnapshotInfo {
     
-    @JsonProperty("meta_data")
-    private ExportedMetaData metaData;
+    private String csn;
     
-    @JsonProperty("snapshot_info")
-    private ExportedSnapshotInfo snapshotInfo;
+    @JsonProperty("create_time")
+    private LocalDateTime createTime;
 }
