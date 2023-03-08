@@ -37,6 +37,6 @@ public final class PreparedStatementExecuteErrorCountAdvice implements InstanceM
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("PreparedStatement");
+        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("prepared_statement");
     }
 }

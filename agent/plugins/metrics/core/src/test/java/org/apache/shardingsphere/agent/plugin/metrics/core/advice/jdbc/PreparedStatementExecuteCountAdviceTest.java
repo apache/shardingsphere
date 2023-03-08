@@ -47,6 +47,6 @@ public final class PreparedStatementExecuteCountAdviceTest {
     @Test
     public void assertMethod() {
         advice.afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, null, "FIXTURE");
-        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("PreparedStatement=1"));
+        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("prepared_statement=1"));
     }
 }

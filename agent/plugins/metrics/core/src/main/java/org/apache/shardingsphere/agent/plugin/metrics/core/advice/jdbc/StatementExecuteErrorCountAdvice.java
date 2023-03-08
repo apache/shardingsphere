@@ -37,6 +37,6 @@ public final class StatementExecuteErrorCountAdvice implements InstanceMethodAdv
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("Statement");
+        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("statement");
     }
 }

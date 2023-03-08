@@ -48,6 +48,6 @@ public final class StatementExecuteErrorCountAdviceTest {
     @Test
     public void assertMethod() {
         advice.onThrowing(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, mock(IOException.class), "FIXTURE");
-        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("Statement=1"));
+        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("statement=1"));
     }
 }

@@ -48,6 +48,6 @@ public final class PreparedStatementExecuteErrorCountAdviceTest {
     @Test
     public void assertMethod() {
         advice.onThrowing(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, mock(IOException.class), "FIXTURE");
-        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("PreparedStatement=1"));
+        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("prepared_statement=1"));
     }
 }

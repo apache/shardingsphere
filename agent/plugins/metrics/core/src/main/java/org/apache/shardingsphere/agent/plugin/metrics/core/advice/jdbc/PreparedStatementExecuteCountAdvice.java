@@ -37,6 +37,6 @@ public final class PreparedStatementExecuteCountAdvice implements InstanceMethod
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("PreparedStatement");
+        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("prepared_statement");
     }
 }
