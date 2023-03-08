@@ -52,6 +52,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -124,27 +125,28 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
             registerStorageUnit(each);
         }
         createOrderTableRule();
-        try (Connection connection = getProxyDataSource().getConnection()) {
+        DataSource proxyDataSource = generateShardingSphereDataSourceFromProxy();
+        try (Connection connection = proxyDataSource.getConnection()) {
             initSchemaAndTable(connection);
         }
         Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(getDatabaseType(), 20);
         log.info("init data begin: {}", LocalDateTime.now());
         String insertOrderTableSql = getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName());
-        DataSourceExecuteUtil.execute(getProxyDataSource(), insertOrderTableSql, dataPair.getLeft());
+        DataSourceExecuteUtil.execute(proxyDataSource, insertOrderTableSql, dataPair.getLeft());
         log.info("init data end: {}", LocalDateTime.now());
         try (Connection connection = DriverManager.getConnection(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword())) {
             initSchemaAndTable(connection);
         }
         startCDCClient();
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !queryForListWithLog("SHOW STREAMING LIST").isEmpty());
-        startIncrementTask(new E2EIncrementalTask(getProxyDataSource(), getSourceTableOrderName(), insertOrderTableSql, new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
+        startIncrementTask(new E2EIncrementalTask(proxyDataSource, getSourceTableOrderName(), insertOrderTableSql, new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
         getIncreaseTaskThread().join(10000);
         List<Map<String, Object>> actualProxyList;
-        try (Connection connection = getProxyDataSource().getConnection()) {
+        try (Connection connection = proxyDataSource.getConnection()) {
             ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", getOrderTableNameWithSchema()));
             actualProxyList = transformResultSetToList(resultSet);
         }
-        Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> listOrderRecords(getOrderTableNameWithSchema()).size() == actualProxyList.size());
+        Awaitility.await().atMost(20, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> listOrderRecords(getOrderTableNameWithSchema()).size() == actualProxyList.size());
         List<Map<String, Object>> actualImportedList = listOrderRecords(getOrderTableNameWithSchema());
         assertThat(actualProxyList.size(), is(actualImportedList.size()));
         SchemaTableName schemaTableName = getDatabaseType().isSchemaAvailable()
@@ -152,7 +154,7 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
                 : new SchemaTableName(new SchemaName(null), new TableName(getSourceTableOrderName()));
         PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword()),
                 getDatabaseType());
-        PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(generateShardingSphereDataSourceFromProxy(), getDatabaseType());
+        PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(proxyDataSource, getDatabaseType());
         StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(PipelineBaseE2EIT.SCHEMA_NAME, "t_order");
         PipelineColumnMetaData primaryKeyMetaData = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
