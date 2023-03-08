@@ -67,11 +67,6 @@
             <artifactId>commons-dbcp2</artifactId>
         </dependency>
         
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-shaded-client</artifactId>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
     
     <build>

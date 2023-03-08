@@ -35,5 +35,4 @@ public final class YamlProxyConfiguration {
     
     private final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations;
     
-    private final Map<String, YamlHBaseConfiguration> hBaseConfigurations;
 }

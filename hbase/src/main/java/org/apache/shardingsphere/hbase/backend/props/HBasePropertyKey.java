@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.props.hbase;
+package org.apache.shardingsphere.hbase.backend.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

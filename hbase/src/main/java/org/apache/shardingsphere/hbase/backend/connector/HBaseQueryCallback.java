@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.context;
+package org.apache.shardingsphere.hbase.backend.connector;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.proxy.backend.exception.HBaseOperationException;
+import org.apache.hadoop.hbase.client.Table;
+import java.io.IOException;
 
 /**
- * background thread to refresh metadata.
+ * Call back for HBase operation.
+ * 
+ * @param <T> return type.
  */
-@AllArgsConstructor
-@Slf4j
-public class HBaseMetaRefresher implements Runnable {
+public interface HBaseQueryCallback<T> {
     
-    private final HBaseContext context;
+    /**
+     * Do operation in HBase.
+     * 
+     * @param table execute in HBase Table
+     * @return result
+     * @throws IOException exception
+     * 
+     */
+    T executeInHBase(Table table) throws IOException;
     
-    @Override
-    public void run() {
-        try {
-            context.getConnections().forEach(context::loadTablesFromHBase);
-        } catch (HBaseOperationException e) {
-            // ignored
-        }
-    }
 }

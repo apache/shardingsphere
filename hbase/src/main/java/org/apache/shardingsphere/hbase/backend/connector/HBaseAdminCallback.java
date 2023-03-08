@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.hbase;
+package org.apache.shardingsphere.hbase.backend.connector;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.Admin;
+import java.io.IOException;
 
-@RequiredArgsConstructor
-@Getter
-public final class HBaseCluster {
+/**
+ * Call back for HBase operation.
+ *
+ * @param <T> return type
+ */
+public interface HBaseAdminCallback<T> {
     
-    private final String clusterName;
-    
-    private final Connection connection;
-    
+    /**
+     * Do operation in HBase.
+     *
+     * @param admin execute in HBase Table
+     * @return result
+     * @throws IOException exception
+     *
+     */
+    T executeInHBase(Admin admin) throws IOException;
 }

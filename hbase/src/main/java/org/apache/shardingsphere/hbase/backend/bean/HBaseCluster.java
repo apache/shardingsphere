@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.props.hbase;
+package org.apache.shardingsphere.hbase.backend.bean;
 
-import org.apache.shardingsphere.infra.util.props.TypedProperties;
-import java.util.Properties;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.hadoop.hbase.client.Connection;
 
-/**
- * Typed properties of HBase.
- */
-public final class HBaseProperties extends TypedProperties<HBasePropertyKey> {
+@RequiredArgsConstructor
+@Getter
+public final class HBaseCluster {
     
-    public HBaseProperties(final Properties props) {
-        super(HBasePropertyKey.class, props);
-    }
+    private final String clusterName;
+    
+    private final Connection connection;
+    
 }

@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.hbase;
+package org.apache.shardingsphere.hbase.backend.config;
 
-import org.apache.hadoop.hbase.client.Admin;
-import java.io.IOException;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
- * Call back for HBase operation.
- *
- * @param <T> return type
+ * Rule configuration for YAML.
  */
-public interface HBaseAdminCallback<T> {
+@Getter
+@Setter
+public final class YamlHBaseConfiguration implements YamlConfiguration {
     
-    /**
-     * Do operation in HBase.
-     *
-     * @param admin execute in HBase Table
-     * @return result
-     * @throws IOException exception
-     *
-     */
-    T executeInHBase(Admin admin) throws IOException;
+    private String databaseName;
+    
+    private Map<String, Object> dataSourceCommon;
+    
+    private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
+    
+    private Properties props;
+    
 }

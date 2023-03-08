@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.context;
+package org.apache.shardingsphere.hbase.backend.context;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,12 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
-import org.apache.shardingsphere.infra.config.props.hbase.HBaseProperties;
-import org.apache.shardingsphere.infra.config.props.hbase.HBasePropertyKey;
-import org.apache.shardingsphere.infra.hbase.HBaseCluster;
-import org.apache.shardingsphere.proxy.backend.connector.hbase.HBaseBackgroundExecutorManager;
-import org.apache.shardingsphere.proxy.backend.connector.hbase.HBaseExecutor;
-import org.apache.shardingsphere.proxy.backend.exception.HBaseOperationException;
+import org.apache.shardingsphere.hbase.backend.bean.HBaseCluster;
+import org.apache.shardingsphere.hbase.backend.connector.HBaseBackgroundExecutorManager;
+import org.apache.shardingsphere.hbase.backend.connector.HBaseExecutor;
+import org.apache.shardingsphere.hbase.backend.exception.HBaseOperationException;
+import org.apache.shardingsphere.hbase.backend.props.HBaseProperties;
+import org.apache.shardingsphere.hbase.backend.props.HBasePropertyKey;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -15,29 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.config;
+package org.apache.shardingsphere.hbase.backend.config;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlHBaseParameter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 /**
- * Rule configuration for YAML.
+ * YAML Data source parameters for HBase.
  */
 @Getter
 @Setter
-public final class YamlHBaseConfiguration implements YamlConfiguration {
+public final class YamlHBaseParameter implements YamlConfiguration {
     
-    private String databaseName;
+    private String hbaseZookeeperQuorum;
     
-    private Map<String, Object> dataSourceCommon;
+    private String fsDefaultFs;
     
-    private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
+    private String hbaseRootDir;
     
-    private Properties props;
+    private long hbaseRpcTimeout;
     
+    private long hbaseClientOperationTimeout;
+    
+    private long hbaseClientScannerTimeoutPeriod;
+    
+    private String hbaseZookeeperPropertyDataDir;
+    
+    private String zookeeperZNodeParent;
+    
+    private String accessUser;
+    
+    private int ipcPoolSize = 1;
 }

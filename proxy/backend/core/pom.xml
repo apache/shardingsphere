@@ -229,11 +229,5 @@
             <scope>compile</scope>
         </dependency>
         
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-shaded-client</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        
     </dependencies>
 </project>

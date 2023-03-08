@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.hbase;
+package org.apache.shardingsphere.hbase.backend.connector;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;

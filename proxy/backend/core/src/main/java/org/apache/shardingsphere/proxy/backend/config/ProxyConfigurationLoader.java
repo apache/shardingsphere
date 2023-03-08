@@ -54,8 +54,6 @@ public final class ProxyConfigurationLoader {
     
     private static final Pattern SCHEMA_CONFIG_FILE_PATTERN = Pattern.compile("config-.+\\.yaml");
     
-    private static final Pattern HBASE_CONFIG_FILE = Pattern.compile("hbase-.+\\.yaml");
-    
     /**
      * Load configuration of ShardingSphere-Proxy.
      *
@@ -67,13 +65,9 @@ public final class ProxyConfigurationLoader {
         YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(String.join("/", path, SERVER_CONFIG_FILE)));
         File configPath = getResourceFile(path);
         Collection<YamlProxyDatabaseConfiguration> databaseConfigs = loadDatabaseConfigurations(configPath);
-        Collection<YamlHBaseConfiguration> hbaseConfigs = loadHBaseConfigurations(configPath);
         return new YamlProxyConfiguration(serverConfig, databaseConfigs.stream().collect(Collectors.toMap(
                 YamlProxyDatabaseConfiguration::getDatabaseName, each -> each, (oldValue, currentValue) -> oldValue,
-                LinkedHashMap::new)), hbaseConfigs.stream().collect(
-                        Collectors.toMap(
-                                YamlHBaseConfiguration::getDatabaseName, each -> each, (oldValue, currentValue) -> oldValue,
-                                LinkedHashMap::new)));
+                LinkedHashMap::new)));
     }
     
     @SneakyThrows(URISyntaxException.class)
@@ -158,28 +152,4 @@ public final class ProxyConfigurationLoader {
         return path.listFiles(each -> SCHEMA_CONFIG_FILE_PATTERN.matcher(each.getName()).matches());
     }
     
-    private static File[] findHBaseConfigurationFiles(final File path) {
-        return path.listFiles(each -> HBASE_CONFIG_FILE.matcher(each.getName()).matches());
-    }
-    
-    private static Collection<YamlHBaseConfiguration> loadHBaseConfigurations(final File configPath) throws IOException {
-        Collection<String> loadedHBaseDatabaseNames = new HashSet<>();
-        Collection<YamlHBaseConfiguration> result = new LinkedList<>();
-        for (File each : findHBaseConfigurationFiles(configPath)) {
-            loadHBaseConfiguration(each).ifPresent(optional -> {
-                Preconditions.checkState(loadedHBaseDatabaseNames.add(optional.getDatabaseName()), "HBase Database name `%s` must unique at all database configurations.", optional.getDatabaseName());
-                result.add(optional);
-            });
-        }
-        return result;
-    }
-    
-    private static Optional<YamlHBaseConfiguration> loadHBaseConfiguration(final File yamlFile) throws IOException {
-        YamlHBaseConfiguration result = YamlEngine.unmarshal(yamlFile, YamlHBaseConfiguration.class);
-        if (null == result) {
-            return Optional.empty();
-        }
-        Preconditions.checkNotNull(result.getDatabaseName(), "Property `databaseName` in file `%s` is required.", yamlFile.getName());
-        return Optional.of(result);
-    }
 }

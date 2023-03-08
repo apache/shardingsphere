@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.hbase;
+package org.apache.shardingsphere.hbase.backend.connector;
 
 import org.apache.hadoop.hbase.client.Table;
 import java.io.IOException;
 
 /**
  * Call back for HBase operation.
- * 
- * @param <T> return type.
  */
-public interface HBaseQueryCallback<T> {
+public interface HBaseUpdateCallback {
     
     /**
      * Do operation in HBase.
-     * 
+     *
      * @param table execute in HBase Table
-     * @return result
      * @throws IOException exception
-     * 
      */
-    T executeInHBase(Table table) throws IOException;
+    void executeInHBase(Table table) throws IOException;
     
 }

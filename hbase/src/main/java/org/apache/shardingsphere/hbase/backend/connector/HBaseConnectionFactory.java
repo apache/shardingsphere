@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.hbase;
+package org.apache.shardingsphere.hbase.backend.connector;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.security.User;
+import org.apache.hadoop.hbase.shaded.org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.security.UserGroupInformation;
-import org.apache.shardingsphere.proxy.backend.config.YamlHBaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlHBaseParameter;
-import org.apache.shardingsphere.proxy.backend.exception.HBaseOperationException;
+import org.apache.shardingsphere.hbase.backend.config.YamlHBaseConfiguration;
+import org.apache.shardingsphere.hbase.backend.config.YamlHBaseParameter;
+import org.apache.shardingsphere.hbase.backend.exception.HBaseOperationException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;

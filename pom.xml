@@ -49,6 +49,7 @@
         <module>test</module>
         
         <module>distribution</module>
+        <module>hbase</module>
     </modules>
     
     <properties>
