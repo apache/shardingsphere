@@ -55,6 +55,18 @@ advisors:
         params:
           - index: 0
             type: java.lang.String
+  - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.StatementExecuteLatencyHistogramAdvice
+    pointcuts:
+      - name: executeQuery
+        type: method
+      - name: execute
+        type: method
+      - name: executeUpdate
+        type: method
+        params:
+          - index: 0
+            type: java.lang.String
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteCountAdvice
     pointcuts:
@@ -72,4 +84,23 @@ advisors:
       - name: execute
         type: method
       - name: executeUpdate
+        type: method
+  - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteLatencyHistogramAdvice
+    pointcuts:
+      - name: executeQuery
+        type: method
+      - name: execute
+        type: method
+      - name: executeUpdate
+        type: method
+  - target: org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.CommitTransactionsCountAdvice
+    pointcuts:
+      - name: commit
+        type: method
+  - target: org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.RollbackTransactionsCountAdvice
+    pointcuts:
+      - name: rollback
         type: method

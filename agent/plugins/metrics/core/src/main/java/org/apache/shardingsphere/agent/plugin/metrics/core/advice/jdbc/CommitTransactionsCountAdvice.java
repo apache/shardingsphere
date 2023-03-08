@@ -28,15 +28,15 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 
 /**
- * Statement execute count advice for ShardingSphere-JDBC.
+ * Commit transactions count advice for ShardingSphere-JDBC.
  */
-public final class PreparedStatementExecuteCountAdvice implements InstanceMethodAdvice {
+public final class CommitTransactionsCountAdvice implements InstanceMethodAdvice {
     
-    private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_total", MetricCollectorType.COUNTER,
-            "Total number of statement execute", Collections.singletonList("statement_type"));
+    private final MetricConfiguration config = new MetricConfiguration("jdbc_transactions_total", MetricCollectorType.COUNTER,
+            "Total transactions of ShardingSphere-JDBC", Collections.singletonList("type"));
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("PreparedStatement");
+    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
+        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("commit");
     }
 }

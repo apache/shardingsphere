@@ -28,7 +28,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 
 /**
- * Statement execute error count advice for ShardingSphereStatement.
+ * Statement execute error count advice for ShardingSphere-JDBC.
  */
 public final class StatementExecuteErrorCountAdvice implements InstanceMethodAdvice {
     

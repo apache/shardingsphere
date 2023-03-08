@@ -17,26 +17,35 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 
-/**
- * Statement execute count advice for ShardingSphere-JDBC.
- */
-public final class PreparedStatementExecuteCountAdvice implements InstanceMethodAdvice {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+
+public final class CommitTransactionsCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_total", MetricCollectorType.COUNTER,
-            "Total number of statement execute", Collections.singletonList("statement_type"));
+    private final MetricConfiguration config = new MetricConfiguration("jdbc_transactions_total", MetricCollectorType.COUNTER,
+            "Total transactions of ShardingSphere-JDBC", Collections.singletonList("type"));
     
-    @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("PreparedStatement");
+    @AfterEach
+    public void reset() {
+        ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
+    }
+    
+    @Test
+    public void assertMethod() {
+        CommitTransactionsCountAdvice advice = new CommitTransactionsCountAdvice();
+        advice.beforeMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, "FIXTURE");
+        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("commit=1"));
     }
 }
