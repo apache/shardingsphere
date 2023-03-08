@@ -39,8 +39,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussSelectStatement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -65,7 +65,7 @@ public final class FetchStreamMergedResultTest {
     
     private ConnectionContext connectionContext;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         fetchCountStatementContext = new FetchStatementContext(createFetchStatement(false));
         fetchCountStatementContext.setUpCursorDefinition(createCursorStatementContext());
