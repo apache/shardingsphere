@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.distsql.export;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+
+import java.util.Optional;
 
 /**
- * Exported cluster info.
+ * Export storage nodes statement.
  */
-@Getter
-@Setter
-public class ExportedClusterInfo {
+@RequiredArgsConstructor
+public final class ExportStorageNodesStatement extends QueryableRALStatement {
     
-    @JsonProperty("meta_data")
-    private ExportedMetaData metaData;
+    private final String filePath;
     
-    @JsonProperty("snapshot_info")
-    private ExportedSnapshotInfo snapshotInfo;
+    /**
+     * Get file path.
+     *
+     * @return file path
+     */
+    public Optional<String> getFilePath() {
+        return Optional.ofNullable(filePath);
+    }
 }
