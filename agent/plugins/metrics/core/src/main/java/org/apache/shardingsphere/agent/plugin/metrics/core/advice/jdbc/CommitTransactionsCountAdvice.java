@@ -17,26 +17,13 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-
-import java.lang.reflect.Method;
-import java.util.Collections;
-
 /**
  * Commit transactions count advice for ShardingSphere-JDBC.
  */
-public final class CommitTransactionsCountAdvice implements InstanceMethodAdvice {
-    
-    private final MetricConfiguration config = new MetricConfiguration("jdbc_transactions_total", MetricCollectorType.COUNTER,
-            "Total transactions of ShardingSphere-JDBC", Collections.singletonList("type"));
+public final class CommitTransactionsCountAdvice extends AbstractTransactionsCountAdvice {
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("commit");
+    protected String getTransactionType() {
+        return "commit";
     }
 }

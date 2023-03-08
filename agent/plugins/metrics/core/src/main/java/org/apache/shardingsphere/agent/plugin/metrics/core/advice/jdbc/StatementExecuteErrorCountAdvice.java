@@ -17,26 +17,13 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-
-import java.lang.reflect.Method;
-import java.util.Collections;
-
 /**
- * Statement execute error count advice for ShardingSphere-JDBC.
+ * Execute error count advice for ShardingSphereStatement.
  */
-public final class StatementExecuteErrorCountAdvice implements InstanceMethodAdvice {
-    
-    private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_error_total", MetricCollectorType.COUNTER,
-            "Total number of statement execute error", Collections.singletonList("statement_type"));
+public final class StatementExecuteErrorCountAdvice extends AbstractExecuteErrorCountAdvice {
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("statement");
+    protected String getStatementType() {
+        return "statement";
     }
 }

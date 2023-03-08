@@ -17,26 +17,13 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
-import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.CounterMetricsCollector;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
-import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-
-import java.lang.reflect.Method;
-import java.util.Collections;
-
 /**
  * Rollback transactions count advice for ShardingSphere-JDBC.
  */
-public final class RollbackTransactionsCountAdvice implements InstanceMethodAdvice {
-    
-    private final MetricConfiguration config = new MetricConfiguration("jdbc_transactions_total", MetricCollectorType.COUNTER,
-            "Total transactions of ShardingSphere-JDBC", Collections.singletonList("type"));
+public final class RollbackTransactionsCountAdvice extends AbstractTransactionsCountAdvice {
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc("rollback");
+    protected String getTransactionType() {
+        return "rollback";
     }
 }
