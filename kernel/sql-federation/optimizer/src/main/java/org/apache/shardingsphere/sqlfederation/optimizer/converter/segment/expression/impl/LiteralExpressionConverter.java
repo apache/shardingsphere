@@ -39,7 +39,7 @@ public final class LiteralExpressionConverter implements SQLSegmentConverter<Lit
             return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof String) {
-            return Optional.of(SqlLiteral.createCharString(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
+            return Optional.of(SqlLiteral.createCharString(String.valueOf(segment.getLiterals()), "UTF-8", SqlParserPos.ZERO));
         }
         return Optional.empty();
     }
