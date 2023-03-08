@@ -45,14 +45,14 @@ public final class AbstractTransactionsCountAdviceTest {
     @Test
     public void assertWithCommit() {
         CommitTransactionsCountAdvice advice = new CommitTransactionsCountAdvice();
-        advice.afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, null,"FIXTURE");
+        advice.afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("commit=1"));
     }
     
     @Test
     public void assertWithRollback() {
         RollbackTransactionsCountAdvice advice = new RollbackTransactionsCountAdvice();
-        advice.afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, null,"FIXTURE");
+        advice.afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("rollback=1"));
     }
 }
