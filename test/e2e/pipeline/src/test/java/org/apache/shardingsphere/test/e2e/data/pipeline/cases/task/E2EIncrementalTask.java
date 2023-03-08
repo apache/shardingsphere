@@ -86,11 +86,13 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
     }
     
     private void updateOrderById(final Object orderId) {
-        int randomInt = ThreadLocalRandom.current().nextInt(-100, 100);
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        int randomInt = random.nextInt(-100, 100);
+        double randDouble = random.nextDouble(-999.0, 999.0);
         if (databaseType instanceof MySQLDatabaseType) {
             String sql = String.format(buildUpdateSql(MYSQL_COLUMN_NAMES, "?"), orderTableName);
             log.info("update sql: {}", sql);
-            int randomUnsignedInt = ThreadLocalRandom.current().nextInt(10, 100);
+            int randomUnsignedInt = random.nextInt(10, 100);
             LocalDateTime now = LocalDateTime.now();
             DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{"中文测试", randomInt, randomInt, randomInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt,
                     randomUnsignedInt, 1.0F, 1.0, new BigDecimal("999"), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue() + 1, new byte[]{}, new byte[]{1, 2, -1, -3},
@@ -100,7 +102,7 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             String sql = String.format(buildUpdateSql(POSTGRESQL_COLUMN_NAMES, "?"), orderTableName);
             log.info("update sql: {}", sql);
-            DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{"中文测试", randomInt, BigDecimal.valueOf(10000), true, new byte[]{}, "update", 1.0F, 2.0,
+            DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{"中文测试", randomInt, BigDecimal.valueOf(10000), true, new byte[]{}, "update", random.nextFloat(), randDouble,
                     PipelineCaseHelper.generateJsonString(10, true), PipelineCaseHelper.generateJsonString(20, true), "text-update", LocalDate.now(),
                     LocalTime.now(), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now(), orderId});
         }
