@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class MultiplexMemoryPipelineChannelTest {
     
@@ -72,7 +72,7 @@ public final class MultiplexMemoryPipelineChannelTest {
             memoryChannel.pushRecord(record);
         }
         boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
-        assertTrue("await failed", awaitResult);
+        assertTrue(awaitResult, "await failed");
         memoryChannel.close();
     }
     

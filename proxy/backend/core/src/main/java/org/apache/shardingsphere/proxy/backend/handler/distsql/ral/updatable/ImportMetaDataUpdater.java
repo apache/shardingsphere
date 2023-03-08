@@ -29,8 +29,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
-import org.apache.shardingsphere.proxy.backend.util.ImportUtils;
 import org.apache.shardingsphere.proxy.backend.util.JsonUtils;
+import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +45,8 @@ import java.util.Objects;
 public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataStatement> {
     
     private final YamlRuleConfigurationSwapperEngine ruleConfigSwapperEngine = new YamlRuleConfigurationSwapperEngine();
+    
+    private final YamlDatabaseConfigurationImportExecutor databaseConfigImportExecutor = new YamlDatabaseConfigurationImportExecutor();
     
     @Override
     public void executeUpdate(final String databaseName, final ImportMetaDataStatement sqlStatement) throws SQLException {
@@ -78,7 +80,7 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
     private void importDatabase(final ExportedMetaData exportedMetaData) {
         for (final String each : exportedMetaData.getDatabases().values()) {
             YamlProxyDatabaseConfiguration yamlDatabaseConfig = YamlEngine.unmarshal(each, YamlProxyDatabaseConfiguration.class);
-            ImportUtils.importDatabaseConfig(yamlDatabaseConfig);
+            databaseConfigImportExecutor.importDatabaseConfiguration(yamlDatabaseConfig);
         }
     }
     

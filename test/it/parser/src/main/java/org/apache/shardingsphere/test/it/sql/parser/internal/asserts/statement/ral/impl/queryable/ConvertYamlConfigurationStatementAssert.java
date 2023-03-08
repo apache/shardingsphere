@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ConvertYamlConfigurationStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -39,7 +39,7 @@ public final class ConvertYamlConfigurationStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ConvertYamlConfigurationStatement actual, final ConvertYamlConfigurationStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should no exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should no exist."));
         } else {
             assertThat(actual.getFilePath(), is(expected.getFilePath()));
         }

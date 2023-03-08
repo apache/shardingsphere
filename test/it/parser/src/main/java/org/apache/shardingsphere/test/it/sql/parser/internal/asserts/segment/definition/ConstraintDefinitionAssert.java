@@ -27,9 +27,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.tab
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedConstraintDefinition;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Constraint definition assert.
@@ -57,21 +57,21 @@ public final class ConstraintDefinitionAssert {
             indexCount++;
         }
         if (null == expected.getConstraintName()) {
-            assertFalse(assertContext.getText("Actual constraint name should not exist."), actual.getConstraintName().isPresent());
+            assertFalse(actual.getConstraintName().isPresent(), assertContext.getText("Actual constraint name should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual constraint name should exist."), actual.getConstraintName().isPresent());
+            assertTrue(actual.getConstraintName().isPresent(), assertContext.getText("Actual constraint name should exist."));
             assertThat(assertContext.getText("Actual constraint name assertion error."), actual.getConstraintName().get().getIdentifier().getValue(), is(expected.getConstraintName()));
         }
         if (null == expected.getIndexName()) {
-            assertFalse(assertContext.getText("Actual index name should not exist."), actual.getIndexName().isPresent());
+            assertFalse(actual.getIndexName().isPresent(), assertContext.getText("Actual index name should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual index name should exist."), actual.getIndexName().isPresent());
+            assertTrue(actual.getIndexName().isPresent(), assertContext.getText("Actual index name should exist."));
             assertThat(assertContext.getText("Actual index name assertion error."), actual.getIndexName().get().getIndexName().getIdentifier().getValue(), is(expected.getIndexName()));
         }
         if (null == expected.getReferencedTable()) {
-            assertFalse(assertContext.getText("Actual referenced table should not exist."), actual.getReferencedTable().isPresent());
+            assertFalse(actual.getReferencedTable().isPresent(), assertContext.getText("Actual referenced table should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual referenced table should exist."), actual.getReferencedTable().isPresent());
+            assertTrue(actual.getReferencedTable().isPresent(), assertContext.getText("Actual referenced table should exist."));
             TableAssert.assertIs(assertContext, actual.getReferencedTable().get(), expected.getReferencedTable());
         }
         assertThat(assertContext.getText("Constraint definition start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));

@@ -48,6 +48,8 @@ import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
@@ -82,6 +84,8 @@ public final class ContextManager implements AutoCloseable {
     
     private final ExecutorEngine executorEngine;
     
+    private final ClusterStateContext clusterStateContext = new ClusterStateContext();
+    
     public ContextManager(final MetaDataContexts metaDataContexts, final InstanceContext instanceContext) {
         this.metaDataContexts = metaDataContexts;
         this.instanceContext = instanceContext;
@@ -90,7 +94,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Renew meta data contexts.
-     *
+     * 
      * @param metaDataContexts meta data contexts
      */
     public synchronized void renewMetaDataContexts(final MetaDataContexts metaDataContexts) {
@@ -99,7 +103,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Get data source map.
-     *
+     * 
      * @param databaseName database name
      * @return data source map
      */
@@ -109,7 +113,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Add database.
-     *
+     * 
      * @param databaseName database name
      */
     public synchronized void addDatabase(final String databaseName) {
@@ -122,7 +126,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Drop database.
-     *
+     * 
      * @param databaseName database name
      */
     public synchronized void dropDatabase(final String databaseName) {
@@ -135,7 +139,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Add schema.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      */
@@ -148,7 +152,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Drop schema.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      */
@@ -161,7 +165,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Alter schema.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      * @param toBeDeletedTableName to be deleted table name
@@ -174,7 +178,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Alter schema.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      * @param toBeChangedTable to be changed table
@@ -223,7 +227,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Alter rule configuration.
-     *
+     * 
      * @param databaseName database name
      * @param ruleConfigs rule configurations
      */
@@ -243,7 +247,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Alter schema meta data.
-     *
+     * 
      * @param databaseName database name
      * @param reloadDatabase reload database
      * @param currentDatabase current database
@@ -257,7 +261,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Alter data source configuration.
-     *
+     * 
      * @param databaseName database name
      * @param dataSourcePropsMap altered data source properties map
      */
@@ -287,7 +291,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Renew ShardingSphere databases.
-     *
+     * 
      * @param database database
      * @param resource resource
      * @return ShardingSphere databases
@@ -303,7 +307,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Alter data source and rule configuration.
-     *
+     * 
      * @param databaseName database name
      * @param dataSourcePropsMap data source props map
      * @param ruleConfigs rule configurations
@@ -333,7 +337,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Create meta data contexts.
-     *
+     * 
      * @param databaseName database name
      * @param switchingResource switching resource
      * @param ruleConfigs rule configs
@@ -360,7 +364,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Create changed databases.
-     *
+     * 
      * @param databaseName database name
      * @param switchingResource switching resource
      * @param ruleConfigs rule configs
@@ -398,7 +402,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Create new ShardingSphere database.
-     *
+     * 
      * @param originalDatabase original database
      * @return ShardingSphere databases
      */
@@ -410,7 +414,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Alter global rule configuration.
-     *
+     * 
      * @param ruleConfigs global rule configuration
      */
     @SuppressWarnings("rawtypes")
@@ -429,7 +433,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Alter properties.
-     *
+     * 
      * @param props properties to be altered
      */
     public synchronized void alterProperties(final Properties props) {
@@ -440,7 +444,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Reload database meta data from governance center.
-     *
+     * 
      * @param databaseName to be reloaded database name
      */
     public synchronized void reloadDatabaseMetaData(final String databaseName) {
@@ -462,7 +466,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Delete schema names.
-     *
+     * 
      * @param databaseName database name
      * @param reloadDatabase reload database
      * @param currentDatabase current database
@@ -474,7 +478,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Reload schema.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName to be reloaded schema name
      * @param dataSourceName data source name
@@ -507,7 +511,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Reload table.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName to be reloaded table name
@@ -523,7 +527,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Reload table from single data source.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      * @param dataSourceName data source name
@@ -566,6 +570,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Drop ShardingSphere data database.
+     * 
      * @param databaseName database name
      */
     public synchronized void dropShardingSphereDatabaseData(final String databaseName) {
@@ -577,7 +582,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Add ShardingSphere schema data.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      */
@@ -590,7 +595,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Drop ShardingSphere schema data.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      */
@@ -604,7 +609,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Add ShardingSphere table data.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
@@ -621,7 +626,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Drop ShardingSphere table data.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
@@ -635,7 +640,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Alter ShardingSphere row data.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
@@ -657,7 +662,7 @@ public final class ContextManager implements AutoCloseable {
     
     /**
      * Delete ShardingSphere row data.
-     *
+     * 
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
@@ -669,6 +674,18 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         metaDataContexts.getShardingSphereData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName).getRows().removeIf(each -> uniqueKey.equals(each.getUniqueKey()));
+    }
+    
+    /**
+     * Update cluster state.
+     * 
+     * @param status status
+     */
+    public void updateClusterState(final String status) {
+        try {
+            clusterStateContext.switchState(ClusterState.valueOf(status));
+        } catch (IllegalArgumentException ignore) {
+        }
     }
     
     @Override

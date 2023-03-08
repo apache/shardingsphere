@@ -26,6 +26,9 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceCon
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterLockDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStatusChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
@@ -56,7 +59,7 @@ public final class StateChangedSubscriber {
     
     /**
      * Renew disabled data source names.
-     *
+     * 
      * @param event Storage node changed event
      */
     @Subscribe
@@ -80,7 +83,7 @@ public final class StateChangedSubscriber {
     
     /**
      * Renew primary data source names.
-     *
+     * 
      * @param event primary state changed event
      */
     @Subscribe
@@ -96,8 +99,28 @@ public final class StateChangedSubscriber {
     }
     
     /**
+     * Reset cluster state.
+     * 
+     * @param event cluster lock deleted event
+     */
+    @Subscribe
+    public synchronized void renew(final ClusterLockDeletedEvent event) {
+        contextManager.getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(event.getState()));
+    }
+    
+    /**
+     * Renew cluster state.
+     * 
+     * @param event cluster state event
+     */
+    @Subscribe
+    public synchronized void renew(final ClusterStateEvent event) {
+        contextManager.updateClusterState(event.getStatus());
+    }
+    
+    /**
      * Renew instance status.
-     *
+     * 
      * @param event state event
      */
     @Subscribe
@@ -107,7 +130,7 @@ public final class StateChangedSubscriber {
     
     /**
      * Renew instance worker id.
-     *
+     * 
      * @param event worker id event
      */
     @Subscribe

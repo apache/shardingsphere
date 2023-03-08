@@ -19,8 +19,6 @@ package org.apache.shardingsphere.proxy.backend.util;
 
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
@@ -81,70 +79,69 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Import utility class.
+ * Yaml database configuration import executor.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ImportUtils {
+public final class YamlDatabaseConfigurationImportExecutor {
     
-    private static final ShardingRuleConfigurationImportChecker SHARDING_RULE_CONFIGURATION_IMPORT_CHECKER = new ShardingRuleConfigurationImportChecker();
+    private final ShardingRuleConfigurationImportChecker shardingRuleConfigImportChecker = new ShardingRuleConfigurationImportChecker();
     
-    private static final ReadwriteSplittingRuleConfigurationImportChecker READWRITE_SPLITTING_RULE_CONFIGURATION_IMPORT_CHECKER = new ReadwriteSplittingRuleConfigurationImportChecker();
+    private final ReadwriteSplittingRuleConfigurationImportChecker readwriteSplittingRuleConfigImportChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
     
-    private static final DatabaseDiscoveryRuleConfigurationImportChecker DATABASE_DISCOVERY_RULE_CONFIGURATION_IMPORT_CHECKER = new DatabaseDiscoveryRuleConfigurationImportChecker();
+    private final DatabaseDiscoveryRuleConfigurationImportChecker databaseDiscoveryRuleConfigImportChecker = new DatabaseDiscoveryRuleConfigurationImportChecker();
     
-    private static final EncryptRuleConfigurationImportChecker ENCRYPT_RULE_CONFIGURATION_IMPORT_CHECKER = new EncryptRuleConfigurationImportChecker();
+    private final EncryptRuleConfigurationImportChecker encryptRuleConfigImportChecker = new EncryptRuleConfigurationImportChecker();
     
-    private static final ShadowRuleConfigurationImportChecker SHADOW_RULE_CONFIGURATION_IMPORT_CHECKER = new ShadowRuleConfigurationImportChecker();
+    private final ShadowRuleConfigurationImportChecker shadowRuleConfigImportChecker = new ShadowRuleConfigurationImportChecker();
     
-    private static final MaskRuleConfigurationImportChecker MASK_RULE_CONFIGURATION_IMPORT_CHECKER = new MaskRuleConfigurationImportChecker();
+    private final MaskRuleConfigurationImportChecker maskRuleConfigImportChecker = new MaskRuleConfigurationImportChecker();
     
-    private static final YamlProxyDataSourceConfigurationSwapper DATA_SOURCE_CONFIGURATION_SWAPPER = new YamlProxyDataSourceConfigurationSwapper();
+    private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
-    private static final DataSourcePropertiesValidateHandler VALIDATE_HANDLER = new DataSourcePropertiesValidateHandler();
+    private final DataSourcePropertiesValidateHandler validateHandler = new DataSourcePropertiesValidateHandler();
     
     /**
      * Import proxy database from yaml configuration.
-     * 
+     *
      * @param yamlConfig yaml proxy database configuration
      */
-    public static void importDatabaseConfig(final YamlProxyDatabaseConfiguration yamlConfig) {
-        String yamlDatabaseName = yamlConfig.getDatabaseName();
-        checkDatabase(yamlDatabaseName);
+    public void importDatabaseConfiguration(final YamlProxyDatabaseConfiguration yamlConfig) {
+        String databaseName = yamlConfig.getDatabaseName();
+        checkDatabase(databaseName);
         checkDataSource(yamlConfig.getDataSources());
-        addDatabase(yamlDatabaseName);
-        addResources(yamlDatabaseName, yamlConfig.getDataSources());
+        addDatabase(databaseName);
+        addResources(databaseName, yamlConfig.getDataSources());
         try {
-            addRules(yamlDatabaseName, yamlConfig.getRules());
+            addRules(databaseName, yamlConfig.getRules());
         } catch (final DistSQLException ex) {
-            dropDatabase(yamlDatabaseName);
+            dropDatabase(databaseName);
             throw ex;
         }
     }
     
-    private static void checkDatabase(final String databaseName) {
+    private void checkDatabase(final String databaseName) {
         Preconditions.checkNotNull(databaseName, "Property `databaseName` in imported config is required");
         if (ProxyContext.getInstance().databaseExists(databaseName)) {
             Preconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources().isEmpty(), "Database `%s` exists and is not empty", databaseName);
         }
     }
     
-    private static void checkDataSource(final Map<String, YamlProxyDataSourceConfiguration> dataSources) {
+    private void checkDataSource(final Map<String, YamlProxyDataSourceConfiguration> dataSources) {
         Preconditions.checkState(!dataSources.isEmpty(), "Data source configurations in imported config is required");
     }
     
-    private static void addDatabase(final String databaseName) {
+    private void addDatabase(final String databaseName) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         contextManager.getInstanceContext().getModeContextManager().createDatabase(databaseName);
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), contextManager.getMetaDataContexts().getMetaData().getProps());
         contextManager.getMetaDataContexts().getMetaData().addDatabase(databaseName, protocolType);
     }
     
-    private static void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
+    private void addResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) {
         Map<String, DataSourceProperties> dataSourcePropsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1);
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
-            dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), DATA_SOURCE_CONFIGURATION_SWAPPER.swap(entry.getValue())));
+            dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(entry.getValue())));
         }
-        VALIDATE_HANDLER.validate(dataSourcePropsMap);
+        validateHandler.validate(dataSourcePropsMap);
         try {
             ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().registerStorageUnits(databaseName, dataSourcePropsMap);
         } catch (final SQLException ex) {
@@ -154,7 +151,7 @@ public class ImportUtils {
         dataSourcePropsMap.forEach((key, value) -> dataSource.put(key, DataSourcePoolCreator.create(value)));
     }
     
-    private static void addRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
+    private void addRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         if (yamlRuleConfigs == null || yamlRuleConfigs.isEmpty()) {
             return;
         }
@@ -166,32 +163,32 @@ public class ImportUtils {
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) each);
-                SHARDING_RULE_CONFIGURATION_IMPORT_CHECKER.check(database, shardingRuleConfig);
+                shardingRuleConfigImportChecker.check(database, shardingRuleConfig);
                 ruleConfigs.add(shardingRuleConfig);
                 rules.add(new ShardingRule(shardingRuleConfig, database.getResourceMetaData().getDataSources().keySet(), instanceContext));
             } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
                 ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new YamlReadwriteSplittingRuleConfigurationSwapper().swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
-                READWRITE_SPLITTING_RULE_CONFIGURATION_IMPORT_CHECKER.check(database, readwriteSplittingRuleConfig);
+                readwriteSplittingRuleConfigImportChecker.check(database, readwriteSplittingRuleConfig);
                 ruleConfigs.add(readwriteSplittingRuleConfig);
                 rules.add(new ReadwriteSplittingRule(databaseName, readwriteSplittingRuleConfig, rules, instanceContext));
             } else if (each instanceof YamlDatabaseDiscoveryRuleConfiguration) {
                 DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = new YamlDatabaseDiscoveryRuleConfigurationSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);
-                DATABASE_DISCOVERY_RULE_CONFIGURATION_IMPORT_CHECKER.check(database, databaseDiscoveryRuleConfig);
+                databaseDiscoveryRuleConfigImportChecker.check(database, databaseDiscoveryRuleConfig);
                 ruleConfigs.add(databaseDiscoveryRuleConfig);
                 rules.add(new DatabaseDiscoveryRule(databaseName, database.getResourceMetaData().getDataSources(), databaseDiscoveryRuleConfig, instanceContext));
             } else if (each instanceof YamlEncryptRuleConfiguration) {
                 EncryptRuleConfiguration encryptRuleConfig = new YamlEncryptRuleConfigurationSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
-                ENCRYPT_RULE_CONFIGURATION_IMPORT_CHECKER.check(database, encryptRuleConfig);
+                encryptRuleConfigImportChecker.check(database, encryptRuleConfig);
                 ruleConfigs.add(encryptRuleConfig);
                 rules.add(new EncryptRule(encryptRuleConfig));
             } else if (each instanceof YamlShadowRuleConfiguration) {
                 ShadowRuleConfiguration shadowRuleConfig = new YamlShadowRuleConfigurationSwapper().swapToObject((YamlShadowRuleConfiguration) each);
-                SHADOW_RULE_CONFIGURATION_IMPORT_CHECKER.check(database, shadowRuleConfig);
+                shadowRuleConfigImportChecker.check(database, shadowRuleConfig);
                 ruleConfigs.add(shadowRuleConfig);
                 rules.add(new ShadowRule(shadowRuleConfig));
             } else if (each instanceof YamlMaskRuleConfiguration) {
                 MaskRuleConfiguration maskRuleConfig = new YamlMaskRuleConfigurationSwapper().swapToObject((YamlMaskRuleConfiguration) each);
-                MASK_RULE_CONFIGURATION_IMPORT_CHECKER.check(database, maskRuleConfig);
+                maskRuleConfigImportChecker.check(database, maskRuleConfig);
                 ruleConfigs.add(maskRuleConfig);
                 rules.add(new MaskRule(maskRuleConfig));
             }
@@ -199,7 +196,7 @@ public class ImportUtils {
         metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), ruleConfigs);
     }
     
-    private static void dropDatabase(final String databaseName) {
+    private void dropDatabase(final String databaseName) {
         ProxyContext.getInstance().getContextManager().getInstanceContext().getModeContextManager().dropDatabase(databaseName);
     }
 }

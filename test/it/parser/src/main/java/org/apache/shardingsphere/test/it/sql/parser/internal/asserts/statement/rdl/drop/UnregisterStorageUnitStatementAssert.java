@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unregister storage unit statement assert.
@@ -42,7 +42,7 @@ public final class UnregisterStorageUnitStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UnregisterStorageUnitStatement actual, final UnregisterStorageUnitStatementTestCase expected) {
         if (null == expected.getDataSources()) {
-            assertNull(assertContext.getText("Actual storage unit should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual storage unit should not exist."));
         } else {
             assertThat(assertContext.getText("storage unit assertion error: "), actual.getStorageUnitNames(), is(expected.getDataSources()));
             assertThat(assertContext.getText("storage unit assertion error: "), actual.isIgnoreSingleTables(), is(expected.getIgnoreSingleTables().iterator().next()));

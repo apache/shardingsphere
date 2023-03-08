@@ -28,13 +28,13 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Postgres index SQL generator.
+ * Index SQL generator for PostgreSQL.
  */
-public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter {
+public final class PostgreSQLIndexSQLGenerator extends AbstractPostgreSQLDDLAdapter {
     
     private static final Integer PG_INDEX_INCLUDE_VERSION = 11;
     
-    public PostgresIndexSQLGenerator(final Connection connection, final int majorVersion, final int minorVersion) {
+    public PostgreSQLIndexSQLGenerator(final Connection connection, final int majorVersion, final int minorVersion) {
         super(connection, majorVersion, minorVersion);
     }
     

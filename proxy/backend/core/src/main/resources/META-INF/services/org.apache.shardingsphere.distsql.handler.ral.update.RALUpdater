@@ -24,4 +24,6 @@ org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ImportMeta
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterReadwriteSplittingStorageUnitStatusStatementUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetDistVariableUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.RefreshDatabaseMetaDataUpdater
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.LockClusterUpdater
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.UnlockClusterUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.RefreshTableMetaDataUpdater

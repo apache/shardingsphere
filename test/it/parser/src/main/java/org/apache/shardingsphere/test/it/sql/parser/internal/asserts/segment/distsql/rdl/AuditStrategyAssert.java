@@ -30,8 +30,8 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Audit strategy assert.
@@ -48,10 +48,10 @@ public final class AuditStrategyAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AuditStrategySegment actual, final ExpectedAuditStrategy expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual strategy should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual strategy should not exist."));
         } else {
             assertThat(actual.isAllowHintDisable(), is(expected.isAllowHintDisable()));
-            assertNotNull(assertContext.getText("Actual sharding auditor segment should exist."), actual.getAuditorSegments());
+            assertNotNull(actual.getAuditorSegments(), assertContext.getText("Actual sharding auditor segment should exist."));
             assertThat(actual.getAuditorSegments().size(), is(expected.getAuditors().size()));
             Iterator<ShardingAuditorSegment> auditorSegmentIterator = actual.getAuditorSegments().iterator();
             Iterator<ExpectedShardingAuditor> expectedShardingAuditorIterator = expected.getAuditors().iterator();

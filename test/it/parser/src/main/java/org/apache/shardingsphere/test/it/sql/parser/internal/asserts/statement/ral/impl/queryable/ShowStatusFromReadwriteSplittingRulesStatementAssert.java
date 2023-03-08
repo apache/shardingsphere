@@ -21,8 +21,8 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Sho
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowStatusFromReadwriteSplittingRulesStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Show status from readwrite-splitting rules statement assert.
@@ -39,9 +39,9 @@ public final class ShowStatusFromReadwriteSplittingRulesStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowStatusFromReadwriteSplittingRulesStatement actual,
                                 final ShowStatusFromReadwriteSplittingRulesStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
         }
     }
 }

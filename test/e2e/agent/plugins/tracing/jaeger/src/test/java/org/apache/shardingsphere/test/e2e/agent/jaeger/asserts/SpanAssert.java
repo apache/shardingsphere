@@ -36,9 +36,9 @@ import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Span assert.
@@ -68,14 +68,14 @@ public final class SpanAssert {
         Collection<String> actualTags = spanResult.getTags().stream().map(TagResult::getKey).collect(Collectors.toSet());
         Collection<String> expectedTags = expected.getTagCases().stream().map(TagAssertion::getTagKey).collect(Collectors.toSet());
         Collection<String> nonExistentTags = expectedTags.stream().filter(each -> !actualTags.contains(each)).collect(Collectors.toSet());
-        assertTrue(String.format("The tags `%s` does not exist in `%s` span", nonExistentTags, expected.getSpanName()), nonExistentTags.isEmpty());
+        assertTrue(nonExistentTags.isEmpty(), String.format("The tags `%s` does not exist in `%s` span", nonExistentTags, expected.getSpanName()));
     }
     
     private static void assertTagValue(final String baseUrl, final SpanTestCase expected, final TagAssertion expectedTagCase) {
         String urlWithParameter = String.format("%s/api/traces?service=%s&operation=%s&tags=%s&limit=%s", baseUrl, getEncodeValue(expected.getServiceName()),
                 getEncodeValue(expected.getSpanName()), getEncodeValue(new Gson().toJson(ImmutableMap.of(expectedTagCase.getTagKey(), expectedTagCase.getTagValue()))), 1000);
         Collection<TraceResult> traceResults = getTraceResults(urlWithParameter);
-        assertFalse(String.format("The tag `%s`=`%s` does not exist in `%s` span", expectedTagCase.getTagKey(), expectedTagCase.getTagValue(), expected.getSpanName()), traceResults.isEmpty());
+        assertFalse(traceResults.isEmpty(), String.format("The tag `%s`=`%s` does not exist in `%s` span", expectedTagCase.getTagKey(), expectedTagCase.getTagValue(), expected.getSpanName()));
     }
     
     @SneakyThrows(UnsupportedEncodingException.class)
