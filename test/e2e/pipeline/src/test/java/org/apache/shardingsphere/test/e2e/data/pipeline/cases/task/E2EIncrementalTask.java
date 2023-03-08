@@ -102,7 +102,7 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             String sql = String.format(buildUpdateSql(POSTGRESQL_COLUMN_NAMES, "?"), orderTableName);
             log.info("update sql: {}", sql);
-            DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{"中文测试", randomInt, BigDecimal.valueOf(10000), true, new byte[]{}, "update", random.nextFloat(), randDouble,
+            DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{"中文测试", randomInt, BigDecimal.valueOf(10000), true, new byte[]{}, "update", PipelineCaseHelper.generateFloat(), randDouble,
                     PipelineCaseHelper.generateJsonString(10, true), PipelineCaseHelper.generateJsonString(20, true), "text-update", LocalDate.now(),
                     LocalTime.now(), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now(), orderId});
         }

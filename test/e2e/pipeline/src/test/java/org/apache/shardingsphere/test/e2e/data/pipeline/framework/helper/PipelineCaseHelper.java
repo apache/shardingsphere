@@ -127,8 +127,13 @@ public final class PipelineCaseHelper {
         return String.format("{\"test\":\"%s\"}", value);
     }
     
-    private static float generateFloat() {
-        return ThreadLocalRandom.current().nextFloat();
+    /**
+     * Generate float value.
+     *
+     * @return float.
+     */
+    public static float generateFloat() {
+        return ThreadLocalRandom.current().nextInt(-1000, 1000) / 100.0F;
     }
     
     private static double generateDouble(final double min, final double max) {

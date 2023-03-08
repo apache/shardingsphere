@@ -34,12 +34,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -95,9 +97,12 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
         startMigrationWithSchema(getSourceTableOrderName(), "t_order");
+        Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> listJobId().size() > 0);
+        String jobId = getJobIdByTableName("ds_0.test." + getSourceTableOrderName());
+        waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         startIncrementTask(new E2EIncrementalTask(getSourceDataSource(), String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName()), insertOrderSql,
                 new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
-        checkOrderMigration();
+        checkOrderMigration(jobId);
         checkOrderItemMigration();
         for (String each : listJobId()) {
             commitMigrationByJobId(each);
@@ -109,8 +114,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
     
-    private void checkOrderMigration() throws SQLException, InterruptedException {
-        String jobId = getJobIdByTableName("ds_0.test." + getSourceTableOrderName());
+    private void checkOrderMigration(final String jobId) throws SQLException, InterruptedException {
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
         long recordId = new SnowflakeKeyGenerateAlgorithm().generateKey();
