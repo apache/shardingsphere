@@ -88,7 +88,6 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
     private void updateOrderById(final Object orderId) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int randomInt = random.nextInt(-100, 100);
-        double randDouble = random.nextDouble(-999.0, 999.0);
         if (databaseType instanceof MySQLDatabaseType) {
             String sql = String.format(buildUpdateSql(MYSQL_COLUMN_NAMES, "?"), orderTableName);
             log.info("update sql: {}", sql);
@@ -102,8 +101,8 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
             String sql = String.format(buildUpdateSql(POSTGRESQL_COLUMN_NAMES, "?"), orderTableName);
             log.info("update sql: {}", sql);
-            DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{"中文测试", randomInt, BigDecimal.valueOf(10000), true, new byte[]{}, "update", PipelineCaseHelper.generateFloat(), randDouble,
-                    PipelineCaseHelper.generateJsonString(10, true), PipelineCaseHelper.generateJsonString(20, true), "text-update", LocalDate.now(),
+            DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{"中文测试", randomInt, BigDecimal.valueOf(10000), true, new byte[]{}, "update", PipelineCaseHelper.generateFloat(),
+                    PipelineCaseHelper.generateDouble(), PipelineCaseHelper.generateJsonString(10, true), PipelineCaseHelper.generateJsonString(20, true), "text-update", LocalDate.now(),
                     LocalTime.now(), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now(), orderId});
         }
     }

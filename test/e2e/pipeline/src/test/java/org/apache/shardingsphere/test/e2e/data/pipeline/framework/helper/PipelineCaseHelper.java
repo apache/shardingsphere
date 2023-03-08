@@ -81,8 +81,8 @@ public final class PipelineCaseHelper {
                 int randomUnsignedInt = generateInt(0, 100);
                 LocalDateTime now = LocalDateTime.now();
                 Object[] addObjs = {orderId, generateInt(0, 100), generateString(6) + "", randomInt, randomInt, randomInt,
-                        randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(-100000000, 100000000),
-                        BigDecimal.valueOf(generateDouble(1, 100)), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(), "1", "t", "e", "s", "t", generateString(2),
+                        randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(),
+                        BigDecimal.valueOf(generateDouble()), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(), "1", "t", "e", "s", "t", generateString(2),
                         emojiText, generateString(1), "1", "2", generateJsonString(32, false)};
                 result.add(addObjs);
             }
@@ -92,7 +92,7 @@ public final class PipelineCaseHelper {
             for (int i = 0; i < insertRows; i++) {
                 Object orderId = keyGenerateAlgorithm.generateKey();
                 result.add(new Object[]{orderId, generateInt(0, 100), generateString(6), generateInt(-128, 127),
-                        BigDecimal.valueOf(generateDouble(1, 100)), true, "bytea".getBytes(), generateString(2), generateString(2), generateFloat(), generateDouble(0, 1000),
+                        BigDecimal.valueOf(generateDouble()), true, "bytea".getBytes(), generateString(2), generateString(2), generateFloat(), generateDouble(),
                         generateJsonString(8, false), generateJsonString(12, true), emojiText, LocalDate.now(),
                         LocalTime.now(), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now()});
             }
@@ -136,8 +136,13 @@ public final class PipelineCaseHelper {
         return ThreadLocalRandom.current().nextInt(-1000, 1000) / 100.0F;
     }
     
-    private static double generateDouble(final double min, final double max) {
-        return ThreadLocalRandom.current().nextDouble(min, max);
+    /**
+     * Generate double value.
+     *
+     * @return double
+     */
+    public static double generateDouble() {
+        return ThreadLocalRandom.current().nextInt(-1000000000, 1000000000) / 1000000.0;
     }
     
     private static List<Object[]> generateOrderItemInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
