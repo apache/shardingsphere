@@ -28,11 +28,11 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 
 /**
- * Abstract execute error count advice for ShardingSphere-JDBC.
+ * Abstract execute errors count advice for ShardingSphere-JDBC.
  */
-public abstract class AbstractExecuteErrorCountAdvice implements InstanceMethodAdvice {
+public abstract class AbstractExecuteErrorsCountAdvice implements InstanceMethodAdvice {
     
-    private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_error_total", MetricCollectorType.COUNTER,
+    private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_errors_total", MetricCollectorType.COUNTER,
             "Total number of statement execute error", Collections.singletonList("statement_type"));
     
     @Override

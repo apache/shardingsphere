@@ -21,6 +21,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
  * Execute count advice for ShardingSpherePreparedStatement.
  */
 public final class PreparedStatementExecuteCountAdvice extends AbstractExecuteCountAdvice {
+    
     @Override
     protected String getStatementType() {
         return "prepared_statement";

@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
 /**
- * Execute error count advice for ShardingSphereStatement.
+ * Execute errors count advice for ShardingSpherePreparedStatement.
  */
-public final class StatementExecuteErrorCountAdvice extends AbstractExecuteErrorCountAdvice {
+public final class PreparedStatementExecuteErrorsCountAdvice extends AbstractExecuteErrorsCountAdvice {
     
     @Override
     protected String getStatementType() {
-        return "statement";
+        return "prepared_statement";
     }
 }
