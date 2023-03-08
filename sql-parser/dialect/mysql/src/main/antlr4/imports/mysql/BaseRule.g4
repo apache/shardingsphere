@@ -179,6 +179,7 @@ identifierKeywordsUnambiguous
     | DATETIME
     | DATE
     | DAY
+    | DAY_MINUTE
     | DEFAULT_AUTH
     | DEFINER
     | DEFINITION
@@ -500,6 +501,7 @@ identifierKeywordsUnambiguous
     | XID
     | XML
     | YEAR
+    | YEAR_MONTH
     ;
     
 identifierKeywordsAmbiguous1RolesAndLabels

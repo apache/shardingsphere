@@ -33,12 +33,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * PostgresSQL auto commit transaction integration test.
+ * PostgreSQL auto commit transaction integration test.
  */
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL}, transactionTypes = TransactionType.LOCAL)
-public final class PostgresSQLAutoCommitTestCase extends BaseTransactionTestCase {
+public final class PostgreSQLAutoCommitTestCase extends BaseTransactionTestCase {
     
-    public PostgresSQLAutoCommitTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
+    public PostgreSQLAutoCommitTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

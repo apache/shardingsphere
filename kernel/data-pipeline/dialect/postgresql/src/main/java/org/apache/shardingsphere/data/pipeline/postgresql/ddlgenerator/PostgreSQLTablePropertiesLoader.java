@@ -25,15 +25,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Postgres table properties loader.
+ * Table properties loader for PostgreSQL.
  */
-public final class PostgresTablePropertiesLoader extends AbstractPostgresDDLAdapter {
+public final class PostgreSQLTablePropertiesLoader extends AbstractPostgreSQLDDLAdapter {
     
     private final String tableName;
     
     private final String schemaName;
     
-    public PostgresTablePropertiesLoader(final Connection connection, final String tableName, final String schemaName, final int majorVersion, final int minorVersion) {
+    public PostgreSQLTablePropertiesLoader(final Connection connection, final String tableName, final String schemaName, final int majorVersion, final int minorVersion) {
         super(connection, majorVersion, minorVersion);
         this.tableName = tableName;
         this.schemaName = schemaName;
