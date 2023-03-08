@@ -38,7 +38,7 @@ public final class PreparedStatementExecuteLatencyHistogramAdvice implements Ins
     private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_latency_millis", MetricCollectorType.HISTOGRAM,
             "Statement execute latency millis histogram", Collections.singletonMap("buckets", getBuckets()));
     
-    private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(StatementExecuteLatencyHistogramAdvice.class);
+    private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(PreparedStatementExecuteLatencyHistogramAdvice.class);
     
     private static Map<String, Object> getBuckets() {
         Map<String, Object> result = new HashMap<>(4, 1);
