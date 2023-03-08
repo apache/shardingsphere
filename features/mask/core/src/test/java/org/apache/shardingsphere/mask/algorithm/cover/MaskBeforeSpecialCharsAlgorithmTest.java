@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mask.algorithm.cover;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -32,7 +32,7 @@ public final class MaskBeforeSpecialCharsAlgorithmTest {
     
     private MaskBeforeSpecialCharsAlgorithm maskAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         maskAlgorithm = new MaskBeforeSpecialCharsAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*")));

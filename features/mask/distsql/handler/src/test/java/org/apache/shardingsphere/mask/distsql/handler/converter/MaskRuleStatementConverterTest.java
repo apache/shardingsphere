@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mask.distsql.parser.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
