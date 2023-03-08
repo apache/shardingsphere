@@ -44,7 +44,7 @@ advisors:
           - index: 0
             type: java.lang.String
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement
-    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.StatementExecuteErrorCountAdvice
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.StatementExecuteErrorsCountAdvice
     pointcuts:
       - name: executeQuery
         type: method
@@ -77,7 +77,7 @@ advisors:
       - name: executeUpdate
         type: method
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
-    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteErrorCountAdvice
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteErrorsCountAdvice
     pointcuts:
       - name: executeQuery
         type: method
