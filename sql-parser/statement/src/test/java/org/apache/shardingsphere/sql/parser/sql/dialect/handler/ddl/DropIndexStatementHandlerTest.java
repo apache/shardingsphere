@@ -72,7 +72,7 @@ public final class DropIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertIfExistsForPostgres() {
+    public void assertIfExistsForPostgreSQL() {
         assertFalse(DropIndexStatementHandler.ifExists(new PostgreSQLDropIndexStatement(false)));
         assertTrue(DropIndexStatementHandler.ifExists(new PostgreSQLDropIndexStatement(true)));
     }

@@ -27,12 +27,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * PostgresSQL and OpenGauss truncate transaction integration test.
+ * PostgreSQL and OpenGauss truncate transaction integration test.
  */
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL, TransactionTestConstants.OPENGAUSS})
-public final class PostgresSQLAndOpenGaussTruncateTestCase extends BaseTransactionTestCase {
+public final class PostgreSQLAndOpenGaussTruncateTestCase extends BaseTransactionTestCase {
     
-    public PostgresSQLAndOpenGaussTruncateTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
+    public PostgreSQLAndOpenGaussTruncateTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     
