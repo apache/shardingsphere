@@ -179,6 +179,7 @@ identifierKeywordsUnambiguous
     | DATETIME
     | DATE
     | DAY
+    | DAY_MINUTE
     | DEFAULT_AUTH
     | DEFINER
     | DEFINITION
@@ -500,6 +501,7 @@ identifierKeywordsUnambiguous
     | XID
     | XML
     | YEAR
+    | YEAR_MONTH
     ;
     
 identifierKeywordsAmbiguous1RolesAndLabels
@@ -1082,7 +1084,7 @@ completeRegularFunction
     
 regularFunctionName
     : IF | LOCALTIME | LOCALTIMESTAMP | REPLACE | INSERT | INTERVAL | MOD
-    | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | GEOMETRYCOLLECTION
+    | DATABASE | SCHEMA | LEFT | RIGHT | DATE | DAY | GEOMETRYCOLLECTION | REPEAT
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
     | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP 
     | CURRENT_DATE | CURRENT_TIME | UTC_TIMESTAMP | identifier

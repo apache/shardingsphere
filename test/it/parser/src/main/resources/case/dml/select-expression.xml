@@ -2089,6 +2089,26 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_with_repeat_function">
+        <from>
+            <simple-table name="t_order" start-index="32" stop-index="38" />
+        </from>
+        <projections start-index="7" stop-index="25">
+            <expression-projection text="REPEAT('MySQL', 3)" start-index="7" stop-index="25">
+                <expr>
+                    <function function-name="REPEAT" text="REPEAT('MySQL', 3)" start-index="7" stop-index="24">
+                        <parameter>
+                            <literal-expression value="MySQL" start-index="14" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="3" start-index="20" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_regular_function">
         <from>
             <simple-table name="t_order" start-index="17" stop-index="23" />

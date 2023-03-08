@@ -96,7 +96,7 @@ public final class ShardingSphereMetaDataTest {
     }
     
     @Test
-    public void assertGetPostgresDefaultSchema() throws SQLException {
+    public void assertGetPostgreSQLDefaultSchema() throws SQLException {
         PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
         ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType, Collections.singletonMap("", databaseType),
                 mock(DataSourceProvidedDatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.lim
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowBinlogEventsStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -44,15 +44,15 @@ public final class ShowBinlogEventsStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowBinlogEventsStatement actual, final ShowBinlogEventsStatementTestCase expected) {
         if (null == expected.getLogName()) {
-            assertNull(assertContext.getText("Actual logName should not exist."), actual.getLogName());
+            assertNull(actual.getLogName(), assertContext.getText("Actual logName should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual logName should exist."), actual.getLogName());
+            assertNotNull(actual.getLogName(), assertContext.getText("Actual logName should exist."));
             assertThat(actual.getLogName(), is(expected.getLogName()));
         }
         if (null == expected.getLimitClause()) {
-            assertNull(assertContext.getText("Actual limit clause should not exist."), actual.getLimit());
+            assertNull(actual.getLimit(), assertContext.getText("Actual limit clause should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual limit clause should exist."), actual.getLimit());
+            assertNotNull(actual.getLimit(), assertContext.getText("Actual limit clause should exist."));
             LimitClauseAssert.assertOffset(assertContext, actual.getLimit().getOffset().get(), expected.getLimitClause().getOffset());
             LimitClauseAssert.assertRowCount(assertContext, actual.getLimit().getRowCount().get(), expected.getLimitClause().getRowCount());
         }

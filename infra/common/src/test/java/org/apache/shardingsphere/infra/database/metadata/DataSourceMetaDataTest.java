@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.SQL92DataSource
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSourceMetaData;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class DataSourceMetaDataTest {
     

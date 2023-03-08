@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Import meta data statement assert.
@@ -43,7 +43,7 @@ public final class ImportMetaDataStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final ImportMetaDataStatement actual,
                                 final ImportMetaDataStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
             assertThat(actual.getFilePath().get(), is(expected.getFilePath()));
         }

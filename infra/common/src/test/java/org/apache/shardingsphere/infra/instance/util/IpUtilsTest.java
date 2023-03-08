@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.instance.util;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public final class IpUtilsTest {
     

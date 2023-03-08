@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class UnsupportedGeneratedKeysResultSetTest {
     

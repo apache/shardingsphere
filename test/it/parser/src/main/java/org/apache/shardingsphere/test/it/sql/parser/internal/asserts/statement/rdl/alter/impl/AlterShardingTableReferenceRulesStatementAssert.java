@@ -30,8 +30,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -49,9 +49,9 @@ public final class AlterShardingTableReferenceRulesStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterShardingTableReferenceRuleStatement actual, final AlterShardingTableReferenceRulesStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
             assertShardingBindingTableRules(assertContext, actual.getRules(), expected.getRules());
         }
     }
@@ -59,9 +59,9 @@ public final class AlterShardingTableReferenceRulesStatementAssert {
     private static void assertShardingBindingTableRules(final SQLCaseAssertContext assertContext, final Collection<TableReferenceRuleSegment> actual,
                                                         final List<ExpectedShardingTableReferenceRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual sharding table reference rule should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual sharding table reference rule should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual sharding table reference rule should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual sharding table reference rule should exist."));
             assertThat(assertContext.getText(String.format("Actual sharding table reference rule size should be %s , but it was %s", expected.size(), actual.size())),
                     actual.size(), is(expected.size()));
             int count = 0;

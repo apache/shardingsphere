@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 /**
- * Data source preparer for PostgresSQL.
+ * Data source preparer for PostgreSQL.
  */
 public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePreparer {
     

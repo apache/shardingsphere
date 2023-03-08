@@ -26,9 +26,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.own
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.type.ExpectedType;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Type assert.
@@ -44,12 +44,12 @@ public final class TypeAssert {
      * @param expected expected type
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TypeSegment actual, final ExpectedType expected) {
-        assertNotNull(assertContext.getText("Type should exist."), expected);
+        assertNotNull(expected, assertContext.getText("Type should exist."));
         IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Type");
         if (null == expected.getOwner()) {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+            assertFalse(actual.getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
+            assertTrue(actual.getOwner().isPresent(), assertContext.getText("Actual owner should exist."));
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);

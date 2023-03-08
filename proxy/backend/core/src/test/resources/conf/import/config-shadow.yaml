@@ -18,7 +18,7 @@
 databaseName: shadow_db
 
 dataSources:
-  ds_1:
+  ds:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
     username: root
     password:
@@ -27,7 +27,7 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 50
     minPoolSize: 1
-  ds_2:
+  shadow_ds:
     url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
     username: root
     password:
@@ -87,4 +87,3 @@ rules:
         type: SQL_HINT
         props:
           foo: bar
-
