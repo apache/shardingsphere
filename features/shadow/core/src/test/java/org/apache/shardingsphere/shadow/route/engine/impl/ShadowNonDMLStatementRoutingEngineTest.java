@@ -31,8 +31,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSe
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -47,7 +47,7 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
     
     private ShadowNonDMLStatementRoutingEngine shadowRouteEngine;
     
-    @Before
+    @BeforeEach
     public void init() {
         shadowRouteEngine = new ShadowNonDMLStatementRoutingEngine(createSQLStatementContext());
     }
