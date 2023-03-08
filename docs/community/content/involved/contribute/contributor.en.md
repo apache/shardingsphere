@@ -31,6 +31,7 @@ git clone https://github.com/(your_github_name)/shardingsphere.git
 Add ShardingSphere remote repository.
 
 ```shell
+cd shardingsphere
 git remote add apache https://github.com/apache/shardingsphere.git
 git remote -v
 ```
