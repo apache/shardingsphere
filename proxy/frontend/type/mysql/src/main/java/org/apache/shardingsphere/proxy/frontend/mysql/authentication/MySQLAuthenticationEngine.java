@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.epoll.EpollDomainSocketChannel;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
@@ -56,6 +58,7 @@ import java.util.Optional;
 /**
  * Authentication engine for MySQL.
  */
+@Slf4j
 public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     
     private final MySQLAuthenticationPluginData authPluginData = new MySQLAuthenticationPluginData();
@@ -147,6 +150,10 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     }
     
     private String getHostAddress(final ChannelHandlerContext context) {
+        if (context.channel() instanceof EpollDomainSocketChannel) {
+            return context.channel().parent().localAddress().toString();
+        }
+        
         SocketAddress socketAddress = context.channel().remoteAddress();
         return socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();
     }

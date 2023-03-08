@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend;
 
-import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -25,7 +24,6 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollDomainSocketChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerDomainSocketChannel;
 import io.netty.channel.epoll.EpollServerSocketChannel;
@@ -72,7 +70,7 @@ public final class ShardingSphereProxy {
             BackendExecutorContext.getInstance().getExecutorEngine().close();
         }
     }
-
+    
     /**
      * Start ShardingSphere-Proxy with unix domain socket.
      *
@@ -88,7 +86,7 @@ public final class ShardingSphereProxy {
             BackendExecutorContext.getInstance().getExecutorEngine().close();
         }
     }
-
+    
     private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
         createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
@@ -100,16 +98,16 @@ public final class ShardingSphereProxy {
         }
         return futures;
     }
-
+    
     private void startDomainSocket(final String socketPath) throws InterruptedException {
         log.info("DomainSocket Starting {}", socketPath);
         createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
-        initServerBootstrapNew(bootstrap);
-        ChannelFuture channelFuture = bootstrap.bind(new DomainSocketAddress(socketPath)).sync();
+        initServerBootstrap(bootstrap, new DomainSocketAddress(socketPath));
+        ChannelFuture channelFuture = bootstrap.bind().sync();
         channelFuture.channel().closeFuture().sync();
     }
-
+    
     private void accept(final List<ChannelFuture> futures) throws InterruptedException {
         log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType());
         for (ChannelFuture future : futures) {
@@ -129,7 +127,7 @@ public final class ShardingSphereProxy {
     
     private void initServerBootstrap(final ServerBootstrap bootstrap) {
         Integer backLog = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG);
-
+        
         bootstrap.group(bossGroup, workerGroup)
                 .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                 .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
@@ -141,24 +139,14 @@ public final class ShardingSphereProxy {
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
     }
-
-    private void initServerBootstrap(final Bootstrap bootstrap) {
-        bootstrap.group(new EpollEventLoopGroup())
-                .channel(EpollDomainSocketChannel.class)
-                .handler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
-    }
-
-    private void initServerBootstrapNew(final ServerBootstrap bootstrap) {
+    
+    private void initServerBootstrap(final ServerBootstrap bootstrap, final DomainSocketAddress localDomainSocketAddress) {
         Integer backLog = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG);
-
+        
         bootstrap.group(bossGroup, workerGroup)
                 .channel(EpollServerDomainSocketChannel.class)
-                .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
-                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .option(ChannelOption.SO_REUSEADDR, true)
+                .localAddress(localDomainSocketAddress)
                 .option(ChannelOption.SO_BACKLOG, backLog)
-                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childOption(ChannelOption.TCP_NODELAY, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
     }

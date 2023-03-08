@@ -81,7 +81,7 @@ public final class BootstrapArguments {
         List<String> addresses = Arrays.asList(args[2].split(","));
         return addresses.stream().filter(InetAddresses::isInetAddress).collect(Collectors.toList());
     }
-
+    
     /**
      * Get unix domain socket path.
      *
@@ -118,8 +118,8 @@ public final class BootstrapArguments {
         }
         return result.toString();
     }
-
-    private boolean isValidPath(String path) {
+    
+    private boolean isValidPath(final String path) {
         try {
             Paths.get(path);
         } catch (InvalidPathException | NullPointerException ex) {
