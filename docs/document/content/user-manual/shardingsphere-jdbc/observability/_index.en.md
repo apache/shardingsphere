@@ -94,7 +94,7 @@ Used for exposure monitoring metrics.
 
 ## Usage in ShardingSphere-JDBC
 
-+ 1 The `SpringBoot` project ready to integrate `ShardingSphere-JDBC`, `test-project.jar`
++ 1 The `SpringBoot` project ready to integrate `ShardingSphere-JDBC`, test-project.jar
 + 2 Startup project
 ```shell
 java -javaagent:/agent/shardingsphere-agent-${latest.release.version}.jar -jar test-project.jar
