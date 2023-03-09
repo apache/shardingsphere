@@ -20,12 +20,14 @@ package org.apache.shardingsphere.infra.datasource.pool.destroyer;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class DataSourcePoolDestroyerTest {
@@ -35,13 +37,17 @@ public final class DataSourcePoolDestroyerTest {
         new DataSourcePoolDestroyer(new MockedDataSource()).asyncDestroy();
     }
     
-    @Test(timeout = 2000L)
-    public void assertAsyncDestroyHikariDataSource() throws SQLException, InterruptedException {
+    @Test
+    public void assertAsyncDestroyHikariDataSource() throws SQLException {
         HikariDataSource dataSource = createHikariDataSource();
         try (Connection ignored = dataSource.getConnection()) {
             new DataSourcePoolDestroyer(dataSource).asyncDestroy();
             assertFalse(dataSource.isClosed());
         }
+        assertTimeout(Duration.ofSeconds(2L), () -> assertClose(dataSource));
+    }
+    
+    private static void assertClose(final HikariDataSource dataSource) throws InterruptedException {
         while (!dataSource.isClosed()) {
             Thread.sleep(10L);
         }

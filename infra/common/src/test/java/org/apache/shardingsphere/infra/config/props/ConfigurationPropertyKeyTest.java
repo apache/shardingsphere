@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.props;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
