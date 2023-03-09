@@ -20,16 +20,16 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 import io.opentracing.Span;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingCommandExecutorTaskAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingRootSpanAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
 
 import java.lang.reflect.Method;
 
 /**
- * OpenTracing command executor task advice executor.
+ * OpenTracing root span advice.
  */
-public final class OpenTracingCommandExecutorTaskAdvice extends TracingCommandExecutorTaskAdvice<Span> {
+public final class OpenTracingRootSpanAdvice extends TracingRootSpanAdvice<Span> {
     
     @Override
     protected Span createRootSpan(final TargetAdviceObject target, final Method method, final Object[] args) {

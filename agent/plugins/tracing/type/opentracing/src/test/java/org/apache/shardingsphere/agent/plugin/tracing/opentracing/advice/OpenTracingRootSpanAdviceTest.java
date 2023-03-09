@@ -56,9 +56,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith({AgentExtension.class, AutoMockExtension.class})
 @StaticMockSettings(ProxyContext.class)
-public final class OpenTracingCommandExecutorTaskAdviceTest {
+public final class OpenTracingRootSpanAdviceTest {
     
-    private static final OpenTracingCommandExecutorTaskAdvice ADVICE = new OpenTracingCommandExecutorTaskAdvice();
+    private static final OpenTracingRootSpanAdvice ADVICE = new OpenTracingRootSpanAdvice();
     
     private static MockTracer tracer;
     

@@ -92,6 +92,21 @@ Used for exposure monitoring metrics.
 | port                              | port                                         |
 | jvm-information-collector-enabled | whether to collect JVM indicator information |
 
+#### OpenTelemetry
+
+OpenTelemetry can export tracing data to Jaeger, Zipkin.
+
+* Parameter description
+
+| Name                               | Description     |
+|------------------------------------|-----------------|
+| otel.service.name                  | service name    |
+| otel.traces.exporter               | traces exporter |
+| otel.exporter.otlp.traces.endpoint | traces endpoint |
+| otel.traces.sampler                | traces sampler  |
+
+Parameter reference [OpenTelemetry SDK Autoconfigure](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure)
+
 ## Usage in ShardingSphere-JDBC
 
 + 1 The `SpringBoot` project ready to integrate `ShardingSphere-JDBC`, test-project.jar

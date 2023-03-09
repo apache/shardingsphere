@@ -49,7 +49,7 @@ public final class LogLoader {
             Matcher matcher = pattern.matcher(each);
             if (matcher.find()) {
                 if (hasFind) {
-                    result.add(builder.toString());
+                    result.add(builder.append(System.lineSeparator()).toString());
                     builder.delete(0, builder.length());
                 }
                 builder.append(each);
@@ -61,7 +61,7 @@ public final class LogLoader {
             }
         }
         if (builder.length() > 0) {
-            result.add(builder.toString());
+            result.add(builder.append(System.lineSeparator()).toString());
         }
         return result;
     }
@@ -72,7 +72,7 @@ public final class LogLoader {
      * @return log file path
      */
     public static String getLogFilePath() {
-        return String.join(File.separator, System.getProperty("user.dir"), "target", "logs", "stdout.log");
+        return String.join(File.separator, Paths.get("").toAbsolutePath().toString(), "target", "logs", "stdout.log");
     }
     
     /**
