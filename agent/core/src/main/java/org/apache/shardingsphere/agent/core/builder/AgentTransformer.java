@@ -68,11 +68,11 @@ public final class AgentTransformer implements Transformer {
         }
         ClassLoaderContext classLoaderContext = new ClassLoaderContext(classLoader, pluginJars);
         PluginLifecycleServiceManager.init(pluginConfigs, pluginJars, classLoaderContext.getPluginClassLoader(), isEnhancedForProxy);
-        AdvisorConfiguration advisorConfig = getEffectiveAdvisorConfiguration(advisorConfigs.get(typeDescription.getTypeName()), classLoaderContext);
+        AdvisorConfiguration advisorConfig = filterEffectiveAdviceClass(advisorConfigs.get(typeDescription.getTypeName()), classLoaderContext);
         return AgentBuilderInterceptChainEngine.intercept(builder, new TargetAdviceObjectBuilderInterceptor(), new MethodAdvisorBuilderInterceptor(typeDescription, classLoaderContext, advisorConfig));
     }
     
-    private AdvisorConfiguration getEffectiveAdvisorConfiguration(final AdvisorConfiguration advisorConfig, final ClassLoaderContext classLoaderContext) {
+    private AdvisorConfiguration filterInvalidAdviceClass(final AdvisorConfiguration advisorConfig, final ClassLoaderContext classLoaderContext) {
         AdvisorConfiguration result = new AdvisorConfiguration(advisorConfig.getTargetClassName());
         for (MethodAdvisorConfiguration each : advisorConfig.getAdvisors()) {
             if (isExist(each.getAdviceClassName(), classLoaderContext.getPluginClassLoader())) {
