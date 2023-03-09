@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -44,6 +45,7 @@ public final class GlobalClockRule implements GlobalRule {
         enabled = ruleConfig.isEnabled();
         globalClockProvider = enabled ? TypedSPILoader.getService(GlobalClockProvider.class, String.join(".", ruleConfig.getType(), ruleConfig.getProvider()),
                 null == ruleConfig.getProps() ? new Properties() : ruleConfig.getProps()) : null;
+        Optional.ofNullable(globalClockProvider).ifPresent(optional -> optional.init(ruleConfig.getProps()));
     }
     
     /**
