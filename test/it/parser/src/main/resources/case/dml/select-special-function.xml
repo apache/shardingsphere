@@ -62,6 +62,25 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_cast">
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="CAST(c AT TIME ZONE 'UTC' AS DATETIME)" start-index="7" stop-index="42">
+                <expr>
+                    <function function-name="CAST" start-index="7" stop-index="42" text="CAST(c AT TIME ZONE 'UTC' AS DATETIME)">
+                        <parameter>
+                            <literal-expression value="c" start-index="12" stop-index="12" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="UTC" start-index="24" stop-index="29" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="DATETIME" start-index="34" stop-index="41" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     <select sql-case-id="select_convert_function">
         <projections start-index="7" stop-index="33">
             <expression-projection text="CONVERT('2020-10-01', DATE)" start-index="7" stop-index="33">
