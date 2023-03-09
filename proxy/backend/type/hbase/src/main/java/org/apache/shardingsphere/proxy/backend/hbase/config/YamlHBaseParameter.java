@@ -15,20 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.hbase.backend.bean;
+package org.apache.shardingsphere.proxy.backend.hbase.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.hadoop.hbase.client.Connection;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * HBase cluster.
+ * YAML Data source parameters for HBase.
  */
-@RequiredArgsConstructor
 @Getter
-public final class HBaseCluster {
+@Setter
+public final class YamlHBaseParameter implements YamlConfiguration {
     
-    private final String clusterName;
+    private String hbaseZookeeperQuorum;
     
-    private final Connection connection;
+    private String fsDefaultFs;
+    
+    private String hbaseRootDir;
+    
+    private long hbaseRpcTimeout;
+    
+    private long hbaseClientOperationTimeout;
+    
+    private long hbaseClientScannerTimeoutPeriod;
+    
+    private String hbaseZookeeperPropertyDataDir;
+    
+    private String zookeeperZNodeParent;
+    
+    private String accessUser;
+    
+    private int ipcPoolSize = 1;
 }

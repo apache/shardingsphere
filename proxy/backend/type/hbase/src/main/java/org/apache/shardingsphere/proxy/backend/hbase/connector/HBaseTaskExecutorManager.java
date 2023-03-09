@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.hbase.backend.connector;
+package org.apache.shardingsphere.proxy.backend.hbase.connector;
 
 import java.io.Closeable;
 import java.util.concurrent.ArrayBlockingQueue;

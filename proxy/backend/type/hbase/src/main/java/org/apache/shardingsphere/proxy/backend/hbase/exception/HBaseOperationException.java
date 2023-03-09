@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.hbase.backend.context;
+package org.apache.shardingsphere.proxy.backend.hbase.exception;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.hbase.backend.exception.HBaseOperationException;
 
 /**
- * HBase meta data refresher.
+ * HBase operation exception.
  */
 @RequiredArgsConstructor
-@Slf4j
-public class HBaseMetaDataRefresher implements Runnable {
+@Getter
+// TODO should extend to ShardingSphereExternalException
+public final class HBaseOperationException extends RuntimeException {
     
-    private final HBaseContext context;
+    private static final long serialVersionUID = -2361593557266150170L;
     
-    @Override
-    public void run() {
-        try {
-            context.getConnections().forEach(context::loadTables);
-        } catch (final HBaseOperationException ignored) {
-        }
-    }
+    private final String errorInfo;
 }
