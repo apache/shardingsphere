@@ -18,95 +18,67 @@
 package org.apache.shardingsphere.proxy.frontend;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.epoll.EpollServerSocketChannel;
+import io.netty.channel.epoll.EpollServerDomainSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.unix.DomainSocketAddress;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
 import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTypeFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * ShardingSphere-Proxy.
+ * UnixDomainSocketServer.
  */
 @Slf4j
-public final class ShardingSphereProxy {
+@RequiredArgsConstructor
+public final class UnixDomainSocketServer extends Thread {
+    
+    private final String socketPath;
     
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
     
-    /**
-     * Start ShardingSphere-Proxy.
-     *
-     * @param port      port
-     * @param addresses addresses
-     */
-    @SneakyThrows(InterruptedException.class)
-    public void start(final int port, final List<String> addresses) {
+    @Override
+    public void run() {
         try {
-            List<ChannelFuture> futures = startInternal(port, addresses);
-            accept(futures);
+            ChannelFuture future = startDomainSocket(socketPath);
+            future.channel().closeFuture().sync();
+        } catch (final InterruptedException ignored) {
         } finally {
             close();
         }
     }
     
-    private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
+    private ChannelFuture startDomainSocket(final String socketPath) throws InterruptedException {
+        log.info("DomainSocket Starting {}", socketPath);
         createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
-        initServerBootstrap(bootstrap);
+        initServerBootstrap(bootstrap, new DomainSocketAddress(socketPath));
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
-        List<ChannelFuture> futures = new ArrayList<>();
-        for (String address : addresses) {
-            futures.add(bootstrap.bind(address, port).sync());
-        }
-        return futures;
-    }
-    
-    private void accept(final List<ChannelFuture> futures) throws InterruptedException {
-        log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType());
-        for (ChannelFuture future : futures) {
-            future.channel().closeFuture().sync();
-        }
+        return bootstrap.bind().sync();
     }
     
     private void createEventLoopGroup() {
         bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
-        workerGroup = getWorkerGroup();
+        workerGroup = Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup();
     }
     
-    private EventLoopGroup getWorkerGroup() {
-        int workerThreads = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE);
-        return Epoll.isAvailable() ? new EpollEventLoopGroup(workerThreads) : new NioEventLoopGroup(workerThreads);
-    }
-    
-    private void initServerBootstrap(final ServerBootstrap bootstrap) {
+    private void initServerBootstrap(final ServerBootstrap bootstrap, final DomainSocketAddress localDomainSocketAddress) {
         Integer backLog = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG);
-        
         bootstrap.group(bossGroup, workerGroup)
-                .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
-                .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
-                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .option(ChannelOption.SO_REUSEADDR, true)
+                .channel(EpollServerDomainSocketChannel.class)
+                .localAddress(localDomainSocketAddress)
                 .option(ChannelOption.SO_BACKLOG, backLog)
-                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .childOption(ChannelOption.TCP_NODELAY, true)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
     }
@@ -118,6 +90,6 @@ public final class ShardingSphereProxy {
         if (null != workerGroup) {
             workerGroup.shutdownGracefully();
         }
-        BackendExecutorContext.getInstance().getExecutorEngine().close();
+        log.debug("UnixDomainSocketServer be closed");
     }
 }
