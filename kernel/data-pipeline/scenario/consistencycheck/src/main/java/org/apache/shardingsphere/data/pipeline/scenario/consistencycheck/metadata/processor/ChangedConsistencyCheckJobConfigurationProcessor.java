@@ -30,10 +30,10 @@ import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBoo
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
 /**
- * Consistency check changed job configuration processor.
+ * Changed consistency check job configuration processor.
  */
 @Slf4j
-public final class ConsistencyCheckChangedJobConfigurationProcessor implements ChangedJobConfigurationProcessor {
+public final class ChangedConsistencyCheckJobConfigurationProcessor implements ChangedJobConfigurationProcessor {
     
     @Override
     public void process(final Type eventType, final JobConfiguration jobConfig) {
