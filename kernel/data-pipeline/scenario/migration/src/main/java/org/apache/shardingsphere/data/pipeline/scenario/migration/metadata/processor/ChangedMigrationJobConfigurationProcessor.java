@@ -18,66 +18,33 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.processor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.ChangedJobConfigurationProcessor;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.impl.AbstractChangedJobConfigurationProcessor;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.prepare.MigrationJobPreparer;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
-import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
 /**
  * Changed migration job configuration processor.
  */
 @Slf4j
-public final class ChangedMigrationJobConfigurationProcessor implements ChangedJobConfigurationProcessor {
+public final class ChangedMigrationJobConfigurationProcessor extends AbstractChangedJobConfigurationProcessor {
     
     @Override
-    public void process(final Type eventType, final JobConfiguration jobConfig) {
-        String jobId = jobConfig.getJobName();
-        boolean disabled = jobConfig.isDisabled();
-        if (disabled) {
-            for (Integer each : PipelineJobCenter.getShardingItems(jobId)) {
-                PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
-            }
-        }
-        boolean deleted = Type.DELETED == eventType;
-        if (deleted) {
-            new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
-        }
-        if (disabled || deleted) {
-            PipelineJobCenter.stop(jobId);
-            return;
-        }
-        switch (eventType) {
-            case ADDED:
-            case UPDATED:
-                if (PipelineJobCenter.isJobExisting(jobId)) {
-                    log.info("{} added to executing jobs failed since it already exists", jobId);
-                } else {
-                    execute(jobConfig);
-                }
-                break;
-            default:
-                break;
-        }
-    }
-    
-    private void execute(final JobConfiguration jobConfig) {
-        MigrationJob job = new MigrationJob();
-        PipelineJobCenter.addJob(jobConfig.getJobName(), job);
-        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfig);
-        job.setJobBootstrap(oneOffJobBootstrap);
-        oneOffJobBootstrap.execute();
+    protected void onDeleted(final JobConfiguration jobConfig) {
+        new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfig.getJobParameter()));
     }
     
     @Override
-    public String getType() {
-        return new MigrationJobType().getTypeName();
+    protected AbstractPipelineJob buildPipelineJob() {
+        return new MigrationJob();
+    }
+    
+    @Override
+    protected JobType getJobType() {
+        return new MigrationJobType();
     }
 }
