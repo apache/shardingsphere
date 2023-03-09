@@ -100,7 +100,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> listJobId().size() > 0);
         String jobId = getJobIdByTableName("ds_0.test." + getSourceTableOrderName());
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        startIncrementTask(new E2EIncrementalTask(getProxyDataSource(), String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName()), insertOrderSQL,
+        startIncrementTask(new E2EIncrementalTask(getSourceDataSource(), String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName()), insertOrderSQL,
                 new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
         checkOrderMigration(jobId);
         checkOrderItemMigration();
