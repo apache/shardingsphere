@@ -19,12 +19,11 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 
 import org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class YamlEngineUserConfigurationTest {
@@ -32,19 +31,19 @@ public final class YamlEngineUserConfigurationTest {
     @Test
     public void assertUnmarshal() {
         YamlUserConfiguration actual = YamlEngine.unmarshal("password: pwd", YamlUserConfiguration.class);
-        assertThat(actual.getPassword(), CoreMatchers.is("pwd"));
+        assertThat(actual.getPassword(), is("pwd"));
     }
     
     @Test
     public void assertSecureUnmarshalProperties() {
         Properties actual = YamlEngine.unmarshal("password: pwd", Properties.class);
-        MatcherAssert.assertThat(actual.getProperty("password"), CoreMatchers.is("pwd"));
+        assertThat(actual.getProperty("password"), is("pwd"));
     }
     
     @Test
     public void assertMarshal() {
         YamlUserConfiguration actual = new YamlUserConfiguration();
         actual.setPassword("pwd");
-        MatcherAssert.assertThat(YamlEngine.marshal(actual), CoreMatchers.is("password: pwd" + System.lineSeparator()));
+        assertThat(YamlEngine.marshal(actual), is("password: pwd" + System.lineSeparator()));
     }
 }
