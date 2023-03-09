@@ -20,31 +20,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
+        <groupId>org.apache.shardingsphere</groupId>
         <version>5.3.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-hbase</artifactId>
     
     <dependencies>
         <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-shaded-client</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        
-        <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-util</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-executor</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-shaded-client</artifactId>
         </dependency>
     </dependencies>
-    
 </project>

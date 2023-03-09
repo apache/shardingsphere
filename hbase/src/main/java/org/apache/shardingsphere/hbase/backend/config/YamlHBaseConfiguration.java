@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Rule configuration for YAML.
+ * YAML rule configuration for HBase.
  */
 @Getter
 @Setter
@@ -38,5 +38,4 @@ public final class YamlHBaseConfiguration implements YamlConfiguration {
     private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
     
     private Properties props;
-    
 }

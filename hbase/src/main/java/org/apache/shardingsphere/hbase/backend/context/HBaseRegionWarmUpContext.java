@@ -54,7 +54,8 @@ public final class HBaseRegionWarmUpContext {
     
     /**
      * Init.
-     * @param poolSize mul execute size
+     * 
+     * @param poolSize execute pool size
      */
     public void init(final int poolSize) {
         executorManager = new HBaseTaskExecutorManager(poolSize);
@@ -62,8 +63,9 @@ public final class HBaseRegionWarmUpContext {
     
     /**
      * Submit region warm up task.
-     * @param tableName tableName
-     * @param hbaseCluster hbaseCluster
+     * 
+     * @param tableName table name
+     * @param hbaseCluster HBase cluster
      */
     public void submitWarmUpTask(final String tableName, final HBaseCluster hbaseCluster) {
         executorManager.submit(() -> loadRegionInfo(tableName, hbaseCluster));
@@ -72,15 +74,20 @@ public final class HBaseRegionWarmUpContext {
     private void loadRegionInfo(final String tableName, final HBaseCluster hbaseCluster) {
         try {
             RegionLocator regionLocator = hbaseCluster.getConnection().getRegionLocator(TableName.valueOf(tableName));
-            regionLocator.getAllRegionLocations();
+            warmUpRegion(regionLocator);
             HBaseRegionWarmUpContext.getInstance().addExecuteCount();
-        } catch (IOException e) {
-            log.error(String.format("table: %s warm up error, getRegionLocator execute error reason is  %s", tableName, e));
+        } catch (final IOException ex) {
+            log.error(String.format("Table: `%s` load region info error, reason is  %s", tableName, ex));
         }
+    }
+    
+    private static void warmUpRegion(final RegionLocator regionLocator) throws IOException {
+        regionLocator.getAllRegionLocations();
     }
     
     /**
      * Init statistics info.
+     * 
      * @param startWarmUpTime start warm up time
      */
     public void initStatisticsInfo(final long startWarmUpTime) {
@@ -91,26 +98,26 @@ public final class HBaseRegionWarmUpContext {
      * Execute count add one.
      */
     public void addExecuteCount() {
-        this.executeCount.incrementAndGet();
+        executeCount.incrementAndGet();
     }
     
     /**
      * All need warm up table add one.
      */
     public void addNeedWarmCount() {
-        this.tableCount.incrementAndGet();
+        tableCount.incrementAndGet();
     }
     
     /**
      * Sync execute.
+     * 
      * @param clusterName clusterName
      */
     public void syncExecuteWarmUp(final String clusterName) {
-        while (this.executeCount.get() < tableCount.get()) {
+        while (executeCount.get() < tableCount.get()) {
             try {
-                Thread.sleep(100);
-            } catch (InterruptedException ignore) {
-                
+                Thread.sleep(100L);
+            } catch (final InterruptedException ignore) {
             }
         }
         log.info(String.format("%s cluster end warm up, execute time: %dms, warm table: %d", clusterName, System.currentTimeMillis() - startWarmUpTime, executeCount.get()));
@@ -120,8 +127,8 @@ public final class HBaseRegionWarmUpContext {
      * Clear statistics info.
      */
     public void clear() {
-        this.tableCount.set(0);
-        this.executeCount.set(0);
+        tableCount.set(0);
+        executeCount.set(0);
     }
     
 }

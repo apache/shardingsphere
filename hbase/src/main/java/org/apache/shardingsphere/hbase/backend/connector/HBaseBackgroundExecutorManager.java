@@ -17,35 +17,29 @@
 
 package org.apache.shardingsphere.hbase.backend.connector;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+
 import java.io.Closeable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Background executor.
+ * HBase background executor manager.
  */
-@Getter
 public final class HBaseBackgroundExecutorManager implements Closeable {
     
     private final ScheduledExecutorService executorService;
     
     public HBaseBackgroundExecutorManager() {
-        executorService = getExecutorService();
-    }
-    
-    private ScheduledExecutorService getExecutorService() {
-        ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("background");
-        return Executors.newScheduledThreadPool(1, threadFactory);
+        executorService = Executors.newScheduledThreadPool(1, ExecutorThreadFactoryBuilder.build("background"));
     }
     
     /**
-     * Submit background task.
-     * @param runnable background task
-     * @param interval Running interval
+     * Submit task.
+     * 
+     * @param runnable task
+     * @param interval running interval
      */
     public void submit(final Runnable runnable, final int interval) {
         executorService.scheduleWithFixedDelay(runnable, interval, interval, TimeUnit.SECONDS);

@@ -66,7 +66,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
         </dependency>
-        
     </dependencies>
     
     <build>

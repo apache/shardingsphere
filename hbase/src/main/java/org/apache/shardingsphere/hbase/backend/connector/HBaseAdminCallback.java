@@ -23,17 +23,16 @@ import java.io.IOException;
 /**
  * Call back for HBase operation.
  *
- * @param <T> return type
+ * @param <T> type of result
  */
 public interface HBaseAdminCallback<T> {
     
     /**
-     * Do operation in HBase.
+     * Execute in HBase.
      *
-     * @param admin execute in HBase Table
-     * @return result
-     * @throws IOException exception
-     *
+     * @param admin execute in HBase table
+     * @return execute result
+     * @throws IOException IO exception
      */
     T executeInHBase(Admin admin) throws IOException;
 }
