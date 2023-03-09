@@ -31,10 +31,10 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import java.util.regex.Pattern;
 
 /**
- * Changed job configuration dispatcher.
+ * Config meta data changed event handler.
  */
 @Slf4j
-public final class ChangedJobConfigurationDispatcher implements PipelineMetaDataChangedEventHandler {
+public final class ConfigMetaDataChangedEventHandler implements PipelineMetaDataChangedEventHandler {
     
     @Override
     public Pattern getKeyPattern() {
