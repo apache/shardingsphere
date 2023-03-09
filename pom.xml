@@ -49,6 +49,7 @@
         <module>test</module>
         
         <module>distribution</module>
+        <module>hbase</module>
     </modules>
     
     <properties>
@@ -111,6 +112,8 @@
         
         <protobuf-java.version>3.21.12</protobuf-java.version>
         <awaitility.version>4.2.0</awaitility.version>
+        
+        <hbase.client.version>1.7.1</hbase.client.version>
         
         <!-- Plugin versions -->
         <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
@@ -615,6 +618,12 @@
                 <version>${apollo-client.version}</version>
                 <scope>provided</scope>
             </dependency>
+            
+            <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase-shaded-client</artifactId>
+                <version>${hbase.client.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -678,6 +687,7 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
+        
     </dependencies>
     
     <build>

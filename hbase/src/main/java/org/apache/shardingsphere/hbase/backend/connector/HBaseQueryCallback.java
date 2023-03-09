@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.config;
+package org.apache.shardingsphere.hbase.backend.connector;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
-
-import java.util.Map;
+import org.apache.hadoop.hbase.client.Table;
+import java.io.IOException;
 
 /**
- * YAML configuration for ShardingSphere-Proxy.
+ * Call back for HBase operation.
+ * 
+ * @param <T> return type.
  */
-@RequiredArgsConstructor
-@Getter
-public final class YamlProxyConfiguration {
+public interface HBaseQueryCallback<T> {
     
-    private final YamlProxyServerConfiguration serverConfiguration;
-    
-    private final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations;
+    /**
+     * Do operation in HBase.
+     * 
+     * @param table execute in HBase Table
+     * @return result
+     * @throws IOException exception
+     * 
+     */
+    T executeInHBase(Table table) throws IOException;
     
 }

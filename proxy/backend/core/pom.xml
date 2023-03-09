@@ -228,5 +228,6 @@
             <artifactId>HikariCP</artifactId>
             <scope>compile</scope>
         </dependency>
+        
     </dependencies>
 </project>

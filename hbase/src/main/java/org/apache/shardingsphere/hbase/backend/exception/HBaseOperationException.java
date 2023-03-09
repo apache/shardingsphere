@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.config;
+package org.apache.shardingsphere.hbase.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
-
-import java.util.Map;
 
 /**
- * YAML configuration for ShardingSphere-Proxy.
+ * HBase Operation exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class YamlProxyConfiguration {
+public final class HBaseOperationException extends RuntimeException {
     
-    private final YamlProxyServerConfiguration serverConfiguration;
+    private static final long serialVersionUID = -2361593557266150170L;
     
-    private final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations;
-    
+    private final String errorInfo;
 }

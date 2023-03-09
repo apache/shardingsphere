@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.config;
+package org.apache.shardingsphere.hbase.backend.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
-
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
- * YAML configuration for ShardingSphere-Proxy.
+ * Rule configuration for YAML.
  */
-@RequiredArgsConstructor
 @Getter
-public final class YamlProxyConfiguration {
+@Setter
+public final class YamlHBaseConfiguration implements YamlConfiguration {
     
-    private final YamlProxyServerConfiguration serverConfiguration;
+    private String databaseName;
     
-    private final Map<String, YamlProxyDatabaseConfiguration> databaseConfigurations;
+    private Map<String, Object> dataSourceCommon;
+    
+    private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
+    
+    private Properties props;
     
 }
