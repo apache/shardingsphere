@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.hbase.backend.connector;
 
+import com.google.common.base.Strings;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.security.User;
-import org.apache.hadoop.hbase.shaded.org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.shardingsphere.hbase.backend.config.YamlHBaseConfiguration;
 import org.apache.shardingsphere.hbase.backend.config.YamlHBaseParameter;
 import org.apache.shardingsphere.hbase.backend.exception.HBaseOperationException;
+
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,7 +40,8 @@ public final class HBaseConnectionFactory {
     
     /**
      * Create HBase connection.
-     * @param yamlProxyHBaseConfiguration HBase config
+     * 
+     * @param yamlProxyHBaseConfiguration HBase configuration
      * @return A connection for per HBase cluster
      */
     public static Map<String, Connection> createHBaseConnections(final YamlHBaseConfiguration yamlProxyHBaseConfiguration) {
@@ -53,18 +55,12 @@ public final class HBaseConnectionFactory {
     private static Connection createConnection(final YamlHBaseParameter parameter) {
         Configuration config = createConfiguration(parameter);
         try {
-            if (StringUtils.isEmpty(parameter.getAccessUser())) {
-                return ConnectionFactory.createConnection(config);
-            } else {
-                return ConnectionFactory.createConnection(config, createUser(parameter.getAccessUser()));
-            }
-        } catch (IOException e) {
-            throw new HBaseOperationException(e.getMessage());
+            return Strings.isNullOrEmpty(parameter.getAccessUser())
+                    ? ConnectionFactory.createConnection(config)
+                    : ConnectionFactory.createConnection(config, User.create(UserGroupInformation.createRemoteUser(parameter.getAccessUser())));
+        } catch (final IOException ex) {
+            throw new HBaseOperationException(ex.getMessage());
         }
-    }
-    
-    private static User createUser(final String accessUser) {
-        return User.create(UserGroupInformation.createRemoteUser(accessUser));
     }
     
     private static Configuration createConfiguration(final YamlHBaseParameter parameter) {

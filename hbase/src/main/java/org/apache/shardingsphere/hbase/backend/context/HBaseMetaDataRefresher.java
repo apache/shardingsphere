@@ -17,25 +17,24 @@
 
 package org.apache.shardingsphere.hbase.backend.context;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.hbase.backend.exception.HBaseOperationException;
 
 /**
- * background thread to refresh metadata.
+ * HBase meta data refresher.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
-public class HBaseMetaRefresher implements Runnable {
+public class HBaseMetaDataRefresher implements Runnable {
     
     private final HBaseContext context;
     
     @Override
     public void run() {
         try {
-            context.getConnections().forEach(context::loadTablesFromHBase);
-        } catch (HBaseOperationException e) {
-            // ignored
+            context.getConnections().forEach(context::loadTables);
+        } catch (final HBaseOperationException ignored) {
         }
     }
 }

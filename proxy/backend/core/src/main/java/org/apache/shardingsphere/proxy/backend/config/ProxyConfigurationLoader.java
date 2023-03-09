@@ -66,8 +66,7 @@ public final class ProxyConfigurationLoader {
         File configPath = getResourceFile(path);
         Collection<YamlProxyDatabaseConfiguration> databaseConfigs = loadDatabaseConfigurations(configPath);
         return new YamlProxyConfiguration(serverConfig, databaseConfigs.stream().collect(Collectors.toMap(
-                YamlProxyDatabaseConfiguration::getDatabaseName, each -> each, (oldValue, currentValue) -> oldValue,
-                LinkedHashMap::new)));
+                YamlProxyDatabaseConfiguration::getDatabaseName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
     @SneakyThrows(URISyntaxException.class)
@@ -151,5 +150,4 @@ public final class ProxyConfigurationLoader {
     private static File[] findRuleConfigurationFiles(final File path) {
         return path.listFiles(each -> SCHEMA_CONFIG_FILE_PATTERN.matcher(each.getName()).matches());
     }
-    
 }

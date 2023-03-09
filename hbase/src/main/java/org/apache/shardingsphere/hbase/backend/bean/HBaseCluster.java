@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Connection;
 
+/**
+ * HBase cluster.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class HBaseCluster {
@@ -28,5 +31,4 @@ public final class HBaseCluster {
     private final String clusterName;
     
     private final Connection connection;
-    
 }

@@ -34,28 +34,19 @@ public final class HBaseTaskExecutorManager implements Closeable {
      * @param poolSize pool size
      */
     public HBaseTaskExecutorManager(final int poolSize) {
-        executorService = getExecutorService(poolSize);
-    }
-    
-    private ThreadPoolExecutor getExecutorService(final int poolSize) {
-        return new ThreadPoolExecutor(
-                poolSize, poolSize, 10,
-                TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(20000),
-                new ThreadPoolExecutor.CallerRunsPolicy());
+        executorService = new ThreadPoolExecutor(poolSize, poolSize, 10L, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20000), new ThreadPoolExecutor.CallerRunsPolicy());
     }
     
     /**
      * Submit task.
+     * 
      * @param runnable task
      */
     public void submit(final Runnable runnable) {
         executorService.submit(runnable);
     }
     
-    /**
-     * Close executor.
-     */
+    @Override
     public void close() {
         executorService.shutdown();
     }
