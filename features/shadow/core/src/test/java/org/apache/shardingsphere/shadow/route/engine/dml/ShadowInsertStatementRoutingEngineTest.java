@@ -36,8 +36,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,7 +56,7 @@ public final class ShadowInsertStatementRoutingEngineTest {
     
     private ShadowInsertStatementRoutingEngine shadowRouteEngine;
     
-    @Before
+    @BeforeEach
     public void init() {
         shadowRouteEngine = new ShadowInsertStatementRoutingEngine(createInsertStatementContext());
     }

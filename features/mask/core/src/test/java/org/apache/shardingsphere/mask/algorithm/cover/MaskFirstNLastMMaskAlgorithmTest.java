@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mask.algorithm.cover;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,7 +31,7 @@ public final class MaskFirstNLastMMaskAlgorithmTest {
     
     private MaskFirstNLastMMaskAlgorithm maskAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         maskAlgorithm = new MaskFirstNLastMMaskAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
