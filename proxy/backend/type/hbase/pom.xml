@@ -20,11 +20,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>shardingsphere</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>shardingsphere-proxy-backend-type</artifactId>
         <version>5.3.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-hbase</artifactId>
+    <artifactId>shardingsphere-proxy-backend-hbase</artifactId>
     
     <dependencies>
         <dependency>
