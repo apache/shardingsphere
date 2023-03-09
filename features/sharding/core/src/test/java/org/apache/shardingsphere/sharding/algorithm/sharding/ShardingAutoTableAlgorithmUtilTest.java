@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding;
 
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,7 +36,7 @@ public final class ShardingAutoTableAlgorithmUtilTest {
     
     private final DataNodeInfo dataNodeInfo = new DataNodeInfo("t_order_", 2, '0');
     
-    @Before
+    @BeforeEach
     public void setup() {
         availableTargetNames.add("t_order_00");
         availableTargetNames.add("t_order_01");

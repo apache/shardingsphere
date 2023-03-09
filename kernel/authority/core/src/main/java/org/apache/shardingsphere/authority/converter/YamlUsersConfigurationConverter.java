@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.user.yaml.config;
+package org.apache.shardingsphere.authority.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.authority.yaml.swapper.YamlUserSwapper;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.yaml.swapper.YamlUserSwapper;
 
 import java.util.Collection;
 import java.util.LinkedList;

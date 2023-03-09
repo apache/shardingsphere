@@ -24,11 +24,11 @@ import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import java.lang.reflect.Method;
 
 /**
- * Tracing command executor task advice executor.
+ * Tracing root span advice.
  * 
  * @param <T> type of span
  */
-public abstract class TracingCommandExecutorTaskAdvice<T> implements InstanceMethodAdvice {
+public abstract class TracingRootSpanAdvice<T> implements InstanceMethodAdvice {
     
     protected static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     

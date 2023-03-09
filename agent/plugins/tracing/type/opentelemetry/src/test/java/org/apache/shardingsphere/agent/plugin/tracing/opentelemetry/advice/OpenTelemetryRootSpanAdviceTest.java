@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith({AgentExtension.class, AutoMockExtension.class})
 @StaticMockSettings(ProxyContext.class)
-public final class OpenTelemetryCommandExecutorTaskAdviceTest {
+public final class OpenTelemetryRootSpanAdviceTest {
     
     private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
     
@@ -78,7 +78,7 @@ public final class OpenTelemetryCommandExecutorTaskAdviceTest {
     
     @Test
     public void assertMethod() {
-        OpenTelemetryCommandExecutorTaskAdvice advice = new OpenTelemetryCommandExecutorTaskAdvice();
+        OpenTelemetryRootSpanAdvice advice = new OpenTelemetryRootSpanAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{}, null, "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
@@ -91,7 +91,7 @@ public final class OpenTelemetryCommandExecutorTaskAdviceTest {
     
     @Test
     public void assertExceptionHandle() {
-        OpenTelemetryCommandExecutorTaskAdvice advice = new OpenTelemetryCommandExecutorTaskAdvice();
+        OpenTelemetryRootSpanAdvice advice = new OpenTelemetryRootSpanAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
         advice.onThrowing(targetObject, null, new Object[]{}, new IOException(), "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();

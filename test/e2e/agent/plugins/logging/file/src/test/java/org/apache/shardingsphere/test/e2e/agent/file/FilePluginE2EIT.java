@@ -39,7 +39,7 @@ public final class FilePluginE2EIT extends BasePluginE2EIT {
     
     private Collection<String> getExpectedLogRegex() {
         Collection<String> result = new LinkedList<>();
-        result.add("Build meta data contexts finished, cost\\s(?=[1-9]+)");
+        result.add("Build meta data contexts finished, cost\\s(?=[1-9]+\\d*)");
         return result;
     }
 }

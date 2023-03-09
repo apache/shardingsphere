@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.strategy.type;
 
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
