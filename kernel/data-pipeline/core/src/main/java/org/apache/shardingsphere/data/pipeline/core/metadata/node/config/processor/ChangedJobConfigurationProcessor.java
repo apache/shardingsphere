@@ -15,35 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor;
 
-import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-
-import java.util.Collection;
-import java.util.Optional;
+import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
 /**
- * Pipeline job.
+ * Changed job configuration processor.
  */
-public interface PipelineJob {
+public interface ChangedJobConfigurationProcessor extends TypedSPI {
     
     /**
-     * Get tasks runner.
+     * Process changed job configuration.
      *
-     * @param shardingItem sharding item
-     * @return tasks runner
+     * @param eventType event type
+     * @param jobConfig job configuration
      */
-    Optional<PipelineTasksRunner> getTasksRunner(int shardingItem);
-    
-    /**
-     * Get sharding items.
-     *
-     * @return sharding items
-     */
-    Collection<Integer> getShardingItems();
-    
-    /**
-     * Stop job.
-     */
-    void stop();
+    void process(Type eventType, JobConfiguration jobConfig);
 }

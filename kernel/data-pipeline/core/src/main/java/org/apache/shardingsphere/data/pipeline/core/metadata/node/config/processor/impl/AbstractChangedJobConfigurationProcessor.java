@@ -15,36 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.metadata.processor;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineChangedJobConfigurationProcessor;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.ChangedJobConfigurationProcessor;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
 /**
- * Consistency check changed job configuration processor.
+ * Abstract changed job configuration processor.
  */
 @Slf4j
-public final class ConsistencyCheckChangedJobConfigurationProcessor implements PipelineChangedJobConfigurationProcessor {
+public abstract class AbstractChangedJobConfigurationProcessor implements ChangedJobConfigurationProcessor {
     
     @Override
     public void process(final Type eventType, final JobConfiguration jobConfig) {
-        String jobId = jobConfig.getJobName();
         boolean disabled = jobConfig.isDisabled();
         if (disabled) {
-            for (Integer each : PipelineJobCenter.getShardingItems(jobId)) {
-                PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
-            }
+            onDisabled(jobConfig);
         }
         boolean deleted = Type.DELETED == eventType;
+        if (deleted) {
+            onDeleted(jobConfig);
+        }
+        String jobId = jobConfig.getJobName();
         if (disabled || deleted) {
             PipelineJobCenter.stop(jobId);
             return;
@@ -55,7 +56,7 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
                 if (PipelineJobCenter.isJobExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
-                    execute(jobConfig);
+                    executeJob(jobConfig);
                 }
                 break;
             default:
@@ -63,16 +64,29 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
         }
     }
     
-    private void execute(final JobConfiguration jobConfig) {
-        ConsistencyCheckJob job = new ConsistencyCheckJob();
+    protected void onDisabled(final JobConfiguration jobConfig) {
+        String jobId = jobConfig.getJobName();
+        for (Integer each : PipelineJobCenter.getShardingItems(jobId)) {
+            PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
+        }
+    }
+    
+    protected abstract void onDeleted(JobConfiguration jobConfig);
+    
+    protected void executeJob(final JobConfiguration jobConfig) {
+        AbstractPipelineJob job = buildPipelineJob();
         PipelineJobCenter.addJob(jobConfig.getJobName(), job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfig);
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }
     
+    protected abstract AbstractPipelineJob buildPipelineJob();
+    
+    protected abstract JobType getJobType();
+    
     @Override
     public String getType() {
-        return new ConsistencyCheckJobType().getTypeName();
+        return getJobType().getTypeName();
     }
 }
