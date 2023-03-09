@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineChangedJobConfigurationProcessor;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.ChangedJobConfigurationProcessor;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
  * Consistency check changed job configuration processor.
  */
 @Slf4j
-public final class ConsistencyCheckChangedJobConfigurationProcessor implements PipelineChangedJobConfigurationProcessor {
+public final class ConsistencyCheckChangedJobConfigurationProcessor implements ChangedJobConfigurationProcessor {
     
     @Override
     public void process(final Type eventType, final JobConfiguration jobConfig) {
