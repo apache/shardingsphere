@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.parser.cache;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.isA;

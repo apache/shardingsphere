@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedInte
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.OrderedSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedInterfaceFixtureImpl;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.fixture.impl.OrderedSPIFixtureImpl;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.ref.SoftReference;
@@ -37,7 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class OrderedSPILoaderTest {
     
-    @After
+    @AfterEach
     public void cleanCache() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(OrderedServicesCache.class.getDeclaredField("cache"), OrderedServicesCache.class, new SoftReference<>(new ConcurrentHashMap<>()));
     }

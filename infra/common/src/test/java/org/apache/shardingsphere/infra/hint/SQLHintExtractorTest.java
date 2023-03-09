@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.hint;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;

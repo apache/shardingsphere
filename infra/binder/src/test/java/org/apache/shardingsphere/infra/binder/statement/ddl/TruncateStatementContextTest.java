@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerTruncateStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

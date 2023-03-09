@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.fixture.InfraDatabaseTypeFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
