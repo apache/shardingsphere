@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.hbase.backend.exception;
+package org.apache.shardingsphere.proxy.backend.hbase.props;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.props.TypedProperties;
+import java.util.Properties;
 
 /**
- * HBase operation exception.
+ * Typed properties of HBase.
  */
-@RequiredArgsConstructor
-@Getter
-// TODO should extend to ShardingSphereExternalException
-public final class HBaseOperationException extends RuntimeException {
+public final class HBaseProperties extends TypedProperties<HBasePropertyKey> {
     
-    private static final long serialVersionUID = -2361593557266150170L;
-    
-    private final String errorInfo;
+    public HBaseProperties(final Properties props) {
+        super(HBasePropertyKey.class, props);
+    }
 }

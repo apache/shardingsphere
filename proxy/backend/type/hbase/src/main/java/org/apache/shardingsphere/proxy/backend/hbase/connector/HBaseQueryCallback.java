@@ -15,17 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.hbase.backend.props;
+package org.apache.shardingsphere.proxy.backend.hbase.connector;
 
-import org.apache.shardingsphere.infra.util.props.TypedProperties;
-import java.util.Properties;
+import org.apache.hadoop.hbase.client.Table;
+import java.io.IOException;
 
 /**
- * Typed properties of HBase.
+ * HBase query callback.
+ * 
+ * @param <T> type of result
  */
-public final class HBaseProperties extends TypedProperties<HBasePropertyKey> {
+public interface HBaseQueryCallback<T> {
     
-    public HBaseProperties(final Properties props) {
-        super(HBasePropertyKey.class, props);
-    }
+    /**
+     * Execute in HBase.
+     * 
+     * @param table table
+     * @return execute result
+     * @throws IOException IO exception
+     * 
+     */
+    T executeInHBase(Table table) throws IOException;
+    
 }

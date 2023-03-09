@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.hbase.backend.context;
+package org.apache.shardingsphere.proxy.backend.hbase.context;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.RegionLocator;
-import org.apache.shardingsphere.hbase.backend.bean.HBaseCluster;
-import org.apache.shardingsphere.hbase.backend.connector.HBaseTaskExecutorManager;
+import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseCluster;
+import org.apache.shardingsphere.proxy.backend.hbase.connector.HBaseTaskExecutorManager;
+
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
