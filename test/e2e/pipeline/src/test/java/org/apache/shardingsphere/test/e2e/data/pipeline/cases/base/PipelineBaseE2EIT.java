@@ -45,6 +45,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Rule;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -248,6 +249,16 @@ public abstract class PipelineBaseE2EIT {
         return "t_order";
     }
     
+    protected void createSchema(final Connection connection, final int sleepSeconds) throws SQLException {
+        if (!getDatabaseType().isSchemaAvailable()) {
+            return;
+        }
+        connection.createStatement().execute(String.format("CREATE SCHEMA %s", SCHEMA_NAME));
+        if (sleepSeconds > 0) {
+            ThreadUtil.sleep(sleepSeconds, TimeUnit.SECONDS);
+        }
+    }
+    
     protected void createSourceOrderTable() throws SQLException {
         sourceExecuteWithLog(getExtraSQLCommand().getCreateTableOrder(getSourceTableOrderName()));
     }
@@ -394,8 +405,8 @@ public abstract class PipelineBaseE2EIT {
     
     // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
     protected DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
-        String dataSourceConfigText = queryForListWithLog("EXPORT DATABASE CONFIGURATION").get(0).get("result").toString();
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(dataSourceConfigText, YamlRootConfiguration.class);
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !getYamlRootConfig().getRules().isEmpty());
+        YamlRootConfiguration rootConfig = getYamlRootConfig();
         if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
             String sourceUrl = String.join(":", storageContainer.getNetworkAliases().get(0), Integer.toString(storageContainer.getExposedPort()));
@@ -408,5 +419,10 @@ public abstract class PipelineBaseE2EIT {
             each.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
         }
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
+    }
+    
+    private YamlRootConfiguration getYamlRootConfig() {
+        String result = queryForListWithLog("EXPORT DATABASE CONFIGURATION").get(0).get("result").toString();
+        return YamlEngine.unmarshal(result, YamlRootConfiguration.class);
     }
 }

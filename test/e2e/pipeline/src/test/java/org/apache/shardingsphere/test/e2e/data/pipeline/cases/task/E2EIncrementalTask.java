@@ -36,6 +36,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,18 +46,16 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 public final class E2EIncrementalTask extends BaseIncrementTask {
     
-    private static final List<String> MYSQL_COLUMN_NAMES = Arrays.asList("status", "t_mediumint", "t_smallint", "t_tinyint", "t_unsigned_int", "t_unsigned_mediumint", "t_unsigned_smallint",
-            "t_unsigned_tinyint", "t_float", "t_double", "t_decimal", "t_timestamp", "t_datetime", "t_date", "t_time", "t_year", "t_bit", "t_binary", "t_varbinary", "t_blob", "t_mediumblob",
-            "t_char", "t_text", "t_mediumtext", "t_enum", "t_set", "t_json");
+    private static final List<String> MYSQL_COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status", "t_mediumint", "t_smallint", "t_tinyint", "t_unsigned_int", "t_unsigned_mediumint",
+            "t_unsigned_smallint", "t_unsigned_tinyint", "t_float", "t_double", "t_decimal", "t_timestamp", "t_datetime", "t_date", "t_time", "t_year", "t_bit", "t_binary", "t_varbinary", "t_blob",
+            "t_mediumblob", "t_char", "t_text", "t_mediumtext", "t_enum", "t_set", "t_json");
     
-    private static final List<String> POSTGRESQL_COLUMN_NAMES = Arrays.asList("status", "t_int2", "t_numeric", "t_bool", "t_bytea", "t_char", "t_float", "t_double", "t_json", "t_jsonb", "t_text",
-            "t_date", "t_time", "t_timestamp", "t_timestamptz");
+    private static final List<String> POSTGRESQL_COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status", "t_int2", "t_numeric", "t_bool", "t_bytea", "t_char", "t_varchar", "t_float",
+            "t_double", "t_json", "t_jsonb", "t_text", "t_date", "t_time", "t_timestamp", "t_timestamptz");
     
     private final DataSource dataSource;
     
     private final String orderTableName;
-    
-    private final String insertTableSql;
     
     private final KeyGenerateAlgorithm primaryKeyGenerateAlgorithm;
     
@@ -70,7 +69,7 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         List<Object> primaryKeys = new LinkedList<>();
         for (Object[] each : orderInsertData) {
             primaryKeys.add(each[0]);
-            DataSourceExecuteUtil.execute(dataSource, insertTableSql, each);
+            insertOrder(each);
         }
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < Math.max(1, loopCount / 3); i++) {
@@ -85,11 +84,38 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         log.info("increment task runnable execute successfully.");
     }
     
+    private void insertOrder(final Object[] orderInsertData) {
+        String sql;
+        if (databaseType instanceof MySQLDatabaseType) {
+            sql = buildInsertSQL(MYSQL_COLUMN_NAMES);
+        } else if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+            sql = buildInsertSQL(POSTGRESQL_COLUMN_NAMES);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        DataSourceExecuteUtil.execute(dataSource, sql, orderInsertData);
+    }
+    
+    private String buildInsertSQL(final List<String> columnNames) {
+        StringBuilder sql = new StringBuilder("INSERT INTO %s (");
+        for (String each : columnNames) {
+            sql.append(each).append(",");
+        }
+        sql.setLength(sql.length() - 1);
+        sql.append(") ").append("VALUES").append("(");
+        for (int i = 0; i < columnNames.size(); i++) {
+            sql.append("?,");
+        }
+        sql.setLength(sql.length() - 1);
+        sql.append(")");
+        return String.format(sql.toString(), orderTableName);
+    }
+    
     private void updateOrderById(final Object orderId) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int randomInt = random.nextInt(-100, 100);
         if (databaseType instanceof MySQLDatabaseType) {
-            String sql = String.format(buildUpdateSQL(MYSQL_COLUMN_NAMES, "?"), orderTableName);
+            String sql = String.format(buildUpdateSQL(ignoreShardingColumns(MYSQL_COLUMN_NAMES), "?"), orderTableName);
             log.info("update sql: {}", sql);
             int randomUnsignedInt = random.nextInt(10, 100);
             LocalDateTime now = LocalDateTime.now();
@@ -99,9 +125,9 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
             return;
         }
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            String sql = String.format(buildUpdateSQL(POSTGRESQL_COLUMN_NAMES, "?"), orderTableName);
+            String sql = String.format(buildUpdateSQL(ignoreShardingColumns(POSTGRESQL_COLUMN_NAMES), "?"), orderTableName);
             log.info("update sql: {}", sql);
-            DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{"中文测试", randomInt, BigDecimal.valueOf(10000), true, new byte[]{}, "update", PipelineCaseHelper.generateFloat(),
+            DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{"中文测试", randomInt, BigDecimal.valueOf(10000), true, new byte[]{}, "char", "varchar", PipelineCaseHelper.generateFloat(),
                     PipelineCaseHelper.generateDouble(), PipelineCaseHelper.generateJsonString(10, true), PipelineCaseHelper.generateJsonString(20, true), "text-update", LocalDate.now(),
                     LocalTime.now(), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now(), orderId});
         }
@@ -115,6 +141,10 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         sql.setLength(sql.length() - 1);
         sql.append(" WHERE order_id=?");
         return sql.toString();
+    }
+    
+    private List<String> ignoreShardingColumns(final List<String> columnNames) {
+        return new ArrayList<>(columnNames.subList(2, columnNames.size()));
     }
     
     private void deleteOrderById(final Object orderId) {

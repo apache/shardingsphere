@@ -35,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.Consistenc
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableInventoryDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -123,26 +124,25 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
             registerStorageUnit(each);
         }
         createOrderTableRule();
-        DataSource proxyDataSource = generateShardingSphereDataSourceFromProxy();
-        try (Connection connection = proxyDataSource.getConnection()) {
-            initSchemaAndTable(connection);
+        try (Connection connection = getProxyDataSource().getConnection()) {
+            initSchemaAndTable(connection, 2);
         }
+        DataSource jdbcDataSource = generateShardingSphereDataSourceFromProxy();
         Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(getDatabaseType(), 20);
         log.info("init data begin: {}", LocalDateTime.now());
-        String insertOrderTableSql = getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName());
-        DataSourceExecuteUtil.execute(proxyDataSource, insertOrderTableSql, dataPair.getLeft());
+        DataSourceExecuteUtil.execute(jdbcDataSource, getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         log.info("init data end: {}", LocalDateTime.now());
         try (Connection connection = DriverManager.getConnection(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword())) {
-            initSchemaAndTable(connection);
+            initSchemaAndTable(connection, 0);
         }
         startCDCClient();
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !queryForListWithLog("SHOW STREAMING LIST").isEmpty());
         String jobId = queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
         waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
-        startIncrementTask(new E2EIncrementalTask(proxyDataSource, getSourceTableOrderName(), insertOrderTableSql, new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
+        startIncrementTask(new E2EIncrementalTask(jdbcDataSource, getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
         getIncreaseTaskThread().join(10000);
         List<Map<String, Object>> actualProxyList;
-        try (Connection connection = proxyDataSource.getConnection()) {
+        try (Connection connection = jdbcDataSource.getConnection()) {
             ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", getOrderTableNameWithSchema()));
             actualProxyList = transformResultSetToList(resultSet);
         }
@@ -152,7 +152,7 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
                 : new SchemaTableName(new SchemaName(null), new TableName(getSourceTableOrderName()));
         PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword()),
                 getDatabaseType());
-        PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(proxyDataSource, getDatabaseType());
+        PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(jdbcDataSource, getDatabaseType());
         StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(PipelineBaseE2EIT.SCHEMA_NAME, "t_order");
         PipelineColumnMetaData primaryKeyMetaData = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
@@ -167,15 +167,14 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         proxyExecuteWithLog(CREATE_SHARDING_RULE_SQL, 2);
     }
     
-    private void initSchemaAndTable(final Connection connection) throws SQLException {
-        if (getDatabaseType().isSchemaAvailable()) {
-            String sql = String.format("CREATE SCHEMA %s", PipelineBaseE2EIT.SCHEMA_NAME);
-            log.info("create schema sql: {}", sql);
-            connection.createStatement().execute(sql);
-        }
+    private void initSchemaAndTable(final Connection connection, final int sleepSeconds) throws SQLException {
+        createSchema(connection, sleepSeconds);
         String sql = getExtraSQLCommand().getCreateTableOrder(getSourceTableOrderName());
         log.info("create table sql: {}", sql);
         connection.createStatement().execute(sql);
+        if (sleepSeconds > 0) {
+            ThreadUtil.sleep(sleepSeconds, TimeUnit.SECONDS);
+        }
     }
     
     private void startCDCClient() {

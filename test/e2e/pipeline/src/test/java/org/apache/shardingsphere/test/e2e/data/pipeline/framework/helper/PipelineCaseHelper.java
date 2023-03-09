@@ -142,7 +142,7 @@ public final class PipelineCaseHelper {
      * @return double
      */
     public static double generateDouble() {
-        return ThreadLocalRandom.current().nextInt(-1000000000, 1000000000) / 1000000.0;
+        return ThreadLocalRandom.current().nextInt(-1000000000, 1000000000) / 1000000.0D;
     }
     
     private static List<Object[]> generateOrderItemInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {

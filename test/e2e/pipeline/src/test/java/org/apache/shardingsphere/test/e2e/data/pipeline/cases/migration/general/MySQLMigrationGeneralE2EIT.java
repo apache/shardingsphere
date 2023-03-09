@@ -90,15 +90,14 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         createTargetOrderItemTableRule();
         Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
         log.info("init data begin: {}", LocalDateTime.now());
-        String insertOrderSQL = getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName());
-        DataSourceExecuteUtil.execute(getSourceDataSource(), insertOrderSQL, dataPair.getLeft());
+        DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         startMigration("t_order_item", "t_order_item");
         String orderJobId = getJobIdByTableName("ds_0." + getSourceTableOrderName());
         waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", orderJobId));
-        startIncrementTask(new E2EIncrementalTask(getSourceDataSource(), getSourceTableOrderName(), insertOrderSQL, new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 30));
+        startIncrementTask(new E2EIncrementalTask(getSourceDataSource(), getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 30));
         assertMigrationSuccessById(orderJobId, "DATA_MATCH");
         String orderItemJobId = getJobIdByTableName("ds_0.t_order_item");
         assertMigrationSuccessById(orderItemJobId, "DATA_MATCH");
