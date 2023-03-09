@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -43,7 +43,7 @@ public final class ShowTablesMergedResultTest {
     
     private ShardingSphereSchema schema;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         shardingRule = createShardingRule();
         schema = new ShardingSphereSchema(Collections.singletonMap("table",

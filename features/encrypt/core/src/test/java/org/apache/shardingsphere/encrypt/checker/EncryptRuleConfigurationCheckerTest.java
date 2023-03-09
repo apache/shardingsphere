@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.exception.metadata.EncryptEncryptorNotF
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;

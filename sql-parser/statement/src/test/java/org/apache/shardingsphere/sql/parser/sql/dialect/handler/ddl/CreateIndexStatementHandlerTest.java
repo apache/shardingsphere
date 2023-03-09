@@ -42,7 +42,7 @@ public final class CreateIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertGeneratedIndexStartIndexForPostgres() {
+    public void assertGeneratedIndexStartIndexForPostgreSQL() {
         PostgreSQLCreateIndexStatement postgreSQLCreateIndexStatement = new PostgreSQLCreateIndexStatement(true);
         postgreSQLCreateIndexStatement.setGeneratedIndexStartIndex(2);
         Optional<Integer> actual = CreateIndexStatementHandler.getGeneratedIndexStartIndex(postgreSQLCreateIndexStatement);

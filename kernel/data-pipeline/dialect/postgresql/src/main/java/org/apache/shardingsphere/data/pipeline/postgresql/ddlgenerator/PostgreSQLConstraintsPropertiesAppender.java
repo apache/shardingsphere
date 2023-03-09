@@ -29,13 +29,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Postgres constraints properties appender.
+ * Constraints properties appender for PostgreSQL.
  */
-public final class PostgresConstraintsPropertiesAppender extends AbstractPostgresDDLAdapter {
+public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostgreSQLDDLAdapter {
     
     private static final Integer PG_CONSTRAINTS_INCLUDE_VERSION = 11;
     
-    public PostgresConstraintsPropertiesAppender(final Connection connection, final int majorVersion, final int minorVersion) {
+    public PostgreSQLConstraintsPropertiesAppender(final Connection connection, final int majorVersion, final int minorVersion) {
         super(connection, majorVersion, minorVersion);
     }
     

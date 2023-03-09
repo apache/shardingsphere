@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.CursorTok
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.CursorToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 

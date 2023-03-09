@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguratio
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.parser.statement.ShowMaskRulesStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;

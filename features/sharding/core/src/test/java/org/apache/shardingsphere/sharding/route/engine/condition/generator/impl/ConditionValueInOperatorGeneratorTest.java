@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
 import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Date;

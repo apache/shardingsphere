@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.distsql.export;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -29,8 +28,6 @@ import java.util.Map;
 @Getter
 @Setter
 public class ExportedMetaData {
-    
-    private Collection<ExportedStorageNode> storageNodes;
     
     private Map<String, String> databases;
     

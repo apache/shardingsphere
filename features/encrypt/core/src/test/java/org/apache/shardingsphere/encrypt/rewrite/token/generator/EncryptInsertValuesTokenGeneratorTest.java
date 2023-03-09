@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;

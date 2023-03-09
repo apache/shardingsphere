@@ -2,7 +2,6 @@
 title = "ElasticJob UI now supports Auth 2.0, OIDC and SAML single sign-on thanks to Casdoor"
 weight = 80
 chapter = true 
-
 +++
 
 ![img](https://shardingsphere.apache.org/blog/img/2022_11_22_ElasticJob_UI_now_supports_Auth_2.0,_OIDC_and_SAML_single_sign-on_thanks_to_Casdoor1.png)

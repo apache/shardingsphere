@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.RowCountT
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.RowCountToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 

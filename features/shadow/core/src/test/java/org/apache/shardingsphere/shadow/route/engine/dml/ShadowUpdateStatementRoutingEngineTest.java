@@ -30,8 +30,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +48,7 @@ public final class ShadowUpdateStatementRoutingEngineTest {
     
     private ShadowUpdateStatementRoutingEngine shadowRouteEngine;
     
-    @Before
+    @BeforeEach
     public void init() {
         shadowRouteEngine = new ShadowUpdateStatementRoutingEngine(createUpdateStatementContext(), Collections.emptyList());
     }
