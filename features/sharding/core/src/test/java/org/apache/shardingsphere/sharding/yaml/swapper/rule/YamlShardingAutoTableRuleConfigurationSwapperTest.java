@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardin
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
@@ -45,7 +45,7 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
     
     private YamlShardingAutoTableRuleConfigurationSwapper swapper;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         ShardingAutoTableAlgorithm shardingAlgorithm = mock(ShardingAutoTableAlgorithm.class);
         when(shardingAlgorithm.getAutoTablesAmount()).thenReturn(2);

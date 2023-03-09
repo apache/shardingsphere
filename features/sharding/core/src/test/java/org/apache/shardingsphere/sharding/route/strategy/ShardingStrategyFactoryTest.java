@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.route.strategy.type.complex.ComplexSha
 import org.apache.shardingsphere.sharding.route.strategy.type.hint.HintShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.none.NoneShardingStrategy;
 import org.apache.shardingsphere.sharding.route.strategy.type.standard.StandardShardingStrategy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;

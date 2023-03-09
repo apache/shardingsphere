@@ -61,7 +61,7 @@ public final class DropTableStatementHandlerTest {
     }
     
     @Test
-    public void assertContainsCascadeForPostgres() {
+    public void assertContainsCascadeForPostgreSQL() {
         assertFalse(DropTableStatementHandler.containsCascade(new PostgreSQLDropTableStatement(false, false)));
         assertTrue(DropTableStatementHandler.containsCascade(new PostgreSQLDropTableStatement(true, true)));
     }

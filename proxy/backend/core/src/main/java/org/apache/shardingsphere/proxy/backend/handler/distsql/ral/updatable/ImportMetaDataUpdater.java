@@ -65,6 +65,7 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();
         importServerConfig(exportedMetaData);
         importDatabase(exportedMetaData);
+        // TODO restore snapshot info
     }
     
     private void importServerConfig(final ExportedMetaData exportedMetaData) {

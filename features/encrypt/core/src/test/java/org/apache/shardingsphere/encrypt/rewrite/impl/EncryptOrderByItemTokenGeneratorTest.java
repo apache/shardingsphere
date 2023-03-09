@@ -35,8 +35,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -51,7 +51,7 @@ public final class EncryptOrderByItemTokenGeneratorTest {
     
     private EncryptOrderByItemTokenGenerator generator;
     
-    @Before
+    @BeforeEach
     public void setup() {
         generator = new EncryptOrderByItemTokenGenerator();
         generator.setEncryptRule(buildEncryptRule());

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShowShardingTableReferenceRuleExecutor;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableReferenceRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;

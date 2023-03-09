@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public final class OrderByTokenTest {
     
     private OrderByToken orderByToken;
     
-    @Before
+    @BeforeEach
     public void setup() {
         orderByToken = new OrderByToken(0);
         List<String> columnLabels = orderByToken.getColumnLabels();

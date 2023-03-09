@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.shadow.distsql.handler.query.CountShadowRuleExecutor;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CountShadowRuleStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;

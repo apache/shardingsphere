@@ -37,8 +37,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -56,7 +56,7 @@ public final class ShadowDeleteStatementRoutingEngineTest {
     
     private ShadowDeleteStatementRoutingEngine shadowDeleteStatementRoutingEngine;
     
-    @Before
+    @BeforeEach
     public void init() {
         shadowDeleteStatementRoutingEngine = new ShadowDeleteStatementRoutingEngine(createDeleteStatementContext(), Collections.emptyList());
     }

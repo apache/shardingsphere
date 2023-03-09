@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.File;

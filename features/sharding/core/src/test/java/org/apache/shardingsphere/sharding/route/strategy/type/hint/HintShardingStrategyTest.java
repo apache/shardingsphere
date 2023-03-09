@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.fixture.CoreHintShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;

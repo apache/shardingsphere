@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.cache.rule.ShardingCacheRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 import org.hamcrest.CoreMatchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;

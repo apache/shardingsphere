@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.distsql.export;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Collection;
 
 /**
  * Exported cluster info.
@@ -29,7 +28,9 @@ import java.util.Collection;
 @Setter
 public class ExportedClusterInfo {
     
-    private Collection<ExportedStorageNode> storageNodes;
-    
+    @JsonProperty("meta_data")
     private ExportedMetaData metaData;
+    
+    @JsonProperty("snapshot_info")
+    private ExportedSnapshotInfo snapshotInfo;
 }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilde
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.sharding.rewrite.parameter.impl.ShardingGeneratedKeyInsertValueParameterRewriter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collection;

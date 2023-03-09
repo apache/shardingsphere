@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,7 +44,7 @@ public final class AutoIntervalShardingAlgorithmTest {
     
     private AutoIntervalShardingAlgorithm shardingAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setup() {
         shardingAlgorithm = (AutoIntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "AUTO_INTERVAL",
                 PropertiesBuilder.build(new Property("datetime-lower", "2020-01-01 00:00:00"), new Property("datetime-upper", "2020-01-01 00:00:16"), new Property("sharding-seconds", "4")));

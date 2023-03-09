@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sharding.cache.api.ShardingCacheRuleConfigurati
 import org.apache.shardingsphere.sharding.cache.yaml.YamlShardingCacheOptionsConfiguration;
 import org.apache.shardingsphere.sharding.cache.yaml.YamlShardingCacheRuleConfiguration;
 import org.hamcrest.CoreMatchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
