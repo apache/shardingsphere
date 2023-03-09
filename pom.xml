@@ -42,7 +42,6 @@
         
         <module>jdbc</module>
         <module>proxy</module>
-        <module>hbase</module>
         
         <module>features</module>
         <module>agent</module>
