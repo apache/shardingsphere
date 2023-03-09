@@ -28,8 +28,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.Serializable;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -84,7 +87,9 @@ public final class MySQLStringBinlogProtocolValueTest {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedByte()).thenReturn((short) expected.length());
         when(payload.readStringFixByBytes(expected.length())).thenReturn(expected.getBytes());
-        assertThat(new MySQLStringBinlogProtocolValue().read(columnDef, payload), is(expected.getBytes()));
+        Serializable actual = new MySQLStringBinlogProtocolValue().read(columnDef, payload);
+        assertInstanceOf(MySQLBinaryString.class, actual);
+        assertThat(((MySQLBinaryString) actual).getBytes(), is(expected.getBytes()));
     }
     
     @Test
@@ -94,7 +99,9 @@ public final class MySQLStringBinlogProtocolValueTest {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedShortLE()).thenReturn(expected.length());
         when(payload.readStringFixByBytes(expected.length())).thenReturn(expected.getBytes());
-        assertThat(new MySQLStringBinlogProtocolValue().read(columnDef, payload), is(expected.getBytes()));
+        Serializable actual = new MySQLStringBinlogProtocolValue().read(columnDef, payload);
+        assertInstanceOf(MySQLBinaryString.class, actual);
+        assertThat(((MySQLBinaryString) actual).getBytes(), is(expected.getBytes()));
     }
     
     @Test

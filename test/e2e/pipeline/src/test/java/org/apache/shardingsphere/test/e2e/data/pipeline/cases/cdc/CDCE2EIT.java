@@ -70,8 +70,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -139,6 +137,8 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         }
         startCDCClient();
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !queryForListWithLog("SHOW STREAMING LIST").isEmpty());
+        String jobId = queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
+        waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
         startIncrementTask(new E2EIncrementalTask(proxyDataSource, getSourceTableOrderName(), insertOrderTableSql, new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
         getIncreaseTaskThread().join(10000);
         List<Map<String, Object>> actualProxyList;
@@ -147,8 +147,6 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
             actualProxyList = transformResultSetToList(resultSet);
         }
         Awaitility.await().atMost(20, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> listOrderRecords(getOrderTableNameWithSchema()).size() == actualProxyList.size());
-        List<Map<String, Object>> actualImportedList = listOrderRecords(getOrderTableNameWithSchema());
-        assertThat(actualProxyList.size(), is(actualImportedList.size()));
         SchemaTableName schemaTableName = getDatabaseType().isSchemaAvailable()
                 ? new SchemaTableName(new SchemaName(PipelineBaseE2EIT.SCHEMA_NAME), new TableName(getSourceTableOrderName()))
                 : new SchemaTableName(new SchemaName(null), new TableName(getSourceTableOrderName()));

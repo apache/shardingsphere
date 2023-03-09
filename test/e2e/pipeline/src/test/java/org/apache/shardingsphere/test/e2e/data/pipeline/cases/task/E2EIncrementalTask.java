@@ -89,7 +89,7 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int randomInt = random.nextInt(-100, 100);
         if (databaseType instanceof MySQLDatabaseType) {
-            String sql = String.format(buildUpdateSql(MYSQL_COLUMN_NAMES, "?"), orderTableName);
+            String sql = String.format(buildUpdateSQL(MYSQL_COLUMN_NAMES, "?"), orderTableName);
             log.info("update sql: {}", sql);
             int randomUnsignedInt = random.nextInt(10, 100);
             LocalDateTime now = LocalDateTime.now();
@@ -99,7 +99,7 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
             return;
         }
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            String sql = String.format(buildUpdateSql(POSTGRESQL_COLUMN_NAMES, "?"), orderTableName);
+            String sql = String.format(buildUpdateSQL(POSTGRESQL_COLUMN_NAMES, "?"), orderTableName);
             log.info("update sql: {}", sql);
             DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{"中文测试", randomInt, BigDecimal.valueOf(10000), true, new byte[]{}, "update", PipelineCaseHelper.generateFloat(),
                     PipelineCaseHelper.generateDouble(), PipelineCaseHelper.generateJsonString(10, true), PipelineCaseHelper.generateJsonString(20, true), "text-update", LocalDate.now(),
@@ -107,7 +107,7 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         }
     }
     
-    private String buildUpdateSql(final List<String> columnNames, final String placeholder) {
+    private String buildUpdateSQL(final List<String> columnNames, final String placeholder) {
         StringBuilder sql = new StringBuilder("UPDATE %s SET ");
         for (String each : columnNames) {
             sql.append(each).append("=").append(placeholder).append(",");
@@ -124,7 +124,7 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
     
     private void setNullToAllFields(final Object orderId) {
         if (databaseType instanceof MySQLDatabaseType) {
-            String sql = String.format(buildUpdateSql(MYSQL_COLUMN_NAMES, "null"), orderTableName);
+            String sql = String.format(buildUpdateSQL(MYSQL_COLUMN_NAMES, "null"), orderTableName);
             DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{orderId});
         }
     }
