@@ -1,26 +1,27 @@
 +++
-title = "Alibaba Cloud’s OpenSergo & ShardingSphere release database governance standard for microservices — combining Database Plus and Database Mesh concepts"
+title = "Alibaba Cloud's OpenSergo & ShardingSphere release database governance standard for microservices - combining Database Plus and Database Mesh concepts"
 weight = 79
 chapter = true 
+
 +++
 
 # Background
 
-Recently, [Alibaba Cloud](https://us.alibabacloud.com/?utm_key=se_1007722888&utm_content=se_1007722888&gclid=Cj0KCQiAyMKbBhD1ARIsANs7rEE71bHtu1aPbMS_E5-awHyWwTtyRn8CfmMU0qD1eH2hKSVEIDxcxaIaAuAVEALw_wcB)’s [OpenSergo](https://opensergo.io/) and [ShardingSphere](https://shardingsphere.apache.org/) jointly released the database governance standard for microservices. By combining the [Database Plus](https://medium.com/faun/whats-the-database-plus-concepand-what-challenges-can-it-solve-715920ba65aa?source=your_stories_page-------------------------------------) and [Database Mesh](https://medium.com/faun/shardingsphere-database-mesh-4ad75bf4bac8?source=your_stories_page-------------------------------------) concepts, the two communities have standardized the existing database governance concepts, patterns, and paths, further completing the database governance ecosystem under the cloud-native environment.
+Recently, [Alibaba Cloud](https://us.alibabacloud.com/?utm_key=se_1007722888&utm_content=se_1007722888&gclid=Cj0KCQiAyMKbBhD1ARIsANs7rEE71bHtu1aPbMS_E5-awHyWwTtyRn8CfmMU0qD1eH2hKSVEIDxcxaIaAuAVEALw_wcB)'s [OpenSergo](https://opensergo.io/) and [ShardingSphere](https://shardingsphere.apache.org/) jointly released the database governance standard for microservices. By combining the [Database Plus](https://medium.com/faun/whats-the-database-plus-concepand-what-challenges-can-it-solve-715920ba65aa?source=your_stories_page-------------------------------------) and [Database Mesh](https://medium.com/faun/shardingsphere-database-mesh-4ad75bf4bac8?source=your_stories_page-------------------------------------) concepts, the two communities have standardized the existing database governance concepts, patterns, and paths, further completing the database governance ecosystem under the cloud-native environment.
 
-![img](https://shardingsphere.apache.org/blog/img/2022_11_15_Alibaba_Cloud’s_OpenSergo_&_ShardingSphere_release_database_governance_standard_for_microservices_—_combining_Database_Plus_and_Database_Mesh_concepts1.png)
+![img](https://shardingsphere.apache.org/blog/img/2022_11_15_Alibaba_Cloud's_OpenSergo_&_ShardingSphere_release_database_governance_standard_for_microservices_—_combining_Database_Plus_and_Database_Mesh_concepts1.png)
 
 ***The founders of both communities expressed their opinions concerning the collaboration between the ShardingSphere community and the OpenSergo community:***
 
 **Zhang Liang, the PMC Chair of the Apache ShardingSphere community:**
 
-In the microservices field, the interaction and collaboration between services have been gradually perfected, but there is still no effective standard for services to access the database. Being, ShardingSphere has been continuously following the **“connect, enhance, and pluggable”** design philosophy. “Connect” refers to providing standardized protocols and interfaces, breaking the barriers for development languages to access heterogeneous databases. It’s forward-looking for OpenSergo to propose the microservice-oriented governance standard and take the initiative to include database access in the standard. I’m pleased to see ShardingSphere and OpenSergo working together to build the standard for microservices which is a pivotal entrance to access databases.
+In the microservices field, the interaction and collaboration between services have been gradually perfected, but there is still no effective standard for services to access the database. Being, ShardingSphere has been continuously following the **"connect, enhance, and pluggable"** design philosophy. "Connect" refers to providing standardized protocols and interfaces, breaking the barriers for development languages to access heterogeneous databases. It's forward-looking for OpenSergo to propose the microservice-oriented governance standard and take the initiative to include database access in the standard. I'm pleased to see ShardingSphere and OpenSergo working together to build the standard for microservices which is a pivotal entrance to access databases.
 
 **Zhao Yihao, the founder of the OpenSergo community:**
 
-In microservice governance, in addition to the governance of the microservices itself, it is also a critical step to ensure business reliability and continuity to deal with microservices’ access to databases. As a Top-Level project in the database governance field, ShardingSphere has integrated a wealth of best practices and technical experience, which complements OpenSergo. In this context, we work with the ShardingSphere community to jointly build a database governance standard from the perspective of microservices, so that enterprises can carry out unified and standardized governance and management on different data layer frameworks and traffic.
+In microservice governance, in addition to the governance of the microservices itself, it is also a critical step to ensure business reliability and continuity to deal with microservices' access to databases. As a Top-Level project in the database governance field, ShardingSphere has integrated a wealth of best practices and technical experience, which complements OpenSergo. In this context, we work with the ShardingSphere community to jointly build a database governance standard from the perspective of microservices, so that enterprises can carry out unified and standardized governance and management on different data layer frameworks and traffic.
 
-> **Note:** database governance in this article includes all aspects of database governance in microservice systems. All business information and key data need a robust and stable database system as it is the most important state terminal.
+**Note:** database governance in this article includes all aspects of database governance in microservice systems. All business information and key data need a robust and stable database system as it is the most important state terminal.
 
 # The database is increasingly vital in the microservice system
 
@@ -34,13 +35,13 @@ However, after services are separated, their corresponding underlying databases 
 - Different transactions usually involve multiple services - but it is a challenge to ensure data consistency between services.
 - It is also challenging to query data across multiple services.
 
-With most backend applications, their system performance improvement is mainly limited to databases. Particularly in a microservice environment, it is a team’s top priority to deal with database performance governance. Database governance naturally becomes an indispensable part of microservice governance.
+With most backend applications, their system performance improvement is mainly limited to databases. Particularly in a microservice environment, it is a team's top priority to deal with database performance governance. Database governance naturally becomes an indispensable part of microservice governance.
 
 In database governance, we now mainly focus on **read/write splitting, sharding, shadow databases, database discovery, and distributed transactions**. At the same time, how to use databases and the actual database storage nodes rely on **the virtual database and database endpoint**.
 
-In response to the above-mentioned problems, OpenSergo and ShardingSphere have assimilated the latter’s database governance experience and released the **database governance standard under microservices**. By doing so, they can standardize the database governance method, lower the entry barriers of this field, and improve the business applicability of microservices.
+In response to the above-mentioned problems, OpenSergo and ShardingSphere have assimilated the latter's database governance experience and released the **database governance standard under microservices**. By doing so, they can standardize the database governance method, lower the entry barriers of this field, and improve the business applicability of microservices.
 
-# ShardingSphere’s strategies on database traffic governance
+# ShardingSphere's strategies on database traffic governance
 
 **1. VirtualDatabase**
 
@@ -203,7 +204,7 @@ Apache ShardingSphere follows the Database Plus concept, designed to build an ec
 
 It is formed based on the industry's service governance scenarios and practices. The biggest characteristic of OpenSergo is defining service governance rules with a unified set of configuration/DSL/protocol and is oriented towards multi-language heterogeneous architecture, achieving full-link ecosystem coverage.
 
-No matter if the microservice language is Java, Go, Node.js, or some other language, or whether it’s a standard microservice or Mesh-based access, developers can use the same set of OpenSergo CRD standard configurations.
+No matter if the microservice language is Java, Go, Node.js, or some other language, or whether it's a standard microservice or Mesh-based access, developers can use the same set of OpenSergo CRD standard configurations.
 
 This allows developers to implement unified governance and control for each layer, ranging from the gateway to microservices, from database to cache, and from registration and discovery to the configuration of services.
 
