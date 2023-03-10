@@ -16,12 +16,22 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
-    <!--<test-case sql="SET DIST VARIABLE sql_show = true;">
-        <assertion expected-data-file="set_dist_variable_sql_show_equal_true.xml">
-            <initial-sql sql="SET DIST VARIABLE sql_show = true;" />
-            <assertion-sql sql="SHOW DIST VARIABLE WHERE name = sql_show;" />
-            <destroy-sql sql="SET DIST VARIABLE sql_show = false;" />
-        </assertion>
-    </test-case> -->
-</integration-test-cases>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>shardingsphere-metadata</artifactId>
+        <version>5.3.2-SNAPSHOT</version>
+    </parent>
+    <artifactId>shardingsphere-metadata-core</artifactId>
+    <name>${project.artifactId}</name>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>
