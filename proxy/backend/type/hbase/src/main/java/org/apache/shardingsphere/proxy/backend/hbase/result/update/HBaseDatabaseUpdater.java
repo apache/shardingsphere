@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.connector;
+package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
-import org.apache.hadoop.hbase.client.Table;
-import java.io.IOException;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
+import java.util.Collection;
 
 /**
- * HBase query callback.
- * 
- * @param <T> type of result
+ * HBase backend updater.
+ *
  */
-public interface HBaseQueryCallback<T> {
+public interface HBaseDatabaseUpdater extends TypedSPI {
     
     /**
-     * Execute in HBase.
-     * 
-     * @param table table
-     * @return execute result
-     * @throws IOException IO exception
-     * 
+     * Execute HBase operation.
+     * @param hbaseOperation HBase operation
+     * @return affected rows
      */
-    T executeInHBase(Table table) throws IOException;
-    
+    Collection<UpdateResult> executeUpdate(HBaseOperation hbaseOperation);
 }

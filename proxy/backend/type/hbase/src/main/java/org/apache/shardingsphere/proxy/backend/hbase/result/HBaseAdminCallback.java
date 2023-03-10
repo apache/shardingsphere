@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.connector;
+package org.apache.shardingsphere.proxy.backend.hbase.result;
 
 import org.apache.hadoop.hbase.client.Admin;
 import java.io.IOException;

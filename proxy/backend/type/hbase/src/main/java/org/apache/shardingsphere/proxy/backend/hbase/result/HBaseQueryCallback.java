@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.config;
+package org.apache.shardingsphere.proxy.backend.hbase.result;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import org.apache.hadoop.hbase.client.Table;
+import java.io.IOException;
 
 /**
- * YAML rule configuration for HBase.
+ * HBase query callback.
+ * 
+ * @param <T> type of result
  */
-@Getter
-@Setter
-public final class YamlHBaseConfiguration implements YamlConfiguration {
+public interface HBaseQueryCallback<T> {
     
-    private String databaseName;
+    /**
+     * Execute in HBase.
+     * 
+     * @param table table
+     * @return execute result
+     * @throws IOException IO exception
+     * 
+     */
+    T executeInHBase(Table table) throws IOException;
     
-    private Map<String, Object> commonDataSourceProps;
-    
-    private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
-    
-    private Properties props;
 }

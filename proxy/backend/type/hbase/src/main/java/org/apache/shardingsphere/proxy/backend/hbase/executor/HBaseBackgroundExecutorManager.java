@@ -15,40 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.connector;
+package org.apache.shardingsphere.proxy.backend.hbase.executor;
+
+import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
 import java.io.Closeable;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * HBase task executor manager.
+ * HBase background executor manager.
  */
-public final class HBaseTaskExecutorManager implements Closeable {
+public final class HBaseBackgroundExecutorManager implements Closeable {
     
-    private final ThreadPoolExecutor executorService;
+    private final ScheduledExecutorService executorService;
     
-    /**
-     * HBase task executor manager.
-     * @param poolSize pool size
-     */
-    public HBaseTaskExecutorManager(final int poolSize) {
-        executorService = new ThreadPoolExecutor(poolSize, poolSize, 10L, TimeUnit.SECONDS, new ArrayBlockingQueue<>(20000), new ThreadPoolExecutor.CallerRunsPolicy());
+    public HBaseBackgroundExecutorManager() {
+        executorService = Executors.newScheduledThreadPool(1, ExecutorThreadFactoryBuilder.build("background"));
     }
     
     /**
      * Submit task.
      * 
      * @param runnable task
+     * @param interval running interval
      */
-    public void submit(final Runnable runnable) {
-        executorService.submit(runnable);
+    public void submit(final Runnable runnable, final int interval) {
+        executorService.scheduleWithFixedDelay(runnable, interval, interval, TimeUnit.SECONDS);
     }
     
     @Override
     public void close() {
         executorService.shutdown();
     }
-    
 }

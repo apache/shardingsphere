@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.config;
+package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 
 /**
- * YAML rule configuration for HBase.
+ * Convert SQL statement to HBase operation.
  */
-@Getter
-@Setter
-public final class YamlHBaseConfiguration implements YamlConfiguration {
+public interface HBaseDatabaseConverter {
     
-    private String databaseName;
-    
-    private Map<String, Object> commonDataSourceProps;
-    
-    private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
-    
-    private Properties props;
+    /**
+     * Convert SQL statement to HBase operation.
+     * 
+     * @return HBase operation
+     */
+    HBaseOperation convert();
 }
