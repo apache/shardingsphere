@@ -27,8 +27,8 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Nested transaction test case.

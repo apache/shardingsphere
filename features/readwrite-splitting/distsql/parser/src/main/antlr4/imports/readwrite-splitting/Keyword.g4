@@ -35,10 +35,6 @@ DROP
     : D R O P
     ;
 
-SET
-    : S E T
-    ;
-
 SHOW
     : S H O W
     ;
@@ -83,24 +79,12 @@ RULES
     : R U L E S
     ;
 
-SOURCE
-    : S O U R C E
-    ;
-
 RESOURCES
     : R E S O U R C E S
     ;
 
 STATUS
     : S T A T U S
-    ;
-
-HINT
-    : H I N T
-    ;
-
-CLEAR
-    : C L E A R
     ;
 
 ENABLE
@@ -125,18 +109,6 @@ EXISTS
 
 COUNT
     : C O U N T
-    ;
-
-WRITE_DATA_SOURCE_QUERY_ENABLED
-    : W R I T E UL_ D A T A UL_ S O U R C E UL_ Q U E R Y UL_ E N A B L E D
-    ;
-
-TRUE
-    : T R U E
-    ;
-
-FALSE
-    : F A L S E
     ;
 
 ROUND_ROBIN

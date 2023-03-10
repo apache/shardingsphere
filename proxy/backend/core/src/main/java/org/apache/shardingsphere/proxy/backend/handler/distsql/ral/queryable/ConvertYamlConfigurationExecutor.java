@@ -343,7 +343,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
                 result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_COMPLEX, strategyType, type, complexShardingStrategyConfig.getShardingColumns(), algorithmDefinition));
                 break;
             case DistSQLScriptConstants.HINT:
-                result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_HINT, type, algorithmDefinition));
+                result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_HINT, strategyType, type, algorithmDefinition));
                 break;
             case DistSQLScriptConstants.NONE:
                 result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_NONE, strategyType, "none"));
@@ -414,9 +414,8 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
             return;
         }
         String loadBalancerType = getLoadBalancerType(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
-        boolean allowWriteDataSourceQuery = Strings.isNullOrEmpty(dynamicConfig.getWriteDataSourceQueryEnabled()) ? Boolean.TRUE : Boolean.parseBoolean(dynamicConfig.getWriteDataSourceQueryEnabled());
         result.append(String.format(DistSQLScriptConstants.READWRITE_SPLITTING_FOR_DYNAMIC,
-                dataSourceRuleConfig.getName(), dynamicConfig.getAutoAwareDataSourceName(), allowWriteDataSourceQuery, loadBalancerType));
+                dataSourceRuleConfig.getName(), dynamicConfig.getAutoAwareDataSourceName(), loadBalancerType));
     }
     
     private void appendStaticReadWriteSplittingRule(final StaticReadwriteSplittingStrategyConfiguration staticConfig, final Map<String, AlgorithmConfiguration> loadBalancers,

@@ -30,8 +30,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Cluster statement assert.
@@ -54,9 +54,9 @@ public final class ClusterStatementAssert {
     private static void assertTable(final SQLCaseAssertContext assertContext, final ClusterStatement actual, final ClusterStatementTestCase expected) {
         Optional<SimpleTableSegment> tableSegment = ClusterStatementHandler.getSimpleTableSegment(actual);
         if (null == expected.getTable()) {
-            assertFalse(assertContext.getText("Actual table segment should not exist."), tableSegment.isPresent());
+            assertFalse(tableSegment.isPresent(), assertContext.getText("Actual table segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual table segment should exist."), tableSegment.isPresent());
+            assertTrue(tableSegment.isPresent(), assertContext.getText("Actual table segment should exist."));
             TableAssert.assertIs(assertContext, tableSegment.get(), expected.getTable());
         }
     }
@@ -64,9 +64,9 @@ public final class ClusterStatementAssert {
     private static void assertIndex(final SQLCaseAssertContext assertContext, final ClusterStatement actual, final ClusterStatementTestCase expected) {
         Optional<IndexSegment> indexSegment = ClusterStatementHandler.getIndexSegment(actual);
         if (null == expected.getIndex()) {
-            assertFalse(assertContext.getText("Actual index segment should not exist."), indexSegment.isPresent());
+            assertFalse(indexSegment.isPresent(), assertContext.getText("Actual index segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual index segment should exist."), indexSegment.isPresent());
+            assertTrue(indexSegment.isPresent(), assertContext.getText("Actual index segment should exist."));
             IndexAssert.assertIs(assertContext, indexSegment.get(), expected.getIndex());
         }
     }

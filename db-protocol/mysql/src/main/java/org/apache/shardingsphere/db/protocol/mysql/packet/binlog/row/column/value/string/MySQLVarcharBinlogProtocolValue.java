@@ -32,6 +32,7 @@ public final class MySQLVarcharBinlogProtocolValue implements MySQLBinlogProtoco
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        return payload.readStringFix(VARCHAR_LENGTH_META_POINT > columnDef.getColumnMeta() ? payload.getByteBuf().readUnsignedByte() : payload.getByteBuf().readUnsignedShortLE());
+        byte[] bytes = payload.readStringFixByBytes(VARCHAR_LENGTH_META_POINT > columnDef.getColumnMeta() ? payload.getByteBuf().readUnsignedByte() : payload.getByteBuf().readUnsignedShortLE());
+        return new MySQLBinaryString(bytes);
     }
 }

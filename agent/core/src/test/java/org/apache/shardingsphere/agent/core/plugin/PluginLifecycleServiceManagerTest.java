@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.core.plugin;
 
 import net.bytebuddy.dynamic.loading.MultipleParentClassLoader;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.management.loading.PrivateMLet;
 import java.net.MalformedURLException;

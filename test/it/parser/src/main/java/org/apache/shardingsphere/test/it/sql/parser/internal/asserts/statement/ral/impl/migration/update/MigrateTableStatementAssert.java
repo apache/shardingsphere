@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.update;
 
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
+import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.MigrateTableStatementTestCase;
 
@@ -37,10 +39,13 @@ public final class MigrateTableStatementAssert {
      * @param expected expected migrate table statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MigrateTableStatement actual, final MigrateTableStatementTestCase expected) {
-        assertThat(assertContext.getText("source database name does not match"), actual.getSourceResourceName(), is(expected.getSourceResourceName()));
-        assertThat(assertContext.getText("source schema name does not match"), actual.getSourceSchemaName(), is(expected.getSourceSchemaName()));
-        assertThat(assertContext.getText("source table name does not match"), actual.getSourceTableName(), is(expected.getSourceTableName()));
         assertThat(assertContext.getText("target database name does not match"), actual.getTargetDatabaseName(), is(expected.getTargetDatabaseName()));
-        assertThat(assertContext.getText("target table name does not match"), actual.getTargetTableName(), is(expected.getTargetTableName()));
+        assertThat(actual.getSourceTargetEntries().size(), is(1));
+        SourceTargetEntry entry = actual.getSourceTargetEntries().get(0);
+        DataNode dataNode = entry.getSource();
+        assertThat(assertContext.getText("source database name does not match"), dataNode.getDataSourceName(), is(expected.getSourceResourceName()));
+        assertThat(assertContext.getText("source schema name does not match"), dataNode.getSchemaName(), is(expected.getSourceSchemaName()));
+        assertThat(assertContext.getText("source table name does not match"), dataNode.getTableName(), is(expected.getSourceTableName()));
+        assertThat(assertContext.getText("target table name does not match"), entry.getTargetTableName(), is(expected.getTargetTableName()));
     }
 }

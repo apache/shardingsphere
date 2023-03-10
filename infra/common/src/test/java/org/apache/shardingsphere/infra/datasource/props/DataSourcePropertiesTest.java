@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.props;
 
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,9 +31,9 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class DataSourcePropertiesTest {
     
@@ -99,7 +99,7 @@ public final class DataSourcePropertiesTest {
     
     @Test
     public void assertNotEqualsWithNullValue() {
-        assertFalse(new DataSourceProperties(MockedDataSource.class.getName(), new HashMap<>()).equals(null));
+        assertNotEquals(null, new DataSourceProperties(MockedDataSource.class.getName(), new HashMap<>()));
     }
     
     @Test
@@ -133,7 +133,7 @@ public final class DataSourcePropertiesTest {
     }
     
     private Map<String, Object> createUserProperties(final String username) {
-        Map<String, Object> result = new LinkedHashMap<>(1, 1);
+        Map<String, Object> result = new LinkedHashMap<>(2, 1);
         result.put("username", username);
         result.put("dataSourceProperties", getDataSourceProperties());
         return result;

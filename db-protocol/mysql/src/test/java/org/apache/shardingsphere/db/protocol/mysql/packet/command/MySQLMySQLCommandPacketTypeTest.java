@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class MySQLMySQLCommandPacketTypeTest {
     
@@ -29,8 +30,8 @@ public final class MySQLMySQLCommandPacketTypeTest {
         assertThat(MySQLCommandPacketType.valueOf(MySQLCommandPacketType.COM_SLEEP.getValue()), is(MySQLCommandPacketType.COM_SLEEP));
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test
     public void assertGetValueWithIllegalArgument() {
-        MySQLCommandPacketType.valueOf(-1);
+        assertThrows(NullPointerException.class, () -> MySQLCommandPacketType.valueOf(-1));
     }
 }

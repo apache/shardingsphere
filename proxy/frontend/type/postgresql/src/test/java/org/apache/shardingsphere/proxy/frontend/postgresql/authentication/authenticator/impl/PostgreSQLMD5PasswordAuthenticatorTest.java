@@ -23,24 +23,29 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class PostgreSQLMD5PasswordAuthenticatorTest {
-    
-    private final PostgreSQLMD5PasswordAuthenticator authenticator = new PostgreSQLMD5PasswordAuthenticator();
     
     private final String username = "root";
     
     private final String password = "password";
     
     @Test
+    public void assertAuthenticationMethodName() {
+        assertThat(new PostgreSQLMD5PasswordAuthenticator().getAuthenticationMethod().getMethodName(), is("md5"));
+    }
+    
+    @Test
     public void assertAuthenticate() {
         ShardingSphereUser user = new ShardingSphereUser(username, password, "");
         byte[] md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
         String md5Digest = md5Encode(md5Salt);
-        assertTrue(authenticator.authenticate(user, new Object[]{md5Digest, md5Salt}));
-        assertFalse(authenticator.authenticate(user, new Object[]{"wrong", md5Salt}));
+        assertTrue(new PostgreSQLMD5PasswordAuthenticator().authenticate(user, new Object[]{md5Digest, md5Salt}));
+        assertFalse(new PostgreSQLMD5PasswordAuthenticator().authenticate(user, new Object[]{"wrong", md5Salt}));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

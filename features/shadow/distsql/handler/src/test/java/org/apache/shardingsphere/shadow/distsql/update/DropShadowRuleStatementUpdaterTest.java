@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleStatementUpdater;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,23 +38,25 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class DropShadowRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckWithNullConfiguration() {
-        new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("anyRuleName"), null);
+        assertThrows(MissingRequiredRuleException.class, () -> new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("anyRuleName"), null));
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckWithRuleNotExisted() {
-        new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("notExistedRuleName"), mock(ShadowRuleConfiguration.class));
+        assertThrows(MissingRequiredRuleException.class,
+                () -> new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("notExistedRuleName"), mock(ShadowRuleConfiguration.class)));
     }
     
     @Test
@@ -95,21 +97,21 @@ public final class DropShadowRuleStatementUpdaterTest {
     }
     
     private ShadowRuleConfiguration createCurrentRuleConfiguration() {
-        ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.getDataSources().add(createShadowDataSourceConfiguration("shadow_group"));
-        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("shadow_group")), Collections.emptyList()));
-        ruleConfig.getShadowAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("SHADOW", new Properties()));
-        return ruleConfig;
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        result.getDataSources().add(createShadowDataSourceConfiguration("shadow_group"));
+        result.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("shadow_group")), Collections.emptyList()));
+        result.getShadowAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("SHADOW", new Properties()));
+        return result;
     }
     
     private ShadowRuleConfiguration createMultipleCurrentRuleConfiguration() {
-        ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.getDataSources().add(createShadowDataSourceConfiguration("shadow_group"));
-        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("shadow_group")), Collections.emptyList()));
-        ruleConfig.getShadowAlgorithms().put("t_order_algorithm_inUsed", new AlgorithmConfiguration("SHADOW", new Properties()));
-        ruleConfig.getShadowAlgorithms().put("t_order_algorithm_unused", new AlgorithmConfiguration("SHADOW", new Properties()));
-        ruleConfig.setDefaultShadowAlgorithmName("t_order_algorithm_inUsed");
-        return ruleConfig;
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
+        result.getDataSources().add(createShadowDataSourceConfiguration("shadow_group"));
+        result.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("shadow_group")), Collections.emptyList()));
+        result.getShadowAlgorithms().put("t_order_algorithm_inUsed", new AlgorithmConfiguration("SHADOW", new Properties()));
+        result.getShadowAlgorithms().put("t_order_algorithm_unused", new AlgorithmConfiguration("SHADOW", new Properties()));
+        result.setDefaultShadowAlgorithmName("t_order_algorithm_inUsed");
+        return result;
     }
     
     private ShadowDataSourceConfiguration createShadowDataSourceConfiguration(final String ruleName) {

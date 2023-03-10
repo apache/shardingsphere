@@ -17,9 +17,20 @@
 
 package org.apache.shardingsphere.test.e2e.fixture;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-public final class ITKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+import java.util.Properties;
+
+public final class ITKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm, InstanceContextAware {
+    
+    private Properties props;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
     @Override
     public Long generateKey() {
@@ -29,5 +40,12 @@ public final class ITKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm
     @Override
     public String getType() {
         return "IT.FIXTURE";
+    }
+    
+    @Override
+    public void setInstanceContext(final InstanceContext instanceContext) {
+        if (null != instanceContext) {
+            instanceContext.generateWorkerId(props);
+        }
     }
 }

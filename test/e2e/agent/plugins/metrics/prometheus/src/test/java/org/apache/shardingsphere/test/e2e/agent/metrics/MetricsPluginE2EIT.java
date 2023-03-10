@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.metrics;
 
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
@@ -38,19 +38,13 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
-@Slf4j
 @RunWith(Parameterized.class)
+@RequiredArgsConstructor
+@Slf4j
 public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     
-    private static boolean hasCollect;
-    
     private final MetricTestCase metricTestCase;
-    
-    public MetricsPluginE2EIT(final MetricTestCase metricTestCase) {
-        this.metricTestCase = metricTestCase;
-    }
     
     @Parameters
     public static Collection<MetricTestCase> getTestParameters() {
@@ -58,17 +52,11 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
     }
     
     @Test
-    @SneakyThrows({IOException.class, InterruptedException.class})
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
         Properties props = E2ETestEnvironment.getInstance().getProps();
         String metaDataURL = props.getProperty("prometheus.metadata.url");
         String queryURL = props.getProperty("prometheus.query.url");
-        if (!hasCollect) {
-            log.info("Wait for prometheus to collect data ...");
-            TimeUnit.SECONDS.sleep(35);
-            hasCollect = true;
-        }
         assertMetadata(metaDataURL, metricTestCase);
         assertQuery(queryURL, metricTestCase);
     }

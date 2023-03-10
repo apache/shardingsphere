@@ -37,9 +37,6 @@ public final class AutoCommitUtils {
         if (sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom()) {
             return false;
         }
-        if (sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement) {
-            return true;
-        }
-        return false;
+        return sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement;
     }
 }

@@ -35,24 +35,27 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class AlterTrafficRuleStatementUpdaterTest {
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertExecuteWithNotExistRuleName() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_3", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
-        updater.checkSQLStatement(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
+        assertThrows(MissingRequiredRuleException.class,
+                () -> updater.checkSQLStatement(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment))));
     }
     
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    @Test
     public void assertExecuteWithInvalidAlgorithmType() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
-        updater.checkSQLStatement(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)));
+        assertThrows(InvalidAlgorithmConfigurationException.class,
+                () -> updater.checkSQLStatement(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment))));
     }
     
     @Test

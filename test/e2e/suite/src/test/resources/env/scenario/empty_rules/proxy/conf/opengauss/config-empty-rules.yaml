@@ -239,10 +239,12 @@ rules:
       type: MOD
       props:
         sharding-count: 40
-  
+
   keyGenerators:
     constant:
       type: IT.FIXTURE
+      props:
+        worker-id: 1
 
   auditors:
     auditor_constant:

@@ -30,9 +30,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class EncryptStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
     
@@ -183,17 +184,17 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertQueryWithNull() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
-            statement.executeQuery(null);
+            assertThrows(SQLException.class, () -> statement.executeQuery(null));
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertQueryWithEmptyString() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
-            statement.executeQuery("");
+            assertThrows(SQLException.class, () -> statement.executeQuery(""));
         }
     }
     

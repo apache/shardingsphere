@@ -30,20 +30,21 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNa
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterIndexStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class ShardingAlterIndexStatementValidatorTest {
     
     @Mock
@@ -67,7 +68,7 @@ public final class ShardingAlterIndexStatementValidatorTest {
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
     
-    @Test(expected = IndexNotExistedException.class)
+    @Test
     public void assertPreValidateAlterIndexWhenIndexNotExistRenameIndexNotExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
@@ -78,10 +79,12 @@ public final class ShardingAlterIndexStatementValidatorTest {
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
-        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertThrows(IndexNotExistedException.class,
+                () -> new ShardingAlterIndexStatementValidator().preValidate(
+                        shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
-    @Test(expected = DuplicatedIndexException.class)
+    @Test
     public void assertPreValidateAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
@@ -93,6 +96,8 @@ public final class ShardingAlterIndexStatementValidatorTest {
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(true);
-        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertThrows(DuplicatedIndexException.class,
+                () -> new ShardingAlterIndexStatementValidator().preValidate(
+                        shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
 }

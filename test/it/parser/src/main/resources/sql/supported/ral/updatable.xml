@@ -40,6 +40,7 @@
     <sql-case id="unlabel-compute-node-without-label" value="UNLABEL COMPUTE NODE instance_unlabel_2" db-types="ShardingSphere" />
     
     <sql-case id="import-database-config" value="IMPORT DATABASE CONFIGURATION FROM FILE '/yaml/config-sharding.yaml'" db-types="ShardingSphere" />
+    <sql-case id="import-metadata" value="IMPORT METADATA FROM FILE '/json/exported-metadata.json'" db-types="ShardingSphere" />
     
     <sql-case id="alter-readwrite-splitting-storage-unit-status-enable" value="ALTER READWRITE_SPLITTING RULE group_1 ENABLE read_ds_0 FROM read_write" db-types="ShardingSphere" />
     <sql-case id="alter-readwrite-splitting-storage-unit-status-disable" value="ALTER READWRITE_SPLITTING RULE group_1 DISABLE read_ds_0 FROM read_write" db-types="ShardingSphere" />

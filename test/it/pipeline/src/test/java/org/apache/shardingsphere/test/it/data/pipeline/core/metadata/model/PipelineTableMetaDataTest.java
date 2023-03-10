@@ -26,9 +26,10 @@ import java.sql.Types;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class PipelineTableMetaDataTest {
     
@@ -64,8 +65,8 @@ public final class PipelineTableMetaDataTest {
         assertTrue(pipelineTableMetaData.getColumnMetaData(1).isUniqueKey());
     }
     
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void assertIndexOutOfBoundsException() {
-        pipelineTableMetaData.getColumnMetaData(2);
+        assertThrows(IndexOutOfBoundsException.class, () -> pipelineTableMetaData.getColumnMetaData(2));
     }
 }

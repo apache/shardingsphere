@@ -25,9 +25,11 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.ConstructionMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Test;
-import org.mockito.MockedConstruction;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -36,12 +38,13 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@ConstructionMockSettings(BackendTransactionManager.class)
 public final class MySQLComResetConnectionExecutorTest {
     
     @Test
@@ -53,10 +56,7 @@ public final class MySQLComResetConnectionExecutorTest {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         int statementId = 1;
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLServerPreparedStatement("", null, Collections.emptyList()));
-        Collection<DatabasePacket<?>> actual;
-        try (MockedConstruction<BackendTransactionManager> ignored = mockConstruction(BackendTransactionManager.class)) {
-            actual = new MySQLComResetConnectionExecutor(connectionSession).execute();
-        }
+        Collection<DatabasePacket<?>> actual = new MySQLComResetConnectionExecutor(connectionSession).execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(MySQLOKPacket.class));
         verify(connectionSession).setAutoCommit(true);

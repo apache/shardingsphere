@@ -27,21 +27,22 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAlgorithmStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class DropShardingAlgorithmStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -49,9 +50,9 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     
     private final DropShardingAlgorithmStatementUpdater updater = new DropShardingAlgorithmStatementUpdater();
     
-    @Test(expected = MissingRequiredAlgorithmException.class)
+    @Test
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, new DropShardingAlgorithmStatement(false, Collections.emptyList()), null);
+        assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, new DropShardingAlgorithmStatement(false, Collections.emptyList()), null));
     }
     
     @Test
@@ -60,9 +61,9 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(database, dropShardingAlgorithmStatement, null);
     }
     
-    @Test(expected = MissingRequiredAlgorithmException.class)
+    @Test
     public void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration());
+        assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration()));
     }
     
     @Test
@@ -70,14 +71,14 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(database, createSQLStatementWithIfExists("t_order"), new ShardingRuleConfiguration());
     }
     
-    @Test(expected = AlgorithmInUsedException.class)
+    @Test
     public void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration());
+        assertThrows(AlgorithmInUsedException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration()));
     }
     
-    @Test(expected = AlgorithmInUsedException.class)
+    @Test
     public void assertCheckSQLStatementWithBindingTableRuleWithIfExists() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatementWithIfExists("t_order_tb_inline"), createCurrentRuleConfiguration());
+        assertThrows(AlgorithmInUsedException.class, () -> updater.checkSQLStatement(database, createSQLStatementWithIfExists("t_order_tb_inline"), createCurrentRuleConfiguration()));
     }
     
     @Test

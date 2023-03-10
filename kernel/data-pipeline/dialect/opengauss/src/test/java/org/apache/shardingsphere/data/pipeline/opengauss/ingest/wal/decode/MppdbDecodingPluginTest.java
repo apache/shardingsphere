@@ -46,7 +46,8 @@ import java.util.stream.IntStream;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -209,7 +210,7 @@ public final class MppdbDecodingPluginTest {
         assertThat(new MppdbDecodingPlugin(null).decode(data, logSequenceNumber), instanceOf(PlaceholderEvent.class));
     }
     
-    @Test(expected = IngestException.class)
+    @Test
     public void assertDecodeUnknownRowEventType() {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
@@ -218,10 +219,10 @@ public final class MppdbDecodingPluginTest {
         tableData.setColumnsType(new String[]{"character varying"});
         tableData.setColumnsVal(new String[]{"1 2 3"});
         ByteBuffer data = ByteBuffer.wrap(toJSON(tableData).getBytes());
-        new MppdbDecodingPlugin(null).decode(data, logSequenceNumber);
+        assertThrows(IngestException.class, () -> new MppdbDecodingPlugin(null).decode(data, logSequenceNumber));
     }
     
-    @Test(expected = DecodingException.class)
+    @Test
     public void assertDecodeTime() throws SQLException {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
@@ -232,7 +233,7 @@ public final class MppdbDecodingPluginTest {
         TimestampUtils timestampUtils = mock(TimestampUtils.class);
         when(timestampUtils.toTime(null, "1 2 3")).thenThrow(new SQLException(""));
         ByteBuffer data = ByteBuffer.wrap(toJSON(tableData).getBytes());
-        new MppdbDecodingPlugin(new OpenGaussTimestampUtils(timestampUtils), true).decode(data, logSequenceNumber);
+        assertThrows(DecodingException.class, () -> new MppdbDecodingPlugin(new OpenGaussTimestampUtils(timestampUtils), true).decode(data, logSequenceNumber));
     }
     
     @Test

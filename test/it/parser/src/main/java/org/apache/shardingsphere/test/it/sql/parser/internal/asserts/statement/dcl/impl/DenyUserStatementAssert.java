@@ -25,9 +25,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.col
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.DenyUserStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Deny user statement assert.
@@ -49,16 +49,16 @@ public final class DenyUserStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
         if (null == expected.getTable()) {
-            assertNull(assertContext.getText("Actual table segment should not exist."), actual.getTable());
+            assertNull(actual.getTable(), assertContext.getText("Actual table segment should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual table segment should exist."), actual.getTable());
+            assertNotNull(actual.getTable(), assertContext.getText("Actual table segment should exist."));
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
     }
     
     private static void assertColumns(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
         if (expected.getColumns().isEmpty()) {
-            assertTrue(assertContext.getText("Actual columns segments should not exist."), actual.getColumns().isEmpty());
+            assertTrue(actual.getColumns().isEmpty(), assertContext.getText("Actual columns segments should not exist."));
         } else {
             ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
         }

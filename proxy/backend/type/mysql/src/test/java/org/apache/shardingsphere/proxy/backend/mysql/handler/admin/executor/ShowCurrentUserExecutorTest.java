@@ -28,8 +28,10 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -41,9 +43,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class ShowCurrentUserExecutorTest {
     
     private static final Grantee GRANTEE = new Grantee("root", "");
@@ -52,13 +55,11 @@ public final class ShowCurrentUserExecutorTest {
     public void assertExecute() throws SQLException {
         ShowCurrentUserExecutor executor = new ShowCurrentUserExecutor();
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            executor.execute(mockConnectionSession());
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
-            while (executor.getMergedResult().next()) {
-                assertThat(executor.getMergedResult().getValue(1, Object.class), is("root@%"));
-            }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        executor.execute(mockConnectionSession());
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+        while (executor.getMergedResult().next()) {
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("root@%"));
         }
     }
     

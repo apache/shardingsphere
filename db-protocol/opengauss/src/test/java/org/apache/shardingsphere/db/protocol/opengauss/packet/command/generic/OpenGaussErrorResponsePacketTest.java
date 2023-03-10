@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opengauss.util.ServerErrorMessage;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -17,20 +17,21 @@
 
 plugins:
   logging:
-    LogFixture:
+    log_fixture:
+      port: 8080
       props:
-        logging_key: "logging_value"
+        key: "value"
   metrics:
-    MetricsFixture:
-      host:  "metrics.host"
-      port: 1
-      password: "metrics.pwd"
+    metrics_fixture:
+      host: "localhost"
+      password: "random"
+      port: 8081
       props:
-        metrics_key: "metrics_value"
+        key: "value"
   tracing:
-    TracingFixture:
-      host:  "tracing.host"
-      password: "tracing.pwd"
-      port: 2
+    tracing_fixture:
+      host: "localhost"
+      port: 8082
+      password: "random"
       props:
-        tracing_key: "tracing_value"
+        key: "value"

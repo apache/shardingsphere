@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite;
 
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
@@ -89,6 +90,9 @@ public final class SQLRewriteEntry {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void decorate(final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
+        if (((CommonSQLStatementContext<?>) sqlRewriteContext.getSqlStatementContext()).isHintSkipSQLRewrite()) {
+            return;
+        }
         for (Entry<ShardingSphereRule, SQLRewriteContextDecorator> entry : decorators.entrySet()) {
             entry.getValue().decorate(entry.getKey(), props, sqlRewriteContext, routeContext);
         }

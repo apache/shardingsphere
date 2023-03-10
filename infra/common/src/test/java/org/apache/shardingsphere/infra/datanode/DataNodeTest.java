@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.infra.datanode;
 
 import org.apache.shardingsphere.infra.exception.InvalidDataNodesFormatException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class DataNodeTest {
     
@@ -34,19 +35,19 @@ public final class DataNodeTest {
         assertThat(dataNode.getTableName(), is("tbl_0"));
     }
     
-    @Test(expected = InvalidDataNodesFormatException.class)
+    @Test
     public void assertNewInValidDataNodeWithoutDelimiter() {
-        new DataNode("ds_0tbl_0");
+        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0tbl_0"));
     }
     
-    @Test(expected = InvalidDataNodesFormatException.class)
+    @Test
     public void assertNewInValidDataNodeWithTwoDelimiters() {
-        new DataNode("ds_0.db_0.tbl_0.tbl_1");
+        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0.db_0.tbl_0.tbl_1"));
     }
     
-    @Test(expected = InvalidDataNodesFormatException.class)
+    @Test
     public void assertNewValidDataNodeWithInvalidDelimiter() {
-        new DataNode("ds_0,tbl_0");
+        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0,tbl_0"));
     }
     
     @Test
@@ -55,7 +56,7 @@ public final class DataNodeTest {
         assertThat(dataNode, is(new DataNode("ds_0.tbl_0")));
         assertThat(dataNode, is(dataNode));
         assertThat(dataNode, not(new DataNode("ds_0.tbl_1")));
-        assertFalse(dataNode.equals(null));
+        assertNotEquals(null, dataNode);
     }
     
     @Test
@@ -68,14 +69,14 @@ public final class DataNodeTest {
         assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, tableName=tbl_0, schemaName=null)"));
     }
     
-    @Test(expected = InvalidDataNodesFormatException.class)
+    @Test
     public void assertEmptyDataSourceDataNode() {
-        new DataNode(".tbl_0");
+        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode(".tbl_0"));
     }
     
-    @Test(expected = InvalidDataNodesFormatException.class)
+    @Test
     public void assertEmptyTableDataNode() {
-        new DataNode("ds_0.");
+        assertThrows(InvalidDataNodesFormatException.class, () -> new DataNode("ds_0."));
     }
     
     @Test
@@ -83,13 +84,6 @@ public final class DataNodeTest {
         String expected = "ds_0.tbl_0";
         DataNode dataNode = new DataNode(expected);
         assertThat(dataNode.format(), is(expected));
-    }
-    
-    @Test
-    public void assertFormattedTextLength() {
-        String text = "ds_0.tbl_0";
-        DataNode dataNode = new DataNode(text);
-        assertThat(dataNode.getFormattedTextLength(), is(text.length()));
     }
     
     @Test
@@ -114,12 +108,5 @@ public final class DataNodeTest {
         String expected = "ds_0.db_0.tbl_0";
         DataNode dataNode = new DataNode(expected);
         assertThat(dataNode.format(), is(expected));
-    }
-    
-    @Test
-    public void assertFormattedTextLengthIncludeInstance() {
-        String text = "ds_0.db_0.tbl_0";
-        DataNode dataNode = new DataNode(text);
-        assertThat(dataNode.getFormattedTextLength(), is(text.length()));
     }
 }

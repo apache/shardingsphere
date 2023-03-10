@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.plugin.config;
 
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public final class PluginConfigurationLoaderTest {
     
@@ -37,9 +37,9 @@ public final class PluginConfigurationLoaderTest {
     public void assertLoad() throws IOException {
         Map<String, PluginConfiguration> actual = PluginConfigurationLoader.load(new File(getResourceURL()));
         assertThat(actual.size(), is(3));
-        assertLoggingPluginConfiguration(actual.get("LogFixture"));
-        assertMetricsPluginConfiguration(actual.get("MetricsFixture"));
-        assertTracingPluginConfiguration(actual.get("TracingFixture"));
+        assertLoggingPluginConfiguration(actual.get("log_fixture"));
+        assertMetricsPluginConfiguration(actual.get("metrics_fixture"));
+        assertTracingPluginConfiguration(actual.get("tracing_fixture"));
     }
     
     private String getResourceURL() throws UnsupportedEncodingException {
@@ -48,25 +48,25 @@ public final class PluginConfigurationLoaderTest {
     
     private void assertLoggingPluginConfiguration(final PluginConfiguration actual) {
         assertNull(actual.getHost());
-        assertThat(actual.getPort(), is(0));
         assertNull(actual.getPassword());
+        assertThat(actual.getPort(), is(8080));
         assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().getProperty("logging_key"), is("logging_value"));
+        assertThat(actual.getProps().get("key"), is("value"));
     }
     
     private void assertMetricsPluginConfiguration(final PluginConfiguration actual) {
-        assertThat(actual.getHost(), is("metrics.host"));
-        assertThat(actual.getPort(), is(1));
-        assertThat(actual.getPassword(), is("metrics.pwd"));
+        assertThat(actual.getHost(), is("localhost"));
+        assertThat(actual.getPassword(), is("random"));
+        assertThat(actual.getPort(), is(8081));
         assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().getProperty("metrics_key"), is("metrics_value"));
+        assertThat(actual.getProps().get("key"), is("value"));
     }
     
     private void assertTracingPluginConfiguration(final PluginConfiguration actual) {
-        assertThat(actual.getHost(), is("tracing.host"));
-        assertThat(actual.getPort(), is(2));
-        assertThat(actual.getPassword(), is("tracing.pwd"));
+        assertThat(actual.getHost(), is("localhost"));
+        assertThat(actual.getPassword(), is("random"));
+        assertThat(actual.getPort(), is(8082));
         assertThat(actual.getProps().size(), is(1));
-        assertThat(actual.getProps().getProperty("tracing_key"), is("tracing_value"));
+        assertThat(actual.getProps().get("key"), is("value"));
     }
 }

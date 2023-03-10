@@ -21,18 +21,18 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,11 +43,12 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -58,26 +59,26 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     
     private final AlterDatabaseDiscoveryRuleStatementUpdater updater = new AlterDatabaseDiscoveryRuleStatementUpdater();
     
-    @Before
+    @BeforeEach
     public void before() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithoutCurrentRule() {
-        updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null);
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null));
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() {
         Properties props = new Properties();
         DatabaseDiscoveryRuleSegment segment =
                 new DatabaseDiscoveryRuleSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), new AlgorithmSegment("MySQL.MGR", props), props);
-        updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.singletonList(segment)),
-                new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.singletonList(segment)),
+                new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap())));
     }
     
-    @Test(expected = MissingRequiredStorageUnitsException.class)
+    @Test
     public void assertCheckSQLStatementWithoutExistedResources() {
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Collections.singleton("ds0"));
         Properties props = new Properties();
@@ -86,17 +87,17 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
         DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),
                 Collections.singletonMap("readwrite_ds_mgr", null), Collections.singletonMap("readwrite_ds_heartbeat", null));
-        updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.singletonList(segment)), ruleConfig);
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.singletonList(segment)), ruleConfig));
     }
     
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    @Test
     public void assertCheckSQLStatementWithDatabaseDiscoveryType() {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("INVALID_TYPE", new Properties());
         DatabaseDiscoveryRuleSegment segment = new DatabaseDiscoveryRuleSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
         DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),
                 Collections.singletonMap("readwrite_ds_mgr", null), Collections.singletonMap("readwrite_ds_heartbeat", null));
-        updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), ruleConfig);
+        assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), ruleConfig));
     }
     
     @Test
@@ -123,8 +124,8 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
                 new HashMap<>(Collections.singletonMap("discovery_type_name", null)), new HashMap<>(Collections.singletonMap("heartbeat_name", null)));
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertThat(currentConfig.getDataSources().size(), is(1));
-        assertTrue(currentConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
-                .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_1")));
+        assertTrue(currentConfig.getDataSources().stream()
+                .map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toList()).removeAll(Collections.singleton("readwrite_ds_1")));
         assertTrue(currentConfig.getDiscoveryTypes().containsKey("readwrite_ds_1_mysql_mgr"));
         assertTrue(currentConfig.getDiscoveryHeartbeats().containsKey("readwrite_ds_1_heartbeat"));
     }

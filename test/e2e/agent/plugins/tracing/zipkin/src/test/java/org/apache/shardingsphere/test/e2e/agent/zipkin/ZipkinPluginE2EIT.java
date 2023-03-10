@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.zipkin;
 
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.SpanAssert;
@@ -29,12 +29,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 @RunWith(Parameterized.class)
+@RequiredArgsConstructor
 public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     
     private final SpanTestCase spanTestCase;
@@ -42,10 +41,6 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     private Properties props;
     
     private String url;
-    
-    public ZipkinPluginE2EIT(final SpanTestCase spanTestCase) {
-        this.spanTestCase = spanTestCase;
-    }
     
     @Parameters
     public static Collection<SpanTestCase> getTestParameters() {
@@ -59,10 +54,8 @@ public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
     }
     
     @Test
-    @SneakyThrows({IOException.class, InterruptedException.class})
     public void assertProxyWithAgent() {
         super.assertProxyWithAgent();
-        TimeUnit.SECONDS.sleep(5);
         SpanAssert.assertIs(url, spanTestCase);
     }
 }

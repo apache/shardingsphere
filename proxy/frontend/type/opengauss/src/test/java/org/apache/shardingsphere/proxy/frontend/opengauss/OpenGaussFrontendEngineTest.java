@@ -22,19 +22,19 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.OpenGaussCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLFrontendEngine;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class OpenGaussFrontendEngineTest {
     
     private final OpenGaussFrontendEngine openGaussFrontendEngine = new OpenGaussFrontendEngine();
@@ -42,7 +42,7 @@ public final class OpenGaussFrontendEngineTest {
     @Mock
     private PostgreSQLFrontendEngine mockPostgreSQLFrontendEngine;
     
-    @Before
+    @BeforeEach
     public void setup() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(OpenGaussFrontendEngine.class.getDeclaredField("postgreSQLFrontendEngine"), openGaussFrontendEngine, mockPostgreSQLFrontendEngine);
     }

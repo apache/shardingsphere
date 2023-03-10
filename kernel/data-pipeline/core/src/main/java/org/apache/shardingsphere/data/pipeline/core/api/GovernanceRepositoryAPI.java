@@ -40,6 +40,22 @@ public interface GovernanceRepositoryAPI {
     boolean isExisted(String key);
     
     /**
+     * Persist job offset info.
+     *
+     * @param jobId job id
+     * @param jobOffsetInfo job offset info
+     */
+    void persistJobOffsetInfo(String jobId, String jobOffsetInfo);
+    
+    /**
+     * Get job offset info.
+     *
+     * @param jobId job id
+     * @return job offset info
+     */
+    Optional<String> getJobOffsetInfo(String jobId);
+    
+    /**
      * Persist job item progress.
      *
      * @param jobId job id

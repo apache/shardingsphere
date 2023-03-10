@@ -145,7 +145,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     private ReadwriteSplittingDataSourceRuleConfiguration createDynamicDataSourceRuleConfiguration(final ReadwriteSplittingDataSourceRuleConfiguration config, final int index,
                                                                                                    final List<String> readwriteDataSourceNames, final List<String> autoAwareDataSourceNames) {
         return new ReadwriteSplittingDataSourceRuleConfiguration(readwriteDataSourceNames.get(index), null,
-                new DynamicReadwriteSplittingStrategyConfiguration(autoAwareDataSourceNames.get(index), config.getDynamicStrategy().getWriteDataSourceQueryEnabled()), config.getLoadBalancerName());
+                new DynamicReadwriteSplittingStrategyConfiguration(autoAwareDataSourceNames.get(index)), config.getLoadBalancerName());
     }
     
     /**

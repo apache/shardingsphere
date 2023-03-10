@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.MySQLDefaultS
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.MySQLSessionVariableHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.Collections;

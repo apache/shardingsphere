@@ -52,8 +52,9 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -358,88 +359,88 @@ public final class SQLFederationResultSetTest {
         assertThat(federationResultSet.getTimestamp("order_id", Calendar.getInstance()), is(new Timestamp(0L)));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetAsciiStreamWithColumnIndex() throws SQLException {
+    @Test
+    public void assertGetAsciiStreamWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getAsciiStream(1), instanceOf(InputStream.class));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getAsciiStream(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetAsciiStreamWithColumnLabel() throws SQLException {
+    @Test
+    public void assertGetAsciiStreamWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getAsciiStream("order_id"), instanceOf(InputStream.class));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getAsciiStream("order_id"));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetUnicodeStreamWithColumnIndex() throws SQLException {
+    @Test
+    public void assertGetUnicodeStreamWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getUnicodeStream(1), instanceOf(InputStream.class));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getUnicodeStream(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetUnicodeStreamWithColumnLabel() throws SQLException {
+    @Test
+    public void assertGetUnicodeStreamWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getUnicodeStream("order_id"), instanceOf(InputStream.class));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getUnicodeStream("order_id"));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBinaryStreamWithColumnIndex() throws SQLException {
+    @Test
+    public void assertGetBinaryStreamWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getBinaryStream(1), instanceOf(InputStream.class));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getBinaryStream(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBinaryStreamWithColumnLabel() throws SQLException {
+    @Test
+    public void assertGetBinaryStreamWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getBinaryStream("order_id"), instanceOf(InputStream.class));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getBinaryStream("order_id"));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCharacterStreamWithColumnIndex() throws SQLException {
+    @Test
+    public void assertGetCharacterStreamWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Reader.class), 1, "OK", 1});
         federationResultSet.next();
-        federationResultSet.getCharacterStream(1);
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getCharacterStream(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCharacterStreamWithColumnLabel() throws SQLException {
+    @Test
+    public void assertGetCharacterStreamWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Reader.class), 1, "OK", 1});
         federationResultSet.next();
-        federationResultSet.getCharacterStream("order_id");
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getCharacterStream("order_id"));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBlobWithColumnIndex() throws SQLException {
+    @Test
+    public void assertGetBlobWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Blob.class), 1, "OK", 1});
         federationResultSet.next();
-        federationResultSet.getBlob(1);
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getBlob(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBlobWithColumnLabel() throws SQLException {
+    @Test
+    public void assertGetBlobWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Blob.class), 1, "OK", 1});
         federationResultSet.next();
-        federationResultSet.getBlob("order_id");
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getBlob("order_id"));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetClobWithColumnIndex() throws SQLException {
+    @Test
+    public void assertGetClobWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Clob.class), 1, "OK", 1});
         federationResultSet.next();
-        federationResultSet.getClob(1);
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getClob(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetClobWithColumnLabel() throws SQLException {
+    @Test
+    public void assertGetClobWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Clob.class), 1, "OK", 1});
         federationResultSet.next();
-        federationResultSet.getClob("order_id");
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getClob("order_id"));
     }
     
     @Test
@@ -470,18 +471,18 @@ public final class SQLFederationResultSetTest {
         assertThat(federationResultSet.getURL("order_id"), is(new URL("http://xxx.xxx")));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetSQLXMLWithColumnIndex() throws SQLException {
+    @Test
+    public void assertGetSQLXMLWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(SQLXML.class), 1, "OK", 1});
         federationResultSet.next();
-        federationResultSet.getSQLXML(1);
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getSQLXML(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetSQLXMLWithColumnLabel() throws SQLException {
+    @Test
+    public void assertGetSQLXMLWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(SQLXML.class), 1, "OK", 1});
         federationResultSet.next();
-        federationResultSet.getSQLXML("order_id");
+        assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getSQLXML("order_id"));
     }
     
     @After

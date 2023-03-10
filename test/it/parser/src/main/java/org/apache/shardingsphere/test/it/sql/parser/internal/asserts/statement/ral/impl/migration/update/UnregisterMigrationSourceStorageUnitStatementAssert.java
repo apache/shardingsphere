@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unregister migration source storage unit statement assert.
@@ -43,7 +43,7 @@ public final class UnregisterMigrationSourceStorageUnitStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final UnregisterMigrationSourceStorageUnitStatement actual,
                                 final UnregisterMigrationSourceStorageUnitStatementTestCase expected) {
         if (null == expected.getDataSources()) {
-            assertNull(assertContext.getText("Actual resource should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual resource should not exist."));
         } else {
             assertThat(assertContext.getText("resource assertion error: "), actual.getNames(), is(expected.getDataSources()));
         }

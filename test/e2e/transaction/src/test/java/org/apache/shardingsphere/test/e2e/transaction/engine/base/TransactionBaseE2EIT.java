@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public abstract class TransactionBaseE2EIT extends BaseE2EIT {
@@ -108,7 +108,7 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
     private Map<String, String> executeShowTransactionRule(final Connection connection) throws SQLException {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("SHOW TRANSACTION RULE;");
-        Map<String, String> result = new HashMap<>(1, 1);
+        Map<String, String> result = new HashMap<>();
         while (resultSet.next()) {
             String defaultType = resultSet.getString(TransactionTestConstants.DEFAULT_TYPE);
             String providerType = resultSet.getString(TransactionTestConstants.PROVIDER_TYPE);

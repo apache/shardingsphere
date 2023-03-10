@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCreateUserStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -41,7 +41,7 @@ public final class ShowCreateUserStatementAssert {
      * @param expected expected show create user statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCreateUserStatement actual, final ShowCreateUserStatementTestCase expected) {
-        assertNotNull("expected show create user should be not null", expected.getUser());
+        assertNotNull(expected.getUser(), "expected show create user should be not null");
         assertThat(actual.getName(), is(expected.getUser().getName()));
     }
 }

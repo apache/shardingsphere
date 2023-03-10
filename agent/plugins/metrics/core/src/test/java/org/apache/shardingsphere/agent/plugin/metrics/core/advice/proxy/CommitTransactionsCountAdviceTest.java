@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -34,11 +34,11 @@ import static org.mockito.Mockito.mock;
 
 public final class CommitTransactionsCountAdviceTest {
     
-    private final MetricConfiguration config = new MetricConfiguration("proxy_commit_transactions_total", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("proxy_transactions_total", MetricCollectorType.COUNTER, null, Collections.singletonList("type"), Collections.emptyMap());
     
     private final CommitTransactionsCountAdvice advice = new CommitTransactionsCountAdvice();
     
-    @After
+    @AfterEach
     public void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
@@ -46,6 +46,6 @@ public final class CommitTransactionsCountAdviceTest {
     @Test
     public void assertMethod() {
         advice.beforeMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, "FIXTURE");
-        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("1"));
+        assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("commit=1"));
     }
 }

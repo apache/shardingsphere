@@ -30,10 +30,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ShardingSpherePreparedStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
     
@@ -586,18 +587,14 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
         }
     }
     
-    @Test(expected = SQLException.class)
-    public void assertQueryWithNull() throws SQLException {
-        try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(null)) {
-            preparedStatement.executeQuery();
-        }
+    @Test
+    public void assertQueryWithNull() {
+        assertThrows(SQLException.class, () -> getShardingSphereDataSource().getConnection().prepareStatement(null));
     }
     
-    @Test(expected = SQLException.class)
-    public void assertQueryWithEmptyString() throws SQLException {
-        try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement("")) {
-            preparedStatement.executeQuery();
-        }
+    @Test
+    public void assertQueryWithEmptyString() {
+        assertThrows(SQLException.class, () -> getShardingSphereDataSource().getConnection().prepareStatement(""));
     }
     
     @Test
@@ -607,11 +604,11 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertColumnNotFoundException() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(UPDATE_WITH_ERROR_COLUMN)) {
             preparedStatement.setString(1, "OK");
-            preparedStatement.executeUpdate();
+            assertThrows(SQLException.class, preparedStatement::executeUpdate);
         }
     }
 }

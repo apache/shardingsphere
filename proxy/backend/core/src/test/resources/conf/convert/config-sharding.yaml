@@ -61,6 +61,9 @@ rules:
        complex:
          shardingColumns: order_id, user_id
          shardingAlgorithmName: t_order_item_inline
+     databaseStrategy:
+       hint:
+         shardingAlgorithmName: t_order_item_hint_inline
      keyGenerateStrategy:
        column: order_item_id
        keyGeneratorName: snowflake
@@ -93,6 +96,10 @@ rules:
      props:
        algorithm-expression: t_order_item_${order_id % 2}
        datetime-lower: "2022-01-01 00:00:00"
+   t_order_item_hint_inline:
+     type: HINT_INLINE
+     props:
+       algorithm-expression: ds_${Integer.valueOf(value) % 2}
 
  keyGenerators:
    snowflake:

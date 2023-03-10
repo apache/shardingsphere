@@ -22,14 +22,15 @@ import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertiesFixture
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class TypedPropertiesTest {
     
@@ -37,8 +38,8 @@ public final class TypedPropertiesTest {
     public void assertGetValue() {
         Properties props = createProperties();
         TypedPropertiesFixture actual = new TypedPropertiesFixture(props);
-        assertTrue(actual.getValue(TypedPropertyKeyFixture.BOOLEAN_VALUE));
-        assertTrue(actual.getValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE));
+        assertTrue((Boolean) actual.getValue(TypedPropertyKeyFixture.BOOLEAN_VALUE));
+        assertTrue((Boolean) actual.getValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE));
         assertThat(actual.getValue(TypedPropertyKeyFixture.INT_VALUE), is(100));
         assertThat(actual.getValue(TypedPropertyKeyFixture.INT_OBJECT_VALUE), is(100));
         assertThat(actual.getValue(TypedPropertyKeyFixture.LONG_VALUE), is(10000L));
@@ -61,8 +62,8 @@ public final class TypedPropertiesTest {
     @Test
     public void assertGetDefaultValue() {
         TypedPropertiesFixture actual = new TypedPropertiesFixture(new Properties());
-        assertFalse(actual.getValue(TypedPropertyKeyFixture.BOOLEAN_VALUE));
-        assertFalse(actual.getValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE));
+        assertFalse((Boolean) actual.getValue(TypedPropertyKeyFixture.BOOLEAN_VALUE));
+        assertFalse((Boolean) actual.getValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE));
         assertThat(actual.getValue(TypedPropertyKeyFixture.INT_VALUE), is(10));
         assertThat(actual.getValue(TypedPropertyKeyFixture.INT_OBJECT_VALUE), is(10));
         assertThat(actual.getValue(TypedPropertyKeyFixture.LONG_VALUE), is(1000L));
@@ -70,7 +71,7 @@ public final class TypedPropertiesTest {
         assertThat(actual.getValue(TypedPropertyKeyFixture.STRING_VALUE), is("value"));
     }
     
-    @Test(expected = TypedPropertiesServerException.class)
+    @Test
     public void assertGetInvalidValue() {
         Properties props = PropertiesBuilder.build(
                 new Property(TypedPropertyKeyFixture.BOOLEAN_VALUE.getKey(), "test"),
@@ -78,6 +79,6 @@ public final class TypedPropertiesTest {
                 new Property(TypedPropertyKeyFixture.INT_VALUE.getKey(), "test"),
                 new Property(TypedPropertyKeyFixture.INT_OBJECT_VALUE.getKey(), "test"),
                 new Property(TypedPropertyKeyFixture.LONG_VALUE.getKey(), "test"));
-        new TypedPropertiesFixture(props);
+        assertThrows(TypedPropertiesServerException.class, () -> new TypedPropertiesFixture(props));
     }
 }

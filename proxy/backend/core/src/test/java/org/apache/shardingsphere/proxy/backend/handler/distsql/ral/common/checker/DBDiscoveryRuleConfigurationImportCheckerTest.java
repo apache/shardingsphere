@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -41,36 +42,36 @@ import static org.mockito.Mockito.when;
 
 public final class DBDiscoveryRuleConfigurationImportCheckerTest {
     
-    private final DatabaseDiscoveryRuleConfigurationImportChecker databaseDiscoveryRuleConfigurationImportChecker = new DatabaseDiscoveryRuleConfigurationImportChecker();
+    private final DatabaseDiscoveryRuleConfigurationImportChecker importChecker = new DatabaseDiscoveryRuleConfigurationImportChecker();
     
-    @Test(expected = MissingRequiredStorageUnitsException.class)
+    @Test
     public void assertCheckDataSources() {
         ShardingSphereDatabase database = mockDatabaseWithDataSource();
         DatabaseDiscoveryRuleConfiguration currentRuleConfig = getRuleConfigWithNotExistedDataSources();
-        databaseDiscoveryRuleConfigurationImportChecker.check(database, currentRuleConfig);
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    @Test
     public void assertCheckDiscoveryTypes() {
         ShardingSphereDatabase database = mockDatabase();
         DatabaseDiscoveryRuleConfiguration currentRuleConfig = createRuleConfigWithInvalidDiscoveryType();
-        databaseDiscoveryRuleConfigurationImportChecker.check(database, currentRuleConfig);
+        assertThrows(InvalidAlgorithmConfigurationException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
-    @Test(expected = MissingRequiredAlgorithmException.class)
+    @Test
     public void assertCheckDiscoveryHeartBeats() {
         ShardingSphereDatabase database = mockDatabase();
         DatabaseDiscoveryRuleConfiguration currentRuleConfig = createRuleConfigWithNotExistsHeartBeats();
-        databaseDiscoveryRuleConfigurationImportChecker.check(database, currentRuleConfig);
+        assertThrows(MissingRequiredAlgorithmException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
     private ShardingSphereDatabase mockDatabaseWithDataSource() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         Collection<String> dataSources = new LinkedList<>();
         dataSources.add("su_1");
-        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(dataSources);
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return database;
+        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(dataSources);
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        return result;
     }
     
     private DatabaseDiscoveryRuleConfiguration getRuleConfigWithNotExistedDataSources() {
@@ -84,10 +85,10 @@ public final class DBDiscoveryRuleConfigurationImportCheckerTest {
     }
     
     private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return database;
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        return result;
     }
     
     private DatabaseDiscoveryRuleConfiguration createRuleConfigWithInvalidDiscoveryType() {

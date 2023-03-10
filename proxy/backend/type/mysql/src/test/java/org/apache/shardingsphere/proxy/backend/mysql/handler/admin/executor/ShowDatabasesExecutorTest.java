@@ -33,8 +33,12 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -51,26 +55,24 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class ShowDatabasesExecutorTest {
     
     private static final String DATABASE_PATTERN = "database_%s";
     
-    private ShowDatabasesExecutor executor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement());
-    
     @Test
     public void assertExecute() throws SQLException {
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames())
-                    .thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
-            executor.execute(mockConnectionSession());
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
-            assertThat(getActual(), is(getExpected()));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
+        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement());
+        executor.execute(mockConnectionSession());
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+        assertThat(getActual(executor), is(getExpected()));
     }
     
     @Test
@@ -81,17 +83,14 @@ public final class ShowDatabasesExecutorTest {
         showFilterSegment.setLike(showLikeSegment);
         showDatabasesStatement.setFilter(showFilterSegment);
         ContextManager contextManager = mockContextManager();
-        executor = new ShowDatabasesExecutor(showDatabasesStatement);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames())
-                    .thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
-            executor.execute(mockConnectionSession());
-            assertThat(getActual(), is(getExpected()));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
+        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        executor.execute(mockConnectionSession());
+        assertThat(getActual(executor), is(getExpected()));
     }
     
-    private Collection<String> getActual() throws SQLException {
+    private Collection<String> getActual(final ShowDatabasesExecutor executor) throws SQLException {
         Map<String, String> result = new ConcurrentHashMap<>(10, 1);
         while (executor.getMergedResult().next()) {
             String value = executor.getMergedResult().getValue(1, Object.class).toString();
@@ -116,21 +115,18 @@ public final class ShowDatabasesExecutorTest {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "%_1");
         showFilterSegment.setLike(showLikeSegment);
         showDatabasesStatement.setFilter(showFilterSegment);
-        executor = new ShowDatabasesExecutor(showDatabasesStatement);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames())
-                    .thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
-            executor.execute(mockConnectionSession());
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
-            int count = 0;
-            while (executor.getMergedResult().next()) {
-                assertThat(executor.getMergedResult().getValue(1, Object.class), is("database_1"));
-                count++;
-            }
-            assertThat(count, is(1));
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
+        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        executor.execute(mockConnectionSession());
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
+        while (executor.getMergedResult().next()) {
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("database_1"));
+            count++;
         }
+        assertThat(count, is(1));
     }
     
     @Test
@@ -140,21 +136,18 @@ public final class ShowDatabasesExecutorTest {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database_9");
         showFilterSegment.setLike(showLikeSegment);
         showDatabasesStatement.setFilter(showFilterSegment);
-        executor = new ShowDatabasesExecutor(showDatabasesStatement);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames())
-                    .thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
-            executor.execute(mockConnectionSession());
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
-            int count = 0;
-            while (executor.getMergedResult().next()) {
-                assertThat(executor.getMergedResult().getValue(1, Object.class), is("database_9"));
-                count++;
-            }
-            assertThat(count, is(1));
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
+        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        executor.execute(mockConnectionSession());
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
+        while (executor.getMergedResult().next()) {
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("database_9"));
+            count++;
         }
+        assertThat(count, is(1));
     }
     
     @Test
@@ -164,21 +157,18 @@ public final class ShowDatabasesExecutorTest {
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "not_exist_database");
         showFilterSegment.setLike(showLikeSegment);
         showDatabasesStatement.setFilter(showFilterSegment);
-        executor = new ShowDatabasesExecutor(showDatabasesStatement);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames())
-                    .thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
-            executor.execute(mockConnectionSession());
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
-            int count = 0;
-            while (executor.getMergedResult().next()) {
-                assertThat(executor.getMergedResult().getValue(1, Object.class), is("not_exist_database"));
-                count++;
-            }
-            assertThat(count, is(0));
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
+        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(showDatabasesStatement);
+        executor.execute(mockConnectionSession());
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
+        while (executor.getMergedResult().next()) {
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is("not_exist_database"));
+            count++;
         }
+        assertThat(count, is(0));
     }
     
     private ContextManager mockContextManager() {

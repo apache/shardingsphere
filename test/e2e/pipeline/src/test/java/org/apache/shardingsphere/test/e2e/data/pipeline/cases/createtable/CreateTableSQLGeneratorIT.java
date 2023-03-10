@@ -110,7 +110,7 @@ public final class CreateTableSQLGeneratorIT {
         if (ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
-        for (String each : ENV.getPostgresVersions()) {
+        for (String each : ENV.getPostgresqlVersions()) {
             result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), each, String.join("/", PARENT_PATH, POSTGRES_CASE_FILE_PATH)));
         }
         for (String each : ENV.getMysqlVersions()) {

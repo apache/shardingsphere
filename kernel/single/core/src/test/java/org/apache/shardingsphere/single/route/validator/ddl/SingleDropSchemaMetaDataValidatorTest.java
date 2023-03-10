@@ -32,22 +32,25 @@ import org.junit.Test;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class SingleDropSchemaMetaDataValidatorTest {
     
-    @Test(expected = DropNotEmptySchemaException.class)
+    @Test
     public void assertValidateWithoutCascadeSchema() {
-        new SingleDropSchemaMetaDataValidator().validate(mock(SingleRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("foo_schema", false), mockDatabase());
+        assertThrows(DropNotEmptySchemaException.class,
+                () -> new SingleDropSchemaMetaDataValidator().validate(mock(SingleRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("foo_schema", false), mockDatabase()));
     }
     
-    @Test(expected = SchemaNotFoundException.class)
+    @Test
     public void assertValidateWithNotExistedSchema() {
         ShardingSphereDatabase database = mockDatabase();
         when(database.getSchema("not_existed_schema")).thenReturn(null);
-        new SingleDropSchemaMetaDataValidator().validate(mock(SingleRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("not_existed_schema", true), database);
+        assertThrows(SchemaNotFoundException.class,
+                () -> new SingleDropSchemaMetaDataValidator().validate(mock(SingleRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("not_existed_schema", true), database));
     }
     
     @Test

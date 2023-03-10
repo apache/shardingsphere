@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.datatype.
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -31,9 +31,7 @@ public final class OracleDataTypeLoader implements DialectDataTypeLoader {
     
     @Override
     public Map<String, Integer> load() throws SQLException {
-        Map<String, Integer> result = new HashMap<>(1, 1);
-        result.putIfAbsent("NUMBER", Types.NUMERIC);
-        return result;
+        return Collections.singletonMap("NUMBER", Types.NUMERIC);
     }
     
     @Override

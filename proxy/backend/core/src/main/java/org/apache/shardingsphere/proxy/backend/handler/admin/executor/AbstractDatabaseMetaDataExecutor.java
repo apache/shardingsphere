@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.StorageUnitNotExistedException;
-import org.apache.shardingsphere.proxy.backend.handler.admin.FunctionWithException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import javax.sql.DataSource;
@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -80,7 +81,8 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         mergedResult = createMergedResult();
     }
     
-    private void handleResultSet(final String databaseName, final ResultSet resultSet) throws SQLException {
+    @SneakyThrows(SQLException.class)
+    private void handleResultSet(final String databaseName, final ResultSet resultSet) {
         ResultSetMetaData metaData = resultSet.getMetaData();
         while (resultSet.next()) {
             Map<String, Object> rowMap = new LinkedHashMap<>();
@@ -107,7 +109,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     
     protected abstract void createPreProcessing();
     
-    protected abstract void getSourceData(String databaseName, FunctionWithException<ResultSet, SQLException> callback) throws SQLException;
+    protected abstract void getSourceData(String databaseName, Consumer<ResultSet> callback) throws SQLException;
     
     protected abstract void rowPostProcessing(String databaseName, Map<String, Object> rowMap, Map<String, String> aliasMap);
     
@@ -156,7 +158,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         }
         
         @Override
-        protected void getSourceData(final String databaseName, final FunctionWithException<ResultSet, SQLException> callback) throws SQLException {
+        protected void getSourceData(final String databaseName, final Consumer<ResultSet> callback) throws SQLException {
             ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
             Optional<Entry<String, DataSource>> dataSourceEntry = resourceMetaData.getDataSources().entrySet().stream().findFirst();
             log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(() -> new StorageUnitNotExistedException(databaseName)).getKey(), sql);
@@ -164,7 +166,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
                     Connection connection = dataSourceEntry.get().getValue().getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(sql);
                     ResultSet resultSet = preparedStatement.executeQuery()) {
-                callback.apply(resultSet);
+                callback.accept(resultSet);
             }
         }
         

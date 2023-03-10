@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class GlobalRuleChangedWatcherTest {
     
@@ -44,7 +44,7 @@ public final class GlobalRuleChangedWatcherTest {
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
-    protected String readYAML() {
+    private String readYAML() {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource("yaml/authority-rule.yaml").toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }

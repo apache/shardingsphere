@@ -26,6 +26,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,113 +42,113 @@ public final class UnSupportedDatabaseMetaDataResultSetTest {
         databaseMetaDataResultSet = new DatabaseMetaDataResultSet(resultSet, null);
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetAsciiStreamWithIndex() throws SQLException {
-        databaseMetaDataResultSet.getAsciiStream(1);
+    @Test
+    public void assertGetAsciiStreamWithIndex() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getAsciiStream(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetAsciiStreamWithLabel() throws SQLException {
-        databaseMetaDataResultSet.getAsciiStream("");
+    @Test
+    public void assertGetAsciiStreamWithLabel() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getAsciiStream(""));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetUnicodeStreamWithIndex() throws SQLException {
-        databaseMetaDataResultSet.getUnicodeStream(1);
+    @Test
+    public void assertGetUnicodeStreamWithIndex() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getUnicodeStream(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetUnicodeStreamWithLabel() throws SQLException {
-        databaseMetaDataResultSet.getUnicodeStream("");
+    @Test
+    public void assertGetUnicodeStreamWithLabel() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getUnicodeStream(""));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBinaryStreamWithIndex() throws SQLException {
-        databaseMetaDataResultSet.getBinaryStream(1);
+    @Test
+    public void assertGetBinaryStreamWithIndex() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getBinaryStream(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBinaryStreamWithLabel() throws SQLException {
-        databaseMetaDataResultSet.getBinaryStream("");
+    @Test
+    public void assertGetBinaryStreamWithLabel() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getBinaryStream(""));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetWarnings() throws SQLException {
-        databaseMetaDataResultSet.getWarnings();
+    @Test
+    public void assertGetWarnings() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getWarnings());
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertClearWarnings() throws SQLException {
-        databaseMetaDataResultSet.clearWarnings();
+    @Test
+    public void assertClearWarnings() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.clearWarnings());
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCharacterStreamWithIndex() throws SQLException {
-        databaseMetaDataResultSet.getCharacterStream(1);
+    @Test
+    public void assertGetCharacterStreamWithIndex() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getCharacterStream(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetCharacterStreamWithLabel() throws SQLException {
-        databaseMetaDataResultSet.getCharacterStream("");
+    @Test
+    public void assertGetCharacterStreamWithLabel() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getCharacterStream(""));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBlobWithIndex() throws SQLException {
-        databaseMetaDataResultSet.getBlob(1);
+    @Test
+    public void assertGetBlobWithIndex() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getBlob(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetBlobWithLabel() throws SQLException {
-        databaseMetaDataResultSet.getBlob("");
+    @Test
+    public void assertGetBlobWithLabel() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getBlob(""));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetClobWithIndex() throws SQLException {
-        databaseMetaDataResultSet.getClob(1);
+    @Test
+    public void assertGetClobWithIndex() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getClob(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetClobWithLabel() throws SQLException {
-        databaseMetaDataResultSet.getClob("");
+    @Test
+    public void assertGetClobWithLabel() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getClob(""));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetDateWithIndexAndCalendar() throws SQLException {
-        databaseMetaDataResultSet.getDate(1, null);
+    @Test
+    public void assertGetDateWithIndexAndCalendar() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getDate(1, null));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetDateWithLabelAndCalendar() throws SQLException {
-        databaseMetaDataResultSet.getDate("", null);
+    @Test
+    public void assertGetDateWithLabelAndCalendar() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getDate("", null));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetTimeWithIndexAndCalendar() throws SQLException {
-        databaseMetaDataResultSet.getTime(1, null);
+    @Test
+    public void assertGetTimeWithIndexAndCalendar() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getTime(1, null));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetTimeWithLabelAndCalendar() throws SQLException {
-        databaseMetaDataResultSet.getTime("", null);
+    @Test
+    public void assertGetTimeWithLabelAndCalendar() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getTime("", null));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetTimestampWithIndexAndCalendar() throws SQLException {
-        databaseMetaDataResultSet.getTimestamp(1, null);
+    @Test
+    public void assertGetTimestampWithIndexAndCalendar() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getTimestamp(1, null));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetTimestampWithLabelAndCalendar() throws SQLException {
-        databaseMetaDataResultSet.getTimestamp("", null);
+    @Test
+    public void assertGetTimestampWithLabelAndCalendar() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getTimestamp("", null));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetSQLXMLWithIndex() throws SQLException {
-        databaseMetaDataResultSet.getSQLXML(1);
+    @Test
+    public void assertGetSQLXMLWithIndex() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getSQLXML(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetSQLXMLWithLabel() throws SQLException {
-        databaseMetaDataResultSet.getSQLXML("");
+    @Test
+    public void assertGetSQLXMLWithLabel() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> databaseMetaDataResultSet.getSQLXML(""));
     }
 }

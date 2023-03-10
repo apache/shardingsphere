@@ -20,47 +20,24 @@ package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.MockedStatic;
-
-import java.util.Collections;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ShowProcessListManager.class)
 public final class ProcessStandaloneSubscriberTest {
-    
-    private final EventBusContext eventBusContext = new EventBusContext();
-    
-    private ProcessStandaloneSubscriber processRegistrySubscriber;
-    
-    private ShowProcessListManager showProcessListManager;
-    
-    private MockedStatic<ShowProcessListManager> mockedStatic;
-    
-    @Before
-    public void setUp() {
-        processRegistrySubscriber = new ProcessStandaloneSubscriber(eventBusContext);
-        mockedStatic = mockStatic(ShowProcessListManager.class);
-        showProcessListManager = mock(ShowProcessListManager.class);
-        mockedStatic.when(ShowProcessListManager::getInstance).thenReturn(showProcessListManager);
-    }
     
     @Test
     public void assertLoadShowProcessListData() {
-        ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
-        when(showProcessListManager.getProcessContexts()).thenReturn(Collections.emptyMap());
-        processRegistrySubscriber.loadShowProcessListData(showProcessListRequestEvent);
-        verify(showProcessListManager, times(1)).getProcessContexts();
-    }
-    
-    @After
-    public void tearDown() {
-        mockedStatic.close();
+        ShowProcessListManager showProcessListManager = mock(ShowProcessListManager.class);
+        when(ShowProcessListManager.getInstance()).thenReturn(showProcessListManager);
+        new ProcessStandaloneSubscriber(new EventBusContext()).loadShowProcessListData(mock(ShowProcessListRequestEvent.class));
+        verify(showProcessListManager).getProcessContexts();
     }
 }

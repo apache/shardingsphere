@@ -25,8 +25,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Sharding table reference rule assert.
@@ -43,9 +43,9 @@ public final class ShardingTableReferenceRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TableReferenceRuleSegment actual, final ExpectedShardingTableReferenceRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual sharding table reference rule should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual sharding table reference rule should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual sharding reference table should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual sharding reference table should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s sharding table reference rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getReference(), is(expected.getTableGroups()));
             assertThat(assertContext.getText(String.format("`%s`'s sharding table reference rule name assertion error: ",

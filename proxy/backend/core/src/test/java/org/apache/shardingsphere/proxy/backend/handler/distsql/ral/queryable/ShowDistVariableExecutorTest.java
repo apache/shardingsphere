@@ -28,7 +28,6 @@ import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigur
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -41,11 +40,12 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowDistVariableExecutorTest extends ProxyContextRestorer {
+public final class ShowDistVariableExecutorTest {
     
     private final ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
     
@@ -117,8 +117,8 @@ public final class ShowDistVariableExecutorTest extends ProxyContextRestorer {
         assertThat(row.getCell(2), is("false"));
     }
     
-    @Test(expected = UnsupportedVariableException.class)
+    @Test
     public void assertExecuteWithInvalidVariableName() {
-        new ShowDistVariableExecutor().getRows(metaData, connectionSession, new ShowDistVariableStatement("wrong_name"));
+        assertThrows(UnsupportedVariableException.class, () -> new ShowDistVariableExecutor().getRows(metaData, connectionSession, new ShowDistVariableStatement("wrong_name")));
     }
 }

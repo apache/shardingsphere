@@ -24,6 +24,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,12 +50,12 @@ public final class PortalContextTest {
         assertThat(portalContext.get(portalName), is(portal));
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertAddDuplicateNamedPortal() throws SQLException {
         Portal portal = mock(Portal.class);
         when(portal.getName()).thenReturn("P_1");
         portalContext.add(portal);
-        portalContext.add(portal);
+        assertThrows(IllegalStateException.class, () -> portalContext.add(portal));
     }
     
     @Test

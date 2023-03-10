@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDist
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowDistVariablesStatementTestCase;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Show dist variables statement assert.
@@ -37,7 +37,7 @@ public final class ShowDistVariablesStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowDistVariablesStatement actual, final ShowDistVariablesStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         }
     }
 }

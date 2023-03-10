@@ -39,8 +39,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -57,7 +57,7 @@ public final class ShardingDALResultMergerTest {
     
     private final List<QueryResult> queryResults = new LinkedList<>();
     
-    @Before
+    @BeforeEach
     public void setUp() {
         queryResults.add(mock(QueryResult.class));
     }

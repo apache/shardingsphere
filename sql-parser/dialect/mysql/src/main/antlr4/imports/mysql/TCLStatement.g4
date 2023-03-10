@@ -28,7 +28,7 @@ setAutoCommit
     ;
 
 beginTransaction
-    : BEGIN | START TRANSACTION (transactionCharacteristic (COMMA_ transactionCharacteristic)*)?
+    : BEGIN WORK? | START TRANSACTION (transactionCharacteristic (COMMA_ transactionCharacteristic)*)?
     ;
 
 transactionCharacteristic

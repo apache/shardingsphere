@@ -48,4 +48,8 @@ public final class MetricConfiguration {
     public MetricConfiguration(final String id, final MetricCollectorType type, final String help, final List<String> labels) {
         this(id, type, help, labels, Collections.emptyMap());
     }
+    
+    public MetricConfiguration(final String id, final MetricCollectorType type, final String help, final Map<String, Object> props) {
+        this(id, type, help, Collections.emptyList(), props);
+    }
 }

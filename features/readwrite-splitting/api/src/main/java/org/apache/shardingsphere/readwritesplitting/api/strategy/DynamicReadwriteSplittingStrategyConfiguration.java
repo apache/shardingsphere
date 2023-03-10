@@ -28,6 +28,4 @@ import lombok.RequiredArgsConstructor;
 public final class DynamicReadwriteSplittingStrategyConfiguration {
     
     private final String autoAwareDataSourceName;
-    
-    private final String writeDataSourceQueryEnabled;
 }

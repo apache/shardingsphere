@@ -27,10 +27,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterReadwriteSplittingStorageUnitStatusStatementAssert {
@@ -45,9 +45,9 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterReadwriteSplittingStorageUnitStatusStatement actual,
                                 final AlterReadwriteSplittingStorageUnitStatusStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
             assertThat(actual.getGroupName(), is(expected.getGroupName()));
             assertThat(actual.getStorageUnitName(), is(expected.getStorageUnitName()));
             assertThat(actual.getStatus(), is(expected.getStatus()));
@@ -57,9 +57,9 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementAssert {
     
     private static void assertIs(final SQLCaseAssertContext assertContext, final AlterReadwriteSplittingStorageUnitStatusStatement actual, final DatabaseContainedTestCase expected) {
         if (null == expected.getDatabase()) {
-            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
+            assertFalse(actual.getDatabase().isPresent(), assertContext.getText("Actual database should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
+            assertTrue(actual.getDatabase().isPresent(), assertContext.getText("Actual database should exist."));
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
         }
     }

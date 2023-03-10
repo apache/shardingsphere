@@ -20,18 +20,19 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class UnifiedCreditCodeRandomReplaceAlgorithmTest {
     
     private UnifiedCreditCodeRandomReplaceAlgorithm maskAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         maskAlgorithm = new UnifiedCreditCodeRandomReplaceAlgorithm();
     }
@@ -44,8 +45,8 @@ public final class UnifiedCreditCodeRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask("123456781234567890").length(), is(18));
     }
     
-    @Test(expected = MaskAlgorithmInitializationException.class)
+    @Test
     public void assertInitWhenConfigIsNull() {
-        maskAlgorithm.init(PropertiesBuilder.build(new Property("registration-department-codes", "1,2,3,4")));
+        assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build(new Property("registration-department-codes", "1,2,3,4"))));
     }
 }

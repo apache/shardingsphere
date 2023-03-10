@@ -20,23 +20,24 @@ package org.apache.shardingsphere.agent.core.spi;
 import org.apache.shardingsphere.fixture.agent.AgentServiceEmptySPIFixture;
 import org.apache.shardingsphere.fixture.agent.AgentServiceSPIFixture;
 import org.apache.shardingsphere.fixture.agent.impl.AgentServiceSPIFixtureImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class AgentServiceLoaderTest {
     
-    @Test(expected = NullPointerException.class)
+    @Test
     public void assertGetServiceLoaderWithNullValue() {
-        AgentServiceLoader.getServiceLoader(null);
+        assertThrows(NullPointerException.class, () -> AgentServiceLoader.getServiceLoader(null));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGetServiceLoaderWithNoInterface() {
-        AgentServiceLoader.getServiceLoader(Object.class);
+        assertThrows(IllegalArgumentException.class, () -> AgentServiceLoader.getServiceLoader(Object.class));
     }
     
     @Test

@@ -28,12 +28,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -47,10 +47,11 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class JDBCExecutorCallbackTest {
     
     @Mock
@@ -64,7 +65,7 @@ public final class JDBCExecutorCallbackTest {
     
     private Collection<JDBCExecutionUnit> units;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
@@ -119,8 +120,8 @@ public final class JDBCExecutorCallbackTest {
         assertThat(callback.execute(units, false), is(Collections.emptyList()));
     }
     
-    @Test(expected = SQLException.class)
-    public void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() throws SQLException {
+    @Test
+    public void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() {
         JDBCExecutorCallback<Object> callback =
                 new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"),
                         Collections.singletonMap("ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), mock(SelectStatement.class), true) {
@@ -135,6 +136,6 @@ public final class JDBCExecutorCallbackTest {
                         return Optional.empty();
                     }
                 };
-        callback.execute(units, true);
+        assertThrows(SQLException.class, () -> callback.execute(units, true));
     }
 }

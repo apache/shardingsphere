@@ -31,11 +31,16 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.fixture.CallTimeRecordDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -57,35 +62,42 @@ import java.util.concurrent.Future;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+public final class JDBCBackendDataSourceTest {
     
     private static final String DATA_SOURCE_PATTERN = "ds_%s";
     
-    @Before
+    @BeforeEach
     public void setUp() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+    }
+    
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(createDatabases(), mockGlobalRuleMetaData(), new ConfigurationProperties(new Properties())));
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        return result;
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("schema");
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(2, 1);
         storageTypes.put("ds_0", new H2DatabaseType());
         storageTypes.put("ds_1", new H2DatabaseType());
         when(database.getResourceMetaData().getStorageTypes()).thenReturn(storageTypes);
         when(database.getResourceMetaData().getDataSources()).thenReturn(mockDataSources(2));
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        result.put("schema", database);
-        return result;
+        return Collections.singletonMap("schema", database);
     }
     
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
@@ -104,21 +116,22 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
     
     @Test
     public void assertGetConnectionsSucceed() throws SQLException {
-        List<Connection> actual = ProxyContext.getInstance().getBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 5, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 5, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(5));
     }
     
-    @Test(expected = OverallConnectionNotEnoughException.class)
-    public void assertGetConnectionsFailed() throws SQLException {
-        ProxyContext.getInstance().getBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY);
+    @Test
+    public void assertGetConnectionsFailed() {
+        assertThrows(OverallConnectionNotEnoughException.class, () -> new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY));
     }
     
     @Test
-    public void assertGetConnectionsByMultiThread() throws InterruptedException {
+    public void assertGetConnectionsByMultiThreads() throws InterruptedException {
+        JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource();
         ExecutorService executorService = Executors.newFixedThreadPool(20);
         Collection<Future<List<Connection>>> futures = new LinkedList<>();
         for (int i = 0; i < 200; i++) {
-            futures.add(executorService.submit(new CallableTask(String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY)));
+            futures.add(executorService.submit(new CallableTask(jdbcBackendDataSource, String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY)));
         }
         Collection<Connection> actual = new LinkedList<>();
         for (Future<List<Connection>> each : futures) {
@@ -133,7 +146,9 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
     }
     
     @RequiredArgsConstructor
-    private static class CallableTask implements Callable<List<Connection>> {
+    private class CallableTask implements Callable<List<Connection>> {
+        
+        private final JDBCBackendDataSource jdbcBackendDataSource;
         
         private final String datasourceName;
         
@@ -143,7 +158,11 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
         
         @Override
         public List<Connection> call() throws SQLException {
-            return ProxyContext.getInstance().getBackendDataSource().getConnections("schema", datasourceName, connectionSize, connectionMode);
+            try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
+                ContextManager contextManager = JDBCBackendDataSourceTest.this.mockContextManager();
+                proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+                return jdbcBackendDataSource.getConnections("schema", datasourceName, connectionSize, connectionMode);
+            }
         }
     }
 }

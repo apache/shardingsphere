@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +35,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngineTest {
@@ -65,10 +66,10 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
-    @Test(expected = ShardingTableRuleNotFoundException.class)
+    @Test
     public void assertRoutingForNonLogicTable() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(
                 createShardingConditions("t_order"), mock(SQLStatementContext.class), new HintValueContext(), new ConfigurationProperties(new Properties()), Collections.emptyList());
-        complexRoutingEngine.route(mock(ShardingRule.class));
+        assertThrows(ShardingTableRuleNotFoundException.class, () -> complexRoutingEngine.route(mock(ShardingRule.class)));
     }
 }

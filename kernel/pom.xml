@@ -40,5 +40,6 @@
         <module>sql-translator</module>
         <module>traffic</module>
         <module>logging</module>
+        <module>global-clock</module>
     </modules>
 </project>

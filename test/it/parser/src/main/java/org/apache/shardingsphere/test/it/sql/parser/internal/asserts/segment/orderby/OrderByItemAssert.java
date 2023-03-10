@@ -38,8 +38,8 @@ import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Order by item assert.
@@ -87,7 +87,7 @@ public final class OrderByItemAssert {
     private static void assertOrderInfo(final SQLCaseAssertContext assertContext, final OrderByItemSegment actual, final ExpectedOrderByItem expected, final String type) {
         assertThat(assertContext.getText(String.format("%s item order direction assertion error: ", type)), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
         if (null != expected.getNullsOrderType()) {
-            assertTrue(assertContext.getText("Actual nulls order type should exist."), actual.getNullsOrderType().isPresent());
+            assertTrue(actual.getNullsOrderType().isPresent(), assertContext.getText("Actual nulls order type should exist."));
             assertThat(assertContext.getText(String.format("%s item nulls order type assertion error: ", type)), actual.getNullsOrderType().get().name(), is(expected.getNullsOrderType()));
         }
     }
@@ -96,9 +96,9 @@ public final class OrderByItemAssert {
                                                 final ColumnOrderByItemSegment actual, final ExpectedColumnOrderByItem expected, final String type) {
         IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, String.format("%s item", type));
         if (null == expected.getOwner()) {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
+            assertFalse(actual.getColumn().getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
+            assertTrue(actual.getColumn().getOwner().isPresent(), assertContext.getText("Actual owner should exist."));
             OwnerAssert.assertIs(assertContext, actual.getColumn().getOwner().get(), expected.getOwner());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);

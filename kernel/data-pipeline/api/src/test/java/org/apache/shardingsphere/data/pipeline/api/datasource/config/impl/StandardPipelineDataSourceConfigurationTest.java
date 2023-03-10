@@ -28,7 +28,7 @@ import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public final class StandardPipelineDataSourceConfigurationTest {
     
@@ -68,7 +68,7 @@ public final class StandardPipelineDataSourceConfigurationTest {
         assertThat(handled.size(), is(backup.size()));
         for (Entry<String, Object> entry : backup.entrySet()) {
             Object actual = handled.get(entry.getKey());
-            assertNotNull("value of '" + entry.getKey() + "' doesn't exist", actual);
+            assertNotNull(actual, "value of '" + entry.getKey() + "' doesn't exist");
             assertThat("value of '" + entry.getKey() + "' doesn't match", actual, is(entry.getValue()));
         }
     }
