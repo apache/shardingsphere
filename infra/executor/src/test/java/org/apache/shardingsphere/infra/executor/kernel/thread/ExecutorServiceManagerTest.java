@@ -18,20 +18,22 @@
 package org.apache.shardingsphere.infra.executor.kernel.thread;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 public final class ExecutorServiceManagerTest {
     
     private static final TransmittableThreadLocal<String> TRANSMITTABLE_THREAD_LOCAL = new TransmittableThreadLocal<>();
     
-    @Test(timeout = 1000L)
-    public void assertThreadLocalValueChangedForReusedThread() throws InterruptedException {
+    @Test
+    public void assertThreadLocalValueChangedForReusedThread() {
         AtomicBoolean finished = new AtomicBoolean(false);
         ExecutorService executorService = new ExecutorServiceManager(1).getExecutorService();
         executorService.submit(() -> {
@@ -43,6 +45,10 @@ public final class ExecutorServiceManagerTest {
             assertValueChangedInConcurrencyThread();
             finished.set(true);
         });
+        assertTimeout(Duration.ofSeconds(1L), () -> assertFinished(finished));
+    }
+    
+    private void assertFinished(final AtomicBoolean finished) throws InterruptedException {
         while (!finished.get()) {
             Thread.sleep(100L);
         }

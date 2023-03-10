@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.fixture.TypedSPIFixtu
 import org.apache.shardingsphere.infra.util.spi.type.typed.fixture.impl.TypedSPIFixtureImpl;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 

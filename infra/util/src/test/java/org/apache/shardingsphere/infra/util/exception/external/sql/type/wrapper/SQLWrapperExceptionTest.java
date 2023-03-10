@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 

@@ -29,8 +29,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ro
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
@@ -44,7 +44,7 @@ public final class TopPaginationContextEngineTest {
     
     private TopPaginationContextEngine topPaginationContextEngine;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         topPaginationContextEngine = new TopPaginationContextEngine();
     }

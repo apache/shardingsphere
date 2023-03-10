@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.executor.kernel.fixture.ExecutorCallbackF
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -48,14 +48,14 @@ public final class ExecutorEngineTest {
     
     private ExecutorCallbackFixture callback;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         executionGroupContext = createMockedExecutionGroups(2, 2);
         firstCallback = new ExecutorCallbackFixture(latch);
         callback = new ExecutorCallbackFixture(latch);
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
         executorEngine.close();
     }

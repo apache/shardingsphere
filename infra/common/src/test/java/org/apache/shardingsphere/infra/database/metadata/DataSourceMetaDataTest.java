@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.OracleDataSourc
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQL92DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSourceMetaData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

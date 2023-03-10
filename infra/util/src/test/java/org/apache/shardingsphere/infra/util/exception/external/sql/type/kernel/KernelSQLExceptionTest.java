@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 

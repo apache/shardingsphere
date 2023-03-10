@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ExecuteIDContextTest {
     
-    @After
+    @AfterEach
     public void tearDown() {
         ExecuteIDContext.remove();
     }
