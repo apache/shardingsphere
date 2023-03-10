@@ -189,7 +189,8 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         result.setType(IngestDataChangeType.INSERT);
         result.setTableName(dumperConfig.getLogicTableName());
         for (int i = 1; i <= columnCount; i++) {
-            result.addColumn(new Column(resultSetMetaData.getColumnName(i), columnValueReader.readValue(resultSet, resultSetMetaData, i), true, tableMetaData.getColumnMetaData(i).isUniqueKey()));
+            String columnName = resultSetMetaData.getColumnName(i);
+            result.addColumn(new Column(columnName, columnValueReader.readValue(resultSet, resultSetMetaData, i), true, tableMetaData.getColumnMetaData(columnName).isUniqueKey()));
         }
         return result;
     }
