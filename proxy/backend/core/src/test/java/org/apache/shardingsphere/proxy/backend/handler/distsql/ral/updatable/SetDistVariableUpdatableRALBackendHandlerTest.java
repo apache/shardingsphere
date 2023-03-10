@@ -28,8 +28,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
@@ -45,7 +45,7 @@ public final class SetDistVariableUpdatableRALBackendHandlerTest {
     
     private ConnectionSession connectionSession;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
     }

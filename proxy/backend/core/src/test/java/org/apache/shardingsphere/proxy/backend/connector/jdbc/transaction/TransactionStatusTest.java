@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,7 +30,7 @@ public final class TransactionStatusTest {
     
     private TransactionStatus transactionStatus;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         transactionStatus = new TransactionStatus(TransactionType.XA);
     }

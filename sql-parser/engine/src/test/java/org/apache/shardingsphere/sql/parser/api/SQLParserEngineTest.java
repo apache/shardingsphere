@@ -22,7 +22,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.annotation.ParametersAreNonnullByDefault;

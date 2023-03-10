@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;

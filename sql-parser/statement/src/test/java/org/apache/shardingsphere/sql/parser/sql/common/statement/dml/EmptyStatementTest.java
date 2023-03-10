@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

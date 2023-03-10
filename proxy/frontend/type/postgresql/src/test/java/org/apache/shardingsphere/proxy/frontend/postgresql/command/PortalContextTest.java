@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
