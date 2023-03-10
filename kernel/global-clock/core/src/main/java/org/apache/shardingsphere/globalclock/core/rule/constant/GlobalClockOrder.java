@@ -25,5 +25,5 @@ public final class GlobalClockOrder {
     /**
      * Global clock order.
      */
-    public static final int ORDER = 1200;
+    public static final int ORDER = 1300;
 }
