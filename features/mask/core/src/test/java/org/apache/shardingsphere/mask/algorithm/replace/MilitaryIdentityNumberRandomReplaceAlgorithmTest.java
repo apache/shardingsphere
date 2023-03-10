@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -31,7 +31,7 @@ public final class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
     
     private MilitaryIdentityNumberRandomReplaceAlgorithm maskAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         maskAlgorithm = new MilitaryIdentityNumberRandomReplaceAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("type-codes", "军,人,士,文,职")));

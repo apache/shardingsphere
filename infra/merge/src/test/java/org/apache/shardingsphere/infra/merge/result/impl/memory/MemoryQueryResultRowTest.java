@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.merge.result.impl.memory;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
@@ -34,7 +34,7 @@ public final class MemoryQueryResultRowTest {
     
     private MemoryQueryResultRow memoryResultSetRow;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(queryResult.getMetaData().getColumnCount()).thenReturn(1);

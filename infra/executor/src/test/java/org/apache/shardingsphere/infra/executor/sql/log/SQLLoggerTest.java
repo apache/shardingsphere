@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
@@ -54,14 +54,14 @@ public final class SQLLoggerTest {
     private Collection<ExecutionUnit> executionUnits;
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    @BeforeClass
+    @BeforeAll
     public static void setupLogger() {
         ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("ShardingSphere-SQL");
         ListAppender<LoggingEvent> appender = (ListAppender) log.getAppender("SQLLoggerTestAppender");
         appenderList = appender.list;
     }
     
-    @Before
+    @BeforeEach
     public void setUp() {
         executionUnits = prepareExecutionUnits(Arrays.asList("db1", "db2", "db3"));
         appenderList.clear();

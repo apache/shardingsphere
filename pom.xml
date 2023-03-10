@@ -100,6 +100,7 @@
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <h2.version>2.1.214</h2.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
+        <hbase.client.version>1.7.1</hbase.client.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
         <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
@@ -494,6 +495,11 @@
                 <artifactId>opengauss-jdbc</artifactId>
                 <version>${opengauss.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase-shaded-client</artifactId>
+                <version>${hbase.client.version}</version>
             </dependency>
             
             <dependency>

@@ -6,7 +6,7 @@ chapter = true
 
 ![img](https://shardingsphere.apache.org/blog/img/2022_11_22_ElasticJob_UI_now_supports_Auth_2.0,_OIDC_and_SAML_single_sign-on_thanks_to_Casdoor1.png)
 
-> If you‘re looking to add SSO to the administration console when using ElasticJob UI, this article will help you tackle this user management problem using ElasticJob UI’s built-in Casdoor.
+> If you're looking to add SSO to the administration console when using ElasticJob UI, this article will help you tackle this user management problem using ElasticJob UI's built-in Casdoor.
 
 # Background
 
@@ -44,7 +44,7 @@ yarn start
 
 ![img](https://shardingsphere.apache.org/blog/img/2022_11_22_ElasticJob_UI_now_supports_Auth_2.0,_OIDC_and_SAML_single_sign-on_thanks_to_Casdoor2.png)
 
-The red arrows indicate what the backend configuration requires, with “Redirect URLs” referring to the address where you perform a callback.
+The red arrows indicate what the backend configuration requires, with "Redirect URLs" referring to the address where you perform a callback.
 
 We also need to find the corresponding cert we selected in the cert option, such as `cert-build-in` here. A certificate is also needed.
 
@@ -64,7 +64,7 @@ Paste the data we obtained from Casdoor into the corresponding position as follo
 
 Now, we can use Casdoor in ElasticJob UI.
 
-Once the ElasticJob’s admin console connects to Casdoor, it will support UI-first centralized identity access/single sign-on based on [OAuth 2.0](https://oauth.net/2/), [OIDC](https://openid.net/connect/) and [SAML](https://auth0.com/blog/how-saml-authentication-works/).
+Once the ElasticJob's admin console connects to Casdoor, it will support UI-first centralized identity access/single sign-on based on [OAuth 2.0](https://oauth.net/2/), [OIDC](https://openid.net/connect/) and [SAML](https://auth0.com/blog/how-saml-authentication-works/).
 
 Thanks to developers from the Casdoor and Apache ShardingSphere community, our collaboration has been going on in a smooth and friendly way. At first, [jakiuncle](https://github.com/jakiuncle) from Casdoor proposed an issue and committed a PR, and then our Committer [TeslaCN](https://github.com/TeslaCN) and PMC [tristaZero](https://github.com/tristaZero) reviewed the PR. This cross-community collaboration stands as a testament to the Beaty of open source.
 
@@ -80,6 +80,6 @@ It provides elastic scheduling, resource management, and job governance combined
 
 # About Casdoor
 
-[Casdoor](https://casdoor.org/) is a UI-first identity access management (IAM) / single-sign-on (SSO) platform based on OAuth 2.0 / OIDC. Casdoor can help you solve user management problems. There’s no need to develop a series of authentication features such as user login and registration. It can manage the user module entirely in a few simple steps in conjunction with the host application. It’s convenient, easy-to-use and powerful.
+[Casdoor](https://casdoor.org/) is a UI-first identity access management (IAM) / single-sign-on (SSO) platform based on OAuth 2.0 / OIDC. Casdoor can help you solve user management problems. There's no need to develop a series of authentication features such as user login and registration. It can manage the user module entirely in a few simple steps in conjunction with the host application. It's convenient, easy-to-use and powerful.
 
 🔗 [**GitHub**](https://github.com/casdoor/casdoor)

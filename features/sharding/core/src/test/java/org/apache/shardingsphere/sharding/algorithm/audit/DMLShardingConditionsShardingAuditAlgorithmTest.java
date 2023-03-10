@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
@@ -50,7 +50,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
     
     private ShardingAuditAlgorithm shardingAuditAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         shardingAuditAlgorithm = TypedSPILoader.getService(ShardingAuditAlgorithm.class, "DML_SHARDING_CONDITIONS");
         sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);

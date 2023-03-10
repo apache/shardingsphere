@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.util.spi.fixture.multiton.MultitonSPIFixt
 import org.apache.shardingsphere.infra.util.spi.fixture.multiton.impl.MultitonSPIFixtureImpl;
 import org.apache.shardingsphere.infra.util.spi.fixture.singleton.SingletonSPIFixture;
 import org.apache.shardingsphere.infra.util.spi.fixture.singleton.impl.SingletonSPIFixtureImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 

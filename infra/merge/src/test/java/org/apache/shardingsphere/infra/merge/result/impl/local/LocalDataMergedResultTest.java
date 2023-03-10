@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.result.impl.local;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;

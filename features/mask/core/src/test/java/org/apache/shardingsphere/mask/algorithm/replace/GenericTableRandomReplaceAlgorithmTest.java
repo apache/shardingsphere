@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Properties;
@@ -35,7 +35,7 @@ public final class GenericTableRandomReplaceAlgorithmTest {
     
     private GenericTableRandomReplaceAlgorithm maskAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         this.maskAlgorithm = new GenericTableRandomReplaceAlgorithm();
     }

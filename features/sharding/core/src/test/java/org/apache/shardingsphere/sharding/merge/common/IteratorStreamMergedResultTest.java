@@ -31,8 +31,8 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -49,7 +49,7 @@ public final class IteratorStreamMergedResultTest {
     
     private SelectStatementContext selectStatementContext;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);

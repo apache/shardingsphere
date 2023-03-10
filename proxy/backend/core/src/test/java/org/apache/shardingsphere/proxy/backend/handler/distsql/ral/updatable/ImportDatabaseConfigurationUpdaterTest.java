@@ -55,85 +55,64 @@ public final class ImportDatabaseConfigurationUpdaterTest {
     
     @Test
     public void assertImportDatabaseExecutorForSharding() throws SQLException {
-        String databaseName = "sharding_db";
-        init(databaseName);
-        importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-sharding.yaml")));
+        assertExecute("sharding_db", "/conf/import/config-sharding.yaml");
     }
     
     @Test
     public void assertImportDatabaseExecutorForReadwriteSplitting() throws SQLException {
-        String databaseName = "readwrite_splitting_db";
-        init(databaseName);
-        importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-readwrite-splitting.yaml")));
+        assertExecute("readwrite_splitting_db", "/conf/import/config-readwrite-splitting.yaml");
     }
     
     @Test
     public void assertImportDatabaseExecutorForDatabaseDiscovery() throws SQLException {
-        String databaseName = "database_discovery_db";
-        init(databaseName);
-        importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-database-discovery.yaml")));
+        assertExecute("database_discovery_db", "/conf/import/config-database-discovery.yaml");
     }
     
     @Test
     public void assertImportDatabaseExecutorForEncrypt() throws SQLException {
-        String databaseName = "encrypt_db";
-        init(databaseName);
-        importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-encrypt.yaml")));
+        assertExecute("encrypt_db", "/conf/import/config-encrypt.yaml");
     }
     
     @Test
     public void assertImportDatabaseExecutorForShadow() throws SQLException {
-        String databaseName = "shadow_db";
-        init(databaseName);
-        importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-shadow.yaml")));
+        assertExecute("shadow_db", "/conf/import/config-shadow.yaml");
     }
     
     @Test
     public void assertImportDatabaseExecutorForMask() throws SQLException {
-        String databaseName = "mask_db";
-        init(databaseName);
-        importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-mask.yaml")));
+        assertExecute("mask_db", "/conf/import/config-mask.yaml");
     }
     
     @Test
     public void assertImportExistedDatabase() {
         String databaseName = "sharding_db";
-        init(databaseName);
         when(ProxyContext.getInstance().databaseExists(databaseName)).thenReturn(true);
-        assertThrows(IllegalStateException.class, () -> importDatabaseConfigUpdater.executeUpdate(databaseName,
-                new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-sharding.yaml"))));
+        assertThrows(IllegalStateException.class, () -> assertExecute(databaseName, "/conf/import/config-sharding.yaml"));
     }
     
     @Test
     public void assertImportEmptyDatabaseName() {
-        String databaseName = "sharding_db";
-        init(databaseName);
-        assertThrows(NullPointerException.class, () -> importDatabaseConfigUpdater.executeUpdate(databaseName,
-                new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-empty-database-name.yaml"))));
+        assertThrows(NullPointerException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-database-name.yaml"));
     }
     
     @Test
     public void assertImportEmptyDataSource() {
-        String databaseName = "sharding_db";
-        init(databaseName);
-        assertThrows(IllegalStateException.class, () -> importDatabaseConfigUpdater.executeUpdate(databaseName,
-                new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-empty-data-source.yaml"))));
+        assertThrows(IllegalStateException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-data-source.yaml"));
     }
     
     @Test
     public void assertImportDuplicatedLogicTable() {
-        String databaseName = "sharding_db";
-        init(databaseName);
-        assertThrows(DuplicateRuleException.class, () -> importDatabaseConfigUpdater.executeUpdate(databaseName,
-                new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-duplicated-logic-table.yaml"))));
+        assertThrows(DuplicateRuleException.class, () -> assertExecute("sharding_db", "/conf/import/config-duplicated-logic-table.yaml"));
     }
     
     @Test
     public void assertImportInvalidAlgorithm() {
-        String databaseName = "sharding_db";
+        assertThrows(InvalidAlgorithmConfigurationException.class, () -> assertExecute("sharding_db", "/conf/import/config-invalid-algorithm.yaml"));
+    }
+    
+    private void assertExecute(final String databaseName, final String filePath) throws SQLException {
         init(databaseName);
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> importDatabaseConfigUpdater.executeUpdate(databaseName,
-                new ImportDatabaseConfigurationStatement(getDatabaseConfigurationFilePath("/conf/import/config-invalid-algorithm.yaml"))));
+        importDatabaseConfigUpdater.executeUpdate(databaseName, new ImportDatabaseConfigurationStatement(ImportDatabaseConfigurationUpdaterTest.class.getResource(filePath).getPath()));
     }
     
     @SneakyThrows({IllegalAccessException.class, NoSuchFieldException.class})
@@ -165,9 +144,5 @@ public final class ImportDatabaseConfigurationUpdaterTest {
         Properties result = new Properties();
         result.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL");
         return result;
-    }
-    
-    private String getDatabaseConfigurationFilePath(final String filePath) {
-        return ImportDatabaseConfigurationUpdaterTest.class.getResource(filePath).getPath();
     }
 }

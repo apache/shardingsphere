@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
