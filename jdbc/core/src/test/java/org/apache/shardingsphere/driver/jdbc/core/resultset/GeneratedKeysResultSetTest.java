@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -40,7 +40,7 @@ public final class GeneratedKeysResultSetTest {
     
     private GeneratedKeysResultSet actualResultSet;
     
-    @Before
+    @BeforeEach
     public void init() {
         actualResultSet = new GeneratedKeysResultSet("order_id", Arrays.<Comparable<?>>asList(1L, 2L).iterator(), statement);
     }

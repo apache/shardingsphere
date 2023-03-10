@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.state.circuit.connection;
 import org.apache.shardingsphere.driver.state.circuit.metadata.CircuitBreakerDatabaseMetaData;
 import org.apache.shardingsphere.driver.state.circuit.statement.CircuitBreakerPreparedStatement;
 import org.apache.shardingsphere.driver.state.circuit.statement.CircuitBreakerStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

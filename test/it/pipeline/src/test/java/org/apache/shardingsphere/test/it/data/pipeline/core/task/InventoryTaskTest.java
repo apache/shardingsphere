@@ -31,10 +31,10 @@ import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureImpor
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -55,17 +55,17 @@ public final class InventoryTaskTest {
     
     private MigrationTaskConfiguration taskConfig;
     
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         DATA_SOURCE_MANAGER.close();
     }
     
-    @Before
+    @BeforeEach
     public void setUp() {
         taskConfig = PipelineContextUtil.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
     }

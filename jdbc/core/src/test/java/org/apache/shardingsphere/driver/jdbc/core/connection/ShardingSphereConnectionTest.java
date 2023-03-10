@@ -30,9 +30,9 @@ import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTr
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
@@ -55,7 +55,7 @@ public final class ShardingSphereConnectionTest {
     
     private ShardingSphereConnection connection;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         TransactionTypeHolder.set(TransactionType.LOCAL);
         connection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, mockContextManager(), mock(JDBCContext.class));
@@ -69,7 +69,7 @@ public final class ShardingSphereConnectionTest {
         return result;
     }
     
-    @After
+    @AfterEach
     public void clear() {
         try {
             connection.close();

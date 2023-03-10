@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.base;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.h2.tools.RunScript;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 import javax.sql.DataSource;
 import java.io.InputStreamReader;
@@ -37,7 +37,7 @@ public abstract class AbstractSQLTest {
     
     private static final Map<String, DataSource> ACTUAL_DATA_SOURCES = new HashMap<>();
     
-    @BeforeClass
+    @BeforeAll
     public static synchronized void initializeDataSource() throws SQLException {
         for (String each : ACTUAL_DATA_SOURCE_NAMES) {
             createDataSources(each);

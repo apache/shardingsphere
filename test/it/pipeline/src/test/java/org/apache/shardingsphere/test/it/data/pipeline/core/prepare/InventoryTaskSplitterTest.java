@@ -31,10 +31,10 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -58,12 +58,12 @@ public final class InventoryTaskSplitterTest {
     
     private InventoryTaskSplitter inventoryTaskSplitter;
     
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
-    @Before
+    @BeforeEach
     public void setUp() throws ReflectiveOperationException {
         initJobItemContext();
         dumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
@@ -78,7 +78,7 @@ public final class InventoryTaskSplitterTest {
         dataSourceManager = (PipelineDataSourceManager) jobItemContext.getImporterConnector().getConnector();
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
         dataSourceManager.close();
     }
