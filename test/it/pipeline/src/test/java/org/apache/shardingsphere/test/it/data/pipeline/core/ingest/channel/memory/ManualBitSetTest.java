@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.ingest.channel.memo
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.ManualBitSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.BitSet;

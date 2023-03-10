@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.metadata.model;
 
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -35,7 +35,7 @@ public final class PipelineTableMetaDataTest {
     
     private PipelineTableMetaData pipelineTableMetaData;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         PipelineColumnMetaData column = new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true, true, true);
         pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap("test", column), Collections.emptySet());

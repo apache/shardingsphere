@@ -27,10 +27,10 @@ import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureImpor
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -46,12 +46,12 @@ public final class IncrementalTaskTest {
     
     private IncrementalTask incrementalTask;
     
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
-    @Before
+    @BeforeEach
     public void setUp() {
         MigrationTaskConfiguration taskConfig = PipelineContextUtil.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
@@ -61,15 +61,15 @@ public final class IncrementalTaskTest {
                 new FixtureInventoryIncrementalJobItemContext());
     }
     
+    @AfterEach
+    public void tearDown() {
+        incrementalTask.stop();
+    }
+    
     @Test
     public void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
         CompletableFuture.allOf(incrementalTask.start().toArray(new CompletableFuture[0])).get(10, TimeUnit.SECONDS);
         assertThat(incrementalTask.getTaskId(), is("ds_0"));
         assertThat(incrementalTask.getTaskProgress().getPosition(), instanceOf(PlaceholderPosition.class));
-    }
-    
-    @After
-    public void tearDown() {
-        incrementalTask.stop();
     }
 }
