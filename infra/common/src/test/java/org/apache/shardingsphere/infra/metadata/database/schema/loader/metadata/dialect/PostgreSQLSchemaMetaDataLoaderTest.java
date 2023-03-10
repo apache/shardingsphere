@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Sch
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;

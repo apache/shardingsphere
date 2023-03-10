@@ -29,7 +29,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
 @Slf4j
-// TODO merge MySQL,PostgreSQL increment task
+// TODO remove later
 public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private final DataSource dataSource;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.route.context;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,8 +31,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class RouteContextTest {
@@ -51,7 +51,7 @@ public final class RouteContextTest {
     
     private RouteContext notContainsTableShardingRouteContext;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         singleRouteContext = new RouteContext();
         multiRouteContext = new RouteContext();

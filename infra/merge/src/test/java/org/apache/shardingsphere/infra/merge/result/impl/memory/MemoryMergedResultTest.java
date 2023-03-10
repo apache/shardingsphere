@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.merge.result.impl.memory;
 
 import org.apache.shardingsphere.infra.merge.result.impl.memory.fixture.TestMemoryMergedResult;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -44,7 +44,7 @@ public final class MemoryMergedResultTest {
     
     private MemoryQueryResultRow memoryResultSetRow;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         memoryMergedResult = new TestMemoryMergedResult();
         memoryResultSetRow = memoryMergedResult.getMemoryQueryResultRow();

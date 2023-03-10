@@ -34,6 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @RequiredArgsConstructor
 @Slf4j
+// TODO remove later
 public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private static final KeyGenerateAlgorithm KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();

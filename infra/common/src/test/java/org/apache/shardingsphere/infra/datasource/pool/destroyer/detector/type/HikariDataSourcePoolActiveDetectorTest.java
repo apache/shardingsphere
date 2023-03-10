@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

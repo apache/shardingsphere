@@ -35,12 +35,12 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.Consistenc
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTableInventoryDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.MySQLIncrementTask;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.PostgreSQLIncrementTask;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
@@ -53,6 +53,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -70,8 +71,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -126,37 +125,34 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         }
         createOrderTableRule();
         try (Connection connection = getProxyDataSource().getConnection()) {
-            initSchemaAndTable(connection);
+            initSchemaAndTable(connection, 2);
         }
+        DataSource jdbcDataSource = generateShardingSphereDataSourceFromProxy();
         Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(getDatabaseType(), 20);
         log.info("init data begin: {}", LocalDateTime.now());
-        DataSourceExecuteUtil.execute(getProxyDataSource(), getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
+        DataSourceExecuteUtil.execute(jdbcDataSource, getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         log.info("init data end: {}", LocalDateTime.now());
         try (Connection connection = DriverManager.getConnection(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword())) {
-            initSchemaAndTable(connection);
+            initSchemaAndTable(connection, 0);
         }
         startCDCClient();
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !queryForListWithLog("SHOW STREAMING LIST").isEmpty());
-        if (getDatabaseType() instanceof MySQLDatabaseType) {
-            startIncrementTask(new MySQLIncrementTask(getProxyDataSource(), getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), 20));
-        } else {
-            startIncrementTask(new PostgreSQLIncrementTask(getProxyDataSource(), PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName(), 20));
-        }
+        String jobId = queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
+        waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
+        startIncrementTask(new E2EIncrementalTask(jdbcDataSource, getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
         getIncreaseTaskThread().join(10000);
         List<Map<String, Object>> actualProxyList;
-        try (Connection connection = getProxyDataSource().getConnection()) {
+        try (Connection connection = jdbcDataSource.getConnection()) {
             ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", getOrderTableNameWithSchema()));
             actualProxyList = transformResultSetToList(resultSet);
         }
-        Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> listOrderRecords(getOrderTableNameWithSchema()).size() == actualProxyList.size());
-        List<Map<String, Object>> actualImportedList = listOrderRecords(getOrderTableNameWithSchema());
-        assertThat(actualProxyList.size(), is(actualImportedList.size()));
+        Awaitility.await().atMost(20, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> listOrderRecords(getOrderTableNameWithSchema()).size() == actualProxyList.size());
         SchemaTableName schemaTableName = getDatabaseType().isSchemaAvailable()
                 ? new SchemaTableName(new SchemaName(PipelineBaseE2EIT.SCHEMA_NAME), new TableName(getSourceTableOrderName()))
                 : new SchemaTableName(new SchemaName(null), new TableName(getSourceTableOrderName()));
         PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword()),
                 getDatabaseType());
-        PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(generateShardingSphereDataSourceFromProxy(), getDatabaseType());
+        PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(jdbcDataSource, getDatabaseType());
         StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(PipelineBaseE2EIT.SCHEMA_NAME, "t_order");
         PipelineColumnMetaData primaryKeyMetaData = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
@@ -171,15 +167,14 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         proxyExecuteWithLog(CREATE_SHARDING_RULE_SQL, 2);
     }
     
-    private void initSchemaAndTable(final Connection connection) throws SQLException {
-        if (getDatabaseType().isSchemaAvailable()) {
-            String sql = String.format("CREATE SCHEMA %s", PipelineBaseE2EIT.SCHEMA_NAME);
-            log.info("create schema sql: {}", sql);
-            connection.createStatement().execute(sql);
-        }
+    private void initSchemaAndTable(final Connection connection, final int sleepSeconds) throws SQLException {
+        createSchema(connection, sleepSeconds);
         String sql = getExtraSQLCommand().getCreateTableOrder(getSourceTableOrderName());
         log.info("create table sql: {}", sql);
         connection.createStatement().execute(sql);
+        if (sleepSeconds > 0) {
+            ThreadUtil.sleep(sleepSeconds, TimeUnit.SECONDS);
+        }
     }
     
     private void startCDCClient() {

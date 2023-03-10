@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.props;
 
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;

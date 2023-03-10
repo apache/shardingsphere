@@ -45,7 +45,7 @@ public final class MySQLStringBinlogProtocolValue implements MySQLBinlogProtocol
             case MYSQL_TYPE_SET:
                 return payload.getByteBuf().readByte();
             case MYSQL_TYPE_STRING:
-                return payload.readStringFix(readActualLength(length, payload));
+                return new MySQLBinaryString(payload.readStringFixByBytes(readActualLength(length, payload)));
             default:
                 throw new UnsupportedSQLOperationException(MySQLBinaryColumnType.valueOf(type).toString());
         }

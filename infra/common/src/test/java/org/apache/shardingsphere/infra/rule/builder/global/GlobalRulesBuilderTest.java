@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRule;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;

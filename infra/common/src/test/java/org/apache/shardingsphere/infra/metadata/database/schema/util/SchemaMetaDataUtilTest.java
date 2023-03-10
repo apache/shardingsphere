@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
