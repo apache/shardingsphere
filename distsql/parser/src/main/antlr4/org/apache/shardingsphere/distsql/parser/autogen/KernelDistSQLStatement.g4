@@ -48,9 +48,11 @@ execute
     | importDatabaseConfiguration
     | exportMetaData
     | importMetaData
+    | exportStorageNodes
     | convertYamlConfiguration
     | showMigrationRule
     | alterMigrationRule
     | lockCluster
+    | unlockCluster
     ) SEMI?
     ;

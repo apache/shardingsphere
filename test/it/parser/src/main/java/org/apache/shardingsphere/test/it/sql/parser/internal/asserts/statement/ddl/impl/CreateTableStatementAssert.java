@@ -37,9 +37,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Create table statement assert.
@@ -87,9 +87,9 @@ public final class CreateTableStatementAssert {
     private static void assertCreateTableAsSelectStatement(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
         Optional<SelectStatement> selectStatement = CreateTableStatementHandler.getSelectStatement(actual);
         if (null == expected.getCreateTableAsSelectStatement()) {
-            assertFalse("actual select statement should not exist", selectStatement.isPresent());
+            assertFalse(selectStatement.isPresent(), "actual select statement should not exist");
         } else {
-            assertTrue("actual select statement should exist", selectStatement.isPresent());
+            assertTrue(selectStatement.isPresent(), "actual select statement should exist");
             SelectStatementAssert.assertIs(assertContext, selectStatement.get(), expected.getCreateTableAsSelectStatement());
         }
     }

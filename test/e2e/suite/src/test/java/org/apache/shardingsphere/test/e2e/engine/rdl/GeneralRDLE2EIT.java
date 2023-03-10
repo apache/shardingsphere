@@ -32,7 +32,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRDLE2EIT extends BaseRDLE2EIT {
@@ -48,7 +48,7 @@ public final class GeneralRDLE2EIT extends BaseRDLE2EIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        assertNotNull("Assertion SQL is required", getAssertion().getAssertionSQL());
+        assertNotNull(getAssertion().getAssertionSQL(), "Assertion SQL is required");
         try (Connection connection = getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(statement);

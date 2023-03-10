@@ -31,8 +31,8 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Create mask rule statement assert.
@@ -49,9 +49,9 @@ public final class CreateMaskRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateMaskRuleStatement actual, final CreateMaskRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
             assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(expected.isIfNotExists()));
             assertMaskRules(assertContext, actual.getRules(), expected.getRules());
         }
@@ -59,11 +59,10 @@ public final class CreateMaskRuleStatementAssert {
     
     private static void assertMaskRules(final SQLCaseAssertContext assertContext, final Collection<MaskRuleSegment> actual, final List<ExpectedMaskRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual mask rule should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual mask rule should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual mask rule should exist."), actual);
-            assertThat(assertContext.getText(String.format("Actual mask rule size should be %s, but it was %s",
-                    expected.size(), actual.size())), actual.size(), is(expected.size()));
+            assertNotNull(actual, assertContext.getText("Actual mask rule should exist."));
+            assertThat(assertContext.getText(String.format("Actual mask rule size should be %s, but it was %s", expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
             for (MaskRuleSegment each : actual) {
                 ExpectedMaskRule expectedMaskRule = expected.get(count);

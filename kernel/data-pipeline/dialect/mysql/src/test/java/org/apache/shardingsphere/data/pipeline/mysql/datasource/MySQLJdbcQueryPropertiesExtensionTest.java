@@ -27,7 +27,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class MySQLJdbcQueryPropertiesExtensionTest {
     
@@ -45,8 +45,9 @@ public final class MySQLJdbcQueryPropertiesExtensionTest {
     }
     
     private void assertQueryProperties(final Properties actual) {
-        assertThat(actual.size(), equalTo(7));
+        assertThat(actual.size(), equalTo(8));
         assertThat(actual.getProperty("useSSL"), equalTo(Boolean.FALSE.toString()));
+        assertThat(actual.getProperty("useServerPrepStmts"), equalTo(Boolean.FALSE.toString()));
         assertThat(actual.getProperty("rewriteBatchedStatements"), equalTo(Boolean.TRUE.toString()));
         assertThat(actual.getProperty("yearIsDateType"), equalTo(Boolean.FALSE.toString()));
         assertThat(actual.getProperty("zeroDateTimeBehavior"), equalTo("convertToNull"));

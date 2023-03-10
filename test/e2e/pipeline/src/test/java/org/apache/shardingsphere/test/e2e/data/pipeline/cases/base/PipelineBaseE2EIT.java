@@ -45,6 +45,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Rule;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -67,8 +68,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter(AccessLevel.PROTECTED)
 @Slf4j
@@ -248,6 +249,16 @@ public abstract class PipelineBaseE2EIT {
         return "t_order";
     }
     
+    protected void createSchema(final Connection connection, final int sleepSeconds) throws SQLException {
+        if (!getDatabaseType().isSchemaAvailable()) {
+            return;
+        }
+        connection.createStatement().execute(String.format("CREATE SCHEMA %s", SCHEMA_NAME));
+        if (sleepSeconds > 0) {
+            ThreadUtil.sleep(sleepSeconds, TimeUnit.SECONDS);
+        }
+    }
+    
     protected void createSourceOrderTable() throws SQLException {
         sourceExecuteWithLog(getExtraSQLCommand().getCreateTableOrder(getSourceTableOrderName()));
     }
@@ -338,14 +349,14 @@ public abstract class PipelineBaseE2EIT {
             Set<String> actualStatus = new HashSet<>();
             Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
             for (Map<String, Object> each : listJobStatus) {
-                assertTrue("error_message is not null", Strings.isNullOrEmpty(each.get("error_message").toString()));
+                assertTrue(Strings.isNullOrEmpty(each.get("error_message").toString()), "error_message is not null");
                 actualStatus.add(each.get("status").toString());
                 String incrementalIdleSeconds = each.get("incremental_idle_seconds").toString();
                 incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
             }
-            assertFalse("status is JobStatus.PREPARING_FAILURE", actualStatus.contains(JobStatus.PREPARING_FAILURE.name()));
-            assertFalse("status is JobStatus.EXECUTE_INVENTORY_TASK_FAILURE", actualStatus.contains(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
-            assertFalse("status is JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE", actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
+            assertFalse(actualStatus.contains(JobStatus.PREPARING_FAILURE.name()), "status is JobStatus.PREPARING_FAILURE");
+            assertFalse(actualStatus.contains(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()), "status is JobStatus.EXECUTE_INVENTORY_TASK_FAILURE");
+            assertFalse(actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()), "status is JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE");
             if (Collections.min(incrementalIdleSecondsList) <= 5) {
                 ThreadUtil.sleep(3, TimeUnit.SECONDS);
                 continue;
@@ -377,7 +388,7 @@ public abstract class PipelineBaseE2EIT {
             }
             ThreadUtil.sleep(2, TimeUnit.SECONDS);
         }
-        assertTrue("The insert record must exist after the stop", recordExist);
+        assertTrue(recordExist, "The insert record must exist after the stop");
     }
     
     protected int getTargetTableRecordsCount(final String tableName) {
@@ -389,13 +400,13 @@ public abstract class PipelineBaseE2EIT {
     protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) {
         String tableName = Strings.isNullOrEmpty(schema) ? "t_order" : String.format("%s.t_order", schema);
         int recordsCount = getTargetTableRecordsCount(tableName);
-        assertTrue("actual count " + recordsCount, recordsCount > tableInitRows);
+        assertTrue(recordsCount > tableInitRows, "actual count " + recordsCount);
     }
     
     // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
     protected DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
-        String dataSourceConfigText = queryForListWithLog("EXPORT DATABASE CONFIGURATION").get(0).get("result").toString();
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(dataSourceConfigText, YamlRootConfiguration.class);
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !getYamlRootConfig().getRules().isEmpty());
+        YamlRootConfiguration rootConfig = getYamlRootConfig();
         if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
             String sourceUrl = String.join(":", storageContainer.getNetworkAliases().get(0), Integer.toString(storageContainer.getExposedPort()));
@@ -408,5 +419,10 @@ public abstract class PipelineBaseE2EIT {
             each.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
         }
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
+    }
+    
+    private YamlRootConfiguration getYamlRootConfig() {
+        String result = queryForListWithLog("EXPORT DATABASE CONFIGURATION").get(0).get("result").toString();
+        return YamlEngine.unmarshal(result, YamlRootConfiguration.class);
     }
 }

@@ -27,7 +27,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.concurrent.ConcurrentMap;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

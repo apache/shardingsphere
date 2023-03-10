@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.SQLException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ExecutorExceptionHandlerTest {
     
-    @After
+    @AfterEach
     public void tearDown() throws NoSuchFieldException, IllegalAccessException {
         ((ThreadLocal<?>) Plugins.getMemberAccessor().get(SQLExecutorExceptionHandler.class.getDeclaredField("IS_EXCEPTION_THROWN"), SQLExecutorExceptionHandler.class)).remove();
     }

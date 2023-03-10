@@ -21,17 +21,25 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.agent.builder.AgentBuilder.Transformer;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
+import net.bytebuddy.pool.TypePool;
+import net.bytebuddy.pool.TypePool.Default;
 import net.bytebuddy.utility.JavaModule;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
+import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfigurationLoader;
+import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInterceptChainEngine;
 import org.apache.shardingsphere.agent.core.builder.interceptor.impl.MethodAdvisorBuilderInterceptor;
 import org.apache.shardingsphere.agent.core.builder.interceptor.impl.TargetAdviceObjectBuilderInterceptor;
+import org.apache.shardingsphere.agent.core.classloader.AgentExtraClassLoader;
 import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
+import org.apache.shardingsphere.agent.core.log.AgentLogger;
+import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginLifecycleServiceManager;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
 
 /**
@@ -39,6 +47,10 @@ import java.util.jar.JarFile;
  */
 @RequiredArgsConstructor
 public final class AgentTransformer implements Transformer {
+    
+    private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(AdvisorConfigurationLoader.class);
+    
+    private static final Map<AgentExtraClassLoader, TypePool> TYPE_POOL_MAP = new ConcurrentHashMap<>();
     
     private final Map<String, PluginConfiguration> pluginConfigs;
     
@@ -56,7 +68,24 @@ public final class AgentTransformer implements Transformer {
         }
         ClassLoaderContext classLoaderContext = new ClassLoaderContext(classLoader, pluginJars);
         PluginLifecycleServiceManager.init(pluginConfigs, pluginJars, classLoaderContext.getPluginClassLoader(), isEnhancedForProxy);
-        return AgentBuilderInterceptChainEngine.intercept(builder,
-                new TargetAdviceObjectBuilderInterceptor(), new MethodAdvisorBuilderInterceptor(typeDescription, classLoaderContext, advisorConfigs.get(typeDescription.getTypeName())));
+        return AgentBuilderInterceptChainEngine.intercept(builder, new TargetAdviceObjectBuilderInterceptor(),
+                new MethodAdvisorBuilderInterceptor(typeDescription, classLoaderContext, filterInvalidAdviceClass(advisorConfigs.get(typeDescription.getTypeName()), classLoaderContext)));
+    }
+    
+    private AdvisorConfiguration filterInvalidAdviceClass(final AdvisorConfiguration advisorConfig, final ClassLoaderContext classLoaderContext) {
+        AdvisorConfiguration result = new AdvisorConfiguration(advisorConfig.getTargetClassName());
+        for (MethodAdvisorConfiguration each : advisorConfig.getAdvisors()) {
+            if (isExist(each.getAdviceClassName(), classLoaderContext.getPluginClassLoader())) {
+                result.getAdvisors().add(each);
+                continue;
+            }
+            LOGGER.error("The advice class `{}` does not exist", each.getAdviceClassName());
+        }
+        return result;
+    }
+    
+    private boolean isExist(final String adviceClassName, final AgentExtraClassLoader pluginClassLoader) {
+        TypePool typePool = TYPE_POOL_MAP.get(pluginClassLoader);
+        return null == typePool ? TYPE_POOL_MAP.computeIfAbsent(pluginClassLoader, Default::of).describe(adviceClassName).isResolved() : typePool.describe(adviceClassName).isResolved();
     }
 }

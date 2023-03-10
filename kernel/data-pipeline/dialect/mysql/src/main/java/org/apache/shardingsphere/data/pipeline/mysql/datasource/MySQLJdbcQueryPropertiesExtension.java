@@ -35,6 +35,7 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
     
     public MySQLJdbcQueryPropertiesExtension() {
         queryProps.setProperty("useSSL", Boolean.FALSE.toString());
+        queryProps.setProperty("useServerPrepStmts", Boolean.FALSE.toString());
         queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
         queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
         queryProps.setProperty("zeroDateTimeBehavior", getZeroDateTimeBehavior());

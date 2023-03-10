@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.dis
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedShardingAuditor;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -42,7 +42,7 @@ public final class ShardingAuditorAssert {
      * @param expected expected sharding auditor test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShardingAuditorSegment actual, final ExpectedShardingAuditor expected) {
-        assertNotNull(assertContext.getText("Actual sharding auditor segment should exist."), actual.getAlgorithmSegment());
+        assertNotNull(actual.getAlgorithmSegment(), assertContext.getText("Actual sharding auditor segment should exist."));
         assertThat(actual.getAuditorName(), is(expected.getAuditorName()));
         AlgorithmAssert.assertIs(assertContext, actual.getAlgorithmSegment(), expected.getAlgorithmSegment());
     }

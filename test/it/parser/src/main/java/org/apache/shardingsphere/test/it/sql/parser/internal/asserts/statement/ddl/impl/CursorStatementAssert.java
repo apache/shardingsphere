@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CursorStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Cursor statement assert.
@@ -54,9 +54,9 @@ public final class CursorStatementAssert {
     
     private static void assertSelect(final SQLCaseAssertContext assertContext, final OpenGaussCursorStatement actual, final CursorStatementTestCase expected) {
         if (null == expected.getSelectTestCase()) {
-            assertNull(assertContext.getText("Actual select statement should not exist."), actual.getSelect());
+            assertNull(actual.getSelect(), assertContext.getText("Actual select statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual select statement should exist."), actual.getSelect());
+            assertNotNull(actual.getSelect(), assertContext.getText("Actual select statement should exist."));
             SelectStatementAssert.assertIs(assertContext, actual.getSelect(), expected.getSelectTestCase());
         }
     }

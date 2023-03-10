@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.database.metadata.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class SQLServerDataSourceMetaDataTest {
     

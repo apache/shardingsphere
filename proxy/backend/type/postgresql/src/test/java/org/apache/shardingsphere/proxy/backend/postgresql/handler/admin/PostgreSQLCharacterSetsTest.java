@@ -24,7 +24,7 @@ import java.nio.charset.UnsupportedCharsetException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class PostgreSQLCharacterSetsTest {
     

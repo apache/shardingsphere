@@ -12,11 +12,11 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 
 - `org.apache.shardingsphere:shardingsphere-db-protocol-core`，数据库协议核心
 - `org.apache.shardingsphere:shardingsphere-mysql-protocol`，数据库协议的 MySQL 实现
-- `org.apache.shardingsphere:shardingsphere-postgresql-protocol`，数据库协议的 PostgresSQL 实现
+- `org.apache.shardingsphere:shardingsphere-postgresql-protocol`，数据库协议的 PostgreSQL 实现
 - `org.apache.shardingsphere:shardingsphere-opengauss-protocol`，数据库协议的 OpenGauss 实现
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-core`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-mysql`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 MySQL 实现
-- `org.apache.shardingsphere:shardingsphere-proxy-frontend-postgresql`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 PostgresSQL 实现
+- `org.apache.shardingsphere:shardingsphere-proxy-frontend-postgresql`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 PostgreSQL 实现
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-opengauss`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 openGauss 实现
 - `org.apache.shardingsphere:shardingsphere-proxy-backend`，ShardingSphere Proxy 的后端
 - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper`，集群模式配置信息持久化定义的 zookeeper 实现 
@@ -28,12 +28,12 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - `org.apache.shardingsphere:shardingsphere-transaction-core`，XA 分布式事务管理器核心
 - `org.apache.shardingsphere:shardingsphere-sql-parser-sql92`，SQL 解析的 SQL 92 方言实现
 - `org.apache.shardingsphere:shardingsphere-sql-parser-mysql`，SQL 解析的 MySQL 方言实现
-- `org.apache.shardingsphere:shardingsphere-sql-parser-postgresql`，SQL 解析的 PostgresSQL 方言实现
+- `org.apache.shardingsphere:shardingsphere-sql-parser-postgresql`，SQL 解析的 PostgreSQL 方言实现
 - `org.apache.shardingsphere:shardingsphere-sql-parser-oracle`，SQL 解析的 Oracle 方言解析实现
 - `org.apache.shardingsphere:shardingsphere-sql-parser-sqlserver`，SQL 解析的 SQL Server 方言实现
 - `org.apache.shardingsphere:shardingsphere-sql-parser-opengauss`，SQL 解析的 OpenGauss 方言实现
 - `org.apache.shardingsphere:shardingsphere-mysql-dialect-exception`， 数据库网关的 MySQL 实现
-- `org.apache.shardingsphere:shardingsphere-postgresql-dialect-exception`，数据库网关的 PostgresSQL 实现
+- `org.apache.shardingsphere:shardingsphere-postgresql-dialect-exception`，数据库网关的 PostgreSQL 实现
 - `org.apache.shardingsphere:shardingsphere-authority-core`，用户权限加载逻辑核心
 - `org.apache.shardingsphere:shardingsphere-single-table-core`，单表（所有的分片数据源中仅唯一存在的表）核心
 - `org.apache.shardingsphere:shardingsphere-traffic-core`，流量治理核心

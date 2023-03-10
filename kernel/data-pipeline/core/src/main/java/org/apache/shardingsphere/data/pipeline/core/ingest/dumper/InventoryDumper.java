@@ -43,6 +43,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestExcep
 import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -101,7 +102,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName());
         try (Connection connection = dataSource.getConnection()) {
             dump(tableMetaData, connection);
-            log.info("Inventory dump done");
         } catch (final SQLException ex) {
             log.error("Inventory dump, ex caught, msg={}.", ex.getMessage());
             throw new IngestException("Inventory dump failed on " + dumperConfig.getActualTableName(), ex);
@@ -111,9 +111,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     }
     
     private void dump(final PipelineTableMetaData tableMetaData, final Connection connection) throws SQLException {
-        if (null != dumperConfig.getRateLimitAlgorithm()) {
-            dumperConfig.getRateLimitAlgorithm().intercept(JobOperationType.SELECT, 1);
-        }
         int batchSize = dumperConfig.getBatchSize();
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
         try (PreparedStatement preparedStatement = JDBCStreamQueryUtil.generateStreamQueryPreparedStatement(databaseType, connection, buildInventoryDumpSQL())) {
@@ -123,15 +120,22 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             }
             setParameters(preparedStatement);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                int rowCount = 0;
+                JobRateLimitAlgorithm rateLimitAlgorithm = dumperConfig.getRateLimitAlgorithm();
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 while (resultSet.next()) {
                     channel.pushRecord(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
+                    ++rowCount;
                     if (!isRunning()) {
                         log.info("Broke because of inventory dump is not running.");
                         break;
                     }
+                    if (null != rateLimitAlgorithm && 0 == rowCount % batchSize) {
+                        rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
+                    }
                 }
                 dumpStatement = null;
+                log.info("Inventory dump done, rowCount={}", rowCount);
             }
         }
     }
