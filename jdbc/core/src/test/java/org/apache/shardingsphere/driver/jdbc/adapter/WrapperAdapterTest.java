@@ -21,8 +21,8 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -38,7 +38,7 @@ public final class WrapperAdapterTest {
     
     private ShardingSphereDataSource wrapperAdapter;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         wrapperAdapter = new ShardingSphereDataSource(
                 DefaultDatabase.LOGIC_NAME, null, Collections.singletonMap("ds", new MockedDataSource()), Collections.singletonList(mock(RuleConfiguration.class)), new Properties());

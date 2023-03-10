@@ -20,8 +20,8 @@ package org.apache.shardingsphere.driver.jdbc.unsupported;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -45,7 +45,7 @@ public final class UnsupportedUpdateOperationResultSetTest {
     
     private ShardingSphereResultSet shardingSphereResultSet;
     
-    @Before
+    @BeforeEach
     public void init() throws SQLException {
         shardingSphereResultSet = new ShardingSphereResultSet(
                 Collections.singletonList(mock(ResultSet.class, RETURNS_DEEP_STUBS)), mock(MergedResult.class), mock(Statement.class), mock(ExecutionContext.class));
