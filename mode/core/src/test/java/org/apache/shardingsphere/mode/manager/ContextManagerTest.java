@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.mode.ModeContextManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -84,7 +85,9 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabases().values()).thenReturn(Collections.singleton(database));
-        contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
+        InstanceContext instanceContext = mock(InstanceContext.class);
+        when(instanceContext.getModeContextManager()).thenReturn(mock(ModeContextManager.class));
+        contextManager = new ContextManager(metaDataContexts, instanceContext);
     }
     
     private ShardingSphereDatabase mockDatabase() {

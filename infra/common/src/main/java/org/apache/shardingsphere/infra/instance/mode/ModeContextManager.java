@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.instance.mode;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaPOJO;
 
@@ -123,4 +124,12 @@ public interface ModeContextManager {
      * @param props pros
      */
     void alterProperties(Properties props);
+    
+    /**
+     * Get schemas.
+     *
+     * @param databaseName database name
+     * @return schemas
+     */
+    Map<String, ShardingSphereSchema> getSchemas(String databaseName);
 }

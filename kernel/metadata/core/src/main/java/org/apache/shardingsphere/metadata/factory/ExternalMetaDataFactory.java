@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database;
+package org.apache.shardingsphere.metadata.factory;
 
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -30,30 +31,29 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ShardingSphere databases factory.
+ * External meta data factory.
  */
-public final class ShardingSphereDatabasesFactory {
+public final class ExternalMetaDataFactory {
     
     /**
-     * Create databases.
+     * Create database meta data for db.
      *
      * @param databaseName database name
      * @param databaseConfig database configuration
-     * @param props properties
+     * @param props configuration properties
      * @param instanceContext instance context
-     * @return created database
+     * @return database meta data
      * @throws SQLException SQL exception
      */
     public static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
-        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseName, databaseConfig, props);
-        Map<String, DatabaseType> storageTypes = DatabaseTypeEngine.getStorageTypes(databaseName, databaseConfig);
-        return ShardingSphereDatabase.create(databaseName, protocolType, storageTypes, databaseConfig, props, instanceContext);
+        return ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseName, databaseConfig, props),
+                DatabaseTypeEngine.getStorageTypes(databaseName, databaseConfig), databaseConfig, props, instanceContext);
     }
     
     /**
-     * Create databases.
-     * 
+     * Create databases meta data for db.
+     *
      * @param databaseConfigMap database configuration map
      * @param props properties
      * @param instanceContext instance context
