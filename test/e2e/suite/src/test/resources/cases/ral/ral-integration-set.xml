@@ -17,9 +17,7 @@
   -->
 
 <integration-test-cases>
-    <!-- TODO fix this bug in #24540 -->
-    <!--
-    <test-case sql="SET DIST VARIABLE sql_show = true;">
+    <!--<test-case sql="SET DIST VARIABLE sql_show = true;">
         <assertion expected-data-file="set_dist_variable_sql_show_equal_true.xml">
             <initial-sql sql="SET DIST VARIABLE sql_show = true;" />
             <assertion-sql sql="SHOW DIST VARIABLE WHERE name = sql_show;" />
