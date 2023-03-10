@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class PostgreSQLFrontendContextTest {
     

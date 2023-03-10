@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.protocol;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class MySQLMySQLBinaryProtocolValueFactoryTest {
     
@@ -156,8 +157,8 @@ public final class MySQLMySQLBinaryProtocolValueFactoryTest {
         assertNull(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_NULL));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGetBinaryProtocolValueWithUnsupportedType() {
-        MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(null);
+        assertThrows(IllegalArgumentException.class, () -> MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(null));
     }
 }

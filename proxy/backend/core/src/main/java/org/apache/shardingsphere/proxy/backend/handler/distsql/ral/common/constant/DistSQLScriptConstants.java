@@ -139,9 +139,7 @@ public final class DistSQLScriptConstants {
     
     public static final String READWRITE_SPLITTING_FOR_DYNAMIC = " %s ("
             + System.lineSeparator()
-            + "AUTO_AWARE_RESOURCE=%s,"
-            + System.lineSeparator()
-            + "WRITE_DATA_SOURCE_QUERY_ENABLED=%s%s"
+            + "AUTO_AWARE_RESOURCE=%s"
             + System.lineSeparator()
             + ")";
     

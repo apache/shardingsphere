@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.util.exception.external.sql.type.feature;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
@@ -27,7 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class FeatureSQLExceptionTest {
     
-    @SuppressWarnings("serial")
     @Test
     public void assertToSQLException() {
         SQLException actual = new FeatureSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, "reason") {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.collector.type
 import io.prometheus.client.Gauge;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;

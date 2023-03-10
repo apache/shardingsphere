@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -46,7 +46,7 @@ public final class LimitClauseAssert {
      */
     public static void assertOffset(final SQLCaseAssertContext assertContext, final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
         if (null == actual) {
-            assertNull(assertContext.getText("Offset should not exist."), expected);
+            assertNull(expected, assertContext.getText("Offset should not exist."));
             return;
         }
         if (actual instanceof ParameterMarkerPaginationValueSegment) {
@@ -67,7 +67,7 @@ public final class LimitClauseAssert {
      */
     public static void assertRowCount(final SQLCaseAssertContext assertContext, final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
         if (null == actual) {
-            assertNull(assertContext.getText("Row count should not exist."), expected);
+            assertNull(expected, assertContext.getText("Row count should not exist."));
             return;
         }
         if (SQLCaseType.Placeholder == assertContext.getCaseType()) {

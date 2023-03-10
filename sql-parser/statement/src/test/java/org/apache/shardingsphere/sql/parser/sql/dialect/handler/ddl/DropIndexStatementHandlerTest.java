@@ -29,8 +29,8 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class DropIndexStatementHandlerTest {
     
@@ -72,7 +72,7 @@ public final class DropIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertIfExistsForPostgres() {
+    public void assertIfExistsForPostgreSQL() {
         assertFalse(DropIndexStatementHandler.ifExists(new PostgreSQLDropIndexStatement(false)));
         assertTrue(DropIndexStatementHandler.ifExists(new PostgreSQLDropIndexStatement(true)));
     }

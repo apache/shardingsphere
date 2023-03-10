@@ -30,11 +30,11 @@ import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigur
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,33 +55,33 @@ public final class UnsupportedOperationStatementTest {
         shardingSphereStatement = new ShardingSphereStatement(connection);
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertAddBatch() throws SQLException {
-        shardingSphereStatement.addBatch("");
+    @Test
+    public void assertAddBatch() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.addBatch(""));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertClearBatch() throws SQLException {
-        shardingSphereStatement.clearBatch();
+    @Test
+    public void assertClearBatch() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.clearBatch());
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertExecuteBatch() throws SQLException {
-        shardingSphereStatement.executeBatch();
+    @Test
+    public void assertExecuteBatch() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.executeBatch());
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertCloseOnCompletion() throws SQLException {
-        shardingSphereStatement.closeOnCompletion();
+    @Test
+    public void assertCloseOnCompletion() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.closeOnCompletion());
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertIsCloseOnCompletion() throws SQLException {
-        shardingSphereStatement.isCloseOnCompletion();
+    @Test
+    public void assertIsCloseOnCompletion() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.isCloseOnCompletion());
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetCursorName() throws SQLException {
-        shardingSphereStatement.setCursorName("cursorName");
+    @Test
+    public void assertSetCursorName() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.setCursorName("cursorName"));
     }
 }

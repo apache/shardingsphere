@@ -27,8 +27,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -45,9 +45,9 @@ public final class CheckMigrationStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CheckMigrationStatement actual, final CheckMigrationStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
             JobIdAssert.assertJobId(assertContext, actual.getJobId(), expected.getJobId());
             assertTypeStrategy(assertContext, actual.getTypeStrategy(), expected.getTableStrategies());
         }
@@ -55,9 +55,9 @@ public final class CheckMigrationStatementAssert {
     
     private static void assertTypeStrategy(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final List<ExpectedAlgorithm> expected) {
         if (expected.isEmpty()) {
-            assertNull(assertContext.getText("Actual type strategy should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual type strategy should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual type strategy should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual type strategy should exist."));
             assertThat(assertContext.getText("Type strategy assertion error"), actual.getName(), is(expected.iterator().next().getName()));
         }
     }

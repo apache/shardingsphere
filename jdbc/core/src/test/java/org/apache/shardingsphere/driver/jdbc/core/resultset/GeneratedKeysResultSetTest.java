@@ -28,9 +28,10 @@ import java.sql.Statement;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class GeneratedKeysResultSetTest {
@@ -63,10 +64,10 @@ public final class GeneratedKeysResultSetTest {
         assertTrue(actualResultSet.isClosed());
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertThrowExceptionWhenInvokeClosedResultSet() {
         actualResultSet.close();
-        actualResultSet.getType();
+        assertThrows(IllegalStateException.class, () -> actualResultSet.getType());
     }
     
     @Test

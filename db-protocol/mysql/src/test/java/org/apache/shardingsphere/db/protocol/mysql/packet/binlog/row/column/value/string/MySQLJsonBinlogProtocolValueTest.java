@@ -23,17 +23,21 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQ
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLJsonValueDecoder.JsonValueTypes;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class MySQLJsonBinlogProtocolValueTest {
     
     private static final String KEY = "key";
@@ -51,7 +55,7 @@ public final class MySQLJsonBinlogProtocolValueTest {
     
     private MySQLBinlogColumnDef columnDef;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MySQL_TYPE_JSON);
         when(payload.getByteBuf()).thenReturn(byteBuf);
@@ -101,9 +105,9 @@ public final class MySQLJsonBinlogProtocolValueTest {
         assertThat(new MySQLJsonBinlogProtocolValue().read(columnDef, payload), is(EXPECTED_JSON));
     }
     
-    @Test(expected = UnsupportedSQLOperationException.class)
+    @Test
     public void assertReadJsonValueWithIllegalMeta() {
         columnDef.setColumnMeta(5);
-        new MySQLJsonBinlogProtocolValue().read(columnDef, payload);
+        assertThrows(UnsupportedSQLOperationException.class, () -> new MySQLJsonBinlogProtocolValue().read(columnDef, payload));
     }
 }

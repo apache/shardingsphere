@@ -117,7 +117,7 @@
         <!-- Imports -->
         <module name="AvoidStarImport" />
         <module name="AvoidStaticImport">
-            <property name="excludes" value="org.junit.Assert.*,org.hamcrest.Matchers.*,org.hamcrest.CoreMatchers.*,org.hamcrest.MatcherAssert.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*" />
+            <property name="excludes" value="org.junit.jupiter.api.Assertions.*,org.junit.jupiter.api.Assumptions.*,org.junit.Assert.*,org.hamcrest.Matchers.*,org.hamcrest.CoreMatchers.*,org.hamcrest.MatcherAssert.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*" />
         </module>
         <module name="IllegalImport">
             <property name="illegalClasses" value="org.mockito.junit.MockitoJUnitRunner.Silent" />
@@ -256,7 +256,7 @@
         -->
         <module name="JavadocMethod">
             <property name="scope" value="public" />
-            <property name="allowedAnnotations" value="Override, Test, Before, After, BeforeClass, AfterClass, Parameterized, Parameters" />
+            <property name="allowedAnnotations" value="Override, Test, Before, After, BeforeClass, AfterClass, Parameterized, Parameters, BeforeEach, AfterEach, BeforeAll, AfterAll, ParameterizedTest" />
             <property name="ignoreMethodNamesRegex" value="^assert.*$|^verify.*$" />
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF" />
         </module>

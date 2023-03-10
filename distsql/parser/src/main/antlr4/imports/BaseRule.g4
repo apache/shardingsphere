@@ -62,3 +62,7 @@ resourceName
 storageUnitName
     : IDENTIFIER_
     ;
+
+metadata
+    : STRING_
+    ;

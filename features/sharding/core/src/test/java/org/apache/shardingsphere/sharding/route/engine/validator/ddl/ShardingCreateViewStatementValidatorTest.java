@@ -33,20 +33,24 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class ShardingCreateViewStatementValidatorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -64,7 +68,7 @@ public final class ShardingCreateViewStatementValidatorTest {
     @Mock
     private SelectStatement selectStatement;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         when(createViewStatementContext.getSqlStatement()).thenReturn(createViewStatement);
         when(createViewStatement.getSelect()).thenReturn(selectStatement);
@@ -79,13 +83,14 @@ public final class ShardingCreateViewStatementValidatorTest {
                 mock(ConfigurationProperties.class));
     }
     
-    @Test(expected = EngagedViewException.class)
+    @Test
     public void assertPreValidateCreateViewWithException() {
         when(shardingRule.isShardingTable(any())).thenReturn(true);
         when(shardingRule.isAllBindingTables(any())).thenReturn(false);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
         when(props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE)).thenReturn("NONE");
-        new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), props);
+        assertThrows(EngagedViewException.class,
+                () -> new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), props));
     }
     
     @Test
@@ -96,21 +101,23 @@ public final class ShardingCreateViewStatementValidatorTest {
                 mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = UnsupportedCreateViewException.class)
+    @Test
     public void assertPostValidateCreateViewWithException() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.isDistinctRow()).thenReturn(true);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        new ShardingCreateViewStatementValidator().postValidate(
-                shardingRule, createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext);
+        assertThrows(UnsupportedCreateViewException.class,
+                () -> new ShardingCreateViewStatementValidator().postValidate(shardingRule,
+                        createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
     
-    @Test(expected = EngagedViewException.class)
+    @Test
     public void assertPreValidateCreateViewWithBroadcastTable() {
         when(shardingRule.isAllBroadcastTables(any())).thenReturn(true);
         when(shardingRule.isBroadcastTable("order_view")).thenReturn(false);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
         when(props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE)).thenReturn("NONE");
-        new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), props);
+        assertThrows(EngagedViewException.class,
+                () -> new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), props));
     }
 }

@@ -31,8 +31,8 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Register storage unit statement assert.
@@ -49,9 +49,9 @@ public final class RegisterStorageUnitStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RegisterStorageUnitStatement actual, final RegisterStorageUnitStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
             assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(expected.isIfNotExists()));
             assertDataSources(assertContext, actual.getStorageUnits(), expected.getDataSources());
         }
@@ -59,9 +59,9 @@ public final class RegisterStorageUnitStatementAssert {
     
     private static void assertDataSources(final SQLCaseAssertContext assertContext, final Collection<DataSourceSegment> actual, final List<ExpectedDataSource> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual storage unit should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual storage unit should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual storage unit should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual storage unit should exist."));
             assertThat(assertContext.getText(String.format("Actual storage unit size should be %s , but it was %s", expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
             for (DataSourceSegment actualDataSource : actual) {

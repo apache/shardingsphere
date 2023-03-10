@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.context;
 
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

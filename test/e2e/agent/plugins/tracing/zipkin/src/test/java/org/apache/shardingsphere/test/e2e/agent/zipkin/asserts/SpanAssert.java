@@ -33,9 +33,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Span assert.
@@ -60,14 +60,14 @@ public final class SpanAssert {
         Collection<String> actualTags = spanResults.stream().flatMap(each -> each.getTags().keySet().stream()).collect(Collectors.toSet());
         Collection<String> expectedTags = expected.getTagCases().stream().map(TagAssertion::getTagKey).collect(Collectors.toSet());
         Collection<String> nonExistentTags = expectedTags.stream().filter(each -> !actualTags.contains(each)).collect(Collectors.toSet());
-        assertTrue(String.format("The tags `%s` does not exist in `%s` span", nonExistentTags, expected.getSpanName()), nonExistentTags.isEmpty());
+        assertTrue(nonExistentTags.isEmpty(), String.format("The tags `%s` does not exist in `%s` span", nonExistentTags, expected.getSpanName()));
     }
     
     private static void assertTagValue(final String baseUrl, final SpanTestCase expected, final TagAssertion expectedTagCase) {
         String baseTraceApiUrl = String.format("%s/api/v2/traces?serviceName=%s&spanName=%s&annotationQuery=%s&limit=%s", baseUrl, getEncodeValue(expected.getServiceName()),
                 getEncodeValue(expected.getSpanName()), getEncodeValue(String.format("%s=%s", expectedTagCase.getTagKey(), expectedTagCase.getTagValue())), 1000);
         Collection<SpanResult> spanResults = getSpanResults(expected, baseTraceApiUrl);
-        assertFalse(String.format("The tag `%s`=`%s` does not exist in `%s` span", expectedTagCase.getTagKey(), expectedTagCase.getTagValue(), expected.getSpanName()), spanResults.isEmpty());
+        assertFalse(spanResults.isEmpty(), String.format("The tag `%s`=`%s` does not exist in `%s` span", expectedTagCase.getTagKey(), expectedTagCase.getTagValue(), expected.getSpanName()));
     }
     
     @SneakyThrows(UnsupportedEncodingException.class)

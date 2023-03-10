@@ -35,12 +35,14 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -57,15 +59,16 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class SelectInformationSchemataExecutorTest {
     
     private final Grantee grantee = new Grantee("root", "127.0.0.1");
@@ -77,7 +80,7 @@ public final class SelectInformationSchemataExecutorTest {
     @Mock
     private ConnectionSession connectionSession;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         when(connectionSession.getGrantee()).thenReturn(grantee);
         statement = (SelectStatement) new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).getSQLParserEngine("MySQL").parse(sql, false);
@@ -85,15 +88,13 @@ public final class SelectInformationSchemataExecutorTest {
     
     @Test
     public void assertExecuteWithUnauthorizedDatabase() throws SQLException {
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         ContextManager contextManager = mockContextManager(createDatabase("no_auth_db"));
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("no_auth_db"));
-            executor.execute(connectionSession);
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
-            assertFalse(executor.getMergedResult().next());
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("no_auth_db"));
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
+        executor.execute(connectionSession);
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
+        assertFalse(executor.getMergedResult().next());
     }
     
     @Test
@@ -101,48 +102,42 @@ public final class SelectInformationSchemataExecutorTest {
         Map<String, String> expectedResultSetMap = new HashMap<>(2, 1);
         expectedResultSetMap.put("SCHEMA_NAME", "foo_ds");
         expectedResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         ShardingSphereDatabase database = createDatabase(expectedResultSetMap);
         ContextManager contextManager = mockContextManager(database);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
-            proxyContext.when(() -> ProxyContext.getInstance().getDatabase("auth_db")).thenReturn(database);
-            executor.execute(connectionSession);
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
-            assertTrue(executor.getMergedResult().next());
-            assertThat(executor.getMergedResult().getValue(1, String.class), is("auth_db"));
-            assertThat(executor.getMergedResult().getValue(2, String.class), is("utf8mb4"));
-            assertFalse(executor.getMergedResult().next());
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
+        when(ProxyContext.getInstance().getDatabase("auth_db")).thenReturn(database);
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
+        executor.execute(connectionSession);
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+        assertTrue(executor.getMergedResult().next());
+        assertThat(executor.getMergedResult().getValue(1, String.class), is("auth_db"));
+        assertThat(executor.getMergedResult().getValue(2, String.class), is("utf8mb4"));
+        assertFalse(executor.getMergedResult().next());
     }
     
     @Test
     public void assertExecuteWithAuthorizedDatabaseAndEmptyResource() throws SQLException {
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         ContextManager contextManager = mockContextManager(createDatabase("auth_db"));
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
-            executor.execute(connectionSession);
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
-            assertTrue(executor.getMergedResult().next());
-            assertThat(executor.getMergedResult().getValue(1, String.class), is("auth_db"));
-            assertThat(executor.getMergedResult().getValue(2, String.class), is(""));
-            assertFalse(executor.getMergedResult().next());
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
+        executor.execute(connectionSession);
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+        assertTrue(executor.getMergedResult().next());
+        assertThat(executor.getMergedResult().getValue(1, String.class), is("auth_db"));
+        assertThat(executor.getMergedResult().getValue(2, String.class), is(""));
+        assertFalse(executor.getMergedResult().next());
     }
     
     @Test
     public void assertExecuteWithoutDatabase() throws SQLException {
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
         ContextManager contextManager = mockContextManager();
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            proxyContext.when(() -> ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.emptyList());
-            executor.execute(connectionSession);
-            assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.emptyList());
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
+        executor.execute(connectionSession);
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }
     
     private ContextManager mockContextManager(final ShardingSphereDatabase... databases) {

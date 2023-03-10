@@ -37,7 +37,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ParallelRunningStrategy(ParallelLevel.CASE)
 public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
@@ -175,7 +175,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
                 Connection connection = getTargetDataSource().getConnection();
                 Statement statement = 2 == resultSetTypes.length ? connection.createStatement(resultSetTypes[0], resultSetTypes[1])
                         : connection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2])) {
-            assertTrue("Not a query statement.", statement.execute(getSQL()));
+            assertTrue(statement.execute(getSQL()), "Not a query statement.");
             ResultSet resultSet = statement.getResultSet();
             assertResultSet(resultSet);
         }
@@ -200,7 +200,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
                         : actualConnection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2]);
                 Statement expectedStatement = 2 == resultSetTypes.length ? expectedConnection.createStatement(resultSetTypes[0], resultSetTypes[1])
                         : expectedConnection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2])) {
-            assertTrue("Not a query statement.", actualStatement.execute(getSQL()) && expectedStatement.execute(getSQL()));
+            assertTrue(actualStatement.execute(getSQL()) && expectedStatement.execute(getSQL()), "Not a query statement.");
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
                     ResultSet expectedResultSet = expectedStatement.getResultSet()) {
@@ -220,7 +220,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
                 expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a query statement.", actualPreparedStatement.execute() && expectedPreparedStatement.execute());
+            assertTrue(actualPreparedStatement.execute() && expectedPreparedStatement.execute(), "Not a query statement.");
             try (
                     ResultSet actualResultSet = actualPreparedStatement.getResultSet();
                     ResultSet expectedResultSet = expectedPreparedStatement.getResultSet()) {

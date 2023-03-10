@@ -97,15 +97,6 @@ public final class DataNode {
     }
     
     /**
-     * Get formatted text length.
-     *
-     * @return formatted text length
-     */
-    public int getFormattedTextLength() {
-        return dataSourceName.length() + DELIMITER.length() + tableName.length();
-    }
-    
-    /**
      * Is Actual data nodes three tier structure.
      *
      * @param actualDataNodes data source map

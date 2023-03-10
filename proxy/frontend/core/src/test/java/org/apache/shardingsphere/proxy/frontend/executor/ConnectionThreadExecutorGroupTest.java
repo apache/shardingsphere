@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.executor;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public final class ConnectionThreadExecutorGroupTest {
     

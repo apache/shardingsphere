@@ -104,4 +104,9 @@ public final class NativeContainerComposer extends BaseContainerComposer {
     public String getProxyJdbcUrl(final String databaseName) {
         return DataSourceEnvironment.getURL(databaseType, "localhost", 3307, databaseName);
     }
+    
+    @Override
+    public int getProxyCDCPort() {
+        return 33071;
+    }
 }

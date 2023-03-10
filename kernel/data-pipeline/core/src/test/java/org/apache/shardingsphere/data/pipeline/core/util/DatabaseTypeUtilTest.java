@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class DatabaseTypeUtilTest {
     
@@ -32,7 +32,7 @@ public final class DatabaseTypeUtilTest {
     public void assertGetBranchDatabaseTypes() {
         Set<String> trunkDatabaseTypes = Collections.singleton(new MySQLDatabaseType().getType());
         Collection<String> actual = DatabaseTypeUtil.getTrunkAndBranchDatabaseTypes(trunkDatabaseTypes);
-        assertTrue("MySQL not present", actual.contains("MySQL"));
-        assertTrue("MariaDB not present", actual.contains("MariaDB"));
+        assertTrue(actual.contains("MySQL"), "MySQL not present");
+        assertTrue(actual.contains("MariaDB"), "MariaDB not present");
     }
 }

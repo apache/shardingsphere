@@ -37,7 +37,6 @@ rules:
     <data_source_name> (+): # Logic data source name of readwrite-splitting
       dynamic_strategy: # Readwrite-splitting type
         auto_aware_data_source_name: # Database discovery logic data source name
-        write_data_source_query_enabled: # All read data source are offline, write data source whether the data source is responsible for read traffic
       loadBalancerName: # Load balance algorithm name
   
   # Load balance algorithm configuration

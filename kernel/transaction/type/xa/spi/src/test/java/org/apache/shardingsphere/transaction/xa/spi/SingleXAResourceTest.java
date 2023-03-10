@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.transaction.xa.spi;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class SingleXAResourceTest {
     
     @Mock
@@ -41,7 +41,7 @@ public final class SingleXAResourceTest {
     
     private SingleXAResource singleXAResource;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         singleXAResource = new SingleXAResource("ds1", xaResource);
     }

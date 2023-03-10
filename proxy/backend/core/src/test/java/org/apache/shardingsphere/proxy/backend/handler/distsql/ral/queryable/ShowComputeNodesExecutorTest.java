@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.junit.Test;
 
@@ -92,7 +92,7 @@ public final class ShowComputeNodesExecutorTest {
     private InstanceContext createStandaloneInstanceContext() {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getInstance().getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3308", "127.0.0.1@3308", "foo_version"));
-        when(result.getInstance().getState()).thenReturn(new StateContext());
+        when(result.getInstance().getState()).thenReturn(new InstanceStateContext());
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties())));
         when(result.getInstance().getWorkerId()).thenReturn(0);
         return result;
@@ -103,7 +103,7 @@ public final class ShowComputeNodesExecutorTest {
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class, RETURNS_DEEP_STUBS);
         when(computeNodeInstance.getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3309", "127.0.0.1@3309", "foo_version"));
-        when(computeNodeInstance.getState()).thenReturn(new StateContext());
+        when(computeNodeInstance.getState()).thenReturn(new InstanceStateContext());
         when(computeNodeInstance.getWorkerId()).thenReturn(1);
         when(result.getAllClusterInstances()).thenReturn(Collections.singleton(computeNodeInstance));
         return result;

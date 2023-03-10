@@ -21,52 +21,52 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSph
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class UnsupportedOperationParameterMetaTest {
     
     private final ShardingSphereParameterMetaData shardingSphereParameterMetaData = new ShardingSphereParameterMetaData(mock(SQLStatement.class));
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertIsNullable() throws SQLException {
-        shardingSphereParameterMetaData.getParameterClassName(1);
+    @Test
+    public void assertIsNullable() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereParameterMetaData.getParameterClassName(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertIsSigned() throws SQLException {
-        shardingSphereParameterMetaData.isSigned(1);
+    @Test
+    public void assertIsSigned() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereParameterMetaData.isSigned(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetPrecision() throws SQLException {
-        shardingSphereParameterMetaData.getPrecision(1);
+    @Test
+    public void assertGetPrecision() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereParameterMetaData.getPrecision(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetScale() throws SQLException {
-        shardingSphereParameterMetaData.getScale(1);
+    @Test
+    public void assertGetScale() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereParameterMetaData.getScale(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetParameterType() throws SQLException {
-        shardingSphereParameterMetaData.getParameterType(1);
+    @Test
+    public void assertGetParameterType() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereParameterMetaData.getParameterType(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetParameterTypeName() throws SQLException {
-        shardingSphereParameterMetaData.getParameterTypeName(1);
+    @Test
+    public void assertGetParameterTypeName() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereParameterMetaData.getParameterTypeName(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetParameterClassName() throws SQLException {
-        shardingSphereParameterMetaData.getParameterClassName(1);
+    @Test
+    public void assertGetParameterClassName() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereParameterMetaData.getParameterClassName(1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetParameterMode() throws SQLException {
-        shardingSphereParameterMetaData.getParameterMode(1);
+    @Test
+    public void assertGetParameterMode() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereParameterMetaData.getParameterMode(1));
     }
 }

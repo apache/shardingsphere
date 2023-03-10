@@ -40,6 +40,7 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -116,8 +117,8 @@ public final class ShowDistVariableExecutorTest {
         assertThat(row.getCell(2), is("false"));
     }
     
-    @Test(expected = UnsupportedVariableException.class)
+    @Test
     public void assertExecuteWithInvalidVariableName() {
-        new ShowDistVariableExecutor().getRows(metaData, connectionSession, new ShowDistVariableStatement("wrong_name"));
+        assertThrows(UnsupportedVariableException.class, () -> new ShowDistVariableExecutor().getRows(metaData, connectionSession, new ShowDistVariableStatement("wrong_name")));
     }
 }

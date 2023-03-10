@@ -33,8 +33,9 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class DataRecordMergerTest {
     
@@ -46,18 +47,18 @@ public final class DataRecordMergerTest {
     
     private Collection<DataRecord> actual;
     
-    @Test(expected = PipelineUnexpectedDataRecordOrderException.class)
+    @Test
     public void assertInsertBeforeInsert() {
         beforeDataRecord = mockInsertDataRecord(1, 1, 1);
         afterDataRecord = mockInsertDataRecord(1, 1, 1);
-        actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertThrows(PipelineUnexpectedDataRecordOrderException.class, () -> dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
     }
     
-    @Test(expected = PipelineUnexpectedDataRecordOrderException.class)
+    @Test
     public void assertUpdateBeforeInsert() {
         beforeDataRecord = mockUpdateDataRecord(1, 2, 2);
         afterDataRecord = mockInsertDataRecord(1, 1, 1);
-        actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertThrows(PipelineUnexpectedDataRecordOrderException.class, () -> dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
     }
     
     @Test
@@ -159,11 +160,11 @@ public final class DataRecordMergerTest {
         assertThat(dataRecord.getColumn(2).getValue(), is(2));
     }
     
-    @Test(expected = UnsupportedSQLOperationException.class)
+    @Test
     public void assertDeleteBeforeUpdate() {
         beforeDataRecord = mockDeleteDataRecord(1, 1, 1);
         afterDataRecord = mockUpdateDataRecord(1, 2, 2);
-        actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertThrows(UnsupportedSQLOperationException.class, () -> dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
     }
     
     @Test
@@ -199,11 +200,11 @@ public final class DataRecordMergerTest {
         assertThat(dataRecord.getColumn(2).getValue(), is(1));
     }
     
-    @Test(expected = PipelineUnexpectedDataRecordOrderException.class)
+    @Test
     public void assertDeleteBeforeDelete() {
         beforeDataRecord = mockDeleteDataRecord(1, 1, 1);
         afterDataRecord = mockDeleteDataRecord(1, 1, 1);
-        actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertThrows(PipelineUnexpectedDataRecordOrderException.class, () -> dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
     }
     
     @Test

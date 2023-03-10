@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingR
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,13 +37,14 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngineTest {
     
-    @After
+    @AfterEach
     public void tearDown() {
         HintManager.clear();
     }
@@ -86,11 +87,11 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
-    @Test(expected = ShardingRouteAlgorithmException.class)
+    @Test
     public void assertRouteByErrorShardingTableStrategy() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createErrorShardingConditions("t_order"),
                 mock(SQLStatementContext.class), new HintValueContext());
-        standardRoutingEngine.route(createErrorShardingRule());
+        assertThrows(ShardingRouteAlgorithmException.class, () -> standardRoutingEngine.route(createErrorShardingRule()));
     }
     
     @Test

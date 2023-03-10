@@ -20,12 +20,13 @@ package org.apache.shardingsphere.infra.util.props;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyEnumFixture;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class TypedPropertyValueTest {
     
@@ -46,9 +47,9 @@ public final class TypedPropertyValueTest {
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.INT_OBJECT_VALUE, "1000").getValue(), is(1000));
     }
     
-    @Test(expected = TypedPropertyValueException.class)
-    public void assertGetInvalidIntValue() throws TypedPropertyValueException {
-        new TypedPropertyValue(TypedPropertyKeyFixture.INT_VALUE, "test");
+    @Test
+    public void assertGetInvalidIntValue() {
+        assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(TypedPropertyKeyFixture.INT_VALUE, "test"));
     }
     
     @Test
@@ -57,9 +58,9 @@ public final class TypedPropertyValueTest {
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.LONG_OBJECT_VALUE, "10000").getValue(), is(10000L));
     }
     
-    @Test(expected = TypedPropertyValueException.class)
-    public void assertGetInvalidLongValue() throws TypedPropertyValueException {
-        new TypedPropertyValue(TypedPropertyKeyFixture.LONG_VALUE, "test");
+    @Test
+    public void assertGetInvalidLongValue() {
+        assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(TypedPropertyKeyFixture.LONG_VALUE, "test"));
     }
     
     @Test
@@ -72,8 +73,8 @@ public final class TypedPropertyValueTest {
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.ENUM_VALUE, TypedPropertyEnumFixture.FOO.name()).getValue(), is(TypedPropertyEnumFixture.FOO));
     }
     
-    @Test(expected = TypedPropertyValueException.class)
-    public void assertGetInvalidEnumValue() throws TypedPropertyValueException {
-        new TypedPropertyValue(TypedPropertyKeyFixture.ENUM_VALUE, "BAR");
+    @Test
+    public void assertGetInvalidEnumValue() {
+        assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(TypedPropertyKeyFixture.ENUM_VALUE, "BAR"));
     }
 }

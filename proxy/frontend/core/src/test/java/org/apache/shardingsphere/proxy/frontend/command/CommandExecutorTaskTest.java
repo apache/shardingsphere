@@ -37,13 +37,13 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -51,15 +51,14 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 public final class CommandExecutorTaskTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -99,7 +98,7 @@ public final class CommandExecutorTaskTest {
     @Mock
     private FrontendContext frontendContext;
     
-    @Before
+    @BeforeEach
     public void setup() {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(handlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
@@ -113,13 +112,11 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(
-                    new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
-            actual.run();
-            verify(queryCommandExecutor).close();
-            verify(backendConnection).closeExecutionResources();
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(
+                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
+        actual.run();
+        verify(queryCommandExecutor).close();
+        verify(backendConnection).closeExecutionResources();
     }
     
     @SuppressWarnings("unchecked")
@@ -131,16 +128,14 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(
-                    new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
-            actual.run();
-            verify(handlerContext).write(databasePacket);
-            verify(handlerContext).flush();
-            verify(engine.getCommandExecuteEngine()).writeQueryData(handlerContext, backendConnection, queryCommandExecutor, 1);
-            verify(queryCommandExecutor).close();
-            verify(backendConnection).closeExecutionResources();
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(
+                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
+        actual.run();
+        verify(handlerContext).write(databasePacket);
+        verify(handlerContext).flush();
+        verify(engine.getCommandExecuteEngine()).writeQueryData(handlerContext, backendConnection, queryCommandExecutor, 1);
+        verify(queryCommandExecutor).close();
+        verify(backendConnection).closeExecutionResources();
     }
     
     @SuppressWarnings("unchecked")
@@ -153,15 +148,13 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(
-                    new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
-            actual.run();
-            verify(handlerContext).write(databasePacket);
-            verify(handlerContext).flush();
-            verify(commandExecutor).close();
-            verify(backendConnection).closeExecutionResources();
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(
+                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
+        actual.run();
+        verify(handlerContext).write(databasePacket);
+        verify(handlerContext).flush();
+        verify(commandExecutor).close();
+        verify(backendConnection).closeExecutionResources();
     }
     
     @SuppressWarnings("unchecked")
@@ -176,14 +169,12 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getErrorPacket(mockException)).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.of(databasePacket));
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(
-                    new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
-            actual.run();
-            verify(handlerContext, times(2)).write(databasePacket);
-            verify(handlerContext).flush();
-            verify(backendConnection).closeExecutionResources();
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(
+                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
+        actual.run();
+        verify(handlerContext, times(2)).write(databasePacket);
+        verify(handlerContext).flush();
+        verify(backendConnection).closeExecutionResources();
     }
     
     @Test
@@ -196,13 +187,11 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getErrorPacket(any(RuntimeException.class))).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.of(databasePacket));
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(
-                    new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
-            actual.run();
-            verify(handlerContext, times(2)).write(databasePacket);
-            verify(handlerContext).flush();
-            verify(backendConnection).closeExecutionResources();
-        }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(
+                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
+        actual.run();
+        verify(handlerContext, times(2)).write(databasePacket);
+        verify(handlerContext).flush();
+        verify(backendConnection).closeExecutionResources();
     }
 }

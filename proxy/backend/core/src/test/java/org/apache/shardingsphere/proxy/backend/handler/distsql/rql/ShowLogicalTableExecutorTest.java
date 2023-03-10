@@ -24,11 +24,13 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.ShowLogicalTableExecutor;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,18 +41,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class ShowLogicalTableExecutorTest {
     
     @Mock
     private ShardingSphereDatabase database;
     
-    @Before
+    @BeforeEach
     public void before() {
-        when(database.getName()).thenReturn("sharding_db");
+        when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(mock(DatabaseType.class));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(database.getSchema("sharding_db")).thenReturn(schema);
+        when(database.getSchema("foo_db")).thenReturn(schema);
         when(schema.getAllTableNames()).thenReturn(Arrays.asList("t_order", "t_order_item"));
     }
     

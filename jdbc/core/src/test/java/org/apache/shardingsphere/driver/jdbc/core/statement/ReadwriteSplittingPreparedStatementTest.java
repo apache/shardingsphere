@@ -28,25 +28,22 @@ import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ReadwriteSplittingPreparedStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
     
-    @Test(expected = SQLException.class)
-    public void assertQueryWithNull() throws SQLException {
-        try (PreparedStatement preparedStatement = getReadwriteSplittingDataSource().getConnection().prepareStatement(null)) {
-            preparedStatement.executeQuery();
-        }
+    @Test
+    public void assertQueryWithNull() {
+        assertThrows(SQLException.class, () -> getReadwriteSplittingDataSource().getConnection().prepareStatement(null));
     }
     
-    @Test(expected = SQLException.class)
-    public void assertQueryWithEmptyString() throws SQLException {
-        try (PreparedStatement preparedStatement = getReadwriteSplittingDataSource().getConnection().prepareStatement("")) {
-            preparedStatement.executeQuery();
-        }
+    @Test
+    public void assertQueryWithEmptyString() {
+        assertThrows(SQLException.class, () -> getReadwriteSplittingDataSource().getConnection().prepareStatement(""));
     }
     
     @Test

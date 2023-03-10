@@ -208,7 +208,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
                     .addListener(ChannelFutureListener.CLOSE);
             return;
         }
-        String database = backendHandler.getDatabaseByJobId(requestBody.getStreamingId());
+        String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
         checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
         CDCResponse response = backendHandler.startStreaming(request.getRequestId(), requestBody.getStreamingId(), connectionContext, ctx.channel());
         ctx.writeAndFlush(response);
@@ -216,7 +216,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     
     private void processStopStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
         StopStreamingRequestBody requestBody = request.getStopStreamingRequestBody();
-        String database = backendHandler.getDatabaseByJobId(requestBody.getStreamingId());
+        String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
         checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
         backendHandler.stopStreaming(connectionContext.getJobId());
         connectionContext.setStatus(CDCConnectionStatus.LOGGED_IN);
@@ -226,7 +226,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     
     private void processDropStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
         DropStreamingRequestBody requestBody = request.getDropStreamingRequestBody();
-        String database = backendHandler.getDatabaseByJobId(requestBody.getStreamingId());
+        String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
         checkPrivileges(connectionContext.getCurrentUser().getGrantee(), database);
         try {
             backendHandler.dropStreaming(connectionContext.getJobId());

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.hint;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -29,8 +29,8 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,15 +49,15 @@ public final class SQLHintExtractorTest {
     }
     
     @Test
-    public void assertSQLHintSkipEncryptRewrite() {
+    public void assertSQLHintSkipSQLRewrite() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SKIP_ENCRYPT_REWRITE=true */", 0, 0)));
-        assertTrue(new SQLHintExtractor(statement).isHintSkipEncryptRewrite());
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */", 0, 0)));
+        assertTrue(new SQLHintExtractor(statement).isHintSkipSQLRewrite());
     }
     
     @Test
-    public void assertSQLHintSkipEncryptRewriteWithCommentString() {
-        assertTrue(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: SKIP_ENCRYPT_REWRITE=true */").isHintSkipEncryptRewrite());
+    public void assertSQLHintSkipSQLRewriteWithCommentString() {
+        assertTrue(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */").isHintSkipSQLRewrite());
     }
     
     @Test

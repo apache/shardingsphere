@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -40,29 +41,29 @@ import static org.mockito.Mockito.when;
 
 public final class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     
-    private final ReadwriteSplittingRuleConfigurationImportChecker readwriteRuleConfigurationImportChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
+    private final ReadwriteSplittingRuleConfigurationImportChecker importChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
     
-    @Test(expected = MissingRequiredStorageUnitsException.class)
+    @Test
     public void assertCheckDataSources() {
         ShardingSphereDatabase database = mockDatabaseWithDataSource();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = getRuleConfigWithNotExistedDataSources();
-        readwriteRuleConfigurationImportChecker.check(database, currentRuleConfig);
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
-    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    @Test
     public void assertCheckLoadBalancers() {
         ShardingSphereDatabase database = mockDatabase();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = createInvalidLoadBalancerRuleConfig();
-        readwriteRuleConfigurationImportChecker.check(database, currentRuleConfig);
+        assertThrows(InvalidAlgorithmConfigurationException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
     private ShardingSphereDatabase mockDatabaseWithDataSource() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         Collection<String> dataSources = new LinkedList<>();
         dataSources.add("su_1");
-        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(dataSources);
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return database;
+        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(dataSources);
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        return result;
     }
     
     private ReadwriteSplittingRuleConfiguration getRuleConfigWithNotExistedDataSources() {
@@ -75,10 +76,10 @@ public final class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     }
     
     private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return database;
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        return result;
     }
     
     private ReadwriteSplittingRuleConfiguration createInvalidLoadBalancerRuleConfig() {

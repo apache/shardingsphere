@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class BaseRDLE2EIT extends SingleE2EIT {
     
@@ -119,7 +119,7 @@ public abstract class BaseRDLE2EIT extends SingleE2EIT {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
-            assertTrue("Size of actual result set is different with size of expected dat set rows.", rowCount < expected.size());
+            assertTrue(rowCount < expected.size(), "Size of actual result set is different with size of expected dat set rows.");
             assertRow(actual, actualMetaData, expected.get(rowCount));
             rowCount++;
         }

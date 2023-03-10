@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class SQLVisitorRuleTest {
     
@@ -31,8 +32,8 @@ public final class SQLVisitorRuleTest {
         assertThat(SQLVisitorRule.valueOf(SelectContext.class), is(SQLVisitorRule.SELECT));
     }
     
-    @Test(expected = SQLASTVisitorException.class)
+    @Test
     public void assertValueOfParseTreeClassFailure() {
-        SQLVisitorRule.valueOf(ParseTree.class);
+        assertThrows(SQLASTVisitorException.class, () -> SQLVisitorRule.valueOf(ParseTree.class));
     }
 }

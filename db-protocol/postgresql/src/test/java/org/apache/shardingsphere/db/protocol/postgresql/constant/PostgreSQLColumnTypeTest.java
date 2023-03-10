@@ -19,12 +19,13 @@ package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class PostgreSQLColumnTypeTest {
     
@@ -40,9 +41,9 @@ public final class PostgreSQLColumnTypeTest {
         assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_BOOL));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertValueOfJDBCTypeExThrown() {
-        PostgreSQLColumnType.valueOfJDBCType(Types.REF_CURSOR);
+        assertThrows(IllegalArgumentException.class, () -> PostgreSQLColumnType.valueOfJDBCType(Types.REF_CURSOR));
     }
     
     @Test
@@ -51,9 +52,9 @@ public final class PostgreSQLColumnTypeTest {
         assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8));
     }
     
-    @Test(expected = PostgreSQLProtocolException.class)
+    @Test
     public void assertValueOfExThrown() {
-        PostgreSQLColumnType.valueOf(9999);
+        assertThrows(PostgreSQLProtocolException.class, () -> PostgreSQLColumnType.valueOf(9999));
     }
     
     @Test

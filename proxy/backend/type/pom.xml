@@ -32,5 +32,6 @@
         <module>mysql</module>
         <module>postgresql</module>
         <module>opengauss</module>
+        <module>hbase</module>
     </modules>
 </project>

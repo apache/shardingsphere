@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class MySQLCharacterSetTest {
     
@@ -31,13 +32,13 @@ public final class MySQLCharacterSetTest {
         assertThat(actual, is(MySQLCharacterSet.UTF8MB4_GENERAL_CI));
     }
     
-    @Test(expected = UnknownCollationException.class)
+    @Test
     public void assertCharacterSetNotFoundById() {
-        MySQLCharacterSet.findById(-1);
+        assertThrows(UnknownCollationException.class, () -> MySQLCharacterSet.findById(-1));
     }
     
-    @Test(expected = UnknownCollationException.class)
+    @Test
     public void assertFoundUnsupportedCharacterSetById() {
-        MySQLCharacterSet.findById(63);
+        assertThrows(UnknownCollationException.class, () -> MySQLCharacterSet.findById(63));
     }
 }

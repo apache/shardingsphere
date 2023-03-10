@@ -86,6 +86,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ModifyC
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PlaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrepareContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReferenceDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RepeatStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RoutineBodyContext;
@@ -115,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.RenameIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
@@ -295,6 +297,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
                     result.setConvertTableDefinition((ConvertTableDefinitionSegment) each);
                 } else if (each instanceof DropIndexDefinitionSegment) {
                     result.getDropIndexDefinitions().add((DropIndexDefinitionSegment) each);
+                } else if (each instanceof RenameIndexDefinitionSegment) {
+                    result.getRenameIndexDefinitions().add((RenameIndexDefinitionSegment) each);
                 }
             }
         }
@@ -353,6 +357,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             }
             if (each instanceof AlterConvertContext) {
                 result.getValue().add((ConvertTableDefinitionSegment) visit(each));
+            }
+            if (each instanceof RenameIndexContext) {
+                result.getValue().add((RenameIndexDefinitionSegment) visit(each));
             }
         }
         return result;
@@ -563,6 +570,13 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.getIndexes().add(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
         return result;
+    }
+    
+    @Override
+    public ASTNode visitRenameIndex(final RenameIndexContext ctx) {
+        IndexSegment indexNameSegment = (IndexSegment) visitIndexName(ctx.indexName(0));
+        IndexSegment renameIndexName = (IndexSegment) visitIndexName(ctx.indexName(1));
+        return new RenameIndexDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), indexNameSegment, renameIndexName);
     }
     
     @Override

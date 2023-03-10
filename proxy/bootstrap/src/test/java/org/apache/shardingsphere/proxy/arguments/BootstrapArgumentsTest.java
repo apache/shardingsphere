@@ -24,9 +24,10 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class BootstrapArgumentsTest {
     
@@ -35,9 +36,9 @@ public final class BootstrapArgumentsTest {
         assertFalse(new BootstrapArguments(new String[]{}).getPort().isPresent());
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGetPortWithWrongArgument() {
-        new BootstrapArguments(new String[]{"WrongArgument"}).getPort();
+        assertThrows(IllegalArgumentException.class, () -> new BootstrapArguments(new String[]{"WrongArgument"}).getPort());
     }
     
     @Test

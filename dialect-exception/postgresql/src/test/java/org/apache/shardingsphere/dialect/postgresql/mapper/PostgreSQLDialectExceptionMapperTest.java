@@ -17,47 +17,42 @@
 
 package org.apache.shardingsphere.dialect.postgresql.mapper;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.dialect.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.postgresql.util.PSQLState;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
 public final class PostgreSQLDialectExceptionMapperTest {
     
-    private final Class<SQLDialectException> sqlDialectExceptionClazz;
-    
-    private final String sqlState;
-    
-    @Parameters(name = "{1} -> {0}")
-    public static Collection<Object[]> getTestParameters() {
-        return Arrays.asList(new Object[][]{
-                {DatabaseCreateExistsException.class, "42P04"},
-                {InTransactionException.class, PSQLState.TRANSACTION_STATE_INVALID.getState()},
-                {InsertColumnsAndValuesMismatchedException.class, PSQLState.SYNTAX_ERROR.getState()},
-                {InvalidParameterValueException.class, PSQLState.INVALID_PARAMETER_VALUE.getState()},
-                {TooManyConnectionsException.class, PSQLState.CONNECTION_REJECTED.getState()},
-        });
+    @ParameterizedTest(name = "{1} -> {0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void convert(final Class<SQLDialectException> sqlDialectExceptionClazz, final String sqlState) {
+        assertThat(new PostgreSQLDialectExceptionMapper().convert(mock(sqlDialectExceptionClazz)).getSQLState(), is(sqlState));
     }
     
-    @Test
-    public void convert() {
-        assertThat(new PostgreSQLDialectExceptionMapper().convert(mock(sqlDialectExceptionClazz)).getSQLState(), is(sqlState));
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of(DatabaseCreateExistsException.class, "42P04"),
+                    Arguments.of(InTransactionException.class, PSQLState.TRANSACTION_STATE_INVALID.getState()),
+                    Arguments.of(InsertColumnsAndValuesMismatchedException.class, PSQLState.SYNTAX_ERROR.getState()),
+                    Arguments.of(InvalidParameterValueException.class, PSQLState.INVALID_PARAMETER_VALUE.getState()),
+                    Arguments.of(TooManyConnectionsException.class, PSQLState.CONNECTION_REJECTED.getState()));
+        }
     }
 }

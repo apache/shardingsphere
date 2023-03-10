@@ -56,6 +56,17 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
+    public void persistJobOffsetInfo(final String jobId, final String jobOffsetInfo) {
+        repository.persist(PipelineMetaDataNode.getJobOffsetPath(jobId), jobOffsetInfo);
+    }
+    
+    @Override
+    public Optional<String> getJobOffsetInfo(final String jobId) {
+        String text = repository.getDirectly(PipelineMetaDataNode.getJobOffsetPath(jobId));
+        return Strings.isNullOrEmpty(text) ? Optional.empty() : Optional.of(text);
+    }
+    
+    @Override
     public void persistJobItemProgress(final String jobId, final int shardingItem, final String progressValue) {
         repository.persist(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem), progressValue);
     }

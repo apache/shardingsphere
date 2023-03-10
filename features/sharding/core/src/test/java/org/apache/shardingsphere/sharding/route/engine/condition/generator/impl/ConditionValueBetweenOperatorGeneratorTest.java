@@ -31,9 +31,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationU
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
 import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -45,10 +45,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class ConditionValueBetweenOperatorGeneratorTest {
     
     private final ConditionValueBetweenOperatorGenerator generator = new ConditionValueBetweenOperatorGenerator();
@@ -93,13 +94,13 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertTrue(rangeShardingConditionValue.getParameterMarkerIndexes().isEmpty());
     }
     
-    @Test(expected = ClassCastException.class)
+    @Test
     public void assertGenerateErrorConditionValue() {
         int between = 1;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
         BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
-        generator.generate(value, column, new LinkedList<>(), timeServiceRule);
+        assertThrows(ClassCastException.class, () -> generator.generate(value, column, new LinkedList<>(), timeServiceRule));
     }
     
     @SuppressWarnings("unchecked")

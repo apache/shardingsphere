@@ -27,10 +27,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ShardingSphereStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
     
@@ -76,17 +77,17 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertQueryWithNull() throws SQLException {
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
-            statement.executeQuery(null);
+            assertThrows(SQLException.class, () -> statement.executeQuery(null));
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertQueryWithEmptyString() throws SQLException {
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
-            statement.executeQuery("");
+            assertThrows(SQLException.class, () -> statement.executeQuery(""));
         }
     }
     
@@ -108,11 +109,11 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertColumnNotFoundException() throws SQLException {
         String sql = "UPDATE t_order_item SET error_column = '%s'";
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
-            statement.executeUpdate(String.format(sql, "OK"));
+            assertThrows(SQLException.class, () -> statement.executeUpdate(String.format(sql, "OK")));
         }
     }
     

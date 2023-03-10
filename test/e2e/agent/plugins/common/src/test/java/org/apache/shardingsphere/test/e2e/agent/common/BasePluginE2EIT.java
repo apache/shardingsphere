@@ -27,13 +27,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Basic integration test.
@@ -52,7 +51,7 @@ public abstract class BasePluginE2EIT {
     }
     
     @Test
-    public void assertProxyWithAgent() throws IOException {
+    public void assertProxyWithAgent() {
         DataSource dataSource = E2ETestEnvironment.getInstance().getDataSource();
         List<Long> results = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {

@@ -45,8 +45,8 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public abstract class BaseDDLE2EIT extends SingleE2EIT {
     
@@ -56,8 +56,8 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
     
     @Before
     public final void init() throws Exception {
-        assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
-        assertNotNull("Init SQL is required", getAssertion().getInitialSQL().getAffectedTable());
+        assertNotNull(getAssertion().getInitialSQL(), "Expected affected table is required");
+        assertNotNull(getAssertion().getInitialSQL().getAffectedTable(), "Init SQL is required");
         try (Connection connection = getTargetDataSource().getConnection()) {
             synchronizedExecuteInitSQLs(connection);
         }
@@ -115,7 +115,7 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
     }
     
     private void assertNotContainsTable(final Connection connection, final String tableName) throws SQLException {
-        assertFalse(String.format("Table `%s` should not existed", tableName), connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next());
+        assertFalse(connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next(), String.format("Table `%s` should not existed", tableName));
     }
     
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
