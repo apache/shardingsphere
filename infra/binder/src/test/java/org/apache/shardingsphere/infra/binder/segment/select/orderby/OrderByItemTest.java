@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.binder.segment.select.orderby;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.mock;
 
 public final class OrderByItemTest {

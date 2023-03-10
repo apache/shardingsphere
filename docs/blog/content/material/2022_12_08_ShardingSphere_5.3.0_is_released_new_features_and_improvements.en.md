@@ -61,7 +61,7 @@ ShardingSphere 5.3.0 now supports checkpoint storage, which means data consisten
 
 For example, if data is being verified during data migration and the user stops the verification for some reason, with the verification progress `(finished_percentage)` being 5%, then:
 
-```
+```mysql
 mysql> STOP MIGRATION CHECK 'j0101395cd93b2cfc189f29958b8a0342e882';
 Query OK, 0 rows affected (0.12 sec)
 mysql> SHOW MIGRATION CHECK STATUS 'j0101395cd93b2cfc189f29958b8a0342e882';
@@ -75,7 +75,7 @@ mysql> SHOW MIGRATION CHECK STATUS 'j0101395cd93b2cfc189f29958b8a0342e882';
 
 In this case, the user restarts the data verification. But the work does not have to restart from the beginning. The verification progress `(finished_percentage)` remains at 5%.
 
-```
+```mysql
 mysql> START MIGRATION CHECK 'j0101395cd93b2cfc189f29958b8a0342e882';
 Query OK, 0 rows affected (0.35 sec)
 mysql> SHOW MIGRATION CHECK STATUS 'j0101395cd93b2cfc189f29958b8a0342e882';
@@ -95,7 +95,7 @@ Previously, even with XA and other distributed transactions configured, Sharding
 
 Take the following SQL as an example:
 
-```
+```sql
 insert into account(id, balance, transaction_id) values
 (1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),
 (5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);
@@ -103,7 +103,7 @@ insert into account(id, balance, transaction_id) values
 
 When this SQL is sharded according to `id mod 2`, the ShardingSphere kernel layer will automatically split it into the following two SQLs and route them to different shards respectively for execution:
 
-```
+```sql
 insert into account(id, balance, transaction_id) values
 (1, 1, 1),(3, 3, 3),(5, 5, 5),(7, 7, 7);
 insert into account(id, balance, transaction_id) values

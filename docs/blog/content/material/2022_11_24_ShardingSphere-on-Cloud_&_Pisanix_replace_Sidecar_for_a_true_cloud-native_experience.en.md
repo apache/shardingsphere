@@ -44,7 +44,7 @@ Sidecar can indeed play a big role in certain scenarios, but it doesn't mean tha
 
 [ShardingSphere-on-Cloud](https://github.com/apache/shardingsphere-on-cloud) is capable of deploying and migrating ShardingSphere in a Kubernetes environment. With the help of [AWS CloudFormation](https://aws.amazon.com/cloudformation/), [Helm](https://helm.sh/), Operator, and Terraform (coming soon) and other tools, it provides best practices with quick deployment, higher observability, security and migration, and high availability deployment in a cloud native environment.
 
-> Please refer to [***Database Plus Embracing the Cloud: ShardingSphere-on-Cloud Solution Released***](https://medium.com/codex/database-plus-embracing-the-cloud-shardingsphere-on-cloud-solution-released-29916290ad06?source=your_stories_page-------------------------------------) for details.
+Please refer to [***Database Plus Embracing the Cloud: ShardingSphere-on-Cloud Solution Released***](https://medium.com/codex/database-plus-embracing-the-cloud-shardingsphere-on-cloud-solution-released-29916290ad06?source=your_stories_page-------------------------------------) for details.
 
 ## Achieving the vision of ShardingSphere-Sidecar through [Pisanix](https://www.pisanix.io/)
 

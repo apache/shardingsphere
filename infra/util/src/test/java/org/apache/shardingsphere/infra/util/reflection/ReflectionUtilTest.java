@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.util.reflection;
 
 import org.apache.shardingsphere.infra.util.reflection.fixture.ReflectionFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

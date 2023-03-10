@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.MySQLIncrementTask;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
@@ -97,7 +97,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         startMigration("t_order_item", "t_order_item");
         String orderJobId = getJobIdByTableName("ds_0." + getSourceTableOrderName());
         waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", orderJobId));
-        startIncrementTask(new MySQLIncrementTask(getSourceDataSource(), getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), 30));
+        startIncrementTask(new E2EIncrementalTask(getSourceDataSource(), getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 30));
         assertMigrationSuccessById(orderJobId, "DATA_MATCH");
         String orderItemJobId = getJobIdByTableName("ds_0.t_order_item");
         assertMigrationSuccessById(orderItemJobId, "DATA_MATCH");

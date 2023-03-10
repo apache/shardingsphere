@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;

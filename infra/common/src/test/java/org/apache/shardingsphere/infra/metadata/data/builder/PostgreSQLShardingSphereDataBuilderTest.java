@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.data.builder.dialect.PostgreSQLS
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

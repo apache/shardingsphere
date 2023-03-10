@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.result.impl.transparent;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.sql.Date;

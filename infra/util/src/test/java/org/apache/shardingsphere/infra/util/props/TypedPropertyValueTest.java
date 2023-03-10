@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.util.props;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyEnumFixture;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

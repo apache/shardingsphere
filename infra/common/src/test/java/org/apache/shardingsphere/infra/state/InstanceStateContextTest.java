@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.state;
 
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
