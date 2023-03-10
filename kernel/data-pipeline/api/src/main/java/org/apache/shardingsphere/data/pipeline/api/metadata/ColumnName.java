@@ -15,29 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
-
-import lombok.RequiredArgsConstructor;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+package org.apache.shardingsphere.data.pipeline.api.metadata;
 
 /**
- * Basic column value reader.
+ * Column name.
+ *
+ * <p>It's case-insensitive.</p>
  */
-@RequiredArgsConstructor
-public final class BasicColumnValueReader extends AbstractColumnValueReader {
+public final class ColumnName extends IdentifierName {
     
-    private final String databaseType;
-    
-    @Override
-    protected Object doReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        return super.defaultDoReadValue(resultSet, metaData, columnIndex);
-    }
-    
-    @Override
-    public String getType() {
-        return databaseType;
+    public ColumnName(final String columnName) {
+        super(columnName);
     }
 }
