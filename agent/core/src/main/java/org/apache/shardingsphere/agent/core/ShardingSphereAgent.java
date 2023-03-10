@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import net.bytebuddy.pool.TypePool;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfigurationLoader;
@@ -58,6 +57,11 @@ public final class ShardingSphereAgent {
     }
     
     private static boolean isEnhancedForProxy() {
-        return TypePool.Default.ofSystemLoader().describe("org.apache.shardingsphere.proxy.Bootstrap").isResolved();
+        try {
+            Class.forName("org.apache.shardingsphere.proxy.Bootstrap");
+        } catch (final ClassNotFoundException ignored) {
+            return false;
+        }
+        return true;
     }
 }

@@ -22,16 +22,16 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.StatusCode;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingRootSpanAdvice;
+import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingCommandExecutorTaskAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 
 import java.lang.reflect.Method;
 
 /**
- * OpenTelemetry root span advice.
+ * OpenTelemetry command executor task advice executor.
  */
-public final class OpenTelemetryRootSpanAdvice extends TracingRootSpanAdvice<Span> {
+public final class OpenTelemetryCommandExecutorTaskAdvice extends TracingCommandExecutorTaskAdvice<Span> {
     
     @Override
     protected Span createRootSpan(final TargetAdviceObject target, final Method method, final Object[] args) {
