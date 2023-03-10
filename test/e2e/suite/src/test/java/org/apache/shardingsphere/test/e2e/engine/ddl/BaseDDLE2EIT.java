@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.engine.ddl;
 
 import com.google.common.base.Splitter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
@@ -56,14 +55,14 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
     
     @Before
     public final void init() throws Exception {
-        assertNotNull(getAssertion().getInitialSQL(), "Expected affected table is required");
-        assertNotNull(getAssertion().getInitialSQL().getAffectedTable(), "Init SQL is required");
+        assertNotNull(getAssertion().getInitialSQL(), "Init SQL is required");
+        assertNotNull(getAssertion().getInitialSQL().getAffectedTable(), "Expected affected table is required");
         try (Connection connection = getTargetDataSource().getConnection()) {
-            synchronizedExecuteInitSQLs(connection);
+            executeInitSQLs(connection);
         }
     }
     
-    private synchronized void synchronizedExecuteInitSQLs(final Connection connection) throws SQLException {
+    private synchronized void executeInitSQLs(final Connection connection) throws SQLException {
         if (null == getAssertion().getInitialSQL().getSql()) {
             return;
         }
@@ -76,17 +75,23 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
     }
     
     @After
-    public final void tearDown() {
-        try (Connection connection = getTargetDataSource().getConnection()) {
-            synchronizedExecuteDropSQLs(connection, String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable()));
-        } catch (final SQLException | NoSuchTableException ignored) {
+    public final void tearDown() throws SQLException {
+        if (null != getAssertion().getDestroySQL()) {
+            try (Connection connection = getTargetDataSource().getConnection()) {
+                executeDestroySQLs(connection);
+            }
         }
-        waitCompleted();
     }
     
-    private synchronized void synchronizedExecuteDropSQLs(final Connection connection, final String sql) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.executeUpdate();
+    private void executeDestroySQLs(final Connection connection) throws SQLException {
+        if (null == getAssertion().getDestroySQL().getSql()) {
+            return;
+        }
+        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getDestroySQL().getSql())) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
+                preparedStatement.executeUpdate();
+            }
+            waitCompleted();
         }
     }
     
