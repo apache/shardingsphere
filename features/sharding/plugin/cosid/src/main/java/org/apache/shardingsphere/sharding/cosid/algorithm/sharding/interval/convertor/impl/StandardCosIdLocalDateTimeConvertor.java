@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.con
 
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.util.LocalDateTimeConvert;
-import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.LocalDateTimeConvertor;
+import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.CosIdLocalDateTimeConvertor;
 import org.apache.shardingsphere.sharding.exception.ShardingPluginException;
 
 import java.time.Instant;
@@ -35,10 +35,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
- * Local date time convertor for CosId.
+ * Standard local date time convertor for CosId.
  */
 @RequiredArgsConstructor
-public final class CosIDLocalDateTimeConvertor implements LocalDateTimeConvertor {
+public final class StandardCosIdLocalDateTimeConvertor implements CosIdLocalDateTimeConvertor {
     
     private final ZoneId zoneId;
     

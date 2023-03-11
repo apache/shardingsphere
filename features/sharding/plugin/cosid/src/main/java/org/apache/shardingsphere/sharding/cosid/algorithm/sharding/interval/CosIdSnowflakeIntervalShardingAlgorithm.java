@@ -22,8 +22,8 @@ import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
 import me.ahoo.cosid.snowflake.SnowflakeIdStateParser;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.LocalDateTimeConvertor;
-import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.impl.SnowflakeLocalDateTimeConvertor;
+import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.CosIdLocalDateTimeConvertor;
+import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.impl.SnowflakeCosIdLocalDateTimeConvertor;
 
 import java.time.ZoneId;
 import java.util.Properties;
@@ -38,8 +38,8 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
     private static final String ZONE_ID_KEY = "zone-id";
     
     @Override
-    protected LocalDateTimeConvertor createLocalDateTimeConvertor(final Properties props) {
-        return new SnowflakeLocalDateTimeConvertor(createSnowflakeIdStateParser(props));
+    protected CosIdLocalDateTimeConvertor createLocalDateTimeConvertor(final Properties props) {
+        return new SnowflakeCosIdLocalDateTimeConvertor(createSnowflakeIdStateParser(props));
     }
     
     private SnowflakeIdStateParser createSnowflakeIdStateParser(final Properties props) {

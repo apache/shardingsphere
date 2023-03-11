@@ -20,9 +20,9 @@ package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.con
 import java.time.LocalDateTime;
 
 /**
- * Local date time convertor.
+ * Local date time convertor for CosId.
  */
-public interface LocalDateTimeConvertor {
+public interface CosIdLocalDateTimeConvertor {
     
     /**
      * To local date time.
