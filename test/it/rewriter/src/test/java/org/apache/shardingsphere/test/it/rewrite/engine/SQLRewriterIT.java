@@ -92,9 +92,9 @@ public abstract class SQLRewriterIT {
     
     private final TimeServiceRule timeServiceRule = new TimeServiceRule(new TimeServiceRuleConfiguration("System", new Properties()));
     
-    @ParameterizedTest(name = "{4}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public final void assertRewrite(final String type, final String name, final String fileName, final String databaseType, final SQLRewriteEngineTestParameters testParams) throws IOException, SQLException {
+    public final void assertRewrite(final SQLRewriteEngineTestParameters testParams) throws IOException, SQLException {
         Collection<SQLRewriteUnit> actual = createSQLRewriteUnits(testParams);
         assertThat(actual.size(), is(testParams.getOutputSQLs().size()));
         int count = 0;
