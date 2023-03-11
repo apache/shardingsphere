@@ -87,7 +87,7 @@ import static org.mockito.Mockito.when;
 @Getter
 public abstract class AbstractSQLRewriterIT {
     
-    private final SQLRewriteEngineTestParameters testParameters;
+    private final SQLRewriteEngineTestParameters testParams;
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(true,
             DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION, DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION));
@@ -97,13 +97,13 @@ public abstract class AbstractSQLRewriterIT {
     @Test
     public final void assertRewrite() throws IOException, SQLException {
         Collection<SQLRewriteUnit> actual = createSQLRewriteUnits();
-        assertThat(actual.size(), is(testParameters.getOutputSQLs().size()));
+        assertThat(actual.size(), is(testParams.getOutputSQLs().size()));
         int count = 0;
         for (SQLRewriteUnit each : actual) {
-            assertThat(each.getSql(), is(testParameters.getOutputSQLs().get(count)));
-            assertThat(each.getParameters().size(), is(testParameters.getOutputGroupedParameters().get(count).size()));
+            assertThat(each.getSql(), is(testParams.getOutputSQLs().get(count)));
+            assertThat(each.getParameters().size(), is(testParams.getOutputGroupedParameters().get(count).size()));
             for (int i = 0; i < each.getParameters().size(); i++) {
-                assertThat(String.valueOf(each.getParameters().get(i)), is(String.valueOf(testParameters.getOutputGroupedParameters().get(count).get(i))));
+                assertThat(String.valueOf(each.getParameters().get(i)), is(String.valueOf(testParams.getOutputGroupedParameters().get(count).get(i))));
             }
             count++;
         }
@@ -115,14 +115,14 @@ public abstract class AbstractSQLRewriterIT {
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         mockDataSource(databaseConfig.getDataSources());
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, getTestParameters().getDatabaseType());
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, getTestParams().getDatabaseType());
         Map<String, DatabaseType> storageTypes = createStorageTypes(databaseConfig, databaseType);
         when(resourceMetaData.getStorageTypes()).thenReturn(storageTypes);
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, DefaultDatabase.LOGIC_NAME);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseConfig, mock(InstanceContext.class));
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(getTestParameters().getDatabaseType(),
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(getTestParams().getDatabaseType(),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false);
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse(getTestParams().getInputSQL(), false);
         mockRules(databaseRules, schemaName, sqlStatement);
         databaseRules.add(sqlParserRule);
         databaseRules.add(timeServiceRule);
@@ -131,18 +131,18 @@ public abstract class AbstractSQLRewriterIT {
         databases.put(schemaName, database);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(createShardingSphereMetaData(databases), sqlStatement, schemaName);
         if (sqlStatementContext instanceof ParameterAware) {
-            ((ParameterAware) sqlStatementContext).setUpParameters(getTestParameters().getInputParameters());
+            ((ParameterAware) sqlStatementContext).setUpParameters(getTestParams().getInputParameters());
         }
         if (sqlStatementContext instanceof CursorDefinitionAware) {
             ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(createCursorDefinition(schemaName, databases, sqlStatementParserEngine));
         }
-        QueryContext queryContext = new QueryContext(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
+        QueryContext queryContext = new QueryContext(sqlStatementContext, getTestParams().getInputSQL(), getTestParams().getInputParameters());
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
         RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(new ConnectionContext(), queryContext, mock(ShardingSphereRuleMetaData.class), database);
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new ShardingSphereRuleMetaData(Collections.singleton(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()))), props);
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCursorConnectionContext()).thenReturn(new CursorConnectionContext());
-        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext, connectionContext);
+        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(getTestParams().getInputSQL(), getTestParams().getInputParameters(), sqlStatementContext, routeContext, connectionContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())
                 : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();

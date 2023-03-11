@@ -64,17 +64,17 @@ public final class ShardingSQLRewriterIT extends AbstractSQLRewriterIT {
     
     @Override
     protected YamlRootConfiguration createRootConfiguration() throws IOException {
-        URL url = ShardingSQLRewriterIT.class.getClassLoader().getResource(getTestParameters().getRuleFile());
+        URL url = ShardingSQLRewriterIT.class.getClassLoader().getResource(getTestParams().getRuleFile());
         Preconditions.checkNotNull(url, "Can not find rewrite rule yaml configuration");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }
     
     @Override
     protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
-        Optional<SingleRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleRule).map(each -> (SingleRule) each).findFirst();
-        if (singleTableRule.isPresent() && !(sqlStatement instanceof CreateTableStatement)) {
-            singleTableRule.get().put("db", schemaName, "t_single");
-            singleTableRule.get().put("db", schemaName, "t_single_extend");
+        Optional<SingleRule> singleRule = rules.stream().filter(each -> each instanceof SingleRule).map(each -> (SingleRule) each).findFirst();
+        if (singleRule.isPresent() && !(sqlStatement instanceof CreateTableStatement)) {
+            singleRule.get().put("db", schemaName, "t_single");
+            singleRule.get().put("db", schemaName, "t_single_extend");
         }
     }
     

@@ -67,7 +67,7 @@ public final class EncryptSQLRewriterIT extends AbstractSQLRewriterIT {
     
     @Override
     protected YamlRootConfiguration createRootConfiguration() throws IOException {
-        URL url = EncryptSQLRewriterIT.class.getClassLoader().getResource(getTestParameters().getRuleFile());
+        URL url = EncryptSQLRewriterIT.class.getClassLoader().getResource(getTestParams().getRuleFile());
         Preconditions.checkNotNull(url, "Can not find rewrite rule yaml configuration");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }
@@ -89,12 +89,12 @@ public final class EncryptSQLRewriterIT extends AbstractSQLRewriterIT {
     
     @Override
     protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
-        Optional<SingleRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleRule).map(each -> (SingleRule) each).findFirst();
-        if (singleTableRule.isPresent() && !(sqlStatement instanceof CreateTableStatement)) {
-            singleTableRule.get().put("encrypt_ds", schemaName, "t_account");
-            singleTableRule.get().put("encrypt_ds", schemaName, "t_account_bak");
-            singleTableRule.get().put("encrypt_ds", schemaName, "t_account_detail");
-            singleTableRule.get().put("encrypt_ds", schemaName, "t_order");
+        Optional<SingleRule> singleRule = rules.stream().filter(each -> each instanceof SingleRule).map(each -> (SingleRule) each).findFirst();
+        if (singleRule.isPresent() && !(sqlStatement instanceof CreateTableStatement)) {
+            singleRule.get().put("encrypt_ds", schemaName, "t_account");
+            singleRule.get().put("encrypt_ds", schemaName, "t_account_bak");
+            singleRule.get().put("encrypt_ds", schemaName, "t_account_detail");
+            singleRule.get().put("encrypt_ds", schemaName, "t_order");
         }
     }
     

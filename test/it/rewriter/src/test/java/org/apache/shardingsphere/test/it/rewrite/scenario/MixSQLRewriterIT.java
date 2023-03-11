@@ -60,7 +60,7 @@ public final class MixSQLRewriterIT extends AbstractSQLRewriterIT {
     
     @Override
     protected YamlRootConfiguration createRootConfiguration() throws IOException {
-        URL url = MixSQLRewriterIT.class.getClassLoader().getResource(getTestParameters().getRuleFile());
+        URL url = MixSQLRewriterIT.class.getClassLoader().getResource(getTestParams().getRuleFile());
         Preconditions.checkNotNull(url, "Can not find rewrite rule yaml configurations");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }

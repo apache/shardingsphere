@@ -141,12 +141,12 @@ public final class DataNodesTest {
     
     private Collection<ShardingSphereRule> mockDataNodeContainedRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        result.add(mockSingleTableRule());
+        result.add(mockSingleRule());
         result.add(mockShardingRule());
         return result;
     }
     
-    private ShardingSphereRule mockSingleTableRule() {
+    private ShardingSphereRule mockSingleRule() {
         DataNodeContainedRule result = mock(DataNodeContainedRule.class);
         when(result.getDataNodesByTableName("t_single")).thenReturn(Collections.singletonList(new DataNode("readwrite_ds", "t_single")));
         return result;

@@ -63,12 +63,12 @@ public final class CountSingleTableExecutorTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db_1");
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockSingleTableRule()));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockSingleRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }
     
-    private SingleRule mockSingleTableRule() {
+    private SingleRule mockSingleRule() {
         SingleRule result = mock(SingleRule.class);
         when(result.getAllTables()).thenReturn(Arrays.asList("single_table_1", "single_table_2"));
         return result;

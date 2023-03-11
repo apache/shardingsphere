@@ -252,7 +252,7 @@ To implement transparent data sharding, we add Automated Sharding Strategy into 
 
 Automated Sharding Strategy must be configured under `autoTables` attribute. Users only need to specify the data source for data storage as well as the number of shards via Automated Sharding Algorithm. They no longer need to manually set data distribution through  `actualDataNodes`, or to pay extra attention to setting database sharding strategy and table sharding strategy, as Apache ShardingSphere automatically helps users manage data sharding.
 
-We also remove `defaultDataSourceName` from Data Sharding API. We have repeatedly highlighted that Apache ShardingSphere is a distributed database ecosystem now. The message we want to send to users is that you can directly use the services provided by Apache ShardingSphere but when you use the services, you’ll probably feel like you are just using a traditional database. You don’t have to perceive underlying database storage. Apache ShardingSphere’s built-in `SingleTableRule` can manage single tables beyond data sharding, aiming to help users implement single table automatic loading & routing.
+We also remove `defaultDataSourceName` from Data Sharding API. We have repeatedly highlighted that Apache ShardingSphere is a distributed database ecosystem now. The message we want to send to users is that you can directly use the services provided by Apache ShardingSphere but when you use the services, you’ll probably feel like you are just using a traditional database. You don’t have to perceive underlying database storage. Apache ShardingSphere’s built-in `SingleRule` can manage single tables beyond data sharding, aiming to help users implement single table automatic loading & routing.
 
 Additionally, to further simplify configuration, in conjunction with the `defaultDatabaseStrategy` and `defaultTableStrategy` sharding strategies in Data Sharding API, `defaultShardingColumn` as the default sharding key is added as well.
 
@@ -526,7 +526,7 @@ SELECT * FROM t_user WHERE user_id = 1;
 # Actual SQL: ds_0 ::: SELECT user_id, telephone_plain, telephone_cipher FROM t_user WHERE user_id = 1
 ```  
 
-**The 5.0.0 GA version adopts a pluggable architecture and an upgraded kernel, to allow users to combine these functions without any restrictions. Additionally, in the new version, we delete `defaultDataSourceName`so users don’t need additional configuration anymore. Now ShardingSphere implements single-table metadata loading and routing through `SingleTableRule`by default.** Let’s take a look at how to configure and use the function in the 5.0.0 GA version. The configuration code is shown below:
+**The 5.0.0 GA version adopts a pluggable architecture and an upgraded kernel, to allow users to combine these functions without any restrictions. Additionally, in the new version, we delete `defaultDataSourceName`so users don’t need additional configuration anymore. Now ShardingSphere implements single-table metadata loading and routing through `SingleRule`by default.** Let’s take a look at how to configure and use the function in the 5.0.0 GA version. The configuration code is shown below:
 ```  
 rules:
 - !SHARDING
