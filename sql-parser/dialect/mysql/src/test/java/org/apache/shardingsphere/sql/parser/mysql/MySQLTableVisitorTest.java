@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.mysql;
 
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CodePointBuffer;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -27,63 +26,51 @@ import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLLexer;
 import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.MySQLSQLStatVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.SQLStats;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.nio.CharBuffer;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
 public final class MySQLTableVisitorTest {
     
-    private static final Collection<Object[]> TEST_UNITS = new LinkedList<>();
-    
-    static {
-        TEST_UNITS.add(new Object[]{"select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", 2, 3});
-        TEST_UNITS.add(new Object[]{"select_item_nums", "select id, name, age, sex, ss, yy from table1 where id=1", 1, 6});
-        TEST_UNITS.add(new Object[]{"select_with_subquery", "select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1", 2, 5});
-        TEST_UNITS.add(new Object[]{"select_where_num", "select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3", 1, 10});
-        TEST_UNITS.add(new Object[]{"alter_table", "ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;", 1, 4});
-        TEST_UNITS.add(new Object[]{"create_table", "CREATE TABLE IF NOT EXISTS `runoob_tbl`(\n"
-                + "`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
-                + "`runoob_title` VARCHAR(100) NOT NULL,\n"
-                + "`runoob_author` VARCHAR(40) NOT NULL,\n"
-                + "`runoob_test` NATIONAL CHAR(40),\n"
-                + "`submission_date` DATE,\n"
-                + "PRIMARY KEY ( `runoob_id` )\n"
-                + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;",
-                1, 5});
-    }
-    
-    private final String caseId;
-    
-    private final String inputSql;
-    
-    private final int tableNum;
-    
-    private final int columnNum;
-    
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getTestParameters() {
-        return TEST_UNITS;
-    }
-    
-    @Test
-    public void assertSQLStats() {
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertSQLStats(final String caseId, final String inputSql, final int tableNum, final int columnNum) {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(inputSql.toCharArray()));
         MySQLLexer lexer = new MySQLLexer(CodePointCharStream.fromBuffer(buffer));
         MySQLParser parser = new MySQLParser(new CommonTokenStream(lexer));
         ParseTree tree = ((ParseASTNode) parser.parse()).getRootNode();
         MySQLSQLStatVisitor visitor = new MySQLSQLStatVisitor();
         SQLStats sqlStats = visitor.visit(tree);
-        assertThat("table assert error", sqlStats.getTables().keySet().size(), is(tableNum));
-        assertThat("column assert error", sqlStats.getColumns().keySet().size(), is(columnNum));
+        assertThat(sqlStats.getTables().keySet().size(), is(tableNum));
+        assertThat(sqlStats.getColumns().keySet().size(), is(columnNum));
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of("select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", 2, 3),
+                    Arguments.of("select_item_nums", "select id, name, age, sex, ss, yy from table1 where id=1", 1, 6),
+                    Arguments.of("select_with_subquery", "select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1", 2, 5),
+                    Arguments.of("select_where_num", "select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3", 1, 10),
+                    Arguments.of("alter_table", "ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;", 1, 4),
+                    Arguments.of("create_table", "CREATE TABLE IF NOT EXISTS `runoob_tbl`(\n"
+                            + "`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
+                            + "`runoob_title` VARCHAR(100) NOT NULL,\n"
+                            + "`runoob_author` VARCHAR(40) NOT NULL,\n"
+                            + "`runoob_test` NATIONAL CHAR(40),\n"
+                            + "`submission_date` DATE,\n"
+                            + "PRIMARY KEY ( `runoob_id` )\n"
+                            + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+                            1, 5));
+        }
     }
 }
