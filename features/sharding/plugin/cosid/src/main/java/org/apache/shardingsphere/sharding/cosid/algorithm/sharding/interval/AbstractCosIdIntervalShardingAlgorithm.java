@@ -95,11 +95,11 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<T> shardingValue) {
-        return intervalTimeline.sharding(LocalDateTimeRange(shardingValue.getValueRange()));
+        return intervalTimeline.sharding(toLocalDateTimeRange(shardingValue.getValueRange()));
     }
     
     @SuppressWarnings("unchecked")
-    private Range<LocalDateTime> LocalDateTimeRange(final Range<T> shardingValue) {
+    private Range<LocalDateTime> toLocalDateTimeRange(final Range<T> shardingValue) {
         if (Range.all().equals(shardingValue)) {
             return Range.all();
         }
