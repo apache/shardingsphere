@@ -54,8 +54,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
     
     private static final String POSTGRESQL_TABLE_DATA_LENGTH = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH  FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME='%s' AND RELNAME = '%s'";
     
-    private static final String OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH =
-            "SELECT  RELTUPLES AS TABLE_ROWS, PG_TABLE_SIZE('%s.%s') AS DATA_LENGTH FROM PG_CLASS WHERE RELNAMESPACE = (SELECT OID FROM PG_NAMESPACE WHERE NSPNAME='%s') AND RELNAME = '%s'";
+    private static final String OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH = "SELECT  RELTUPLES AS TABLE_ROWS, PG_TABLE_SIZE('%s') AS DATA_LENGTH FROM PG_CLASS WHERE RELNAME = '%s'";
     
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
@@ -160,7 +159,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
                 Statement statement = connection.createStatement()) {
             try (
                     ResultSet resultSet = statement
-                            .executeQuery(String.format(OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH, dataNode.getSchemaName(), dataNode.getTableName(), dataNode.getSchemaName(), dataNode.getTableName()))) {
+                            .executeQuery(String.format(OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH, dataNode.getTableName(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
                     tableRows = resultSet.getBigDecimal("TABLE_ROWS");
                     dataLength = resultSet.getBigDecimal("DATA_LENGTH");
