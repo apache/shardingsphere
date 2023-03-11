@@ -68,7 +68,7 @@ public final class CreateTableSQLGeneratorIT {
     
     private static final String OPEN_GAUSS_CASE_FILE_PATH = "opengauss/create-table-sql-generator.xml";
     
-    private static final String PARENT_PATH = "env/scenario/createtablegenerator";
+    private static final String PARENT_PATH = "env/scenario/create-table-generator";
     
     private static final String DEFAULT_SCHEMA = "public";
     
