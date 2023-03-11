@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.createtable;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -61,7 +60,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Parameterized.class)
-@Slf4j
 public final class CreateTableSQLGeneratorIT {
     
     private static final String POSTGRES_CASE_FILE_PATH = "postgresql/create-table-sql-generator.xml";
@@ -124,7 +122,6 @@ public final class CreateTableSQLGeneratorIT {
     
     @Test
     public void assertGenerateCreateTableSQL() throws SQLException {
-        log.info("generate create table sql, test parameter: {}", testParam);
         DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
         try (
                 Connection connection = dataSource.getConnection();
@@ -137,7 +134,6 @@ public final class CreateTableSQLGeneratorIT {
                 assertSQL(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
-        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
     }
     
     private void assertSQL(final Collection<String> actualSQL, final Collection<String> expectedSQL) {
