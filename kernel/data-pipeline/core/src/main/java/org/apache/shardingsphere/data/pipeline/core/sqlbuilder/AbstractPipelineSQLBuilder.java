@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 /**
  * Abstract pipeline SQL builder.
@@ -81,7 +82,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         if (columnNames.isEmpty()) {
             return "*";
         }
-        return String.join(",", columnNames);
+        return columnNames.stream().map(this::quote).collect(Collectors.joining(","));
     }
     
     @Override
