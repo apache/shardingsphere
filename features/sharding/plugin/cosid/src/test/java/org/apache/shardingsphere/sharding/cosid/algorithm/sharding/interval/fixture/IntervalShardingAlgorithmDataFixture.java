@@ -128,7 +128,7 @@ public final class IntervalShardingAlgorithmDataFixture {
      */
     public static CosIdIntervalShardingAlgorithm createShardingAlgorithm() {
         Properties props = PropertiesBuilder.build(
-                new Property(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai"),
+                new Property("zone-id", "Asia/Shanghai"),
                 new Property(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, LOGIC_NAME_PREFIX),
                 new Property(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY, LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER)),
                 new Property(CosIdIntervalShardingAlgorithm.DATE_TIME_UPPER_KEY, UPPER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER)),

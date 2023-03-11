@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 
-import me.ahoo.cosid.converter.Radix62IdConverter;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
 import me.ahoo.cosid.snowflake.SnowflakeIdStateParser;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.exception.ShardingPluginException;
+import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.LocalDateTimeConvertor;
+import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.impl.SnowflakeLocalDateTimeConvertor;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Properties;
 
 /**
@@ -33,37 +33,20 @@ import java.util.Properties;
  */
 public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosIdIntervalShardingAlgorithm<Comparable<?>> {
     
-    public static final String EPOCH_KEY = "epoch";
+    private static final String EPOCH_KEY = "epoch";
     
-    private SnowflakeIdStateParser snowflakeIdStateParser;
+    private static final String ZONE_ID_KEY = "zone-id";
     
     @Override
-    public void init(final Properties props) {
-        super.init(props);
-        snowflakeIdStateParser = getSnowflakeIdStateParser(props);
+    protected LocalDateTimeConvertor createLocalDateTimeConvertor(final Properties props) {
+        return new SnowflakeLocalDateTimeConvertor(createSnowflakeIdStateParser(props));
     }
     
-    private SnowflakeIdStateParser getSnowflakeIdStateParser(final Properties props) {
+    private SnowflakeIdStateParser createSnowflakeIdStateParser(final Properties props) {
         long epoch = Long.parseLong(props.getProperty(EPOCH_KEY, CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH + ""));
+        ZoneId zoneId = props.containsKey(ZONE_ID_KEY) ? ZoneId.of(props.getProperty(ZONE_ID_KEY)) : ZoneId.systemDefault();
         return new MillisecondSnowflakeIdStateParser(
-                epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, getZoneId());
-    }
-    
-    @Override
-    protected LocalDateTime convertShardingValue(final Comparable<?> shardingValue) {
-        Long snowflakeId = convertToSnowflakeId(shardingValue);
-        return snowflakeIdStateParser.parseTimestamp(snowflakeId);
-    }
-    
-    private Long convertToSnowflakeId(final Comparable<?> shardingValue) {
-        if (shardingValue instanceof Long) {
-            return (Long) shardingValue;
-        }
-        if (shardingValue instanceof String) {
-            String shardingValueStr = (String) shardingValue;
-            return Radix62IdConverter.PAD_START.asLong(shardingValueStr);
-        }
-        throw new ShardingPluginException("Unsupported sharding value type `%s`.", shardingValue);
+                epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, zoneId);
     }
     
     @Override
