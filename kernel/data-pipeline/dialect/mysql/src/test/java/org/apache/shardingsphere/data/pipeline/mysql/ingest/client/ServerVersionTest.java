@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.client;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

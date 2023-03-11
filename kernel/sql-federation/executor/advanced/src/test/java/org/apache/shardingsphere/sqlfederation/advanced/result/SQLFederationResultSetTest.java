@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.advanced.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -65,7 +65,7 @@ public final class SQLFederationResultSetTest {
     
     private SQLFederationResultSet federationResultSet;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         enumerator = createEnumerator();
         federationResultSet = new SQLFederationResultSet(enumerator, mock(ShardingSphereSchema.class), mock(FilterableSchema.class), createSelectStatementContext(), mock(RelDataType.class));
@@ -88,6 +88,12 @@ public final class SQLFederationResultSetTest {
         when(result.moveNext()).thenReturn(true, false);
         when(result.current()).thenReturn(new Object[]{1, 1, "OK", 1});
         return result;
+    }
+    
+    @AfterEach
+    public void clean() {
+        enumerator.close();
+        federationResultSet.close();
     }
     
     @Test
@@ -483,11 +489,5 @@ public final class SQLFederationResultSetTest {
         when(enumerator.current()).thenReturn(new Object[]{mock(SQLXML.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getSQLXML("order_id"));
-    }
-    
-    @After
-    public void clean() {
-        enumerator.close();
-        federationResultSet.close();
     }
 }

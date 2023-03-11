@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,7 +35,7 @@ public final class SQLRegexTrafficAlgorithmTest {
     
     private SQLRegexTrafficAlgorithm sqlRegexAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TypedSPILoader.getService(
                 TrafficAlgorithm.class, "SQL_REGEX", PropertiesBuilder.build(new Property("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*")));
