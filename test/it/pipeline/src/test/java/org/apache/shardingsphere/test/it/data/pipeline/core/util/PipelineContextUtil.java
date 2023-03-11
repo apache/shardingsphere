@@ -19,6 +19,9 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtil;
@@ -32,9 +35,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
-import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineReadConfiguration;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;

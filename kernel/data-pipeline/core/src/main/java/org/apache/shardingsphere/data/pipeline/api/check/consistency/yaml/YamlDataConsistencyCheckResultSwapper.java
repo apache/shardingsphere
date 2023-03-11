@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.yaml.consistency;
+package org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckIgnoredType;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResult.YamlDataConsistencyContentCheckResult;
-import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResult.YamlDataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult.YamlDataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult.YamlDataConsistencyCountCheckResult;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 

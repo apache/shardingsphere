@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.yaml.consistency;
+package org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml;
 
 import lombok.Getter;
 import lombok.Setter;

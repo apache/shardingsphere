@@ -15,35 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.yaml.process;
+package org.apache.shardingsphere.data.pipeline.api.config.process.yaml.swapper;
 
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineReadConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 
 /**
- * YAML pipeline write configuration swapper.
+ * YAML pipeline read configuration swapper.
  */
-public final class YamlPipelineWriteConfigurationSwapper implements YamlConfigurationSwapper<YamlPipelineWriteConfiguration, PipelineWriteConfiguration> {
+public final class YamlPipelineReadConfigurationSwapper implements YamlConfigurationSwapper<YamlPipelineReadConfiguration, PipelineReadConfiguration> {
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
     @Override
-    public YamlPipelineWriteConfiguration swapToYamlConfiguration(final PipelineWriteConfiguration data) {
+    public YamlPipelineReadConfiguration swapToYamlConfiguration(final PipelineReadConfiguration data) {
         if (null == data) {
             return null;
         }
-        YamlPipelineWriteConfiguration result = new YamlPipelineWriteConfiguration();
+        YamlPipelineReadConfiguration result = new YamlPipelineReadConfiguration();
         result.setWorkerThread(data.getWorkerThread());
         result.setBatchSize(data.getBatchSize());
+        result.setShardingSize(data.getShardingSize());
         result.setRateLimiter(algorithmSwapper.swapToYamlConfiguration(data.getRateLimiter()));
         return result;
     }
     
     @Override
-    public PipelineWriteConfiguration swapToObject(final YamlPipelineWriteConfiguration yamlConfig) {
+    public PipelineReadConfiguration swapToObject(final YamlPipelineReadConfiguration yamlConfig) {
         return null == yamlConfig
                 ? null
-                : new PipelineWriteConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), algorithmSwapper.swapToObject(yamlConfig.getRateLimiter()));
+                : new PipelineReadConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), yamlConfig.getShardingSize(), algorithmSwapper.swapToObject(yamlConfig.getRateLimiter()));
     }
 }

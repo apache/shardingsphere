@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.yaml.process;
+package org.apache.shardingsphere.data.pipeline.api.config.process.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
