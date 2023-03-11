@@ -24,7 +24,7 @@ import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguratio
 import org.apache.shardingsphere.logging.yaml.swapper.YamlAppenderSwapper;
 import org.apache.shardingsphere.logging.yaml.swapper.YamlLoggerSwapper;
 import org.apache.shardingsphere.logging.yaml.swapper.YamlLoggingRuleConfigurationSwapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
