@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
-// TODO Move to pipeline-core
 public final class JobDataNodeLine {
     
     // Need sequential collection
