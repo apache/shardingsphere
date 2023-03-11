@@ -72,7 +72,6 @@ public final class ShardingRouteCacheableCheckerTest {
     
     private static final String SCHEMA_NAME = "public";
     
-    
     @ParameterizedTest(name = "probably cacheable: {2}, SQL: {0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertCheckCacheable(final String sql, final List<Object> parameters, final boolean expectedProbablyCacheable, final List<Integer> expectedShardingConditionParameterMarkerIndexes) {
