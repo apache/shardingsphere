@@ -15,42 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.job;
+package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 
 import java.util.Properties;
 
 /**
- * Consistency check job configuration.
+ * Consistency check job configuration for YAML.
  */
-@RequiredArgsConstructor
 @Getter
+@Setter
 @ToString
-public final class ConsistencyCheckJobConfiguration implements PipelineJobConfiguration {
+public final class YamlConsistencyCheckJobConfiguration implements YamlPipelineJobConfiguration {
     
-    private final String jobId;
+    private String jobId;
     
-    private final String parentJobId;
+    private String parentJobId;
     
-    private final String algorithmTypeName;
+    private String algorithmTypeName;
     
-    private final Properties algorithmProps;
+    private Properties algorithmProps;
     
     @Override
-    public String getSourceDatabaseType() {
+    public String getTargetDatabaseName() {
         throw new UnsupportedOperationException("");
-    }
-    
-    /**
-     * Get job sharding count.
-     *
-     * @return job sharding count
-     */
-    @Override
-    public int getJobShardingCount() {
-        return 1;
     }
 }
