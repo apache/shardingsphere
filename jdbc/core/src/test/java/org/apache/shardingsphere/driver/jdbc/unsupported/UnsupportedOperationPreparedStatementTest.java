@@ -29,8 +29,8 @@ import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederationRuleConfigurationBuilder;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 import java.sql.NClob;
@@ -39,6 +39,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,7 +48,7 @@ public final class UnsupportedOperationPreparedStatementTest {
     
     private ShardingSpherePreparedStatement shardingSpherePreparedStatement;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(connection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
@@ -60,48 +61,48 @@ public final class UnsupportedOperationPreparedStatementTest {
         shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1");
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetMetaData() throws SQLException {
-        shardingSpherePreparedStatement.getMetaData();
+    @Test
+    public void assertGetMetaData() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.getMetaData());
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetNString() throws SQLException {
-        shardingSpherePreparedStatement.setNString(1, "");
+    @Test
+    public void assertSetNString() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNString(1, ""));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetNClob() throws SQLException {
-        shardingSpherePreparedStatement.setNClob(1, (NClob) null);
+    @Test
+    public void assertSetNClob() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNClob(1, (NClob) null));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetNClobForReader() throws SQLException {
-        shardingSpherePreparedStatement.setNClob(1, new StringReader(""));
+    @Test
+    public void assertSetNClobForReader() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNClob(1, new StringReader("")));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetNClobForReaderAndLength() throws SQLException {
-        shardingSpherePreparedStatement.setNClob(1, new StringReader(""), 1);
+    @Test
+    public void assertSetNClobForReaderAndLength() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNClob(1, new StringReader(""), 1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetNCharacterStream() throws SQLException {
-        shardingSpherePreparedStatement.setNCharacterStream(1, new StringReader(""));
+    @Test
+    public void assertSetNCharacterStream() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNCharacterStream(1, new StringReader("")));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetNCharacterStreamWithLength() throws SQLException {
-        shardingSpherePreparedStatement.setNCharacterStream(1, new StringReader(""), 1);
+    @Test
+    public void assertSetNCharacterStreamWithLength() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setNCharacterStream(1, new StringReader(""), 1));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetRowId() throws SQLException {
-        shardingSpherePreparedStatement.setRowId(1, null);
+    @Test
+    public void assertSetRowId() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setRowId(1, null));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetRef() throws SQLException {
-        shardingSpherePreparedStatement.setRef(1, null);
+    @Test
+    public void assertSetRef() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSpherePreparedStatement.setRef(1, null));
     }
 }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.traffic.rule.builder;
 
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class DefaultTrafficRuleConfigurationBuilderTest {
     

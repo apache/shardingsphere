@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

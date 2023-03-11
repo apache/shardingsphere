@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigDecimalV
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigIntegerValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.LocalTimeValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.NullValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -38,7 +38,7 @@ import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ColumnValueConvertUtilTest {
     

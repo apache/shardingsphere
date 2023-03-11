@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.state.circuit.connection;
 import org.apache.shardingsphere.driver.state.circuit.metadata.CircuitBreakerDatabaseMetaData;
 import org.apache.shardingsphere.driver.state.circuit.statement.CircuitBreakerPreparedStatement;
 import org.apache.shardingsphere.driver.state.circuit.statement.CircuitBreakerStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,8 +28,8 @@ import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class CircuitBreakerConnectionTest {

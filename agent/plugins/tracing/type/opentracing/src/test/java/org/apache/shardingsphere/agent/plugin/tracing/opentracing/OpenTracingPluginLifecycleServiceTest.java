@@ -21,16 +21,16 @@ import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class OpenTracingPluginLifecycleServiceTest {
     
     private final OpenTracingPluginLifecycleService pluginLifecycleService = new OpenTracingPluginLifecycleService();
     
-    @After
+    @AfterEach
     public void close() {
         pluginLifecycleService.close();
     }

@@ -25,10 +25,10 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -42,12 +42,13 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class DatabaseMetaDataPersistServiceTest {
     
     @Mock
@@ -123,8 +124,7 @@ public final class DatabaseMetaDataPersistServiceTest {
         when(repository.getDirectly("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());
         Map<String, ShardingSphereSchema> schema = databaseMetaDataPersistService.loadSchemas("foo_db");
         assertThat(schema.size(), is(1));
-        Map<String, ShardingSphereSchema> empty = databaseMetaDataPersistService.loadSchemas("test");
-        assertThat(empty.size(), is(0));
+        assertTrue(databaseMetaDataPersistService.loadSchemas("test").isEmpty());
         assertThat(schema.get("foo_schema").getAllTableNames(), is(Collections.singleton("t_order")));
         assertThat(schema.get("foo_schema").getTable("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
         assertThat(schema.get("foo_schema").getAllColumnNames("t_order").size(), is(1));

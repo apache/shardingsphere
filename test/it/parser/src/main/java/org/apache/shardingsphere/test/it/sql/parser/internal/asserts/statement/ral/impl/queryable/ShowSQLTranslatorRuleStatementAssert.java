@@ -21,8 +21,8 @@ import org.apache.shardingsphere.sqltranslator.distsql.parser.statement.ShowSQLT
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowSQLTranslatorRuleStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Show SQL translator rule statement assert.
@@ -38,9 +38,9 @@ public final class ShowSQLTranslatorRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowSQLTranslatorRuleStatement actual, final ShowSQLTranslatorRuleStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
         }
     }
 }

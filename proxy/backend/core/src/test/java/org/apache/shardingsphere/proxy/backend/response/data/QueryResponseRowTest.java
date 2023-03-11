@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.response.data;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Arrays;

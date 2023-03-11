@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.util.yaml.representer;
 
 import org.apache.shardingsphere.infra.util.yaml.fixture.pojo.YamlConfigurationFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 

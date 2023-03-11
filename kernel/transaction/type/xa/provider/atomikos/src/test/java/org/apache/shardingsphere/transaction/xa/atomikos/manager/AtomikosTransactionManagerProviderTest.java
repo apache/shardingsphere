@@ -20,12 +20,12 @@ package org.apache.shardingsphere.transaction.xa.atomikos.manager;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
@@ -34,15 +34,15 @@ import javax.transaction.Transaction;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class AtomikosTransactionManagerProviderTest {
     
     private final AtomikosTransactionManagerProvider transactionManagerProvider = new AtomikosTransactionManagerProvider();
@@ -56,7 +56,7 @@ public final class AtomikosTransactionManagerProviderTest {
     @Mock
     private XADataSource xaDataSource;
     
-    @Before
+    @BeforeEach
     public void setUp() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(AtomikosTransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider, userTransactionManager);
         Plugins.getMemberAccessor().set(AtomikosTransactionManagerProvider.class.getDeclaredField("userTransactionService"), transactionManagerProvider, userTransactionService);

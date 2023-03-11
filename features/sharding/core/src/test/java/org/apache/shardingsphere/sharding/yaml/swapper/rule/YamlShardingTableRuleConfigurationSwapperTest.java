@@ -27,13 +27,14 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardin
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class YamlShardingTableRuleConfigurationSwapperTest {
@@ -60,9 +61,9 @@ public final class YamlShardingTableRuleConfigurationSwapperTest {
         return result;
     }
     
-    @Test(expected = MissingRequiredShardingConfigurationException.class)
+    @Test
     public void assertSwapToObjectWithoutLogicTable() {
-        new YamlShardingTableRuleConfigurationSwapper().swapToObject(new YamlTableRuleConfiguration());
+        assertThrows(MissingRequiredShardingConfigurationException.class, () -> new YamlShardingTableRuleConfigurationSwapper().swapToObject(new YamlTableRuleConfiguration()));
     }
     
     @Test

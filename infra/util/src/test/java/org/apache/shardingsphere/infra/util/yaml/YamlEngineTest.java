@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.util.yaml;
 
 import org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts.YamlShortcutsConfigurationFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
 
 import java.io.BufferedReader;
@@ -31,7 +31,8 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class YamlEngineTest {
     
@@ -87,7 +88,7 @@ public final class YamlEngineTest {
         assertThat(YamlEngine.marshal(actual), is("name: test" + System.lineSeparator()));
     }
     
-    @Test(expected = ConstructorException.class)
+    @Test
     public void assertUnmarshalInvalidYaml() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/accepted-class.yaml");
         assertNotNull(url);
@@ -100,7 +101,7 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append(System.lineSeparator());
             }
         }
-        YamlEngine.unmarshal(yamlContent.toString(), Object.class);
+        assertThrows(ConstructorException.class, () -> YamlEngine.unmarshal(yamlContent.toString(), Object.class));
     }
     
     @Test
@@ -109,9 +110,8 @@ public final class YamlEngineTest {
         actual.setName("test");
         YamlShortcutsConfigurationFixture actualAnother = new YamlShortcutsConfigurationFixture();
         actualAnother.setName("test");
-        StringBuilder res = new StringBuilder("- !FIXTURE");
-        res.append(System.lineSeparator()).append("  name: test").append(System.lineSeparator()).append("- !FIXTURE")
-                .append(System.lineSeparator()).append("  name: test").append(System.lineSeparator());
-        assertThat(YamlEngine.marshal(Arrays.asList(actual, actualAnother)), is(res.toString()));
+        String res = "- !FIXTURE" + System.lineSeparator() + "  name: test" + System.lineSeparator() + "- !FIXTURE"
+                + System.lineSeparator() + "  name: test" + System.lineSeparator();
+        assertThat(YamlEngine.marshal(Arrays.asList(actual, actualAnother)), is(res));
     }
 }

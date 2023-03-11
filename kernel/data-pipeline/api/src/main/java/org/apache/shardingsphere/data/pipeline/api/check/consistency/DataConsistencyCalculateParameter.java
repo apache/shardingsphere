@@ -24,7 +24,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Data consistency calculate parameter.
@@ -45,7 +45,7 @@ public final class DataConsistencyCalculateParameter {
     
     private final String logicTableName;
     
-    private final Collection<String> columnNames;
+    private final List<String> columnNames;
     
     private final String databaseType;
     

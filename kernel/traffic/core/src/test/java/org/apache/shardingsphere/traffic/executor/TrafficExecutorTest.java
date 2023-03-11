@@ -20,7 +20,7 @@ package org.apache.shardingsphere.traffic.executor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -43,7 +43,7 @@ public final class TrafficExecutorTest {
             when(executionUnit.getStorageResource()).thenReturn(statement);
             trafficExecutor.execute(executionUnit, Statement::executeQuery);
         }
-        verify(statement, times(1)).close();
+        verify(statement).close();
         verify(statement, times(0)).getConnection();
     }
 }

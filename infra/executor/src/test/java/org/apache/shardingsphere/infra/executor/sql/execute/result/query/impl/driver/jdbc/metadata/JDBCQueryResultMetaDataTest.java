@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -26,7 +26,7 @@ import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +34,7 @@ public final class JDBCQueryResultMetaDataTest {
     
     private JDBCQueryResultMetaData queryResultMetaData;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         queryResultMetaData = new JDBCQueryResultMetaData(mockResultSetMetaData());
     }

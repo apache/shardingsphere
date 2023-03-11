@@ -19,9 +19,9 @@ package org.apache.shardingsphere.timeservice.type.system;
 
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class SystemTimeServiceTest {
     

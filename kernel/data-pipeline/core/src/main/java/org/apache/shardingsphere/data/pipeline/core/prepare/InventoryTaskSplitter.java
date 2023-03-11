@@ -44,6 +44,9 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -176,7 +179,8 @@ public final class InventoryTaskSplitter {
         Optional<String> sql = pipelineSQLBuilder.buildEstimatedCountSQL(schemaName, actualTableName);
         try {
             if (sql.isPresent()) {
-                long result = getEstimatedCount(dataSource, sql.get());
+                DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, jobConfig.getSourceDatabaseType());
+                long result = getEstimatedCount(databaseType, dataSource, sql.get());
                 return result > 0 ? result : getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
             }
             return getCount(dataSource, pipelineSQLBuilder.buildCountSQL(schemaName, actualTableName));
@@ -186,12 +190,13 @@ public final class InventoryTaskSplitter {
         }
     }
     
-    // TODO maybe need refactor after PostgreSQL support estimated count.
-    private long getEstimatedCount(final DataSource dataSource, final String estimatedCountSQL) throws SQLException {
+    private long getEstimatedCount(final DatabaseType databaseType, final DataSource dataSource, final String estimatedCountSQL) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(estimatedCountSQL)) {
-            preparedStatement.setString(1, connection.getCatalog());
+            if (databaseType instanceof MySQLDatabaseType) {
+                preparedStatement.setString(1, connection.getCatalog());
+            }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 resultSet.next();
                 return resultSet.getLong(1);

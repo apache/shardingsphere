@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForEncryptTest;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,8 +30,9 @@ import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class EncryptPreparedStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
     
@@ -199,18 +200,14 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
         }
     }
     
-    @Test(expected = SQLException.class)
-    public void assertQueryWithNull() throws SQLException {
-        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(null)) {
-            preparedStatement.executeQuery();
-        }
+    @Test
+    public void assertQueryWithNull() {
+        assertThrows(SQLException.class, () -> getEncryptConnection().prepareStatement(null));
     }
     
-    @Test(expected = SQLException.class)
-    public void assertQueryWithEmptyString() throws SQLException {
-        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement("")) {
-            preparedStatement.executeQuery();
-        }
+    @Test
+    public void assertQueryWithEmptyString() {
+        assertThrows(SQLException.class, () -> getEncryptConnection().prepareStatement(""));
     }
     
     @Test

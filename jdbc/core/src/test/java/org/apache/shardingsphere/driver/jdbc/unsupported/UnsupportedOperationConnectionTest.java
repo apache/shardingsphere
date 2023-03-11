@@ -26,14 +26,14 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,98 +49,98 @@ public final class UnsupportedOperationConnectionTest {
         shardingSphereConnection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(JDBCContext.class));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertPrepareCall() throws SQLException {
-        shardingSphereConnection.prepareCall("");
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertPrepareCallWithResultSetTypeAndResultSetConcurrency() throws SQLException {
-        shardingSphereConnection.prepareCall("", 0, 0);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertPrepareCallWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException {
-        shardingSphereConnection.prepareCall("", 0, 0, 0);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertNativeSQL() throws SQLException {
-        shardingSphereConnection.nativeSQL("");
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertAbort() throws SQLException {
-        shardingSphereConnection.abort(null);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetTypeMap() throws SQLException {
-        shardingSphereConnection.getTypeMap();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetTypeMap() throws SQLException {
-        shardingSphereConnection.setTypeMap(null);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetNetworkTimeout() throws SQLException {
-        shardingSphereConnection.getNetworkTimeout();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetNetworkTimeout() throws SQLException {
-        shardingSphereConnection.setNetworkTimeout(null, 0);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertCreateClob() throws SQLException {
-        shardingSphereConnection.createClob();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertCreateBlob() throws SQLException {
-        shardingSphereConnection.createBlob();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertCreateNClob() throws SQLException {
-        shardingSphereConnection.createNClob();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertCreateSQLXML() throws SQLException {
-        shardingSphereConnection.createSQLXML();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertCreateStruct() throws SQLException {
-        shardingSphereConnection.createStruct("", null);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetClientInfo() throws SQLException {
-        shardingSphereConnection.getClientInfo();
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertGetClientInfoWithName() throws SQLException {
-        shardingSphereConnection.getClientInfo("");
-    }
-    
-    @Test(expected = UnsupportedSQLOperationException.class)
-    public void assertSetClientInfo() {
-        shardingSphereConnection.setClientInfo("", "");
-    }
-    
-    @Test(expected = UnsupportedSQLOperationException.class)
-    public void assertSetClientInfoWithProperties() {
-        shardingSphereConnection.setClientInfo(new Properties());
-    }
-    
-    @After
+    @AfterEach
     public void tearDown() {
         TransactionTypeHolder.clear();
+    }
+    
+    @Test
+    public void assertPrepareCall() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall(""));
+    }
+    
+    @Test
+    public void assertPrepareCallWithResultSetTypeAndResultSetConcurrency() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall("", 0, 0));
+    }
+    
+    @Test
+    public void assertPrepareCallWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall("", 0, 0, 0));
+    }
+    
+    @Test
+    public void assertNativeSQL() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.nativeSQL(""));
+    }
+    
+    @Test
+    public void assertAbort() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.abort(null));
+    }
+    
+    @Test
+    public void assertGetTypeMap() {
+        assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::getTypeMap);
+    }
+    
+    @Test
+    public void assertSetTypeMap() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.setTypeMap(null));
+    }
+    
+    @Test
+    public void assertGetNetworkTimeout() {
+        assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::getNetworkTimeout);
+    }
+    
+    @Test
+    public void assertSetNetworkTimeout() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.setNetworkTimeout(null, 0));
+    }
+    
+    @Test
+    public void assertCreateClob() {
+        assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createClob);
+    }
+    
+    @Test
+    public void assertCreateBlob() {
+        assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createBlob);
+    }
+    
+    @Test
+    public void assertCreateNClob() {
+        assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createNClob);
+    }
+    
+    @Test
+    public void assertCreateSQLXML() {
+        assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createSQLXML);
+    }
+    
+    @Test
+    public void assertCreateStruct() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.createStruct("", null));
+    }
+    
+    @Test
+    public void assertGetClientInfo() {
+        assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::getClientInfo);
+    }
+    
+    @Test
+    public void assertGetClientInfoWithName() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.getClientInfo(""));
+    }
+    
+    @Test
+    public void assertSetClientInfo() {
+        assertThrows(UnsupportedSQLOperationException.class, () -> shardingSphereConnection.setClientInfo("", ""));
+    }
+    
+    @Test
+    public void assertSetClientInfoWithProperties() {
+        assertThrows(UnsupportedSQLOperationException.class, () -> shardingSphereConnection.setClientInfo(new Properties()));
     }
 }

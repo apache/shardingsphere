@@ -22,7 +22,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -54,9 +54,9 @@ public final class SQLParserEngineTest {
                 });
         Plugins.getMemberAccessor().set(sqlParserEngine.getClass().getDeclaredField("parseTreeCache"), sqlParserEngine, parseTreeCache);
         sqlParserEngine.parse(SQL, true);
-        verify(sqlParserExecutor, times(1)).parse(SQL);
+        verify(sqlParserExecutor).parse(SQL);
         sqlParserEngine.parse(SQL, true);
-        verify(sqlParserExecutor, times(1)).parse(SQL);
+        verify(sqlParserExecutor).parse(SQL);
         sqlParserEngine.parse(SQL, false);
         verify(sqlParserExecutor, times(2)).parse(SQL);
     }

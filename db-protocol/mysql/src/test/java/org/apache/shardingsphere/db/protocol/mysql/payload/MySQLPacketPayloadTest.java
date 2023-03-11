@@ -18,20 +18,19 @@
 package org.apache.shardingsphere.db.protocol.mysql.payload;
 
 import io.netty.buffer.ByteBuf;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLPacketPayloadTest {
     
     @Mock
@@ -151,23 +150,23 @@ public final class MySQLPacketPayloadTest {
     
     @Test
     public void assertWriteIntLenencWithTwoBytes() {
-        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(new Double(Math.pow(2, 16)).longValue() - 1);
+        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2, 16)).longValue() - 1);
         verify(byteBuf).writeByte(0xfc);
-        verify(byteBuf).writeShortLE(new Double(Math.pow(2, 16)).intValue() - 1);
+        verify(byteBuf).writeShortLE(Double.valueOf(Math.pow(2, 16)).intValue() - 1);
     }
     
     @Test
     public void assertWriteIntLenencWithThreeBytes() {
-        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(new Double(Math.pow(2, 24)).longValue() - 1);
+        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2, 24)).longValue() - 1);
         verify(byteBuf).writeByte(0xfd);
-        verify(byteBuf).writeMediumLE(new Double(Math.pow(2, 24)).intValue() - 1);
+        verify(byteBuf).writeMediumLE(Double.valueOf(Math.pow(2, 24)).intValue() - 1);
     }
     
     @Test
     public void assertWriteIntLenencWithFourBytes() {
-        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(new Double(Math.pow(2, 25)).longValue() - 1);
+        new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2, 25)).longValue() - 1);
         verify(byteBuf).writeByte(0xfe);
-        verify(byteBuf).writeLongLE(new Double(Math.pow(2, 25)).intValue() - 1);
+        verify(byteBuf).writeLongLE(Double.valueOf(Math.pow(2, 25)).intValue() - 1);
     }
     
     @Test
@@ -282,7 +281,7 @@ public final class MySQLPacketPayloadTest {
     @Test
     public void assertWriteReserved() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeReserved(10);
-        verify(byteBuf, times(1)).writeZero(10);
+        verify(byteBuf).writeZero(10);
     }
     
     @Test

@@ -20,12 +20,13 @@ package org.apache.shardingsphere.mode.manager.standalone.workerid.generator;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class StandaloneWorkerIdGeneratorTest {
     
@@ -44,8 +45,8 @@ public final class StandaloneWorkerIdGeneratorTest {
         assertThat(new StandaloneWorkerIdGenerator().generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1"))), is(1));
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertGenerateWithInvalidProperties() {
-        new StandaloneWorkerIdGenerator().generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1024")));
+        assertThrows(IllegalStateException.class, () -> new StandaloneWorkerIdGenerator().generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1024"))));
     }
 }

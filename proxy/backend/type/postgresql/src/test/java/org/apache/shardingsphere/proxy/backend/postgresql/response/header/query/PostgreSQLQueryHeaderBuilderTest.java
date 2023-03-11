@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.postgresql.response.header.query
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;

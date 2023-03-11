@@ -33,8 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -52,7 +52,7 @@ public final class EncryptAlterTableTokenGeneratorTest {
     
     private EncryptAlterTableTokenGenerator generator;
     
-    @Before
+    @BeforeEach
     public void setup() {
         generator = new EncryptAlterTableTokenGenerator();
         generator.setEncryptRule(mockEncryptRule());

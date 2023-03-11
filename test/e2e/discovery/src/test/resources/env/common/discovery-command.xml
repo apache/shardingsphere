@@ -84,4 +84,38 @@
             SHOW READWRITE_SPLITTING RULES replica_ds;
         </assertion-sql>
     </create-readwrite-splitting-rule>
+
+    <drop-database>
+        <execute-sql>
+            DROP DATABASE db_discovery;
+        </execute-sql>
+        <assertion-sql>
+            USE db_discovery;
+        </assertion-sql>
+    </drop-database>
+
+    <create-readwrite-splitting-database>
+        <execute-sql>
+            CREATE DATABASE readwrite_splitting_db;
+        </execute-sql>
+        <assertion-sql>
+            USE readwrite_splitting_db;
+        </assertion-sql>
+    </create-readwrite-splitting-database>
+
+    <register-single-storage-unit>
+        <execute-sql>
+            REGISTER STORAGE UNIT ds_3 (
+            HOST="mysql_4",
+            PORT=3306,
+            DB="it_discovery_test",
+            USER="test_user",
+            PASSWORD="Test@123",
+            PROPERTIES("connectionTimeout"="5000")
+            );
+        </execute-sql>
+        <assertion-sql>
+            SHOW STORAGE UNITS;
+        </assertion-sql>
+    </register-single-storage-unit>
 </command>

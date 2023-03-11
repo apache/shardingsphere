@@ -27,7 +27,7 @@ import java.io.File;
 import java.io.FileWriter;
 
 /**
- *  SQL parse result reporter for CSV.
+ * SQL parse result reporter for CSV.
  */
 public final class CsvSQLParseResultReporter implements SQLParseResultReporter {
     

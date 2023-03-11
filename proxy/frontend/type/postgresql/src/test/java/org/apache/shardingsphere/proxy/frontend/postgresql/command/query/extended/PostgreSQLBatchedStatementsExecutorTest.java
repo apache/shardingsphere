@@ -40,13 +40,15 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -65,10 +67,11 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class PostgreSQLBatchedStatementsExecutorTest {
     
     @Mock
@@ -93,22 +96,20 @@ public final class PostgreSQLBatchedStatementsExecutorTest {
                 Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR));
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
                 Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));
-        try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgreSQLPreparedStatement, parameterSets);
-            prepareExecutionUnitParameters(actual, parameterSets);
-            int actualUpdated = actual.executeBatch();
-            assertThat(actualUpdated, is(3));
-            InOrder inOrder = inOrder(preparedStatement);
-            for (List<Object> each : parameterSets) {
-                inOrder.verify(preparedStatement).setObject(1, each.get(0));
-                inOrder.verify(preparedStatement).setObject(2, each.get(1).toString());
-                inOrder.verify(preparedStatement).addBatch();
-            }
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgreSQLPreparedStatement, parameterSets);
+        prepareExecutionUnitParameters(actual, parameterSets);
+        int actualUpdated = actual.executeBatch();
+        assertThat(actualUpdated, is(3));
+        InOrder inOrder = inOrder(preparedStatement);
+        for (List<Object> each : parameterSets) {
+            inOrder.verify(preparedStatement).setObject(1, each.get(0));
+            inOrder.verify(preparedStatement).setObject(2, each.get(1).toString());
+            inOrder.verify(preparedStatement).addBatch();
         }
     }
     
-    private static InsertStatementContext mockInsertStatementContext() {
+    private InsertStatementContext mockInsertStatementContext() {
         PostgreSQLInsertStatement insertStatement = mock(PostgreSQLInsertStatement.class, RETURNS_DEEP_STUBS);
         when(insertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("t");
         InsertStatementContext result = mock(InsertStatementContext.class);

@@ -32,6 +32,10 @@ import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigur
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Job configuration builder.
  */
@@ -39,28 +43,43 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 public final class JobConfigurationBuilder {
     
     /**
-     * Create job configuration.
+     * Create migration job configuration.
      *
      * @return created job configuration
      */
+    // TODO Rename createJobConfiguration
     public static MigrationJobConfiguration createJobConfiguration() {
+        return new YamlMigrationJobConfigurationSwapper().swapToObject(createYamlMigrationJobConfiguration());
+    }
+    
+    /**
+     * Create YAML migration job configuration.
+     *
+     * @return created job configuration
+     */
+    public static YamlMigrationJobConfiguration createYamlMigrationJobConfiguration() {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setTargetDatabaseName("logic_db");
-        result.setSourceResourceName("standard_0");
-        result.setSourceTableName("t_order");
-        result.setTargetTableName("t_order");
+        result.setSourceDatabaseType("H2");
+        result.setTargetDatabaseType("H2");
+        result.setTargetTableNames(Collections.singletonList("t_order"));
+        Map<String, String> targetTableSchemaMap = new LinkedHashMap<>();
+        targetTableSchemaMap.put("t_order", "");
+        result.setTargetTableSchemaMap(targetTableSchemaMap);
+        result.setTablesFirstDataNodes("t_order:ds_0.t_order");
+        result.setJobShardingDataNodes(Collections.singletonList("t_order:ds_0.t_order"));
         result.setJobId(generateJobId(result));
-        result.setSource(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
+        Map<String, YamlPipelineDataSourceConfiguration> sources = new LinkedHashMap<>();
+        sources.put("ds_0", createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
+        result.setSources(sources);
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
         TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(result);
-        return new YamlMigrationJobConfigurationSwapper().swapToObject(result);
+        return result;
     }
     
     private static String generateJobId(final YamlMigrationJobConfiguration yamlJobConfig) {
-        String sourceTableName = RandomStringUtils.randomAlphabetic(32);
-        MigrationJobId migrationJobId = new MigrationJobId(yamlJobConfig.getSourceResourceName(), yamlJobConfig.getSourceSchemaName(), sourceTableName,
-                yamlJobConfig.getTargetDatabaseName(), yamlJobConfig.getTargetTableName());
+        MigrationJobId migrationJobId = new MigrationJobId(yamlJobConfig.getJobShardingDataNodes(), RandomStringUtils.randomAlphabetic(32));
         return new MigrationJobAPI().marshalJobId(migrationJobId);
     }
     

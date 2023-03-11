@@ -33,8 +33,8 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.Co
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
@@ -42,9 +42,9 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ConsistencyCheckJobAPITest {
     
@@ -52,7 +52,7 @@ public final class ConsistencyCheckJobAPITest {
     
     private static MigrationJobAPI migrationJobAPI;
     
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
         checkJobAPI = new ConsistencyCheckJobAPI();

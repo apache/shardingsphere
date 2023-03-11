@@ -30,8 +30,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Alter index statement assert.
@@ -54,9 +54,9 @@ public final class AlterIndexStatementAssert {
     private static void assertTable(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
         Optional<SimpleTableSegment> tableSegment = AlterIndexStatementHandler.getSimpleTableSegment(actual);
         if (null == expected.getTable()) {
-            assertFalse(assertContext.getText("Actual table segment should not exist."), tableSegment.isPresent());
+            assertFalse(tableSegment.isPresent(), assertContext.getText("Actual table segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual table segment should exist."), tableSegment.isPresent());
+            assertTrue(tableSegment.isPresent(), assertContext.getText("Actual table segment should exist."));
             TableAssert.assertIs(assertContext, tableSegment.get(), expected.getTable());
         }
     }

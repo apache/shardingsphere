@@ -28,8 +28,8 @@ import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineWriteCon
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class PipelineProcessConfigurationPersistServiceTest {
     
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }

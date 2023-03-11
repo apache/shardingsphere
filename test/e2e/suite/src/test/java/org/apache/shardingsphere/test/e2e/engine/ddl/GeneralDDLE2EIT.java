@@ -33,7 +33,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDDLE2EIT extends BaseDDLE2EIT {
@@ -61,14 +61,14 @@ public final class GeneralDDLE2EIT extends BaseDDLE2EIT {
     
     private void executeUpdateForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse("Not a DDL statement.", statement.executeUpdate(getSQL()) > 0);
+            assertFalse(statement.executeUpdate(getSQL()) > 0, "Not a DDL statement.");
         }
         waitCompleted();
     }
     
     private void executeUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
-            assertFalse("Not a DDL statement.", preparedStatement.executeUpdate() > 0);
+            assertFalse(preparedStatement.executeUpdate() > 0, "Not a DDL statement.");
         }
         waitCompleted();
     }
@@ -87,14 +87,14 @@ public final class GeneralDDLE2EIT extends BaseDDLE2EIT {
     
     private void executeForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse("Not a DDL statement.", statement.execute(getSQL()));
+            assertFalse(statement.execute(getSQL()), "Not a DDL statement.");
         }
         waitCompleted();
     }
     
     private void executeForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
-            assertFalse("Not a DDL statement.", preparedStatement.execute());
+            assertFalse(preparedStatement.execute(), "Not a DDL statement.");
         }
         waitCompleted();
     }

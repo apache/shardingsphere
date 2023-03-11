@@ -25,8 +25,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedOwner;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Owner assert.
@@ -45,9 +45,9 @@ public final class OwnerAssert {
         IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Owner");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
         if (null == expected.getOwner()) {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+            assertFalse(actual.getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
+            assertTrue(actual.getOwner().isPresent(), assertContext.getText("Actual owner should exist."));
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
         }
     }

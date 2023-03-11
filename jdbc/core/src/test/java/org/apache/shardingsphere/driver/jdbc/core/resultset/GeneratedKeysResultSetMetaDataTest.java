@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.sql.ResultSetMetaData;
@@ -28,16 +28,17 @@ import java.sql.Types;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class GeneratedKeysResultSetMetaDataTest {
     
     private ResultSetMetaData actualMetaData;
     
-    @Before
+    @BeforeEach
     public void init() {
         actualMetaData = new GeneratedKeysResultSet("order_id", Arrays.<Comparable<?>>asList(1L, 2L).iterator(), mock(Statement.class)).getMetaData();
     }
@@ -152,9 +153,9 @@ public final class GeneratedKeysResultSetMetaDataTest {
         assertThat(actualMetaData.unwrap(GeneratedKeysResultSetMetaData.class), is((GeneratedKeysResultSetMetaData) actualMetaData));
     }
     
-    @Test(expected = SQLException.class)
-    public void assertUnwrapError() throws SQLException {
-        actualMetaData.unwrap(RowSetMetaDataImpl.class);
+    @Test
+    public void assertUnwrapError() {
+        assertThrows(SQLException.class, () -> actualMetaData.unwrap(RowSetMetaDataImpl.class));
     }
     
     @Test

@@ -14,11 +14,11 @@ All built-in plugins are listed below in the form of `groupId:artifactId`.
 
 - `org.apache.shardingsphere:shardingsphere-db-protocol-core`, database protocol core
 - `org.apache.shardingsphere:shardingsphere-mysql-protocol`, the MySQL implementation of the database protocol
-- `org.apache.shardingsphere:shardingsphere-postgresql-protocol`, the PostgresSQL implementation of the database protocol
+- `org.apache.shardingsphere:shardingsphere-postgresql-protocol`, the PostgreSQL implementation of the database protocol
 - `org.apache.shardingsphere:shardingsphere-opengauss-protocol`, the OpenGauss implementation of the database protocol
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-core`, used by ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-mysql`, a MySQL implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
-- `org.apache.shardingsphere:shardingsphere-proxy-frontend-postgresql`, a PostgresSQL implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
+- `org.apache.shardingsphere:shardingsphere-proxy-frontend-postgresql`, a PostgreSQL implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-opengauss`, an openGauss implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-backend`, the backend for ShardingSphere Proxy
 - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper`, the zookeeper implementation of the persistent definition of cluster mode configuration information
@@ -30,12 +30,12 @@ For the core `org.apache.shardingsphere:shardingsphere-jdbc-core`, the following
 - `org.apache.shardingsphere:shardingsphere-transaction-core`, XA Distributed Transaction Manager Core
 - `org.apache.shardingsphere:shardingsphere-sql-parser-sql92`, the SQL 92 dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-mysql`, MySQL dialect implementation of SQL parsing
-- `org.apache.shardingsphere:shardingsphere-sql-parser-postgresql`, PostgresSQL dialect implementation of SQL parsing
+- `org.apache.shardingsphere:shardingsphere-sql-parser-postgresql`, PostgreSQL dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-oracle`, Oracle dialect parsing implementation for SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-sqlserver`, the SQL Server dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-sql-parser-opengauss`, the OpenGauss dialect implementation of SQL parsing
 - `org.apache.shardingsphere:shardingsphere-mysql-dialect-exception`, MySQL implementation of database gateway
-- `org.apache.shardingsphere:shardingsphere-postgresql-dialect-exception`, PostgresSQL implementation of database
+- `org.apache.shardingsphere:shardingsphere-postgresql-dialect-exception`, PostgreSQL implementation of database
   gateway
 - `org.apache.shardingsphere:shardingsphere-authority-core`, the user authority to load the logical core
 - `org.apache.shardingsphere:shardingsphere-single-table-core`, single-table (only the only table that exists in all

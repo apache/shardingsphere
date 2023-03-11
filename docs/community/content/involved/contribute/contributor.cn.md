@@ -31,6 +31,7 @@ git clone https://github.com/(your_github_name)/shardingsphere.git
 添加 ShardingSphere 远程仓库。
 
 ```shell
+cd shardingsphere
 git remote add apache https://github.com/apache/shardingsphere.git
 git remote -v
 ```

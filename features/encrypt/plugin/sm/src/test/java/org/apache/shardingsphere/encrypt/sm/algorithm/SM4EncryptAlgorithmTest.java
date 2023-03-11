@@ -24,20 +24,22 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class SM4EncryptAlgorithmTest {
     
-    @Test(expected = EncryptAlgorithmInitializationException.class)
+    @Test
     public void assertInitWithoutKey() {
-        TypedSPILoader.getService(EncryptAlgorithm.class, "SM4", PropertiesBuilder.build(new Property("sm4-mode", "ECB"), new Property("sm4-padding", "PKCS5Padding")));
+        assertThrows(EncryptAlgorithmInitializationException.class,
+                () -> TypedSPILoader.getService(EncryptAlgorithm.class, "SM4", PropertiesBuilder.build(new Property("sm4-mode", "ECB"), new Property("sm4-padding", "PKCS5Padding"))));
     }
     
     @SuppressWarnings("unchecked")

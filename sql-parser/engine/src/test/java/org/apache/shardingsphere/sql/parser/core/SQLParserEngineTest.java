@@ -21,7 +21,7 @@ import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -46,9 +46,9 @@ public final class SQLParserEngineTest {
                     }
                 });
         parseTreeCache.get("");
-        verify(sqlParserExecutor, times(1)).parse("");
+        verify(sqlParserExecutor).parse("");
         parseTreeCache.get("");
-        verify(sqlParserExecutor, times(1)).parse("");
+        verify(sqlParserExecutor).parse("");
         sqlParserExecutor.parse("");
         verify(sqlParserExecutor, times(2)).parse("");
     }

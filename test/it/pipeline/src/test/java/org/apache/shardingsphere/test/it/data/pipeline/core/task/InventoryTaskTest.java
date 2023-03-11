@@ -31,10 +31,10 @@ import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureImpor
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -47,6 +47,7 @@ import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class InventoryTaskTest {
     
@@ -54,23 +55,23 @@ public final class InventoryTaskTest {
     
     private MigrationTaskConfiguration taskConfig;
     
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         DATA_SOURCE_MANAGER.close();
     }
     
-    @Before
+    @BeforeEach
     public void setUp() {
         taskConfig = PipelineContextUtil.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
     }
     
-    @Test(expected = ExecutionException.class)
-    public void assertStartWithGetEstimatedRowsFailure() throws ExecutionException, InterruptedException, TimeoutException {
+    @Test
+    public void assertStartWithGetEstimatedRowsFailure() {
         InventoryDumperConfiguration inventoryDumperConfig = createInventoryDumperConfiguration("t_non_exist", "t_non_exist");
         PipelineDataSourceWrapper dataSource = DATA_SOURCE_MANAGER.getDataSource(inventoryDumperConfig.getDataSourceConfig());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
@@ -78,7 +79,7 @@ public final class InventoryTaskTest {
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
                         PipelineContextUtil.getPipelineChannelCreator(), new FixtureImporterConnector(), dataSource,
                         metaDataLoader, PipelineContextUtil.getExecuteEngine(), PipelineContextUtil.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext())) {
-            CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
+            assertThrows(ExecutionException.class, () -> CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS));
         }
     }
     

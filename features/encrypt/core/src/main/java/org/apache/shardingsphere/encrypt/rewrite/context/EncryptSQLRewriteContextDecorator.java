@@ -23,7 +23,6 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngin
 import org.apache.shardingsphere.encrypt.rewrite.parameter.EncryptParameterRewriterBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.token.EncryptTokenGenerateBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -47,7 +46,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     @Override
     public void decorate(final EncryptRule encryptRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
-        if (((CommonSQLStatementContext) sqlStatementContext).getSqlHintExtractor().isHintSkipEncryptRewrite() || !containsEncryptTable(encryptRule, sqlStatementContext)) {
+        if (!containsEncryptTable(encryptRule, sqlStatementContext)) {
             return;
         }
         Collection<EncryptCondition> encryptConditions = createEncryptConditions(encryptRule, sqlRewriteContext);

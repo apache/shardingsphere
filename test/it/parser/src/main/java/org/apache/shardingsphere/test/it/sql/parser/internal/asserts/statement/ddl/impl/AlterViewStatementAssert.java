@@ -28,8 +28,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Alter view statement assert.
@@ -56,9 +56,9 @@ public final class AlterViewStatementAssert {
     
     private static void assertViewDefinition(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
         if (null == expected.getViewDefinition()) {
-            assertFalse("actual view definition should not exist", AlterViewStatementHandler.getViewDefinition(actual).isPresent());
+            assertFalse(AlterViewStatementHandler.getViewDefinition(actual).isPresent(), "actual view definition should not exist");
         } else {
-            assertTrue("actual view definition should exist", AlterViewStatementHandler.getViewDefinition(actual).isPresent());
+            assertTrue(AlterViewStatementHandler.getViewDefinition(actual).isPresent(), "actual view definition should exist");
             assertThat(assertContext.getText(String.format("`%s`'s view definition assertion error: ", actual.getClass().getSimpleName())), AlterViewStatementHandler.getViewDefinition(actual).get(),
                     is(expected.getViewDefinition()));
         }
@@ -66,9 +66,9 @@ public final class AlterViewStatementAssert {
     
     private static void assertSelect(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
         if (null == expected.getSelectStatement()) {
-            assertFalse("actual select statement should not exist", AlterViewStatementHandler.getSelectStatement(actual).isPresent());
+            assertFalse(AlterViewStatementHandler.getSelectStatement(actual).isPresent(), "actual select statement should not exist");
         } else {
-            assertTrue("actual select statement should exist", AlterViewStatementHandler.getSelectStatement(actual).isPresent());
+            assertTrue(AlterViewStatementHandler.getSelectStatement(actual).isPresent(), "actual select statement should exist");
             SelectStatementAssert.assertIs(assertContext, AlterViewStatementHandler.getSelectStatement(actual).get(), expected.getSelectStatement());
         }
     }

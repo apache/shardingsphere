@@ -21,8 +21,8 @@ import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationSource
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationSourceStorageUnitsStatementTestCase;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Show migration source storage units statement assert.
@@ -38,9 +38,9 @@ public final class ShowMigrationSourceStorageUnitsStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowMigrationSourceStorageUnitsStatement actual, final ShowMigrationSourceStorageUnitsStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
         }
     }
 }

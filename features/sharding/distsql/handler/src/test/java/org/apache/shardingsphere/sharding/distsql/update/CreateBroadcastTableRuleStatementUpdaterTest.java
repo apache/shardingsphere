@@ -22,11 +22,11 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateBroadcastTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateBroadcastTableRuleStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,9 +34,10 @@ import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class CreateBroadcastTableRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -56,11 +57,11 @@ public final class CreateBroadcastTableRuleStatementUpdaterTest {
         assertTrue(currentRuleConfig.getBroadcastTables().contains("t_2"));
     }
     
-    @Test(expected = DuplicateRuleException.class)
+    @Test
     public void assertCheckDuplicatedBroadcastTable() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Arrays.asList("t_order", "t_address"));
-        updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentRuleConfig));
     }
     
     @Test

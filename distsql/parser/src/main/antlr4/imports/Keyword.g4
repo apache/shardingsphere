@@ -43,10 +43,6 @@ ALTER
     : A L T E R
     ;
 
-CLEAR
-    : C L E A R
-    ;
-
 DROP
     : D R O P
     ;
@@ -105,10 +101,6 @@ VARIABLE
 
 VARIABLES
     : V A R I A B L E S
-    ;
-
-HINT
-    : H I N T
     ;
 
 ENABLE
@@ -349,4 +341,20 @@ LIKE
 
 NOT
     : N O T
+    ;
+
+LOCK
+    : L O C K
+    ;
+
+UNLOCK
+    : U N L O C K
+    ;
+
+CLUSTER
+    : C L U S T E R
+    ;
+
+LOCK_STRATEGY
+    : L O C K UL_ S T R A T E G Y
     ;

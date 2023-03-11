@@ -23,14 +23,15 @@ import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -41,7 +42,7 @@ public final class ShardingRuleBuilderTest {
     @SuppressWarnings("rawtypes")
     private DatabaseRuleBuilder builder;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         ruleConfig = new ShardingRuleConfiguration();
         builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
@@ -55,14 +56,16 @@ public final class ShardingRuleBuilderTest {
     }
     
     @SuppressWarnings("unchecked")
-    @Test(expected = MissingRequiredShardingConfigurationException.class)
+    @Test
     public void assertBuildWithNullDataSourceMap() {
-        assertThat(builder.build(ruleConfig, "sharding_db", null, Collections.emptyList(), mock(InstanceContext.class)), instanceOf(ShardingRule.class));
+        assertThrows(MissingRequiredShardingConfigurationException.class,
+                () -> builder.build(ruleConfig, "sharding_db", null, Collections.emptyList(), mock(InstanceContext.class)));
     }
     
     @SuppressWarnings("unchecked")
-    @Test(expected = MissingRequiredShardingConfigurationException.class)
+    @Test
     public void assertBuildWithEmptyDataSourceMap() {
-        assertThat(builder.build(ruleConfig, "sharding_db", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(ShardingRule.class));
+        assertThrows(MissingRequiredShardingConfigurationException.class,
+                () -> builder.build(ruleConfig, "sharding_db", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)));
     }
 }

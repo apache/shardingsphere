@@ -24,7 +24,7 @@ import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mariadb.jdbc.MariaDbConnection;
 import org.mariadb.jdbc.MariaXaResource;
 

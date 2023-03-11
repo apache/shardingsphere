@@ -26,7 +26,6 @@ import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.common.utils.StringUtils;
 import com.google.common.util.concurrent.SettableFuture;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -35,14 +34,14 @@ import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceMet
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProperties;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.NacosMetaDataUtil;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.plugins.MemberAccessor;
 import org.mockito.stubbing.VoidAnswer2;
 
@@ -58,6 +57,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -65,7 +65,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class NacosRepositoryTest {
     
     private static final NacosRepository REPOSITORY = new NacosRepository();
@@ -75,9 +75,8 @@ public final class NacosRepositoryTest {
     
     private ServiceController serviceController;
     
-    @Before
-    @SneakyThrows(Exception.class)
-    public void initClient() {
+    @BeforeEach
+    public void initClient() throws ReflectiveOperationException {
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(REPOSITORY.getClass().getDeclaredField("nacosProps"), REPOSITORY, new NacosProperties(new Properties()));
         accessor.set(REPOSITORY.getClass().getDeclaredField("client"), REPOSITORY, client);
@@ -145,9 +144,7 @@ public final class NacosRepositoryTest {
         instance.setIp(ip);
         instance.setEphemeral(false);
         String key = "/test/children/keys/persistent/0";
-        Map<String, String> metaDataMap = new HashMap<>(1, 1);
-        metaDataMap.put(key, "value0");
-        instance.setMetadata(metaDataMap);
+        instance.setMetadata(new HashMap<>(Collections.singletonMap(key, "value0")));
         List<Instance> instances = new LinkedList<>();
         buildParentPath(key, instances);
         instances.add(instance);
@@ -338,16 +335,16 @@ public final class NacosRepositoryTest {
         verify(client).shutDown();
     }
     
-    @Test(expected = ClusterPersistRepositoryException.class)
+    @Test
     public void assertPersistNotAvailable() {
-        REPOSITORY.persist("/test/children/keys/persistent/1", "value4");
+        assertThrows(ClusterPersistRepositoryException.class, () -> REPOSITORY.persist("/test/children/keys/persistent/1", "value4"));
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertExceededMaximum() {
         ServiceMetaData ephemeralService = serviceController.getEphemeralService();
         ephemeralService.setPort(new AtomicInteger(Integer.MAX_VALUE));
-        REPOSITORY.persistEphemeral("/key2", "value");
+        assertThrows(IllegalStateException.class, () -> REPOSITORY.persistEphemeral("/key2", "value"));
     }
     
     private VoidAnswer2<String, EventListener> getListenerAnswer(final Instance preInstance, final Event event) {

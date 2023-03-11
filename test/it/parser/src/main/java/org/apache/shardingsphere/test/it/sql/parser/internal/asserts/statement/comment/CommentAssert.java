@@ -30,7 +30,7 @@ import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Comment assert.
@@ -55,12 +55,12 @@ public final class CommentAssert {
     
     private static void assertEmptyComment(final SQLCaseAssertContext assertContext, final SQLStatement actual) {
         if (actual instanceof AbstractSQLStatement) {
-            assertTrue(assertContext.getText("Comment should be empty."), ((AbstractSQLStatement) actual).getCommentSegments().isEmpty());
+            assertTrue(((AbstractSQLStatement) actual).getCommentSegments().isEmpty(), assertContext.getText("Comment should be empty."));
         }
     }
     
     private static void assertCorrectComment(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
-        assertTrue(assertContext.getText("Comment should exist."), actual instanceof AbstractSQLStatement);
+        assertTrue(actual instanceof AbstractSQLStatement, assertContext.getText("Comment should exist."));
         assertThat(assertContext.getText("Comments size assertion error: "), ((AbstractSQLStatement) actual).getCommentSegments().size(), is(expected.getComments().size()));
         Iterator<CommentSegment> actualIterator = ((AbstractSQLStatement) actual).getCommentSegments().iterator();
         for (final ExpectedComment each : expected.getComments()) {

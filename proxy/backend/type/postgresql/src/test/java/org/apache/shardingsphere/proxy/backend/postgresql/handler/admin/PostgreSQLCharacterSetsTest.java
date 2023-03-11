@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class PostgreSQLCharacterSetsTest {
     
@@ -42,8 +43,8 @@ public final class PostgreSQLCharacterSetsTest {
         assertThat(PostgreSQLCharacterSets.findCharacterSet("'utf-8'"), is(StandardCharsets.UTF_8));
     }
     
-    @Test(expected = UnsupportedCharsetException.class)
+    @Test
     public void assertFindUnsupportedCharset() {
-        PostgreSQLCharacterSets.findCharacterSet("unknown_charset");
+        assertThrows(UnsupportedCharsetException.class, () -> PostgreSQLCharacterSets.findCharacterSet("unknown_charset"));
     }
 }

@@ -60,11 +60,9 @@ HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 
 CREATE READWRITE_SPLITTING RULE replica_ds_0 (
-AUTO_AWARE_RESOURCE=readwrite_ds_0,
-WRITE_DATA_SOURCE_QUERY_ENABLED=true
+AUTO_AWARE_RESOURCE=readwrite_ds_0
 ), replica_ds_1 (
-AUTO_AWARE_RESOURCE=readwrite_ds_1,
-WRITE_DATA_SOURCE_QUERY_ENABLED=true
+AUTO_AWARE_RESOURCE=readwrite_ds_1
 );
 
 CREATE ENCRYPT RULE t_encrypt (

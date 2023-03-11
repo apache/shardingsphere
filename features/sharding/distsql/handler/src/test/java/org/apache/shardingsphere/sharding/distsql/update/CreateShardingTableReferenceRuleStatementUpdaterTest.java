@@ -26,11 +26,11 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableReferenceRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableReferenceRuleStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -38,8 +38,9 @@ import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -47,9 +48,9 @@ public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
     
     private final CreateShardingTableReferenceRuleStatementUpdater updater = new CreateShardingTableReferenceRuleStatementUpdater();
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithoutCurrentTableRule() {
-        updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), new ShardingRuleConfiguration());
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), new ShardingRuleConfiguration()));
     }
     
     private CreateShardingTableReferenceRuleStatement createSQLStatement(final boolean ifNotExists, final String name, final String reference) {
@@ -58,9 +59,9 @@ public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
         return new CreateShardingTableReferenceRuleStatement(ifNotExists, segments);
     }
     
-    @Test(expected = DuplicateRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithDuplicateTables() {
-        updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), getCurrentRuleConfig());
+        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), getCurrentRuleConfig()));
     }
     
     @Test

@@ -24,8 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
@@ -42,6 +45,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.Rule;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -64,8 +68,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter(AccessLevel.PROTECTED)
 @Slf4j
@@ -88,6 +92,8 @@ public abstract class PipelineBaseE2EIT {
     protected static final String DS_4 = "pipeline_it_4";
     
     protected static final int TABLE_INIT_ROW_COUNT = 3000;
+    
+    private static final String REGISTER_STORAGE_UNIT_SQL = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')";
     
     @Rule
     @Getter(AccessLevel.NONE)
@@ -143,6 +149,17 @@ public abstract class PipelineBaseE2EIT {
         cleanUpDataSource();
     }
     
+    protected String appendExtraParam(final String jdbcUrl) {
+        String result = jdbcUrl;
+        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
+            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
+        }
+        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType()) || DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified")));
+        }
+        return result;
+    }
+    
     private void cleanUpProxyDatabase(final Connection connection) {
         if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
             return;
@@ -161,8 +178,12 @@ public abstract class PipelineBaseE2EIT {
         }
         String jobTypeName = jobType.getTypeName();
         List<Map<String, Object>> jobList;
-        try (ResultSet resultSet = connection.createStatement().executeQuery(String.format("SHOW %s LIST", jobTypeName))) {
+        try {
+            ResultSet resultSet = connection.createStatement().executeQuery(String.format("SHOW %s LIST", jobTypeName));
             jobList = transformResultSetToList(resultSet);
+        } catch (final SQLException ex) {
+            log.warn("{} execute failed, message {}", String.format("SHOW %s LIST", jobTypeName), ex.getMessage());
+            return;
         }
         if (jobList.isEmpty()) {
             return;
@@ -195,19 +216,17 @@ public abstract class PipelineBaseE2EIT {
         ThreadUtil.sleep(2, TimeUnit.SECONDS);
     }
     
-    protected void addResource(final String distSQL) throws SQLException {
-        proxyExecuteWithLog(distSQL, 2);
+    protected void registerStorageUnit(final String storageUnitName) throws SQLException {
+        String registerStorageUnitTemplate = REGISTER_STORAGE_UNIT_SQL.replace("${ds}", storageUnitName)
+                .replace("${user}", getUsername())
+                .replace("${password}", getPassword())
+                .replace("${url}", appendExtraParam(getActualJdbcUrlTemplate(storageUnitName, true)));
+        proxyExecuteWithLog(registerStorageUnitTemplate, 2);
     }
     
-    protected String appendExtraParam(final String jdbcUrl) {
-        String result = jdbcUrl;
-        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
-            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
-        }
-        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType()) || DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
-            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified")));
-        }
-        return result;
+    // TODO Use registerStorageUnit instead, and remove the method
+    protected void addResource(final String distSQL) throws SQLException {
+        proxyExecuteWithLog(distSQL, 2);
     }
     
     protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
@@ -228,6 +247,16 @@ public abstract class PipelineBaseE2EIT {
     
     protected String getTargetTableOrderName() {
         return "t_order";
+    }
+    
+    protected void createSchema(final Connection connection, final int sleepSeconds) throws SQLException {
+        if (!getDatabaseType().isSchemaAvailable()) {
+            return;
+        }
+        connection.createStatement().execute(String.format("CREATE SCHEMA %s", SCHEMA_NAME));
+        if (sleepSeconds > 0) {
+            ThreadUtil.sleep(sleepSeconds, TimeUnit.SECONDS);
+        }
     }
     
     protected void createSourceOrderTable() throws SQLException {
@@ -280,9 +309,7 @@ public abstract class PipelineBaseE2EIT {
         while (retryNumber <= 3) {
             try (Connection connection = proxyDataSource.getConnection()) {
                 ResultSet resultSet = connection.createStatement().executeQuery(sql);
-                List<Map<String, Object>> result = transformResultSetToList(resultSet);
-                log.info("proxy query for list, sql: {}, result: {}", sql, result);
-                return result;
+                return transformResultSetToList(resultSet);
             } catch (final SQLException ex) {
                 log.error("data access error", ex);
             }
@@ -292,7 +319,7 @@ public abstract class PipelineBaseE2EIT {
         throw new RuntimeException("can't get result from proxy");
     }
     
-    private List<Map<String, Object>> transformResultSetToList(final ResultSet resultSet) throws SQLException {
+    protected List<Map<String, Object>> transformResultSetToList(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columns = resultSetMetaData.getColumnCount();
         List<Map<String, Object>> result = new ArrayList<>();
@@ -322,14 +349,14 @@ public abstract class PipelineBaseE2EIT {
             Set<String> actualStatus = new HashSet<>();
             Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
             for (Map<String, Object> each : listJobStatus) {
-                assertTrue("error_message is not null", Strings.isNullOrEmpty(each.get("error_message").toString()));
+                assertTrue(Strings.isNullOrEmpty(each.get("error_message").toString()), "error_message is not null");
                 actualStatus.add(each.get("status").toString());
                 String incrementalIdleSeconds = each.get("incremental_idle_seconds").toString();
                 incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
             }
-            assertFalse("status is JobStatus.PREPARING_FAILURE", actualStatus.contains(JobStatus.PREPARING_FAILURE.name()));
-            assertFalse("status is JobStatus.EXECUTE_INVENTORY_TASK_FAILURE", actualStatus.contains(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
-            assertFalse("status is JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE", actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
+            assertFalse(actualStatus.contains(JobStatus.PREPARING_FAILURE.name()), "status is JobStatus.PREPARING_FAILURE");
+            assertFalse(actualStatus.contains(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()), "status is JobStatus.EXECUTE_INVENTORY_TASK_FAILURE");
+            assertFalse(actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()), "status is JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE");
             if (Collections.min(incrementalIdleSecondsList) <= 5) {
                 ThreadUtil.sleep(3, TimeUnit.SECONDS);
                 continue;
@@ -342,13 +369,17 @@ public abstract class PipelineBaseE2EIT {
     }
     
     protected void assertProxyOrderRecordExist(final String tableName, final Object orderId) {
-        boolean recordExist = false;
         String sql;
         if (orderId instanceof String) {
             sql = String.format("SELECT 1 FROM %s WHERE order_id = '%s'", tableName, orderId);
         } else {
             sql = String.format("SELECT 1 FROM %s WHERE order_id = %s", tableName, orderId);
         }
+        assertProxyOrderRecordExist(sql);
+    }
+    
+    protected void assertProxyOrderRecordExist(final String sql) {
+        boolean recordExist = false;
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> result = queryForListWithLog(sql);
             recordExist = !result.isEmpty();
@@ -357,7 +388,7 @@ public abstract class PipelineBaseE2EIT {
             }
             ThreadUtil.sleep(2, TimeUnit.SECONDS);
         }
-        assertTrue("The insert record must exist after the stop", recordExist);
+        assertTrue(recordExist, "The insert record must exist after the stop");
     }
     
     protected int getTargetTableRecordsCount(final String tableName) {
@@ -369,6 +400,29 @@ public abstract class PipelineBaseE2EIT {
     protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) {
         String tableName = Strings.isNullOrEmpty(schema) ? "t_order" : String.format("%s.t_order", schema);
         int recordsCount = getTargetTableRecordsCount(tableName);
-        assertTrue("actual count " + recordsCount, recordsCount > tableInitRows);
+        assertTrue(recordsCount > tableInitRows, "actual count " + recordsCount);
+    }
+    
+    // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
+    protected DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !getYamlRootConfig().getRules().isEmpty());
+        YamlRootConfiguration rootConfig = getYamlRootConfig();
+        if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
+            String sourceUrl = String.join(":", storageContainer.getNetworkAliases().get(0), Integer.toString(storageContainer.getExposedPort()));
+            String targetUrl = String.join(":", storageContainer.getHost(), Integer.toString(storageContainer.getMappedPort()));
+            for (Map<String, Object> each : rootConfig.getDataSources().values()) {
+                each.put("url", each.get("url").toString().replaceFirst(sourceUrl, targetUrl));
+            }
+        }
+        for (Map<String, Object> each : rootConfig.getDataSources().values()) {
+            each.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
+        }
+        return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
+    }
+    
+    private YamlRootConfiguration getYamlRootConfig() {
+        String result = queryForListWithLog("EXPORT DATABASE CONFIGURATION").get(0).get("result").toString();
+        return YamlEngine.unmarshal(result, YamlRootConfiguration.class);
     }
 }

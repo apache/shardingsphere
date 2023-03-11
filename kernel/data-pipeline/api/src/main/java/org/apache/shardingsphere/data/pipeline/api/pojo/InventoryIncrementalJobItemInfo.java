@@ -30,6 +30,8 @@ public class InventoryIncrementalJobItemInfo {
     
     private final int shardingItem;
     
+    private final String tableNames;
+    
     private final InventoryIncrementalJobItemProgress jobItemProgress;
     
     private final long startTimeMillis;

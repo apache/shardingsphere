@@ -86,10 +86,11 @@ chapter = true
     - 其他类型应使用 `assertThat`。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
  - 测试类和 `@Test` 标注的方法无需 javadoc。
- - 使用 Mockito `mockStatic` 和 `mockConstruction` 方法必须搭配 try-with-resource 或在清理方法中关闭，避免泄漏。
  - 使用 `mock` 应遵循如下规范：
    - 单元测试需要连接某个环境时，应使用 `mock`；
    - 单元测试包含不容易构建的对象时，例如：超过两层嵌套并且和测试无关的对象，应使用 `mock`。
+   - 模拟静态方法或构造器，应优先考虑使用测试框架提供的 `AutoMockExtension` 和 `StaticMockSettings` 自动释放资源；若使用 Mockito `mockStatic` 和 `mockConstruction` 方法，必须搭配 `try-with-resource` 或在清理方法中关闭，避免泄漏。
+   - 校验仅有一次调用时，无需使用 `times(1)` 参数，使用 `verify` 的单参数方法即可。
 
 ## G4 编码规范
 

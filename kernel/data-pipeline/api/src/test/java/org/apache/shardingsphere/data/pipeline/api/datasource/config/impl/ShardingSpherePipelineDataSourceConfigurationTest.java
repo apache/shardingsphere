@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api.datasource.config.impl;
 
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,8 +29,8 @@ import java.util.Map.Entry;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ShardingSpherePipelineDataSourceConfigurationTest {
     
@@ -49,7 +49,7 @@ public final class ShardingSpherePipelineDataSourceConfigurationTest {
         assertThat(handled.size(), is(backup.size()));
         for (Entry<String, Object> entry : backup.entrySet()) {
             Object actual = handled.get(entry.getKey());
-            assertNotNull("value of '" + entry.getKey() + "' doesn't exist", actual);
+            assertNotNull(actual, "value of '" + entry.getKey() + "' doesn't exist");
             assertThat("value of '" + entry.getKey() + "' doesn't match", actual, is(entry.getValue()));
         }
     }

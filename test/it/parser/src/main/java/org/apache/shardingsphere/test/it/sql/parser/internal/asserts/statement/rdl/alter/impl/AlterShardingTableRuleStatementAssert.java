@@ -35,8 +35,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Alter sharding table rule statement assert.
@@ -53,9 +53,9 @@ public final class AlterShardingTableRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterShardingTableRuleStatement actual, final SQLParserTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
             if (expected instanceof AlterShardingAutoTableRuleStatementTestCase) {
                 AlterShardingAutoTableRuleStatementTestCase autoTableRuleStatementTestCase = (AlterShardingAutoTableRuleStatementTestCase) expected;
                 Collection<AutoTableRuleSegment> actualAutoTableRules = actual.getRules().stream().map(each -> (AutoTableRuleSegment) each).collect(Collectors.toList());
@@ -70,9 +70,9 @@ public final class AlterShardingTableRuleStatementAssert {
     
     private static void assertShardingAutoTableRules(final SQLCaseAssertContext assertContext, final Collection<AutoTableRuleSegment> actual, final List<ExpectedAutoTableRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual sharding auto table rule should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual sharding auto table rule should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual sharding auto table rule should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual sharding auto table rule should exist."));
             int count = 0;
             for (AutoTableRuleSegment tableRuleSegment : actual) {
                 ExpectedAutoTableRule expectedTableRule = expected.get(count);
@@ -84,9 +84,9 @@ public final class AlterShardingTableRuleStatementAssert {
     
     private static void assertShardingTableRules(final SQLCaseAssertContext assertContext, final Collection<TableRuleSegment> actual, final List<ExpectedTableRule> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual sharding table rule should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual sharding table rule should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual sharding table rule should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual sharding table rule should exist."));
             int count = 0;
             for (TableRuleSegment tableRuleSegment : actual) {
                 ExpectedTableRule expectedTableRule = expected.get(count);
