@@ -147,12 +147,12 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     public RexNode visitInputRef(final InputRefContext ctx) {
         Integer index = Integer.valueOf(ctx.INTEGER_().getText());
         String sign = ctx.getParent().getStop().getText();
-        if (ctx.getParent() instanceof CastContext) {
-            return makeCastInputRef(sign, index);
-        }
         if (null != columnMap.get(index)) {
             Class dataType = getClass(columnMap.get(index));
             return rexBuilder.makeInputRef(typeFactory.createJavaType(dataType), index);
+        }
+        if (ctx.getParent() instanceof CastContext) {
+            return makeCastInputRef(sign, index);
         }
         return rexBuilder.makeInputRef(typeFactory.createJavaType(Integer.class), index);
     }
@@ -192,6 +192,8 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
                 return String.class;
             case 91:
                 return Date.class;
+            case 5:
+                return Short.class;
             default:
                 return String.class;
         }
