@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.ingest;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,9 +25,14 @@ import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMap
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.api.metadata.ColumnName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Dumper configuration.
@@ -49,6 +55,10 @@ public class DumperConfiguration {
     private Map<ActualTableName, LogicTableName> tableNameMap;
     
     private TableNameSchemaNameMapping tableNameSchemaNameMapping;
+    
+    // LinkedHashSet is required
+    @Getter(AccessLevel.PROTECTED)
+    private Map<LogicTableName, Set<ColumnName>> targetTableColumnsMap;
     
     private boolean decodeWithTX;
     
@@ -94,5 +104,30 @@ public class DumperConfiguration {
      */
     public String getSchemaName(final ActualTableName actualTableName) {
         return tableNameSchemaNameMapping.getSchemaName(getLogicTableName(actualTableName));
+    }
+    
+    /**
+     * Get column name list of table.
+     *
+     * @param logicTableName logic table name
+     * @return column names of table
+     */
+    public Optional<List<String>> getColumnNameList(final LogicTableName logicTableName) {
+        Set<ColumnName> columnNames = null != targetTableColumnsMap ? targetTableColumnsMap.get(logicTableName) : null;
+        if (null == columnNames) {
+            return Optional.empty();
+        }
+        return Optional.of(columnNames.stream().map(ColumnName::getOriginal).collect(Collectors.toList()));
+    }
+    
+    /**
+     * Get column name set of table.
+     *
+     * @param actualTableName actual table name
+     * @return column names of table
+     */
+    public Optional<Set<ColumnName>> getColumnNameSet(final String actualTableName) {
+        Set<ColumnName> result = null != targetTableColumnsMap ? targetTableColumnsMap.get(getLogicTableName(actualTableName)) : null;
+        return Optional.ofNullable(result);
     }
 }

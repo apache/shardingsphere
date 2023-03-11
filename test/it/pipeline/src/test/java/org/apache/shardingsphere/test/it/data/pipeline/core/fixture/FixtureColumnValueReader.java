@@ -17,30 +17,20 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractColumnValueReader;
 
-import java.util.Optional;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
-public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
+/**
+ * Basic column value reader.
+ */
+public final class FixtureColumnValueReader extends AbstractColumnValueReader {
     
     @Override
-    protected boolean isKeyword(final String item) {
-        return false;
-    }
-    
-    @Override
-    protected String getLeftIdentifierQuoteString() {
-        return "";
-    }
-    
-    @Override
-    protected String getRightIdentifierQuoteString() {
-        return "";
-    }
-    
-    @Override
-    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return Optional.empty();
+    protected Object doReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return super.defaultDoReadValue(resultSet, metaData, columnIndex);
     }
     
     @Override

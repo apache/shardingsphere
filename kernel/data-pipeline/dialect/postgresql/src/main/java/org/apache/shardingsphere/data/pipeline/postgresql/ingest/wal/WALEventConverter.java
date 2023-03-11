@@ -23,20 +23,20 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
+import org.apache.shardingsphere.data.pipeline.api.metadata.ColumnName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * WAL event converter.
@@ -62,61 +62,59 @@ public final class WALEventConverter {
         if (filter(event)) {
             return createPlaceholderRecord(event);
         }
+        if (!(event instanceof AbstractRowEvent)) {
+            return createPlaceholderRecord(event);
+        }
+        PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((AbstractRowEvent) event).getTableName());
         if (event instanceof WriteRowEvent) {
-            return handleWriteRowsEvent((WriteRowEvent) event);
+            return handleWriteRowEvent((WriteRowEvent) event, tableMetaData);
         }
         if (event instanceof UpdateRowEvent) {
-            return handleUpdateRowsEvent((UpdateRowEvent) event);
+            return handleUpdateRowEvent((UpdateRowEvent) event, tableMetaData);
         }
         if (event instanceof DeleteRowEvent) {
-            return handleDeleteRowsEvent((DeleteRowEvent) event);
-        }
-        if (event instanceof PlaceholderEvent || event instanceof BeginTXEvent || event instanceof CommitTXEvent) {
-            return createPlaceholderRecord(event);
+            return handleDeleteRowEvent((DeleteRowEvent) event, tableMetaData);
         }
         throw new UnsupportedSQLOperationException("");
     }
     
     private boolean filter(final AbstractWALEvent event) {
-        if (isRowEvent(event)) {
+        if (event instanceof AbstractRowEvent) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
             return !dumperConfig.containsTable(rowEvent.getTableName());
         }
         return false;
     }
     
-    private boolean isRowEvent(final AbstractWALEvent event) {
-        return event instanceof WriteRowEvent || event instanceof UpdateRowEvent || event instanceof DeleteRowEvent;
-    }
-    
     private PlaceholderRecord createPlaceholderRecord(final AbstractWALEvent event) {
         return new PlaceholderRecord(new WALPosition(event.getLogSequenceNumber()));
-    }
-    
-    private DataRecord handleWriteRowsEvent(final WriteRowEvent writeRowEvent) {
-        DataRecord result = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
-        result.setType(IngestDataChangeType.INSERT);
-        putColumnsIntoDataRecord(result, getPipelineTableMetaData(writeRowEvent.getTableName()), writeRowEvent.getAfterRow());
-        return result;
     }
     
     private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
         return metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new ActualTableName(actualTableName)), actualTableName);
     }
     
-    private DataRecord handleUpdateRowsEvent(final UpdateRowEvent updateRowEvent) {
-        DataRecord result = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
-        result.setType(IngestDataChangeType.UPDATE);
-        putColumnsIntoDataRecord(result, getPipelineTableMetaData(updateRowEvent.getTableName()), updateRowEvent.getAfterRow());
+    private DataRecord handleWriteRowEvent(final WriteRowEvent writeRowEvent, final PipelineTableMetaData tableMetaData) {
+        DataRecord result = createDataRecord(writeRowEvent, writeRowEvent.getAfterRow().size());
+        result.setType(IngestDataChangeType.INSERT);
+        putColumnsIntoDataRecord(result, tableMetaData, writeRowEvent.getTableName(), writeRowEvent.getAfterRow());
         return result;
     }
     
-    private DataRecord handleDeleteRowsEvent(final DeleteRowEvent event) {
+    private DataRecord handleUpdateRowEvent(final UpdateRowEvent updateRowEvent, final PipelineTableMetaData tableMetaData) {
+        DataRecord result = createDataRecord(updateRowEvent, updateRowEvent.getAfterRow().size());
+        result.setType(IngestDataChangeType.UPDATE);
+        String actualTableName = updateRowEvent.getTableName();
+        putColumnsIntoDataRecord(result, tableMetaData, actualTableName, updateRowEvent.getAfterRow());
+        return result;
+    }
+    
+    private DataRecord handleDeleteRowEvent(final DeleteRowEvent event, final PipelineTableMetaData tableMetaData) {
         // TODO completion columns
         DataRecord result = createDataRecord(event, event.getPrimaryKeys().size());
         result.setType(IngestDataChangeType.DELETE);
         // TODO Unique key may be a column within unique index
-        List<String> primaryKeyColumns = getPipelineTableMetaData(event.getTableName()).getPrimaryKeyColumns();
+        List<String> primaryKeyColumns = tableMetaData.getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
             result.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
         }
@@ -130,12 +128,21 @@ public final class WALEventConverter {
         return result;
     }
     
-    private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final List<Object> values) {
+    private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final String actualTableName, final List<Object> values) {
+        Set<ColumnName> columnNameSet = dumperConfig.getColumnNameSet(actualTableName).orElse(null);
         for (int i = 0, count = values.size(); i < count; i++) {
-            boolean isUniqueKey = tableMetaData.getColumnMetaData(i + 1).isUniqueKey();
+            PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
+            if (isColumnUnneeded(columnNameSet, columnMetaData.getName())) {
+                continue;
+            }
+            boolean isUniqueKey = columnMetaData.isUniqueKey();
             Object uniqueKeyOldValue = isUniqueKey ? values.get(i) : null;
-            Column column = new Column(tableMetaData.getColumnMetaData(i + 1).getName(), uniqueKeyOldValue, values.get(i), true, isUniqueKey);
+            Column column = new Column(columnMetaData.getName(), uniqueKeyOldValue, values.get(i), true, isUniqueKey);
             dataRecord.addColumn(column);
         }
+    }
+    
+    boolean isColumnUnneeded(final Set<ColumnName> columnNameSet, final String columnName) {
+        return null != columnNameSet && !columnNameSet.contains(new ColumnName(columnName));
     }
 }
