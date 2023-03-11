@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
-import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.impl.CosIDLocalDateTimeConvertor;
-import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.LocalDateTimeConvertor;
+import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.impl.StandardCosIdLocalDateTimeConvertor;
+import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.CosIdLocalDateTimeConvertor;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -39,11 +39,11 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractCosIdIntervalS
     private static final String TIMESTAMP_UNIT_KEY = "ts-unit";
     
     @Override
-    protected LocalDateTimeConvertor createLocalDateTimeConvertor(final Properties props) {
+    protected CosIdLocalDateTimeConvertor createLocalDateTimeConvertor(final Properties props) {
         ZoneId zoneId = props.containsKey(ZONE_ID_KEY) ? ZoneId.of(props.getProperty(ZONE_ID_KEY)) : ZoneId.systemDefault();
         boolean isSecondTs = props.containsKey(TIMESTAMP_UNIT_KEY) && TIMESTAMP_SECOND_UNIT.equalsIgnoreCase(props.getProperty(TIMESTAMP_UNIT_KEY));
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(props.getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN));
-        return new CosIDLocalDateTimeConvertor(zoneId, isSecondTs, dateTimeFormatter);
+        return new StandardCosIdLocalDateTimeConvertor(zoneId, isSecondTs, dateTimeFormatter);
     }
     
     @Override

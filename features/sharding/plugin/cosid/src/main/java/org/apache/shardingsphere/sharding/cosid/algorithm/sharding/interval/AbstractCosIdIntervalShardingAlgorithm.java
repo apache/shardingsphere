@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
-import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.LocalDateTimeConvertor;
+import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.CosIdLocalDateTimeConvertor;
 import org.apache.shardingsphere.sharding.exception.ShardingPluginException;
 
 import java.time.LocalDateTime;
@@ -56,7 +56,7 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     
     private IntervalTimeline intervalTimeline;
     
-    private LocalDateTimeConvertor localDateTimeConvertor;
+    private CosIdLocalDateTimeConvertor localDateTimeConvertor;
     
     @Override
     public void init(final Properties props) {
@@ -79,7 +79,7 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
         return props.getProperty(key);
     }
     
-    protected abstract LocalDateTimeConvertor createLocalDateTimeConvertor(Properties props);
+    protected abstract CosIdLocalDateTimeConvertor createLocalDateTimeConvertor(Properties props);
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<T> shardingValue) {

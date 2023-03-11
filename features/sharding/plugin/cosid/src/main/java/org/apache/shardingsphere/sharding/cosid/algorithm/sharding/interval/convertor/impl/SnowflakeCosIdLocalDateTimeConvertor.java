@@ -20,16 +20,16 @@ package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.con
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.converter.Radix62IdConverter;
 import me.ahoo.cosid.snowflake.SnowflakeIdStateParser;
-import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.LocalDateTimeConvertor;
+import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.CosIdLocalDateTimeConvertor;
 import org.apache.shardingsphere.sharding.exception.ShardingPluginException;
 
 import java.time.LocalDateTime;
 
 /**
- * Local date time convertor for Snowflake.
+ * Snowflake local date time convertor for Snowflake.
  */
 @RequiredArgsConstructor
-public final class SnowflakeLocalDateTimeConvertor implements LocalDateTimeConvertor {
+public final class SnowflakeCosIdLocalDateTimeConvertor implements CosIdLocalDateTimeConvertor {
     
     private final SnowflakeIdStateParser snowflakeIdStateParser;
     
