@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.test.it.rewrite.engine;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
@@ -60,14 +59,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParameters;
+import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParametersBuilder;
 import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
 import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
-import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -86,21 +85,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
-@Getter
 public abstract class SQLRewriterIT {
-    
-    private final SQLRewriteEngineTestParameters testParams;
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(true,
             DefaultSQLParserRuleConfigurationBuilder.PARSE_TREE_CACHE_OPTION, DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION));
     
     private final TimeServiceRule timeServiceRule = new TimeServiceRule(new TimeServiceRuleConfiguration("System", new Properties()));
     
-    @Test
-    public final void assertRewrite() throws IOException, SQLException {
-        Collection<SQLRewriteUnit> actual = createSQLRewriteUnits();
+    @ParameterizedTest(name = "{4}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public final void assertRewrite(final String type, final String name, final String fileName, final String databaseType, final SQLRewriteEngineTestParameters testParams) throws IOException, SQLException {
+        Collection<SQLRewriteUnit> actual = createSQLRewriteUnits(testParams);
         assertThat(actual.size(), is(testParams.getOutputSQLs().size()));
         int count = 0;
         for (SQLRewriteUnit each : actual) {
@@ -113,20 +108,20 @@ public abstract class SQLRewriterIT {
         }
     }
     
-    private Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException, SQLException {
-        YamlRootConfiguration rootConfig = createRootConfiguration();
+    private Collection<SQLRewriteUnit> createSQLRewriteUnits(final SQLRewriteEngineTestParameters testParams) throws IOException, SQLException {
+        YamlRootConfiguration rootConfig = createRootConfiguration(testParams);
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         mockDataSource(databaseConfig.getDataSources());
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, getTestParams().getDatabaseType());
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, testParams.getDatabaseType());
         Map<String, DatabaseType> storageTypes = createStorageTypes(databaseConfig, databaseType);
         when(resourceMetaData.getStorageTypes()).thenReturn(storageTypes);
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, DefaultDatabase.LOGIC_NAME);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseConfig, mock(InstanceContext.class));
-        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(getTestParams().getDatabaseType(),
+        SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(testParams.getDatabaseType(),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
-        SQLStatement sqlStatement = sqlStatementParserEngine.parse(getTestParams().getInputSQL(), false);
+        SQLStatement sqlStatement = sqlStatementParserEngine.parse(testParams.getInputSQL(), false);
         mockRules(databaseRules, schemaName, sqlStatement);
         databaseRules.add(sqlParserRule);
         databaseRules.add(timeServiceRule);
@@ -135,20 +130,20 @@ public abstract class SQLRewriterIT {
         databases.put(schemaName, database);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(createShardingSphereMetaData(databases), sqlStatement, schemaName);
         if (sqlStatementContext instanceof ParameterAware) {
-            ((ParameterAware) sqlStatementContext).setUpParameters(getTestParams().getInputParameters());
+            ((ParameterAware) sqlStatementContext).setUpParameters(testParams.getInputParameters());
         }
         if (sqlStatementContext instanceof CursorDefinitionAware) {
             ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(createCursorDefinition(schemaName, databases, sqlStatementParserEngine));
         }
-        QueryContext queryContext = new QueryContext(sqlStatementContext, getTestParams().getInputSQL(), getTestParams().getInputParameters());
+        QueryContext queryContext = new QueryContext(sqlStatementContext, testParams.getInputSQL(), testParams.getInputParameters());
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
         RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(new ConnectionContext(), queryContext, mock(ShardingSphereRuleMetaData.class), database);
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new ShardingSphereRuleMetaData(Collections.singleton(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()))), props);
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCursorConnectionContext()).thenReturn(new CursorConnectionContext());
-        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(getTestParams().getInputSQL(), getTestParams().getInputParameters(), sqlStatementContext, routeContext, connectionContext);
+        SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(testParams.getInputSQL(), testParams.getInputParameters(), sqlStatementContext, routeContext, connectionContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
-                ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())
+                ? Collections.singleton(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())
                 : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
     
@@ -171,7 +166,7 @@ public abstract class SQLRewriterIT {
     
     protected abstract void mockDataSource(Map<String, DataSource> dataSources) throws SQLException;
     
-    protected abstract YamlRootConfiguration createRootConfiguration() throws IOException;
+    protected abstract YamlRootConfiguration createRootConfiguration(SQLRewriteEngineTestParameters testParams) throws IOException;
     
     protected abstract Map<String, ShardingSphereSchema> mockSchemas(String schemaName);
     
@@ -181,20 +176,9 @@ public abstract class SQLRewriterIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.of("select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", 2, 3),
-                    Arguments.of("select_item_nums", "select id, name, age, sex, ss, yy from table1 where id=1", 1, 6),
-                    Arguments.of("select_with_subquery", "select id, name, age, count(*) as n, (select id, name, age, sex from table2 where id=2) as sid, yyyy from table1 where id=1", 2, 5),
-                    Arguments.of("select_where_num", "select id, name, age, sex, ss, yy from table1 where id=1 and name=1 and a=1 and b=2 and c=4 and d=3", 1, 10),
-                    Arguments.of("alter_table", "ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, engine ss max_rows 10,min_rows 2, ADD column6 TIMESTAMP, ADD column7 TIME;", 1, 4),
-                    Arguments.of("create_table", "CREATE TABLE IF NOT EXISTS `runoob_tbl`(\n"
-                                    + "`runoob_id` INT UNSIGNED AUTO_INCREMENT,\n"
-                                    + "`runoob_title` VARCHAR(100) NOT NULL,\n"
-                                    + "`runoob_author` VARCHAR(40) NOT NULL,\n"
-                                    + "`runoob_test` NATIONAL CHAR(40),\n"
-                                    + "`submission_date` DATE,\n"
-                                    + "PRIMARY KEY ( `runoob_id` )\n"
-                                    + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;",
-                            1, 5));
+            SQLRewriterITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(SQLRewriterITSettings.class);
+            Preconditions.checkNotNull(settings, "Annotation ExternalSQLParserITSettings is required.");
+            return SQLRewriteEngineTestParametersBuilder.loadTestParameters(settings.value().toUpperCase(), settings.value(), SQLRewriterIT.class).stream().map(Arguments::of);
         }
     }
 }
