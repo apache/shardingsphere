@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
@@ -47,14 +47,14 @@ public final class XAShardingSphereTransactionManagerTest {
     
     private final XAShardingSphereTransactionManager xaTransactionManager = new XAShardingSphereTransactionManager();
     
-    @Before
+    @BeforeEach
     public void setUp() {
         Map<String, DataSource> dataSources = createDataSources(TypedSPILoader.getService(DatabaseType.class, "H2"));
         Map<String, DatabaseType> databaseTypes = createDatabaseTypes(TypedSPILoader.getService(DatabaseType.class, "H2"));
         xaTransactionManager.init(databaseTypes, dataSources, "Atomikos");
     }
     
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         xaTransactionManager.close();
     }

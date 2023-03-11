@@ -15,37 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.cosid.algorithm;
+package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
-import java.util.Arrays;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Arguments {
+/**
+ * Local date time convertor for CosId.
+ */
+public interface CosIdLocalDateTimeConvertor {
     
     /**
-     * Of arguments.
+     * To local date time.
      * 
-     * @param args arguments
-     * @param <T> type of arguments
-     * @return arguments
+     * @param value value to be converted
+     * @return converted local date time
      */
-    @SafeVarargs
-    public static <T> T[] of(final T... args) {
-        return args;
-    }
-    
-    /**
-     * Of array element.
-     * 
-     * @param args arguments
-     * @param <T> type of arguments
-     * @return iterable
-     */
-    @SafeVarargs
-    public static <T> Iterable<T[]> ofArrayElement(final T[]... args) {
-        return Arrays.asList(args);
-    }
+    LocalDateTime toLocalDateTime(Comparable<?> value);
 }

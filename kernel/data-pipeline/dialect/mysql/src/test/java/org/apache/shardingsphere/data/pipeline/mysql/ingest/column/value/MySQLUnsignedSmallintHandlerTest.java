@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedSmallintHandler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 
