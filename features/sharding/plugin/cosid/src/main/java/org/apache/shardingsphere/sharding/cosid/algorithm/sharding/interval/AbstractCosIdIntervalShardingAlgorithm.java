@@ -66,20 +66,20 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     @Override
     public void init(final Properties props) {
         zoneId = getZoneId(props);
-        intervalTimeline = getIntervalTimeline(props);
+        intervalTimeline = createIntervalTimeline(props);
     }
     
     private ZoneId getZoneId(final Properties props) {
         return props.containsKey(ZONE_ID_KEY) ? ZoneId.of(props.getProperty(ZONE_ID_KEY)) : ZoneId.systemDefault();
     }
     
-    private IntervalTimeline getIntervalTimeline(final Properties props) {
+    private IntervalTimeline createIntervalTimeline(final Properties props) {
         String logicNamePrefix = getRequiredValue(props, CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY);
         LocalDateTime effectiveLower = LocalDateTime.parse(getRequiredValue(props, DATE_TIME_LOWER_KEY), DEFAULT_DATE_TIME_FORMATTER);
         LocalDateTime effectiveUpper = LocalDateTime.parse(getRequiredValue(props, DATE_TIME_UPPER_KEY), DEFAULT_DATE_TIME_FORMATTER);
-        DateTimeFormatter suffixFormatter = DateTimeFormatter.ofPattern(getRequiredValue(props, SHARDING_SUFFIX_FORMAT_KEY));
         ChronoUnit stepUnit = ChronoUnit.valueOf(getRequiredValue(props, INTERVAL_UNIT_KEY));
         int stepAmount = Integer.parseInt(props.getOrDefault(INTERVAL_AMOUNT_KEY, 1).toString());
+        DateTimeFormatter suffixFormatter = DateTimeFormatter.ofPattern(getRequiredValue(props, SHARDING_SUFFIX_FORMAT_KEY));
         return new IntervalTimeline(logicNamePrefix, Range.closed(effectiveLower, effectiveUpper), IntervalStep.of(stepUnit, stepAmount), suffixFormatter);
     }
     
@@ -90,18 +90,16 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<T> shardingValue) {
-        LocalDateTime shardingTime = convertShardingValue(shardingValue.getValue());
-        return intervalTimeline.sharding(shardingTime);
+        return intervalTimeline.sharding(toLocalDateTime(shardingValue.getValue()));
     }
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<T> shardingValue) {
-        Range<LocalDateTime> shardingRangeTime = convertRangeShardingValue(shardingValue.getValueRange());
-        return intervalTimeline.sharding(shardingRangeTime);
+        return intervalTimeline.sharding(LocalDateTimeRange(shardingValue.getValueRange()));
     }
     
     @SuppressWarnings("unchecked")
-    private Range<LocalDateTime> convertRangeShardingValue(final Range<T> shardingValue) {
+    private Range<LocalDateTime> LocalDateTimeRange(final Range<T> shardingValue) {
         if (Range.all().equals(shardingValue)) {
             return Range.all();
         }
@@ -110,17 +108,17 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
             return (Range<LocalDateTime>) shardingValue;
         }
         if (shardingValue.hasLowerBound() && shardingValue.hasUpperBound()) {
-            LocalDateTime lower = convertShardingValue(shardingValue.lowerEndpoint());
-            LocalDateTime upper = convertShardingValue(shardingValue.upperEndpoint());
+            LocalDateTime lower = toLocalDateTime(shardingValue.lowerEndpoint());
+            LocalDateTime upper = toLocalDateTime(shardingValue.upperEndpoint());
             return Range.range(lower, shardingValue.lowerBoundType(), upper, shardingValue.upperBoundType());
         }
         if (shardingValue.hasLowerBound()) {
-            LocalDateTime lower = convertShardingValue(shardingValue.lowerEndpoint());
+            LocalDateTime lower = toLocalDateTime(shardingValue.lowerEndpoint());
             return BoundType.OPEN.equals(shardingValue.lowerBoundType()) ? Range.greaterThan(lower) : Range.atLeast(lower);
         }
-        LocalDateTime upper = convertShardingValue(shardingValue.upperEndpoint());
+        LocalDateTime upper = toLocalDateTime(shardingValue.upperEndpoint());
         return BoundType.OPEN.equals(shardingValue.upperBoundType()) ? Range.lessThan(upper) : Range.atMost(upper);
     }
     
-    protected abstract LocalDateTime convertShardingValue(T shardingValue);
+    protected abstract LocalDateTime toLocalDateTime(T shardingValue);
 }

@@ -50,9 +50,8 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
     }
     
     @Override
-    protected LocalDateTime convertShardingValue(final Comparable<?> shardingValue) {
-        Long snowflakeId = convertToSnowflakeId(shardingValue);
-        return snowflakeIdStateParser.parseTimestamp(snowflakeId);
+    protected LocalDateTime toLocalDateTime(final Comparable<?> shardingValue) {
+        return snowflakeIdStateParser.parseTimestamp(convertToSnowflakeId(shardingValue));
     }
     
     private Long convertToSnowflakeId(final Comparable<?> shardingValue) {
@@ -60,8 +59,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
             return (Long) shardingValue;
         }
         if (shardingValue instanceof String) {
-            String shardingValueStr = (String) shardingValue;
-            return Radix62IdConverter.PAD_START.asLong(shardingValueStr);
+            return Radix62IdConverter.PAD_START.asLong((String) shardingValue);
         }
         throw new ShardingPluginException("Unsupported sharding value type `%s`.", shardingValue);
     }

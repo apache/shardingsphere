@@ -51,21 +51,12 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractCosIdIntervalS
     @Override
     public void init(final Properties props) {
         super.init(props);
-        isSecondTs = getIsSecondTs(props);
-        dateTimeFormatter = getDateTimeFormatter(props);
+        isSecondTs = props.containsKey(TIMESTAMP_UNIT_KEY) && TIMESTAMP_SECOND_UNIT.equalsIgnoreCase(props.getProperty(TIMESTAMP_UNIT_KEY));
+        dateTimeFormatter = DateTimeFormatter.ofPattern(props.getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN));
     }
     
-    private boolean getIsSecondTs(final Properties props) {
-        return props.containsKey(TIMESTAMP_UNIT_KEY) && TIMESTAMP_SECOND_UNIT.equalsIgnoreCase(props.getProperty(TIMESTAMP_UNIT_KEY));
-    }
-    
-    private DateTimeFormatter getDateTimeFormatter(final Properties props) {
-        return DateTimeFormatter.ofPattern(props.getProperty(DATE_TIME_PATTERN_KEY, DEFAULT_DATE_TIME_PATTERN));
-    }
-    
-    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     @Override
-    protected LocalDateTime convertShardingValue(final Comparable<?> shardingValue) {
+    protected LocalDateTime toLocalDateTime(final Comparable<?> shardingValue) {
         if (shardingValue instanceof LocalDateTime) {
             return (LocalDateTime) shardingValue;
         }
