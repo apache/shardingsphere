@@ -37,7 +37,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.im
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -82,7 +82,7 @@ public final class CreateTableSQLGeneratorIT {
     
     private DockerStorageContainer storageContainer;
     
-    @After
+    @AfterEach
     public void stopContainer() {
         storageContainer.stop();
     }
