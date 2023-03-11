@@ -52,7 +52,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
     
     private static Properties createProperties() {
         return PropertiesBuilder.build(
-                new Property(CosIdIntervalShardingAlgorithm.ZONE_ID_KEY, "Asia/Shanghai"),
+                new Property("zone-id", "Asia/Shanghai"),
                 new Property(CosIdAlgorithmConstants.LOGIC_NAME_PREFIX_KEY, IntervalShardingAlgorithmDataFixture.LOGIC_NAME_PREFIX),
                 new Property(CosIdIntervalShardingAlgorithm.DATE_TIME_LOWER_KEY,
                         IntervalShardingAlgorithmDataFixture.LOWER_DATE_TIME.format(CosIdIntervalShardingAlgorithm.DEFAULT_DATE_TIME_FORMATTER)),
