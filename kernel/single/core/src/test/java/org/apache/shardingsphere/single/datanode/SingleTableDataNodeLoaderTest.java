@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -54,7 +54,7 @@ public final class SingleTableDataNodeLoaderTest {
     
     private Map<String, DataSource> dataSourceMap;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         dataSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceMap.put("ds0", mockDataSource("ds0", Arrays.asList("employee", "dept", "salary")));

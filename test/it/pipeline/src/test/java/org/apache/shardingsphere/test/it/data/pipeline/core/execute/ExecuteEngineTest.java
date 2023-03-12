@@ -22,9 +22,10 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -35,26 +36,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 public final class ExecuteEngineTest {
     
-    @Test(timeout = 30000L)
-    public void assertSubmitAndTaskSucceeded() throws ExecutionException, InterruptedException {
+    @Test
+    public void assertSubmitAndTaskSucceeded() {
         LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
         ExecuteCallback callback = mock(ExecuteCallback.class);
         ExecuteEngine executeEngine = ExecuteEngine.newCachedThreadInstance(ExecuteEngineTest.class.getSimpleName());
         Future<?> future = executeEngine.submit(lifecycleExecutor, callback);
-        future.get();
+        assertTimeout(Duration.ofSeconds(30L), () -> future.get());
         shutdownAndAwaitTerminal(executeEngine);
         verify(lifecycleExecutor).run();
         verify(callback).onSuccess();
     }
     
-    @Test(timeout = 30000L)
+    @Test
     public void assertSubmitAndTaskFailed() {
         LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
         RuntimeException expectedException = new RuntimeException("Expected");
@@ -64,6 +66,7 @@ public final class ExecuteEngineTest {
         Future<?> future = executeEngine.submit(lifecycleExecutor, callback);
         Throwable actualCause = null;
         try {
+            // TODO assertTimeout
             future.get();
         } catch (final InterruptedException ex) {
             fail();
@@ -83,7 +86,7 @@ public final class ExecuteEngineTest {
     }
     
     @Test
-    public void assertTriggerAllSuccess() throws InterruptedException {
+    public void assertTriggerAllSuccess() {
         CompletableFuture<?> future1 = CompletableFuture.runAsync(new FixtureRunnable(true));
         CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(true));
         FixtureExecuteCallback executeCallback = new FixtureExecuteCallback();
@@ -93,7 +96,7 @@ public final class ExecuteEngineTest {
     }
     
     @Test
-    public void assertTriggerPartSuccessFailure() throws InterruptedException {
+    public void assertTriggerPartSuccessFailure() {
         CompletableFuture<?> future1 = CompletableFuture.runAsync(new FixtureRunnable(true));
         CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(false));
         FixtureExecuteCallback executeCallback = new FixtureExecuteCallback();

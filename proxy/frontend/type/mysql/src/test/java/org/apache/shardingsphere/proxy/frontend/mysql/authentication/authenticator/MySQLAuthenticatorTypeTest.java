@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.impl.MySQLClearPasswordAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.impl.MySQLNativePasswordAuthenticator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;

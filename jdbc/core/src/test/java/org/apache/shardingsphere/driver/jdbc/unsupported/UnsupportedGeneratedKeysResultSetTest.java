@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
 import java.sql.SQLFeatureNotSupportedException;

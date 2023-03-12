@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.savepoint;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.postgresql.jdbc.PSQLSavepoint;
@@ -43,7 +44,7 @@ public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertRollback2Savepoint();
         assertReleaseSavepoint();
         assertErrors();

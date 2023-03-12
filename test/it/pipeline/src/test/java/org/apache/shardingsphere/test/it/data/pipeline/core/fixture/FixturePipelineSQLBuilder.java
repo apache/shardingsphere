@@ -24,11 +24,6 @@ import java.util.Optional;
 public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
-    public String getType() {
-        return "H2";
-    }
-    
-    @Override
     protected boolean isKeyword(final String item) {
         return false;
     }
@@ -46,5 +41,10 @@ public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder 
     @Override
     public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
         return Optional.empty();
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
     }
 }

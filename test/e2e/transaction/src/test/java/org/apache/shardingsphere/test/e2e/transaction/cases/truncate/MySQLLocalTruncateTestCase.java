@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.truncate;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -38,7 +39,7 @@ public final class MySQLLocalTruncateTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertTruncateRollback();
         assertTruncateCommit();
     }

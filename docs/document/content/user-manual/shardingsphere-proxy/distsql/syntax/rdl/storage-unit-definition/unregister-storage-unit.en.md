@@ -33,7 +33,7 @@ storageUnitName ::=
   unregistered;
 - Unable to unregister storage unit already used by rules. `Storage unit are still in used.` will be prompted when removing
   storage units used by rules;
-- The storage unit need to be removed only contains `SINGLE TABLE RULE`, and when the user confirms that this restriction
+- The storage unit need to be removed only contains `SINGLE RULE`, and when the user confirms that this restriction
   can be ignored, the `IGNORE SINGLE TABLES` keyword can be added to remove the storage unit;
 - `ifExists` clause is used for avoid `Storage unit not exists` error.
 
@@ -51,7 +51,7 @@ UNREGISTER STORAGE UNIT ds_0;
 UNREGISTER STORAGE UNIT ds_0, ds_1;
 ```
 
-- Ignore single table rule remove storage unit
+- Ignore single rule remove storage unit
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0 IGNORE SINGLE TABLES;

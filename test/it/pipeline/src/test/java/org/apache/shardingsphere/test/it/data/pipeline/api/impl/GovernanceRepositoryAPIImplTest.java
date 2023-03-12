@@ -41,8 +41,8 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -65,7 +65,7 @@ public final class GovernanceRepositoryAPIImplTest {
     
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
         governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();

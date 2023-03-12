@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.metadata;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 

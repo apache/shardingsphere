@@ -55,7 +55,7 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
      * Route for single table.
      *
      * @param routeContext route context
-     * @param singleRule single table rule
+     * @param singleRule single rule
      */
     public void route(final RouteContext routeContext, final SingleRule singleRule) {
         if (routeContext.getRouteUnits().isEmpty() || sqlStatement instanceof SelectStatement) {

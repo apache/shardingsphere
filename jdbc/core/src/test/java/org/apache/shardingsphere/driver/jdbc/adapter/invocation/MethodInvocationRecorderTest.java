@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter.invocation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

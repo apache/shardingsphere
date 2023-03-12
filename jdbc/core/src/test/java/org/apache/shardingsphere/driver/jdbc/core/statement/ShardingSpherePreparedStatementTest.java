@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.test.e2e.driver.fixture.keygen.ResetIncrementKeyGenerateAlgorithmFixture;
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
-import org.junit.Test;
+import org.apache.shardingsphere.test.e2e.driver.fixture.keygen.ResetIncrementKeyGenerateAlgorithmFixture;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,9 +30,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

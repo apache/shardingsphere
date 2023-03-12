@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
@@ -52,7 +53,7 @@ public final class BroadcastTableTransactionTestCase extends BaseTransactionTest
     
     @Override
     @SneakyThrows(SQLException.class)
-    protected void executeTest() {
+    protected void executeTest(final TransactionContainerComposer containerComposer) {
         rollback();
         commit();
     }

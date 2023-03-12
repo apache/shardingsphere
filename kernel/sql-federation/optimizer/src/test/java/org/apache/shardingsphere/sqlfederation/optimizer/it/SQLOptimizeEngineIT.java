@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.it;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
@@ -40,45 +39,36 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLOptimizeEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.Types;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
 public final class SQLOptimizeEngineIT {
     
     private static final String SCHEMA_NAME = "federate_jdbc";
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
-    private final TestCase testcase;
-    
     private SQLOptimizeEngine optimizeEngine;
     
-    @SneakyThrows({IOException.class, JAXBException.class})
-    @Parameters(name = "{0}")
-    public static Collection<TestCase> data() {
-        return TestCasesLoader.getInstance().generate();
-    }
-    
-    @Before
+    @BeforeEach
     public void init() {
         Map<String, ShardingSphereTable> tables = new HashMap<>();
         tables.put("t_order_federate", createOrderFederationTableMetaData());
@@ -253,10 +243,20 @@ public final class SQLOptimizeEngineIT {
         return SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator, cluster, mock(SQLParserRule.class), databaseType, false);
     }
     
-    @Test
-    public void assertOptimize() {
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertOptimize(final TestCase testcase) {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType())).parse(testcase.getSql(), false);
         String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain().replaceAll("[\r\n]", "");
         assertThat(actual, is(testcase.getAssertion().getExpectedResult()));
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @SneakyThrows({IOException.class, JAXBException.class})
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return TestCasesLoader.getInstance().generate().stream().map(Arguments::of);
+        }
     }
 }

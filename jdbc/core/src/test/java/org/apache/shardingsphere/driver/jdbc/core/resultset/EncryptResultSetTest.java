@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForEncryptTest;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Ignore
+@Disabled
 public final class EncryptResultSetTest extends AbstractShardingSphereDataSourceForEncryptTest {
     
     private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";

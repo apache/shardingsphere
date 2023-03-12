@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Delet
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opengauss.jdbc.TimestampUtils;
 import org.opengauss.replication.LogSequenceNumber;
 import org.opengauss.util.PGobject;
