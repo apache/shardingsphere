@@ -85,7 +85,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager, final String databaseName) {
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
             try {
-                each.onInitialized(InstanceType.JDBC, modeConfig, contextManager, databaseName);
+                each.onInitialized(InstanceType.JDBC, databaseName, modeConfig, contextManager);
                 // CHECKSTYLE:OFF
             } catch (final Exception ignored) {
                 // CHECKSTYLE:ON

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleLi
 public final class PipelineContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
-    public void onInitialized(final InstanceType instanceType, final ModeConfiguration modeConfig, final ContextManager contextManager, final String databaseName) {
+    public void onInitialized(final InstanceType instanceType, final String databaseName, final ModeConfiguration modeConfig, final ContextManager contextManager) {
         if (null == modeConfig) {
             return;
         }

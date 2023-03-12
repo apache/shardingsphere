@@ -32,11 +32,11 @@ public interface ContextManagerLifecycleListener {
      * Callback on initialized.
      *
      * @param instanceType instance type
+     * @param databaseName database name
      * @param modeConfig mode configuration
      * @param contextManager context manager
-     * @param databaseName database name
      */
-    void onInitialized(InstanceType instanceType, ModeConfiguration modeConfig, ContextManager contextManager, String databaseName);
+    void onInitialized(InstanceType instanceType, String databaseName, ModeConfiguration modeConfig, ContextManager contextManager);
     
     /**
      * Callback on destroyed.
