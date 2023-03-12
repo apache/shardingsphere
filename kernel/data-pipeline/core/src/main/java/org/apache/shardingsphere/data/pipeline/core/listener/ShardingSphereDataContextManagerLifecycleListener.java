@@ -41,4 +41,8 @@ public final class ShardingSphereDataContextManagerLifecycleListener implements 
         }
         ShardingSphereDataJobWorker.initialize(contextManager);
     }
+    
+    @Override
+    public void onDestroyed(final InstanceType instanceType, final String databaseName) {
+    }
 }

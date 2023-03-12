@@ -45,4 +45,9 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         PipelineContextManager.putContext(new PipelineContextKey(instanceType, databaseName), new PipelineContext(modeConfig, contextManager));
         PipelineJobWorker.initialize();
     }
+    
+    @Override
+    public void onDestroyed(final InstanceType instanceType, final String databaseName) {
+        PipelineContextManager.removeContext(new PipelineContextKey(instanceType, databaseName));
+    }
 }
