@@ -50,10 +50,10 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     }
     
     private void prepare() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        executeWithLog(connection, "delete from account;");
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
-        connection.close();
+        try (Connection connection = getDataSource().getConnection()) {
+            executeWithLog(connection, "delete from account;");
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
+        }
     }
     
     @Override
@@ -63,19 +63,19 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     
     private void assertTruncateInMySQLXATransaction() throws SQLException {
         // TODO This test case may cause bad effects to other test cases in JDBC adapter
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertAccountRowCount(connection, 8);
-        try {
-            connection.createStatement().execute("truncate account;");
-            fail("Expect exception, but no exception report.");
-        } catch (final TableModifyInTransactionException ex) {
-            log.info("Exception for expected in Proxy: {}", ex.getMessage());
-        } catch (final SQLException ex) {
-            log.info("Exception for expected in JDBC: {}", ex.getMessage());
-        } finally {
-            connection.rollback();
-            connection.close();
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 8);
+            try {
+                connection.createStatement().execute("truncate account;");
+                fail("Expect exception, but no exception report.");
+            } catch (final TableModifyInTransactionException ex) {
+                log.info("Exception for expected in Proxy: {}", ex.getMessage());
+            } catch (final SQLException ex) {
+                log.info("Exception for expected in JDBC: {}", ex.getMessage());
+            } finally {
+                connection.rollback();
+            }
         }
     }
 }

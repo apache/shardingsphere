@@ -52,26 +52,27 @@ public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
     
     @SneakyThrows(SQLException.class)
     private void assertErrors() {
-        Connection connection = getDataSource().getConnection();
-        try {
-            connection.setSavepoint("point");
-            fail("Expect exception, but no exception report.");
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Savepoint can only be used in transaction blocks."));
-        }
-        try {
-            connection.rollback(new PSQLSavepoint("point1"));
-            fail("Expect exception, but no exception report.");
-        } catch (final SQLException ex) {
-            // TODO can not run to get the correct result in JDBC mode.
-            assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
-        }
-        try {
-            connection.releaseSavepoint(new PSQLSavepoint("point1"));
-            fail("Expect exception, but no exception report.");
-        } catch (final SQLException ex) {
-            // TODO can not run to get the correct result in JDBC mode.
-            assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
+        try (Connection connection = getDataSource().getConnection()) {
+            try {
+                connection.setSavepoint("point");
+                fail("Expect exception, but no exception report.");
+            } catch (final SQLException ex) {
+                assertThat(ex.getMessage(), is("Savepoint can only be used in transaction blocks."));
+            }
+            try {
+                connection.rollback(new PSQLSavepoint("point1"));
+                fail("Expect exception, but no exception report.");
+            } catch (final SQLException ex) {
+                // TODO can not run to get the correct result in JDBC mode.
+                assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
+            }
+            try {
+                connection.releaseSavepoint(new PSQLSavepoint("point1"));
+                fail("Expect exception, but no exception report.");
+            } catch (final SQLException ex) {
+                // TODO can not run to get the correct result in JDBC mode.
+                assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
+            }
         }
     }
 }

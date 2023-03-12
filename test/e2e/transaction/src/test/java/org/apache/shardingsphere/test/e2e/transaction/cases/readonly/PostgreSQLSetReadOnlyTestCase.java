@@ -46,12 +46,12 @@ public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     }
     
     private void assertSetReadOnly() throws SQLException {
-        Connection connection1 = getDataSource().getConnection();
-        executeUpdateWithLog(connection1, "insert into account(id, balance) values (1, 0), (2, 100);");
-        Connection connection2 = getDataSource().getConnection();
-        connection2.setReadOnly(true);
-        assertQueryBalance(connection2);
-        try {
+        try (Connection connection1 = getDataSource().getConnection()) {
+            executeUpdateWithLog(connection1, "insert into account(id, balance) values (1, 0), (2, 100);");
+        }
+        try (Connection connection2 = getDataSource().getConnection()) {
+            connection2.setReadOnly(true);
+            assertQueryBalance(connection2);
             executeWithLog(connection2, "update account set balance = 100 where id = 2;");
             log.info("Using the driver of postgresql:42.4.1 expect to update successfully.");
         } catch (final SQLException ex) {

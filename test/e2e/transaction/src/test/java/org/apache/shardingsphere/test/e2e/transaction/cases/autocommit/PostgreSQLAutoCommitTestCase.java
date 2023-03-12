@@ -49,18 +49,16 @@ public final class PostgreSQLAutoCommitTestCase extends BaseTransactionTestCase 
     }
     
     private void assertAutoCommit() throws SQLException {
-        Connection connection1 = getDataSource().getConnection();
-        Connection connection2 = getDataSource().getConnection();
-        executeWithLog(connection1, "set transaction isolation level read committed;");
-        executeWithLog(connection2, "set transaction isolation level read committed;");
-        connection1.setAutoCommit(false);
-        connection2.setAutoCommit(false);
-        executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(1, 100, 1);");
-        assertFalse(executeQueryWithLog(connection2, "select * from account;").next());
-        connection1.commit();
-        ThreadUtil.sleep(1, TimeUnit.SECONDS);
-        assertTrue(executeQueryWithLog(connection2, "select * from account;").next());
-        connection1.close();
-        connection2.close();
+        try (Connection connection1 = getDataSource().getConnection(); Connection connection2 = getDataSource().getConnection()) {
+            executeWithLog(connection1, "set transaction isolation level read committed;");
+            executeWithLog(connection2, "set transaction isolation level read committed;");
+            connection1.setAutoCommit(false);
+            connection2.setAutoCommit(false);
+            executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(1, 100, 1);");
+            assertFalse(executeQueryWithLog(connection2, "select * from account;").next());
+            connection1.commit();
+            ThreadUtil.sleep(1, TimeUnit.SECONDS);
+            assertTrue(executeQueryWithLog(connection2, "select * from account;").next());
+        }
     }
 }

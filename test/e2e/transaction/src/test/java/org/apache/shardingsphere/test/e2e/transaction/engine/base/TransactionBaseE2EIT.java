@@ -194,22 +194,24 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private void alterLocalTransactionRule(final TransactionContainerComposer containerComposer) throws SQLException {
-        Connection connection = containerComposer.getDataSource().getConnection();
-        if (isExpectedTransactionRule(connection, TransactionType.LOCAL, "")) {
-            return;
+        try (Connection connection = containerComposer.getDataSource().getConnection()) {
+            if (isExpectedTransactionRule(connection, TransactionType.LOCAL, "")) {
+                return;
+            }
+            String alterLocalTransactionRule = commonSQL.getAlterLocalTransactionRule();
+            executeWithLog(connection, alterLocalTransactionRule);    
         }
-        String alterLocalTransactionRule = commonSQL.getAlterLocalTransactionRule();
-        executeWithLog(connection, alterLocalTransactionRule);
         assertTrue(waitExpectedTransactionRule(TransactionType.LOCAL, "", containerComposer));
     }
     
     private void alterXaTransactionRule(final String providerType, final TransactionContainerComposer containerComposer) throws SQLException {
-        Connection connection = containerComposer.getDataSource().getConnection();
-        if (isExpectedTransactionRule(connection, TransactionType.XA, providerType)) {
-            return;
+        try (Connection connection = containerComposer.getDataSource().getConnection()) {
+            if (isExpectedTransactionRule(connection, TransactionType.XA, providerType)) {
+                return;
+            }
+            String alterXaTransactionRule = commonSQL.getAlterXATransactionRule().replace("${providerType}", providerType);
+            executeWithLog(connection, alterXaTransactionRule);
         }
-        String alterXaTransactionRule = commonSQL.getAlterXATransactionRule().replace("${providerType}", providerType);
-        executeWithLog(connection, alterXaTransactionRule);
         assertTrue(waitExpectedTransactionRule(TransactionType.XA, providerType, containerComposer));
     }
     
@@ -221,16 +223,17 @@ public abstract class TransactionBaseE2EIT {
     
     private boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType, final TransactionContainerComposer containerComposer) throws SQLException {
         ThreadUtil.sleep(5, TimeUnit.SECONDS);
-        Connection connection = containerComposer.getDataSource().getConnection();
-        int waitTimes = 0;
-        do {
-            if (isExpectedTransactionRule(connection, expectedTransType, expectedProviderType)) {
-                return true;
-            }
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
-            waitTimes++;
-        } while (waitTimes <= 3);
-        return false;
+        try (Connection connection = containerComposer.getDataSource().getConnection()) {
+            int waitTimes = 0;
+            do {
+                if (isExpectedTransactionRule(connection, expectedTransType, expectedProviderType)) {
+                    return true;
+                }
+                ThreadUtil.sleep(2, TimeUnit.SECONDS);
+                waitTimes++;
+            } while (waitTimes <= 3);
+            return false;
+        }
     }
     
     private Map<String, String> executeShowTransactionRule(final Connection connection) throws SQLException {
@@ -296,22 +299,23 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private int countWithLog(final String sql, final TransactionContainerComposer containerComposer) throws SQLException {
-        Connection connection = containerComposer.getDataSource().getConnection();
-        int retryNumber = 0;
-        while (retryNumber <= 3) {
-            try {
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);
-                int result = 0;
-                while (resultSet.next()) {
-                    result++;
+        try (Connection connection = containerComposer.getDataSource().getConnection()) {
+            int retryNumber = 0;
+            while (retryNumber <= 3) {
+                try {
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery(sql);
+                    int result = 0;
+                    while (resultSet.next()) {
+                        result++;
+                    }
+                    return result;
+                } catch (final SQLException ex) {
+                    log.error("Data access error.", ex);
                 }
-                return result;
-            } catch (final SQLException ex) {
-                log.error("Data access error.", ex);
+                ThreadUtil.sleep(2, TimeUnit.SECONDS);
+                retryNumber++;
             }
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
-            retryNumber++;
         }
         throw new RuntimeException("Can't get result from proxy.");
     }

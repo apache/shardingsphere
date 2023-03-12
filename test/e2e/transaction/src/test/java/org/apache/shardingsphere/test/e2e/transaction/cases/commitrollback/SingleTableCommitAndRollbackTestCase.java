@@ -44,24 +44,26 @@ public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionT
     }
     
     private void assertRollback() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertAccountRowCount(connection, 0);
-        Statement statement = connection.createStatement();
-        statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
-        assertAccountRowCount(connection, 1);
-        connection.rollback();
-        assertAccountRowCount(connection, 0);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 0);
+            Statement statement = connection.createStatement();
+            statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
+            assertAccountRowCount(connection, 1);
+            connection.rollback();
+            assertAccountRowCount(connection, 0);
+        }
     }
     
     private void assertCommit() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertAccountRowCount(connection, 0);
-        Statement statement = connection.createStatement();
-        statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
-        assertAccountRowCount(connection, 1);
-        connection.commit();
-        assertAccountRowCount(connection, 1);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 0);
+            Statement statement = connection.createStatement();
+            statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
+            assertAccountRowCount(connection, 1);
+            connection.commit();
+            assertAccountRowCount(connection, 1);
+        }
     }
 }

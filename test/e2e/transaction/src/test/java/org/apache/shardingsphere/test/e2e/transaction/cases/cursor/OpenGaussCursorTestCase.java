@@ -57,20 +57,22 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     
     @Override
     protected void beforeTest() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        assertTableRowCount(connection, "t_order", 4);
+        try (Connection connection = getDataSource().getConnection()) {
+            assertTableRowCount(connection, "t_order", 4);
+        }
     }
     
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        singleTableCursorTest(connection);
-        singleTableCursorOrderByTest(connection);
-        broadcastTableCursorTest(connection);
-        broadcastTableCursorTest2(connection);
-        broadcastAndSingleTablesCursorTest(connection);
-        broadcastAndSingleTablesCursorTest2(connection);
-        viewCursorTest(connection);
+        try (Connection connection = getDataSource().getConnection()) {
+            singleTableCursorTest(connection);
+            singleTableCursorOrderByTest(connection);
+            broadcastTableCursorTest(connection);
+            broadcastTableCursorTest2(connection);
+            broadcastAndSingleTablesCursorTest(connection);
+            broadcastAndSingleTablesCursorTest2(connection);
+            viewCursorTest(connection);
+        }
     }
     
     private void singleTableCursorTest(final Connection connection) throws SQLException {

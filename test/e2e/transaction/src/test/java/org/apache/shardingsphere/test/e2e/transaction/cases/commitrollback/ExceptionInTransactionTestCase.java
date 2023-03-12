@@ -58,9 +58,12 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             fail("It should fail here.");
         } catch (final ArithmeticException ex) {
             assertThat(ex.getMessage(), is("/ by zero"));
-        } finally {
             if (null != connection) {
                 connection.rollback();
+            }
+        } finally {
+            if (null != connection) {
+                connection.close();
             }
         }
         Thread queryThread = new Thread(() -> {
