@@ -43,29 +43,11 @@ public final class PipelineContext {
     }
     
     /**
-     * Initialize mode configuration.
-     *
-     * @param modeConfig configuration
-     */
-    public static void initModeConfig(final ModeConfiguration modeConfig) {
-        PipelineContext.modeConfig = modeConfig;
-    }
-    
-    /**
      * Get context manager.
      *
      * @return context manager
      */
     public static ContextManager getContextManager() {
         return contextManager;
-    }
-    
-    /**
-     * Initialize context manager.
-     *
-     * @param contextManager context manager
-     */
-    public static void initContextManager(final ContextManager contextManager) {
-        PipelineContext.contextManager = contextManager;
     }
 }

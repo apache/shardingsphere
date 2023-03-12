@@ -26,6 +26,8 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtil;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
@@ -37,6 +39,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.context.Migrat
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -68,19 +71,20 @@ public final class PipelineContextUtil {
     @SneakyThrows
     public static void mockModeConfigAndContextManager() {
         EmbedTestingServer.start();
-        if (null != PipelineContext.getContextManager()) {
+        PipelineContextKey pipelineContextKey = new PipelineContextKey(InstanceType.PROXY, null);
+        if (null != PipelineContextManager.getContext(pipelineContextKey)) {
             return;
         }
         ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFileAndIgnoreComments("config_sharding_sphere_jdbc_source.yaml"));
         YamlRootConfiguration rootConfig = (YamlRootConfiguration) pipelineDataSourceConfig.getDataSourceConfiguration();
         ModeConfiguration modeConfig = new YamlModeConfigurationSwapper().swapToObject(rootConfig.getMode());
-        PipelineContext.initModeConfig(modeConfig);
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) PipelineDataSourceFactory.newInstance(pipelineDataSourceConfig).getDataSource();
         ContextManager contextManager = getContextManager(dataSource);
         MetaDataPersistService persistService = new MetaDataPersistService(getClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository()));
         MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), persistService);
-        PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
+        PipelineContext pipelineContext = new PipelineContext(modeConfig, new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
+        PipelineContextManager.putContext(pipelineContextKey, pipelineContext);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
