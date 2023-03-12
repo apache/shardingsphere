@@ -45,7 +45,7 @@ public final class MySQLJdbcTransactionE2ETT extends TransactionBaseE2EIT {
     
     @After
     public void after() throws SQLException {
-        getDataSource().close();
+        getContainerComposer().getDataSource().close();
         getContainerComposer().close();
     }
     

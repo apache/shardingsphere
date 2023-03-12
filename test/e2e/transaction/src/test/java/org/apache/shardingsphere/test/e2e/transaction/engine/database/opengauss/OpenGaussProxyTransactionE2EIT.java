@@ -47,7 +47,7 @@ public final class OpenGaussProxyTransactionE2EIT extends TransactionBaseE2EIT {
     @After
     @SneakyThrows(SQLException.class)
     public void after() {
-        getDataSource().close();
+        getContainerComposer().getDataSource().close();
         getContainerComposer().close();
     }
     

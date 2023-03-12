@@ -47,7 +47,7 @@ public final class PostgreSQLProxyTransactionE2EIT extends TransactionBaseE2EIT 
     @After
     @SneakyThrows(SQLException.class)
     public void after() {
-        getDataSource().close();
+        getContainerComposer().getDataSource().close();
         getContainerComposer().close();
     }
     

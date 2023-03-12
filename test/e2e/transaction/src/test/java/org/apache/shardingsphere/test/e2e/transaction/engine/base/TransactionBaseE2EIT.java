@@ -17,32 +17,73 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.engine.base;
 
+import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
+import org.apache.shardingsphere.test.e2e.transaction.engine.command.CommonSQLCommand;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
+import org.apache.shardingsphere.test.e2e.transaction.env.TransactionE2EEnvironment;
+import org.apache.shardingsphere.test.e2e.transaction.env.enums.TransactionE2EEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.transaction.env.enums.TransactionTestCaseRegistry;
+import org.apache.shardingsphere.test.e2e.transaction.framework.container.compose.DockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
+import org.apache.shardingsphere.test.e2e.transaction.util.TestCaseClassScanner;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXB;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Getter
 @Slf4j
-public abstract class TransactionBaseE2EIT extends BaseE2EIT {
+public abstract class TransactionBaseE2EIT {
+    
+    private static final List<String> ALL_XA_PROVIDERS = Arrays.asList(TransactionTestConstants.ATOMIKOS, TransactionTestConstants.BITRONIX, TransactionTestConstants.NARAYANA);
+    
+    private static final List<Class<? extends BaseTransactionTestCase>> TEST_CASES = TestCaseClassScanner.scan();
+    
+    private static final TransactionE2EEnvironment ENV = TransactionE2EEnvironment.getInstance();
+    
+    private final TransactionContainerComposer containerComposer;
+    
+    private final CommonSQLCommand commonSQL;
     
     public TransactionBaseE2EIT(final TransactionTestParameter testParam) {
-        super(testParam);
+        containerComposer = new TransactionContainerComposer(testParam);
+        commonSQL = loadCommonSQLCommand();
+    }
+    
+    private CommonSQLCommand loadCommonSQLCommand() {
+        return JAXB.unmarshal(Objects.requireNonNull(TransactionBaseE2EIT.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
     }
     
     /**
@@ -52,7 +93,7 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
      * @throws SQLException SQL exception
      */
     public void createAccountTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, getCommonSQLCommand().getCreateAccountTable());
+        executeWithLog(connection, commonSQL.getCreateAccountTable());
     }
     
     /**
@@ -66,21 +107,21 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
     }
     
     private void alterLocalTransactionRule() throws SQLException {
-        Connection connection = getProxyConnection();
+        Connection connection = containerComposer.getDataSource().getConnection();
         if (isExpectedTransactionRule(connection, TransactionType.LOCAL, "")) {
             return;
         }
-        String alterLocalTransactionRule = getCommonSQLCommand().getAlterLocalTransactionRule();
+        String alterLocalTransactionRule = commonSQL.getAlterLocalTransactionRule();
         executeWithLog(connection, alterLocalTransactionRule);
         assertTrue(waitExpectedTransactionRule(TransactionType.LOCAL, ""));
     }
     
     private void alterXaTransactionRule(final String providerType) throws SQLException {
-        Connection connection = getProxyConnection();
+        Connection connection = containerComposer.getDataSource().getConnection();
         if (isExpectedTransactionRule(connection, TransactionType.XA, providerType)) {
             return;
         }
-        String alterXaTransactionRule = getCommonSQLCommand().getAlterXATransactionRule().replace("${providerType}", providerType);
+        String alterXaTransactionRule = commonSQL.getAlterXATransactionRule().replace("${providerType}", providerType);
         executeWithLog(connection, alterXaTransactionRule);
         assertTrue(waitExpectedTransactionRule(TransactionType.XA, providerType));
     }
@@ -93,7 +134,7 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
     
     private boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType) throws SQLException {
         ThreadUtil.sleep(5, TimeUnit.SECONDS);
-        Connection connection = getProxyConnection();
+        Connection connection = containerComposer.getDataSource().getConnection();
         int waitTimes = 0;
         do {
             if (isExpectedTransactionRule(connection, expectedTransType, expectedProviderType)) {
@@ -151,7 +192,7 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
         for (Class<? extends BaseTransactionTestCase> each : testParam.getTransactionTestCaseClasses()) {
             log.info("Transaction IT {} -> {} test begin.", testParam, each.getSimpleName());
             try {
-                each.getConstructor(TransactionBaseE2EIT.class, DataSource.class).newInstance(this, getDataSource()).execute();
+                each.getConstructor(TransactionBaseE2EIT.class, DataSource.class).newInstance(this, containerComposer.getDataSource()).execute();
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
@@ -160,7 +201,7 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
             }
             log.info("Transaction IT {} -> {} test end.", testParam, each.getSimpleName());
             try {
-                getDataSource().close();
+                containerComposer.getDataSource().close();
             } catch (final SQLException ignored) {
             }
         }
@@ -173,7 +214,7 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
             }
             log.info("Call transaction IT {} -> {} -> {} -> {} test begin.", testParam, transactionType, provider, each.getSimpleName());
             try {
-                each.getConstructor(TransactionBaseE2EIT.class, DataSource.class).newInstance(this, getDataSource()).execute();
+                each.getConstructor(TransactionBaseE2EIT.class, DataSource.class).newInstance(this, containerComposer.getDataSource()).execute();
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
@@ -182,9 +223,215 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
             }
             log.info("Call transaction IT {} -> {} -> {} -> {} test end.", testParam, transactionType, provider, each.getSimpleName());
             try {
-                getDataSource().close();
+                containerComposer.getDataSource().close();
             } catch (final SQLException ignored) {
             }
+        }
+    }
+    
+    /**
+     * Add resource.
+     *
+     * @param connection connection
+     * @param databaseName database name
+     * @throws SQLException SQL exception
+     */
+    @SneakyThrows(InterruptedException.class)
+    public void addResource(final Connection connection, final String databaseName) throws SQLException {
+        String addSourceResource = commonSQL.getSourceAddNewResourceTemplate()
+                .replace("${user}", ENV.getActualDataSourceUsername(containerComposer.getDatabaseType()))
+                .replace("${password}", ENV.getActualDataSourcePassword(containerComposer.getDatabaseType()))
+                .replace("${ds2}", getActualJdbcUrlTemplate(databaseName));
+        executeWithLog(connection, addSourceResource);
+        int resourceCount = countWithLog("SHOW STORAGE UNITS FROM sharding_db");
+        Thread.sleep(5000L);
+        assertThat(resourceCount, is(3));
+    }
+    
+    private String getActualJdbcUrlTemplate(final String databaseName) {
+        if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
+            return DataSourceEnvironment.getURL(containerComposer.getDatabaseType(),
+                    containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
+        }
+        return DataSourceEnvironment.getURL(containerComposer.getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(containerComposer.getDatabaseType()), databaseName);
+    }
+    
+    /**
+     * Create the account table rule with one data source.
+     *
+     * @param connection connection
+     * @throws SQLException SQL exception
+     */
+    public void createOriginalAccountTableRule(final Connection connection) throws SQLException {
+        executeWithLog(connection, "DROP SHARDING TABLE RULE account;");
+        executeWithLog(connection, commonSQL.getCreateOneDataSourceAccountTableRule());
+        assertThat(countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;"), is(3));
+    }
+    
+    private void executeWithLog(final Connection connection, final String sql) throws SQLException {
+        log.info("Connection execute:{}.", sql);
+        connection.createStatement().execute(sql);
+        ThreadUtil.sleep(1, TimeUnit.SECONDS);
+    }
+    
+    private int countWithLog(final String sql) throws SQLException {
+        Connection connection = containerComposer.getDataSource().getConnection();
+        int retryNumber = 0;
+        while (retryNumber <= 3) {
+            try {
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql);
+                int result = 0;
+                while (resultSet.next()) {
+                    result++;
+                }
+                return result;
+            } catch (final SQLException ex) {
+                log.error("Data access error.", ex);
+            }
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
+            retryNumber++;
+        }
+        throw new RuntimeException("Can't get result from proxy.");
+    }
+    
+    
+    
+    
+    
+    /**
+     * Get transaction test parameters.
+     *
+     * @param testCaseClass test case class
+     * @return transaction test parameters
+     */
+    public static Collection<TransactionTestParameter> getTransactionTestParameters(final Class<? extends TransactionBaseE2EIT> testCaseClass) {
+        TransactionTestCaseRegistry currentTestCaseInfo = ENV.getTransactionTestCaseRegistryMap().get(testCaseClass.getName());
+        Collection<TransactionTestParameter> result = new LinkedList<>();
+        if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.NONE) {
+            return result;
+        }
+        if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
+            addTestParameters(currentTestCaseInfo, result);
+        }
+        if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.NATIVE && "MySQL".equalsIgnoreCase(ENV.getNativeDatabaseType())) {
+            addParametersByVersions(ENV.getMysqlVersions(), result, currentTestCaseInfo);
+        }
+        return result;
+    }
+    
+    private static void addTestParameters(final TransactionTestCaseRegistry currentTestCaseInfo, final Collection<TransactionTestParameter> testParams) {
+        if (TransactionTestConstants.MYSQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
+            addParametersByVersions(ENV.getMysqlVersions(), testParams, currentTestCaseInfo);
+        } else if (TransactionTestConstants.POSTGRESQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
+            addParametersByVersions(ENV.getPostgresqlVersions(), testParams, currentTestCaseInfo);
+        } else if (TransactionTestConstants.OPENGAUSS.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
+            addParametersByVersions(ENV.getOpenGaussVersions(), testParams, currentTestCaseInfo);
+        }
+    }
+    
+    private static void addParametersByVersions(final List<String> databaseVersion, final Collection<TransactionTestParameter> testParams, final TransactionTestCaseRegistry currentTestCaseInfo) {
+        for (String each : databaseVersion) {
+            testParams.addAll(addParametersByTestCaseClasses(each, currentTestCaseInfo));
+        }
+    }
+    
+    private static Collection<TransactionTestParameter> addParametersByTestCaseClasses(final String version, final TransactionTestCaseRegistry currentTestCaseInfo) {
+        Map<String, TransactionTestParameter> testParams = new LinkedHashMap<>();
+        for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
+            if (!ENV.getNeedToRunTestCases().isEmpty() && !ENV.getNeedToRunTestCases().contains(each.getSimpleName())) {
+                log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
+                continue;
+            }
+            TransactionTestCase annotation = each.getAnnotation(TransactionTestCase.class);
+            if (null == annotation) {
+                log.info("Collect transaction test case, annotation is null, skip: {}.", each.getName());
+                continue;
+            }
+            Optional<String> dbType = Arrays.stream(annotation.dbTypes()).filter(currentTestCaseInfo.getDbType()::equalsIgnoreCase).findAny();
+            if (!dbType.isPresent()) {
+                log.info("Collect transaction test case, dbType is not matched, skip: {}.", each.getName());
+                continue;
+            }
+            Optional<String> runAdapters = Arrays.stream(annotation.adapters()).filter(currentTestCaseInfo.getRunningAdaptor()::equalsIgnoreCase).findAny();
+            if (!runAdapters.isPresent()) {
+                log.info("Collect transaction test case, runAdapter is not matched, skip: {}.", each.getName());
+                continue;
+            }
+            String scenario = annotation.scenario();
+            addParametersByTransactionTypes(version, currentTestCaseInfo, each, annotation, testParams, scenario);
+        }
+        return testParams.values();
+    }
+    
+    private static void addParametersByTransactionTypes(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                                        final Class<? extends BaseTransactionTestCase> caseClass, final TransactionTestCase annotation,
+                                                        final Map<String, TransactionTestParameter> testParams, final String scenario) {
+        if (AdapterType.PROXY.getValue().equals(currentTestCaseInfo.getRunningAdaptor())) {
+            List<TransactionType> allowTransactionTypes = ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
+                    : ENV.getAllowTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
+            List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
+            addParameters(version, currentTestCaseInfo, caseClass, allowTransactionTypes, allowProviders, testParams, scenario);
+        } else {
+            for (TransactionType each : annotation.transactionTypes()) {
+                if (!ENV.getAllowTransactionTypes().isEmpty() && !ENV.getAllowTransactionTypes().contains(each.toString())) {
+                    log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
+                    continue;
+                }
+                addParametersByTransactionProvidersInJDBC(version, currentTestCaseInfo, caseClass, each, testParams, scenario);
+            }
+        }
+    }
+    
+    private static void addParametersByTransactionProvidersInJDBC(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                                                  final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each,
+                                                                  final Map<String, TransactionTestParameter> testParams, final String scenario) {
+        if (TransactionType.LOCAL.equals(each)) {
+            addParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(""), testParams, scenario);
+        } else if (TransactionType.XA.equals(each)) {
+            List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
+            for (String provider : allowProviders) {
+                addParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(provider), testParams, scenario);
+            }
+        }
+    }
+    
+    private static void addParameters(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                      final Class<? extends BaseTransactionTestCase> caseClass, final List<TransactionType> transactionTypes, final List<String> providers,
+                                      final Map<String, TransactionTestParameter> testParams, final String scenario) {
+        String uniqueKey = getUniqueKey(currentTestCaseInfo.getDbType(), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers, scenario);
+        testParams.putIfAbsent(uniqueKey, new TransactionTestParameter(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers,
+                getStorageContainerImage(currentTestCaseInfo.getDbType(), version), scenario, new LinkedList<>()));
+        testParams.get(uniqueKey).getTransactionTestCaseClasses().add(caseClass);
+    }
+    
+    private static String getUniqueKey(final String dbType, final String runningAdapter, final List<TransactionType> transactionTypes, final List<String> providers, final String scenario) {
+        return dbType + File.separator + runningAdapter + File.separator + transactionTypes + File.separator + providers + File.separator + scenario;
+    }
+    
+    private static DatabaseType getSqlDatabaseType(final String databaseType) {
+        switch (databaseType) {
+            case TransactionTestConstants.MYSQL:
+                return new MySQLDatabaseType();
+            case TransactionTestConstants.POSTGRESQL:
+                return new PostgreSQLDatabaseType();
+            case TransactionTestConstants.OPENGAUSS:
+                return new OpenGaussDatabaseType();
+            default:
+                throw new UnsupportedOperationException(String.format("Unsupported database type `%s`.", databaseType));
+        }
+    }
+    
+    private static String getStorageContainerImage(final String databaseType, final String version) {
+        switch (databaseType) {
+            case TransactionTestConstants.MYSQL:
+                return "mysql/mysql-server:" + version;
+            case TransactionTestConstants.POSTGRESQL:
+            case TransactionTestConstants.OPENGAUSS:
+                return version;
+            default:
+                throw new UnsupportedOperationException(String.format("Unsupported database type `%s`.", databaseType));
         }
     }
 }

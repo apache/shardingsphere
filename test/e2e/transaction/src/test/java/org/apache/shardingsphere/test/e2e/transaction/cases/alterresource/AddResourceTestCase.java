@@ -56,7 +56,7 @@ public final class AddResourceTestCase extends BaseTransactionTestCase {
     
     private void createThreeDataSourceAccountTableRule(final Connection connection) throws SQLException {
         executeWithLog(connection, "DROP SHARDING TABLE RULE account;");
-        executeWithLog(connection, getBaseTransactionITCase().getCommonSQLCommand().getCreateThreeDataSourceAccountTableRule());
+        executeWithLog(connection, getBaseTransactionITCase().getCommonSQL().getCreateThreeDataSourceAccountTableRule());
         int ruleCount = countWithLog(connection, "SHOW SHARDING TABLE RULES FROM sharding_db;");
         assertThat(ruleCount, is(3));
     }

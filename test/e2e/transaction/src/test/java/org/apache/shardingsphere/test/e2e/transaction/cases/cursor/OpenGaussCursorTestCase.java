@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.cursor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.command.CursorSQLCommand;
@@ -34,8 +33,8 @@ import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * OpenGauss cursor transaction integration test.
@@ -52,7 +51,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     private CursorSQLCommand loadCursorSQLCommand() {
-        return JAXB.unmarshal(Objects.requireNonNull(BaseE2EIT.class.getClassLoader().getResource("env/common/cursor-command.xml")), CursorSQLCommand.class);
+        return JAXB.unmarshal(Objects.requireNonNull(TransactionBaseE2EIT.class.getClassLoader().getResource("env/common/cursor-command.xml")), CursorSQLCommand.class);
     }
     
     @Override
