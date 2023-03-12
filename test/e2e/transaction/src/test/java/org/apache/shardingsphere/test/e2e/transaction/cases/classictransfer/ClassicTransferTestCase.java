@@ -48,8 +48,9 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     
     @Override
     public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        executeUpdateWithLog(connection, "insert into account(transaction_id, balance) values (1,0), (2,100);");
+        try (Connection connection = getDataSource().getConnection()) {
+            executeUpdateWithLog(connection, "insert into account(transaction_id, balance) values (1,0), (2,100);");
+        }
         innerRun();
     }
     

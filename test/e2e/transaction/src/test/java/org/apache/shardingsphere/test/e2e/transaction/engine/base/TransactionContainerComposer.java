@@ -59,7 +59,7 @@ public final class TransactionContainerComposer implements AutoCloseable {
         return result;
     }
     
-    boolean isProxyAdapter(final TransactionTestParameter testParam) {
+    private boolean isProxyAdapter(final TransactionTestParameter testParam) {
         return AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter());
     }
     

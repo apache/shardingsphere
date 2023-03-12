@@ -46,13 +46,13 @@ public final class AddResourceTestCase extends BaseTransactionTestCase {
     }
     
     private void assertAddResource(final TransactionContainerComposer containerComposer) throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        getBaseTransactionITCase().addResource(connection, "transaction_it_2", containerComposer);
-        createThreeDataSourceAccountTableRule(connection);
-        reCreateAccountTable(connection);
-        assertRollback();
-        assertCommit();
-        connection.close();
+        try (Connection connection = getDataSource().getConnection()) {
+            getBaseTransactionITCase().addResource(connection, "transaction_it_2", containerComposer);
+            createThreeDataSourceAccountTableRule(connection);
+            reCreateAccountTable(connection);
+            assertRollback();
+            assertCommit();
+        }
     }
     
     private void createThreeDataSourceAccountTableRule(final Connection connection) throws SQLException {
@@ -68,22 +68,24 @@ public final class AddResourceTestCase extends BaseTransactionTestCase {
     }
     
     private void assertRollback() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-        executeWithLog(connection, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
-        connection.rollback();
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+            executeWithLog(connection, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
+            connection.rollback();
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+        }
     }
     
     private void assertCommit() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-        executeWithLog(connection, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
-        connection.commit();
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+            executeWithLog(connection, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
+            connection.commit();
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
+        }
     }
 }
