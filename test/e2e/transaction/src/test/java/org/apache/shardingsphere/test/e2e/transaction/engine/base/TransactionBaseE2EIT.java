@@ -91,7 +91,6 @@ public abstract class TransactionBaseE2EIT {
         return JAXB.unmarshal(Objects.requireNonNull(TransactionBaseE2EIT.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
     }
     
-    
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
