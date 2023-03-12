@@ -180,20 +180,20 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
         switch (dataType) {
             case -5:
                 return Long.class;
+            case 1:
+                return String.class;
             case 4:
                 return Integer.class;
+            case 5:
+                return Short.class;
             case 6:
                 return Float.class;
             case 8:
                 return Double.class;
-            case 1:
-                return String.class;
             case 12:
                 return String.class;
             case 91:
                 return Date.class;
-            case 5:
-                return Short.class;
             default:
                 return String.class;
         }
