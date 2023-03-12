@@ -47,9 +47,10 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     
     @Override
     public void executeTest() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        executeUpdateWithLog(connection, "insert into account(transaction_id, balance) values (1,0), (2,100);");
-        innerRun();
+        try (Connection connection = getDataSource().getConnection()) {
+            executeUpdateWithLog(connection, "insert into account(transaction_id, balance) values (1,0), (2,100);");
+            innerRun();
+        }
     }
     
     @SneakyThrows(InterruptedException.class)
