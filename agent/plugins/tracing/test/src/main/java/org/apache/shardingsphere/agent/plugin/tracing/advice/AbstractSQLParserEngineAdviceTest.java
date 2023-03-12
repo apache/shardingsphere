@@ -19,13 +19,13 @@ package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
 import lombok.Getter;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.AgentExtension;
+import org.apache.shardingsphere.agent.plugin.tracing.TracingAgentExtension;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.mockito.Mockito.mock;
 
-@ExtendWith(AgentExtension.class)
+@ExtendWith(TracingAgentExtension.class)
 public abstract class AbstractSQLParserEngineAdviceTest implements AdviceTestBase {
     
     @Getter

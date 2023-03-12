@@ -22,36 +22,29 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.common.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.JDBCAgentTestUtils;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
- * Basic integration test.
+ * Agent test action extension.
  */
 @Slf4j
-public abstract class BasePluginE2EIT {
+public final class AgentTestActionExtension implements BeforeEachCallback {
     
-    private static boolean hasSleep;
+    private static volatile boolean hasSleep;
     
-    @Before
-    public void check() {
-        Assume.assumeThat(E2ETestEnvironment.getInstance().isEnvironmentPrepared(), is(true));
-        Assume.assumeThat(E2ETestEnvironment.getInstance().isInitializationFailed(), is(false));
-        E2ETestEnvironment.getInstance().createDataSource();
-        assertNotNull(E2ETestEnvironment.getInstance().getDataSource());
-    }
-    
-    @Test
-    public void assertProxyWithAgent() {
+    @Override
+    public void beforeEach(final ExtensionContext context) {
+        checkEnvironment();
         DataSource dataSource = E2ETestEnvironment.getInstance().getDataSource();
         List<Long> results = new ArrayList<>(10);
         for (int i = 1; i <= 10; i++) {
@@ -68,6 +61,13 @@ public abstract class BasePluginE2EIT {
         }
         JDBCAgentTestUtils.createExecuteError(dataSource);
         sleep();
+    }
+    
+    private void checkEnvironment() {
+        assumeTrue(E2ETestEnvironment.getInstance().isEnvironmentPrepared());
+        assumeFalse(E2ETestEnvironment.getInstance().isInitializationFailed());
+        E2ETestEnvironment.getInstance().createDataSource();
+        assertNotNull(E2ETestEnvironment.getInstance().getDataSource());
     }
     
     @SneakyThrows(InterruptedException.class)

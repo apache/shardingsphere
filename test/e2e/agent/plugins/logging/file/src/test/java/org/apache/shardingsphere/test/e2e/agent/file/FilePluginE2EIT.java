@@ -17,29 +17,20 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file;
 
-import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
+import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
 import org.apache.shardingsphere.test.e2e.agent.file.loader.LogLoader;
-import org.junit.Test;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class FilePluginE2EIT extends BasePluginE2EIT {
+@ExtendWith(AgentTestActionExtension.class)
+public final class FilePluginE2EIT {
     
     @Test
     public void assertProxyWithAgent() {
-        super.assertProxyWithAgent();
         assertTrue(LogLoader.getLogFile().exists(), String.format("The file `%s` does not exist", LogLoader.getLogFilePath()));
-        Collection<String> expectedLogRegexs = getExpectedLogRegex();
-        expectedLogRegexs.forEach(ContentAssert::assertIs);
-    }
-    
-    private Collection<String> getExpectedLogRegex() {
-        Collection<String> result = new LinkedList<>();
-        result.add("Build meta data contexts finished, cost\\s(?=[1-9]+\\d*)");
-        return result;
+        ContentAssert.assertIs("Build meta data contexts finished, cost\\s(?=[1-9]+\\d*)");
     }
 }

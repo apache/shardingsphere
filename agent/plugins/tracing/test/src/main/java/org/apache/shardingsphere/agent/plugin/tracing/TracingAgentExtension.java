@@ -36,7 +36,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-public final class AgentExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+/**
+ * Tracing agent extension.
+ */
+public final class TracingAgentExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
