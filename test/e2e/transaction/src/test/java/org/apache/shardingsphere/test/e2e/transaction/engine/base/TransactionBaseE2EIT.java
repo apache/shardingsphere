@@ -336,104 +336,101 @@ public abstract class TransactionBaseE2EIT {
                 return result;
             }
             if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
-                addTestParameters(currentTestCaseInfo, result);
+                result.addAll(getTestParameters(currentTestCaseInfo));
             }
             if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.NATIVE && "MySQL".equalsIgnoreCase(ENV.getNativeDatabaseType())) {
-                addParametersByVersions(ENV.getMysqlVersions(), result, currentTestCaseInfo);
+                result.addAll(getTestParameters(currentTestCaseInfo, ENV.getMysqlVersions()));
             }
             return result;
         }
-    
-        private void addTestParameters(final TransactionTestCaseRegistry currentTestCaseInfo, final Collection<TransactionTestParameter> testParams) {
-            if (TransactionTestConstants.MYSQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
-                addParametersByVersions(ENV.getMysqlVersions(), testParams, currentTestCaseInfo);
-            } else if (TransactionTestConstants.POSTGRESQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
-                addParametersByVersions(ENV.getPostgresqlVersions(), testParams, currentTestCaseInfo);
-            } else if (TransactionTestConstants.OPENGAUSS.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
-                addParametersByVersions(ENV.getOpenGaussVersions(), testParams, currentTestCaseInfo);
+        
+        private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry) {
+            Collection<TransactionTestParameter> result = new LinkedList<>();
+            if (TransactionTestConstants.MYSQL.equalsIgnoreCase(registry.getDbType())) {
+                result.addAll(getTestParameters(registry, ENV.getMysqlVersions()));
+            } else if (TransactionTestConstants.POSTGRESQL.equalsIgnoreCase(registry.getDbType())) {
+                result.addAll(getTestParameters(registry, ENV.getPostgresqlVersions()));
+            } else if (TransactionTestConstants.OPENGAUSS.equalsIgnoreCase(registry.getDbType())) {
+                result.addAll(getTestParameters(registry, ENV.getOpenGaussVersions()));
             }
+            return result;
         }
-    
-        private void addParametersByVersions(final List<String> databaseVersion, final Collection<TransactionTestParameter> testParams, final TransactionTestCaseRegistry currentTestCaseInfo) {
-            for (String each : databaseVersion) {
-                testParams.addAll(addParametersByTestCaseClasses(each, currentTestCaseInfo));
-            }
+        
+        private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry, final List<String> databaseVersions) {
+            return databaseVersions.stream().flatMap(each -> getTestParameters(registry, each).stream()).collect(Collectors.toList());
         }
-    
-        private Collection<TransactionTestParameter> addParametersByTestCaseClasses(final String version, final TransactionTestCaseRegistry currentTestCaseInfo) {
-            Map<String, TransactionTestParameter> testParams = new LinkedHashMap<>();
+        
+        private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry, final String databaseVersion) {
+            Map<String, TransactionTestParameter> result = new LinkedHashMap<>();
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
                 if (!ENV.getNeedToRunTestCases().isEmpty() && !ENV.getNeedToRunTestCases().contains(each.getSimpleName())) {
                     log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
                     continue;
                 }
-                TransactionTestCase annotation = each.getAnnotation(TransactionTestCase.class);
-                if (null == annotation) {
+                TransactionTestCase transactionTestCase = each.getAnnotation(TransactionTestCase.class);
+                if (null == transactionTestCase) {
                     log.info("Collect transaction test case, annotation is null, skip: {}.", each.getName());
                     continue;
                 }
-                Optional<String> dbType = Arrays.stream(annotation.dbTypes()).filter(currentTestCaseInfo.getDbType()::equalsIgnoreCase).findAny();
-                if (!dbType.isPresent()) {
+                Optional<String> databaseType = Arrays.stream(transactionTestCase.dbTypes()).filter(registry.getDbType()::equalsIgnoreCase).findAny();
+                if (!databaseType.isPresent()) {
                     log.info("Collect transaction test case, dbType is not matched, skip: {}.", each.getName());
                     continue;
                 }
-                Optional<String> runAdapters = Arrays.stream(annotation.adapters()).filter(currentTestCaseInfo.getRunningAdaptor()::equalsIgnoreCase).findAny();
+                Optional<String> runAdapters = Arrays.stream(transactionTestCase.adapters()).filter(registry.getRunningAdaptor()::equalsIgnoreCase).findAny();
                 if (!runAdapters.isPresent()) {
                     log.info("Collect transaction test case, runAdapter is not matched, skip: {}.", each.getName());
                     continue;
                 }
-                String scenario = annotation.scenario();
-                addParametersByTransactionTypes(version, currentTestCaseInfo, each, annotation, testParams, scenario);
+                setTestParameters(result, registry, databaseVersion, transactionTestCase, transactionTestCase.scenario(), each);
             }
-            return testParams.values();
+            return result.values();
         }
-    
-        private void addParametersByTransactionTypes(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
-                                                            final Class<? extends BaseTransactionTestCase> caseClass, final TransactionTestCase annotation,
-                                                            final Map<String, TransactionTestParameter> testParams, final String scenario) {
-            if (AdapterType.PROXY.getValue().equals(currentTestCaseInfo.getRunningAdaptor())) {
-                List<TransactionType> allowTransactionTypes = ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
+        
+        private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
+                                       final TransactionTestCase transactionTestCase, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
+            if (AdapterType.PROXY.getValue().equals(registry.getRunningAdaptor())) {
+                List<TransactionType> allowedTransactionTypes = ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
                         : ENV.getAllowTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
-                List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
-                addParameters(version, currentTestCaseInfo, caseClass, allowTransactionTypes, allowProviders, testParams, scenario);
-            } else {
-                for (TransactionType each : annotation.transactionTypes()) {
-                    if (!ENV.getAllowTransactionTypes().isEmpty() && !ENV.getAllowTransactionTypes().contains(each.toString())) {
-                        log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
-                        continue;
-                    }
-                    addParametersByTransactionProvidersInJDBC(version, currentTestCaseInfo, caseClass, each, testParams, scenario);
+                List<String> allowedProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
+                setTestParameters(testParams, registry, databaseVersion, allowedTransactionTypes, allowedProviders, scenario, caseClass);
+                return;
+            }
+            for (TransactionType each : transactionTestCase.transactionTypes()) {
+                if (!ENV.getAllowTransactionTypes().isEmpty() && !ENV.getAllowTransactionTypes().contains(each.toString())) {
+                    log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
+                    continue;
+                }
+                setTestParameters(testParams, registry, databaseVersion, each, scenario, caseClass);
+            }
+        }
+        
+        private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
+                                       final TransactionType transactionType, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
+            if (TransactionType.LOCAL.equals(transactionType)) {
+                setTestParameters(testParams, registry, databaseVersion, Collections.singletonList(transactionType), Collections.singletonList(""), scenario, caseClass);
+                return;
+            }
+            if (TransactionType.XA.equals(transactionType)) {
+                for (String each : ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders()) {
+                    setTestParameters(testParams, registry, databaseVersion, Collections.singletonList(transactionType), Collections.singletonList(each), scenario, caseClass);
                 }
             }
         }
-    
-        private void addParametersByTransactionProvidersInJDBC(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
-                                                                      final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each,
-                                                                      final Map<String, TransactionTestParameter> testParams, final String scenario) {
-            if (TransactionType.LOCAL.equals(each)) {
-                addParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(""), testParams, scenario);
-            } else if (TransactionType.XA.equals(each)) {
-                List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
-                for (String provider : allowProviders) {
-                    addParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(provider), testParams, scenario);
-                }
-            }
+        
+        private void setTestParameters(final Map<String, TransactionTestParameter> testParams, final TransactionTestCaseRegistry registry, final String databaseVersion,
+                                       final List<TransactionType> transactionTypes, final List<String> providers, final String scenario, final Class<? extends BaseTransactionTestCase> caseClass) {
+            String key = getUniqueKey(registry.getDbType(), registry.getRunningAdaptor(), transactionTypes, providers, scenario);
+            testParams.putIfAbsent(key, new TransactionTestParameter(getDatabaseType(registry.getDbType()), registry.getRunningAdaptor(), transactionTypes, providers,
+                    getStorageContainerImageName(registry.getDbType(), databaseVersion), scenario, new LinkedList<>()));
+            testParams.get(key).getTransactionTestCaseClasses().add(caseClass);
         }
-    
-        private void addParameters(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
-                                          final Class<? extends BaseTransactionTestCase> caseClass, final List<TransactionType> transactionTypes, final List<String> providers,
-                                          final Map<String, TransactionTestParameter> testParams, final String scenario) {
-            String uniqueKey = getUniqueKey(currentTestCaseInfo.getDbType(), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers, scenario);
-            testParams.putIfAbsent(uniqueKey, new TransactionTestParameter(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers,
-                    getStorageContainerImage(currentTestCaseInfo.getDbType(), version), scenario, new LinkedList<>()));
-            testParams.get(uniqueKey).getTransactionTestCaseClasses().add(caseClass);
+        
+        private String getUniqueKey(final String databaseType, final String runningAdapter, final List<TransactionType> transactionTypes, final List<String> providers, final String scenario) {
+            return String.join(File.separator, databaseType, runningAdapter, transactionTypes.toString(), providers.toString(), scenario);
         }
-    
-        private String getUniqueKey(final String dbType, final String runningAdapter, final List<TransactionType> transactionTypes, final List<String> providers, final String scenario) {
-            return dbType + File.separator + runningAdapter + File.separator + transactionTypes + File.separator + providers + File.separator + scenario;
-        }
-    
-        private DatabaseType getSqlDatabaseType(final String databaseType) {
+        
+        private DatabaseType getDatabaseType(final String databaseType) {
             switch (databaseType) {
                 case TransactionTestConstants.MYSQL:
                     return new MySQLDatabaseType();
@@ -445,14 +442,14 @@ public abstract class TransactionBaseE2EIT {
                     throw new UnsupportedOperationException(String.format("Unsupported database type `%s`.", databaseType));
             }
         }
-    
-        private String getStorageContainerImage(final String databaseType, final String version) {
+        
+        private String getStorageContainerImageName(final String databaseType, final String databaseVersion) {
             switch (databaseType) {
                 case TransactionTestConstants.MYSQL:
-                    return "mysql/mysql-server:" + version;
+                    return "mysql/mysql-server:" + databaseVersion;
                 case TransactionTestConstants.POSTGRESQL:
                 case TransactionTestConstants.OPENGAUSS:
-                    return version;
+                    return databaseVersion;
                 default:
                     throw new UnsupportedOperationException(String.format("Unsupported database type `%s`.", databaseType));
             }
