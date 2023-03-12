@@ -70,7 +70,17 @@ public final class ShardingSphereServiceLoader<T> {
     @SuppressWarnings("unchecked")
     public static <T> Collection<T> getServiceInstances(final Class<T> serviceInterface) {
         ShardingSphereServiceLoader<?> result = LOADERS.get(serviceInterface);
-        return (Collection<T>) (null != result ? result.getServiceInstances() : LOADERS.computeIfAbsent(serviceInterface, ShardingSphereServiceLoader::new).getServiceInstances());
+        if (null != result) {
+            return (Collection<T>) result.getServiceInstances();
+        }
+        synchronized (LOADERS) {
+            result = LOADERS.get(serviceInterface);
+            if (null == result) {
+                result = new ShardingSphereServiceLoader<>(serviceInterface);
+                LOADERS.put(serviceInterface, result);
+            }
+        }
+        return (Collection<T>) result.getServiceInstances();
     }
     
     private Collection<T> getServiceInstances() {
