@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobWorker;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
@@ -31,7 +32,7 @@ import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleLi
 public final class PipelineContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
-    public void onInitialized(final ModeConfiguration modeConfig, final ContextManager contextManager) {
+    public void onInitialized(final InstanceType instanceType, final ModeConfiguration modeConfig, final ContextManager contextManager, final String databaseName) {
         if (null == modeConfig) {
             return;
         }

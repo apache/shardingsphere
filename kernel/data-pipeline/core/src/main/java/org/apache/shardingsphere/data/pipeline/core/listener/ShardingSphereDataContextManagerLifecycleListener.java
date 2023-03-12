@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.listener;
 
 import org.apache.shardingsphere.data.pipeline.core.execute.ShardingSphereDataJobWorker;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleLi
 public final class ShardingSphereDataContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
-    public void onInitialized(final ModeConfiguration modeConfig, final ContextManager contextManager) {
+    public void onInitialized(final InstanceType instanceType, final ModeConfiguration modeConfig, final ContextManager contextManager, final String databaseName) {
         if (null == modeConfig) {
             return;
         }

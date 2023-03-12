@@ -25,6 +25,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
  */
 public final class PipelineContext {
     
+    // TODO private InstanceType instanceType;
+    
     private static volatile ModeConfiguration modeConfig;
     
     private static volatile ContextManager contextManager;
