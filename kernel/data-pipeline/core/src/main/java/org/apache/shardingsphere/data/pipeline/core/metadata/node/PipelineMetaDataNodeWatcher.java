@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -40,6 +42,8 @@ public final class PipelineMetaDataNodeWatcher {
     
     private static final PipelineMetaDataNodeWatcher INSTANCE = new PipelineMetaDataNodeWatcher();
     
+    private static final ExecutorService EVENT_LISTENER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Pipeline-EventListener-%d").build());
+    
     private final Map<Pattern, PipelineMetaDataChangedEventHandler> listenerMap = new ConcurrentHashMap<>();
     
     private PipelineMetaDataNodeWatcher() {
@@ -49,7 +53,7 @@ public final class PipelineMetaDataNodeWatcher {
     }
     
     private void dispatchEvent(final DataChangedEvent event) {
-        CompletableFuture.runAsync(() -> dispatchEvent0(event), PipelineContext.getEventListenerExecutor()).whenComplete((unused, throwable) -> {
+        CompletableFuture.runAsync(() -> dispatchEvent0(event), EVENT_LISTENER_EXECUTOR).whenComplete((unused, throwable) -> {
             if (null != throwable) {
                 log.error("dispatch event failed", throwable);
             }

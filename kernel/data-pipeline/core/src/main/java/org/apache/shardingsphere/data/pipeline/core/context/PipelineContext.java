@@ -17,12 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.context;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Pipeline context.
@@ -32,8 +28,6 @@ public final class PipelineContext {
     private static volatile ModeConfiguration modeConfig;
     
     private static volatile ContextManager contextManager;
-    
-    private static final ExecutorService EVENT_LISTENER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Pipeline-EventListener-%d").build());
     
     /**
      * Get mode configuration.
@@ -69,14 +63,5 @@ public final class PipelineContext {
      */
     public static void initContextManager(final ContextManager contextManager) {
         PipelineContext.contextManager = contextManager;
-    }
-    
-    /**
-     * Get pipeline executor.
-     *
-     * @return pipeline executor
-     */
-    public static ExecutorService getEventListenerExecutor() {
-        return EVENT_LISTENER_EXECUTOR;
     }
 }
