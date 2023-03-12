@@ -242,7 +242,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     private String generateJobId(final YamlMigrationJobConfiguration config) {
-        MigrationJobId jobId = new MigrationJobId(config.getJobShardingDataNodes(), config.getTargetDatabaseName());
+        MigrationJobId jobId = new MigrationJobId(config.getJobShardingDataNodes(), config.getDatabaseName());
         return marshalJobId(jobId);
     }
     
