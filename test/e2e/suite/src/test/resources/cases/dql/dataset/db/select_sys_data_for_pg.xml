@@ -24,20 +24,17 @@
     </metadata>
     <row values="public | t_broadcast_table | table | postgres" />
     <row values="public | t_country | table | postgres" />
-<!--    <row values="public | t_merchant | table | postgres" />-->
     <row values="public | t_order | table | postgres" />
     <row values="public | t_order_aggregation_view | view | test_user" />
     <row values="public | t_order_federate | table | postgres" />
     <row values="public | t_order_federate_sharding | table | postgres" />
     <row values="public | t_order_item | table | postgres" />
-<!--    <row values="public | t_order_item_federate | table | postgres" />-->
     <row values="public | t_order_item_federate_sharding | table | postgres" />
     <row values="public | t_order_item_join_view | view | test_user" />
     <row values="public | t_order_subquery_view | view | test_user" />
     <row values="public | t_order_union_view | view | test_user" />
     <row values="public | t_product | table | postgres" />
     <row values="public | t_product_category | table | postgres" />
-<!--    <row values="public | t_product_detail | table | postgres" />-->
     <row values="public | t_single_table | table | postgres" />
     <row values="public | t_user | table | postgres" />
 </dataset>

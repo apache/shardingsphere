@@ -71,7 +71,6 @@ type
     : BIGINT | INTEGER | VARCHAR | DATE | VARCHAR_ZH
     ;
 
-
 string_zh
     : UTF_ STRING_
     ;
