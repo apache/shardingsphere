@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.settype;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -42,7 +43,7 @@ public class SetTransactionTypeTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    protected void executeTest() throws SQLException {
+    protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             assertTransactionType(connection, TransactionType.XA.name());
             executeWithLog(connection, "SET DIST VARIABLE TRANSACTION_TYPE = 'LOCAL'");

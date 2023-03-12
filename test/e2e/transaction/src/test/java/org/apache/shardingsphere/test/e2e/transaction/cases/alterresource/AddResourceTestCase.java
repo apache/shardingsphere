@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.alterresource;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
@@ -40,13 +41,13 @@ public final class AddResourceTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
-        assertAddResource();
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
+        assertAddResource(containerComposer);
     }
     
-    private void assertAddResource() throws SQLException {
+    private void assertAddResource(final TransactionContainerComposer containerComposer) throws SQLException {
         Connection connection = getDataSource().getConnection();
-        getBaseTransactionITCase().addResource(connection, "transaction_it_2");
+        getBaseTransactionITCase().addResource(connection, "transaction_it_2", containerComposer);
         createThreeDataSourceAccountTableRule(connection);
         reCreateAccountTable(connection);
         assertRollback();
@@ -56,7 +57,7 @@ public final class AddResourceTestCase extends BaseTransactionTestCase {
     
     private void createThreeDataSourceAccountTableRule(final Connection connection) throws SQLException {
         executeWithLog(connection, "DROP SHARDING TABLE RULE account;");
-        executeWithLog(connection, getBaseTransactionITCase().getCommonSQLCommand().getCreateThreeDataSourceAccountTableRule());
+        executeWithLog(connection, getBaseTransactionITCase().getCommonSQL().getCreateThreeDataSourceAccountTableRule());
         int ruleCount = countWithLog(connection, "SHOW SHARDING TABLE RULES FROM sharding_db;");
         assertThat(ruleCount, is(3));
     }

@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
 import javax.sql.DataSource;
@@ -48,15 +49,16 @@ public abstract class BaseTransactionTestCase {
     /**
      * Execute test cases.
      *
+     * @param containerComposer container composer
      * @throws SQLException SQL exception
      */
-    public void execute() throws SQLException {
+    public void execute(final TransactionContainerComposer containerComposer) throws SQLException {
         beforeTest();
-        executeTest();
+        executeTest(containerComposer);
         afterTest();
     }
     
-    protected abstract void executeTest() throws SQLException;
+    protected abstract void executeTest(TransactionContainerComposer containerComposer) throws SQLException;
     
     protected void beforeTest() throws SQLException {
         Connection connection = getDataSource().getConnection();

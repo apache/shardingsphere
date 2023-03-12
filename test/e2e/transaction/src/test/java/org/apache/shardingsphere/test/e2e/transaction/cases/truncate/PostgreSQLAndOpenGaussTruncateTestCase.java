@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.truncate;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
@@ -37,7 +38,7 @@ public final class PostgreSQLAndOpenGaussTruncateTestCase extends BaseTransactio
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertTruncateRollback();
         assertTruncateCommit();
     }

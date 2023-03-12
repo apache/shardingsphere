@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
@@ -40,7 +41,7 @@ public final class MultiTableCommitAndRollbackTestCase extends BaseTransactionTe
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertRollback();
         assertCommit();
     }

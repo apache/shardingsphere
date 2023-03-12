@@ -46,6 +46,6 @@ public final class DiscoveryContainerComposer implements AutoCloseable {
     
     @Override
     public void close() {
-        containerComposer.close();
+        containerComposer.stop();
     }
 }

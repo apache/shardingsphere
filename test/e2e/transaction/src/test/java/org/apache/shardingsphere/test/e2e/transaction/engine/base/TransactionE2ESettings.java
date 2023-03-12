@@ -15,11 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.transaction.engine.database.postgresql;
+package org.apache.shardingsphere.test.e2e.transaction.engine.base;
 
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionE2ESettings;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-@TransactionE2ESettings(PostgreSQLProxyTransactionE2EIT.class)
-public final class PostgreSQLProxyTransactionE2EIT extends TransactionBaseE2EIT {
+/**
+ * Transaction E2E Settings.
+ */
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+public @interface TransactionE2ESettings {
+    
+    /**
+     * Get test case class.
+     *
+     * @return test case class
+     */
+    Class<? extends TransactionBaseE2EIT> value();
 }
