@@ -34,7 +34,7 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 @Setter
-public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> extends RALBackendHandler<T> {
+public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> implements RALBackendHandler {
     
     private final UpdatableRALStatement sqlStatement;
     

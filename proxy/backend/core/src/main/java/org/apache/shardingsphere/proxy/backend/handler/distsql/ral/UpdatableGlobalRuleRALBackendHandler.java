@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -36,9 +37,9 @@ import java.util.LinkedList;
  */
 public final class UpdatableGlobalRuleRALBackendHandler implements DistSQLBackendHandler {
     
-    private final RALStatement sqlStatement;
+    private final UpdatableGlobalRuleRALStatement sqlStatement;
     
-    public UpdatableGlobalRuleRALBackendHandler(final RALStatement sqlStatement) {
+    public UpdatableGlobalRuleRALBackendHandler(final UpdatableGlobalRuleRALStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
     }
     
