@@ -61,7 +61,7 @@ public final class ShowSingleTableExecutorTest {
         Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
         singleTableDataNodeMap.put("t_order", Collections.singletonList(new DataNode("ds_1", "t_order")));
         singleTableDataNodeMap.put("t_order_item", Collections.singletonList(new DataNode("ds_2", "t_order_item")));
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(mockSingleTableRule(singleTableDataNodeMap))));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(mockSingleRule(singleTableDataNodeMap))));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
     }
     
@@ -84,7 +84,7 @@ public final class ShowSingleTableExecutorTest {
         Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
         singleTableDataNodeMap.put("t_order_multiple", Collections.singletonList(new DataNode("ds_1_multiple", "t_order_multiple")));
         singleTableDataNodeMap.put("t_order_item_multiple", Collections.singletonList(new DataNode("ds_2_multiple", "t_order_item_multiple")));
-        addShardingSphereRule(mockSingleTableRule(singleTableDataNodeMap));
+        addShardingSphereRule(mockSingleRule(singleTableDataNodeMap));
         RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowSingleTableStatement.class));
         assertThat(actual.size(), is(4));
@@ -140,7 +140,7 @@ public final class ShowSingleTableExecutorTest {
         assertThat(iterator.next(), is("storage_unit_name"));
     }
     
-    private SingleRule mockSingleTableRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {
+    private SingleRule mockSingleRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {
         SingleRule result = mock(SingleRule.class);
         when(result.getSingleTableDataNodes()).thenReturn(singleTableDataNodeMap);
         return result;

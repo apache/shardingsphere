@@ -77,7 +77,7 @@ public final class UnregisterStorageUnitBackendHandlerTest {
     private ShadowRule shadowRule;
     
     @Mock
-    private SingleRule singleTableRule;
+    private SingleRule singleRule;
     
     private ContextManager contextManager;
     
@@ -138,11 +138,11 @@ public final class UnregisterStorageUnitBackendHandlerTest {
     
     @Test
     public void assertStorageUnitNameInUseWithoutIgnoreSingleTables() {
-        when(ruleMetaData.findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(singleTableRule));
-        when(singleTableRule.getType()).thenReturn("SingleTableRule");
+        when(ruleMetaData.findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(singleRule));
+        when(singleRule.getType()).thenReturn("SingleRule");
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
-        when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
+        when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
@@ -152,11 +152,11 @@ public final class UnregisterStorageUnitBackendHandlerTest {
     
     @Test
     public void assertStorageUnitNameInUseIgnoreSingleTables() throws SQLException {
-        when(ruleMetaData.findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(singleTableRule));
-        when(singleTableRule.getType()).thenReturn("SingleRule");
+        when(ruleMetaData.findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(singleRule));
+        when(singleRule.getType()).thenReturn("SingleRule");
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
-        when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
+        when(singleRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);

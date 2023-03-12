@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewrite.scenario;
+package org.apache.shardingsphere.test.it.rewrite.engine.scenario;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -25,11 +25,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.test.it.rewrite.engine.AbstractSQLRewriterIT;
-import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParametersBuilder;
-import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.runners.Parameterized.Parameters;
+import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterIT;
+import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterITSettings;
+import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParameters;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -45,22 +44,12 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MixSQLRewriterIT extends AbstractSQLRewriterIT {
-    
-    private static final String CASE_PATH = "scenario/mix/case";
-    
-    public MixSQLRewriterIT(final String type, final String name, final String fileName, final String databaseType, final SQLRewriteEngineTestParameters testParams) {
-        super(testParams);
-    }
-    
-    @Parameters(name = "{0}: {1} ({3}) -> {2}")
-    public static Collection<Object[]> loadTestParameters() {
-        return SQLRewriteEngineTestParametersBuilder.loadTestParameters(CASE_PATH.toUpperCase(), CASE_PATH, MixSQLRewriterIT.class);
-    }
+@SQLRewriterITSettings("scenario/mix/case")
+public final class MixSQLRewriterIT extends SQLRewriterIT {
     
     @Override
-    protected YamlRootConfiguration createRootConfiguration() throws IOException {
-        URL url = MixSQLRewriterIT.class.getClassLoader().getResource(getTestParameters().getRuleFile());
+    protected YamlRootConfiguration createRootConfiguration(final SQLRewriteEngineTestParameters testParams) throws IOException {
+        URL url = MixSQLRewriterIT.class.getClassLoader().getResource(testParams.getRuleFile());
         Preconditions.checkNotNull(url, "Can not find rewrite rule yaml configurations");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }
