@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -56,7 +57,7 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertTruncateInMySQLXATransaction();
     }
     

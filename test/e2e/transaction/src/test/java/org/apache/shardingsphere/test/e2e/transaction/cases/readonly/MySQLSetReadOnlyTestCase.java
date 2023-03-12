@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.readonly;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
@@ -40,7 +41,7 @@ public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertSetReadOnly();
         assertNotSetReadOnly();
     }

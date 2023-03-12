@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
@@ -37,7 +38,7 @@ public final class MultiTransactionInConnectionTestCase extends BaseTransactionT
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             PreparedStatement statement = connection.prepareStatement("insert into account(id, balance, transaction_id) values(?, ?, ?)");
             for (int i = 0; i < 8; i++) {

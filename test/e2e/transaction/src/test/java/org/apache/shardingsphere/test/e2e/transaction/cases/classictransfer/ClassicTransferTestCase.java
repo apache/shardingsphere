@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
@@ -46,7 +47,7 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         Connection connection = getDataSource().getConnection();
         executeUpdateWithLog(connection, "insert into account(transaction_id, balance) values (1,0), (2,100);");
         innerRun();

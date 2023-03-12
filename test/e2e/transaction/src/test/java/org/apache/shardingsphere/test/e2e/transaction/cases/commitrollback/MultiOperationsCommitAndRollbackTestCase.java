@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
@@ -43,7 +44,7 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertRollback();
         assertCommit();
     }

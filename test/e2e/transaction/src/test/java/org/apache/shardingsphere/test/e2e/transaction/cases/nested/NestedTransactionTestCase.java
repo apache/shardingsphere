@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.nested;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -41,7 +42,7 @@ public class NestedTransactionTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    protected void executeTest() throws SQLException {
+    protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection();
         assertFalse(connection.isHoldTransaction());
         connection.setAutoCommit(false);

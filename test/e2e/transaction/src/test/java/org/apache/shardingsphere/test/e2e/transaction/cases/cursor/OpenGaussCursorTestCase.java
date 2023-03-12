@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.cursor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.command.CursorSQLCommand;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
@@ -61,7 +62,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         Connection connection = getDataSource().getConnection();
         singleTableCursorTest(connection);
         singleTableCursorOrderByTest(connection);
