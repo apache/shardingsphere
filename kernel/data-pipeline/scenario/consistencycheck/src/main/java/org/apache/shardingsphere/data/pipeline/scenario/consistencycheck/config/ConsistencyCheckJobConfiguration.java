@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 import java.util.Properties;
 
@@ -33,6 +34,10 @@ import java.util.Properties;
 public final class ConsistencyCheckJobConfiguration implements PipelineJobConfiguration {
     
     private final String jobId;
+    
+    private final InstanceType instanceType;
+    
+    private final String databaseName;
     
     private final String parentJobId;
     

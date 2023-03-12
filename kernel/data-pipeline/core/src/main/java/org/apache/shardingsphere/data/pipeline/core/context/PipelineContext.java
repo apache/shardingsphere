@@ -39,7 +39,8 @@ public final class PipelineContext {
      * @return mode configuration
      */
     public static ModeConfiguration getModeConfig() {
-        return modeConfig;
+        // TODO now getModeConfig
+        return null;
     }
     
     /**
@@ -48,6 +49,7 @@ public final class PipelineContext {
      * @return context manager
      */
     public static ContextManager getContextManager() {
-        return contextManager;
+        // TODO now getContextManager
+        return null;
     }
 }

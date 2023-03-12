@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.yaml.job;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
@@ -30,12 +31,15 @@ import java.util.Map;
 /**
  * Migration job configuration for YAML.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString(exclude = {"sources", "target"})
 public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfiguration {
     
     private String jobId;
+    
+    private String instanceType;
     
     private String targetDatabaseName;
     
@@ -86,5 +90,10 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
         Preconditions.checkNotNull(yamlConfig);
         Preconditions.checkNotNull(yamlConfig.getType());
         Preconditions.checkNotNull(yamlConfig.getParameter());
+    }
+    
+    @Override
+    public String getDatabaseName() {
+        return targetDatabaseName;
     }
 }

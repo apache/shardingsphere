@@ -23,6 +23,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,8 @@ import java.util.Map;
 public final class MigrationJobConfiguration implements PipelineJobConfiguration {
     
     private final String jobId;
+    
+    private final InstanceType instanceType;
     
     private final String targetDatabaseName;
     
@@ -61,6 +64,11 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     private final int concurrency;
     
     private final int retryTimes;
+    
+    @Override
+    public String getDatabaseName() {
+        return targetDatabaseName;
+    }
     
     /**
      * Get job sharding count.

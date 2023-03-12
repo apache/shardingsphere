@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
 import org.junit.jupiter.api.BeforeAll;
@@ -94,7 +95,7 @@ public final class ConsistencyCheckJobAPITest {
         for (int i = 0; i < 3; i++) {
             String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(parentJobId, null, null));
             ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(
-                    new ConsistencyCheckJobConfiguration(checkJobId, parentJobId, null, null), 0, JobStatus.FINISHED, null);
+                    new ConsistencyCheckJobConfiguration(checkJobId, InstanceType.PROXY, null, parentJobId, null, null), 0, JobStatus.FINISHED, null);
             checkJobAPI.persistJobItemProgress(checkJobItemContext);
             Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult = Collections.singletonMap("t_order",
                     new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(0, 0), new DataConsistencyContentCheckResult(true)));
