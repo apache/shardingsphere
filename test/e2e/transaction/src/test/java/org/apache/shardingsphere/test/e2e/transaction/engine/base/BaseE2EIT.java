@@ -98,9 +98,7 @@ public abstract class BaseE2EIT {
     private final AutoDataSource dataSource;
     
     static {
-        long startTime = System.currentTimeMillis();
         TEST_CASES = TestCaseClassScanner.scan();
-        log.info("Load transaction test case classes time consume: {}.", System.currentTimeMillis() - startTime);
     }
     
     public BaseE2EIT(final TransactionTestParameter testParam) {
@@ -121,7 +119,7 @@ public abstract class BaseE2EIT {
         return JAXB.unmarshal(Objects.requireNonNull(BaseE2EIT.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
     }
     
-    final boolean isProxyAdapter(final TransactionTestParameter testParam) {
+    private boolean isProxyAdapter(final TransactionTestParameter testParam) {
         return AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter());
     }
     
@@ -272,10 +270,6 @@ public abstract class BaseE2EIT {
         }
     }
     
-    final Connection getProxyConnection() throws SQLException {
-        return dataSource.getConnection();
-    }
-    
     private String getActualJdbcUrlTemplate(final String databaseName) {
         if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
@@ -315,25 +309,26 @@ public abstract class BaseE2EIT {
         assertThat(countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;"), is(3));
     }
     
-    int countWithLog(final String sql) throws SQLException {
-        Connection connection = getProxyConnection();
-        int retryNumber = 0;
-        while (retryNumber <= 3) {
-            try {
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql);
-                int result = 0;
-                while (resultSet.next()) {
-                    result++;
+    private int countWithLog(final String sql) throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            int retryNumber = 0;
+            while (retryNumber <= 3) {
+                try {
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery(sql);
+                    int result = 0;
+                    while (resultSet.next()) {
+                        result++;
+                    }
+                    return result;
+                } catch (final SQLException ex) {
+                    log.error("Data access error.", ex);
                 }
-                return result;
-            } catch (final SQLException ex) {
-                log.error("Data access error.", ex);
+                ThreadUtil.sleep(2, TimeUnit.SECONDS);
+                retryNumber++;
             }
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
-            retryNumber++;
+            throw new RuntimeException("Can't get result from proxy.");
         }
-        throw new RuntimeException("Can't get result from proxy.");
     }
     
     protected final void executeWithLog(final Connection connection, final String sql) throws SQLException {

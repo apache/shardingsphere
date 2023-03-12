@@ -66,22 +66,24 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
     }
     
     private void alterLocalTransactionRule() throws SQLException {
-        Connection connection = getProxyConnection();
-        if (isExpectedTransactionRule(connection, TransactionType.LOCAL, "")) {
-            return;
+        try (Connection connection = getDataSource().getConnection()) {
+            if (isExpectedTransactionRule(connection, TransactionType.LOCAL, "")) {
+                return;
+            }
+            String alterLocalTransactionRule = getCommonSQLCommand().getAlterLocalTransactionRule();
+            executeWithLog(connection, alterLocalTransactionRule);
         }
-        String alterLocalTransactionRule = getCommonSQLCommand().getAlterLocalTransactionRule();
-        executeWithLog(connection, alterLocalTransactionRule);
         assertTrue(waitExpectedTransactionRule(TransactionType.LOCAL, ""));
     }
     
     private void alterXaTransactionRule(final String providerType) throws SQLException {
-        Connection connection = getProxyConnection();
-        if (isExpectedTransactionRule(connection, TransactionType.XA, providerType)) {
-            return;
+        try (Connection connection = getDataSource().getConnection()) {
+            if (isExpectedTransactionRule(connection, TransactionType.XA, providerType)) {
+                return;
+            }
+            String alterXaTransactionRule = getCommonSQLCommand().getAlterXATransactionRule().replace("${providerType}", providerType);
+            executeWithLog(connection, alterXaTransactionRule);
         }
-        String alterXaTransactionRule = getCommonSQLCommand().getAlterXATransactionRule().replace("${providerType}", providerType);
-        executeWithLog(connection, alterXaTransactionRule);
         assertTrue(waitExpectedTransactionRule(TransactionType.XA, providerType));
     }
     
@@ -93,16 +95,17 @@ public abstract class TransactionBaseE2EIT extends BaseE2EIT {
     
     private boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType) throws SQLException {
         ThreadUtil.sleep(5, TimeUnit.SECONDS);
-        Connection connection = getProxyConnection();
-        int waitTimes = 0;
-        do {
-            if (isExpectedTransactionRule(connection, expectedTransType, expectedProviderType)) {
-                return true;
-            }
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
-            waitTimes++;
-        } while (waitTimes <= 3);
-        return false;
+        try (Connection connection = getDataSource().getConnection()) {
+            int waitTimes = 0;
+            do {
+                if (isExpectedTransactionRule(connection, expectedTransType, expectedProviderType)) {
+                    return true;
+                }
+                ThreadUtil.sleep(2, TimeUnit.SECONDS);
+                waitTimes++;
+            } while (waitTimes <= 3);
+            return false;
+        }
     }
     
     private Map<String, String> executeShowTransactionRule(final Connection connection) throws SQLException {
