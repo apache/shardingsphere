@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobWorker;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -40,8 +42,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
             log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
             return;
         }
-        PipelineContext.initModeConfig(modeConfig);
-        PipelineContext.initContextManager(contextManager);
+        PipelineContextManager.putContext(new PipelineContextKey(instanceType, databaseName), new PipelineContext(modeConfig, contextManager));
         PipelineJobWorker.initialize();
     }
 }

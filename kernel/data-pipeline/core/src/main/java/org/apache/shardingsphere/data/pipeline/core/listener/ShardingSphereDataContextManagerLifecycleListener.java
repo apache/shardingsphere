@@ -30,6 +30,9 @@ public final class ShardingSphereDataContextManagerLifecycleListener implements 
     
     @Override
     public void onInitialized(final InstanceType instanceType, final ModeConfiguration modeConfig, final ContextManager contextManager, final String databaseName) {
+        if (instanceType != InstanceType.PROXY) {
+            return;
+        }
         if (null == modeConfig) {
             return;
         }

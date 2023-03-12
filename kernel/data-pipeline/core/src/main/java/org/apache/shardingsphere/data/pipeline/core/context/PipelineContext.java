@@ -17,19 +17,21 @@
 
 package org.apache.shardingsphere.data.pipeline.core.context;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Pipeline context.
  */
+@RequiredArgsConstructor
+@Getter
 public final class PipelineContext {
     
-    // TODO private InstanceType instanceType;
+    private final ModeConfiguration modeConfig;
     
-    private static volatile ModeConfiguration modeConfig;
-    
-    private static volatile ContextManager contextManager;
+    private final ContextManager contextManager;
     
     /**
      * Get mode configuration.

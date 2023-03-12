@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.listener;
+package org.apache.shardingsphere.data.pipeline.core.context;
 
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**
- * Context manager lifecycle listener.
+ * Pipeline context key.
  */
-@SingletonSPI
-public interface ContextManagerLifecycleListener {
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@Getter
+public final class PipelineContextKey {
     
-    /**
-     * Callback on initialized.
-     *
-     * @param instanceType instance type
-     * @param modeConfig mode configuration
-     * @param contextManager context manager
-     * @param databaseName database name
-     */
-    void onInitialized(InstanceType instanceType, ModeConfiguration modeConfig, ContextManager contextManager, String databaseName);
+    private final InstanceType instanceType;
+    
+    private final String databaseName;
 }
