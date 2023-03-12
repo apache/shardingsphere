@@ -419,7 +419,6 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     @Override
     public void commit(final String jobId) {
-        checkModeConfig();
         log.info("Commit job {}", jobId);
         final long startTimeMillis = System.currentTimeMillis();
         dropCheckJobs(jobId);

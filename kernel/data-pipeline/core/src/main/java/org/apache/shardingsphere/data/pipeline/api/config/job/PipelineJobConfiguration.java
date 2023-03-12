@@ -25,6 +25,13 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 public interface PipelineJobConfiguration {
     
     /**
+     * Get job id.
+     *
+     * @return job id
+     */
+    String getJobId();
+    
+    /**
      * Get instance type.
      *
      * @return instance type
@@ -37,13 +44,6 @@ public interface PipelineJobConfiguration {
      * @return database name
      */
     String getDatabaseName();
-    
-    /**
-     * Get job id.
-     *
-     * @return job id
-     */
-    String getJobId();
     
     /**
      * Get job sharding count.

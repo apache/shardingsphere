@@ -66,6 +66,11 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
     
     private int retryTimes = 3;
     
+    @Override
+    public String getDatabaseName() {
+        return targetDatabaseName;
+    }
+    
     /**
      * Set sources.
      *
@@ -90,10 +95,5 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
         Preconditions.checkNotNull(yamlConfig);
         Preconditions.checkNotNull(yamlConfig.getType());
         Preconditions.checkNotNull(yamlConfig.getParameter());
-    }
-    
-    @Override
-    public String getDatabaseName() {
-        return targetDatabaseName;
     }
 }
