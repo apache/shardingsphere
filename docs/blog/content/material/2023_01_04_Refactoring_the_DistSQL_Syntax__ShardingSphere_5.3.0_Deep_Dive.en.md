@@ -219,7 +219,7 @@ In addition to the syntax refactoring, this update further simplifies the operat
 
 For example, when users create sharding rules, the algorithm must meet the following rules:
 
-```
+```sql
 TYPE(NAME="MOD",PROPERTIES("sharding-count"="4"))
 ```
 
