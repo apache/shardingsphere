@@ -54,6 +54,8 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
     
     private static final String POSTGRESQL_TABLE_DATA_LENGTH = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH  FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME='%s' AND RELNAME = '%s'";
     
+    private static final String OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH = "SELECT  RELTUPLES AS TABLE_ROWS, PG_TABLE_SIZE('%s') AS DATA_LENGTH FROM PG_CLASS WHERE RELNAME = '%s'";
+    
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
@@ -101,7 +103,8 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
         } else if (databaseType instanceof PostgreSQLDatabaseType) {
             addForPostgreSQL(dataSources, dataNode, row);
         } else if (databaseType instanceof OpenGaussDatabaseType) {
-            // TODO get OpenGauss rows and data length
+            addForOpenGauss(dataSources, dataNode, row);
+        } else {
             row.add(BigDecimal.ZERO);
             row.add(BigDecimal.ZERO);
         }
@@ -139,6 +142,26 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
             }
             try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_DATA_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
+                    dataLength = resultSet.getBigDecimal("DATA_LENGTH");
+                }
+            }
+        }
+        row.add(tableRows);
+        row.add(dataLength);
+    }
+    
+    private void addForOpenGauss(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row) throws SQLException {
+        DataSource dataSource = dataSources.get(dataNode.getDataSourceName());
+        BigDecimal tableRows = BigDecimal.ZERO;
+        BigDecimal dataLength = BigDecimal.ZERO;
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            try (
+                    ResultSet resultSet = statement
+                            .executeQuery(String.format(OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH, dataNode.getTableName(), dataNode.getTableName()))) {
+                if (resultSet.next()) {
+                    tableRows = resultSet.getBigDecimal("TABLE_ROWS");
                     dataLength = resultSet.getBigDecimal("DATA_LENGTH");
                 }
             }
