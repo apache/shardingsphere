@@ -31,10 +31,10 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
@@ -87,7 +87,8 @@ public final class MetaDataContextsFactory {
         checkDataSourceStates(effectiveDatabaseConfigs, storageNodes, param.isForce());
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
-        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);
+        // TODO Distinguish load calls ExternalMetaDataFactory or InternalMetaDataFactory
+        Map<String, ShardingSphereDatabase> databases = ExternalMetaDataFactory.create(effectiveDatabaseConfigs, props, instanceContext);
         databases.putAll(reloadDatabases(databases, persistService));
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
         return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props));

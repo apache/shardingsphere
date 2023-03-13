@@ -105,8 +105,18 @@ public final class ShardingSphereDatabase {
         return create(name, protocolType, databaseConfig, new LinkedList<>(), SystemSchemaBuilder.build(name, protocolType));
     }
     
-    private static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
-                                                 final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
+    /**
+     * Create database meta data.
+     *
+     * @param name database name
+     * @param protocolType database protocol type
+     * @param databaseConfig database configuration
+     * @param rules rules
+     * @param schemas schemas
+     * @return database meta data
+     */
+    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
+                                                final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
         ShardingSphereResourceMetaData resourceMetaData = createResourceMetaData(name, databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, ruleMetaData, schemas);

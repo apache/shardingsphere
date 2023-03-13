@@ -31,8 +31,8 @@ import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -45,9 +45,7 @@ import static org.mockito.Mockito.when;
 
 public final class AdvancedSQLFederationExecutorTest {
     
-    private SQLFederationExecutor sqlFederationExecutor;
-    
-    @Before
+    @BeforeEach
     public void init() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
         tables.put("t_order_federate", createOrderTableMetaData());
@@ -60,7 +58,7 @@ public final class AdvancedSQLFederationExecutorTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getDatabase(databaseName)).thenReturn(database);
         when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        sqlFederationExecutor = new AdvancedSQLFederationExecutor();
+        SQLFederationExecutor sqlFederationExecutor = new AdvancedSQLFederationExecutor();
         sqlFederationExecutor.init(databaseName, schemaName, metaData, new ShardingSphereData(), mock(JDBCExecutor.class));
     }
     

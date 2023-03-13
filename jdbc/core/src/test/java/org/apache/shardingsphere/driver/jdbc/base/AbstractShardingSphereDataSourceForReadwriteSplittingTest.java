@@ -19,8 +19,8 @@ package org.apache.shardingsphere.driver.jdbc.base;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -41,7 +41,7 @@ public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest 
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
     
-    @BeforeClass
+    @BeforeAll
     public static void initReadwriteSplittingDataSources() throws SQLException, IOException {
         if (null == dataSource) {
             dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
@@ -61,7 +61,7 @@ public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest 
         return dataSource;
     }
     
-    @AfterClass
+    @AfterAll
     public static void clear() throws Exception {
         if (null == dataSource) {
             return;

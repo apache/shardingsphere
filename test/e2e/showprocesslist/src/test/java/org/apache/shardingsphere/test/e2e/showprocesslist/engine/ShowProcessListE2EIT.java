@@ -19,15 +19,15 @@ package org.apache.shardingsphere.test.e2e.showprocesslist.engine;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.showprocesslist.container.composer.ClusterShowProcessListContainerComposer;
+import org.apache.shardingsphere.test.e2e.showprocesslist.env.ShowProcessListEnvironment;
 import org.apache.shardingsphere.test.e2e.showprocesslist.env.enums.ShowProcessListEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.showprocesslist.parameter.ShowProcessListTestParameter;
-import org.apache.shardingsphere.test.e2e.showprocesslist.env.ShowProcessListEnvironment;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -37,61 +37,37 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 // TODO add jdbc
-@RunWith(Parameterized.class)
 public final class ShowProcessListE2EIT {
     
     private static final ShowProcessListEnvironment ENV = ShowProcessListEnvironment.getInstance();
     
     private static final String SELECT_SLEEP = "select sleep(10)";
     
-    private final ClusterShowProcessListContainerComposer containerComposer;
-    
-    public ShowProcessListE2EIT(final ShowProcessListTestParameter testParam) {
-        containerComposer = new ClusterShowProcessListContainerComposer(testParam);
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<ShowProcessListTestParameter> getTestParameters() {
-        Collection<ShowProcessListTestParameter> result = new LinkedList<>();
-        ENV.getScenarios().forEach(each -> {
-            if (ShowProcessListEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
-                for (String runMode : ENV.getRunModes()) {
-                    result.add(new ShowProcessListTestParameter(new MySQLDatabaseType(), each, runMode));
-                }
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertShowProcessList(final ShowProcessListTestParameter testParam) throws SQLException, InterruptedException {
+        try (ClusterShowProcessListContainerComposer containerComposer = new ClusterShowProcessListContainerComposer(testParam)) {
+            containerComposer.start();
+            CompletableFuture<Void> executeSelectSleep = CompletableFuture.runAsync(getExecuteSleepThread("proxy", containerComposer));
+            Thread.sleep(5000L);
+            try (
+                    Connection connection = containerComposer.getProxyDataSource().getConnection();
+                    Statement statement = connection.createStatement()) {
+                ResultSet resultSet = statement.executeQuery("show processlist");
+                assertResultSet(resultSet);
             }
-        });
-        return result;
-    }
-    
-    @Before
-    public void setUp() {
-        containerComposer.start();
-    }
-    
-    @After
-    public void closeContainers() {
-        containerComposer.stop();
-    }
-    
-    @Test
-    public void assertShowProcessList() throws SQLException, InterruptedException {
-        CompletableFuture<Void> executeSelectSleep = CompletableFuture.runAsync(getExecuteSleepThread("proxy"));
-        Thread.sleep(5000);
-        try (
-                Connection connection = containerComposer.getProxyDataSource().getConnection();
-                Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery("show processlist");
-            assertResultSet(resultSet);
+            executeSelectSleep.join();
         }
-        executeSelectSleep.join();
     }
     
-    private Runnable getExecuteSleepThread(final String targetContainer) {
+    private Runnable getExecuteSleepThread(final String targetContainer, final ClusterShowProcessListContainerComposer containerComposer) {
         return () -> {
             try (
                     Connection connection = "proxy".equals(targetContainer) ? containerComposer.getProxyDataSource().getConnection() : containerComposer.getJdbcDataSource().getConnection();
@@ -130,5 +106,23 @@ public final class ShowProcessListE2EIT {
             }
         }
         assertThat(count, is(1));
+    }
+    
+    private static boolean isEnabled() {
+        return ShowProcessListEnvTypeEnum.DOCKER == ENV.getItEnvType();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            Collection<Arguments> result = new LinkedList<>();
+            for (String each : ENV.getScenarios()) {
+                for (String runMode : ENV.getRunModes()) {
+                    result.add(Arguments.of(new ShowProcessListTestParameter(new MySQLDatabaseType(), each, runMode)));
+                }
+            }
+            return result.stream();
+        }
     }
 }

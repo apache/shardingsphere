@@ -27,7 +27,7 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.AgentExtension;
+import org.apache.shardingsphere.agent.plugin.tracing.TracingAgentExtension;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({AgentExtension.class, AutoMockExtension.class})
+@ExtendWith({TracingAgentExtension.class, AutoMockExtension.class})
 @StaticMockSettings(ProxyContext.class)
 public final class OpenTelemetryRootSpanAdviceTest {
     

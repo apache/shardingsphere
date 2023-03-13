@@ -21,8 +21,8 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.DefaultDistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
@@ -34,7 +34,7 @@ public final class DistributedLockHolderTest {
     
     private DistributedLockHolder defaultDistributedLockHolder;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         defaultDistributedLockHolder = new DistributedLockHolder("default", mock(ClusterPersistRepository.class), new DefaultLockTypedProperties(new Properties()));
     }

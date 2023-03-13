@@ -66,13 +66,13 @@ public interface MutableDataNodeRule extends ShardingSphereRule {
     Optional<DataNode> findSingleTableDataNode(String schemaName, String tableName);
     
     /**
-     * Reload single table rule.
+     * Reload single rule.
      *
      * @param config rule configuration
      * @param databaseName database name
      * @param dataSourceMap data source map
      * @param builtRules built rules
-     * @return single table rule
+     * @return single rule
      */
     ShardingSphereRule reloadRule(RuleConfiguration config, String databaseName, Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> builtRules);
 }

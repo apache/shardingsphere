@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.it.data.pipeline.core.ingest.position;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

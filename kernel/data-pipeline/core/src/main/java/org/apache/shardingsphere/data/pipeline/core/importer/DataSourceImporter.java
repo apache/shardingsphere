@@ -206,9 +206,6 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         Set<String> shardingColumns = importerConfig.getShardingColumns(record.getTableName());
-        if (null == shardingColumns) {
-            log.error("executeUpdate, could not get shardingColumns, tableName={}, logicTableNames={}", record.getTableName(), importerConfig.getLogicTableNames());
-        }
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, shardingColumns);
         List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record);
         String updateSql = pipelineSqlBuilder.buildUpdateSQL(getSchemaName(record.getTableName()), record, conditionColumns);

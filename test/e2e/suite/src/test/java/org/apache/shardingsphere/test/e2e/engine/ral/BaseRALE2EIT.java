@@ -74,6 +74,7 @@ public abstract class BaseRALE2EIT extends SingleE2EIT {
                 preparedStatement.executeUpdate();
             }
         }
+        sleep(1000);
     }
     
     private void executeDestroySQLs(final Connection connection) throws SQLException {
@@ -85,11 +86,12 @@ public abstract class BaseRALE2EIT extends SingleE2EIT {
                 preparedStatement.executeUpdate();
             }
         }
+        sleep(1000);
     }
     
-    protected void sleep() {
+    protected void sleep(final long timeout) {
         try {
-            TimeUnit.SECONDS.sleep(2);
+            TimeUnit.MILLISECONDS.sleep(timeout);
         } catch (final InterruptedException ignored) {
         }
     }

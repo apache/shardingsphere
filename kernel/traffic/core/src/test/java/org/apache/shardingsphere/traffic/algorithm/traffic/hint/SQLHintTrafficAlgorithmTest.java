@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.algorithm.traffic.hint;
 
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -31,8 +31,8 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingSphereDataSourceTest {
     
-    @After
+    @AfterEach
     public void tearDown() {
         TransactionTypeHolder.set(null);
     }

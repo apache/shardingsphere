@@ -101,9 +101,6 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
         this.taskConfig = taskConfig;
         this.dataSourceManager = dataSourceManager;
         this.importerConnector = importerConnector;
-        if (null != initProgress) {
-            status = initProgress.getStatus();
-        }
     }
     
     @Override

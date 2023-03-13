@@ -26,7 +26,7 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAData
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.h2.jdbc.JdbcConnection;
 import org.h2.jdbcx.JdbcXAConnection;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;

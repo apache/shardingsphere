@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.core.database.visitor;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

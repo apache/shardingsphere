@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;

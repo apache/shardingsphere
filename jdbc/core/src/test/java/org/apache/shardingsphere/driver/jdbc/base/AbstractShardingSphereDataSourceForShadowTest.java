@@ -19,8 +19,8 @@ package org.apache.shardingsphere.driver.jdbc.base;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -41,7 +41,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("shadow_jdbc_0", "shadow_jdbc_1");
     
-    @BeforeClass
+    @BeforeAll
     public static void initShadowDataSource() throws SQLException, IOException {
         if (null == dataSource) {
             dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
@@ -61,7 +61,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
         return dataSource;
     }
     
-    @AfterClass
+    @AfterAll
     public static void close() throws Exception {
         if (null == dataSource) {
             return;

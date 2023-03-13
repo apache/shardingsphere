@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Collections;

@@ -18,39 +18,8 @@
 package org.apache.shardingsphere.test.e2e.transaction.engine.database.mysql;
 
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
-import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionE2ESettings;
 
-import java.sql.SQLException;
-import java.util.Collection;
-
-@RunWith(Parameterized.class)
+@TransactionE2ESettings(MySQLJdbcTransactionE2ETT.class)
 public final class MySQLJdbcTransactionE2ETT extends TransactionBaseE2EIT {
-    
-    private final TransactionTestParameter testParam;
-    
-    public MySQLJdbcTransactionE2ETT(final TransactionTestParameter testParam) {
-        super(testParam);
-        this.testParam = testParam;
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<TransactionTestParameter> getTestParameters() {
-        return getTransactionTestParameters(MySQLJdbcTransactionE2ETT.class);
-    }
-    
-    @After
-    public void after() throws SQLException {
-        getDataSource().close();
-        getContainerComposer().close();
-    }
-    
-    @Test
-    public void assertTransaction() throws SQLException {
-        callTestCases(testParam);
-    }
 }

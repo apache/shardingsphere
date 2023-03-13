@@ -122,6 +122,11 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     }
     
     @Override
+    public Map<String, ShardingSphereSchema> getSchemas(final String databaseName) {
+        return contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().loadSchemas(databaseName);
+    }
+    
+    @Override
     public void setContextManagerAware(final ContextManager contextManager) {
         this.contextManager = contextManager;
     }
