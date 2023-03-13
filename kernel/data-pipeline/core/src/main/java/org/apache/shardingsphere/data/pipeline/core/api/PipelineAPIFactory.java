@@ -25,6 +25,8 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.GovernanceRepositoryAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.registry.CoordinatorRegistryCenterInitializer;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
@@ -35,6 +37,9 @@ import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Pipeline API factory.
@@ -63,28 +68,31 @@ public final class PipelineAPIFactory {
     /**
      * Get job statistics API.
      *
+     * @param contextKey context key
      * @return job statistics API
      */
-    public static JobStatisticsAPI getJobStatisticsAPI() {
-        return ElasticJobAPIHolder.getInstance().getJobStatisticsAPI();
+    public static JobStatisticsAPI getJobStatisticsAPI(final PipelineContextKey contextKey) {
+        return ElasticJobAPIHolder.getInstance(contextKey).getJobStatisticsAPI();
     }
     
     /**
      * Get job configuration API.
      *
+     * @param contextKey context key
      * @return job configuration API
      */
-    public static JobConfigurationAPI getJobConfigurationAPI() {
-        return ElasticJobAPIHolder.getInstance().getJobConfigurationAPI();
+    public static JobConfigurationAPI getJobConfigurationAPI(final PipelineContextKey contextKey) {
+        return ElasticJobAPIHolder.getInstance(contextKey).getJobConfigurationAPI();
     }
     
     /**
      * Get job operate API.
      *
+     * @param contextKey context key
      * @return job operate API
      */
-    public static JobOperateAPI getJobOperateAPI() {
-        return ElasticJobAPIHolder.getInstance().getJobOperateAPI();
+    public static JobOperateAPI getJobOperateAPI(final PipelineContextKey contextKey) {
+        return ElasticJobAPIHolder.getInstance(contextKey).getJobOperateAPI();
     }
     
     /**
@@ -99,7 +107,9 @@ public final class PipelineAPIFactory {
     @Getter
     private static final class ElasticJobAPIHolder {
         
-        private static volatile ElasticJobAPIHolder instance;
+        private static final Map<PipelineContextKey, ElasticJobAPIHolder> INSTANCE_MAP = new ConcurrentHashMap<>();
+        
+        private final PipelineContextKey contextKey;
         
         private final JobStatisticsAPI jobStatisticsAPI;
         
@@ -107,23 +117,28 @@ public final class PipelineAPIFactory {
         
         private final JobOperateAPI jobOperateAPI;
         
-        private ElasticJobAPIHolder() {
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
+        private ElasticJobAPIHolder(final PipelineContextKey contextKey) {
+            this.contextKey = contextKey;
+            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContextManager.getContext(contextKey).getModeConfig().getRepository();
             String namespace = repositoryConfig.getNamespace() + PipelineMetaDataNode.getElasticJobNamespace();
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(repositoryConfig.getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(repositoryConfig.getServerLists(), namespace, null);
             jobOperateAPI = JobAPIFactory.createJobOperateAPI(repositoryConfig.getServerLists(), namespace, null);
         }
         
-        public static ElasticJobAPIHolder getInstance() {
-            if (null == instance) {
-                synchronized (PipelineAPIFactory.class) {
-                    if (null == instance) {
-                        instance = new ElasticJobAPIHolder();
-                    }
+        public static ElasticJobAPIHolder getInstance(final PipelineContextKey contextKey) {
+            ElasticJobAPIHolder result = INSTANCE_MAP.get(contextKey);
+            if (null != result) {
+                return result;
+            }
+            synchronized (INSTANCE_MAP) {
+                result = INSTANCE_MAP.get(contextKey);
+                if (null == result) {
+                    result = new ElasticJobAPIHolder(contextKey);
+                    INSTANCE_MAP.put(contextKey, result);
                 }
             }
-            return instance;
+            return result;
         }
     }
     
