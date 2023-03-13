@@ -92,17 +92,17 @@ The new release 5.3.0 has upgraded DistSQL. We have completely sorted out and re
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive4.png)
 
-> Description: keyword `INSTANCE` is updated to `COMPUTE NODE`.
+*Description: keyword* `INSTANCE` *is updated to* `COMPUTE NODE`*.*
 
 **Storage Node**
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive5.png)
 
-> Description:
->
-> Keyword `RESOURCE` is updated to `STORAGE NODE / STORAGE UNIT`, which corresponds to instance-level storage and database-level storage respectively.
->
-> The `STORAGE NODE` is reserved and is not used currently.
+*Description:*
+
+*Keyword* `RESOURCE` *is updated to* `STORAGE NODE / STORAGE UNIT`*, which corresponds to instance-level storage and database-level storage respectively.*
+
+*The* `STORAGE NODE` *is reserved and is not used currently.*
 
 ## Instance Object
 
@@ -114,29 +114,29 @@ Global rule syntax is not adjusted this time.
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive6.png)
 
-> Description: DIST is added before VARIABLE to represent a distributed variable.
+*Description:* `DIST` *is added before* `VARIABLE` *to represent a distributed variable.*
 
 **MIGRATION Job**
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive7.png)
 
-> Description:
->
-> `PROCESS CONFIGURATION` keyword is changed to `RULE`.
->
-> Remove `CREATE` and `DROP` operations because `MIGRATION RULE` has default values.
->
-> Other syntax is not adjusted.
+*Description:*
+
+`PROCESS CONFIGURATION` *keyword is changed to* `RULE`*.*
+
+*Remove* `CREATE` *and* `DROP` *operations because* `MIGRATION RULE` *has default values.*
+
+*Other syntax is not adjusted.*
 
 ## Database Object
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive8.png)
 
-> Description:
->
-> `CONFIG` is changed to `CONFIGURATION`, which is more accurate.
->
-> The `REFRESH DATABASE METADATA `statement is added to pull the configuration from the governance center to forcibly refresh the local metadata.
+*Description:*
+
+`CONFIG` *is changed to* `CONFIGURATION`*, which is more accurate.*
+
+*The* `REFRESH DATABASE METADATA` *statement is added to pull the configuration from the governance center to forcibly refresh the local metadata.*
 
 ## Table Object
 
@@ -144,7 +144,7 @@ Global rule syntax is not adjusted this time.
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive9.png)
 
-> Description: `SHARDING` keyword is removed from the broadcast table.
+*Description:* `SHARDING` *keyword is removed from the broadcast table.*
 
 **Data Encryption**
 
@@ -154,17 +154,17 @@ The syntax related to data encryption is not adjusted this time. Please refer to
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive10.png)
 
-> Description:
->
-> Remove the syntax for independently creating sharding algorithms and distributed ID generators and integrate them into the rule definition of `CREATE SHARDING TABLE RULE.`
->
-> Other syntax is not adjusted.
+*Description:*
+
+*Remove the syntax for independently creating sharding algorithms and distributed ID generators and integrate them into the rule definition of* `CREATE SHARDING TABLE RULE`*.*
+
+*Other syntax is not adjusted.*
 
 **Single Table**
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive11.png)
 
-> Description: by default, only one single-table router can be created. And `CREATE` is updated to `SET`.
+*Description: by default, only one single-table router can be created. And* `CREATE` *is updated to* `SET`*.*
 
 ## **Relation Object**
 
@@ -172,23 +172,23 @@ The syntax related to data encryption is not adjusted this time. Please refer to
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive12.png)
 
-> Description:
->
-> Remove the syntax for creating a `DB_DISCOVERY TYPE` and `HEARTBEAT` independently and integrate them into the rule definition of the `CREATE DB_DISCOVERY RULE`.
->
-> Other syntax is not adjusted.
+*Description:*
+
+*Remove the syntax for creating a* `DB_DISCOVERY TYPE` *and* `HEARTBEAT` *independently and integrate them into the rule definition of the* `CREATE DB_DISCOVERY RULE`*.*
+
+*Other syntax is not adjusted.*
 
 **Binding Table**
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive13.png)
 
-> Description: adjust the keyword and add `ruleName` for easier management.
+*Description: adjust the keyword and add* `ruleName` *for easier management.*
 
 # Traffic Object
 
 **Read/write Splitting**
 
-Description: there is no major change to read/write splitting syntax. Only `RESOURCE` is replaced with `STORAGE_UNIT` based on the keyword change of the storage node. For example:
+*Description: there is no major change to read/write splitting syntax. Only* `RESOURCE` *is replaced with* `STORAGE_UNIT` *based on the keyword change of the storage node. For example:*
 
 ```sql
 CREATE READWRITE_SPLITTING RULE ms_group_0 (
@@ -202,11 +202,11 @@ TYPE(NAME="random")
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive14.png)
 
-> Description:
->
-> Remove syntax for creating shadow algorithms independently and integrate it into the rule definition of `CREATE SHADOW RULE`.
->
-> Add statements to `ALTER` and `SHOW` default shadow algorithm, corresponding to `CREATE DEFAULT SHADOW ALGORITHM`.
+*Description:*
+
+*Remove syntax for creating shadow algorithms independently and integrate it into the rule definition of* `CREATE SHADOW RULE`*.*
+
+*Add statements to* `ALTER` *and* `SHOW` *default shadow algorithm, corresponding to* `CREATE DEFAULT SHADOW ALGORITHM`*.*
 
 # Property Specification Optimization
 
@@ -231,7 +231,7 @@ After this optimization, you can omit quotes when referencing a built-in algorit
 Therefore, the following is also rightful and equivalent:
 
 ```sql
-TYPE(NAME="MOD",PROPERTIES("sharding-count"="4"))
+TYPE(NAME="MOD",PROPERTIES("sharding-count"=4))
 ```
 
 # Demo

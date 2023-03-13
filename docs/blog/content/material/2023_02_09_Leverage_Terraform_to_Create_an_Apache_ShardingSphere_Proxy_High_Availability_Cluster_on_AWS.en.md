@@ -1,5 +1,5 @@
 +++
-title = "Leverage Terraform to Create an [Apache ShardingSphere](https://medium.com/u/b9760a2e8a07?source=post_page-----45d27a114904--------------------------------) Proxy High Availability Cluster on AWS"
+title = "Leverage Terraform to Create an Apache ShardingSphere Proxy High Availability Cluster on AWS"
 weight = 86
 chapter = true 
 +++
@@ -18,15 +18,15 @@ It’s supported by public cloud vendors such as AWS, GCP, AZURE and a variety o
 
 **Terraform has the following advantages:**
 
-> Support for multi-cloud deployments
+*Support for multi-cloud deployments*
 
 Terraform is suitable for multi-cloud scenarios, deploying similar infrastructures such as Alibaba Cloud, or other cloud providers and local data centres. Developers can use the same tools and similar profiles to manage resources from different cloud providers simultaneously.
 
-> Automated management infrastructure
+*Automated management infrastructure*
 
 Terraform’s ability to create reusable modules reduces human-induced deployment and management errors.
 
-> Infrastructure as code
+*Infrastructure as code*
 
 Resources can be managed and maintained in code, allowing infrastructure state to be saved. This enables users to track changes made to different components of the system (infrastructure as code) and share these configurations with others.
 
