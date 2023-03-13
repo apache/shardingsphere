@@ -84,4 +84,9 @@
         <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_detail AS a WHERE a.account_id = 1 AND a.password = 'aaa' AND a.password like 'aaa' AND a.amount = 1000 AND a.status = 'OK'" />
         <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS a, a.status AS s FROM t_account_detail AS a WHERE a.account_id = 1 AND a.assisted_query_password = 'assisted_query_aaa' AND a.like_query_password like 'like_query_aaa' AND a.cipher_amount = 'encrypt_1000' AND a.status = 'OK'" />
     </rewrite-assertion>
+    
+    <rewrite-assertion id="select_where_with_plain_column_like_concat_for_literals" db-types="PostgreSQL,openGauss">
+        <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.certificate_number like concat('%','abc','%')" />
+        <output sql="SELECT a.account_id, a.plain_password AS password, a.plain_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.plain_certificate_number like concat ('%', 'abc', '%')" />
+    </rewrite-assertion>
 </rewrite-assertions>
