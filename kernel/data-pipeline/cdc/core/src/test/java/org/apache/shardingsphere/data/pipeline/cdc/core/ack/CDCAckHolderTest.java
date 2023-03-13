@@ -54,7 +54,7 @@ public final class CDCAckHolderTest {
         CDCAckHolder cdcAckHolder = CDCAckHolder.getInstance();
         final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
         SocketSinkImporter socketSinkImporter = mock(SocketSinkImporter.class);
-        importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(new FinishedRecord(new FinishedPosition()), 0, System.currentTimeMillis() - 60 * 1000 * 10));
+        importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(new FinishedRecord(new FinishedPosition()), System.currentTimeMillis() - 60 * 1000 * 10));
         cdcAckHolder.bindAckIdWithPosition(importerDataRecordMap);
         cdcAckHolder.cleanUp(socketSinkImporter);
         Optional<Map<String, Map<SocketSinkImporter, CDCAckPosition>>> ackIdPositionMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdPositionMap");
