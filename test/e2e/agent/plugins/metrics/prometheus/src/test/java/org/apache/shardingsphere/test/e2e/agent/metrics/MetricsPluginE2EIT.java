@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.agent.metrics;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
+import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.apache.shardingsphere.test.e2e.agent.metrics.asserts.MetricMetadataAssert;
@@ -29,31 +28,25 @@ import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricQueryAsserti
 import org.apache.shardingsphere.test.e2e.agent.metrics.cases.MetricTestCase;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsMetaDataResult;
 import org.apache.shardingsphere.test.e2e.agent.metrics.result.MetricsQueryResult;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.Collection;
 import java.util.Properties;
+import java.util.stream.Stream;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
+@ExtendWith(AgentTestActionExtension.class)
 @Slf4j
-public final class MetricsPluginE2EIT extends BasePluginE2EIT {
+public final class MetricsPluginE2EIT {
     
-    private final MetricTestCase metricTestCase;
-    
-    @Parameters
-    public static Collection<MetricTestCase> getTestParameters() {
-        return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases();
-    }
-    
-    @Test
-    public void assertProxyWithAgent() {
-        super.assertProxyWithAgent();
+    @ParameterizedTest
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertProxyWithAgent(final MetricTestCase metricTestCase) {
         Properties props = E2ETestEnvironment.getInstance().getProps();
         String metaDataURL = props.getProperty("prometheus.metadata.url");
         String queryURL = props.getProperty("prometheus.query.url");
@@ -69,7 +62,7 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
             String metaDataURLWithParam = String.join("", metaDataURL, "?metric=", URLEncoder.encode(metricName, "UTF-8"));
             MetricMetadataAssert.assertIs(OkHttpUtils.getInstance().get(metaDataURLWithParam, MetricsMetaDataResult.class), metricCase);
         } catch (final IOException ex) {
-            log.info("Access prometheus HTTP RESTful API error: ", ex);
+            log.info("Access prometheus HTTP RESTFul API error: ", ex);
         }
     }
     
@@ -79,8 +72,16 @@ public final class MetricsPluginE2EIT extends BasePluginE2EIT {
                 String queryURLWithParam = String.join("", queryURL, "?query=", URLEncoder.encode(each.getQuery(), "UTF-8"));
                 MetricQueryAssert.assertIs(OkHttpUtils.getInstance().get(queryURLWithParam, MetricsQueryResult.class), each);
             } catch (final IOException ex) {
-                log.info("Access prometheus HTTP RESTful API error: ", ex);
+                log.info("Access prometheus HTTP RESTFul API error: ", ex);
             }
+        }
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases().stream().map(Arguments::of);
         }
     }
 }

@@ -68,7 +68,18 @@ mode:
       timeToLiveSeconds: 60
 ```
 
+Using the persistent repository requires additional introduction of the corresponding Maven dependencies. It is recommended to use:
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-cluster-mode-repository-zookeeper</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
 ## Related References
 
 - [Installation and Usage of ZooKeeper Registry Center](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
 - Please refer to [Builtin Persist Repository List](/en/user-manual/common-config/builtin-algorithm/metadata-repository/) for more details about the type of repository.
+- Please refer to [ShardingSphere-JDBC Optional Plugins](/en/user-manual/shardingsphere-jdbc/optional-plugins/) for more implementations of the persistent repository.

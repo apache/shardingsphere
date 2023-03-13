@@ -158,7 +158,7 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         PipelineColumnMetaData primaryKeyMetaData = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
         ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0);
         SingleTableInventoryDataConsistencyChecker checker = new SingleTableInventoryDataConsistencyChecker("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
-                primaryKeyMetaData, metaDataLoader, null, progressContext);
+                tableMetaData.getColumnNames(), primaryKeyMetaData, null, progressContext);
         DataConsistencyCheckResult checkResult = checker.check(new DataMatchDataConsistencyCalculateAlgorithm());
         assertTrue(checkResult.isMatched());
     }

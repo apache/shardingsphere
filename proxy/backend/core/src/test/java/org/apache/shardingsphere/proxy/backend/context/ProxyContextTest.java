@@ -28,9 +28,9 @@ import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -54,12 +54,12 @@ public final class ProxyContextTest {
     
     private ContextManager currentContextManager;
     
-    @Before
+    @BeforeEach
     public void recordCurrentContextManager() {
         currentContextManager = ProxyContext.getInstance().getContextManager();
     }
     
-    @After
+    @AfterEach
     public void restorePreviousContextManager() {
         ProxyContext.init(currentContextManager);
     }

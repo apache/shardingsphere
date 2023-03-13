@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.err;
 
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;

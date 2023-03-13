@@ -45,30 +45,33 @@ public interface PipelineSQLBuilder extends TypedSPI {
      *
      * @param schemaName schema name
      * @param tableName table name
+     * @param columnNames column names
      * @param uniqueKey unique key
      * @return divisible inventory dump SQL
      */
-    String buildDivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey);
+    String buildDivisibleInventoryDumpSQL(String schemaName, String tableName, List<String> columnNames, String uniqueKey);
     
     /**
      * Build divisible inventory dump SQL without end value.
      *
      * @param schemaName schema name
      * @param tableName table name
+     * @param columnNames column names
      * @param uniqueKey unique key
      * @return divisible inventory dump SQL without end value
      */
-    String buildDivisibleInventoryDumpSQLNoEnd(String schemaName, String tableName, String uniqueKey);
+    String buildDivisibleInventoryDumpSQLNoEnd(String schemaName, String tableName, List<String> columnNames, String uniqueKey);
     
     /**
      * Build indivisible inventory dump first SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
+     * @param columnNames column names
      * @param uniqueKey unique key
      * @return indivisible inventory dump SQL
      */
-    String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey);
+    String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, List<String> columnNames, String uniqueKey);
     
     /**
      * Build no unique key inventory dump SQL.
@@ -104,6 +107,7 @@ public interface PipelineSQLBuilder extends TypedSPI {
      * @param record data record
      * @return filtered columns
      */
+    // TODO Consider remove extractUpdatedColumns. openGauss has special impl currently
     List<Column> extractUpdatedColumns(DataRecord record);
     
     /**
@@ -149,11 +153,12 @@ public interface PipelineSQLBuilder extends TypedSPI {
      *
      * @param schemaName schema name
      * @param tableName table name
+     * @param columnNames column names
      * @param uniqueKey unique key, it may be primary key, not null
      * @param firstQuery first query
      * @return query SQL
      */
-    String buildQueryAllOrderingSQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
+    String buildQueryAllOrderingSQL(String schemaName, String tableName, List<String> columnNames, String uniqueKey, boolean firstQuery);
     
     /**
      * Build check empty SQL.

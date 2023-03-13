@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.alterresource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
@@ -39,17 +40,17 @@ public final class CloseResourceTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
-        assertCloseResource();
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
+        assertCloseResource(containerComposer);
     }
     
-    private void assertCloseResource() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        getBaseTransactionITCase().createOriginalAccountTableRule(connection);
-        reCreateAccountTable(connection);
-        assertRollback();
-        assertCommit();
-        connection.close();
+    private void assertCloseResource(final TransactionContainerComposer containerComposer) throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            getBaseTransactionITCase().createOriginalAccountTableRule(connection, containerComposer);
+            reCreateAccountTable(connection);
+            assertRollback();
+            assertCommit();
+        }
     }
     
     private void reCreateAccountTable(final Connection connection) throws SQLException {
@@ -58,22 +59,24 @@ public final class CloseResourceTestCase extends BaseTransactionTestCase {
     }
     
     private void assertRollback() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-        executeWithLog(connection, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
-        connection.rollback();
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+            executeWithLog(connection, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
+            connection.rollback();
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+        }
     }
     
     private void assertCommit() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-        executeWithLog(connection, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
-        connection.commit();
-        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+            executeWithLog(connection, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
+            connection.commit();
+            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
+        }
     }
 }

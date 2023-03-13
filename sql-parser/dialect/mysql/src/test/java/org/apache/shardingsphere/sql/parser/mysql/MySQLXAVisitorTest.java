@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.mysql;
 
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CodePointBuffer;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -25,56 +24,43 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLLexer;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLTCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.nio.CharBuffer;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
 public final class MySQLXAVisitorTest {
     
-    private static final Collection<Object[]> TEST_UNITS = new LinkedList<>();
-    
-    static {
-        TEST_UNITS.add(new Object[]{"xa_start", "XA START 0x6262,b'000',7", "START", "0x6262,b'000',7"});
-        TEST_UNITS.add(new Object[]{"xa_begin", "XA BEGIN 0x6262,b'000',7", "BEGIN", "0x6262,b'000',7"});
-        TEST_UNITS.add(new Object[]{"xa_end", "XA END 0x6262,b'000',7", "END", "0x6262,b'000',7"});
-        TEST_UNITS.add(new Object[]{"xa_prepare", "XA PREPARE 0x6262,b'000',7", "PREPARE", "0x6262,b'000',7"});
-        TEST_UNITS.add(new Object[]{"xa_commit", "XA COMMIT 0x6262,b'000',7", "COMMIT", "0x6262,b'000',7"});
-        TEST_UNITS.add(new Object[]{"xa_rollback", "XA ROLLBACK 0x6262,b'000',7", "ROLLBACK", "0x6262,b'000',7"});
-        TEST_UNITS.add(new Object[]{"xa_recover", "XA RECOVER", "RECOVER", null});
-    }
-    
-    private final String caseId;
-    
-    private final String inputSql;
-    
-    private final String op;
-    
-    private final String xid;
-    
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getTestParameters() {
-        return TEST_UNITS;
-    }
-    
-    @Test
-    public void assertXA() {
-        CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(inputSql.toCharArray()));
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertXA(final String caseId, final String inputSQL, final String operation, final String xid) {
+        CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(inputSQL.toCharArray()));
         MySQLLexer lexer = new MySQLLexer(CodePointCharStream.fromBuffer(buffer));
         MySQLStatementParser parser = new MySQLStatementParser(new CommonTokenStream(lexer));
         MySQLTCLStatementSQLVisitor visitor = new MySQLTCLStatementSQLVisitor();
-        MySQLXAStatement xa = (MySQLXAStatement) visitor.visitXa(parser.xa());
-        assertThat("parse error", parser.getNumberOfSyntaxErrors(), is(0));
-        assertThat("xa op error", xa.getOp(), is(op));
-        assertThat("xa xid error", xa.getXid(), is(xid));
+        MySQLXAStatement xaStatement = (MySQLXAStatement) visitor.visitXa(parser.xa());
+        assertThat("XA parse error.", parser.getNumberOfSyntaxErrors(), is(0));
+        assertThat("XA operation error.", xaStatement.getOp(), is(operation));
+        assertThat("XA xid error.", xaStatement.getXid(), is(xid));
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of("xa_start", "XA START 0x6262,b'000',7", "START", "0x6262,b'000',7"),
+                    Arguments.of("xa_begin", "XA BEGIN 0x6262,b'000',7", "BEGIN", "0x6262,b'000',7"),
+                    Arguments.of("xa_end", "XA END 0x6262,b'000',7", "END", "0x6262,b'000',7"),
+                    Arguments.of("xa_commit", "XA COMMIT 0x6262,b'000',7", "COMMIT", "0x6262,b'000',7"),
+                    Arguments.of("xa_rollback", "XA ROLLBACK 0x6262,b'000',7", "ROLLBACK", "0x6262,b'000',7"),
+                    Arguments.of("xa_recover", "XA RECOVER", "RECOVER", null));
+        }
     }
 }

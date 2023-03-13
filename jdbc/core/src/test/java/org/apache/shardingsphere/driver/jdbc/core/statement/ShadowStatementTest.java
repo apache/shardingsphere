@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShadowTest;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -50,6 +50,16 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
     private static final String SELECT_SHADOW_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = 1";
     
     private static final String RESULT_SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
+    
+    @AfterEach
+    public void clean() throws SQLException {
+        try (Statement statement = getActualDataSources().get("shadow_jdbc_0").getConnection().createStatement()) {
+            statement.execute(CLEAN_SQL);
+        }
+        try (Statement statement = getActualDataSources().get("shadow_jdbc_1").getConnection().createStatement()) {
+            statement.execute(CLEAN_SQL);
+        }
+    }
     
     @Test
     public void assertInsertNativeCase() throws SQLException {
@@ -161,15 +171,5 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
             statement.execute(DELETE_SHADOW_SQL);
         }
         assertResultSet(true, 0, "cipher");
-    }
-    
-    @After
-    public void clean() throws SQLException {
-        try (Statement statement = getActualDataSources().get("shadow_jdbc_0").getConnection().createStatement()) {
-            statement.execute(CLEAN_SQL);
-        }
-        try (Statement statement = getActualDataSources().get("shadow_jdbc_1").getConnection().createStatement()) {
-            statement.execute(CLEAN_SQL);
-        }
     }
 }

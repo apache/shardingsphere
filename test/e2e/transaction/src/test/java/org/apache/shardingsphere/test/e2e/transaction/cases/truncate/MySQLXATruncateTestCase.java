@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -49,32 +50,32 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     }
     
     private void prepare() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        executeWithLog(connection, "delete from account;");
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
-        connection.close();
+        try (Connection connection = getDataSource().getConnection()) {
+            executeWithLog(connection, "delete from account;");
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
+        }
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertTruncateInMySQLXATransaction();
     }
     
     private void assertTruncateInMySQLXATransaction() throws SQLException {
         // TODO This test case may cause bad effects to other test cases in JDBC adapter
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertAccountRowCount(connection, 8);
-        try {
-            connection.createStatement().execute("truncate account;");
-            fail("Expect exception, but no exception report.");
-        } catch (final TableModifyInTransactionException ex) {
-            log.info("Exception for expected in Proxy: {}", ex.getMessage());
-        } catch (final SQLException ex) {
-            log.info("Exception for expected in JDBC: {}", ex.getMessage());
-        } finally {
-            connection.rollback();
-            connection.close();
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 8);
+            try {
+                connection.createStatement().execute("truncate account;");
+                fail("Expect exception, but no exception report.");
+            } catch (final TableModifyInTransactionException ex) {
+                log.info("Exception for expected in Proxy: {}", ex.getMessage());
+            } catch (final SQLException ex) {
+                log.info("Exception for expected in JDBC: {}", ex.getMessage());
+            } finally {
+                connection.rollback();
+            }
         }
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.algorithm.traffic.transaction;
 
 import org.apache.shardingsphere.traffic.api.traffic.transaction.TransactionTrafficValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 

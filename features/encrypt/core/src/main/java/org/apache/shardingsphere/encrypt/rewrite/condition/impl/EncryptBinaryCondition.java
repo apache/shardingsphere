@@ -22,10 +22,13 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +52,8 @@ public final class EncryptBinaryCondition implements EncryptCondition {
     
     private final int stopIndex;
     
+    private final ExpressionSegment expressionSegment;
+    
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
     private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
@@ -59,6 +64,7 @@ public final class EncryptBinaryCondition implements EncryptCondition {
         this.operator = operator;
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
+        this.expressionSegment = expressionSegment;
         putPositionMap(expressionSegment);
     }
     
@@ -67,6 +73,17 @@ public final class EncryptBinaryCondition implements EncryptCondition {
             positionIndexMap.put(0, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
         } else if (expressionSegment instanceof LiteralExpressionSegment) {
             positionValueMap.put(0, ((LiteralExpressionSegment) expressionSegment).getLiterals());
+        } else if (expressionSegment instanceof FunctionSegment) {
+            Collection<ExpressionSegment> parameters = ((FunctionSegment) expressionSegment).getParameters();
+            Iterator<ExpressionSegment> iterator = parameters.iterator();
+            int i = 0;
+            while (iterator.hasNext()) {
+                ExpressionSegment next = iterator.next();
+                if (next instanceof LiteralExpressionSegment) {
+                    positionValueMap.put(i, ((LiteralExpressionSegment) next).getLiterals());
+                }
+                i++;
+            }
         }
     }
     

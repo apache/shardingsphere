@@ -69,7 +69,7 @@ public final class CDCDataRecordUtil {
             cdcAckPositionMap.put(socketSinkImporter, new CDCAckPosition(record, 1));
         } else {
             cdcAckPosition.setLastRecord(record);
-            cdcAckPosition.setDataRecordCount(cdcAckPosition.getDataRecordCount());
+            cdcAckPosition.addDataRecordCount(cdcAckPosition.getDataRecordCount());
         }
     }
     

@@ -17,45 +17,34 @@
 
 package org.apache.shardingsphere.test.e2e.agent.zipkin;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
+import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.SpanAssert;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.IntegrationTestCasesLoader;
 import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.SpanTestCase;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.util.Collection;
-import java.util.Properties;
+import java.util.stream.Stream;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
-public final class ZipkinPluginE2EIT extends BasePluginE2EIT {
+@ExtendWith(AgentTestActionExtension.class)
+public final class ZipkinPluginE2EIT {
     
-    private final SpanTestCase spanTestCase;
-    
-    private Properties props;
-    
-    private String url;
-    
-    @Parameters
-    public static Collection<SpanTestCase> getTestParameters() {
-        return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases();
+    @ParameterizedTest
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertProxyWithAgent(final SpanTestCase spanTestCase) {
+        SpanAssert.assertIs(E2ETestEnvironment.getInstance().getProps().getProperty("zipkin.url"), spanTestCase);
     }
     
-    @Before
-    public void before() {
-        props = E2ETestEnvironment.getInstance().getProps();
-        url = props.getProperty("zipkin.url");
-    }
-    
-    @Test
-    public void assertProxyWithAgent() {
-        super.assertProxyWithAgent();
-        SpanAssert.assertIs(url, spanTestCase);
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases().stream().map(Arguments::of);
+        }
     }
 }

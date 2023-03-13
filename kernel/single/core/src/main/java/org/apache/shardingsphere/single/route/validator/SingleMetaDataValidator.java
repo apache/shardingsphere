@@ -32,7 +32,7 @@ public interface SingleMetaDataValidator<T extends SQLStatement> {
     /**
      * Validate single table meta data.
      * 
-     * @param rule single table rule
+     * @param rule single rule
      * @param sqlStatementContext SQL statement context
      * @param database database
      */

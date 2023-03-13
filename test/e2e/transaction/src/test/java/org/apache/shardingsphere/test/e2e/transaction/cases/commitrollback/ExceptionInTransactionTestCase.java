@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
@@ -43,7 +44,7 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
     }
     
     @Override
-    protected void executeTest() throws SQLException {
+    protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         Connection connection = null;
         try {
             connection = getDataSource().getConnection();
@@ -57,9 +58,12 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             fail("It should fail here.");
         } catch (final ArithmeticException ex) {
             assertThat(ex.getMessage(), is("/ by zero"));
-        } finally {
             if (null != connection) {
                 connection.rollback();
+            }
+        } finally {
+            if (null != connection) {
+                connection.close();
             }
         }
         Thread queryThread = new Thread(() -> {

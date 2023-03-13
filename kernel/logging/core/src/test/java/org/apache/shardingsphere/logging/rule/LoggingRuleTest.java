@@ -20,8 +20,8 @@ package org.apache.shardingsphere.logging.rule;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.logger.ShardingSphereAppender;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
@@ -32,7 +32,7 @@ public final class LoggingRuleTest {
     
     private LoggingRule loggingRule;
     
-    @Before
+    @BeforeEach
     public void setup() {
         loggingRule = new LoggingRule(new LoggingRuleConfiguration(Collections.singleton(new ShardingSphereLogger("ROOT", "INFO", true, "console")),
                 Collections.singleton(new ShardingSphereAppender("console", "ch.qos.logback.core.ConsoleAppender", "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n"))));
