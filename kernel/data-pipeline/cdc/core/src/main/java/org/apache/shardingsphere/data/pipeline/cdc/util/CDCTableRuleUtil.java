@@ -28,7 +28,6 @@ import java.util.List;
  */
 public final class CDCTableRuleUtil {
     
-    
     /**
      * Get actual data nodes.
      *
