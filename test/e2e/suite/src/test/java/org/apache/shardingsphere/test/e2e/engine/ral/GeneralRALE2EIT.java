@@ -59,7 +59,7 @@ public final class GeneralRALE2EIT extends BaseRALE2EIT {
             assertResultSet(statement, getSQL());
         } else {
             statement.execute(getSQL());
-            sleep();
+            sleep(2000);
             assertResultSet(statement, getAssertion().getAssertionSQL().getSql());
         }
     }
