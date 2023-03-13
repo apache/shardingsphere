@@ -1,5 +1,5 @@
 +++
-title = "Leverage Terraform to Create an [Apache ShardingSphere](https://medium.com/u/b9760a2e8a07?source=post_page-----45d27a114904--------------------------------) Proxy High Availability Cluster on AWS"
+title = "Leverage Terraform to Create an Apache ShardingSphere Proxy High Availability Cluster on AWS"
 weight = 86
 chapter = true 
 +++
