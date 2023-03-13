@@ -41,7 +41,7 @@ import java.util.Map;
 /**
  * Cluster show process list composed container.
  */
-public final class ClusterShowProcessListContainerComposer {
+public final class ClusterShowProcessListContainerComposer implements AutoCloseable {
     
     private final ITContainers containers;
     
@@ -108,10 +108,8 @@ public final class ClusterShowProcessListContainerComposer {
         containers.start();
     }
     
-    /**
-     * Stop.
-     */
-    public void stop() {
+    @Override
+    public void close() {
         containers.stop();
     }
 }

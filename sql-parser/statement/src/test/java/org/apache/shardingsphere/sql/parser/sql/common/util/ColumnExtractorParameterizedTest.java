@@ -17,49 +17,43 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.util;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
 public final class ColumnExtractorParameterizedTest {
-    
-    private static final Collection<ExpressionSegment> TEST_UNITS = new LinkedList<>();
     
     private static final ColumnSegment COLUMN_SEGMENT = new ColumnSegment(35, 42, new IdentifierValue("order_item_id"));
     
-    static {
-        TEST_UNITS.add(new BinaryOperationExpression(0, 0, COLUMN_SEGMENT, null, null, null));
-        TEST_UNITS.add(new InExpression(0, 0, COLUMN_SEGMENT, null, false));
-        TEST_UNITS.add(new BetweenExpression(0, 0, COLUMN_SEGMENT, null, null, false));
-    }
-    
-    private final ExpressionSegment expression;
-    
-    @Parameters(name = "{0}")
-    public static Collection<ExpressionSegment> getTestParameters() {
-        return TEST_UNITS;
-    }
-    
-    @Test
-    public void assertExtract() {
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExtract(final ExpressionSegment expression) {
         Collection<ColumnSegment> columnSegments = ColumnExtractor.extract(expression);
         assertThat(columnSegments.size(), is(1));
         assertThat(columnSegments.iterator().next(), is(COLUMN_SEGMENT));
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of(new BinaryOperationExpression(0, 0, COLUMN_SEGMENT, null, null, null)),
+                    Arguments.of(new InExpression(0, 0, COLUMN_SEGMENT, null, false)),
+                    Arguments.of(new BetweenExpression(0, 0, COLUMN_SEGMENT, null, null, false)));
+        }
     }
 }

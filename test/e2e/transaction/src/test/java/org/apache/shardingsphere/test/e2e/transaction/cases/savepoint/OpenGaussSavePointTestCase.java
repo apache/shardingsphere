@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.transaction.cases.savepoint;
 
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.opengauss.jdbc.PSQLSavepoint;
@@ -42,31 +43,32 @@ public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertRollback2Savepoint();
         assertReleaseSavepoint();
         assertErrors();
     }
     
     private void assertErrors() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        try {
-            connection.setSavepoint("point");
-            fail("Expect exception, but no exception report.");
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Cannot establish a savepoint in auto-commit mode."));
-        }
-        try {
-            connection.rollback(new PSQLSavepoint("point1"));
-            fail("Expect exception, but no exception report.");
-        } catch (final SQLException ex) {
-            assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
-        }
-        try {
-            connection.releaseSavepoint(new PSQLSavepoint("point1"));
-            fail("Expect exception, but no exception report.");
-        } catch (final SQLException ex) {
-            assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
+        try (Connection connection = getDataSource().getConnection()) {
+            try {
+                connection.setSavepoint("point");
+                fail("Expect exception, but no exception report.");
+            } catch (final SQLException ex) {
+                assertThat(ex.getMessage(), is("Cannot establish a savepoint in auto-commit mode."));
+            }
+            try {
+                connection.rollback(new PSQLSavepoint("point1"));
+                fail("Expect exception, but no exception report.");
+            } catch (final SQLException ex) {
+                assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
+            }
+            try {
+                connection.releaseSavepoint(new PSQLSavepoint("point1"));
+                fail("Expect exception, but no exception report.");
+            } catch (final SQLException ex) {
+                assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
+            }
         }
     }
 }

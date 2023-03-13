@@ -34,12 +34,12 @@ import java.sql.Statement;
 @RequiredArgsConstructor
 public final class DiscoveryRuleBuilder {
     
-    private final DiscoveryDistSQLCommand discoveryDistSQLCommand;
-    
     private final DataSource proxyDataSource;
     
+    private final DiscoveryDistSQLCommand discoveryDistSQL;
+    
     /**
-     *  build Discovery Environment.
+     * Build Discovery Environment.
      *
      * @throws SQLException SQL exception
      */
@@ -55,12 +55,12 @@ public final class DiscoveryRuleBuilder {
     }
     
     private void createDatabase(final Statement statement) throws SQLException {
-        statement.execute(discoveryDistSQLCommand.getCreateDatabase().getExecuteSQL());
-        Awaitility.await().atMost(Durations.ONE_SECOND).until(() -> assertResult(statement, discoveryDistSQLCommand.getCreateDatabase().getAssertionSQL()));
+        statement.execute(discoveryDistSQL.getCreateDatabase().getExecuteSQL());
+        Awaitility.await().atMost(Durations.ONE_SECOND).until(() -> getCreateDatabaseResult(statement, discoveryDistSQL.getCreateDatabase().getAssertionSQL()));
     }
     
-    private boolean assertResult(final Statement statement, final String assertionSQL) {
-        try (ResultSet resultSet = statement.executeQuery(assertionSQL)) {
+    private boolean getCreateDatabaseResult(final Statement statement, final String assertionSQL) {
+        try (ResultSet ignored = statement.executeQuery(assertionSQL)) {
             return true;
         } catch (final SQLException ignored) {
             return false;
@@ -68,21 +68,21 @@ public final class DiscoveryRuleBuilder {
     }
     
     private void registerStorageUnits(final Statement statement) throws SQLException {
-        statement.execute(discoveryDistSQLCommand.getRegisterStorageUnits().getExecuteSQL());
-        Awaitility.await().atMost(Durations.TWO_SECONDS).until(() -> assertResult0(statement, discoveryDistSQLCommand.getRegisterStorageUnits().getAssertionSQL()));
+        statement.execute(discoveryDistSQL.getRegisterStorageUnits().getExecuteSQL());
+        Awaitility.await().atMost(Durations.TWO_SECONDS).until(() -> getExecuteResult(statement, discoveryDistSQL.getRegisterStorageUnits().getAssertionSQL()));
     }
     
     private void createDiscoveryRule(final Statement statement) throws SQLException {
-        statement.execute(discoveryDistSQLCommand.getCreateDiscoveryRule().getExecuteSQL());
-        Awaitility.await().atMost(Durations.TWO_SECONDS).until(() -> assertResult0(statement, discoveryDistSQLCommand.getCreateDiscoveryRule().getAssertionSQL()));
+        statement.execute(discoveryDistSQL.getCreateDiscoveryRule().getExecuteSQL());
+        Awaitility.await().atMost(Durations.TWO_SECONDS).until(() -> getExecuteResult(statement, discoveryDistSQL.getCreateDiscoveryRule().getAssertionSQL()));
     }
     
     private void createReadwriteSplittingRule(final Statement statement) throws SQLException {
-        statement.execute(discoveryDistSQLCommand.getCreateReadwriteSplittingRule().getExecuteSQL());
-        Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertResult0(statement, discoveryDistSQLCommand.getCreateReadwriteSplittingRule().getAssertionSQL()));
+        statement.execute(discoveryDistSQL.getCreateReadwriteSplittingRule().getExecuteSQL());
+        Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> getExecuteResult(statement, discoveryDistSQL.getCreateReadwriteSplittingRule().getAssertionSQL()));
     }
     
-    private boolean assertResult0(final Statement statement, final String assertionSQL) {
+    private boolean getExecuteResult(final Statement statement, final String assertionSQL) {
         try (ResultSet resultSet = statement.executeQuery(assertionSQL)) {
             return resultSet.next();
         } catch (final SQLException ignored) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;

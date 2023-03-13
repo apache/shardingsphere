@@ -76,7 +76,7 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
     private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
         if (!FILLED_SUITES.contains(getItKey())) {
             synchronized (FILLED_SUITES) {
-                if (!FILLED_SUITES.contains(getScenario())) {
+                if (!FILLED_SUITES.contains(getItKey())) {
                     new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap()).fillData();
                     new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.EXPECTED), getExpectedDataSourceMap()).fillData();
                     FILLED_SUITES.add(getItKey());

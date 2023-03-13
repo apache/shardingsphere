@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.state.circuit.datasource;
 
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;

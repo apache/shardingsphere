@@ -17,29 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
  * RAL backend handler.
  */
-@Getter
-public abstract class RALBackendHandler<T extends RALStatement> implements DistSQLBackendHandler {
-    
-    private T sqlStatement;
-    
-    private ConnectionSession connectionSession;
-    
-    /**
-     * Initialize.
-     *
-     * @param sqlStatement SQL statement
-     * @param connectionSession connection session
-     */
-    public final void init(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
-        this.sqlStatement = (T) sqlStatement;
-        this.connectionSession = connectionSession;
-    }
+public interface RALBackendHandler extends DistSQLBackendHandler {
 }

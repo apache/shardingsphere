@@ -17,45 +17,29 @@
 
 package org.apache.shardingsphere.test.e2e.driver.mix;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.driver.AbstractYamlDataSourceE2EIT;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.apache.shardingsphere.test.e2e.driver.AbstractYamlDataSourceE2EIT;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
 public final class YamlShardingWithReadwriteSplittingE2EIT extends AbstractYamlDataSourceE2EIT {
     
-    private final String filePath;
-    
-    private final boolean hasDataSource;
-    
-    @Parameters(name = "{index}:{0}-{1}")
-    public static Collection<Object[]> init() {
-        return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/sharding_readwrite_splitting/configWithDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/sharding_readwrite_splitting/configWithoutDataSourceWithoutProps.yaml", false},
-                {"/yaml/integrate/sharding_readwrite_splitting/configWithDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/sharding_readwrite_splitting/configWithoutDataSourceWithProps.yaml", false},
-        });
-    }
-    
-    @Test
-    public void assertWithDataSource() throws Exception {
+    @ParameterizedTest(name = "{index}:{0}-{1}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertWithDataSource(final String filePath, final boolean hasDataSource) throws Exception {
         File yamlFile = new File(Objects.requireNonNull(YamlShardingWithReadwriteSplittingE2EIT.class.getResource(filePath)).toURI());
         DataSource dataSource;
         if (hasDataSource) {
@@ -79,5 +63,16 @@ public final class YamlShardingWithReadwriteSplittingE2EIT extends AbstractYamlD
             statement.executeQuery("SELECT * FROM config");
         }
         ((ShardingSphereDataSource) dataSource).close();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of("/yaml/integrate/sharding_readwrite_splitting/configWithDataSourceWithoutProps.yaml", true),
+                    Arguments.of("/yaml/integrate/sharding_readwrite_splitting/configWithoutDataSourceWithoutProps.yaml", false),
+                    Arguments.of("/yaml/integrate/sharding_readwrite_splitting/configWithDataSourceWithProps.yaml", true),
+                    Arguments.of("/yaml/integrate/sharding_readwrite_splitting/configWithoutDataSourceWithProps.yaml", false));
+        }
     }
 }

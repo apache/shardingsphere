@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.parser.rule;
 
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.junit.Before;
-import org.junit.Test;
-
 public final class SQLParserRuleTest {
     
     private SQLParserRule sqlParserRule;
     
-    @Before
+    @BeforeEach
     public void setup() {
         sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(true, new CacheOption(2, 4), new CacheOption(3, 7)));
     }

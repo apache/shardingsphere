@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.transaction.core;
 
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public final class TransactionTypeHolderTest {
     
-    @Before
+    @BeforeEach
     public void setUp() {
         TransactionTypeHolder.clear();
     }

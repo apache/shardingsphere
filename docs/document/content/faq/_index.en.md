@@ -172,12 +172,12 @@ Answer:
 2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
 3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/) for above rules.
 
-### [DistSQL] How to solve ` Storage unit [xxx] is still used by [SingleTableRule].` exception when dropping a data source using DistSQL?
+### [DistSQL] How to solve ` Storage unit [xxx] is still used by [SingleRule].` exception when dropping a data source using DistSQL?
 
 Answer：
 
 1. Storage units referenced by rules cannot be deleted
-2. If the storage unit is only referenced by single table rule, and the user confirms that the restriction can be ignored, the optional parameter ignore single tables can be added to perform forced deletion
+2. If the storage unit is only referenced by single rule, and the user confirms that the restriction can be ignored, the optional parameter ignore single tables can be added to perform forced deletion
 ```
 UNREGISTER STORAGE UNIT storageUnitName [, storageUnitName] ... [ignore single tables]
 ```

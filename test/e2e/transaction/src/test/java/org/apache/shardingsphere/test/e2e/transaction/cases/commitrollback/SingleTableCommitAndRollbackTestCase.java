@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
@@ -37,30 +38,32 @@ public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionT
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertRollback();
         assertCommit();
     }
     
     private void assertRollback() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertAccountRowCount(connection, 0);
-        Statement statement = connection.createStatement();
-        statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
-        assertAccountRowCount(connection, 1);
-        connection.rollback();
-        assertAccountRowCount(connection, 0);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 0);
+            Statement statement = connection.createStatement();
+            statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
+            assertAccountRowCount(connection, 1);
+            connection.rollback();
+            assertAccountRowCount(connection, 0);
+        }
     }
     
     private void assertCommit() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertAccountRowCount(connection, 0);
-        Statement statement = connection.createStatement();
-        statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
-        assertAccountRowCount(connection, 1);
-        connection.commit();
-        assertAccountRowCount(connection, 1);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 0);
+            Statement statement = connection.createStatement();
+            statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
+            assertAccountRowCount(connection, 1);
+            connection.commit();
+            assertAccountRowCount(connection, 1);
+        }
     }
 }

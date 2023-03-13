@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.provider.simple.model.privilege;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 

@@ -19,11 +19,10 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -42,12 +41,11 @@ public final class RALBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof QueryableRALStatement) {
-            return new QueryableRALBackendHandler<>(sqlStatement, connectionSession);
+            return new QueryableRALBackendHandler<>((QueryableRALStatement) sqlStatement, connectionSession);
         }
-        // TODO remove other updatable RAL backend handlers after the refactoring of RALBackendHandler is complete
-        if (TypedSPILoader.contains(RALUpdater.class, sqlStatement.getClass().getName())) {
-            return new UpdatableRALBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
+        if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
+            new UpdatableGlobalRuleRALBackendHandler((UpdatableGlobalRuleRALStatement) sqlStatement);
         }
-        return new UpdatableGlobalRuleRALBackendHandler(sqlStatement);
+        return new UpdatableRALBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
     }
 }
