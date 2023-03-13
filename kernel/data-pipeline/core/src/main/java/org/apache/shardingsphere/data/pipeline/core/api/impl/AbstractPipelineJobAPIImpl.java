@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDa
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
@@ -62,12 +64,12 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     protected abstract String marshalJobIdLeftPart(PipelineJobId pipelineJobId);
     
     @Override
-    public List<? extends PipelineJobInfo> list() {
-        return getJobBriefInfos().map(each -> getJobInfo(each.getJobName())).collect(Collectors.toList());
+    public List<? extends PipelineJobInfo> list(final InstanceType instanceType, final String databaseName) {
+        return getJobBriefInfos(new PipelineContextKey(instanceType, databaseName)).map(each -> getJobInfo(each.getJobName())).collect(Collectors.toList());
     }
     
-    private Stream<JobBriefInfo> getJobBriefInfos() {
-        return PipelineAPIFactory.getJobStatisticsAPI().getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"))
+    private Stream<JobBriefInfo> getJobBriefInfos(final PipelineContextKey contextKey) {
+        return PipelineAPIFactory.getJobStatisticsAPI(contextKey).getAllJobsBriefInfo().stream().filter(each -> !each.getJobName().startsWith("_"))
                 .filter(each -> PipelineJobIdUtils.parseJobType(each.getJobName()).getTypeCode().equals(getJobType().getTypeCode()));
     }
     
