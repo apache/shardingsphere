@@ -19,18 +19,20 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.importer;
 
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
+import java.util.List;
+
 /**
  * Importer.
  */
 public interface Importer {
     
     /**
-     * Write record.
+     * Write records.
      *
-     * @param record record
+     * @param records records
      * @throws Exception exception
      */
-    void write(Record record) throws Exception;
+    void write(List<Record> records) throws Exception;
     
     /**
      * Close importer.

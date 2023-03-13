@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.client.importer;
 
 import com.google.protobuf.Any;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.ProtocolStringList;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.ImportDataSourceParameter;
@@ -25,12 +26,14 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder.SQLBuilder;
 import org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder.SQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.AnyValueConvert;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.DataChangeType;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +60,47 @@ public final class DataSourceImporter implements Importer {
     }
     
     @Override
-    public void write(final Record record) throws Exception {
+    public void write(final List<Record> records) throws Exception {
+        List<Record> insertRecords = new LinkedList<>();
+        List<Record> otherRecords = new LinkedList<>();
+        for (Record each : records) {
+            if (DataChangeType.INSERT == each.getDataChangeType()) {
+                insertRecords.add(each);
+                continue;
+            }
+            otherRecords.add(each);
+        }
+        if (!insertRecords.isEmpty()) {
+            batchInsertRecords(insertRecords);
+        }
+        for (Record each : otherRecords) {
+            handlerRecords(each);
+        }
+    }
+    
+    private void batchInsertRecords(final List<Record> insertRecords) throws SQLException {
+        Optional<String> sqlOptional = buildSQL(insertRecords.get(0));
+        if (!sqlOptional.isPresent()) {
+            throw new RuntimeException("build sql failed");
+        }
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlOptional.get())) {
+            for (Record each : insertRecords) {
+                List<Any> afterValue = new ArrayList<>(each.getAfterMap().values());
+                for (int i = 0; i < afterValue.size(); i++) {
+                    try {
+                        preparedStatement.setObject(i + 1, AnyValueConvert.convertToObject(afterValue.get(i)));
+                    } catch (final InvalidProtocolBufferException ex) {
+                        log.error("Convert failed, value: {}", afterValue.get(i));
+                        throw new RuntimeException(ex);
+                    }
+                }
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        }
+    }
+    
+    private void handlerRecords(final Record record) throws SQLException, InvalidProtocolBufferException {
         Optional<String> sqlOptional = buildSQL(record);
         if (!sqlOptional.isPresent()) {
             log.error("build sql failed, record {}", record);
