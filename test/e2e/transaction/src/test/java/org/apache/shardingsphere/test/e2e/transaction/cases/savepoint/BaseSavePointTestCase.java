@@ -35,32 +35,34 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
     }
     
     void assertRollback2Savepoint() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertAccountRowCount(connection, 0);
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
-        final Savepoint savepoint = connection.setSavepoint("point1");
-        assertAccountRowCount(connection, 1);
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
-        assertAccountRowCount(connection, 2);
-        connection.rollback(savepoint);
-        assertAccountRowCount(connection, 1);
-        connection.commit();
-        assertAccountRowCount(connection, 1);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 0);
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
+            final Savepoint savepoint = connection.setSavepoint("point1");
+            assertAccountRowCount(connection, 1);
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
+            assertAccountRowCount(connection, 2);
+            connection.rollback(savepoint);
+            assertAccountRowCount(connection, 1);
+            connection.commit();
+            assertAccountRowCount(connection, 1);
+        }
     }
     
     void assertReleaseSavepoint() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertAccountRowCount(connection, 1);
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
-        final Savepoint savepoint = connection.setSavepoint("point2");
-        assertAccountRowCount(connection, 2);
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(3, 3, 3);");
-        assertAccountRowCount(connection, 3);
-        connection.releaseSavepoint(savepoint);
-        assertAccountRowCount(connection, 3);
-        connection.commit();
-        assertAccountRowCount(connection, 3);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 1);
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
+            final Savepoint savepoint = connection.setSavepoint("point2");
+            assertAccountRowCount(connection, 2);
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(3, 3, 3);");
+            assertAccountRowCount(connection, 3);
+            connection.releaseSavepoint(savepoint);
+            assertAccountRowCount(connection, 3);
+            connection.commit();
+            assertAccountRowCount(connection, 3);
+        }
     }
 }

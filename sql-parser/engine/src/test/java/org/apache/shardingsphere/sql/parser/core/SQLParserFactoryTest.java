@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.fixture.LexerFixture;
 import org.apache.shardingsphere.sql.parser.fixture.ParserFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.hamcrest.MatcherAssert.assertThat;

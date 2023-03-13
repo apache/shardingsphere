@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.api.datanode;
 
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 

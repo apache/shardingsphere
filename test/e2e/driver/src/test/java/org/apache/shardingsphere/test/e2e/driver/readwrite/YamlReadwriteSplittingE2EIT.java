@@ -17,45 +17,29 @@
 
 package org.apache.shardingsphere.test.e2e.driver.readwrite;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.driver.AbstractYamlDataSourceE2EIT;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.apache.shardingsphere.test.e2e.driver.AbstractYamlDataSourceE2EIT;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
 public final class YamlReadwriteSplittingE2EIT extends AbstractYamlDataSourceE2EIT {
     
-    private final String filePath;
-    
-    private final boolean hasDataSource;
-    
-    @Parameters(name = "{index}:{0}-{1}")
-    public static Collection<Object[]> init() {
-        return Arrays.asList(new Object[][]{
-                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true},
-                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true},
-                {"/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true},
-        });
-    }
-    
-    @Test
-    public void assertWithDataSource() throws Exception {
+    @ParameterizedTest(name = "{index}:{0}-{1}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertWithDataSource(final String filePath, final boolean hasDataSource) throws Exception {
         File yamlFile = new File(Objects.requireNonNull(YamlReadwriteSplittingE2EIT.class.getResource(filePath)).toURI());
         DataSource dataSource;
         if (hasDataSource) {
@@ -77,8 +61,9 @@ public final class YamlReadwriteSplittingE2EIT extends AbstractYamlDataSourceE2E
         ((ShardingSphereDataSource) dataSource).close();
     }
     
-    @Test
-    public void assertWithDataSourceByYamlBytes() throws Exception {
+    @ParameterizedTest(name = "{index}:{0}-{1}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertWithDataSourceByYamlBytes(final String filePath, final boolean hasDataSource) throws Exception {
         File yamlFile = new File(Objects.requireNonNull(YamlReadwriteSplittingE2EIT.class.getResource(filePath)).toURI());
         DataSource dataSource;
         if (hasDataSource) {
@@ -98,5 +83,16 @@ public final class YamlReadwriteSplittingE2EIT extends AbstractYamlDataSourceE2E
             statement.executeQuery("SELECT * FROM t_config");
         }
         ((ShardingSphereDataSource) dataSource).close();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of("/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true),
+                    Arguments.of("/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithoutProps.yaml", true),
+                    Arguments.of("/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true),
+                    Arguments.of("/yaml/integrate/readwrite_splitting/configWithReadwriteSplittingDataSourceWithProps.yaml", true));
+        }
     }
 }

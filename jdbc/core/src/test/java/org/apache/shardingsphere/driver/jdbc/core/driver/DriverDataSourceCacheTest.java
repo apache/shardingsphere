@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 

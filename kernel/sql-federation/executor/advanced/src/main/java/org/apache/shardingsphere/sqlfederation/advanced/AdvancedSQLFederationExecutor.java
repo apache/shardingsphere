@@ -69,7 +69,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Advanced sql federation executor.
+ * Advanced SQL federation executor.
  */
 public final class AdvancedSQLFederationExecutor implements SQLFederationExecutor {
     

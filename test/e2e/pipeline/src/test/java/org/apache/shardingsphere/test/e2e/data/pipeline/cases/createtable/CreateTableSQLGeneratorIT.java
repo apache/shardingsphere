@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.createtable;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -38,11 +37,13 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.im
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -56,12 +57,11 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(Parameterized.class)
-@Slf4j
 public final class CreateTableSQLGeneratorIT {
     
     private static final String POSTGRES_CASE_FILE_PATH = "postgresql/create-table-sql-generator.xml";
@@ -70,7 +70,7 @@ public final class CreateTableSQLGeneratorIT {
     
     private static final String OPEN_GAUSS_CASE_FILE_PATH = "opengauss/create-table-sql-generator.xml";
     
-    private static final String PARENT_PATH = "env/scenario/createtablegenerator";
+    private static final String PARENT_PATH = "env/scenario/create-table-generator";
     
     private static final String DEFAULT_SCHEMA = "public";
     
@@ -80,51 +80,20 @@ public final class CreateTableSQLGeneratorIT {
     
     private static final PipelineE2EEnvironment ENV = PipelineE2EEnvironment.getInstance();
     
-    private final DockerStorageContainer storageContainer;
+    private DockerStorageContainer storageContainer;
     
-    private final PipelineTestParameter testParam;
+    @AfterEach
+    public void stopContainer() {
+        storageContainer.stop();
+    }
     
-    private final CreateTableSQLGeneratorAssertionsRootEntity rootEntity;
-    
-    public CreateTableSQLGeneratorIT(final PipelineTestParameter testParam) {
-        this.testParam = testParam;
-        rootEntity = JAXB.unmarshal(
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertGenerateCreateTableSQL(final PipelineTestParameter testParam) throws SQLException {
+        startStorageContainer(testParam.getDatabaseType(), testParam.getStorageContainerImage());
+        CreateTableSQLGeneratorAssertionsRootEntity rootEntity = JAXB.unmarshal(
                 Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(testParam.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
-        DatabaseType databaseType = testParam.getDatabaseType();
-        StorageContainerConfiguration storageContainerConfig;
-        if (DatabaseTypeUtil.isMySQL(databaseType)) {
-            int majorVersion = new DockerImageVersion(testParam.getStorageContainerImage()).getMajorVersion();
-            Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
-            storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);
-        } else {
-            storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);
-        }
-        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(), "",
-                storageContainerConfig);
-        storageContainer.start();
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<PipelineTestParameter> getTestParameters() {
-        Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
-            return result;
-        }
-        for (String each : ENV.getPostgresqlVersions()) {
-            result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), each, String.join("/", PARENT_PATH, POSTGRES_CASE_FILE_PATH)));
-        }
-        for (String each : ENV.getMysqlVersions()) {
-            result.add(new PipelineTestParameter(new MySQLDatabaseType(), each, String.join("/", PARENT_PATH, MYSQL_CASE_FILE_PATH)));
-        }
-        for (String each : ENV.getOpenGaussVersions()) {
-            result.add(new PipelineTestParameter(new OpenGaussDatabaseType(), each, String.join("/", PARENT_PATH, OPEN_GAUSS_CASE_FILE_PATH)));
-        }
-        return result;
-    }
-    
-    @Test
-    public void assertGenerateCreateTableSQL() throws SQLException {
-        log.info("generate create table sql, test parameter: {}", testParam);
         DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
         try (
                 Connection connection = dataSource.getConnection();
@@ -137,7 +106,21 @@ public final class CreateTableSQLGeneratorIT {
                 assertSQL(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
-        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
+    }
+    
+    private void startStorageContainer(final DatabaseType databaseType, final String storageContainerImage) {
+        StorageContainerConfiguration storageContainerConfig = createStorageContainerConfiguration(databaseType, storageContainerImage);
+        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage, "", storageContainerConfig);
+        storageContainer.start();
+    }
+    
+    private StorageContainerConfiguration createStorageContainerConfiguration(final DatabaseType databaseType, final String storageContainerImage) {
+        if (DatabaseTypeUtil.isMySQL(databaseType)) {
+            int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
+            Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+            return MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);
+        }
+        return StorageContainerConfigurationFactory.newInstance(databaseType);
     }
     
     private void assertSQL(final Collection<String> actualSQL, final Collection<String> expectedSQL) {
@@ -160,8 +143,25 @@ public final class CreateTableSQLGeneratorIT {
         return result;
     }
     
-    @After
-    public void stopContainer() {
-        storageContainer.stop();
+    private static boolean isEnabled() {
+        return ENV.getItEnvType() != PipelineEnvTypeEnum.NONE && (!ENV.getMysqlVersions().isEmpty() || !ENV.getPostgresqlVersions().isEmpty() || !ENV.getOpenGaussVersions().isEmpty());
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            Collection<PipelineTestParameter> result = new LinkedList<>();
+            for (String each : ENV.getMysqlVersions()) {
+                result.add(new PipelineTestParameter(new MySQLDatabaseType(), each, String.join("/", PARENT_PATH, MYSQL_CASE_FILE_PATH)));
+            }
+            for (String each : ENV.getPostgresqlVersions()) {
+                result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), each, String.join("/", PARENT_PATH, POSTGRES_CASE_FILE_PATH)));
+            }
+            for (String each : ENV.getOpenGaussVersions()) {
+                result.add(new PipelineTestParameter(new OpenGaussDatabaseType(), each, String.join("/", PARENT_PATH, OPEN_GAUSS_CASE_FILE_PATH)));
+            }
+            return result.stream().map(Arguments::of);
+        }
     }
 }

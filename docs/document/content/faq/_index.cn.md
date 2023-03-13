@@ -169,12 +169,12 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 2. ShardingSphere 预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout` 等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
 3. 以上规则请参考 [相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)。
 
-### [DistSQL] 使用 `DistSQL` 删除 `storage unit` 时，出现 `Storage unit [xxx] is still used by [SingleTableRule]`。
+### [DistSQL] 使用 `DistSQL` 删除 `storage unit` 时，出现 `Storage unit [xxx] is still used by [SingleRule]`。
 
 回答：
 
 1. 被规则引用的 `storage unit` 将无法被删除。
-2. 若 `storage unit` 只被 `single table rule` 引用，且用户确认可以忽略该限制，则可以添加可选参数 ignore single tables 进行强制删除。
+2. 若 `storage unit` 只被 `single rule` 引用，且用户确认可以忽略该限制，则可以添加可选参数 ignore single tables 进行强制删除。
 
 ### [DistSQL] 使用 `DistSQL` 添加数据源时，出现 `Failed to get driver instance for jdbcURL=xxx`。
 

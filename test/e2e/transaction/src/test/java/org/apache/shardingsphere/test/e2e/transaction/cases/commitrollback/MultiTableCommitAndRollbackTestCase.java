@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
@@ -40,42 +41,44 @@ public final class MultiTableCommitAndRollbackTestCase extends BaseTransactionTe
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertRollback();
         assertCommit();
     }
     
     private void assertRollback() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertTableRowCount(connection, T_ORDER, 0);
-        assertTableRowCount(connection, T_ORDER_ITEM, 0);
-        executeSqlListWithLog(connection,
-                "INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, '1');",
-                "INSERT INTO t_order (order_id, user_id, status) VALUES (2, 2, '2');",
-                "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (1, 1, 1, '1');",
-                "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (2, 2, 2, '2');");
-        assertTableRowCount(connection, T_ORDER, 2);
-        assertTableRowCount(connection, T_ORDER_ITEM, 2);
-        connection.rollback();
-        assertTableRowCount(connection, T_ORDER, 0);
-        assertTableRowCount(connection, T_ORDER_ITEM, 0);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertTableRowCount(connection, T_ORDER, 0);
+            assertTableRowCount(connection, T_ORDER_ITEM, 0);
+            executeSqlListWithLog(connection,
+                    "INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, '1');",
+                    "INSERT INTO t_order (order_id, user_id, status) VALUES (2, 2, '2');",
+                    "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (1, 1, 1, '1');",
+                    "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (2, 2, 2, '2');");
+            assertTableRowCount(connection, T_ORDER, 2);
+            assertTableRowCount(connection, T_ORDER_ITEM, 2);
+            connection.rollback();
+            assertTableRowCount(connection, T_ORDER, 0);
+            assertTableRowCount(connection, T_ORDER_ITEM, 0);
+        }
     }
     
     private void assertCommit() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        assertTableRowCount(connection, T_ORDER, 0);
-        assertTableRowCount(connection, T_ORDER_ITEM, 0);
-        executeSqlListWithLog(connection,
-                "INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, '1');",
-                "INSERT INTO t_order (order_id, user_id, status) VALUES (2, 2, '2');",
-                "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (1, 1, 1, '1');",
-                "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (2, 2, 2, '2');");
-        assertTableRowCount(connection, T_ORDER, 2);
-        assertTableRowCount(connection, T_ORDER_ITEM, 2);
-        connection.commit();
-        assertTableRowCount(connection, T_ORDER, 2);
-        assertTableRowCount(connection, T_ORDER_ITEM, 2);
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            assertTableRowCount(connection, T_ORDER, 0);
+            assertTableRowCount(connection, T_ORDER_ITEM, 0);
+            executeSqlListWithLog(connection,
+                    "INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, '1');",
+                    "INSERT INTO t_order (order_id, user_id, status) VALUES (2, 2, '2');",
+                    "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (1, 1, 1, '1');",
+                    "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (2, 2, 2, '2');");
+            assertTableRowCount(connection, T_ORDER, 2);
+            assertTableRowCount(connection, T_ORDER_ITEM, 2);
+            connection.commit();
+            assertTableRowCount(connection, T_ORDER, 2);
+            assertTableRowCount(connection, T_ORDER_ITEM, 2);
+        }
     }
 }

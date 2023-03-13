@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Iterator;

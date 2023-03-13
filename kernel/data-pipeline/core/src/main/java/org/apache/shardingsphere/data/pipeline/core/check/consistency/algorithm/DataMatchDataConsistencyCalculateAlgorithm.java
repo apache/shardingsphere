@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCheckUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.BasicColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.core.util.CloseUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtil;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
@@ -93,8 +92,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         try {
             Collection<Collection<Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
-            ColumnValueReader columnValueReader = PipelineTypedSPILoader.findDatabaseTypedService(ColumnValueReader.class, param.getDatabaseType())
-                    .orElseGet(() -> new BasicColumnValueReader(param.getDatabaseType()));
+            ColumnValueReader columnValueReader = PipelineTypedSPILoader.getDatabaseTypedService(ColumnValueReader.class, param.getDatabaseType());
             ResultSet resultSet = calculationContext.getResultSet();
             while (resultSet.next()) {
                 if (isCanceling()) {
@@ -178,13 +176,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             throw new UnsupportedOperationException("Data consistency of DATA_MATCH type not support table without unique key and primary key now");
         }
         PipelineSQLBuilder sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, param.getDatabaseType());
-        String logicTableName = param.getLogicTableName();
-        String schemaName = param.getSchemaName();
-        String uniqueKey = param.getUniqueKey().getName();
-        if (null != param.getTableCheckPosition()) {
-            return sqlBuilder.buildQueryAllOrderingSQL(schemaName, logicTableName, uniqueKey, false);
-        }
-        return sqlBuilder.buildQueryAllOrderingSQL(schemaName, logicTableName, uniqueKey, true);
+        boolean firstQuery = null == param.getTableCheckPosition();
+        return sqlBuilder.buildQueryAllOrderingSQL(param.getSchemaName(), param.getLogicTableName(), param.getColumnNames(), param.getUniqueKey().getName(), firstQuery);
     }
     
     @Override

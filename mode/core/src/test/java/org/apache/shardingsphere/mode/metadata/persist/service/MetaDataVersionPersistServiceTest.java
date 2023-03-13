@@ -19,14 +19,14 @@ package org.apache.shardingsphere.mode.metadata.persist.service;
 
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.mock;
@@ -40,7 +40,7 @@ public final class MetaDataVersionPersistServiceTest {
     
     private MetaDataVersionPersistService metaDataVersionPersistService;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         repository = mock(PersistRepository.class);
         when(repository.getDirectly(contains("foo_db"))).thenReturn("1");

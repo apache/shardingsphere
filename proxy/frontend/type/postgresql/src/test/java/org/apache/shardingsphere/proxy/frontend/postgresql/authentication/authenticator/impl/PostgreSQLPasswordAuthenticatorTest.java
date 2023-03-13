@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl;
 
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

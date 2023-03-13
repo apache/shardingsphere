@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.readonly;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.junit.Assert;
@@ -39,18 +40,18 @@ public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertSetReadOnly();
         assertNotSetReadOnly();
     }
     
     private void assertSetReadOnly() throws SQLException {
-        Connection connection1 = getDataSource().getConnection();
-        executeUpdateWithLog(connection1, "insert into account(id, balance) values (1, 0), (2, 100);");
-        Connection connection2 = getDataSource().getConnection();
-        connection2.setReadOnly(true);
-        assertQueryBalance(connection2);
-        try {
+        try (Connection connection1 = getDataSource().getConnection()) {
+            executeUpdateWithLog(connection1, "insert into account(id, balance) values (1, 0), (2, 100);");
+        }
+        try (Connection connection2 = getDataSource().getConnection()) {
+            connection2.setReadOnly(true);
+            assertQueryBalance(connection2);
             executeWithLog(connection2, "update account set balance = 100 where id = 2;");
             log.info("Using the driver of postgresql:42.4.1 expect to update successfully.");
         } catch (final SQLException ex) {

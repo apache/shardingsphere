@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.RegisterStorageUnitBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.storage.unit.UnregisterStorageUnitBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
