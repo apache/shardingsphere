@@ -33,8 +33,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -61,27 +63,30 @@ public final class DataSourceImporter implements Importer {
     
     @Override
     public void write(final List<Record> records) throws Exception {
-        List<Record> insertRecords = new LinkedList<>();
-        List<Record> otherRecords = new LinkedList<>();
-        for (Record each : records) {
-            if (DataChangeType.INSERT == each.getDataChangeType()) {
-                insertRecords.add(each);
+        Map<String, List<Record>> recordMap = groupingByTableName(records);
+        for (List<Record> each : recordMap.values()) {
+            long insertCount = each.stream().filter(record -> DataChangeType.INSERT == record.getDataChangeType()).count();
+            if (insertCount == each.size()) {
+                batchInsertRecords(each);
                 continue;
             }
-            otherRecords.add(each);
+            processedRecords(each);
         }
-        if (!insertRecords.isEmpty()) {
-            batchInsertRecords(insertRecords);
+    }
+    
+    private Map<String, List<Record>> groupingByTableName(final List<Record> records) {
+        Map<String, List<Record>> result = new HashMap<>();
+        for (Record each : records) {
+            result.computeIfAbsent(each.getTableMetaData().getTableName(), ignored -> new LinkedList<>()).add(each);
         }
-        for (Record each : otherRecords) {
-            handlerRecords(each);
-        }
+        return result;
     }
     
     private void batchInsertRecords(final List<Record> insertRecords) throws SQLException {
         Optional<String> sqlOptional = buildSQL(insertRecords.get(0));
         if (!sqlOptional.isPresent()) {
-            throw new RuntimeException("build sql failed");
+            log.error("Build update sql failed, record {}", insertRecords.get(0));
+            throw new RuntimeException("Build insert sql failed, record");
         }
         try (PreparedStatement preparedStatement = connection.prepareStatement(sqlOptional.get())) {
             for (Record each : insertRecords) {
@@ -100,11 +105,24 @@ public final class DataSourceImporter implements Importer {
         }
     }
     
-    private void handlerRecords(final Record record) throws SQLException, InvalidProtocolBufferException {
+    private void processedRecords(final List<Record> records) {
+        for (Record each : records) {
+            try {
+                processedRecord(each);
+            } catch (final SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (final InvalidProtocolBufferException ex) {
+                log.error("invalid protocol message: {}", each);
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+    
+    private void processedRecord(final Record record) throws SQLException, InvalidProtocolBufferException {
         Optional<String> sqlOptional = buildSQL(record);
         if (!sqlOptional.isPresent()) {
-            log.error("build sql failed, record {}", record);
-            throw new RuntimeException("build sql failed");
+            log.error("Build sql failed, record {}", record);
+            throw new RuntimeException("Build sql failed");
         }
         String sql = sqlOptional.get();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

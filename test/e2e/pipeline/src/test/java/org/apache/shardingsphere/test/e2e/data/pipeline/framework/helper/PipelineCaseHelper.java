@@ -149,8 +149,7 @@ public final class PipelineCaseHelper {
         List<Object[]> result = new ArrayList<>(insertRows);
         for (int i = 0; i < insertRows; i++) {
             Object orderId = keyGenerateAlgorithm.generateKey();
-            int userId = generateInt(0, 100);
-            result.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, "SUCCESS"});
+            result.add(new Object[]{orderId, orderId, generateInt(0, 100), "SUCCESS"});
         }
         return result;
     }

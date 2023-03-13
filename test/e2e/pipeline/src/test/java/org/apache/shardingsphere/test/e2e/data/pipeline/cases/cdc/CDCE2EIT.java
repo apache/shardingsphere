@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.cdc;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
@@ -65,7 +64,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -80,12 +78,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public final class CDCE2EIT extends PipelineBaseE2EIT {
     
-    private static final String CREATE_SHARDING_RULE_SQL = String.format("CREATE SHARDING TABLE RULE t_order("
-            + "STORAGE_UNITS(%s,%s),"
-            + "SHARDING_COLUMN=user_id,"
-            + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='4')),"
-            + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake'))"
-            + ")", DS_0, DS_1);
+    private static final String CREATE_SHARDING_RULE_SQL = String.format("CREATE SHARDING TABLE RULE t_order(\n"
+            + "STORAGE_UNITS(%s,%s),\n"
+            + "SHARDING_COLUMN=order_id,\n"
+            + "TYPE(NAME=\"hash_mod\",PROPERTIES(\"sharding-count\"=\"4\")),\n"
+            + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=\"snowflake\"))\n"
+            + "),t_order_item(\n"
+            + "STORAGE_UNITS(%s,%s),\n"
+            + "SHARDING_COLUMN=order_id,\n"
+            + "TYPE(NAME=\"hash_mod\",PROPERTIES(\"sharding-count\"=\"4\")),\n"
+            + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=\"snowflake\"))\n"
+            + ")", DS_0, DS_1, DS_0, DS_1);
     
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     
@@ -118,60 +121,66 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
     @Test
     public void assertCDCDataImportSuccess() throws SQLException, InterruptedException {
         // make sure the program time zone same with the database server at CI.
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        //        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         initEnvironment(getDatabaseType(), new CDCJobType());
         for (String each : Arrays.asList(DS_0, DS_1)) {
             registerStorageUnit(each);
         }
-        createOrderTableRule();
+        createShardingTableRule();
         try (Connection connection = getProxyDataSource().getConnection()) {
             initSchemaAndTable(connection, 2);
         }
-        DataSource jdbcDataSource = generateShardingSphereDataSourceFromProxy();
-        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(getDatabaseType(), 20);
+        DataSource sourceDataSource = generateShardingSphereDataSourceFromProxy();
+        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(getDatabaseType(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
         log.info("init data begin: {}", LocalDateTime.now());
-        DataSourceExecuteUtil.execute(jdbcDataSource, getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
+        DataSourceExecuteUtil.execute(sourceDataSource, getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
+        DataSourceExecuteUtil.execute(sourceDataSource, getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
-        try (Connection connection = DriverManager.getConnection(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword())) {
+        String actualJdbcUrl = getActualJdbcUrlTemplate(DS_4, false);
+        try (Connection connection = DriverManager.getConnection(actualJdbcUrl, getUsername(), getPassword())) {
             initSchemaAndTable(connection, 0);
         }
         startCDCClient();
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !queryForListWithLog("SHOW STREAMING LIST").isEmpty());
         String jobId = queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
         waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
-        startIncrementTask(new E2EIncrementalTask(jdbcDataSource, getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
+        String tableName = getDatabaseType().isSchemaAvailable() ? String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName()) : getSourceTableOrderName();
+        startIncrementTask(new E2EIncrementalTask(sourceDataSource, tableName, new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
         getIncreaseTaskThread().join(10000);
         List<Map<String, Object>> actualProxyList;
-        try (Connection connection = jdbcDataSource.getConnection()) {
+        try (Connection connection = sourceDataSource.getConnection()) {
             ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", getOrderTableNameWithSchema()));
             actualProxyList = transformResultSetToList(resultSet);
         }
-        Awaitility.await().atMost(20, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> listOrderRecords(getOrderTableNameWithSchema()).size() == actualProxyList.size());
-        SchemaTableName schemaTableName = getDatabaseType().isSchemaAvailable()
-                ? new SchemaTableName(new SchemaName(PipelineBaseE2EIT.SCHEMA_NAME), new TableName(getSourceTableOrderName()))
-                : new SchemaTableName(new SchemaName(null), new TableName(getSourceTableOrderName()));
-        PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword()),
-                getDatabaseType());
-        PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(jdbcDataSource, getDatabaseType());
-        StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(PipelineBaseE2EIT.SCHEMA_NAME, "t_order");
-        PipelineColumnMetaData primaryKeyMetaData = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
-        ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0);
-        SingleTableInventoryDataConsistencyChecker checker = new SingleTableInventoryDataConsistencyChecker("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
-                tableMetaData.getColumnNames(), primaryKeyMetaData, null, progressContext);
-        DataConsistencyCheckResult checkResult = checker.check(new DataMatchDataConsistencyCalculateAlgorithm());
-        assertTrue(checkResult.isMatched());
+        Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> listOrderRecords(getOrderTableNameWithSchema()).size() == actualProxyList.size());
+        try (
+                PipelineDataSourceWrapper sourceDataSourceWrapper = new PipelineDataSourceWrapper(sourceDataSource, getDatabaseType());
+                PipelineDataSourceWrapper targetDataSourceWrapper = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(actualJdbcUrl, getUsername(), getPassword()),
+                        getDatabaseType())) {
+            SchemaTableName orderSchemaTableName = getDatabaseType().isSchemaAvailable()
+                    ? new SchemaTableName(new SchemaName(PipelineBaseE2EIT.SCHEMA_NAME), new TableName(getSourceTableOrderName()))
+                    : new SchemaTableName(new SchemaName(null), new TableName(getSourceTableOrderName()));
+            Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).untilAsserted(
+                    () -> assertTrue(checkTableDataMatched(sourceDataSourceWrapper, targetDataSourceWrapper, "t_order", orderSchemaTableName)));
+            SchemaTableName itemSchemaTableName = getDatabaseType().isSchemaAvailable()
+                    ? new SchemaTableName(new SchemaName(PipelineBaseE2EIT.SCHEMA_NAME), new TableName("t_order_item"))
+                    : new SchemaTableName(new SchemaName(null), new TableName("t_order_item"));
+            Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).untilAsserted(
+                    () -> assertTrue(checkTableDataMatched(sourceDataSourceWrapper, targetDataSourceWrapper, "t_order_item", itemSchemaTableName)));
+        }
     }
     
-    private void createOrderTableRule() throws SQLException {
+    private void createShardingTableRule() throws SQLException {
         proxyExecuteWithLog(CREATE_SHARDING_RULE_SQL, 2);
     }
     
     private void initSchemaAndTable(final Connection connection, final int sleepSeconds) throws SQLException {
         createSchema(connection, sleepSeconds);
-        String sql = getExtraSQLCommand().getCreateTableOrder(getSourceTableOrderName());
-        log.info("create table sql: {}", sql);
-        connection.createStatement().execute(sql);
+        String createOrderSQL = getExtraSQLCommand().getCreateTableOrder(getSourceTableOrderName());
+        connection.createStatement().execute(createOrderSQL);
+        String createItemSQL = getExtraSQLCommand().getCreateTableOrderItem();
+        connection.createStatement().execute(createItemSQL);
+        log.info("create order sql: {}, order item sql: {}", createOrderSQL, createItemSQL);
         if (sleepSeconds > 0) {
             ThreadUtil.sleep(sleepSeconds, TimeUnit.SECONDS);
         }
@@ -188,7 +197,7 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         // TODO add full=false test case later
         parameter.setFull(true);
         String schema = getDatabaseType().isSchemaAvailable() ? "test" : "";
-        parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable(getSourceTableOrderName()).setSchema(schema).build()));
+        parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable("*").setSchema(schema).build()));
         parameter.setDatabaseType(getDatabaseType().getType());
         CompletableFuture.runAsync(() -> new CDCClient(parameter).start(), executor).whenComplete((unused, throwable) -> {
             if (null != throwable) {
@@ -210,5 +219,16 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
         } else {
             return getSourceTableOrderName();
         }
+    }
+    
+    private boolean checkTableDataMatched(final PipelineDataSourceWrapper sourceDataSource, final PipelineDataSourceWrapper targetDataSource, final String tableName,
+                                          final SchemaTableName schemaTableName) {
+        StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(PipelineBaseE2EIT.SCHEMA_NAME, tableName);
+        PipelineColumnMetaData primaryKeyMetaData = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
+        ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0);
+        SingleTableInventoryDataConsistencyChecker checker = new SingleTableInventoryDataConsistencyChecker("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
+                tableMetaData.getColumnNames(), primaryKeyMetaData, null, progressContext);
+        return checker.check(new DataMatchDataConsistencyCalculateAlgorithm()).isMatched();
     }
 }
