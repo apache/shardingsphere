@@ -230,7 +230,9 @@ After this optimization, you can omit quotes when referencing a built-in algorit
 
 Therefore, the following is also rightful and equivalent:
 
-`TYPE(NAME=MOD,PROPERTIES("sharding-count"=4))`.
+```sql
+TYPE(NAME="MOD",PROPERTIES("sharding-count"="4"))
+```
 
 # Demo
 
