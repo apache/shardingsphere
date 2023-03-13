@@ -37,7 +37,7 @@ public final class PipelineJobIdUtils {
      * @return job id common prefix
      */
     public static String marshalJobIdCommonPrefix(final PipelineJobId pipelineJobId) {
-        return 'j' + pipelineJobId.getJobTypeCode() + pipelineJobId.getFormatVersion();
+        return 'j' + pipelineJobId.getJobType().getTypeCode() + pipelineJobId.getFormatVersion();
     }
     
     /**

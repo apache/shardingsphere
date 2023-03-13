@@ -37,9 +37,4 @@ public abstract class AbstractPipelineJobId implements PipelineJobId {
         Preconditions.checkArgument(2 == formatVersion.length(), "formatVersion length is not 2");
         this.formatVersion = formatVersion;
     }
-    
-    @Override
-    public final String getJobTypeCode() {
-        return jobType.getTypeCode();
-    }
 }

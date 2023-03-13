@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+
 /**
  * Pipeline job id.
  */
 public interface PipelineJobId {
     
     /**
-     * Get job type code.
+     * Get job type.
      *
      * @return type
      */
-    String getJobTypeCode();
+    JobType getJobType();
     
     /**
      * Get format version.
