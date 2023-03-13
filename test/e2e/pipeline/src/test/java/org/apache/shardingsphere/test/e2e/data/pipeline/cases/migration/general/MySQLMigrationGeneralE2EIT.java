@@ -23,9 +23,10 @@ import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
+import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
@@ -51,53 +52,47 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
-    private final PipelineTestParameter testParam;
+    private static final String SOURCE_TABLE_ORDER_NAME = "t_order_copy";
     
     public MySQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
         super(testParam);
-        this.testParam = testParam;
     }
     
     @Parameters(name = "{0}")
     public static Collection<PipelineTestParameter> getTestParameters() {
         Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
+        if (PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
-        for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(databaseType)) {
+        for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(databaseType)) {
             result.add(new PipelineTestParameter(databaseType, each, "env/scenario/general/mysql.xml"));
         }
         return result;
     }
     
-    @Override
-    protected String getSourceTableOrderName() {
-        return "t_order_copy";
-    }
-    
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
-        log.info("assertMigrationSuccess testParam:{}", testParam);
-        initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
+        getContainerComposer().initEnvironment(getContainerComposer().getDatabaseType(), new MigrationJobType());
         addMigrationProcessConfig();
-        createSourceOrderTable();
-        createSourceOrderItemTable();
+        getContainerComposer().createSourceOrderTable(SOURCE_TABLE_ORDER_NAME);
+        getContainerComposer().createSourceOrderItemTable();
         addMigrationSourceResource();
         addMigrationTargetResource();
         createTargetOrderTableRule();
         createTargetOrderTableEncryptRule();
         createTargetOrderItemTableRule();
-        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
+        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(getContainerComposer().getDatabaseType(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         log.info("init data begin: {}", LocalDateTime.now());
-        DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
-        DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
+        DataSourceExecuteUtil.execute(getContainerComposer().getSourceDataSource(), getContainerComposer().getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_ORDER_NAME), dataPair.getLeft());
+        DataSourceExecuteUtil.execute(getContainerComposer().getSourceDataSource(), getContainerComposer().getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
-        startMigration(getSourceTableOrderName(), getTargetTableOrderName());
+        startMigration(SOURCE_TABLE_ORDER_NAME, getContainerComposer().getTargetTableOrderName());
         startMigration("t_order_item", "t_order_item");
-        String orderJobId = getJobIdByTableName("ds_0." + getSourceTableOrderName());
-        waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", orderJobId));
-        startIncrementTask(new E2EIncrementalTask(getSourceDataSource(), getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 30));
+        String orderJobId = getJobIdByTableName("ds_0." + SOURCE_TABLE_ORDER_NAME);
+        getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", orderJobId));
+        getContainerComposer().startIncrementTask(
+                new E2EIncrementalTask(getContainerComposer().getSourceDataSource(), SOURCE_TABLE_ORDER_NAME, new SnowflakeKeyGenerateAlgorithm(), getContainerComposer().getDatabaseType(), 30));
         assertMigrationSuccessById(orderJobId, "DATA_MATCH");
         String orderItemJobId = getJobIdByTableName("ds_0.t_order_item");
         assertMigrationSuccessById(orderItemJobId, "DATA_MATCH");
@@ -108,13 +103,12 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         }
         List<String> lastJobIds = listJobId();
         assertTrue(lastJobIds.isEmpty());
-        proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
-        assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT, "");
-        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
+        getContainerComposer().proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
+        getContainerComposer().assertGreaterThanOrderTableInitRows(PipelineContainerComposer.TABLE_INIT_ROW_COUNT, "");
     }
     
     private void assertMigrationSuccessById(final String jobId, final String algorithmType) throws SQLException, InterruptedException {
-        List<Map<String, Object>> jobStatus = waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        List<Map<String, Object>> jobStatus = getContainerComposer().waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         for (Map<String, Object> each : jobStatus) {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
             assertThat(Integer.parseInt(each.get("inventory_finished_percentage").toString()), is(100));
