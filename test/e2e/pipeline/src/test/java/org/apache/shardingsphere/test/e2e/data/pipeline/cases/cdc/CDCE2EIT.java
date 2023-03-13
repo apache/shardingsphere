@@ -157,8 +157,9 @@ public final class CDCE2EIT {
         SchemaTableName schemaTableName = containerComposer.getDatabaseType().isSchemaAvailable()
                 ? new SchemaTableName(new SchemaName(PipelineContainerComposer.SCHEMA_NAME), new TableName(SOURCE_TABLE_ORDER_NAME))
                 : new SchemaTableName(new SchemaName(null), new TableName(SOURCE_TABLE_ORDER_NAME));
-        PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false), containerComposer.getUsername(), containerComposer.getPassword()),
-                containerComposer.getDatabaseType());
+        PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(
+                containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
+                containerComposer.getUsername(), containerComposer.getPassword()), containerComposer.getDatabaseType());
         PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(jdbcDataSource, containerComposer.getDatabaseType());
         StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(PipelineContainerComposer.SCHEMA_NAME, "t_order");
