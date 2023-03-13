@@ -39,14 +39,16 @@ import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
+import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -74,87 +76,93 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * MySQL CDC E2E IT.
+ * CDC E2E IT.
  */
 @RunWith(Parameterized.class)
 @Slf4j
-public final class CDCE2EIT extends PipelineBaseE2EIT {
+public final class CDCE2EIT {
     
     private static final String CREATE_SHARDING_RULE_SQL = String.format("CREATE SHARDING TABLE RULE t_order("
             + "STORAGE_UNITS(%s,%s),"
             + "SHARDING_COLUMN=user_id,"
             + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='4')),"
             + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake'))"
-            + ")", DS_0, DS_1);
+            + ")", PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1);
+    
+    private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
+    
+    private final PipelineContainerComposer containerComposer;
     
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     
     public CDCE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
+        containerComposer = new PipelineContainerComposer(testParam);
     }
     
     @Parameters(name = "{0}")
     public static Collection<PipelineTestParameter> getTestParameters() {
         Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
+        if (PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
         MySQLDatabaseType mysqlDatabaseType = new MySQLDatabaseType();
-        for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(mysqlDatabaseType)) {
+        for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(mysqlDatabaseType)) {
             result.add(new PipelineTestParameter(mysqlDatabaseType, each, "env/scenario/general/mysql.xml"));
         }
         OpenGaussDatabaseType openGaussDatabaseType = new OpenGaussDatabaseType();
-        for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(openGaussDatabaseType)) {
+        for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(openGaussDatabaseType)) {
             result.add(new PipelineTestParameter(openGaussDatabaseType, each, "env/scenario/general/postgresql.xml"));
         }
         return result;
     }
     
-    @Override
-    protected String getSourceTableOrderName() {
-        return "t_order";
+    @After
+    public void tearDown() {
+        containerComposer.close();
     }
     
     @Test
     public void assertCDCDataImportSuccess() throws SQLException, InterruptedException {
         // make sure the program time zone same with the database server at CI.
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        initEnvironment(getDatabaseType(), new CDCJobType());
-        for (String each : Arrays.asList(DS_0, DS_1)) {
-            registerStorageUnit(each);
+        containerComposer.initEnvironment(containerComposer.getDatabaseType(), new CDCJobType());
+        for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
+            containerComposer.registerStorageUnit(each);
         }
         createOrderTableRule();
-        try (Connection connection = getProxyDataSource().getConnection()) {
+        try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
             initSchemaAndTable(connection, 2);
         }
-        DataSource jdbcDataSource = generateShardingSphereDataSourceFromProxy();
-        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(getDatabaseType(), 20);
+        DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
+        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), 20);
         log.info("init data begin: {}", LocalDateTime.now());
-        DataSourceExecuteUtil.execute(jdbcDataSource, getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
+        DataSourceExecuteUtil.execute(jdbcDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_ORDER_NAME), dataPair.getLeft());
         log.info("init data end: {}", LocalDateTime.now());
-        try (Connection connection = DriverManager.getConnection(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword())) {
+        try (Connection connection = DriverManager.getConnection(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
+                containerComposer.getUsername(), containerComposer.getPassword())) {
             initSchemaAndTable(connection, 0);
         }
         startCDCClient();
-        Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !queryForListWithLog("SHOW STREAMING LIST").isEmpty());
-        String jobId = queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
-        waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
-        startIncrementTask(new E2EIncrementalTask(jdbcDataSource, getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), getDatabaseType(), 20));
-        getIncreaseTaskThread().join(10000);
+        Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW STREAMING LIST").isEmpty());
+        String jobId = containerComposer.queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
+        containerComposer.waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
+        containerComposer.startIncrementTask(new E2EIncrementalTask(jdbcDataSource, SOURCE_TABLE_ORDER_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20));
+        containerComposer.getIncreaseTaskThread().join(10000L);
         List<Map<String, Object>> actualProxyList;
         try (Connection connection = jdbcDataSource.getConnection()) {
             ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", getOrderTableNameWithSchema()));
-            actualProxyList = transformResultSetToList(resultSet);
+            actualProxyList = containerComposer.transformResultSetToList(resultSet);
         }
         Awaitility.await().atMost(20, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> listOrderRecords(getOrderTableNameWithSchema()).size() == actualProxyList.size());
-        SchemaTableName schemaTableName = getDatabaseType().isSchemaAvailable()
-                ? new SchemaTableName(new SchemaName(PipelineBaseE2EIT.SCHEMA_NAME), new TableName(getSourceTableOrderName()))
-                : new SchemaTableName(new SchemaName(null), new TableName(getSourceTableOrderName()));
-        PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword()),
-                getDatabaseType());
-        PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(jdbcDataSource, getDatabaseType());
+        SchemaTableName schemaTableName = containerComposer.getDatabaseType().isSchemaAvailable()
+                ? new SchemaTableName(new SchemaName(PipelineContainerComposer.SCHEMA_NAME), new TableName(SOURCE_TABLE_ORDER_NAME))
+                : new SchemaTableName(new SchemaName(null), new TableName(SOURCE_TABLE_ORDER_NAME));
+        PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(
+                containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
+                containerComposer.getUsername(), containerComposer.getPassword()), containerComposer.getDatabaseType());
+        PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(jdbcDataSource, containerComposer.getDatabaseType());
         StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(PipelineBaseE2EIT.SCHEMA_NAME, "t_order");
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(PipelineContainerComposer.SCHEMA_NAME, "t_order");
         PipelineColumnMetaData primaryKeyMetaData = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
         ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0);
         SingleTableInventoryDataConsistencyChecker checker = new SingleTableInventoryDataConsistencyChecker("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
@@ -164,12 +172,12 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
     }
     
     private void createOrderTableRule() throws SQLException {
-        proxyExecuteWithLog(CREATE_SHARDING_RULE_SQL, 2);
+        containerComposer.proxyExecuteWithLog(CREATE_SHARDING_RULE_SQL, 2);
     }
     
     private void initSchemaAndTable(final Connection connection, final int sleepSeconds) throws SQLException {
-        createSchema(connection, sleepSeconds);
-        String sql = getExtraSQLCommand().getCreateTableOrder(getSourceTableOrderName());
+        containerComposer.createSchema(connection, sleepSeconds);
+        String sql = containerComposer.getExtraSQLCommand().getCreateTableOrder(SOURCE_TABLE_ORDER_NAME);
         log.info("create table sql: {}", sql);
         connection.createStatement().execute(sql);
         if (sleepSeconds > 0) {
@@ -178,18 +186,19 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
     }
     
     private void startCDCClient() {
-        ImportDataSourceParameter importDataSourceParam = new ImportDataSourceParameter(appendExtraParam(getActualJdbcUrlTemplate(DS_4, false, 0)), getUsername(), getPassword());
+        ImportDataSourceParameter importDataSourceParam = new ImportDataSourceParameter(containerComposer.appendExtraParam(
+                containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false, 0)), containerComposer.getUsername(), containerComposer.getPassword());
         StartCDCClientParameter parameter = new StartCDCClientParameter(importDataSourceParam);
         parameter.setAddress("localhost");
-        parameter.setPort(getContainerComposer().getProxyCDCPort());
+        parameter.setPort(containerComposer.getContainerComposer().getProxyCDCPort());
         parameter.setUsername(ProxyContainerConstants.USERNAME);
         parameter.setPassword(ProxyContainerConstants.PASSWORD);
         parameter.setDatabase("sharding_db");
         // TODO add full=false test case later
         parameter.setFull(true);
-        String schema = getDatabaseType().isSchemaAvailable() ? "test" : "";
-        parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable(getSourceTableOrderName()).setSchema(schema).build()));
-        parameter.setDatabaseType(getDatabaseType().getType());
+        String schema = containerComposer.getDatabaseType().isSchemaAvailable() ? "test" : "";
+        parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable(SOURCE_TABLE_ORDER_NAME).setSchema(schema).build()));
+        parameter.setDatabaseType(containerComposer.getDatabaseType().getType());
         CompletableFuture.runAsync(() -> new CDCClient(parameter).start(), executor).whenComplete((unused, throwable) -> {
             if (null != throwable) {
                 log.error("cdc client sync failed, ", throwable);
@@ -198,17 +207,14 @@ public final class CDCE2EIT extends PipelineBaseE2EIT {
     }
     
     private List<Map<String, Object>> listOrderRecords(final String tableNameWithSchema) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(getActualJdbcUrlTemplate(DS_4, false), getUsername(), getPassword())) {
+        try (Connection connection = DriverManager.getConnection(
+                containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false), containerComposer.getUsername(), containerComposer.getPassword())) {
             ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", tableNameWithSchema));
-            return transformResultSetToList(resultSet);
+            return containerComposer.transformResultSetToList(resultSet);
         }
     }
     
     private String getOrderTableNameWithSchema() {
-        if (getDatabaseType().isSchemaAvailable()) {
-            return String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName());
-        } else {
-            return getSourceTableOrderName();
-        }
+        return containerComposer.getDatabaseType().isSchemaAvailable() ? String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_ORDER_NAME) : SOURCE_TABLE_ORDER_NAME;
     }
 }

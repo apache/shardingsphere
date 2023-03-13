@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.data.pipeline.cases.base;
+package org.apache.shardingsphere.test.e2e.data.pipeline.cases;
 
 import com.google.common.base.Strings;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
@@ -36,7 +36,6 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.comp
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.DockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose.NativeContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
-import org.apache.shardingsphere.test.e2e.data.pipeline.framework.watcher.PipelineWatcher;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
@@ -44,7 +43,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageConta
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Rule;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
@@ -71,33 +69,28 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Getter(AccessLevel.PROTECTED)
+/**
+ * Pipeline container composer.
+ */
+@Getter
 @Slf4j
-public abstract class PipelineBaseE2EIT {
+public final class PipelineContainerComposer implements AutoCloseable {
     
-    protected static final PipelineE2EEnvironment ENV = PipelineE2EEnvironment.getInstance();
+    public static final String SCHEMA_NAME = "test";
     
-    protected static final String SCHEMA_NAME = "test";
+    public static final String PROXY_DATABASE = "sharding_db";
     
-    protected static final String PROXY_DATABASE = "sharding_db";
+    public static final String DS_0 = "pipeline_it_0";
     
-    protected static final String DS_0 = "pipeline_it_0";
+    public static final String DS_1 = "pipeline_it_1";
     
-    protected static final String DS_1 = "pipeline_it_1";
+    public static final String DS_2 = "pipeline_it_2";
     
-    protected static final String DS_2 = "pipeline_it_2";
+    public static final String DS_3 = "pipeline_it_3";
     
-    protected static final String DS_3 = "pipeline_it_3";
+    public static final String DS_4 = "pipeline_it_4";
     
-    protected static final String DS_4 = "pipeline_it_4";
-    
-    protected static final int TABLE_INIT_ROW_COUNT = 3000;
-    
-    private static final String REGISTER_STORAGE_UNIT_SQL = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')";
-    
-    @Rule
-    @Getter(AccessLevel.NONE)
-    public PipelineWatcher pipelineWatcher;
+    public static final int TABLE_INIT_ROW_COUNT = 3000;
     
     private final BaseContainerComposer containerComposer;
     
@@ -115,24 +108,31 @@ public abstract class PipelineBaseE2EIT {
     
     private Thread increaseTaskThread;
     
-    public PipelineBaseE2EIT(final PipelineTestParameter testParam) {
+    public PipelineContainerComposer(final PipelineTestParameter testParam) {
         databaseType = testParam.getDatabaseType();
-        containerComposer = ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER
+        containerComposer = PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER
                 ? new DockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage(), testParam.getStorageContainerCount())
                 : new NativeContainerComposer(testParam.getDatabaseType());
-        if (ENV.getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
+        if (PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
             username = storageContainer.getUsername();
             password = storageContainer.getPassword();
         } else {
-            username = ENV.getActualDataSourceUsername(databaseType);
-            password = ENV.getActualDataSourcePassword(databaseType);
+            username = PipelineE2EEnvironment.getInstance().getActualDataSourceUsername(databaseType);
+            password = PipelineE2EEnvironment.getInstance().getActualDataSourcePassword(databaseType);
         }
-        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineBaseE2EIT.class.getClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
-        pipelineWatcher = new PipelineWatcher(containerComposer);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineContainerComposer.class.getClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
+        containerComposer.start();
     }
     
-    protected void initEnvironment(final DatabaseType databaseType, final JobType jobType) throws SQLException {
+    /**
+     * Initialize environment.
+     * 
+     * @param databaseType database type
+     * @param jobType job type
+     * @throws SQLException SQL exception
+     */
+    public void initEnvironment(final DatabaseType databaseType, final JobType jobType) throws SQLException {
         sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
         proxyDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(containerComposer.getProxyJdbcUrl(PROXY_DATABASE)),
                 ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
@@ -149,7 +149,13 @@ public abstract class PipelineBaseE2EIT {
         cleanUpDataSource();
     }
     
-    protected String appendExtraParam(final String jdbcUrl) {
+    /**
+     * Append extra parameter.
+     * 
+     * @param jdbcUrl JDBC URL
+     * @return appended JDBC URL
+     */
+    public String appendExtraParam(final String jdbcUrl) {
         String result = jdbcUrl;
         if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
             result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
@@ -161,7 +167,7 @@ public abstract class PipelineBaseE2EIT {
     }
     
     private void cleanUpProxyDatabase(final Connection connection) {
-        if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
+        if (PipelineEnvTypeEnum.NATIVE != PipelineE2EEnvironment.getInstance().getItEnvType()) {
             return;
         }
         try {
@@ -173,7 +179,7 @@ public abstract class PipelineBaseE2EIT {
     }
     
     private void cleanUpPipelineJobs(final Connection connection, final JobType jobType) throws SQLException {
-        if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
+        if (PipelineEnvTypeEnum.NATIVE != PipelineE2EEnvironment.getInstance().getItEnvType()) {
             return;
         }
         String jobTypeName = jobType.getTypeName();
@@ -201,7 +207,7 @@ public abstract class PipelineBaseE2EIT {
     }
     
     private void cleanUpDataSource() {
-        if (PipelineEnvTypeEnum.NATIVE != ENV.getItEnvType()) {
+        if (PipelineEnvTypeEnum.NATIVE != PipelineE2EEnvironment.getInstance().getItEnvType()) {
             return;
         }
         for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
@@ -216,40 +222,77 @@ public abstract class PipelineBaseE2EIT {
         ThreadUtil.sleep(2, TimeUnit.SECONDS);
     }
     
-    protected void registerStorageUnit(final String storageUnitName) throws SQLException {
-        String registerStorageUnitTemplate = REGISTER_STORAGE_UNIT_SQL.replace("${ds}", storageUnitName)
+    /**
+     * Register storage unit.
+     * 
+     * @param storageUnitName storage unit name
+     * @throws SQLException SQL exception
+     */
+    public void registerStorageUnit(final String storageUnitName) throws SQLException {
+        String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
                 .replace("${user}", getUsername())
                 .replace("${password}", getPassword())
                 .replace("${url}", appendExtraParam(getActualJdbcUrlTemplate(storageUnitName, true)));
         proxyExecuteWithLog(registerStorageUnitTemplate, 2);
     }
     
+    /**
+     * Add resource.
+     * 
+     * @param distSQL dist SQL
+     * @throws SQLException SQL exception
+     */
     // TODO Use registerStorageUnit instead, and remove the method
-    protected void addResource(final String distSQL) throws SQLException {
+    public void addResource(final String distSQL) throws SQLException {
         proxyExecuteWithLog(distSQL, 2);
     }
     
-    protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
-        if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
+    /**
+     * Get actual JDBC URL template.
+     * 
+     * @param databaseName database name
+     * @param isInContainer is in container
+     * @param storageContainerIndex storage container index
+     * @return actual JDBC URL template
+     */
+    public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
+        if (PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(storageContainerIndex);
             return isInContainer
                     ? DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getNetworkAliases().get(0), storageContainer.getExposedPort(), databaseName)
                     : storageContainer.getJdbcUrl(databaseName);
         }
-        return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
+        return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", PipelineE2EEnvironment.getInstance().getActualDataSourceDefaultPort(databaseType), databaseName);
     }
     
-    protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
+    /**
+     * Get actual JDBC URL template.
+     * 
+     * @param databaseName database name
+     * @param isInContainer is in container
+     * @return actual JDBC URL template
+     */
+    public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
         return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
     }
     
-    protected abstract String getSourceTableOrderName();
-    
-    protected String getTargetTableOrderName() {
+    /**
+     * Get target table order name.
+     * 
+     * @return target table order name
+     */
+    public String getTargetTableOrderName() {
         return "t_order";
     }
     
-    protected void createSchema(final Connection connection, final int sleepSeconds) throws SQLException {
+    /**
+     * Create schema.
+     * 
+     * @param connection connection
+     * @param sleepSeconds sleep seconds
+     * @throws SQLException SQL exception
+     */
+    public void createSchema(final Connection connection, final int sleepSeconds) throws SQLException {
         if (!getDatabaseType().isSchemaAvailable()) {
             return;
         }
@@ -259,34 +302,72 @@ public abstract class PipelineBaseE2EIT {
         }
     }
     
-    protected void createSourceOrderTable() throws SQLException {
-        sourceExecuteWithLog(getExtraSQLCommand().getCreateTableOrder(getSourceTableOrderName()));
+    /**
+     * Create source order table.
+     * 
+     * @param sourceTableOrderName source table order name 
+     * @throws SQLException SQL exception
+     */
+    public void createSourceOrderTable(final String sourceTableOrderName) throws SQLException {
+        sourceExecuteWithLog(getExtraSQLCommand().getCreateTableOrder(sourceTableOrderName));
     }
     
-    protected void createSourceTableIndexList(final String schema) throws SQLException {
+    /**
+     * Create source table index list.
+     * 
+     * @param schema schema
+     * @param sourceTableOrderName source table order name
+     * @throws SQLException SQL exception
+     */
+    public void createSourceTableIndexList(final String schema, final String sourceTableOrderName) throws SQLException {
         if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
-            sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.%s ( user_id )", schema, getSourceTableOrderName()));
+            sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.%s ( user_id )", schema, sourceTableOrderName));
         } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
-            sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.%s ( user_id )", schema, getSourceTableOrderName()));
+            sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.%s ( user_id )", schema, sourceTableOrderName));
         }
     }
     
-    protected void createSourceCommentOnList(final String schema) throws SQLException {
-        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.%s.user_id IS 'user id'", schema, getSourceTableOrderName()));
+    /**
+     * Create source comment on list.
+     * 
+     * @param schema schema
+     * @param sourceTableOrderName source table order name
+     * @throws SQLException SQL exception
+     */
+    public void createSourceCommentOnList(final String schema, final String sourceTableOrderName) throws SQLException {
+        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.%s.user_id IS 'user id'", schema, sourceTableOrderName));
     }
     
-    protected void createSourceOrderItemTable() throws SQLException {
+    /**
+     * Create source order item table.
+     * 
+     * @throws SQLException SQL exception
+     */
+    public void createSourceOrderItemTable() throws SQLException {
         sourceExecuteWithLog(extraSQLCommand.getCreateTableOrderItem());
     }
     
-    protected void sourceExecuteWithLog(final String sql) throws SQLException {
+    /**
+     * Source execute with log.
+     * 
+     * @param sql SQL
+     * @throws SQLException SQL exception
+     */
+    public void sourceExecuteWithLog(final String sql) throws SQLException {
         log.info("source execute :{}", sql);
         try (Connection connection = sourceDataSource.getConnection()) {
             connection.createStatement().execute(sql);
         }
     }
     
-    protected void proxyExecuteWithLog(final String sql, final int sleepSeconds) throws SQLException {
+    /**
+     * Proxy execute with log.
+     * 
+     * @param sql SQL
+     * @param sleepSeconds sleep seconds
+     * @throws SQLException SQL exception
+     */
+    public void proxyExecuteWithLog(final String sql, final int sleepSeconds) throws SQLException {
         log.info("proxy execute :{}", sql);
         try (Connection connection = proxyDataSource.getConnection()) {
             connection.createStatement().execute(sql);
@@ -294,7 +375,12 @@ public abstract class PipelineBaseE2EIT {
         ThreadUtil.sleep(Math.max(sleepSeconds, 0), TimeUnit.SECONDS);
     }
     
-    protected void waitJobPrepareSuccess(final String distSQL) {
+    /**
+     * Wait job prepare success.
+     * 
+     * @param distSQL dist SQL
+     */
+    public void waitJobPrepareSuccess(final String distSQL) {
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> jobStatus = queryForListWithLog(distSQL);
             Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
@@ -304,7 +390,13 @@ public abstract class PipelineBaseE2EIT {
         }
     }
     
-    protected List<Map<String, Object>> queryForListWithLog(final String sql) {
+    /**
+     * Query for list with log.
+     * 
+     * @param sql SQL
+     * @return query result
+     */
+    public List<Map<String, Object>> queryForListWithLog(final String sql) {
         int retryNumber = 0;
         while (retryNumber <= 3) {
             try (Connection connection = proxyDataSource.getConnection()) {
@@ -319,7 +411,14 @@ public abstract class PipelineBaseE2EIT {
         throw new RuntimeException("can't get result from proxy");
     }
     
-    protected List<Map<String, Object>> transformResultSetToList(final ResultSet resultSet) throws SQLException {
+    /**
+     * Transform result set to list.
+     * 
+     * @param resultSet result set
+     * @return transformed result
+     * @throws SQLException SQL exception
+     */
+    public List<Map<String, Object>> transformResultSetToList(final ResultSet resultSet) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columns = resultSetMetaData.getColumnCount();
         List<Map<String, Object>> result = new ArrayList<>();
@@ -333,13 +432,25 @@ public abstract class PipelineBaseE2EIT {
         return result;
     }
     
-    protected void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
+    /**
+     * Start increment task.
+     * 
+     * @param baseIncrementTask base increment task
+     */
+    public void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
         increaseTaskThread = new Thread(baseIncrementTask);
         increaseTaskThread.start();
     }
     
+    /**
+     * Wait increment task finished.
+     * 
+     * @param distSQL dist SQL
+     * @return result
+     * @throws InterruptedException interrupted exception
+     */
     // TODO use DAO to query via DistSQL
-    protected List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) throws InterruptedException {
+    public List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) throws InterruptedException {
         if (null != increaseTaskThread) {
             TimeUnit.SECONDS.timedJoin(increaseTaskThread, 30);
         }
@@ -368,7 +479,13 @@ public abstract class PipelineBaseE2EIT {
         return Collections.emptyList();
     }
     
-    protected void assertProxyOrderRecordExist(final String tableName, final Object orderId) {
+    /**
+     * Assert proxy order record exist.
+     * 
+     * @param tableName table name
+     * @param orderId order id
+     */
+    public void assertProxyOrderRecordExist(final String tableName, final Object orderId) {
         String sql;
         if (orderId instanceof String) {
             sql = String.format("SELECT 1 FROM %s WHERE order_id = '%s'", tableName, orderId);
@@ -378,7 +495,12 @@ public abstract class PipelineBaseE2EIT {
         assertProxyOrderRecordExist(sql);
     }
     
-    protected void assertProxyOrderRecordExist(final String sql) {
+    /**
+     * Assert proxy order record exist.
+     * 
+     * @param sql SQL
+     */
+    public void assertProxyOrderRecordExist(final String sql) {
         boolean recordExist = false;
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> result = queryForListWithLog(sql);
@@ -391,23 +513,41 @@ public abstract class PipelineBaseE2EIT {
         assertTrue(recordExist, "The insert record must exist after the stop");
     }
     
-    protected int getTargetTableRecordsCount(final String tableName) {
+    /**
+     * Get target table records count.
+     * 
+     * @param tableName table name
+     * @return target table records count
+     */
+    public int getTargetTableRecordsCount(final String tableName) {
         List<Map<String, Object>> targetList = queryForListWithLog("SELECT COUNT(1) AS count FROM " + tableName);
         assertFalse(targetList.isEmpty());
         return ((Number) targetList.get(0).get("count")).intValue();
     }
     
-    protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) {
+    /**
+     * Assert greater than order table init rows.
+     * 
+     * @param tableInitRows table init rows
+     * @param schema schema
+     */
+    public void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) {
         String tableName = Strings.isNullOrEmpty(schema) ? "t_order" : String.format("%s.t_order", schema);
         int recordsCount = getTargetTableRecordsCount(tableName);
         assertTrue(recordsCount > tableInitRows, "actual count " + recordsCount);
     }
     
+    /**
+     * Generate ShardingSphere data source from proxy.
+     * 
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
     // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
-    protected DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
+    public DataSource generateShardingSphereDataSourceFromProxy() throws SQLException {
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !getYamlRootConfig().getRules().isEmpty());
         YamlRootConfiguration rootConfig = getYamlRootConfig();
-        if (PipelineEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
+        if (PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
             String sourceUrl = String.join(":", storageContainer.getNetworkAliases().get(0), Integer.toString(storageContainer.getExposedPort()));
             String targetUrl = String.join(":", storageContainer.getHost(), Integer.toString(storageContainer.getMappedPort()));
@@ -422,7 +562,11 @@ public abstract class PipelineBaseE2EIT {
     }
     
     private YamlRootConfiguration getYamlRootConfig() {
-        String result = queryForListWithLog("EXPORT DATABASE CONFIGURATION").get(0).get("result").toString();
-        return YamlEngine.unmarshal(result, YamlRootConfiguration.class);
+        return YamlEngine.unmarshal(queryForListWithLog("EXPORT DATABASE CONFIGURATION").get(0).get("result").toString(), YamlRootConfiguration.class);
+    }
+    
+    @Override
+    public void close() {
+        containerComposer.stop();
     }
 }

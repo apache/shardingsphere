@@ -21,11 +21,13 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.MigrationDistSQLCommand;
+import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
+import org.junit.After;
 import org.opengauss.util.PSQLException;
 
 import javax.xml.bind.JAXB;
@@ -44,48 +46,55 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter
 @Slf4j
-public abstract class AbstractMigrationE2EIT extends PipelineBaseE2EIT {
+public abstract class AbstractMigrationE2EIT {
     
     private final MigrationDistSQLCommand migrationDistSQLCommand;
     
+    private final PipelineContainerComposer containerComposer;
+    
     public AbstractMigrationE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
-        migrationDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineBaseE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
+        containerComposer = new PipelineContainerComposer(testParam);
+        migrationDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(AbstractMigrationE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
+    }
+    
+    @After
+    public final void tearDown() {
+        containerComposer.close();
     }
     
     protected void addMigrationSourceResource() throws SQLException {
-        if (PipelineEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
+        if (PipelineEnvTypeEnum.NATIVE == PipelineE2EEnvironment.getInstance().getItEnvType()) {
             try {
-                proxyExecuteWithLog("UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_0", 2);
+                containerComposer.proxyExecuteWithLog("UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_0", 2);
             } catch (final SQLException ex) {
                 log.warn("Drop sharding_db failed, maybe it's not exist. error msg={}", ex.getMessage());
             }
         }
-        String addSourceResource = migrationDistSQLCommand.getRegisterMigrationSourceStorageUnitTemplate().replace("${user}", getUsername())
-                .replace("${password}", getPassword())
-                .replace("${ds0}", appendExtraParam(getActualJdbcUrlTemplate(DS_0, true)));
-        addResource(addSourceResource);
+        String addSourceResource = migrationDistSQLCommand.getRegisterMigrationSourceStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
+                .replace("${password}", containerComposer.getPassword())
+                .replace("${ds0}", containerComposer.appendExtraParam(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_0, true)));
+        containerComposer.addResource(addSourceResource);
     }
     
     protected void addMigrationTargetResource() throws SQLException {
-        String addTargetResource = migrationDistSQLCommand.getRegisterMigrationTargetStorageUnitTemplate().replace("${user}", getUsername())
-                .replace("${password}", getPassword())
-                .replace("${ds2}", appendExtraParam(getActualJdbcUrlTemplate(DS_2, true)))
-                .replace("${ds3}", appendExtraParam(getActualJdbcUrlTemplate(DS_3, true)))
-                .replace("${ds4}", appendExtraParam(getActualJdbcUrlTemplate(DS_4, true)));
-        addResource(addTargetResource);
-        List<Map<String, Object>> resources = queryForListWithLog("SHOW STORAGE UNITS from sharding_db");
+        String addTargetResource = migrationDistSQLCommand.getRegisterMigrationTargetStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
+                .replace("${password}", containerComposer.getPassword())
+                .replace("${ds2}", containerComposer.appendExtraParam(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_2, true)))
+                .replace("${ds3}", containerComposer.appendExtraParam(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_3, true)))
+                .replace("${ds4}", containerComposer.appendExtraParam(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, true)));
+        containerComposer.addResource(addTargetResource);
+        List<Map<String, Object>> resources = containerComposer.queryForListWithLog("SHOW STORAGE UNITS from sharding_db");
         assertThat(resources.size(), is(3));
     }
     
     protected void createSourceSchema(final String schemaName) throws SQLException {
-        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
-            sourceExecuteWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
+        if (DatabaseTypeUtil.isPostgreSQL(containerComposer.getDatabaseType())) {
+            containerComposer.sourceExecuteWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
             return;
         }
-        if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+        if (DatabaseTypeUtil.isOpenGauss(containerComposer.getDatabaseType())) {
             try {
-                sourceExecuteWithLog(String.format("CREATE SCHEMA %s", schemaName));
+                containerComposer.sourceExecuteWithLog(String.format("CREATE SCHEMA %s", schemaName));
             } catch (final SQLException ex) {
                 // only used for native mode.
                 if (ex instanceof PSQLException && "42P06".equals(ex.getSQLState())) {
@@ -98,57 +107,57 @@ public abstract class AbstractMigrationE2EIT extends PipelineBaseE2EIT {
     }
     
     protected void createTargetOrderTableRule() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableRule(), 2);
+        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableRule(), 2);
     }
     
     protected void createTargetOrderTableEncryptRule() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableEncryptRule(), 2);
+        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableEncryptRule(), 2);
     }
     
     protected void createTargetOrderItemTableRule() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 2);
+        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 2);
     }
     
     protected void startMigration(final String sourceTableName, final String targetTableName) throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTable(sourceTableName, targetTableName), 5);
+        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTable(sourceTableName, targetTableName), 5);
     }
     
     protected void startMigrationWithSchema(final String sourceTableName, final String targetTableName) throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
+        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
     }
     
     protected void addMigrationProcessConfig() throws SQLException {
-        proxyExecuteWithLog(migrationDistSQLCommand.getAlterMigrationRule(), 0);
+        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getAlterMigrationRule(), 0);
     }
     
     protected void stopMigrationByJobId(final String jobId) throws SQLException {
-        proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 1);
+        containerComposer.proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 1);
     }
     
     protected void startMigrationByJobId(final String jobId) throws SQLException {
-        proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 1);
+        containerComposer.proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 1);
     }
     
     protected void commitMigrationByJobId(final String jobId) throws SQLException {
-        proxyExecuteWithLog(String.format("COMMIT MIGRATION '%s'", jobId), 1);
+        containerComposer.proxyExecuteWithLog(String.format("COMMIT MIGRATION '%s'", jobId), 1);
     }
     
     protected List<String> listJobId() {
-        List<Map<String, Object>> jobList = queryForListWithLog("SHOW MIGRATION LIST");
+        List<Map<String, Object>> jobList = containerComposer.queryForListWithLog("SHOW MIGRATION LIST");
         return jobList.stream().map(a -> a.get("id").toString()).collect(Collectors.toList());
     }
     
     protected String getJobIdByTableName(final String tableName) {
-        List<Map<String, Object>> jobList = queryForListWithLog("SHOW MIGRATION LIST");
+        List<Map<String, Object>> jobList = containerComposer.queryForListWithLog("SHOW MIGRATION LIST");
         return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find " + tableName + " table")).get("id").toString();
     }
     
     protected void assertCheckMigrationSuccess(final String jobId, final String algorithmType) throws SQLException {
-        proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType), 0);
+        containerComposer.proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType), 0);
         // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
         List<Map<String, Object>> resultList = Collections.emptyList();
         for (int i = 0; i < 10; i++) {
-            resultList = queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
+            resultList = containerComposer.queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
             if (resultList.isEmpty()) {
                 ThreadUtil.sleep(3, TimeUnit.SECONDS);
                 continue;
