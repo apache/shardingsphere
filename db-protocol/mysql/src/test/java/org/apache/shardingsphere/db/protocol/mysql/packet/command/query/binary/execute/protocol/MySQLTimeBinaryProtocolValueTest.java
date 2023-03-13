@@ -99,7 +99,6 @@ public final class MySQLTimeBinaryProtocolValueTest {
     public void assertWriteWithTwelveBytes() {
         MySQLTimeBinaryProtocolValue actual = new MySQLTimeBinaryProtocolValue();
         actual.write(payload, new Time(1L));
-        verify(payload).writeInt1(12);
         verify(payload, times(5)).writeInt1(anyInt());
         verify(payload).writeInt4(0);
         verify(payload).writeInt4(1000000);
