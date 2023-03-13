@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class HBaseRegionReloadConverter implements HBaseDatabaseConverter {
+public final class HBaseRegionReloadConverter implements HBaseDatabaseConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;
     

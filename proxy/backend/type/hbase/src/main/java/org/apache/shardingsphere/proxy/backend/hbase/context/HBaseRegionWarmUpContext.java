@@ -75,9 +75,10 @@ public final class HBaseRegionWarmUpContext {
     }
     
     /**
-     * load one table region info.
-     * @param tableName tableName
-     * @param connection hbase connection
+     * Load one table region info.
+     *
+     * @param tableName table name
+     * @param connection HBase connection
      */
     public void loadRegionInfo(final String tableName, final Connection connection) {
         HBaseRegionWarmUpContext.getInstance().addExecuteCount();
@@ -132,7 +133,7 @@ public final class HBaseRegionWarmUpContext {
     /**
      * Sync execute.
      * 
-     * @param clusterName clusterName
+     * @param clusterName cluster name
      */
     public void syncExecuteWarmUp(final String clusterName) {
         while (executeCount.get() < tableCount.get()) {

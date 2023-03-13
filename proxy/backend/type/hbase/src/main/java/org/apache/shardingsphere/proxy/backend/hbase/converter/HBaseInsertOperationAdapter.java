@@ -26,7 +26,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @Getter
-public class HBaseInsertOperationAdapter extends Operation {
+public final class HBaseInsertOperationAdapter extends Operation {
     
     private final List<Put> puts;
     

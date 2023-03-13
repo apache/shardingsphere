@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class HBaseDatabaseInsertConverter implements HBaseDatabaseConverter {
+public final class HBaseDatabaseInsertConverter implements HBaseDatabaseConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;
     

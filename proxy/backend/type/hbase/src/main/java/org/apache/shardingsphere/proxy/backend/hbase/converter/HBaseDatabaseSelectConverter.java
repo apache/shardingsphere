@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Slf4j
-public class HBaseDatabaseSelectConverter extends HBaseDatabaseRowKeysConverterAdapter implements HBaseDatabaseConverter {
+public final class HBaseDatabaseSelectConverter extends HBaseDatabaseRowKeysConverterAdapter implements HBaseDatabaseConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;
     

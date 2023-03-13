@@ -26,7 +26,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @Getter
-public class HBaseUpdateOperationAdapter extends Operation {
+public final class HBaseUpdateOperationAdapter extends Operation {
     
     private final String tableName;
     

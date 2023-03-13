@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class HBaseDatabaseUpdateConverter extends HBaseDatabaseRowKeysConverterAdapter implements HBaseDatabaseConverter {
+public final class HBaseDatabaseUpdateConverter extends HBaseDatabaseRowKeysConverterAdapter implements HBaseDatabaseConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;
     
