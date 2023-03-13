@@ -81,7 +81,7 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
                     new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap()).fillData();
                     new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.EXPECTED), getExpectedDataSourceMap()).fillData();
                     FILLED_SUITES.add(getItKey());
-                    sleep(500);
+                    sleep(1000);
                 }
             }
         }
