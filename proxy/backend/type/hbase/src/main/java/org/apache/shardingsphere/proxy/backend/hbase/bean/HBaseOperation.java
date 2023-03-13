@@ -28,5 +28,4 @@ public class HBaseOperation {
     private final String tableName;
     
     private final Operation operation;
-    
 }
