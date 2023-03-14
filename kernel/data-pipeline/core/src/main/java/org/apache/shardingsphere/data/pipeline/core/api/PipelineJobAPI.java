@@ -27,9 +27,9 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
@@ -116,11 +116,10 @@ public interface PipelineJobAPI extends TypedSPI {
     /**
      * Get pipeline job info.
      *
-     * @param instanceType instance type
-     * @param databaseName dabase name
+     * @param contextKey context key
      * @return job info list
      */
-    List<? extends PipelineJobInfo> list(InstanceType instanceType, String databaseName);
+    List<? extends PipelineJobInfo> list(PipelineContextKey contextKey);
     
     /**
      * Persist job item progress.

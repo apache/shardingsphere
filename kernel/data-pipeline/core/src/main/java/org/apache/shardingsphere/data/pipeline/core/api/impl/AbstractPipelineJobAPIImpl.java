@@ -36,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDa
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
@@ -64,8 +63,8 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     protected abstract String marshalJobIdLeftPart(PipelineJobId pipelineJobId);
     
     @Override
-    public List<? extends PipelineJobInfo> list(final InstanceType instanceType, final String databaseName) {
-        return getJobBriefInfos(new PipelineContextKey(instanceType, databaseName)).map(each -> getJobInfo(each.getJobName())).collect(Collectors.toList());
+    public List<? extends PipelineJobInfo> list(final PipelineContextKey contextKey) {
+        return getJobBriefInfos(contextKey).map(each -> getJobInfo(each.getJobName())).collect(Collectors.toList());
     }
     
     private Stream<JobBriefInfo> getJobBriefInfos(final PipelineContextKey contextKey) {

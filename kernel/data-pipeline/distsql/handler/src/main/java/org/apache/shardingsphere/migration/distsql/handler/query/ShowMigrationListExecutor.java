@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -37,7 +38,8 @@ public final class ShowMigrationListExecutor implements QueryableRALExecutor<Sho
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationListStatement sqlStatement) {
-        return jobAPI.list(InstanceType.PROXY, null).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
+        return jobAPI.list(new PipelineContextKey(InstanceType.PROXY, null)).stream()
+                .map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
                 ((TableBasedPipelineJobInfo) each).getTable(), each.getJobMetaData().getJobItemCount(),
                 each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
                 each.getJobMetaData().getCreateTime(), each.getJobMetaData().getStopTime())).collect(Collectors.toList());

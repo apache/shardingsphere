@@ -20,6 +20,7 @@ package org.apache.shardingsphere.cdc.distsql.handler.query;
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingListStatement;
 import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -38,7 +39,8 @@ public final class ShowStreamingListExecutor implements QueryableRALExecutor<Sho
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStreamingListStatement sqlStatement) {
-        return jobAPI.list(InstanceType.PROXY, null).stream().map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
+        return jobAPI.list(new PipelineContextKey(InstanceType.PROXY, null)).stream()
+                .map(each -> new LocalDataQueryResultRow(each.getJobMetaData().getJobId(),
                 ((TableBasedPipelineJobInfo) each).getDatabaseName(), ((TableBasedPipelineJobInfo) each).getTable(),
                 each.getJobMetaData().getJobItemCount(), each.getJobMetaData().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString(),
                 each.getJobMetaData().getCreateTime(), Optional.ofNullable(each.getJobMetaData().getStopTime()).orElse(""))).collect(Collectors.toList());
