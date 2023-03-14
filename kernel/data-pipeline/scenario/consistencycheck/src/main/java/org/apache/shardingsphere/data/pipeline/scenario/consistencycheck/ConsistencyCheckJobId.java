@@ -19,33 +19,32 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.job.BasePipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 /**
  * Consistency check job id.
  */
 @Getter
 @ToString(callSuper = true)
-public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
-    
-    public static final String CURRENT_VERSION = "01";
+public final class ConsistencyCheckJobId extends BasePipelineJobId {
     
     private final String parentJobId;
     
     private final int sequence;
     
-    public ConsistencyCheckJobId(final String parentJobId) {
-        this(parentJobId, ConsistencyCheckSequence.MIN_SEQUENCE);
+    public ConsistencyCheckJobId(final String parentJobId, final InstanceType instanceType, final String databaseName) {
+        this(parentJobId, ConsistencyCheckSequence.MIN_SEQUENCE, instanceType, databaseName);
     }
     
-    public ConsistencyCheckJobId(final String parentJobId, final String latestCheckJobId) {
-        this(parentJobId, ConsistencyCheckSequence.getNextSequence(parseSequence(latestCheckJobId)));
+    public ConsistencyCheckJobId(final String parentJobId, final String latestCheckJobId, final InstanceType instanceType, final String databaseName) {
+        this(parentJobId, ConsistencyCheckSequence.getNextSequence(parseSequence(latestCheckJobId)), instanceType, databaseName);
     }
     
-    public ConsistencyCheckJobId(final String parentJobId, final int sequence) {
-        super(new ConsistencyCheckJobType(), CURRENT_VERSION);
+    public ConsistencyCheckJobId(final String parentJobId, final int sequence, final InstanceType instanceType, final String databaseName) {
+        super(new ConsistencyCheckJobType(), instanceType, databaseName);
         this.parentJobId = parentJobId;
         this.sequence = sequence > ConsistencyCheckSequence.MAX_SEQUENCE ? ConsistencyCheckSequence.MIN_SEQUENCE : sequence;
     }

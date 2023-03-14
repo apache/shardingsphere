@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.job;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.job.BasePipelineJobId;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Getter
 @ToString(callSuper = true)
-public final class CDCJobId extends AbstractPipelineJobId {
+public final class CDCJobId extends BasePipelineJobId {
     
     public static final String CURRENT_VERSION = "01";
     

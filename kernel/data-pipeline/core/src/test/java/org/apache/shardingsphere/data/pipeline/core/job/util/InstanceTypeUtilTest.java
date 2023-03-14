@@ -15,30 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration;
+package org.apache.shardingsphere.data.pipeline.core.job.util;
 
-import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.job.BasePipelineJobId;
-
-import java.util.List;
-
-/**
- * Migration job id.
- */
-@Getter
-@ToString(callSuper = true)
-public final class MigrationJobId extends BasePipelineJobId {
+public final class InstanceTypeUtilTest {
     
-    public static final String CURRENT_VERSION = "01";
-    
-    private final List<String> jobShardingDataNodes;
-    
-    private final String targetDatabaseName;
-    
-    public MigrationJobId(final List<String> jobShardingDataNodes, final String targetDatabaseName) {
-        super(new MigrationJobType(), CURRENT_VERSION);
-        this.jobShardingDataNodes = jobShardingDataNodes;
-        this.targetDatabaseName = targetDatabaseName;
-    }
+    // TODO now InstanceTypeUtilTest
 }
