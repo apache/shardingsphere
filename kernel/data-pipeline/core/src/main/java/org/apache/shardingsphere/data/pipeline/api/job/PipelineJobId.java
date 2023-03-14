@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.job;
 
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 /**
  * Pipeline job id.
@@ -37,4 +38,18 @@ public interface PipelineJobId {
      * @return format version
      */
     String getFormatVersion();
+    
+    /**
+     * Get instance type.
+     *
+     * @return instance type
+     */
+    InstanceType getInstanceType();
+    
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    String getDatabaseName();
 }

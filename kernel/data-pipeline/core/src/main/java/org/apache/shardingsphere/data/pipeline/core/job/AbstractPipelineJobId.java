@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 /**
  * Abstract pipeline job id.
@@ -32,9 +33,15 @@ public abstract class AbstractPipelineJobId implements PipelineJobId {
     
     private final String formatVersion;
     
-    public AbstractPipelineJobId(final JobType jobType, final String formatVersion) {
+    private final InstanceType instanceType;
+    
+    private final String databaseName;
+    
+    public AbstractPipelineJobId(final JobType jobType, final String formatVersion, final InstanceType instanceType, final String databaseName) {
         this.jobType = jobType;
         Preconditions.checkArgument(2 == formatVersion.length(), "formatVersion length is not 2");
         this.formatVersion = formatVersion;
+        this.instanceType = instanceType;
+        this.databaseName = databaseName;
     }
 }
