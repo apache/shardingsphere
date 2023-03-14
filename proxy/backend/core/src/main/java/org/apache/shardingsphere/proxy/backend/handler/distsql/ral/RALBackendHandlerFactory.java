@@ -44,7 +44,7 @@ public final class RALBackendHandlerFactory {
             return new QueryableRALBackendHandler<>((QueryableRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof UpdatableGlobalRuleRALStatement) {
-            new UpdatableGlobalRuleRALBackendHandler((UpdatableGlobalRuleRALStatement) sqlStatement);
+            return new UpdatableGlobalRuleRALBackendHandler((UpdatableGlobalRuleRALStatement) sqlStatement);
         }
         return new UpdatableRALBackendHandler<>((UpdatableRALStatement) sqlStatement, connectionSession);
     }

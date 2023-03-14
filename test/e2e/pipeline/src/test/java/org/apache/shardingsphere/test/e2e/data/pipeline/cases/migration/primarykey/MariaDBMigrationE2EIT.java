@@ -22,8 +22,9 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobTy
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
+import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
@@ -46,17 +47,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
     
+    private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
+    
     public MariaDBMigrationE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
+        super(testParam, new MigrationJobType());
     }
     
     @Parameters(name = "{0}")
     public static Collection<PipelineTestParameter> getTestParameters() {
         Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
+        if (PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.NONE) {
             return result;
         }
-        List<String> versions = PipelineBaseE2EIT.ENV.listStorageContainerImages(new MySQLDatabaseType());
+        List<String> versions = PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType());
         if (versions.isEmpty()) {
             return result;
         }
@@ -65,34 +68,28 @@ public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
         return result;
     }
     
-    @Override
-    protected String getSourceTableOrderName() {
-        return "t_order";
-    }
-    
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
-        initEnvironment(getDatabaseType(), new MigrationJobType());
         String sqlPattern = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-        sourceExecuteWithLog(String.format(sqlPattern, getSourceTableOrderName()));
-        try (Connection connection = getSourceDataSource().getConnection()) {
+        getContainerComposer().sourceExecuteWithLog(String.format(sqlPattern, SOURCE_TABLE_ORDER_NAME));
+        try (Connection connection = getContainerComposer().getSourceDataSource().getConnection()) {
             KeyGenerateAlgorithm generateAlgorithm = new UUIDKeyGenerateAlgorithm();
-            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, generateAlgorithm, getSourceTableOrderName(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
+            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, generateAlgorithm, SOURCE_TABLE_ORDER_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         }
         addMigrationProcessConfig();
         addMigrationSourceResource();
         addMigrationTargetResource();
         createTargetOrderTableRule();
-        startMigration(getSourceTableOrderName(), getTargetTableOrderName());
+        startMigration(SOURCE_TABLE_ORDER_NAME, getContainerComposer().getTargetTableOrderName());
         String jobId = listJobId().get(0);
-        waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        sourceExecuteWithLog("INSERT INTO t_order (order_id, user_id, status) VALUES ('a1', 1, 'OK')");
-        assertProxyOrderRecordExist("t_order", "a1");
-        waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        getContainerComposer().sourceExecuteWithLog("INSERT INTO t_order (order_id, user_id, status) VALUES ('a1', 1, 'OK')");
+        getContainerComposer().assertProxyOrderRecordExist("t_order", "a1");
+        getContainerComposer().waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "CRC32_MATCH");
         commitMigrationByJobId(jobId);
-        proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
-        assertThat(getTargetTableRecordsCount(getSourceTableOrderName()), is(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT + 1));
+        getContainerComposer().proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
+        assertThat(getContainerComposer().getTargetTableRecordsCount(SOURCE_TABLE_ORDER_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
         List<String> lastJobIds = listJobId();
         assertTrue(lastJobIds.isEmpty());
     }
