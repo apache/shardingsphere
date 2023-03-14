@@ -19,10 +19,10 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.BasePipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 /**
  * Consistency check job id.
@@ -35,16 +35,16 @@ public final class ConsistencyCheckJobId extends BasePipelineJobId {
     
     private final int sequence;
     
-    public ConsistencyCheckJobId(final String parentJobId, final InstanceType instanceType, final String databaseName) {
-        this(parentJobId, ConsistencyCheckSequence.MIN_SEQUENCE, instanceType, databaseName);
+    public ConsistencyCheckJobId(final String parentJobId, final PipelineContextKey contextKey) {
+        this(parentJobId, ConsistencyCheckSequence.MIN_SEQUENCE, contextKey);
     }
     
-    public ConsistencyCheckJobId(final String parentJobId, final String latestCheckJobId, final InstanceType instanceType, final String databaseName) {
-        this(parentJobId, ConsistencyCheckSequence.getNextSequence(parseSequence(latestCheckJobId)), instanceType, databaseName);
+    public ConsistencyCheckJobId(final String parentJobId, final String latestCheckJobId, final PipelineContextKey contextKey) {
+        this(parentJobId, ConsistencyCheckSequence.getNextSequence(parseSequence(latestCheckJobId)), contextKey);
     }
     
-    public ConsistencyCheckJobId(final String parentJobId, final int sequence, final InstanceType instanceType, final String databaseName) {
-        super(new ConsistencyCheckJobType(), instanceType, databaseName);
+    public ConsistencyCheckJobId(final String parentJobId, final int sequence, final PipelineContextKey contextKey) {
+        super(new ConsistencyCheckJobType(), contextKey);
         this.parentJobId = parentJobId;
         this.sequence = sequence > ConsistencyCheckSequence.MAX_SEQUENCE ? ConsistencyCheckSequence.MIN_SEQUENCE : sequence;
     }
