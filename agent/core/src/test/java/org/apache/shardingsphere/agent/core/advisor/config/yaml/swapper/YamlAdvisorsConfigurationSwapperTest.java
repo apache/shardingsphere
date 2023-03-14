@@ -24,7 +24,9 @@ import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvis
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlAdviceFixture;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlTargetObjectFixture;
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,8 +39,9 @@ public final class YamlAdvisorsConfigurationSwapperTest {
     
     @Test
     public void assertSwapToObject() {
+        Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
         Collection<AdvisorConfiguration> actual = YamlAdvisorsConfigurationSwapper.swap(
-                new Yaml().loadAs(getClass().getResourceAsStream("/META-INF/conf/advisors.yaml"), YamlAdvisorsConfiguration.class), "FIXTURE");
+                yaml.loadAs(getClass().getResourceAsStream("/META-INF/conf/advisors.yaml"), YamlAdvisorsConfiguration.class), "FIXTURE");
         assertThat(actual.size(), is(1));
         assertAdvisorConfiguration(actual.iterator().next());
     }

@@ -22,7 +22,9 @@ import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentC
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginCategoryConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginConfiguration;
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -82,7 +84,8 @@ public final class YamlPluginsConfigurationSwapperTest {
     
     @Test
     public void assertSwapWithFile() throws IOException {
-        YamlAgentConfiguration yamlAgentConfig = new Yaml().loadAs(new InputStreamReader(new FileInputStream(new File(getResourceURL(), CONFIG_PATH))), YamlAgentConfiguration.class);
+        Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
+        YamlAgentConfiguration yamlAgentConfig = yaml.loadAs(new InputStreamReader(new FileInputStream(new File(getResourceURL(), CONFIG_PATH))), YamlAgentConfiguration.class);
         Map<String, PluginConfiguration> actual = YamlPluginsConfigurationSwapper.swap(yamlAgentConfig);
         assertThat(actual.size(), is(3));
         assertLogFixturePluginConfiguration(actual.get("log_fixture"));
