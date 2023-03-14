@@ -36,16 +36,17 @@ public final class HBaseRegionReloadConverter implements HBaseDatabaseConverter 
     public HBaseRegionReloadConverter(final SQLStatementContext<?> sqlStatementContext) {
         this.sqlStatementContext = sqlStatementContext;
     }
-
+    
     private Operation getOperation() {
         return new Operation() {
+            
             @Override
             public Map<String, Object> getFingerprint() {
                 return new TreeMap<>();
             }
-
+            
             @Override
-            public Map<String, Object> toMap(int i) {
+            public Map<String, Object> toMap(final int i) {
                 return new TreeMap<>();
             }
         };
