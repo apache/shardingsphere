@@ -161,7 +161,12 @@ public final class PipelineAPIFactory {
             CoordinatorRegistryCenterInitializer registryCenterInitializer = new CoordinatorRegistryCenterInitializer();
             // TODO now get modeConfig
             ModeConfiguration modeConfig = PipelineContextManager.getContext(null).getModeConfig();
-            return registryCenterInitializer.createRegistryCenter(modeConfig, PipelineMetaDataNode.getElasticJobNamespace());
+            String clusterType = modeConfig.getRepository().getType();
+            if ("ZooKeeper".equals(clusterType)) {
+                return registryCenterInitializer.createZookeeperRegistryCenter(modeConfig, PipelineMetaDataNode.getElasticJobNamespace());
+            } else {
+                throw new IllegalArgumentException("Unsupported cluster type: " + clusterType);
+            }
         }
     }
 }
