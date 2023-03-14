@@ -50,9 +50,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
-    private static final String SOURCE_TABLE_ORDER_NAME = "t_order_copy";
+    private static final String SOURCE_TABLE_NAME = "t_order_copy";
     
-    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    private static final String TARGET_TABLE_NAME = "t_order";
     
     public PostgreSQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
@@ -77,25 +77,25 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
         addMigrationProcessConfig();
         createSourceSchema(PipelineContainerComposer.SCHEMA_NAME);
-        getContainerComposer().createSourceOrderTable(SOURCE_TABLE_ORDER_NAME);
+        getContainerComposer().createSourceOrderTable(SOURCE_TABLE_NAME);
         getContainerComposer().createSourceOrderItemTable();
-        getContainerComposer().createSourceTableIndexList(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_ORDER_NAME);
-        getContainerComposer().createSourceCommentOnList(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_ORDER_NAME);
+        getContainerComposer().createSourceTableIndexList(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
+        getContainerComposer().createSourceCommentOnList(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
         addMigrationSourceResource();
         addMigrationTargetResource();
         createTargetOrderTableRule();
         createTargetOrderItemTableRule();
         Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(getContainerComposer().getDatabaseType(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         log.info("init data begin: {}", LocalDateTime.now());
-        DataSourceExecuteUtil.execute(getContainerComposer().getSourceDataSource(), getContainerComposer().getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_ORDER_NAME), dataPair.getLeft());
+        DataSourceExecuteUtil.execute(getContainerComposer().getSourceDataSource(), getContainerComposer().getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
         DataSourceExecuteUtil.execute(getContainerComposer().getSourceDataSource(), getContainerComposer().getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
-        startMigrationWithSchema(SOURCE_TABLE_ORDER_NAME, "t_order");
+        startMigrationWithSchema(SOURCE_TABLE_NAME, "t_order");
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> listJobId().size() > 0);
-        String jobId = getJobIdByTableName("ds_0.test." + SOURCE_TABLE_ORDER_NAME);
+        String jobId = getJobIdByTableName("ds_0.test." + SOURCE_TABLE_NAME);
         getContainerComposer().waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         getContainerComposer().startIncrementTask(new E2EIncrementalTask(
-                getContainerComposer().getSourceDataSource(), String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_ORDER_NAME),
+                getContainerComposer().getSourceDataSource(), String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME),
                 new SnowflakeKeyGenerateAlgorithm(), getContainerComposer().getDatabaseType(), 20));
         checkOrderMigration(jobId);
         checkOrderItemMigration();
@@ -113,11 +113,11 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         stopMigrationByJobId(jobId);
         long recordId = new SnowflakeKeyGenerateAlgorithm().generateKey();
         getContainerComposer().sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')",
-                String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_ORDER_NAME), recordId, 1, "afterStop"));
+                String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME), recordId, 1, "afterStop"));
         startMigrationByJobId(jobId);
         // must refresh firstly, otherwise proxy can't get schema and table info
         getContainerComposer().proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
-        getContainerComposer().assertProxyOrderRecordExist(String.join(".", PipelineContainerComposer.SCHEMA_NAME, TARGET_TABLE_ORDER_NAME), recordId);
+        getContainerComposer().assertProxyOrderRecordExist(String.join(".", PipelineContainerComposer.SCHEMA_NAME, TARGET_TABLE_NAME), recordId);
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }
     

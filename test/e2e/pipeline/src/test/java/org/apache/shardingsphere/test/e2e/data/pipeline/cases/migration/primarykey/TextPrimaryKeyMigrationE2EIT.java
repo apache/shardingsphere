@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
-    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    private static final String TARGET_TABLE_NAME = "t_order";
     
     public TextPrimaryKeyMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
@@ -73,18 +73,18 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @Test
     public void assertTextPrimaryMigrationSuccess() throws SQLException, InterruptedException {
-        getContainerComposer().createSourceOrderTable(getSourceTableOrderName());
+        getContainerComposer().createSourceOrderTable(getSourceTableName());
         try (Connection connection = getContainerComposer().getSourceDataSource().getConnection()) {
             UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, getSourceTableOrderName(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
+            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, getSourceTableName(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         }
         addMigrationProcessConfig();
         addMigrationSourceResource();
         addMigrationTargetResource();
         createTargetOrderTableRule();
-        startMigration(getSourceTableOrderName(), TARGET_TABLE_ORDER_NAME);
+        startMigration(getSourceTableName(), TARGET_TABLE_NAME);
         String jobId = listJobId().get(0);
-        getContainerComposer().sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableOrderName(), "1000000000", 1, "afterStop"));
+        getContainerComposer().sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableName(), "1000000000", 1, "afterStop"));
         getContainerComposer().waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         commitMigrationByJobId(jobId);
@@ -92,7 +92,7 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
         assertTrue(lastJobIds.isEmpty());
     }
     
-    private String getSourceTableOrderName() {
+    private String getSourceTableName() {
         return DatabaseTypeUtil.isMySQL(getContainerComposer().getDatabaseType()) ? "T_ORDER" : "t_order";
     }
 }

@@ -89,7 +89,7 @@ public final class CDCE2EIT {
             + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake'))"
             + ")", PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1);
     
-    private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
+    private static final String SOURCE_TABLE_NAME = "t_order";
     
     private final PipelineContainerComposer containerComposer;
     
@@ -135,7 +135,7 @@ public final class CDCE2EIT {
         DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
         Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), 20);
         log.info("init data begin: {}", LocalDateTime.now());
-        DataSourceExecuteUtil.execute(jdbcDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_ORDER_NAME), dataPair.getLeft());
+        DataSourceExecuteUtil.execute(jdbcDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
         log.info("init data end: {}", LocalDateTime.now());
         try (
                 Connection connection = DriverManager.getConnection(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
@@ -146,7 +146,7 @@ public final class CDCE2EIT {
         Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW STREAMING LIST").isEmpty());
         String jobId = containerComposer.queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
         containerComposer.waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
-        containerComposer.startIncrementTask(new E2EIncrementalTask(jdbcDataSource, SOURCE_TABLE_ORDER_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20));
+        containerComposer.startIncrementTask(new E2EIncrementalTask(jdbcDataSource, SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20));
         containerComposer.getIncreaseTaskThread().join(10000L);
         List<Map<String, Object>> actualProxyList;
         try (Connection connection = jdbcDataSource.getConnection()) {
@@ -155,8 +155,8 @@ public final class CDCE2EIT {
         }
         Awaitility.await().atMost(20, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> listOrderRecords(getOrderTableNameWithSchema()).size() == actualProxyList.size());
         SchemaTableName schemaTableName = containerComposer.getDatabaseType().isSchemaAvailable()
-                ? new SchemaTableName(new SchemaName(PipelineContainerComposer.SCHEMA_NAME), new TableName(SOURCE_TABLE_ORDER_NAME))
-                : new SchemaTableName(new SchemaName(null), new TableName(SOURCE_TABLE_ORDER_NAME));
+                ? new SchemaTableName(new SchemaName(PipelineContainerComposer.SCHEMA_NAME), new TableName(SOURCE_TABLE_NAME))
+                : new SchemaTableName(new SchemaName(null), new TableName(SOURCE_TABLE_NAME));
         PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(
                 containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
                 containerComposer.getUsername(), containerComposer.getPassword()), containerComposer.getDatabaseType());
@@ -177,7 +177,7 @@ public final class CDCE2EIT {
     
     private void initSchemaAndTable(final Connection connection, final int sleepSeconds) throws SQLException {
         containerComposer.createSchema(connection, sleepSeconds);
-        String sql = containerComposer.getExtraSQLCommand().getCreateTableOrder(SOURCE_TABLE_ORDER_NAME);
+        String sql = containerComposer.getExtraSQLCommand().getCreateTableOrder(SOURCE_TABLE_NAME);
         log.info("create table sql: {}", sql);
         connection.createStatement().execute(sql);
         if (sleepSeconds > 0) {
@@ -197,7 +197,7 @@ public final class CDCE2EIT {
         // TODO add full=false test case later
         parameter.setFull(true);
         String schema = containerComposer.getDatabaseType().isSchemaAvailable() ? "test" : "";
-        parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable(SOURCE_TABLE_ORDER_NAME).setSchema(schema).build()));
+        parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable(SOURCE_TABLE_NAME).setSchema(schema).build()));
         parameter.setDatabaseType(containerComposer.getDatabaseType().getType());
         CompletableFuture.runAsync(() -> new CDCClient(parameter).start(), executor).whenComplete((unused, throwable) -> {
             if (null != throwable) {
@@ -216,6 +216,6 @@ public final class CDCE2EIT {
     }
     
     private String getOrderTableNameWithSchema() {
-        return containerComposer.getDatabaseType().isSchemaAvailable() ? String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_ORDER_NAME) : SOURCE_TABLE_ORDER_NAME;
+        return containerComposer.getDatabaseType().isSchemaAvailable() ? String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
     }
 }
