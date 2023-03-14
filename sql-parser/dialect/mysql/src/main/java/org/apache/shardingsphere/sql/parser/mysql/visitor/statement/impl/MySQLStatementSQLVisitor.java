@@ -448,6 +448,16 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
             return createCompareSegment(ctx);
         }
+        if (null != ctx.MEMBER()) {
+            int startIndex = ctx.MEMBER().getSymbol().getStopIndex() + 5;
+            int endIndex = ctx.stop.getStopIndex() - 1;
+            String rightText = ctx.start.getInputStream().getText(new Interval(startIndex, endIndex));
+            ExpressionSegment right = new ExpressionProjectionSegment(startIndex, endIndex, rightText);
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
+            String operator = "MEMBER OF";
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+        }
         if (null != ctx.assignmentOperator()) {
             return createAssignmentSegment(ctx);
         }
