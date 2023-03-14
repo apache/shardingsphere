@@ -54,6 +54,8 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
     private static final String SOURCE_TABLE_ORDER_NAME = "t_order_copy";
     
+    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    
     public MySQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
     }
@@ -86,7 +88,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         DataSourceExecuteUtil.execute(getContainerComposer().getSourceDataSource(), getContainerComposer().getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_ORDER_NAME), dataPair.getLeft());
         DataSourceExecuteUtil.execute(getContainerComposer().getSourceDataSource(), getContainerComposer().getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
-        startMigration(SOURCE_TABLE_ORDER_NAME, getContainerComposer().getTargetTableOrderName());
+        startMigration(SOURCE_TABLE_ORDER_NAME, TARGET_TABLE_ORDER_NAME);
         startMigration("t_order_item", "t_order_item");
         String orderJobId = getJobIdByTableName("ds_0." + SOURCE_TABLE_ORDER_NAME);
         getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", orderJobId));

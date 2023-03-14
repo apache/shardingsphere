@@ -47,6 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
+    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    
     public TextPrimaryKeyMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
     }
@@ -80,7 +82,7 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
         addMigrationSourceResource();
         addMigrationTargetResource();
         createTargetOrderTableRule();
-        startMigration(getSourceTableOrderName(), getContainerComposer().getTargetTableOrderName());
+        startMigration(getSourceTableOrderName(), TARGET_TABLE_ORDER_NAME);
         String jobId = listJobId().get(0);
         getContainerComposer().sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableOrderName(), "1000000000", 1, "afterStop"));
         getContainerComposer().waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
