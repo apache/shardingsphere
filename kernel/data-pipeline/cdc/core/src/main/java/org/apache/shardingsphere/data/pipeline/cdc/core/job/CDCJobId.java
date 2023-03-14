@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.job;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.BasePipelineJobId;
 
 import java.util.List;
@@ -31,17 +32,12 @@ import java.util.List;
 @ToString(callSuper = true)
 public final class CDCJobId extends BasePipelineJobId {
     
-    public static final String CURRENT_VERSION = "01";
-    
-    private final String databaseName;
-    
     private final List<String> schemaTableNames;
     
     private final boolean full;
     
-    public CDCJobId(final String databaseName, final List<String> schemaTableNames, final boolean full) {
-        super(new CDCJobType(), CURRENT_VERSION);
-        this.databaseName = databaseName;
+    public CDCJobId(final List<String> schemaTableNames, final boolean full, final PipelineContextKey contextKey) {
+        super(new CDCJobType(), contextKey);
         this.schemaTableNames = schemaTableNames;
         this.full = full;
     }

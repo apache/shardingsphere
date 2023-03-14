@@ -61,6 +61,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractInventoryIn
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
@@ -72,6 +73,7 @@ import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -202,14 +204,15 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     private String generateJobId(final YamlCDCJobConfiguration config) {
         // TODO generate parameter add sink type
-        CDCJobId jobId = new CDCJobId(config.getDatabaseName(), config.getSchemaTableNames(), config.isFull());
+        PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY, config.getDatabaseName());
+        CDCJobId jobId = new CDCJobId(config.getSchemaTableNames(), config.isFull(), contextKey);
         return marshalJobId(jobId);
     }
     
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
         CDCJobId jobId = (CDCJobId) pipelineJobId;
-        String text = Joiner.on('|').join(jobId.getDatabaseName(), jobId.getSchemaTableNames(), jobId.isFull());
+        String text = Joiner.on('|').join(jobId.getContextKey().getDatabaseName(), jobId.getSchemaTableNames(), jobId.isFull());
         return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     
