@@ -887,13 +887,15 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
+        calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
-        ASTNode exprSegment = visit(ctx.expr());
-        if (exprSegment instanceof ColumnSegment) {
-            result.getParameters().add((ColumnSegment) exprSegment);
-        } else if (exprSegment instanceof LiteralExpressionSegment) {
-            result.getParameters().add((LiteralExpressionSegment) exprSegment);
+        for (ExprContext each : ctx.expr()) {
+            ASTNode expr = visit(each);
+            if (expr instanceof ColumnSegment) {
+                result.getParameters().add((ColumnSegment) expr);
+            } else if (expr instanceof LiteralExpressionSegment) {
+                result.getParameters().add((LiteralExpressionSegment) expr);
+            }
         }
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         return result;

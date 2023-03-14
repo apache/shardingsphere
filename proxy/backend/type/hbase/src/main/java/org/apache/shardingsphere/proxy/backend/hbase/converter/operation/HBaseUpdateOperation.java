@@ -15,34 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.converter;
+package org.apache.shardingsphere.proxy.backend.hbase.converter.operation;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Operation;
 import org.apache.hadoop.hbase.client.Put;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
- * HBase database update operation adapter.
+ * HBase update operation.
  */
 @RequiredArgsConstructor
 @Getter
-public final class HBaseUpdateOperationAdapter extends Operation {
-    
-    private final String tableName;
+public final class HBaseUpdateOperation extends Operation {
     
     private final List<Put> puts;
     
     @Override
     public Map<String, Object> getFingerprint() {
-        return new TreeMap<>();
+        return Collections.emptyMap();
     }
     
     @Override
     public Map<String, Object> toMap(final int i) {
-        return new TreeMap<>();
+        return Collections.emptyMap();
     }
 }

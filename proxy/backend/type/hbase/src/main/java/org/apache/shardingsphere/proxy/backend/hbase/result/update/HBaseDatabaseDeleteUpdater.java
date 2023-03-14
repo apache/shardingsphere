@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseDeleteOperationAdapter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseDeleteOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
@@ -32,15 +32,14 @@ import java.util.Collections;
 public final class HBaseDatabaseDeleteUpdater implements HBaseDatabaseUpdater {
     
     @Override
-    public Collection<UpdateResult> executeUpdate(final HBaseOperation hbaseOperation) {
-        if (hbaseOperation.getOperation() instanceof HBaseDeleteOperationAdapter) {
-            int deleteAffectedSize = ((HBaseDeleteOperationAdapter) hbaseOperation.getOperation()).getDeletes().size();
-            HBaseExecutor.executeUpdate(hbaseOperation.getTableName(), table -> table.delete(((HBaseDeleteOperationAdapter) hbaseOperation.getOperation()).getDeletes()));
-            return Collections.singletonList(new UpdateResult(deleteAffectedSize, 0));
-        } else {
-            HBaseExecutor.executeUpdate(hbaseOperation.getTableName(), table -> table.delete((Delete) hbaseOperation.getOperation()));
-            return Collections.singletonList(new UpdateResult(1, 0));
+    public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) {
+        if (operation.getOperation() instanceof HBaseDeleteOperation) {
+            int deleteAffectedSize = ((HBaseDeleteOperation) operation.getOperation()).getDeletes().size();
+            HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.delete(((HBaseDeleteOperation) operation.getOperation()).getDeletes()));
+            return Collections.singleton(new UpdateResult(deleteAffectedSize, 0));
         }
+        HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.delete((Delete) operation.getOperation()));
+        return Collections.singleton(new UpdateResult(1, 0));
     }
     
     @Override

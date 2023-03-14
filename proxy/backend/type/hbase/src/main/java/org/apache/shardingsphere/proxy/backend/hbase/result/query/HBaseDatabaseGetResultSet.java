@@ -28,10 +28,10 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
-import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseDatabaseConverter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
-import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseDatabaseConverterFactory;
-import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseSelectOperationAdapter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverterFactory;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseSelectOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBasePropertyKey;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
@@ -79,13 +79,13 @@ public final class HBaseDatabaseGetResultSet implements HBaseDatabaseQueryResult
     @Override
     public void init(final SQLStatementContext<?> sqlStatementContext) {
         statementContext = (SelectStatementContext) sqlStatementContext;
-        HBaseDatabaseConverter converter = HBaseDatabaseConverterFactory.newInstance(sqlStatementContext);
+        HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation hbaseOperation = converter.convert();
         initResultNum(sqlStatementContext);
         final long startMill = System.currentTimeMillis();
         if (hbaseOperation.getOperation() instanceof Get) {
             executeGetRequest(hbaseOperation);
-        } else if (hbaseOperation.getOperation() instanceof HBaseSelectOperationAdapter) {
+        } else if (hbaseOperation.getOperation() instanceof HBaseSelectOperation) {
             executeGetsRequest(hbaseOperation);
         } else {
             executeScanRequest(hbaseOperation);
@@ -130,7 +130,7 @@ public final class HBaseDatabaseGetResultSet implements HBaseDatabaseQueryResult
     }
     
     private void executeGetsRequest(final HBaseOperation hbaseOperation) {
-        List<Result> results = Arrays.asList(HBaseExecutor.executeQuery(hbaseOperation.getTableName(), table -> table.get(((HBaseSelectOperationAdapter) hbaseOperation.getOperation()).getGets())));
+        List<Result> results = Arrays.asList(HBaseExecutor.executeQuery(hbaseOperation.getTableName(), table -> table.get(((HBaseSelectOperation) hbaseOperation.getOperation()).getGets())));
         results = results.stream().filter(result -> result.rawCells().length > 0).collect(Collectors.toList());
         orderResults(results);
         iterator = results.iterator();
@@ -157,7 +157,7 @@ public final class HBaseDatabaseGetResultSet implements HBaseDatabaseQueryResult
     
     private void executeScanRequest(final HBaseOperation hbaseOperation) {
         Scan scan = (Scan) hbaseOperation.getOperation();
-        scan.setLimit(new Long(maxLimitResultSize).intValue());
+        scan.setLimit(Long.valueOf(maxLimitResultSize).intValue());
         ResultScanner resultScanner = HBaseExecutor.executeQuery(hbaseOperation.getTableName(), table -> table.getScanner(scan));
         iterator = resultScanner.iterator();
         setColumns(iterator);

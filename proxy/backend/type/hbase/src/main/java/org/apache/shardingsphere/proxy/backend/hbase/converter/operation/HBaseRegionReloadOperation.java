@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.bean;
+package org.apache.shardingsphere.proxy.backend.hbase.converter.operation;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Operation;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
- * HBase operation.
+ * HBase region reload operation.
  */
-@RequiredArgsConstructor
-@Getter
-public final class HBaseOperation {
+public final class HBaseRegionReloadOperation extends Operation {
     
-    private final String tableName;
+    @Override
+    public Map<String, Object> getFingerprint() {
+        return Collections.emptyMap();
+    }
     
-    private final Operation operation;
+    @Override
+    public Map<String, Object> toMap(final int i) {
+        return Collections.emptyMap();
+    }
 }

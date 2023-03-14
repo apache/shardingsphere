@@ -15,32 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.converter;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.hadoop.hbase.client.Operation;
-import org.apache.hadoop.hbase.client.Put;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 
 /**
- * HBase database insert operation adapter.
+ * Export storage nodes statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class HBaseInsertOperationAdapter extends Operation {
-    
-    private final List<Put> puts;
-    
-    @Override
-    public Map<String, Object> getFingerprint() {
-        return new TreeMap<>();
-    }
-    
-    @Override
-    public Map<String, Object> toMap(final int i) {
-        return new TreeMap<>();
-    }
+public final class ExportStorageNodesStatementTestCase extends DatabaseContainedTestCase {
 }

@@ -15,34 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.converter;
+package org.apache.shardingsphere.data.pipeline.cdc.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.Operation;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.TableRule;
+
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
- * HBase database delete converter.
+ * CDC table rule util.
  */
-@RequiredArgsConstructor
-@Getter
-public final class HBaseDeleteOperationAdapter extends Operation {
+public final class CDCTableRuleUtil {
     
-    private final String tableName;
-    
-    private final List<Delete> deletes;
-    
-    @Override
-    public Map<String, Object> getFingerprint() {
-        return new TreeMap<>();
-    }
-    
-    @Override
-    public Map<String, Object> toMap(final int i) {
-        return new TreeMap<>();
+    /**
+     * Get actual data nodes.
+     *
+     * @param shardingRule sharding rule
+     * @param tableName table name
+     * @return data nodes
+     */
+    public static List<DataNode> getActualDataNodes(final ShardingRule shardingRule, final String tableName) {
+        TableRule tableRule = shardingRule.getTableRule(tableName);
+        // TODO support virtual data source name
+        return tableRule.getActualDataNodes();
     }
 }

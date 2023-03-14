@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.bean;
+package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.hadoop.hbase.client.Operation;
+import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 
 /**
- * HBase operation.
+ * Convert SQL statement to HBase operation.
  */
-@RequiredArgsConstructor
-@Getter
-public final class HBaseOperation {
+public interface HBaseOperationConverter {
     
-    private final String tableName;
-    
-    private final Operation operation;
+    /**
+     * Convert SQL statement to HBase operation.
+     * 
+     * @return HBase operation
+     */
+    HBaseOperation convert();
 }

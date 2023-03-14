@@ -19,10 +19,11 @@ package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseInsertOperationAdapter;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseInsertOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -33,20 +34,14 @@ import java.util.List;
 public final class HBaseDatabaseInsertUpdater implements HBaseDatabaseUpdater {
     
     @Override
-    public String getType() {
-        return MySQLInsertStatement.class.getCanonicalName();
+    public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) {
+        List<Put> puts = ((HBaseInsertOperation) operation.getOperation()).getPuts();
+        HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.put(puts));
+        return Collections.singleton(new UpdateResult(puts.size(), 0));
     }
     
-    /**
-     * Execute HBase operation.
-     *
-     * @param hbaseOperation HBase operation
-     * @return affected rows
-     */
     @Override
-    public Collection<UpdateResult> executeUpdate(final HBaseOperation hbaseOperation) {
-        List<Put> puts = ((HBaseInsertOperationAdapter) hbaseOperation.getOperation()).getPuts();
-        HBaseExecutor.executeUpdate(hbaseOperation.getTableName(), table -> table.put(puts));
-        return Collections.singletonList(new UpdateResult(puts.size(), 0));
+    public String getType() {
+        return MySQLInsertStatement.class.getCanonicalName();
     }
 }

@@ -25,33 +25,41 @@ import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseDeleteOperationConverter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseInsertOperationConverter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseSelectOperationConverter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseUpdateOperationConverter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.type.HBaseRegionReloadOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 
 /**
- * HBase database converter factory.
+ * HBase operation converter factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class HBaseDatabaseConverterFactory {
+public final class HBaseOperationConverterFactory {
     
     /**
-     * Create new instance of HBase database converter.
+     * Create new instance of HBase operation converter.
      *
-     * @param sqlStatementContext sql statement context
+     * @param sqlStatementContext SQL statement context
      * @return instance of converter
      */
-    public static HBaseDatabaseConverter newInstance(final SQLStatementContext<?> sqlStatementContext) {
+    public static HBaseOperationConverter newInstance(final SQLStatementContext<?> sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            return new HBaseDatabaseSelectConverter(sqlStatementContext);
-        } else if (sqlStatementContext instanceof InsertStatementContext) {
-            return new HBaseDatabaseInsertConverter(sqlStatementContext);
-        } else if (sqlStatementContext instanceof DeleteStatementContext) {
-            return new HBaseDatabaseDeleteConverter(sqlStatementContext);
-        } else if (sqlStatementContext instanceof UpdateStatementContext) {
-            return new HBaseDatabaseUpdateConverter(sqlStatementContext);
-        } else if (sqlStatementContext instanceof FlushStatementContext) {
-            return new HBaseRegionReloadConverter(sqlStatementContext);
-        } else {
-            throw new HBaseOperationException("Can't found converter");
+            return new HBaseSelectOperationConverter(sqlStatementContext);
         }
+        if (sqlStatementContext instanceof InsertStatementContext) {
+            return new HBaseInsertOperationConverter(sqlStatementContext);
+        }
+        if (sqlStatementContext instanceof DeleteStatementContext) {
+            return new HBaseDeleteOperationConverter(sqlStatementContext);
+        }
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            return new HBaseUpdateOperationConverter(sqlStatementContext);
+        }
+        if (sqlStatementContext instanceof FlushStatementContext) {
+            return new HBaseRegionReloadOperationConverter(sqlStatementContext);
+        }
+        throw new HBaseOperationException("Can not find HBase converter.");
     }
 }

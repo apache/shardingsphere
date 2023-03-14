@@ -21,29 +21,29 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class HBaseDatabaseDescribeResultSetTest extends AbstractHBaseDatabaseQueryResultSetTest {
-    
-    private final TablesContext tablesContext = mock(TablesContext.class, RETURNS_DEEP_STUBS);
+public final class HBaseDatabaseDescribeResultSetTest extends AbstractHBaseDatabaseQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
         HBaseDatabaseQueryResultSet resultSet = new HBaseDatabaseDescribeResultSet();
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
-        when(context.getTablesContext()).thenReturn(tablesContext);
+        when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));
         when(context.getTablesContext().getTableNames().iterator().next()).thenReturn(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME);
         resultSet.init(context);
-        
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(9));
         assertThat(actual.get(0), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
@@ -52,23 +52,21 @@ public class HBaseDatabaseDescribeResultSetTest extends AbstractHBaseDatabaseQue
         assertThat(actual.get(8), is(""));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertGetRowDataWithTableIsNotExists() throws IOException {
         when(getAdmin().tableExists(any())).thenReturn(false);
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
-        when(context.getTablesContext()).thenReturn(tablesContext);
+        when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));
         when(context.getTablesContext().getTableNames().iterator().next()).thenReturn(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME);
-        HBaseDatabaseQueryResultSet resultSet = new HBaseDatabaseDescribeResultSet();
-        resultSet.init(context);
+        assertThrows(IllegalArgumentException.class, () -> new HBaseDatabaseDescribeResultSet().init(context));
     }
     
-    @Test(expected = HBaseOperationException.class)
+    @Test
     public void assertGetRowDataWithBackendError() throws IOException {
         when(getAdmin().getTableDescriptor(any())).thenThrow(IOException.class);
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
-        when(context.getTablesContext()).thenReturn(tablesContext);
+        when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));
         when(context.getTablesContext().getTableNames().iterator().next()).thenReturn(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME);
-        HBaseDatabaseQueryResultSet resultSet = new HBaseDatabaseDescribeResultSet();
-        resultSet.init(context);
+        assertThrows(HBaseOperationException.class, () -> new HBaseDatabaseDescribeResultSet().init(context));
     }
 }
