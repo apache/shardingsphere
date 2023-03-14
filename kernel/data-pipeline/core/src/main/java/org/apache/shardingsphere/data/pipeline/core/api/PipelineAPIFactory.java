@@ -81,9 +81,8 @@ public final class PipelineAPIFactory {
      * @param contextKey context key
      * @return job configuration API
      */
-    public static JobConfigurationAPI getJobConfigurationAPI() {
-        // TODO now getJobConfigurationAPI
-        return ElasticJobAPIHolder.getInstance(null).getJobConfigurationAPI();
+    public static JobConfigurationAPI getJobConfigurationAPI(final PipelineContextKey contextKey) {
+        return ElasticJobAPIHolder.getInstance(contextKey).getJobConfigurationAPI();
     }
     
     /**
