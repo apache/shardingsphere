@@ -208,7 +208,7 @@ public final class CDCE2EIT {
     private List<Map<String, Object>> listOrderRecords(final String tableNameWithSchema) throws SQLException {
         try (
                 Connection connection = DriverManager.getConnection(
-                containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false), containerComposer.getUsername(), containerComposer.getPassword())) {
+                        containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false), containerComposer.getUsername(), containerComposer.getPassword())) {
             ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", tableNameWithSchema));
             return containerComposer.transformResultSetToList(resultSet);
         }
