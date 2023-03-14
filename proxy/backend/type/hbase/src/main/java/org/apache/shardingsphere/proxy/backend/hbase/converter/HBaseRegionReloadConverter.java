@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
+import org.apache.hadoop.hbase.client.Operation;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.FlushStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+/**
+ * HBase database region reload converter.
+ */
 public final class HBaseRegionReloadConverter implements HBaseDatabaseConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;
@@ -30,12 +36,26 @@ public final class HBaseRegionReloadConverter implements HBaseDatabaseConverter 
     public HBaseRegionReloadConverter(final SQLStatementContext<?> sqlStatementContext) {
         this.sqlStatementContext = sqlStatementContext;
     }
+
+    private Operation getOperation() {
+        return new Operation() {
+            @Override
+            public Map<String, Object> getFingerprint() {
+                return new TreeMap<>();
+            }
+
+            @Override
+            public Map<String, Object> toMap(int i) {
+                return new TreeMap<>();
+            }
+        };
+    }
     
     @Override
     public HBaseOperation convert() {
         List<String> tables = ((FlushStatementContext) sqlStatementContext).getAllTables()
                 .stream().map(simpleTableSegment -> simpleTableSegment.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
         
-        return new HBaseOperation(String.join(",", tables), null);
+        return new HBaseOperation(String.join(",", tables), getOperation());
     }
 }

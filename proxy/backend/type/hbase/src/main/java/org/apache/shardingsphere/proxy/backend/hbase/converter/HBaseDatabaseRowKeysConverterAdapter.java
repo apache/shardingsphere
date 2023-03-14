@@ -24,6 +24,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * HBase database row keys converter adapter.
+ */
 public class HBaseDatabaseRowKeysConverterAdapter {
     
     protected List<String> getRowKeysFromWhereSegmentByIn(final InExpression expression) {

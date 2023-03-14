@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
@@ -29,7 +29,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import java.util.List;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
+/**
+ * HBase database insert converter.
+ */
+@RequiredArgsConstructor
 public final class HBaseDatabaseInsertConverter implements HBaseDatabaseConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;
@@ -44,11 +47,11 @@ public final class HBaseDatabaseInsertConverter implements HBaseDatabaseConverte
     private Put generateHBaseRequest(final InsertStatementContext context, final InsertValueContext insertValueContext) {
         List<String> columns = context.getInsertColumnNames();
         List<Object> values = insertValueContext.getValueExpressions().stream().map(each -> ((LiteralExpressionSegment) each).getLiterals()).collect(Collectors.toList());
-        Put put = new Put(Bytes.toBytes(String.valueOf(values.get(0))));
+        Put result = new Put(Bytes.toBytes(String.valueOf(values.get(0))));
         for (int i = 1; i < columns.size(); i++) {
-            put.addColumn(Bytes.toBytes(HBaseContext.getInstance().getColumnFamily()), Bytes.toBytes(String.valueOf(columns.get(i))), Bytes.toBytes(String.valueOf(values.get(i))));
+            result.addColumn(Bytes.toBytes(HBaseContext.getInstance().getColumnFamily()), Bytes.toBytes(String.valueOf(columns.get(i))), Bytes.toBytes(String.valueOf(values.get(i))));
         }
-        return put;
+        return result;
     }
     
     private List<Put> createHBaseRequest(final InsertStatementContext context) {

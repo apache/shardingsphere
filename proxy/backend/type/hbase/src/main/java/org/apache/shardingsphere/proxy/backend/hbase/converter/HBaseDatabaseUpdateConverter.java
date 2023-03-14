@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
 import com.google.common.base.Preconditions;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class HBaseDatabaseUpdateConverter extends HBaseDatabaseRowKeysConverterAdapter implements HBaseDatabaseConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;
@@ -42,11 +42,9 @@ public final class HBaseDatabaseUpdateConverter extends HBaseDatabaseRowKeysConv
     public HBaseOperation convert() {
         UpdateStatementContext context = (UpdateStatementContext) sqlStatementContext;
         Preconditions.checkArgument(context.getWhereSegments().stream().findFirst().isPresent(), "Where segment is not present");
-        
         if (context.getWhereSegments().stream().findFirst().get().getExpr() instanceof InExpression) {
             return createHBasePutsOperation(context);
         }
-        
         return new HBaseOperation(context.getTablesContext().getTableNames().iterator().next(), createHBaseRequest(context));
     }
     
@@ -66,9 +64,9 @@ public final class HBaseDatabaseUpdateConverter extends HBaseDatabaseRowKeysConv
     
     private Put createHBaseRequest(final UpdateStatementContext context) {
         String rowKey = getRowKeyFromWhereSegment(context.getWhereSegments().stream().findFirst().get().getExpr());
-        Put put = getPutByRowKey(rowKey);
-        addPutColumn(context, put);
-        return put;
+        Put result = getPutByRowKey(rowKey);
+        addPutColumn(context, result);
+        return result;
     }
     
     private void addPutColumn(final UpdateStatementContext context, final Put put) {

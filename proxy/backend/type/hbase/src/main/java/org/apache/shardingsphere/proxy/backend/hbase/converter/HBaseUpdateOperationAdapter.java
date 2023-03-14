@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Operation;
 import org.apache.hadoop.hbase.client.Put;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
-@AllArgsConstructor
+/**
+ * HBase database update operation adapter.
+ */
+@RequiredArgsConstructor
 @Getter
 public final class HBaseUpdateOperationAdapter extends Operation {
     
@@ -34,11 +38,11 @@ public final class HBaseUpdateOperationAdapter extends Operation {
     
     @Override
     public Map<String, Object> getFingerprint() {
-        return null;
+        return new TreeMap<>();
     }
     
     @Override
     public Map<String, Object> toMap(final int i) {
-        return null;
+        return new TreeMap<>();
     }
 }

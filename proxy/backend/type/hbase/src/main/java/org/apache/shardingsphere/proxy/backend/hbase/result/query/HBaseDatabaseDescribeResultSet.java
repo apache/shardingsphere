@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Result set for HBase databases test.
+ * Result set for HBase databases describe.
  */
 public final class HBaseDatabaseDescribeResultSet implements HBaseDatabaseQueryResultSet {
     

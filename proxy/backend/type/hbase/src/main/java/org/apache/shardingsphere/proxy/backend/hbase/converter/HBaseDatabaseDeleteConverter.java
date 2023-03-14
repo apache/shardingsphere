@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
 import com.google.common.base.Preconditions;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -31,7 +31,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import java.util.List;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
+/**
+ * HBase database delete converter.
+ */
+@RequiredArgsConstructor
 public final class HBaseDatabaseDeleteConverter extends HBaseDatabaseRowKeysConverterAdapter implements HBaseDatabaseConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;

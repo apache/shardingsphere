@@ -27,7 +27,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class HBaseDatabaseInsertUpdater implements HBaseDatabaseUpdater {
+/**
+ * HBase database insert updater.
+ */
+public final class HBaseDatabaseInsertUpdater implements HBaseDatabaseUpdater {
     
     @Override
     public String getType() {

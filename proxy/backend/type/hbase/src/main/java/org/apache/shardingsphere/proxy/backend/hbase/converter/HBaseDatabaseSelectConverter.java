@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Query;
@@ -45,7 +45,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
+/**
+ * HBase database select converter.
+ */
+@RequiredArgsConstructor
 @Slf4j
 public final class HBaseDatabaseSelectConverter extends HBaseDatabaseRowKeysConverterAdapter implements HBaseDatabaseConverter {
     
@@ -79,11 +82,10 @@ public final class HBaseDatabaseSelectConverter extends HBaseDatabaseRowKeysConv
     
     private HBaseOperation createGetRequest(final SelectStatementContext context) {
         ExpressionSegment expression = context.getWhereSegments().stream().findFirst().get().getExpr();
-        // 处理 in
         List<Get> gets = getRowKeyFromWhereSegment(expression).stream().map(this::getGetByRowKey).collect(Collectors.toList());
         if (!HeterogeneousUtil.isUseShorthandProjection(context)) {
-            for (Get get : gets) {
-                decorateWithColumns(get, context);
+            for (Get each : gets) {
+                decorateWithColumns(each, context);
             }
         }
         if (expression instanceof InExpression) {
@@ -147,9 +149,9 @@ public final class HBaseDatabaseSelectConverter extends HBaseDatabaseRowKeysConv
     }
     
     private byte[] calBytes(final String row, final int step) {
-        byte[] result = Bytes.toBytes(row);
-        byte[] rowBytes = Arrays.copyOf(result, result.length);
-        rowBytes[rowBytes.length - 1] = (byte) (rowBytes[rowBytes.length - 1] + step);
-        return rowBytes;
+        byte[] rowByte = Bytes.toBytes(row);
+        byte[] result = Arrays.copyOf(rowByte, rowByte.length);
+        result[result.length - 1] = (byte) (result[result.length - 1] + step);
+        return result;
     }
 }

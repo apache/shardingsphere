@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.bean;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Operation;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
-public class HBaseOperation {
+public final class HBaseOperation {
     
     private final String tableName;
     

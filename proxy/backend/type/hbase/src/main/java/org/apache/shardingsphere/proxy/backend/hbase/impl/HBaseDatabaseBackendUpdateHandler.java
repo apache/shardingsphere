@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.impl;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
@@ -32,9 +32,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Collection;
 
 /**
- * HBase database backend updater factory.
+ * HBase database backend updater handler.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public final class HBaseDatabaseBackendUpdateHandler implements DatabaseBackendHandler {
     

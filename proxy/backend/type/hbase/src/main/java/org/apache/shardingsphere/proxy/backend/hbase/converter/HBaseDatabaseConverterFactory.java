@@ -28,13 +28,13 @@ import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementConte
 import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 
 /**
- * Heterogeneous database converter factory.
+ * HBase database converter factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class HBaseDatabaseConverterFactory {
+public final class HBaseDatabaseConverterFactory {
     
     /**
-     * Create new instance of heterogeneous database converter.
+     * Create new instance of HBase database converter.
      *
      * @param sqlStatementContext sql statement context
      * @return instance of converter

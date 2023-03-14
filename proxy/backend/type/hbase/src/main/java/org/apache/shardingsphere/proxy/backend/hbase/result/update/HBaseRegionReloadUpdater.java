@@ -29,7 +29,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class HBaseRegionReloadUpdater implements HBaseDatabaseUpdater {
+/**
+ * HBase database region reload updater.
+ */
+public final class HBaseRegionReloadUpdater implements HBaseDatabaseUpdater {
     
     @Override
     public Collection<UpdateResult> executeUpdate(final HBaseOperation hbaseOperation) {

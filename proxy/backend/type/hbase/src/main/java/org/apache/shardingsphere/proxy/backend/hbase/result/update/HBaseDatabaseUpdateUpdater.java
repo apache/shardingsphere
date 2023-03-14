@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Result set for HBase databases test.
+ * HBase database update updater.
  */
 public final class HBaseDatabaseUpdateUpdater implements HBaseDatabaseUpdater {
     

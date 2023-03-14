@@ -35,7 +35,7 @@ import java.util.Map.Entry;
 /**
  * Result set for HBase databases test.
  */
-public class HBaseDatabaseListResultSet implements HBaseDatabaseQueryResultSet {
+public final class HBaseDatabaseListResultSet implements HBaseDatabaseQueryResultSet {
     
     private Iterator<Entry<String, String>> iterator;
     

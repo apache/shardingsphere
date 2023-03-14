@@ -26,7 +26,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import java.util.Collection;
 import java.util.Collections;
 
-public class HBaseDatabaseDeleteUpdater implements HBaseDatabaseUpdater {
+/**
+ * HBase database delete updater.
+ */
+public final class HBaseDatabaseDeleteUpdater implements HBaseDatabaseUpdater {
     
     @Override
     public Collection<UpdateResult> executeUpdate(final HBaseOperation hbaseOperation) {
