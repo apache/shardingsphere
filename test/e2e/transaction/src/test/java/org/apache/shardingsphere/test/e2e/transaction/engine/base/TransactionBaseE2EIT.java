@@ -199,7 +199,7 @@ public abstract class TransactionBaseE2EIT {
                 return;
             }
             String alterLocalTransactionRule = commonSQL.getAlterLocalTransactionRule();
-            executeWithLog(connection, alterLocalTransactionRule);    
+            executeWithLog(connection, alterLocalTransactionRule);
         }
         assertTrue(waitExpectedTransactionRule(TransactionType.LOCAL, "", containerComposer));
     }

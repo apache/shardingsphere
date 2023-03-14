@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCConnectionManager;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ResourceLock;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionExcept
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
+import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -65,6 +67,8 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
     
     private final AtomicBoolean closed = new AtomicBoolean(false);
     
+    private final Collection<TransactionHook> transactionHooks = ShardingSphereServiceLoader.getServiceInstances(TransactionHook.class);
+    
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current database name is null.");
@@ -88,8 +92,17 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
             synchronized (cachedConnections) {
                 cachedConnections.putAll(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName, result);
             }
+            executeTransactionHooksAfterCreateConnections(result);
         }
         return result;
+    }
+    
+    private void executeTransactionHooksAfterCreateConnections(final List<Connection> result) throws SQLException {
+        if (connectionSession.getTransactionStatus().isInTransaction()) {
+            for (TransactionHook each : transactionHooks) {
+                each.afterCreateConnections(result, connectionSession.getConnectionContext().getTransactionConnectionContext());
+            }
+        }
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
