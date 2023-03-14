@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL rollback prepared statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLRollbackPreparedStatement extends RollbackPreparedStatement implements PostgreSQLStatement {
 }

@@ -23,6 +23,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.ShardingSphereRowDataChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.ShardingSphereRowDataDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.TableDataChangedEvent;
 
 /**
@@ -85,7 +87,31 @@ public final class DatabaseChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final TableDataChangedEvent event) {
-        contextManager.alterSchemaData(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableData());
-        contextManager.alterSchemaData(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
+        if (null != event.getAddedTable()) {
+            contextManager.addShardingSphereTableData(event.getDatabaseName(), event.getSchemaName(), event.getAddedTable());
+        }
+        if (null != event.getDeletedTable()) {
+            contextManager.dropShardingSphereTableData(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
+        }
+    }
+    
+    /**
+     * Renew ShardingSphere data of row.
+     *
+     * @param event ShardingSphere row data added event
+     */
+    @Subscribe
+    public synchronized void renew(final ShardingSphereRowDataChangedEvent event) {
+        contextManager.alterShardingSphereRowData(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), event.getYamlRowData());
+    }
+    
+    /**
+     * Renew ShardingSphere data of row.
+     *
+     * @param event ShardingSphere row data deleted event
+     */
+    @Subscribe
+    public synchronized void renew(final ShardingSphereRowDataDeletedEvent event) {
+        contextManager.deleteShardingSphereRowData(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), event.getUniqueKey());
     }
 }

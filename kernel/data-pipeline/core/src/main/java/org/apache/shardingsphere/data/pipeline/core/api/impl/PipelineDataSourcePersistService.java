@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineMetaDataPersistService;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -40,11 +40,11 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, DataSourceProperties> load(final JobType jobType) {
-        String dataSourcesProperties = PipelineAPIFactory.getGovernanceRepositoryAPI().getMetaDataDataSources(jobType);
-        if (Strings.isNullOrEmpty(dataSourcesProperties)) {
+        String dataSourcesProps = PipelineAPIFactory.getGovernanceRepositoryAPI().getMetaDataDataSources(jobType);
+        if (Strings.isNullOrEmpty(dataSourcesProps)) {
             return Collections.emptyMap();
         }
-        Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSourcesProperties, Map.class);
+        Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSourcesProps, Map.class);
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSources.size());
         yamlDataSources.forEach((key, value) -> result.put(key, swapper.swapToDataSourceProperties(value)));
         return result;

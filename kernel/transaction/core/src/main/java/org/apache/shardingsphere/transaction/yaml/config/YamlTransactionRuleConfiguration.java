@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 import java.util.Properties;
@@ -29,7 +29,7 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-public final class YamlTransactionRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlTransactionRuleConfiguration implements YamlGlobalRuleConfiguration {
     
     private String defaultType;
     

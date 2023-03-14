@@ -57,4 +57,22 @@ public final class PipelineJdbcUtils {
                 return false;
         }
     }
+    
+    /**
+     * Whether column is binary column.
+     * <p>it doesn't include BLOB etc.</p>
+     *
+     * @param columnType column type, value of java.sql.Types
+     * @return true or false
+     */
+    public static boolean isBinaryColumn(final int columnType) {
+        switch (columnType) {
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

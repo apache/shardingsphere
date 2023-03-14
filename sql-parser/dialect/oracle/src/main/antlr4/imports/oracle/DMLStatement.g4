@@ -432,6 +432,15 @@ fromClauseOption
     | LP_ joinClause RP_
     | selectTableReference
     | inlineAnalyticView
+    | xmlTable
+    ;
+
+xmlTable
+    : tableName alias? COMMA_ xmlTableFunction xmlTableFunctionAlias
+    ;
+
+xmlTableFunctionAlias
+    : alias
     ;
 
 selectTableReference

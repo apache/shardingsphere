@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.charset.CharsetNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.S
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
 public final class ConvertTableDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;

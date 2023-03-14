@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterAttributeDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle alter attribute dimension view statement.
  */
-@ToString(callSuper = true)
 public final class OracleAlterAttributeDimensionStatement extends AlterAttributeDimensionStatement implements OracleStatement {
 }

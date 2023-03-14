@@ -42,8 +42,8 @@ numberLiterals
    ;
 
 dateTimeLiterals
-    : (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier STRING_ RBE_
+    : (DATE | TIME | TIMESTAMP) stringLiterals
+    | LBE_ identifier stringLiterals RBE_
     ;
 
 hexadecimalLiterals
@@ -162,7 +162,8 @@ unreservedWord
     | ENFORCED | TRUSTED | ID | SYNCHRONOUS | ASYNCHRONOUS | REPEAT | FEATURE | STATEMENT | CLAUSE | UNPLUG
     | HOST | PORT | EVERY | MINUTES | HOURS | NORELOCATE | SAVE | DISCARD | APPLICATION | INSTALL
     | MINIMUM | VERSION | UNINSTALL | COMPATIBILITY | MATERIALIZE | SUBTYPE | RECORD | CONSTANT | CURSOR
-    | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK
+    | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK | ROWID
+    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME
     ;
 
 schemaName
@@ -443,6 +444,7 @@ expr
     | booleanPrimary
     | aggregationFunction
     | analyticFunction
+    | expr datetimeExpr
     ;
 
 andOperator
@@ -507,7 +509,7 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | analyticFunction | specialFunction | regularFunction 
+    : aggregationFunction | analyticFunction | specialFunction | regularFunction | xmlFunction
     ;
 
 aggregationFunction
@@ -515,7 +517,8 @@ aggregationFunction
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG | PERCENT_RANK
+    : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG | PERCENT_RANK | PERCENTILE_CONT | PERCENTILE_DISC | CUME_DIST | RANK
+    | REGR_SLOPE | REGR_INTERCEPT | REGR_COUNT | REGR_R2 | REGR_AVGX | REGR_AVGY | REGR_SXX | REGR_SYY | REGR_SXY
     ;
 
 listaggOverflowClause
@@ -544,7 +547,7 @@ specialFunction
     ;
 
 castFunction
-    : CAST LP_ expr AS dataType RP_
+    : (CAST | XMLCAST) LP_ expr AS dataType RP_
     ;
 
 charFunction
@@ -616,7 +619,7 @@ dataTypeName
     | BOOLEAN | PLS_INTEGER | BINARY_INTEGER | INTEGER | NUMBER | NATURAL | NATURALN | POSITIVE | POSITIVEN | SIGNTYPE
     | SIMPLE_INTEGER | BFILE | MLSLABEL | UROWID | DATE | TIMESTAMP | TIMESTAMP WITH TIME ZONE | TIMESTAMP WITH LOCAL TIME ZONE
     | INTERVAL DAY TO SECOND | INTERVAL YEAR TO MONTH | JSON | FLOAT | REAL | DOUBLE PRECISION | INT | SMALLINT
-    | DECIMAL | NUMERIC | DEC | IDENTIFIER_ | XMLTYPE
+    | DECIMAL | NUMERIC | DEC | IDENTIFIER_ | XMLTYPE | ROWID
     ;
 
 datetimeTypeSuffix
@@ -1607,3 +1610,83 @@ maxNumberOfSnapshots
     : INTEGER_
     ;
 
+datetimeExpr
+    : AT (LOCAL | TIME ZONE expr)
+    ;
+
+xmlFunction
+    : xmlAggFunction
+    | xmlColattvalFunction
+    | xmlExistsFunction
+    | xmlForestFunction
+    | xmlParseFunction
+    | xmlPiFunction
+    | xmlQueryFunction
+    | xmlRootFunction
+    | xmlSerializeFunction
+    | xmlTableFunction
+    ;
+
+xmlAggFunction
+    : XMLAGG LP_ expr orderByClause? RP_
+    ;
+
+xmlColattvalFunction
+    : XMLCOLATTVAL LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+    ;
+
+xmlExistsFunction
+    : XMLEXISTS LP_ STRING_ xmlPassingClause? RP_
+    ;
+
+xmlForestFunction
+   : XMLFOREST LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+   ;
+
+xmlParseFunction
+    : XMLPARSE LP_ (DOCUMENT | CONTENT) expr (WELLFORMED)? RP_
+    ;
+
+xmlPiFunction
+    : XMLPI LP_ (EVALNAME expr | (NAME)? identifier) (COMMA_ expr)? RP_
+    ;
+
+xmlQueryFunction
+    : XMLQUERY LP_ STRING_ xmlPassingClause? RETURNING CONTENT (NULL ON EMPTY)? RP_
+    ;
+
+xmlPassingClause
+    : PASSING (BY VALUE)? expr (AS alias)? (COMMA_ expr (AS alias)?)*
+    ;
+
+xmlRootFunction
+    : XMLROOT LP_ expr COMMA_ VERSION (expr | NO VALUE) (COMMA_ STANDALONE (YES | NO | NO VALUE))? RP_
+    ;
+
+xmlSerializeFunction
+    : XMLSERIALIZE LP_ (DOCUMENT | CONTENT) expr (AS dataType)? (ENCODING STRING_)? (VERSION stringLiterals)? (NO INDENT | INDENT (SIZE EQ_ INTEGER_)?)? ((HIDE | SHOW) DEFAULTS)? RP_
+    ;
+
+xmlTableFunction
+    : XMLTABLE LP_ (xmlNameSpacesClause COMMA_)? STRING_ xmlTableOptions RP_
+    ;
+
+xmlNameSpacesClause
+    : XMLNAMESPACES LP_ (defaultString COMMA_)? (xmlNameSpaceStringAsIdentifier | defaultString) (COMMA_ (xmlNameSpaceStringAsIdentifier | defaultString))* RP_
+    ;
+
+xmlNameSpaceStringAsIdentifier
+    : STRING_ AS identifier
+    ;
+
+defaultString
+    : DEFAULT STRING_
+    ;
+
+xmlTableOptions
+    : xmlPassingClause? (RETURNING SEQUENCE BY REF)? (COLUMNS xmlTableColumn (COMMA_ xmlTableColumn)*)?
+    ;
+
+xmlTableColumn
+    : columnName (FOR ORDINALITY | (dataType | XMLTYPE (LP_ SEQUENCE RP_ BY REF)?) (PATH STRING_)? (DEFAULT expr)?)
+    ;

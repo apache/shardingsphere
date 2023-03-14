@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.database.type.dialect;
 import org.apache.shardingsphere.infra.database.metadata.dialect.H2DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +49,7 @@ public final class H2DatabaseType implements BranchDatabaseType {
     
     @Override
     public DatabaseType getTrunkDatabaseType() {
-        return DatabaseTypeFactory.getInstance("MySQL");
+        return TypedSPILoader.getService(DatabaseType.class, "MySQL");
     }
     
     @Override

@@ -18,6 +18,7 @@
     private RuleConfiguration createShadowRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setShadowAlgorithms(createShadowAlgorithmConfigurations());
+        result.setDefaultShadowAlgorithmName("sql-hint-algorithm");
         result.setDataSources(createShadowDataSources());
         result.setTables(createShadowTables());
         return result;
@@ -38,7 +39,7 @@
         result.add("order-type-insert-match-algorithm");
         result.add("order-type-delete-match-algorithm");
         result.add("order-type-select-match-algorithm");
-        result.add("simple-hint-algorithm");
+        result.add("sql-hint-algorithm");
         return result;
     }
     
@@ -47,13 +48,13 @@
         result.add("shadow-data-source");
         return result;
     }
-
-    private Map<String, ShadowDataSourceConfiguration> createShadowDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds_0", "ds_1"));
+    
+    private Collection<ShadowDataSourceConfiguration> createShadowDataSources() {
+        Collection<ShadowDataSourceConfiguration> result = new LinkedList<>();
+        result.add(new ShadowDataSourceConfiguration("shadow-data-source", "ds_0", "ds_1"));
         return result;
     }
-
+    
     private Map<String, AlgorithmConfiguration> createShadowAlgorithmConfigurations() {
         Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
         Properties orderTypeInsertProps = new Properties();
@@ -74,6 +75,6 @@
         Properties noteAlgorithmProps = new Properties();
         noteAlgorithmProps.setProperty("shadow", "true");
         noteAlgorithmProps.setProperty("foo", "bar");
-        result.put("simple-hint-algorithm", new AlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
+        result.put("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", noteAlgorithmProps));
         return result;
     }

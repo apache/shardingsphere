@@ -20,10 +20,10 @@ package org.apache.shardingsphere.infra.metadata.data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 /**
  * ShardingSphere table data.
@@ -35,7 +35,5 @@ public final class ShardingSphereTableData {
     
     private final String name;
     
-    private final List<ShardingSphereColumn> columns;
-    
-    private final List<ShardingSphereRowData> rows = new LinkedList<>();
+    private final Collection<ShardingSphereRowData> rows = new TreeSet<>(Comparator.comparing(ShardingSphereRowData::getUniqueKey));
 }

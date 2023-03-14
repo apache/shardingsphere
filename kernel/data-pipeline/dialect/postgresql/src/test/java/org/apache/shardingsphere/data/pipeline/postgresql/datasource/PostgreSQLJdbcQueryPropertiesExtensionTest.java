@@ -18,21 +18,22 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.datasource;
 
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtensionFactory;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class PostgreSQLJdbcQueryPropertiesExtensionTest {
     
     @Test
     public void assertExtendQueryProperties() {
-        Optional<JdbcQueryPropertiesExtension> extension = JdbcQueryPropertiesExtensionFactory.getInstance("PostgreSQL");
+        Optional<JdbcQueryPropertiesExtension> extension = TypedSPILoader.findService(JdbcQueryPropertiesExtension.class, "PostgreSQL");
         assertTrue(extension.isPresent());
         assertExtension(extension.get());
     }
@@ -40,6 +41,6 @@ public final class PostgreSQLJdbcQueryPropertiesExtensionTest {
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
         assertThat(actual, instanceOf(PostgreSQLJdbcQueryPropertiesExtension.class));
         assertThat(actual.getType(), equalTo("PostgreSQL"));
-        assertTrue(actual.extendQueryProperties().isEmpty());
+        assertFalse(actual.extendQueryProperties().isEmpty());
     }
 }

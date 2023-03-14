@@ -28,6 +28,8 @@ import java.util.Properties;
 @Setter
 public final class YamlExampleConfiguration implements YamlConfiguration {
     
+    private String output;
+    
     private List<String> products;
     
     private List<String> modes;

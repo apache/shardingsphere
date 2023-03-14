@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 import java.util.Collection;
@@ -30,7 +29,6 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class OrPredicateSegment implements SQLSegment {
     
     private final int startIndex = 0;

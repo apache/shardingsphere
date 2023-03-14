@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.DropIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.RenameIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -42,7 +42,6 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public abstract class AlterTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment table;
@@ -68,6 +67,8 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     private final Collection<DropConstraintDefinitionSegment> dropConstraintDefinitions = new LinkedList<>();
     
     private final Collection<DropIndexDefinitionSegment> dropIndexDefinitions = new LinkedList<>();
+    
+    private final Collection<RenameIndexDefinitionSegment> renameIndexDefinitions = new LinkedList<>();
     
     /**
      * Get rename table.

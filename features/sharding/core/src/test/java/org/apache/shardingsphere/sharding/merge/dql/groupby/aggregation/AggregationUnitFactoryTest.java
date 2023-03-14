@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation;
 
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
-import org.junit.Test;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;

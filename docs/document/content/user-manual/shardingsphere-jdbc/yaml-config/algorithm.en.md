@@ -41,7 +41,7 @@ loadBalancers:
 ## Shadow DB
 
 ```yaml
-loadBalancers:
+shadowAlgorithms:
   # shadowAlgorithmName is specified by users, and its property has to be consistent with that of shadowAlgorithmNames in shadow DB rules.
   <shadowAlgorithmName>:
     # type and props, please refer to the built-in shadow DB algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/shadow/
@@ -55,6 +55,18 @@ loadBalancers:
 ```yaml
 discoveryTypes:
   # discoveryTypeName is specified by users, and its property has to be consistent with that of discoveryTypeName in the database discovery rules.
+    type: xxx
+    props:
+      xxx: xxx
+```
+
+## Data Masking
+
+```yaml
+maskAlgorithms:
+  # maskAlgorithmName is specified by users, and its property should be consistent with that of maskAlgorithm in mask rules.
+  <maskAlgorithmName>:
+    # type and props, please refer to the built-in mask algorithm: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/mask/
     type: xxx
     props:
       xxx: xxx

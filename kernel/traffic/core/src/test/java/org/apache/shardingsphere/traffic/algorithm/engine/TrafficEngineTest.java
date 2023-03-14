@@ -26,10 +26,10 @@ import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,12 +38,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class TrafficEngineTest {
     
     @Mock
@@ -102,8 +102,8 @@ public final class TrafficEngineTest {
     
     private List<InstanceMetaData> mockComputeNodeInstances() {
         List<InstanceMetaData> result = new ArrayList<>();
-        result.add(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307"));
-        result.add(new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308"));
+        result.add(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version"));
+        result.add(new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308", "foo_version"));
         return result;
     }
 }

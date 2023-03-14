@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -38,23 +38,19 @@ import java.util.Properties;
 /**
  * AES encrypt algorithm.
  */
-public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
     private static final String AES_KEY = "aes-key-value";
-    
-    @Getter
-    private Properties props;
     
     private byte[] secretKey;
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         secretKey = createSecretKey(props);
     }
     
     private byte[] createSecretKey(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(AES_KEY), "%s can not be null.", AES_KEY);
+        ShardingSpherePreconditions.checkState(props.containsKey(AES_KEY), () -> new EncryptAlgorithmInitializationException("AES", String.format("%s can not be null", AES_KEY)));
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
     
@@ -74,7 +70,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         if (null == cipherValue) {
             return null;
         }
-        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.getDecoder().decode(cipherValue));
+        byte[] result = getCipher(Cipher.DECRYPT_MODE).doFinal(Base64.getDecoder().decode(cipherValue.trim()));
         return new String(result, StandardCharsets.UTF_8);
     }
     

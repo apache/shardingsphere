@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command;
 
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,14 +31,14 @@ public final class MySQLCommandPacketTypeLoaderTest {
     @Test
     public void assertGetCommandPacketType() {
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
-        when(payload.readInt1()).thenReturn(0, MySQLCommandPacketType.COM_QUIT.getValue());
+        when(payload.readInt1()).thenReturn(MySQLCommandPacketType.COM_QUIT.getValue());
         assertThat(MySQLCommandPacketTypeLoader.getCommandPacketType(payload), is(MySQLCommandPacketType.COM_QUIT));
     }
     
-    @Test(expected = NullPointerException.class)
+    @Test
     public void assertGetCommandPacketTypeError() {
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
-        when(payload.readInt1()).thenReturn(0, 0x21);
-        MySQLCommandPacketTypeLoader.getCommandPacketType(payload);
+        when(payload.readInt1()).thenReturn(0x21);
+        assertThrows(NullPointerException.class, () -> MySQLCommandPacketTypeLoader.getCommandPacketType(payload));
     }
 }

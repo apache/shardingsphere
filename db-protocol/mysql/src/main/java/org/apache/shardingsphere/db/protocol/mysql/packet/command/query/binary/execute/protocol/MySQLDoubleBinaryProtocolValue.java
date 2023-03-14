@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 public final class MySQLDoubleBinaryProtocolValue implements MySQLBinaryProtocolValue {
     
     @Override
-    public Object read(final MySQLPacketPayload payload) {
+    public Object read(final MySQLPacketPayload payload, final boolean unsigned) {
         return payload.getByteBuf().readDoubleLE();
     }
     

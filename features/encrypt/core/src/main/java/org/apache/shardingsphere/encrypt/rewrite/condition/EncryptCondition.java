@@ -70,8 +70,8 @@ public interface EncryptCondition {
     /**
      * Get values.
      *
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @return values
      */
-    List<Object> getValues(List<Object> parameters);
+    List<Object> getValues(List<Object> params);
 }

@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare;
 
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLComStmtPrepareMySQLOKPacketTest {
     
     @Mock
@@ -36,8 +34,7 @@ public final class MySQLComStmtPrepareMySQLOKPacketTest {
     
     @Test
     public void assertWrite() {
-        MySQLComStmtPrepareOKPacket actual = new MySQLComStmtPrepareOKPacket(1, 1, 0, 1, 0);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLComStmtPrepareOKPacket actual = new MySQLComStmtPrepareOKPacket(1, 0, 1, 0);
         actual.write(payload);
         verify(payload).writeInt1(0x00);
         verify(payload, times(2)).writeInt2(0);

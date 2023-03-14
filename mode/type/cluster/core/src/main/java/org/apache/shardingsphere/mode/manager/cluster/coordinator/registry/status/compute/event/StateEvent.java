@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
-import java.util.Collection;
-
 /**
  * State event.
  */
@@ -32,5 +30,5 @@ public final class StateEvent implements GovernanceEvent {
     
     private final String instanceId;
     
-    private final Collection<String> status;
+    private final String status;
 }

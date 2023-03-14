@@ -21,19 +21,6 @@ ShardingSphere 内置提供了多种分片算法，按照类型可以划分为�
 | -------------- | -------- | ------ |
 | sharding-count | int      | 分片数量 |
 
-#### 基于 CosId 的取模分片算法
-
-基于 `me.ahoo.cosid:cosid-core` 的工具类实现的取模分片算法。
-参考 https://github.com/apache/shardingsphere/issues/14047 的讨论。
-
-类型：COSID_MOD
-
-可配置属性：
-
-| *属性名称*          | *数据类型* | *说明*                 |
-|-------------------| -------- |------------------------|
-| mod               | int      | 分片数量                 |
-| logic-name-prefix | String   | 分片数据源或真实表的前缀格式 |
 
 #### 哈希取模分片算法
 
@@ -157,6 +144,20 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 | datetime-interval-unit   | String  | 分片键时间间隔单位，必须遵循 Java ChronoUnit 的枚举值。例如：MONTHS                                                     |         |
 | datetime-interval-amount | int     | 分片键时间间隔，超过该时间间隔将进入下一分片                                                                            |         |
 
+#### 基于 CosId 的取模分片算法
+
+基于 `me.ahoo.cosid:cosid-core` 的工具类实现的取模分片算法。
+参考 https://github.com/apache/shardingsphere/issues/14047 的讨论。
+
+类型：COSID_MOD
+
+可配置属性：
+
+| *属性名称*          | *数据类型* | *说明*                  |
+|-------------------| -------- |--------------------------|
+| mod               | int      | 分片数量                  |
+| logic-name-prefix | String   | 分片数据源或真实表的前缀格式 |
+
 ### 复合分片算法
 
 #### 复合行表达式分片算法
@@ -214,7 +215,7 @@ rules:
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: t-order-inline
+          shardingAlgorithmName: t_order_inline
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
@@ -223,7 +224,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: t_order-item-inline
+          shardingAlgorithmName: t_order_item_inline
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
@@ -231,7 +232,7 @@ rules:
       actualDataNodes: ds_${0..1}.t_account_${0..1}
       tableStrategy:
         standard:
-          shardingAlgorithmName: t-account-inline
+          shardingAlgorithmName: t_account_inline
       keyGenerateStrategy:
         column: account_id
         keyGeneratorName: snowflake
@@ -243,24 +244,24 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: database-inline
+      shardingAlgorithmName: database_inline
   defaultTableStrategy:
     none:
   
   shardingAlgorithms:
-    database-inline:
+    database_inline:
       type: INLINE
       props:
         algorithm-expression: ds_${user_id % 2}
-    t-order-inline:
+    t_order_inline:
       type: INLINE
       props:
         algorithm-expression: t_order_${order_id % 2}
-    t_order-item-inline:
+    t_order_item_inline:
       type: INLINE
       props:
         algorithm-expression: t_order_item_${order_id % 2}
-    t-account-inline:
+    t_account_inline:
       type: INLINE
       props:
         algorithm-expression: t_account_${account_id % 2}

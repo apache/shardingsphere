@@ -17,33 +17,28 @@
 
 package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
-import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.Properties;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class SQLRegexTrafficAlgorithmTest {
     
     private SQLRegexTrafficAlgorithm sqlRegexAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setUp() {
-        sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TrafficAlgorithmFactory.newInstance(new AlgorithmConfiguration("SQL_REGEX", createProperties()));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.put("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*");
-        return result;
+        sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TypedSPILoader.getService(
+                TrafficAlgorithm.class, "SQL_REGEX", PropertiesBuilder.build(new Property("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*")));
     }
     
     @Test

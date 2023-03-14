@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr;
 
-import org.apache.shardingsphere.dbdiscovery.mysql.exception.DBDiscoverySQLException;
+import org.apache.shardingsphere.dbdiscovery.exception.DBDiscoveryProviderException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid MGR mode exception.
  */
-public final class InvalidMGRModeException extends DBDiscoverySQLException {
+public final class InvalidMGRModeException extends DBDiscoveryProviderException {
     
     private static final long serialVersionUID = -2190741601319220590L;
     

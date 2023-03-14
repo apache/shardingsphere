@@ -26,16 +26,17 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelType;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AuditStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.KeyGenerateStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAuditorSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -86,7 +87,7 @@ public final class ShardingTableRuleStatementConverter {
     private static Map<String, AlgorithmConfiguration> createAuditorConfiguration(final AbstractTableRuleSegment rule) {
         Map<String, AlgorithmConfiguration> result = new HashMap<>();
         Optional.ofNullable(rule.getAuditStrategySegment()).ifPresent(optional -> {
-            for (ShardingAuditorSegment each : optional.getShardingAuditorSegments()) {
+            for (ShardingAuditorSegment each : optional.getAuditorSegments()) {
                 result.put(each.getAuditorName(), new AlgorithmConfiguration(each.getAlgorithmSegment().getName(), each.getAlgorithmSegment().getProps()));
             }
         });
@@ -103,12 +104,12 @@ public final class ShardingTableRuleStatementConverter {
     private static Map<String, AlgorithmConfiguration> createAlgorithmConfiguration(final TableRuleSegment rule) {
         Map<String, AlgorithmConfiguration> result = new HashMap<>();
         if (null != rule.getTableStrategySegment()) {
-            Optional.ofNullable(rule.getTableStrategySegment().getAlgorithmSegment())
+            Optional.ofNullable(rule.getTableStrategySegment().getShardingAlgorithm())
                     .ifPresent(optional -> result.put(getTableShardingAlgorithmName(rule.getLogicTable(), ShardingStrategyLevelType.TABLE, optional.getName()),
                             createAlgorithmConfiguration(optional)));
         }
         if (null != rule.getDatabaseStrategySegment()) {
-            Optional.ofNullable(rule.getDatabaseStrategySegment().getAlgorithmSegment())
+            Optional.ofNullable(rule.getDatabaseStrategySegment().getShardingAlgorithm())
                     .ifPresent(optional -> result.put(getTableShardingAlgorithmName(rule.getLogicTable(), ShardingStrategyLevelType.DATABASE, optional.getName()),
                             createAlgorithmConfiguration(optional)));
         }
@@ -158,7 +159,10 @@ public final class ShardingTableRuleStatementConverter {
     
     private static ShardingStrategyConfiguration createShardingStrategyConfiguration(final String logicTable, final ShardingStrategyLevelType strategyLevel, final String type,
                                                                                      final ShardingStrategySegment segment) {
-        String shardingAlgorithmName = getTableShardingAlgorithmName(logicTable, strategyLevel, segment.getAlgorithmSegment().getName());
+        if ("none".equalsIgnoreCase(type)) {
+            return new NoneShardingStrategyConfiguration();
+        }
+        String shardingAlgorithmName = getTableShardingAlgorithmName(logicTable, strategyLevel, segment.getShardingAlgorithm().getName());
         return createStrategyConfiguration(ShardingStrategyType.getValueOf(type).name(), segment.getShardingColumn(), shardingAlgorithmName);
     }
     
@@ -170,7 +174,7 @@ public final class ShardingTableRuleStatementConverter {
     }
     
     private static ShardingAuditStrategyConfiguration createShardingAuditStrategyConfiguration(final AuditStrategySegment segment) {
-        List<String> auditorNames = segment.getShardingAuditorSegments().stream().map(ShardingAuditorSegment::getAuditorName).collect(Collectors.toList());
+        List<String> auditorNames = segment.getAuditorSegments().stream().map(ShardingAuditorSegment::getAuditorName).collect(Collectors.toList());
         return new ShardingAuditStrategyConfiguration(auditorNames, segment.isAllowHintDisable());
     }
     

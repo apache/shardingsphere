@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Create domain statement.
  */
-@ToString(callSuper = true)
 public abstract class CreateDomainStatement extends AbstractSQLStatement implements DDLStatement {
 }

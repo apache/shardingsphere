@@ -21,17 +21,17 @@ import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
+import javax.sql.DataSource;
 import javax.transaction.Transaction;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -40,21 +40,21 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class XAShardingSphereTransactionManagerTest {
     
     private final XAShardingSphereTransactionManager xaTransactionManager = new XAShardingSphereTransactionManager();
     
-    @Before
+    @BeforeEach
     public void setUp() {
-        Map<String, ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeFactory.getInstance("H2"));
-        Map<String, DatabaseType> databaseTypes = createDatabaseTypes(DatabaseTypeFactory.getInstance("H2"));
-        xaTransactionManager.init(databaseTypes, resourceDataSources, "Atomikos");
+        Map<String, DataSource> dataSources = createDataSources(TypedSPILoader.getService(DatabaseType.class, "H2"));
+        Map<String, DatabaseType> databaseTypes = createDatabaseTypes(TypedSPILoader.getService(DatabaseType.class, "H2"));
+        xaTransactionManager.init(databaseTypes, dataSources, "Atomikos");
     }
     
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         xaTransactionManager.close();
     }
@@ -137,24 +137,20 @@ public final class XAShardingSphereTransactionManagerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private Map<String, XATransactionDataSource> getCachedDataSources() {
-        Field field = xaTransactionManager.getClass().getDeclaredField("cachedDataSources");
-        field.setAccessible(true);
-        return (Map<String, XATransactionDataSource>) field.get(xaTransactionManager);
+        return (Map<String, XATransactionDataSource>) Plugins.getMemberAccessor().get(xaTransactionManager.getClass().getDeclaredField("cachedDataSources"), xaTransactionManager);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private ThreadLocal<Map<Transaction, Connection>> getEnlistedTransactions(final XATransactionDataSource transactionDataSource) {
-        Field field = transactionDataSource.getClass().getDeclaredField("enlistedTransactions");
-        field.setAccessible(true);
-        return (ThreadLocal<Map<Transaction, Connection>>) field.get(transactionDataSource);
+        return (ThreadLocal<Map<Transaction, Connection>>) Plugins.getMemberAccessor().get(transactionDataSource.getClass().getDeclaredField("enlistedTransactions"), transactionDataSource);
     }
     
-    private Map<String, ResourceDataSource> createResourceDataSources(final DatabaseType databaseType) {
-        Map<String, ResourceDataSource> result = new LinkedHashMap<>(3, 1);
-        result.put("sharding_db.ds_0", new ResourceDataSource("sharding_db.ds_0", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_0")));
-        result.put("sharding_db.ds_1", new ResourceDataSource("sharding_db.ds_1", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_1")));
-        result.put("sharding_db.ds_2", new ResourceDataSource("sharding_db.ds_2", DataSourceUtils.build(AtomikosDataSourceBean.class, databaseType, "demo_ds_2")));
+    private Map<String, DataSource> createDataSources(final DatabaseType databaseType) {
+        Map<String, DataSource> result = new LinkedHashMap<>(3, 1);
+        result.put("sharding_db.ds_0", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_0"));
+        result.put("sharding_db.ds_1", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_1"));
+        result.put("sharding_db.ds_2", DataSourceUtils.build(AtomikosDataSourceBean.class, databaseType, "demo_ds_2"));
         return result;
     }
     

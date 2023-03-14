@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.util.exception.internal.fixture;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 
+@NoArgsConstructor
 public final class ShardingSphereInternalExceptionFixture extends ShardingSphereInternalException {
     
     private static final long serialVersionUID = 3759417279204541147L;

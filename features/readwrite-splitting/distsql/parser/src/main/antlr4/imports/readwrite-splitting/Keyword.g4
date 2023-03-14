@@ -35,10 +35,6 @@ DROP
     : D R O P
     ;
 
-SET
-    : S E T
-    ;
-
 SHOW
     : S H O W
     ;
@@ -83,24 +79,12 @@ RULES
     : R U L E S
     ;
 
-SOURCE
-    : S O U R C E
-    ;
-
 RESOURCES
     : R E S O U R C E S
     ;
 
 STATUS
     : S T A T U S
-    ;
-
-HINT
-    : H I N T
-    ;
-
-CLEAR
-    : C L E A R
     ;
 
 ENABLE
@@ -123,19 +107,50 @@ EXISTS
     : E X I S T S
     ;  
 
-
 COUNT
     : C O U N T
     ;
 
-WRITE_DATA_SOURCE_QUERY_ENABLED
-    : W R I T E UL_ D A T A UL_ S O U R C E UL_ Q U E R Y UL_ E N A B L E D
+ROUND_ROBIN
+    : R O U N D UL_ R O B I N
     ;
 
-TRUE
-    : T R U E
+RANDOM
+    : R A N D O M
     ;
 
-FALSE
-    : F A L S E
+WEIGHT
+    : W E I G H T
+    ;
+
+TRANSACTION_RANDOM
+    : T R A N S A C T I O N UL_ R A N D O M
+    ;
+
+TRANSACTION_ROUND_ROBIN
+    : T R A N S A C T I O N UL_ R O U N D UL_ R O B I N
+    ;
+
+TRANSACTION_WEIGHT
+    : T R A N S A C T I O N UL_ W E I G H T
+    ;
+
+FIXED_REPLICA_RANDOM
+    : F I X E D UL_ R E P L I C A UL_ R A N D O M
+    ;
+
+FIXED_REPLICA_ROUND_ROBIN
+    : F I X E D UL_ R E P L I C A UL_ R O U N D UL_ R O B I N
+    ;
+
+FIXED_REPLICA_WEIGHT
+    : F I X E D UL_ R E P L I C A UL_ W E I G H T
+    ;
+
+FIXED_PRIMARY
+    : F I X E D UL_ P R I M A R Y
+    ;
+
+NOT
+    : N O T
     ;

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
 public final class HavingSegment implements SQLSegment {
     
     private final int startIndex;

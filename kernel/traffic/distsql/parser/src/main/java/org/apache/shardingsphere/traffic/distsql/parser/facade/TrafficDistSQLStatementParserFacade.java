@@ -26,7 +26,7 @@ import org.apache.shardingsphere.traffic.distsql.parser.core.TrafficDistSQLParse
 import org.apache.shardingsphere.traffic.distsql.parser.core.TrafficDistSQLStatementVisitor;
 
 /**
- * SQL parser facade for traffic dist SQL statement.
+ * SQL parser facade for traffic DistSQL statement.
  */
 public final class TrafficDistSQLStatementParserFacade implements FeaturedDistSQLStatementParserFacade {
     

@@ -35,7 +35,7 @@ import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.
 import java.util.Properties;
 
 /**
- * SQL statement visitor for transaction dist SQL.
+ * SQL statement visitor for transaction DistSQL.
  */
 public final class TransactionDistSQLStatementVisitor extends TransactionDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
@@ -51,12 +51,8 @@ public final class TransactionDistSQLStatementVisitor extends TransactionDistSQL
     
     @Override
     public ASTNode visitTransactionRuleDefinition(final TransactionRuleDefinitionContext ctx) {
-        String defaultType = getIdentifierValue(ctx.defaultType());
-        if (null == ctx.providerDefinition()) {
-            return new AlterTransactionRuleStatement(defaultType, new TransactionProviderSegment(null, null));
-        }
-        TransactionProviderSegment provider = (TransactionProviderSegment) visit(ctx.providerDefinition());
-        return new AlterTransactionRuleStatement(defaultType, provider);
+        return null == ctx.providerDefinition() ? new AlterTransactionRuleStatement(getIdentifierValue(ctx.defaultType()), new TransactionProviderSegment(null, null))
+                : new AlterTransactionRuleStatement(getIdentifierValue(ctx.defaultType()), (TransactionProviderSegment) visit(ctx.providerDefinition()));
     }
     
     @Override

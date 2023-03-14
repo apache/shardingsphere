@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
-import org.junit.Test;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginDistributedTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer begin distributed transaction statement.
  */
-@ToString(callSuper = true)
 public final class SQLServerBeginDistributedTransactionStatement extends BeginDistributedTransactionStatement implements SQLServerStatement {
 }

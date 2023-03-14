@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle alter inmemory join group statement.
  */
-@ToString(callSuper = true)
 public final class OracleAlterInmemoryJoinGroupStatement extends AbstractSQLStatement implements OracleStatement {
 }

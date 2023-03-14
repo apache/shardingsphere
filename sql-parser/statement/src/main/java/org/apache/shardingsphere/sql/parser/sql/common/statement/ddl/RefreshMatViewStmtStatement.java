@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Refresh materialized view statement.
  */
-@ToString(callSuper = true)
 public abstract class RefreshMatViewStmtStatement extends AbstractSQLStatement implements DDLStatement {
 }

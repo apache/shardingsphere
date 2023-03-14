@@ -20,13 +20,13 @@ grammar BaseRule;
 import Symbol, Keyword, Literals;
 
 propertiesDefinition
-    : PROPERTIES LP properties? RP
+    : PROPERTIES LP_ properties? RP_
     ;
 
 properties
-    : property (COMMA property)*
+    : property (COMMA_ property)*
     ;
 
 property
-    : key=STRING EQ value=STRING
+    : key=STRING_ EQ_ value=STRING_
     ;

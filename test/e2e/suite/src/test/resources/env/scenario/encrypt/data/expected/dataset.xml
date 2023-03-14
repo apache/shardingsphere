@@ -1,0 +1,120 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata data-nodes="expected_dataset.t_user">
+        <column name="user_id" type="numeric" />
+        <column name="user_name" type="varchar" />
+        <column name="password" type="varchar" />
+        <column name="email" type="varchar" />
+        <column name="telephone" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <metadata data-nodes="expected_dataset.t_user_item">
+        <column name="item_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <metadata data-nodes="expected_dataset.t_single_table">
+        <column name="single_id" type="numeric" />
+        <column name="id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
+    <metadata data-nodes="expected_dataset.t_merchant">
+        <column name="merchant_id" type="numeric" />
+        <column name="country_id" type="numeric" />
+        <column name="merchant_name" type="varchar" />
+        <column name="business_code" type="varchar" />
+        <column name="telephone" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <row data-node="expected_dataset.t_single_table" values="1, 10, init" />
+    <row data-node="expected_dataset.t_single_table" values="2, 11, init" />
+    <row data-node="expected_dataset.t_single_table" values="3, 12, init" />
+    <row data-node="expected_dataset.t_single_table" values="4, 13, init" />
+    <row data-node="expected_dataset.t_user" values="10, zhangsan, 111111, zhangsan@gmail.com, 12345678900, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="11, lisi, 222222, lisi@gmail.com, 12345678901, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="12, wangwu, 333333, wangwu@gmail.com, 12345678902, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="13, zhaoliu, 444444, zhaoliu@gmail.com, 12345678903, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="14, zhuqi, 555555, zhuqi@gmail.com, 12345678904, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="15, liba, 666666, liba@gmail.com, 12345678905, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="16, wangjiu, 777777, wangjiu@gmail.com, 12345678906, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="17, zhuda, 888888, zhuda@gmail.com, 12345678907, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="18, suner, 999999, suner@gmail.com, 12345678908, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="19, zhousan, 123456, zhousan@gmail.com, 12345678909, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="20, tom, 234567, tom@gmail.com, 12345678910, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="21, kobe, 345678, kobe@gmail.com, 12345678911, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="22, jerry, 456789, jerry@gmail.com, 12345678912, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="23, james, 567890, james@gmail.com, 12345678913, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="24, wade, 012345, wade@gmail.com, 12345678914, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="25, rose, 000000, rose@gmail.com, 12345678915, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="26, bosh, 111222, bosh@gmail.com, 12345678916, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="27, jack, 222333, jack@gmail.com, 12345678917, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="28, jordan, 333444, jordan@gmail.com, 12345678918, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="29, julie, 444555, julie@gmail.com, 12345678919, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="30, 张三, 123456, zhangsan@gmail.com, 18012312345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="31, 张飞, 234567, zhangfei@gmail.com, 18012412345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="32, 张翼, 345678, zhangyi@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="33, 李四, 456789, lisi@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="34, 李靖, 123123, lijing@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="35, 王善民, 234234, wangshanmin@sphereex.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="36, 王安石, 345345, jeff@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="37, 王羲之, 345345, wangxizhi@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="38, 王莽, 456456, wangmang@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user" values="39, 王勃, 567567, wangbo@gmail.com, 18012512345, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="100000, 10, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="110000, 11, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="120000, 12, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="130000, 13, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="140000, 14, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="150000, 15, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="160000, 16, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="170000, 17, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="180000, 18, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="190000, 19, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="200000, 20, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="210000, 21, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="220000, 22, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="230000, 23, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="240000, 24, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="250000, 25, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="260000, 26, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="270000, 27, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="280000, 28, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_user_item" values="290000, 29, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="1, 86, tencent, 86000001, 86100000001, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="2, 86, haier, 86000002, 86100000002, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="3, 86, huawei, 86000003, 86100000003, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="4, 86, alibaba, 86000004, 86100000004, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="5, 86, lenovo, 86000005, 86100000005, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="6, 86, moutai, 86000006, 86100000006, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="7, 86, baidu, 86000007, 86100000007, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="8, 86, xiaomi, 86000008, 86100000008, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="9, 86, vivo, 86000009, 86100000009, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="10, 86, oppo, 86000010, 86100000010, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="11, 1, google, 01000011, 01100000011, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="12, 1, walmart, 01000012, 01100000012, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="13, 1, amazon, 01000013, 01100000013, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="14, 1, apple, 01000014, 01100000014, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="15, 1, microsoft, 01000015, 01100000015, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="16, 1, dell, 01000016, 01100000016, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="17, 1, johnson, 01000017, 01100000017, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="18, 1, intel, 01000018, 01100000018, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="19, 1, hp, 01000019, 01100000019, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="20, 1, tesla, 01000020, 01100000020, 2017-08-08" />
+</dataset>

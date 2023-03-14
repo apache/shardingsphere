@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL start transaction statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLStartTransactionStatement extends StartTransactionStatement implements PostgreSQLStatement {
 }

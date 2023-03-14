@@ -13,7 +13,7 @@ Apache ShardingSphere 自动化 & 透明化了数据加密过程，让用户无�
 
 ### 整体架构
 
-![1](https://shardingsphere.apache.org/document/current/img/encrypt/1.png)
+![1](https://shardingsphere.apache.org/document/current/img/encrypt/1_cn_v2.png)
 
 加密模块将用户发起的 SQL 进行拦截，并通过 SQL 语法解析器进行解析、理解 SQL 行为，再依据用户传入的加密规则，找出需要加密的字段和所使用的加解密算法对目标字段进行加解密处理后，再与底层数据库进行交互。
 Apache ShardingSphere 会将用户请求的明文进行加密后存储到底层数据库；并在用户查询时，将密文从数据库中取出进行解密后返回给终端用户。
@@ -23,7 +23,7 @@ Apache ShardingSphere 会将用户请求的明文进行加密后存储到底层�
 
 在详解整套流程之前，我们需要先了解下加密规则与配置，这是认识整套流程的基础。加密配置主要分为四部分：数据源配置，加密算法配置，加密表配置以及查询属性配置，其详情如下图所示：
 
-![2](https://shardingsphere.apache.org/document/current/img/encrypt/2.png)
+![2](https://shardingsphere.apache.org/document/current/img/encrypt/2_cn_v2.png)
 
 **数据源配置**：指数据源配置。
 
@@ -51,14 +51,14 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 **Apache ShardingSphere 将面向用户的逻辑列与面向底层数据库的明文列和密文列进行了列名以及数据的加密映射转换。** 
 如下图所示：
 
-![3](https://shardingsphere.apache.org/document/current/img/encrypt/3.png)
+![3](https://shardingsphere.apache.org/document/current/img/encrypt/3_cn_v2.png)
 
 即依据用户提供的加密规则，将用户 SQL 与底层数据表结构割裂开来，使得用户的 SQL 编写不再依赖于真实的数据库表结构。
 而用户与底层数据库之间的衔接、映射、转换交由 Apache ShardingSphere 进行处理。
 
 下方图片展示了使用加密模块进行增删改查时，其中的处理流程和转换逻辑，如下图所示。
 
-![4](https://shardingsphere.apache.org/document/current/img/encrypt/4.png)
+![4](https://shardingsphere.apache.org/document/current/img/encrypt/4_cn_v3.png)
 
 ## 解决方案详解
 
@@ -92,7 +92,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 使用这套配置， Apache ShardingSphere 只需将 logicColumn 和 cipherColumn，assistedQueryColumn 进行转换，底层数据表不存储明文，只存储了密文，这也是安全审计部分的要求所在。
 如果用户希望将明文、密文一同存储到数据库，只需添加 plainColumn 配置即可。整体处理流程如下图所示：
 
-![5](https://shardingsphere.apache.org/document/current/img/encrypt/5.png)
+![5](https://shardingsphere.apache.org/document/current/img/encrypt/5_cn_v2.png)
 
 ### 已上线业务改造
 
@@ -111,7 +111,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 1. 系统迁移前
 
-假设系统需要对 `t_user` 的 `pwd` 字段进行加密处理，业务方使用 Apache ShardingSphere 来代替标准化的 JDBC 接口，此举基本不需要额外改造（我们还提供了 Spring Boot Starter，Spring 命名空间，YAML 等接入方式，满足不同业务方需求）。
+假设系统需要对 `t_user` 的 `pwd` 字段进行加密处理，业务方使用 Apache ShardingSphere 来代替标准化的 JDBC 接口，此举基本不需要额外改造（我们还提供了 YAML 接入方式，满足不同业务方需求）。
 另外，提供一套加密配置规则，如下所示：
 
 ```yaml
@@ -138,7 +138,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 通过 Apache ShardingSphere，针对新增的数据，会把明文写到 pwd 列，并同时把明文进行加密存储到 `pwd_cipher` 列。
 此时，由于 `queryWithCipherColumn` 设置为 false，对业务应用来说，依旧使用 `pwd` 这一明文列进行查询存储，却在底层数据库表 `pwd_cipher` 上额外存储了新增数据的密文数据，其处理流程如下图所示：
 
-![6](https://shardingsphere.apache.org/document/current/img/encrypt/6.png)
+![6](https://shardingsphere.apache.org/document/current/img/encrypt/6_cn_v2.png)
 
 新增数据在插入时，就通过 Apache ShardingSphere 加密为密文数据，并被存储到了 cipherColumn。而现在就需要处理历史明文存量数据。
 **由于 Apache ShardingSphere 目前并未提供相关迁移洗数工具，此时需要业务方自行将 `pwd` 中的明文数据进行加密处理存储到 `pwd_cipher`。**
@@ -157,7 +157,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 也就是说，如果将系统切到密文列进行查询时，发现系统报错，需要回滚。那么只需将 `queryWithCipherColumn = false`，Apache ShardingSphere 将会还原，即又重新开始使用 plainColumn 进行查询。
 处理流程如下图所示：
 
-![7](https://shardingsphere.apache.org/document/current/img/encrypt/7.png)
+![7](https://shardingsphere.apache.org/document/current/img/encrypt/7_cn_v2.png)
 
 3. 系统迁移后
 
@@ -190,7 +190,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 其处理流程如下：
 
-![8](https://shardingsphere.apache.org/document/current/img/encrypt/8.png)
+![8](https://shardingsphere.apache.org/document/current/img/encrypt/8_cn_v2.png)
 
 4. 系统迁移完成 
 
@@ -198,7 +198,7 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 答案是：辅助查询列
 **因为辅助查询列一般使用不可逆的 MD5 和 SM3 等算法，基于辅助列进行查询，即使在迁移洗数过程中，系统也是可以提供正确服务。**
 
-至此，已在线业务加密整改解决方案全部叙述完毕。我们提供了 Java、YAML、Spring Boot Starter、Spring 命名空间多种方式供用户选择接入，力求满足业务不同的接入需求。
+至此，已在线业务加密整改解决方案全部叙述完毕。我们提供了 Java、YAML 两方式供用户选择接入，力求满足业务不同的接入需求。
 该解决方案目前已在京东数科不断落地上线，提供对内基础服务支撑。
 
 ## 中间件加密服务优势

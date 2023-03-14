@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptInsertOnUpdateTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -33,8 +33,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.P
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,9 +44,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,7 +55,7 @@ public final class EncryptInsertOnUpdateTokenGeneratorTest {
     
     private EncryptInsertOnUpdateTokenGenerator generator;
     
-    @Before
+    @BeforeEach
     public void setup() {
         generator = new EncryptInsertOnUpdateTokenGenerator();
         generator.setEncryptRule(mockEncryptRule());
@@ -64,8 +64,8 @@ public final class EncryptInsertOnUpdateTokenGeneratorTest {
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
         when(result.getCipherColumn("t_user", "mobile")).thenReturn("cipher_mobile");
-        when(result.findEncryptor("t_user", "mobile")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
-        when(result.findEncryptor("t_user", "cipher_mobile")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
+        when(result.findEncryptor("t_user", "mobile")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
+        when(result.findEncryptor("t_user", "cipher_mobile")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(result.getEncryptValues(null, "db_test", "t_user", "mobile", Collections.singletonList(0))).thenReturn(Collections.singletonList("encryptValue"));
         return result;
     }

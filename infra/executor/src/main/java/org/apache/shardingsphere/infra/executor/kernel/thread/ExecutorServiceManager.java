@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.kernel.thread;
 
+import com.alibaba.ttl.threadpool.TtlExecutors;
 import lombok.Getter;
 
 import java.util.concurrent.ExecutorService;
@@ -41,7 +42,7 @@ public final class ExecutorServiceManager {
     }
     
     public ExecutorServiceManager(final int executorSize, final String nameFormat) {
-        executorService = getExecutorService(executorSize, nameFormat);
+        executorService = TtlExecutors.getTtlExecutorService(getExecutorService(executorSize, nameFormat));
     }
     
     private ExecutorService getExecutorService(final int executorSize, final String nameFormat) {

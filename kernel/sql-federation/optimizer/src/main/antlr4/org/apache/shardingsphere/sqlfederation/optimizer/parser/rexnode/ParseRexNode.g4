@@ -17,7 +17,7 @@
 
 grammar ParseRexNode;
 
-import Symbol,Keyword,Literals;
+import Symbol, Keyword, Literals;
 
 expression
     : op LP_ parameter COMMA_ parameter RP_
@@ -40,7 +40,7 @@ searchArgs
     ;
 
 constant
-    : INTEGER_ | STRING_
+    : INTEGER_ | STRING_ | PLACEHOLDER_
     ;
 
 cast
@@ -68,7 +68,7 @@ argRangeList
     ;
 
 type
-    : INTEGER|VARCHAR
+    : BIGINT | INTEGER | VARCHAR
     ;
 
 WS

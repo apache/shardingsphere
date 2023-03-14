@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 
@@ -31,7 +30,6 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class InsertMultiTableElementSegment implements SQLSegment {
     
     private final int startIndex;

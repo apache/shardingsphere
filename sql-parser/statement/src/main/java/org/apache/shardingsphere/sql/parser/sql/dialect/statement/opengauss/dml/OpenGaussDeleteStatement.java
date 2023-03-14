@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss delete statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussDeleteStatement extends DeleteStatement implements OpenGaussStatement {
 }

@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Empty statement.
  */
-@ToString(callSuper = true)
 public class EmptyStatement extends AbstractSQLStatement {
     
     @Override

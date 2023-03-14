@@ -16,14 +16,14 @@ rules:
       productionDataSourceName: # production data source name
       shadowDataSourceName: # shadow data source name
   tables:
-    <table-name>:
+    <table_name>:
       dataSourceNames: # shadow table associates shadow data source name list
-        - <shadow-data-source>
+        - <shadow_data_source>
       shadowAlgorithmNames: # shadow table associates shadow algorithm name list
-        - <shadow-algorithm-name>
+        - <shadow_algorithm_name>
   defaultShadowAlgorithmName: # default shadow algorithm name (option)
   shadowAlgorithms:
-    <shadow-algorithm-name> (+): # shadow algorithm name
+    <shadow_algorithm_name> (+): # shadow algorithm name
       type: # shadow algorithm type
       props: # shadow algorithm attribute configuration
 ```
@@ -71,23 +71,19 @@ rules:
       dataSourceNames: 
         - shadowDataSource
       shadowAlgorithmNames: 
-        - user-id-insert-match-algorithm
-        - simple-hint-algorithm
+        - user_id_insert_match_algorithm
+        - sql_hint_algorithm
   shadowAlgorithms:
-    user-id-insert-match-algorithm:
+    user_id_insert_match_algorithm:
       type: REGEX_MATCH
       props:
         operation: insert
         column: user_id
         regex: "[1]"
-    simple-hint-algorithm:
-      type: SIMPLE_HINT
-      props:
-        foo: bar
+    sql_hint_algorithm:
+      type: SQL_HINT
 ```
 
 ## Related References
 - [Core Features of Shadow DB](/en/features/shadow/)
 - [JAVA API: Shadow DB Configuration](/en/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)
-- [Spring Boot Starter: Shadow DB Configuration](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/shadow/)
-- [Spring Namespace: Shadow DB Configuration](/en/user-manual/shardingsphere-jdbc/spring-namespace/rules/shadow/)

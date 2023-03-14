@@ -47,6 +47,57 @@ function fallbackMessage(action) {
     return actionMsg;
 }
 
+function switchTab(tabGroup, tabId) {
+    allTabItems = jQuery("[data-tab-group='"+tabGroup+"']");
+    targetTabItems = jQuery("[data-tab-group='"+tabGroup+"'][data-tab-item='"+tabId+"']");
+
+    // if event is undefined then switchTab was called from restoreTabSelection
+    // so it's not a button event and we don't need to safe the selction or
+    // prevent page jump
+    var isButtonEvent = event != undefined;
+
+    if(isButtonEvent){
+      // save button position relative to viewport
+      var yposButton = event.target.getBoundingClientRect().top;
+    }
+
+    allTabItems.removeClass("active");
+    targetTabItems.addClass("active");
+
+    if(isButtonEvent){
+      // reset screen to the same position relative to clicked button to prevent page jump
+      var yposButtonDiff = event.target.getBoundingClientRect().top - yposButton;
+      window.scrollTo(window.scrollX, window.scrollY+yposButtonDiff);
+
+      // Store the selection to make it persistent
+      if(window.localStorage){
+          var selectionsJSON = window.localStorage.getItem("tabSelections");
+          if(selectionsJSON){
+            var tabSelections = JSON.parse(selectionsJSON);
+          }else{
+            var tabSelections = {};
+          }
+          tabSelections[tabGroup] = tabId;
+          window.localStorage.setItem("tabSelections", JSON.stringify(tabSelections));
+      }
+    }
+}
+
+function restoreTabSelections() {
+    if(window.localStorage){
+        var selectionsJSON = window.localStorage.getItem("tabSelections");
+        // if(selectionsJSON){
+        //   var tabSelections = JSON.parse(selectionsJSON);
+        // }else{
+          var tabSelections = {};
+        // }
+        Object.keys(tabSelections).forEach(function(tabGroup) {
+          var tabItem = tabSelections[tabGroup];
+          switchTab(tabGroup, tabItem);
+        });
+    }
+}
+
 // for the window resize
 $(window).resize(function() {
     setMenuHeight();
@@ -83,6 +134,8 @@ $(window).resize(function() {
 
 
 jQuery(document).ready(function() {
+    restoreTabSelections();
+
     jQuery('#sidebar .category-icon').on('click', function() {
         $( this ).toggleClass("fa-angle-down fa-angle-right") ;
         $( this ).parent().parent().children('ul').toggle() ;
@@ -181,7 +234,7 @@ jQuery(document).ready(function() {
 
         if (text.length > 5) {
             if (!clipInit) {
-                var text, clip = new Clipboard('.copy-to-clipboard', {
+                var text, clip = new ClipboardJS('.copy-to-clipboard', {
                     text: function(trigger) {
                         text = $(trigger).prev('code').text();
                         return text.replace(/^\$\s/gm, '');
@@ -189,7 +242,7 @@ jQuery(document).ready(function() {
                 });
 
                 var inPre;
-                clip.on('success', function(e) {
+                clip.on('success', function(e) {console.log(text)
                     e.clearSelection();
                     inPre = $(e.trigger).parent().prop('tagName') == 'PRE';
                     $(e.trigger).attr('aria-label', 'Copied to clipboard!').addClass('tooltipped tooltipped-' + (inPre ? 'w' : 's'));
@@ -222,6 +275,13 @@ jQuery(document).ready(function() {
             location.href = jQuery(this).attr('href');
         });
     });
+
+    jQuery('input, textarea').keydown(function (e) {
+         //  left and right arrow keys
+         if (e.which == '37' || e.which == '39') {
+             e.stopPropagation();
+         }
+     });
 
     jQuery(document).keydown(function(e) {
       // prev links - left arrow key
@@ -257,7 +317,7 @@ jQuery(document).ready(function() {
         });
     }
 
-    /** 
+    /**
     * Fix anchor scrolling that hides behind top nav bar
     * Courtesy of https://stackoverflow.com/a/13067009/28106
     *
@@ -339,11 +399,66 @@ jQuery(document).ready(function() {
 
         $(document).ready($.proxy(anchorScrolls, 'init'));
     })(window.document, window.history, window.location);
+
+
+    //railroad diagram
     
+    if($('.tab-panel').length) {
+        var codeStr = $('.tab-panel code').text()
+        var _h = $('.tab-panel code').height()
+        var diagram = $('#diagram')
+
+        function appendFormElement(tagName, type, name, value, parentEl){
+            var el = document.createElement(tagName)
+            el.type = type
+            el.name = name
+            el.value = value,
+            parentEl.appendChild(el)
+        }
+
+        var form = document.createElement('form')
+        form.name = "data2"
+        form.method = "post"
+        form.action = "https://www.sphere-ex.com/rrdg"
+        form.enctype="multipart/form-data"
+
+        appendFormElement('input', 'hidden', 'task', 'VIEW', form)
+        appendFormElement('input', 'hidden', 'frame', '', form)
+        appendFormElement('input', 'hidden', 'name', 'ui', form)
+        
+        // 可增加
+        appendFormElement('input', 'hidden', 'color', '#FF8B00', form)
+
+        appendFormElement('textarea', 'hidden', 'text', codeStr, form)
+     
+        appendFormElement('input', 'hidden', 'width', '700', form)
+        appendFormElement('input', 'hidden', 'padding', '10', form)
+        appendFormElement('input', 'hidden', 'strokewidth', '1', form)
+
+        document.body.appendChild(form)
+
+        document.forms.data2.target = 'diagram';
+        document.forms.data2.frame.value = 'diagram';
+        // document.forms.data2.time.value = new Date().getTime();
+
+        
+        diagram.before('<p id="testLoading">Loading ...</p>')
+
+        document.forms.data2.submit();
+
+        document.body.removeChild(form)
+
+        diagram.on('load', function(){
+            $('#testLoading').remove()
+            diagram.height(_h > 500 ? _h+'px' : '500px')
+        })
+    }
+
 });
 
-jQuery(window).on('load', function() {
 
+
+jQuery(window).on('load', function() {
     function adjustForScrollbar() {
         if ((parseInt(jQuery('#body-inner').height()) + 83) >= jQuery('#body').height()) {
             jQuery('.nav.nav-next').css({ 'margin-right': getScrollBarWidth() });
@@ -468,6 +583,63 @@ window.onload = function(){
       }
     }
     
+  }
+
+  window.onload = function(){
+    var markdown = document.querySelector('#body'),
+    h2s = markdown.querySelectorAll('h2'),
+    bookToc = document.querySelector('#TableOfContents');
+    if(bookToc){
+      var bocs = bookToc.querySelectorAll('a'),
+      h2Info = [];
+      h2s.forEach(item=>{
+        h2Info.push({
+          top: item.offsetTop,
+          id: item.id
+        })
+      })
+
+      function ScollPostion() {
+        var t, l, w, h;
+        if (document.documentElement && document.documentElement.scrollTop) {
+            t = document.documentElement.scrollTop;
+            l = document.documentElement.scrollLeft;
+            w = document.documentElement.scrollWidth;
+            h = document.documentElement.scrollHeight;
+        } else if (document.body) {
+            t = document.body.scrollTop;
+            l = document.body.scrollLeft;
+            w = document.body.scrollWidth;
+            h = document.body.scrollHeight;
+        }
+        return {
+            top: t,
+            left: l,
+            width: w,
+            height: h
+        };
+    }
+
+      function deal(str){
+        bocs.forEach(function(item){
+          if(item.getAttribute('href').split('#')[1] == str){
+            item.classList='active'
+          }else{
+            item.classList=''
+          }
+        })
+      }
+
+      document.body.onscroll = function(e){
+        var scrollTop = ScollPostion().top
+        h2Info.map(function(item){
+          if(Math.abs(scrollTop - item.top)<20){
+            deal(item.id)
+          }
+        })
+      }
+    }
+
   }
 
 jQuery.extend({

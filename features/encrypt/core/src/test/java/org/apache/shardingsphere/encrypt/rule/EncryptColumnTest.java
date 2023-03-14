@@ -17,24 +17,24 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class EncryptColumnTest {
     
     @Test
     public void assertGetAssistedQueryColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "fuzzyQueryColumn", "plainColumn", "encryptorName", null).getAssistedQueryColumn().isPresent());
+        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "encryptorName", null).getAssistedQueryColumn().isPresent());
     }
     
     @Test
-    public void assertGetFuzzyQueryColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "fuzzyQueryColumn", "plainColumn", "encryptorName", null).getFuzzyQueryColumn().isPresent());
+    public void assertGetLikeQueryColumn() {
+        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "encryptorName", null).getLikeQueryColumn().isPresent());
     }
     
     @Test
     public void assertGetPlainColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "fuzzyQueryColumn", "plainColumn", "encryptorName", null).getPlainColumn().isPresent());
+        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "encryptorName", null).getPlainColumn().isPresent());
     }
 }

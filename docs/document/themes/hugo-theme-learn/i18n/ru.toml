@@ -1,0 +1,35 @@
+[Search-placeholder]
+other = "Поиск..."
+
+[Clear-History]
+other = "Очистить историю"
+
+[Attachments-label]
+other = "Присоединенные файлы"
+
+[title-404]
+other = "Ошибка"
+
+[message-404]
+other = "Упс. Выглядит будто такой страницы нет ¯\\_(ツ)_/¯."
+
+[Go-to-homepage]
+other = "Перейти на главную"
+
+[Edit-this-page]
+other = "Редактировать"
+
+[Shortcuts-Title]
+other = "Еще"
+
+[Expand-title]
+other = "Развернуть..."
+
+[Byte-symbol]
+other = "Б"
+
+[Kilobyte-symbol]
+other = "КБ"
+
+[Megabyte-symbol]
+other = "МБ"

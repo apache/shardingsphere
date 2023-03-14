@@ -30,5 +30,7 @@ import java.util.List;
 @Setter
 public final class YamlShardingSphereRowData implements YamlConfiguration {
     
+    private String uniqueKey;
+    
     private List<Object> rows;
 }

@@ -96,7 +96,7 @@ public enum ShardingStrategyType {
         
         @Override
         public boolean isValid(final String shardingColumn) {
-            return true;
+            return null == shardingColumn;
         }
     },
     COMPLEX {
@@ -164,7 +164,7 @@ public enum ShardingStrategyType {
         try {
             return valueOf(name.toUpperCase());
         } catch (final IllegalArgumentException ex) {
-            throw new UnsupportedSQLOperationException(String.format("unsupported strategy type %s", name));
+            throw new UnsupportedSQLOperationException(String.format("unsupported strategy type `%s`", name));
         }
     }
     
@@ -176,18 +176,18 @@ public enum ShardingStrategyType {
      */
     public static ShardingStrategyType getValueOf(final ShardingStrategyConfiguration shardingStrategyConfig) {
         Optional<ShardingStrategyType> type = Arrays.stream(values())
-                .filter(each -> shardingStrategyConfig.getClass().getCanonicalName().equals(each.getImplementedClass().getCanonicalName())).findFirst();
+                .filter(each -> shardingStrategyConfig.getClass().getName().equals(each.getImplementedClass().getName())).findFirst();
         type.orElseThrow(() -> new UnsupportedOperationException(String.format("unsupported strategy type %s", shardingStrategyConfig.getClass().getName())));
         return type.get();
     }
     
     /**
-     * Determine whether the specified type is included.
+     * Determine whether contains type.
      *
-     * @param name name
-     * @return have data or not
+     * @param type type
+     * @return contains or not
      */
-    public static boolean contain(final String name) {
-        return Arrays.stream(values()).map(Enum::name).anyMatch(each -> each.equalsIgnoreCase(name));
+    public static boolean contains(final String type) {
+        return Arrays.stream(values()).map(Enum::name).anyMatch(each -> each.equalsIgnoreCase(type));
     }
 }

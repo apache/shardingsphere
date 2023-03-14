@@ -3,6 +3,10 @@ title = "Appendix with SQL operator"
 weight = 3
 +++
 
+Limited supported SQL:
+
+- When using `getGeneratedKeys` interface of JDBC specification to return auto-increment key, it is necessary to use a distributed key generator that supports auto-increment, and does not support other types of distributed key generators
+
 Unsupported SQL:
 
 - CASE WHEN contains sub-query

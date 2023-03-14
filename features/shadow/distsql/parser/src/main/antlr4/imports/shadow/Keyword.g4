@@ -134,3 +134,19 @@ EXISTS
 COUNT
     : C O U N T
     ;
+
+VALUE_MATCH
+    : V A L U E UL_ M A T C H
+    ;
+
+REGEX_MATCH
+    : R E G E X UL_ M A T C H
+    ;
+
+SQL_HINT
+    : S I M P L E UL_ H I N T
+    ;
+
+NOT
+    : N O T
+    ;

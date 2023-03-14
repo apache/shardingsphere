@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
@@ -30,7 +29,6 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString(callSuper = true)
 public final class ColumnAssignmentSegment extends AssignmentSegment {
     
     private final int startIndex;

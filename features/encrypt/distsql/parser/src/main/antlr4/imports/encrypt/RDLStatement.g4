@@ -20,81 +20,93 @@ grammar RDLStatement;
 import BaseRule;
 
 createEncryptRule
-    : CREATE ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
+    : CREATE ENCRYPT RULE ifNotExists? encryptRuleDefinition (COMMA_ encryptRuleDefinition)*
     ;
 
 alterEncryptRule
-    : ALTER ENCRYPT RULE encryptRuleDefinition (COMMA encryptRuleDefinition)*
+    : ALTER ENCRYPT RULE encryptRuleDefinition (COMMA_ encryptRuleDefinition)*
     ;
 
 dropEncryptRule
-    : DROP ENCRYPT RULE ifExists? tableName (COMMA tableName)*
+    : DROP ENCRYPT RULE ifExists? tableName (COMMA_ tableName)*
     ;
 
 encryptRuleDefinition
-    : tableName LP (resourceDefinition COMMA)? COLUMNS LP encryptColumnDefinition (COMMA encryptColumnDefinition)* RP (COMMA QUERY_WITH_CIPHER_COLUMN EQ queryWithCipherColumn)? RP
-    ;
-
-resourceDefinition
-    : RESOURCE EQ resourceName 
+    : tableName LP_ COLUMNS LP_ encryptColumnDefinition (COMMA_ encryptColumnDefinition)* RP_ (COMMA_ QUERY_WITH_CIPHER_COLUMN EQ_ queryWithCipherColumn)? RP_
     ;
 
 resourceName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 encryptColumnDefinition
-    : LP columnDefinition (COMMA plainColumnDefinition)? COMMA cipherColumnDefinition (COMMA assistedQueryColumnDefinition)? (COMMA fuzzyQueryColumnDefinition)? COMMA algorithmDefinition (COMMA algorithmDefinition)? (COMMA algorithmDefinition)? RP
+    : LP_ columnDefinition (COMMA_ plainColumnDefinition)? COMMA_ cipherColumnDefinition (COMMA_ assistedQueryColumnDefinition)? (COMMA_ likeQueryColumnDefinition)? COMMA_ encryptAlgorithm (COMMA_ assistedQueryAlgorithm)? (COMMA_ likeQueryAlgorithm)? (COMMA_ QUERY_WITH_CIPHER_COLUMN EQ_ queryWithCipherColumn)? RP_
     ;
 
 columnDefinition
-    : NAME EQ columnName (COMMA DATA_TYPE EQ dataType)?
+    : NAME EQ_ columnName (COMMA_ DATA_TYPE EQ_ dataType)?
     ;
 
 columnName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 dataType
-    : STRING 
+    : STRING_
     ;
 
 plainColumnDefinition
-    : PLAIN EQ plainColumnName (COMMA PLAIN_DATA_TYPE EQ dataType)?
+    : PLAIN EQ_ plainColumnName (COMMA_ PLAIN_DATA_TYPE EQ_ dataType)?
     ;
 
 plainColumnName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 cipherColumnDefinition
-    :  CIPHER EQ cipherColumnName (COMMA CIPHER_DATA_TYPE EQ dataType)?
+    :  CIPHER EQ_ cipherColumnName (COMMA_ CIPHER_DATA_TYPE EQ_ dataType)?
     ;
 
 cipherColumnName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 assistedQueryColumnDefinition
-    : ASSISTED_QUERY_COLUMN EQ assistedQueryColumnName (COMMA ASSISTED_QUERY_DATA_TYPE EQ dataType)?
+    : ASSISTED_QUERY_COLUMN EQ_ assistedQueryColumnName (COMMA_ ASSISTED_QUERY_DATA_TYPE EQ_ dataType)?
     ;
 
 assistedQueryColumnName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
-fuzzyQueryColumnDefinition
-    : FUZZY_QUERY_COLUMN EQ fuzzyQueryColumnName (COMMA FUZZY_QUERY_DATA_TYPE EQ dataType)?
+likeQueryColumnDefinition
+    : LIKE_QUERY_COLUMN EQ_ likeQueryColumnName (COMMA_ LIKE_QUERY_DATA_TYPE EQ_ dataType)?
     ;
 
-fuzzyQueryColumnName
-    : IDENTIFIER
+likeQueryColumnName
+    : IDENTIFIER_
     ;
-    
+
+encryptAlgorithm
+    : ENCRYPT_ALGORITHM LP_ algorithmDefinition RP_
+    ;
+
+assistedQueryAlgorithm
+    : ASSISTED_QUERY_ALGORITHM LP_ algorithmDefinition RP_
+    ;
+
+likeQueryAlgorithm
+    : LIKE_QUERY_ALGORITHM LP_ algorithmDefinition RP_
+    ;
+
 queryWithCipherColumn
     : TRUE | FALSE
     ;
 
 ifExists
     : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

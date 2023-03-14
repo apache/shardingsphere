@@ -30,10 +30,10 @@ import java.util.Collection;
 @Getter
 public final class DropDatabaseDiscoveryRuleStatement extends DropRuleStatement {
     
-    private final Collection<String> ruleNames;
+    private final Collection<String> names;
     
-    public DropDatabaseDiscoveryRuleStatement(final boolean ifExists, final Collection<String> ruleNames) {
+    public DropDatabaseDiscoveryRuleStatement(final boolean ifExists, final Collection<String> names) {
         super(ifExists);
-        this.ruleNames = ruleNames;
+        this.names = names;
     }
 }

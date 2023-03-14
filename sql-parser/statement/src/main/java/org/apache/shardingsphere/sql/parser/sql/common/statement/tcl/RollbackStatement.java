@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Optional;
@@ -29,7 +28,6 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public abstract class RollbackStatement extends AbstractSQLStatement implements TCLStatement {
     
     private String savepointName;

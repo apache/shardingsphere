@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateAggregateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL create aggregate statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLCreateAggregateStatement extends CreateAggregateStatement implements PostgreSQLStatement {
 }

@@ -19,16 +19,8 @@ grammar RALStatement;
 
 import BaseRule;
 
-createTrafficRule
-    : CREATE TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
-    ;
-
 alterTrafficRule
-    : ALTER TRAFFIC RULE trafficRuleDefinition (COMMA trafficRuleDefinition)* 
-    ;
-
-dropTrafficRule
-    : DROP TRAFFIC RULE ifExists? ruleName (COMMA ruleName)*
+    : ALTER TRAFFIC RULE trafficRuleDefinition (COMMA_ trafficRuleDefinition)*
     ;
 
 showTrafficRules
@@ -36,35 +28,43 @@ showTrafficRules
     ;
 
 trafficRuleDefinition
-    : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
+    : ruleName LP_ (labelDefinition COMMA_)? trafficAlgorithmDefinition (COMMA_ loadBalancerDefinition)? RP_
     ;
 
 labelDefinition
-    : LABELS LP label (COMMA label)* RP
+    : LABELS LP_ label (COMMA_ label)* RP_
     ;
 
 trafficAlgorithmDefinition
-    : TRAFFIC_ALGORITHM LP algorithmDefinition RP 
+    : TRAFFIC_ALGORITHM LP_ algorithmDefinition RP_
     ;
 
 algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
+    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
     ;
 
 loadBalancerDefinition
-    : LOAD_BALANCER LP algorithmDefinition RP
+    : LOAD_BALANCER LP_ algorithmDefinition RP_
     ;
 
 algorithmTypeName
-    : STRING
+    : buildInTrafficAlgorithmTypeName | buildInLoadBalancerTypeName | STRING_
+    ;
+
+buildInTrafficAlgorithmTypeName
+    : SQL_MATCH | SQL_HINT
+    ;
+
+buildInLoadBalancerTypeName
+    : RANDOM | ROUND_ROBIN
     ;
 
 label
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 ruleName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 ifExists

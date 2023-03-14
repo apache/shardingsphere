@@ -17,7 +17,9 @@
 
 - !AUTHORITY
   users:
-    - root@%:root
-    - sharding@:sharding
-  provider:
+    - user: root@%
+      password: root
+    - user: sharding@
+      password: sharding
+  privilege:
     type: ALL_PERMITTED

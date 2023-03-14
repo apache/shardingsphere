@@ -30,5 +30,5 @@ public final class WorkerIdEvent implements GovernanceEvent {
     
     private final String instanceId;
     
-    private final Long workerId;
+    private final Integer workerId;
 }

@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.shadow.rule.builder.ShadowRuleBuilder
-org.apache.shardingsphere.shadow.rule.builder.AlgorithmProvidedShadowRuleBuilder

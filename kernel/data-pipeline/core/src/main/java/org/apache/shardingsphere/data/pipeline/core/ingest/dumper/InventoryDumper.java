@@ -36,14 +36,18 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineJobUniqueKeyDataTypeException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
@@ -54,7 +58,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Optional;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Inventory dumper.
@@ -83,98 +88,99 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         this.dumperConfig = dumperConfig;
         this.channel = channel;
         this.dataSource = dataSource;
-        sqlBuilder = PipelineSQLBuilderFactory.getInstance(dumperConfig.getDataSourceConfig().getDatabaseType().getType());
-        columnValueReader = ColumnValueReaderFactory.getInstance(dumperConfig.getDataSourceConfig().getDatabaseType().getType());
+        String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
+        sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, databaseType);
+        columnValueReader = PipelineTypedSPILoader.getDatabaseTypedService(ColumnValueReader.class, databaseType);
         this.metaDataLoader = metaDataLoader;
     }
     
     @Override
     protected void runBlocking() {
-        String firstSQL = buildInventoryDumpSQL(true);
-        String laterSQL = buildInventoryDumpSQL(false);
         IngestPosition<?> position = dumperConfig.getPosition();
-        log.info("Inventory dump, uniqueKeyDataType={}, firstSQL={}, laterSQL={}, position={}.", dumperConfig.getUniqueKeyDataType(), firstSQL, laterSQL, position);
         if (position instanceof FinishedPosition) {
             log.info("Ignored because of already finished.");
             return;
         }
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName());
-        Object beginUniqueKeyValue = ((PrimaryKeyPosition<?>) position).getBeginValue();
-        int round = 1;
         try (Connection connection = dataSource.getConnection()) {
-            Optional<Object> maxUniqueKeyValue;
-            while ((maxUniqueKeyValue = dump(tableMetaData, connection, 1 == round ? firstSQL : laterSQL, beginUniqueKeyValue, round++)).isPresent()) {
-                beginUniqueKeyValue = maxUniqueKeyValue.get();
-                if (!isRunning()) {
-                    log.info("Broke because of inventory dump is not running.");
-                    break;
-                }
-            }
-            log.info("Inventory dump done, round={}, maxUniqueKeyValue={}.", round, maxUniqueKeyValue);
+            dump(tableMetaData, connection);
         } catch (final SQLException ex) {
             log.error("Inventory dump, ex caught, msg={}.", ex.getMessage());
-            throw new IngestException(ex);
+            throw new IngestException("Inventory dump failed on " + dumperConfig.getActualTableName(), ex);
         } finally {
-            log.info("Inventory dump, before put FinishedRecord.");
             channel.pushRecord(new FinishedRecord(new FinishedPosition()));
         }
     }
     
-    private String buildInventoryDumpSQL(final boolean firstQuery) {
-        String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
-        if (PipelineJdbcUtils.isIntegerColumn(dumperConfig.getUniqueKeyDataType())) {
-            return sqlBuilder.buildDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), dumperConfig.getUniqueKeyDataType(), firstQuery);
-        }
-        if (PipelineJdbcUtils.isStringColumn(dumperConfig.getUniqueKeyDataType())) {
-            return sqlBuilder.buildIndivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), dumperConfig.getUniqueKeyDataType(), firstQuery);
-        }
-        throw new UnsupportedPipelineJobUniqueKeyDataTypeException(dumperConfig.getUniqueKeyDataType());
-    }
-    
-    private Optional<Object> dump(final PipelineTableMetaData tableMetaData, final Connection connection, final String sql, final Object beginUniqueKeyValue, final int round) throws SQLException {
-        if (null != dumperConfig.getRateLimitAlgorithm()) {
-            dumperConfig.getRateLimitAlgorithm().intercept(JobOperationType.SELECT, 1);
-        }
+    private void dump(final PipelineTableMetaData tableMetaData, final Connection connection) throws SQLException {
         int batchSize = dumperConfig.getBatchSize();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+        DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
+        try (PreparedStatement preparedStatement = JDBCStreamQueryUtil.generateStreamQueryPreparedStatement(databaseType, connection, buildInventoryDumpSQL())) {
             dumpStatement = preparedStatement;
-            setParameters(preparedStatement, batchSize, beginUniqueKeyValue);
+            if (!(databaseType instanceof MySQLDatabaseType)) {
+                preparedStatement.setFetchSize(batchSize);
+            }
+            setParameters(preparedStatement);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 int rowCount = 0;
-                Object maxUniqueKeyValue = null;
+                JobRateLimitAlgorithm rateLimitAlgorithm = dumperConfig.getRateLimitAlgorithm();
+                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 while (resultSet.next()) {
                     channel.pushRecord(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
-                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, tableMetaData.getColumnMetaData(dumperConfig.getUniqueKey()).getOrdinalPosition());
-                    rowCount++;
+                    ++rowCount;
                     if (!isRunning()) {
                         log.info("Broke because of inventory dump is not running.");
                         break;
                     }
-                }
-                if (0 == round % 50) {
-                    log.info("Dumping, round={}, rowCount={}, maxUniqueKeyValue={}.", round, rowCount, maxUniqueKeyValue);
+                    if (null != rateLimitAlgorithm && 0 == rowCount % batchSize) {
+                        rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
+                    }
                 }
                 dumpStatement = null;
-                return Optional.ofNullable(maxUniqueKeyValue);
+                log.info("Inventory dump done, rowCount={}", rowCount);
             }
         }
     }
     
-    private void setParameters(final PreparedStatement preparedStatement, final int batchSize, final Object beginUniqueKeyValue) throws SQLException {
-        preparedStatement.setFetchSize(batchSize);
-        if (PipelineJdbcUtils.isIntegerColumn(dumperConfig.getUniqueKeyDataType())) {
-            preparedStatement.setObject(1, beginUniqueKeyValue);
-            preparedStatement.setObject(2, ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());
-            preparedStatement.setInt(3, batchSize);
+    private String buildInventoryDumpSQL() {
+        LogicTableName logicTableName = new LogicTableName(dumperConfig.getLogicTableName());
+        String schemaName = dumperConfig.getSchemaName(logicTableName);
+        if (!dumperConfig.hasUniqueKey()) {
+            return sqlBuilder.buildNoUniqueKeyInventoryDumpSQL(schemaName, dumperConfig.getActualTableName());
+        }
+        PrimaryKeyPosition<?> position = (PrimaryKeyPosition<?>) dumperConfig.getPosition();
+        PipelineColumnMetaData firstColumn = dumperConfig.getUniqueKeyColumns().get(0);
+        List<String> columnNames = dumperConfig.getColumnNameList(logicTableName).orElse(Collections.singletonList("*"));
+        if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) || PipelineJdbcUtils.isStringColumn(firstColumn.getDataType())) {
+            if (null != position.getBeginValue() && null != position.getEndValue()) {
+                return sqlBuilder.buildDivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
+            }
+            if (null != position.getBeginValue() && null == position.getEndValue()) {
+                return sqlBuilder.buildDivisibleInventoryDumpSQLNoEnd(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
+            }
+        }
+        return sqlBuilder.buildIndivisibleInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), columnNames, firstColumn.getName());
+    }
+    
+    private void setParameters(final PreparedStatement preparedStatement) throws SQLException {
+        if (!dumperConfig.hasUniqueKey()) {
             return;
         }
-        if (PipelineJdbcUtils.isStringColumn(dumperConfig.getUniqueKeyDataType())) {
-            preparedStatement.setObject(1, beginUniqueKeyValue);
-            preparedStatement.setInt(2, batchSize);
+        PipelineColumnMetaData firstColumn = dumperConfig.getUniqueKeyColumns().get(0);
+        PrimaryKeyPosition<?> position = (PrimaryKeyPosition<?>) dumperConfig.getPosition();
+        if (PipelineJdbcUtils.isIntegerColumn(firstColumn.getDataType()) && null != position.getBeginValue() && null != position.getEndValue()) {
+            preparedStatement.setObject(1, position.getBeginValue());
+            preparedStatement.setObject(2, position.getEndValue());
             return;
         }
-        throw new UnsupportedPipelineJobUniqueKeyDataTypeException(dumperConfig.getUniqueKeyDataType());
+        if (PipelineJdbcUtils.isStringColumn(firstColumn.getDataType())) {
+            if (null != position.getBeginValue()) {
+                preparedStatement.setObject(1, position.getBeginValue());
+            }
+            if (null != position.getEndValue()) {
+                preparedStatement.setObject(2, position.getEndValue());
+            }
+        }
     }
     
     private DataRecord loadDataRecord(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData, final PipelineTableMetaData tableMetaData) throws SQLException {
@@ -183,15 +189,16 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         result.setType(IngestDataChangeType.INSERT);
         result.setTableName(dumperConfig.getLogicTableName());
         for (int i = 1; i <= columnCount; i++) {
-            result.addColumn(new Column(resultSetMetaData.getColumnName(i), columnValueReader.readValue(resultSet, resultSetMetaData, i), true, tableMetaData.getColumnMetaData(i).isUniqueKey()));
+            String columnName = resultSetMetaData.getColumnName(i);
+            result.addColumn(new Column(columnName, columnValueReader.readValue(resultSet, resultSetMetaData, i), true, tableMetaData.getColumnMetaData(columnName).isUniqueKey()));
         }
         return result;
     }
     
     private IngestPosition<?> newPosition(final ResultSet resultSet) throws SQLException {
-        return null == dumperConfig.getUniqueKey()
+        return !dumperConfig.hasUniqueKey()
                 ? new PlaceholderPosition()
-                : PrimaryKeyPositionFactory.newInstance(resultSet.getObject(dumperConfig.getUniqueKey()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());
+                : PrimaryKeyPositionFactory.newInstance(resultSet.getObject(dumperConfig.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());
     }
     
     @Override

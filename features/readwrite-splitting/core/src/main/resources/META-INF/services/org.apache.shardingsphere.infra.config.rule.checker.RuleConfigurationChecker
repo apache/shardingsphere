@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.readwritesplitting.checker.ReadwriteSplittingRuleConfigurationChecker
-org.apache.shardingsphere.readwritesplitting.checker.AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker

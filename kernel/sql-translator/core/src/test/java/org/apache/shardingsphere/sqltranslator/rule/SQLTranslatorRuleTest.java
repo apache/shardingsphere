@@ -21,12 +21,13 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedDatabaseException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class SQLTranslatorRuleTest {
     
@@ -59,9 +60,10 @@ public final class SQLTranslatorRuleTest {
         assertThat(actual, is(expected));
     }
     
-    @Test(expected = UnsupportedTranslatedDatabaseException.class)
+    @Test
     public void assertNotUseOriginalSQLWhenTranslatingFailed() {
-        new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", false)).translate("", null, new PostgreSQLDatabaseType(), new MySQLDatabaseType());
+        assertThrows(UnsupportedTranslatedDatabaseException.class,
+                () -> new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", false)).translate("", null, new PostgreSQLDatabaseType(), new MySQLDatabaseType()));
     }
     
     @Test

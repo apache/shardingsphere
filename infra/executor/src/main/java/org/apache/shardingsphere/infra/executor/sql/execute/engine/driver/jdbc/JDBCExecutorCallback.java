@@ -28,8 +28,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.DatabaseMetaData;
@@ -59,14 +57,12 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     private final boolean isExceptionThrown;
     
-    private final EventBusContext eventBusContext;
-    
     @Override
-    public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
+    public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread) throws SQLException {
         // TODO It is better to judge whether need sane result before execute, can avoid exception thrown
         Collection<T> result = new LinkedList<>();
         for (JDBCExecutionUnit each : executionUnits) {
-            T executeResult = execute(each, isTrunkThread, dataMap);
+            T executeResult = execute(each, isTrunkThread);
             if (null != executeResult) {
                 result.add(executeResult);
             }
@@ -79,17 +75,17 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
      *
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      */
-    private T execute(final JDBCExecutionUnit jdbcExecutionUnit, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
+    private T execute(final JDBCExecutionUnit jdbcExecutionUnit, final boolean isTrunkThread) throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
         DatabaseType storageType = storageTypes.get(jdbcExecutionUnit.getExecutionUnit().getDataSourceName());
         DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(jdbcExecutionUnit.getStorageResource().getConnection().getMetaData(), storageType);
         SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
             SQLUnit sqlUnit = jdbcExecutionUnit.getExecutionUnit().getSqlUnit();
-            sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), dataSourceMetaData, isTrunkThread, dataMap);
+            sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), dataSourceMetaData, isTrunkThread);
             T result = executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode(), storageType);
             sqlExecutionHook.finishSuccess();
-            finishReport(dataMap, jdbcExecutionUnit);
+            finishReport(jdbcExecutionUnit);
             return result;
         } catch (final SQLException ex) {
             if (!storageType.equals(protocolType)) {
@@ -114,10 +110,8 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
         return result;
     }
     
-    private void finishReport(final Map<String, Object> dataMap, final SQLExecutionUnit executionUnit) {
-        if (dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            ExecuteProcessEngine.finishExecution(dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name()).toString(), executionUnit, eventBusContext);
-        }
+    private void finishReport(final SQLExecutionUnit executionUnit) {
+        new ExecuteProcessEngine().finishExecution(executionUnit);
     }
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode, DatabaseType storageType) throws SQLException;

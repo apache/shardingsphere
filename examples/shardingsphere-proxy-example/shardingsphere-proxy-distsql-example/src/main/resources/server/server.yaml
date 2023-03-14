@@ -43,12 +43,12 @@ authority:
   privilege:
     type: ALL_PERMITTED
 
-rules:
-  - !TRANSACTION
-    defaultType: XA
-    providerType: Atomikos
-  - !SQL_PARSER
-    sqlCommentParseEnabled: true
+transaction:
+  defaultType: XA
+  providerType: Atomikos
+
+sqlParser:
+  sqlCommentParseEnabled: true
 
 props:
   max-connections-size-per-query: 1

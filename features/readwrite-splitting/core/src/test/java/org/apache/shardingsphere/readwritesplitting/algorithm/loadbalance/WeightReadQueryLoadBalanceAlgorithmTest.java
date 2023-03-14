@@ -17,76 +17,117 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.readwritesplitting.factory.ReadQueryLoadBalanceAlgorithmFactory;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategyAware;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class WeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetSingleReadDataSource() {
-        WeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = createReadQueryLoadBalanceAlgorithm(createSingleDataSourceProperties());
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5")));
         assertThat(loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), new TransactionConnectionContext()), is("test_read_ds_1"));
-    }
-    
-    private Properties createSingleDataSourceProperties() {
-        Properties result = new Properties();
-        result.setProperty("test_read_ds_1", "5");
-        return result;
     }
     
     @Test
     public void assertGetMultipleReadDataSources() {
-        WeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = createReadQueryLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class,
+                "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5")));
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, new TransactionConnectionContext()), notNullValue());
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, new TransactionConnectionContext()), notNullValue());
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, new TransactionConnectionContext()), notNullValue());
+        assertWeightReadQueryLoadBalance(loadBalanceAlgorithm, writeDataSourceName, readDataSourceNames);
     }
     
-    private Properties createMultipleDataSourcesProperties() {
-        Properties result = new Properties();
-        result.setProperty("test_read_ds_1", "5");
-        result.setProperty("test_read_ds_2", "5");
-        return result;
-    }
-    
-    private WeightReadQueryLoadBalanceAlgorithm createReadQueryLoadBalanceAlgorithm(final Properties props) {
-        return (WeightReadQueryLoadBalanceAlgorithm) ReadQueryLoadBalanceAlgorithmFactory.newInstance(new AlgorithmConfiguration("WEIGHT", props));
+    private void assertWeightReadQueryLoadBalance(final ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm, final String writeDataSourceName, final List<String> readDataSourceNames) {
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, new TransactionConnectionContext()), notNullValue());
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, new TransactionConnectionContext()), notNullValue());
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, new TransactionConnectionContext()), notNullValue());
     }
     
     @Test
-    public void assertGetReadDataSourceInTransaction() {
-        WeightReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = createReadQueryLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
+    public void assertGetReadDataSourceDefaultStrategy() {
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class,
+                "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5")));
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionConnectionContext context = new TransactionConnectionContext();
+        assertWeightReadQueryLoadBalance(loadBalanceAlgorithm, writeDataSourceName, readDataSourceNames);
         context.setInTransaction(true);
         assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(writeDataSourceName));
     }
     
     @Test
+    public void assertGetDataSourceWithFixedPrimaryStrategy() {
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "WEIGHT",
+                PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5"),
+                        new Property(TransactionReadQueryStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_PRIMARY.name())));
+        String writeDataSourceName = "test_write_ds";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
+        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        assertWeightReadQueryLoadBalance(loadBalanceAlgorithm, writeDataSourceName, readDataSourceNames);
+        context.setInTransaction(true);
+        assertTrue(writeDataSourceName.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
+        assertTrue(writeDataSourceName.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
+    }
+    
+    @Test
+    public void assertGetDataSourceWithFixedReplicaStrategy() {
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "WEIGHT",
+                PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5"),
+                        new Property(TransactionReadQueryStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_REPLICA.name())));
+        String writeDataSourceName = "test_write_ds";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
+        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        assertWeightReadQueryLoadBalance(loadBalanceAlgorithm, writeDataSourceName, readDataSourceNames);
+        context.setInTransaction(true);
+        String routeDataSource = loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context);
+        assertTrue(readDataSourceNames.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(routeDataSource));
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(routeDataSource));
+    }
+    
+    @Test
+    public void assertGetDataSourceWithDynamicReplicaStrategy() {
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "WEIGHT",
+                PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5"),
+                        new Property(TransactionReadQueryStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.DYNAMIC_REPLICA.name())));
+        String writeDataSourceName = "test_write_ds";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
+        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        assertWeightReadQueryLoadBalance(loadBalanceAlgorithm, writeDataSourceName, readDataSourceNames);
+        context.setInTransaction(true);
+        assertWeightReadQueryLoadBalance(loadBalanceAlgorithm, writeDataSourceName, readDataSourceNames);
+    }
+    
+    @Test
     public void assertGetDataSourceWhenReadDataSourceChanged() {
-        Properties props = new Properties();
-        props.setProperty("test_read_ds_1", "1");
-        props.setProperty("test_read_ds_2", "2");
-        WeightReadQueryLoadBalanceAlgorithm algorithm = createReadQueryLoadBalanceAlgorithm(props);
-        algorithm.getDataSource("ds", "test_write_ds", Arrays.asList("test_read_ds_1", "test_read_ds_1"), new TransactionConnectionContext());
-        assertThat(algorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), new TransactionConnectionContext()), is("test_read_ds_1"));
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class,
+                "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5")));
+        loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Arrays.asList("test_read_ds_1", "test_read_ds_1"), new TransactionConnectionContext());
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), new TransactionConnectionContext()), is("test_read_ds_1"));
     }
 }

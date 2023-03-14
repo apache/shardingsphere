@@ -20,9 +20,10 @@ package org.apache.shardingsphere.infra.executor.kernel;
 import org.apache.shardingsphere.infra.executor.kernel.fixture.ExecutorCallbackFixture;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -32,7 +33,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class ExecutorEngineTest {
@@ -47,14 +48,14 @@ public final class ExecutorEngineTest {
     
     private ExecutorCallbackFixture callback;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         executionGroupContext = createMockedExecutionGroups(2, 2);
         firstCallback = new ExecutorCallbackFixture(latch);
         callback = new ExecutorCallbackFixture(latch);
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
         executorEngine.close();
     }
@@ -64,7 +65,7 @@ public final class ExecutorEngineTest {
         for (int i = 0; i < groupSize; i++) {
             result.add(new ExecutionGroup<>(createMockedInputs(unitSize)));
         }
-        return new ExecutionGroupContext(result);
+        return new ExecutionGroupContext<>(result, mock(ExecutionGroupReportContext.class));
     }
     
     private List<Object> createMockedInputs(final int size) {
@@ -99,7 +100,7 @@ public final class ExecutorEngineTest {
     @Test
     public void assertExecutionGroupIsEmpty() throws SQLException {
         CountDownLatch latch = new CountDownLatch(1);
-        List<String> actual = executorEngine.execute(new ExecutionGroupContext<>(new LinkedList<>()), new ExecutorCallbackFixture(latch));
+        List<String> actual = executorEngine.execute(new ExecutionGroupContext<>(new LinkedList<>(), mock(ExecutionGroupReportContext.class)), new ExecutorCallbackFixture(latch));
         latch.countDown();
         assertTrue(actual.isEmpty());
     }

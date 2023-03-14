@@ -24,10 +24,12 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedCRC32DataConsistencyCalculateAlgorithmException;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.core.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,37 +39,29 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
  * CRC32 match data consistency calculate algorithm.
  */
+@SPIDescription("Match CRC32 of records.")
 @Slf4j
 public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getType());
-    
-    @Getter
-    private Properties props;
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeUtil.getTrunkAndBranchDatabaseTypes(Collections.singleton(new MySQLDatabaseType().getType()));
     
     @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
-    
-    @Override
-    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter parameter) {
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
-        List<CalculatedItem> calculatedItems = parameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, parameter, each)).collect(Collectors.toList());
+    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
+        PipelineSQLBuilder sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, param.getDatabaseType());
+        List<CalculatedItem> calculatedItems = param.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, param, each)).collect(Collectors.toList());
         return Collections.singletonList(new CalculatedResult(calculatedItems.get(0).getRecordsCount(), calculatedItems.stream().map(CalculatedItem::getCrc32).collect(Collectors.toList())));
     }
     
-    private CalculatedItem calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName) {
-        Optional<String> sql = sqlBuilder.buildCRC32SQL(parameter.getSchemaName(), parameter.getLogicTableName(), columnName);
-        ShardingSpherePreconditions.checkState(sql.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(parameter.getDatabaseType()));
+    private CalculatedItem calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter param, final String columnName) {
+        Optional<String> sql = sqlBuilder.buildCRC32SQL(param.getSchemaName(), param.getLogicTableName(), columnName);
+        ShardingSpherePreconditions.checkState(sql.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(param.getDatabaseType()));
         try (
-                Connection connection = parameter.getDataSource().getConnection();
+                Connection connection = param.getDataSource().getConnection();
                 PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql.get()));
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
@@ -75,7 +69,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
             int recordsCount = resultSet.getInt(2);
             return new CalculatedItem(crc32, recordsCount);
         } catch (final SQLException ex) {
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getSchemaName(), parameter.getLogicTableName(), ex);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
         }
     }
     
@@ -87,11 +81,6 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
     @Override
     public Collection<String> getSupportedDatabaseTypes() {
         return SUPPORTED_DATABASE_TYPES;
-    }
-    
-    @Override
-    public String getDescription() {
-        return "Match CRC32 of records.";
     }
     
     @RequiredArgsConstructor
@@ -140,6 +129,12 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
             int result = recordsCount;
             result = 31 * result + columnsCrc32.hashCode();
             return result;
+        }
+        
+        // TODO not support now
+        @Override
+        public Optional<Object> getMaxUniqueKeyValue() {
+            return Optional.empty();
         }
     }
 }

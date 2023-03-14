@@ -28,7 +28,7 @@ import java.math.BigInteger;
 public final class MySQLInt8BinaryProtocolValue implements MySQLBinaryProtocolValue {
     
     @Override
-    public Object read(final MySQLPacketPayload payload) {
+    public Object read(final MySQLPacketPayload payload, final boolean unsigned) {
         return payload.readInt8();
     }
     

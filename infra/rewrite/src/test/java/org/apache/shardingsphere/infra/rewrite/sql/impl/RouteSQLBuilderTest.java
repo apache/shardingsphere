@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.fixture.RouteUnitAwareSQLToke
 import org.apache.shardingsphere.infra.rewrite.sql.fixture.SQLTokenFixture;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 

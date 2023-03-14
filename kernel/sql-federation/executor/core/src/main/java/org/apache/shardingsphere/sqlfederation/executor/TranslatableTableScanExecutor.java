@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sqlfederation.executor;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
@@ -47,6 +49,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -60,17 +63,18 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.SQLDialectFactory;
+import org.apache.shardingsphere.sqlfederation.SQLFederationDataContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.ScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
@@ -94,6 +98,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -103,6 +109,8 @@ import java.util.stream.Collectors;
 public final class TranslatableTableScanExecutor implements TableScanExecutor {
     
     private static final JavaTypeFactory JAVA_TYPE_FACTORY = new JavaTypeFactoryImpl();
+    
+    private static final Pattern COLUMN_INFORMATION_PATTERN = Pattern.compile("\\{.*}");
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
@@ -118,18 +126,104 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     
     private final ShardingSphereData data;
     
-    private final EventBusContext eventBusContext;
-    
     @Override
-    public Enumerable<Object[]> execute(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
-        String databaseName = executorContext.getDatabaseName();
-        String schemaName = executorContext.getSchemaName();
-        DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContexts().get(databaseName).getDatabaseType().getType());
+    public Enumerable<Object> executeScalar(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
+        String databaseName = executorContext.getDatabaseName().toLowerCase();
+        String schemaName = executorContext.getSchemaName().toLowerCase();
+        DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
         SqlString sqlString = createSQLString(table, (TranslatableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
         // TODO replace sql parse with sql convert
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
-        QueryContext queryContext = createQueryContext(federationContext.getDatabases(), sqlString, databaseType);
-        ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
+        QueryContext queryContext = createQueryContext(federationContext.getMetaData(), sqlString, databaseType);
+        ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
+        ExecutionContext context = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, executorContext.getProps(), new ConnectionContext());
+        if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
+            federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
+            return createEmptyScalarEnumerable();
+        }
+        if (databaseType.getSystemSchemas().contains(schemaName)) {
+            return executeByScalarShardingSphereData(databaseName, schemaName, table);
+        }
+        return executeScalarEnumerable(databaseType, queryContext, database, context);
+    }
+    
+    private AbstractEnumerable<Object> createEmptyScalarEnumerable() {
+        return new AbstractEnumerable<Object>() {
+            
+            @Override
+            public Enumerator<Object> enumerator() {
+                return new EmptyRowEnumerator<>();
+            }
+        };
+    }
+    
+    private Enumerable<Object> executeByScalarShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table) {
+        Optional<ShardingSphereTableData> tableData = Optional.ofNullable(data.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
+                .map(ShardingSphereSchemaData::getTableData).map(shardingSphereData -> shardingSphereData.get(table.getName()));
+        return tableData.map(this::createMemoryScalarEnumerator).orElseGet(this::createEmptyScalarEnumerable);
+    }
+    
+    private Enumerable<Object> createMemoryScalarEnumerator(final ShardingSphereTableData tableData) {
+        return new AbstractEnumerable<Object>() {
+            
+            @Override
+            public Enumerator<Object> enumerator() {
+                return new MemoryEnumerator<>(tableData.getRows());
+            }
+        };
+    }
+    
+    private AbstractEnumerable<Object> executeScalarEnumerable(final DatabaseType databaseType, final QueryContext queryContext,
+                                                               final ShardingSphereDatabase database, final ExecutionContext context) {
+        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
+        try {
+            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
+                    prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits(), new ExecutionGroupReportContext(database.getName()));
+            setParameters(executionGroupContext.getInputGroups());
+            executeProcessEngine.initializeExecution(executionGroupContext, context.getQueryContext());
+            List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
+            MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
+            MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
+            Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
+            return createScalarEnumerable(mergedResult, queryResults.get(0).getMetaData(), statements);
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
+        } finally {
+            executeProcessEngine.cleanExecution();
+        }
+    }
+    
+    private AbstractEnumerable<Object> createScalarEnumerable(final MergedResult mergedResult, final QueryResultMetaData metaData, final Collection<Statement> statements) throws SQLException {
+        // TODO remove getRows when mergedResult support JDBC first method
+        Collection<Object> rows = getScalarRows(mergedResult, metaData);
+        return new AbstractEnumerable<Object>() {
+            
+            @Override
+            public Enumerator<Object> enumerator() {
+                return new SQLFederationRowEnumerator<>(rows, statements);
+            }
+        };
+    }
+    
+    private Collection<Object> getScalarRows(final MergedResult mergedResult, final QueryResultMetaData metaData) throws SQLException {
+        Collection<Object> result = new LinkedList<>();
+        while (mergedResult.next()) {
+            Object currentRow = mergedResult.getValue(1, Object.class);
+            result.add(currentRow);
+        }
+        return result;
+    }
+    
+    @Override
+    public Enumerable<Object[]> execute(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
+        String databaseName = executorContext.getDatabaseName().toLowerCase();
+        String schemaName = executorContext.getSchemaName().toLowerCase();
+        DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
+        SqlString sqlString = createSQLString(table, (TranslatableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
+        // TODO replace sql parse with sql convert
+        SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
+        QueryContext queryContext = createQueryContext(federationContext.getMetaData(), sqlString, databaseType);
+        ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, executorContext.getProps(), new ConnectionContext());
         if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
@@ -142,12 +236,13 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     }
     
     private AbstractEnumerable<Object[]> execute(final DatabaseType databaseType, final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
+        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
         try {
-            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
+            ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
+                    prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits(), new ExecutionGroupReportContext(database.getName()));
             setParameters(executionGroupContext.getInputGroups());
-            ExecuteProcessEngine.initializeExecution(context.getQueryContext(), executionGroupContext, eventBusContext);
+            executeProcessEngine.initializeExecution(executionGroupContext, context.getQueryContext());
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
-            ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
             MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
             Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
@@ -155,7 +250,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         } finally {
-            ExecuteProcessEngine.cleanExecution();
+            executeProcessEngine.cleanExecution();
         }
     }
     
@@ -182,7 +277,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new MemoryEnumerator(tableData.getRows());
+                return new MemoryEnumerator<>(tableData.getRows());
             }
         };
     }
@@ -213,24 +308,23 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     }
     
     @SneakyThrows(SQLException.class)
-    private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) {
-        for (int i = 0; i < parameters.size(); i++) {
-            Object parameter = parameters.get(i);
-            preparedStatement.setObject(i + 1, parameter);
+    private void setParameters(final PreparedStatement preparedStatement, final List<Object> params) {
+        for (int i = 0; i < params.size(); i++) {
+            preparedStatement.setObject(i + 1, params.get(i));
         }
     }
     
     private RelNode createRelNode(final ShardingSphereTable table, final TranslatableScanNodeExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContexts().get(databaseName).getDialectProps());
-        ShardingSphereDatabase database = executorContext.getFederationContext().getDatabases().get(databaseName);
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContext(databaseName).getDialectProps());
+        ShardingSphereDatabase database = executorContext.getFederationContext().getMetaData().getDatabase(databaseName);
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName,
                 new FilterableSchema(schemaName, database.getSchema(schemaName), database.getProtocolType(), JAVA_TYPE_FACTORY, null), JAVA_TYPE_FACTORY, connectionConfig);
         RelOptCluster relOptCluster = RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(JAVA_TYPE_FACTORY));
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName());
         if (null != scanContext.getFilterValues()) {
-            builder.filter(createFilters(scanContext.getFilterValues()));
+            builder.filter(createFilters(scanContext.getFilterValues(), (SQLFederationDataContext) scanContext.getRoot()));
         }
         if (null != scanContext.getProjects()) {
             builder.project(createProjections(scanContext.getProjects(), builder, table.getColumnNames()));
@@ -238,16 +332,31 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         return builder.build();
     }
     
-    private Collection<RexNode> createFilters(final String[] filterValues) {
+    private Collection<RexNode> createFilters(final String[] filterValues, final SQLFederationDataContext context) {
         Collection<RexNode> result = new LinkedList<>();
         JavaTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
         RexBuilder rexBuilder = new RexBuilder(typeFactory);
         for (String each : filterValues) {
             if (!Strings.isNullOrEmpty(each)) {
-                result.add(StringToRexNodeUtil.buildRexNode(each, rexBuilder));
+                Map<Integer, Integer> columnIndexDataTypeMap = extractColumnIndexDataTypeMap(each);
+                String filterValue = extractFilterValue(each);
+                result.add(StringToRexNodeUtil.buildRexNode(filterValue, rexBuilder, context.getParameters(), columnIndexDataTypeMap));
             }
         }
         return result;
+    }
+    
+    private Map<Integer, Integer> extractColumnIndexDataTypeMap(final String filterExpression) {
+        Matcher matcher = COLUMN_INFORMATION_PATTERN.matcher(filterExpression);
+        if (!matcher.find()) {
+            return Collections.emptyMap();
+        }
+        return new Gson().fromJson(matcher.group(), new TypeToken<Map<Integer, Integer>>() {
+        }.getType());
+    }
+    
+    private String extractFilterValue(final String filterExpression) {
+        return COLUMN_INFORMATION_PATTERN.matcher(filterExpression).replaceAll("");
     }
     
     private Collection<RexNode> createProjections(final int[] projects, final RelBuilder relBuilder, final List<String> columnNames) {
@@ -265,7 +374,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new SQLFederationRowEnumerator(rows, statements);
+                return new SQLFederationRowEnumerator<>(rows, statements);
             }
         };
     }
@@ -282,22 +391,22 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         return result;
     }
     
-    private QueryContext createQueryContext(final Map<String, ShardingSphereDatabase> databases, final SqlString sqlString, final DatabaseType databaseType) {
+    private QueryContext createQueryContext(final ShardingSphereMetaData metaData, final SqlString sqlString, final DatabaseType databaseType) {
         String sql = sqlString.getSql().replace("\n", " ");
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getType(),
                 optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(),
                 optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(sql, false);
-        List<Object> parameters = getParameters(sqlString.getDynamicParameters());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, parameters, sqlStatement, executorContext.getDatabaseName());
-        return new QueryContext(sqlStatementContext, sql, parameters);
+        List<Object> params = getParameters(sqlString.getDynamicParameters());
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, params, sqlStatement, executorContext.getDatabaseName());
+        return new QueryContext(sqlStatementContext, sql, params);
     }
     
-    private List<Object> getParameters(final List<Integer> parameterIndexes) {
-        if (null == parameterIndexes) {
+    private List<Object> getParameters(final List<Integer> paramIndexes) {
+        if (null == paramIndexes) {
             return Collections.emptyList();
         }
         List<Object> result = new ArrayList<>();
-        for (Integer each : parameterIndexes) {
+        for (Integer each : paramIndexes) {
             result.add(executorContext.getFederationContext().getQueryContext().getParameters().get(each));
         }
         return result;
@@ -308,7 +417,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new EmptyRowEnumerator();
+                return new EmptyRowEnumerator<>();
             }
         };
     }

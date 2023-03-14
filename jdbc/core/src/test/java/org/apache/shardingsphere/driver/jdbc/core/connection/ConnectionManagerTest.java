@@ -28,15 +28,18 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.MockedStatic;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -50,74 +53,55 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(DataSourcePoolCreator.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class ConnectionManagerTest {
     
     private ConnectionManager connectionManager;
     
-    private ConnectionManager connectionManagerInXaTransaction;
-    
-    private MockedStatic<DataSourcePoolCreator> dataSourcePoolCreator;
-    
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
-        ContextManager contextManager = mockContextManager();
-        connectionManager = new ConnectionManager(DefaultDatabase.LOGIC_NAME, contextManager);
-        TransactionTypeHolder.set(TransactionType.XA);
-        connectionManagerInXaTransaction = new ConnectionManager(DefaultDatabase.LOGIC_NAME, contextManager);
-    }
-    
-    @After
-    public void cleanUp() {
-        dataSourcePoolCreator.close();
-        TransactionTypeHolder.clear();
+        connectionManager = new ConnectionManager(DefaultDatabase.LOGIC_NAME, mockContextManager());
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, DataSource> dataSourceMap = mockDataSourceMap();
-        MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
+        MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
-        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));
-        when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(mock(TrafficRule.class, RETURNS_DEEP_STUBS));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
+                new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class, RETURNS_DEEP_STUBS))));
         when(result.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
-                Collections.singletonList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307")));
-        dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class);
+                Collections.singletonList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version")));
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
         when(DataSourcePoolCreator.create((Map) any())).thenReturn(trafficDataSourceMap);
         return result;
     }
     
-    private Map<String, DataSource> mockTrafficDataSourceMap() throws SQLException {
-        MockedDataSource result = new MockedDataSource(mock(Connection.class, RETURNS_DEEP_STUBS));
-        result.setUrl("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false");
-        result.setUsername("root");
-        result.setPassword("123456");
-        when(result.getConnection().getMetaData().getURL()).thenReturn(result.getUrl());
-        when(result.getConnection().getMetaData().getUserName()).thenReturn(result.getUsername());
-        return Collections.singletonMap("127.0.0.1@3307", result);
+    private Map<String, DataSource> mockDataSourceMap() throws SQLException {
+        Map<String, DataSource> result = new HashMap<>(2, 1);
+        result.put("ds", new MockedDataSource());
+        DataSource invalidDataSource = mock(DataSource.class);
+        when(invalidDataSource.getConnection()).thenThrow(new SQLException());
+        result.put("invalid_ds", invalidDataSource);
+        return result;
     }
     
     private MetaDataPersistService mockMetaDataPersistService() {
         MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSourceService().load(DefaultDatabase.LOGIC_NAME)).thenReturn(createDataSourcePropertiesMap());
+        when(result.getDataSourceService().load(DefaultDatabase.LOGIC_NAME))
+                .thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties())));
         when(result.getGlobalRuleService().loadUsers()).thenReturn(Collections.singletonList(new ShardingSphereUser("root", "root", "localhost")));
-        return result;
-    }
-    
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(1, 1);
-        result.put(DefaultDatabase.LOGIC_NAME, new DataSourceProperties(HikariDataSource.class.getName(), createProperties()));
         return result;
     }
     
@@ -129,13 +113,14 @@ public final class ConnectionManagerTest {
         return result;
     }
     
-    private Map<String, DataSource> mockDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
-        result.put("ds", new MockedDataSource());
-        DataSource invalidDataSource = mock(DataSource.class);
-        when(invalidDataSource.getConnection()).thenThrow(new SQLException());
-        result.put("invalid_ds", invalidDataSource);
-        return result;
+    private Map<String, DataSource> mockTrafficDataSourceMap() throws SQLException {
+        MockedDataSource result = new MockedDataSource(mock(Connection.class, RETURNS_DEEP_STUBS));
+        result.setUrl("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false");
+        result.setUsername("root");
+        result.setPassword("123456");
+        when(result.getConnection().getMetaData().getURL()).thenReturn(result.getUrl());
+        when(result.getConnection().getMetaData().getUserName()).thenReturn(result.getUsername());
+        return Collections.singletonMap("127.0.0.1@3307", result);
     }
     
     @Test
@@ -168,10 +153,12 @@ public final class ConnectionManagerTest {
     
     @Test
     public void assertGetConnectionWhenConfigTrafficRuleInXaTransaction() throws SQLException {
-        List<Connection> actual = connectionManagerInXaTransaction.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
+        TransactionTypeHolder.set(TransactionType.XA);
+        List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
         assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
+        TransactionTypeHolder.clear();
     }
     
     @Test
@@ -222,11 +209,8 @@ public final class ConnectionManagerTest {
     
     @Test
     public void assertGetConnectionsWhenConnectionCreateFailed() {
-        try {
-            connectionManager.getConnections("invalid_ds", 3, ConnectionMode.CONNECTION_STRICTLY);
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released. "
-                    + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties."));
-        }
+        SQLException ex = assertThrows(SQLException.class, () -> connectionManager.getConnections("invalid_ds", 3, ConnectionMode.CONNECTION_STRICTLY));
+        assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released. "
+                + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties."));
     }
 }

@@ -17,6 +17,14 @@
 
 name: pg_class
 columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: false
+    unsigned: false
+    visible: true
   relname:
     caseSensitive: true
     dataType: 12

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -33,7 +33,8 @@ import java.util.HashSet;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class PostgreSQLDatabaseTypeTest {
@@ -68,9 +69,9 @@ public final class PostgreSQLDatabaseTypeTest {
         new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(RollbackStatement.class));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertHandleRollbackOnlyForRollbackOnlyAndNotTCLStatement() throws SQLException {
-        new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(SelectStatement.class));
+    @Test
+    public void assertHandleRollbackOnlyForRollbackOnlyAndNotTCLStatement() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(SelectStatement.class)));
     }
     
     @Test

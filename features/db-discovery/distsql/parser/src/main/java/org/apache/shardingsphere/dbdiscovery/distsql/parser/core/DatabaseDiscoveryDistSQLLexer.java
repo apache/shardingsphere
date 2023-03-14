@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQL
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for database discovery dist SQL.
+ * SQL lexer for database discovery DistSQL.
  */
 public final class DatabaseDiscoveryDistSQLLexer extends DatabaseDiscoveryDistSQLStatementLexer implements SQLLexer {
     

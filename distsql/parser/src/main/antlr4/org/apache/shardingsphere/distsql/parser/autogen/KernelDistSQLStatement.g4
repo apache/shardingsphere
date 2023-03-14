@@ -28,7 +28,6 @@ execute
     | setDistVariable
     | showDistVariable
     | showDistVariables
-    | clearHint
     | enableComputeNode
     | disableComputeNode
     | showComputeNodes
@@ -36,20 +35,24 @@ execute
     | showComputeNodeMode
     | labelComputeNode
     | unlabelComputeNode
-    | countSingleTableRule
+    | countSingleTable
     | alterComputeNode
-    | prepareDistSQL
-    | applyDistSQL
-    | discardDistSQL
+    | showLogicalTables
     | showSingleTable
     | showDefaultSingleTableStorageUnit
     | setDefaultSingleTableStorageUnit
+    | refreshDatabaseMetadata
     | refreshTableMetadata
     | showTableMetadata
     | exportDatabaseConfiguration
     | importDatabaseConfiguration
+    | exportMetaData
+    | importMetaData
+    | exportStorageNodes
     | convertYamlConfiguration
     | showMigrationRule
     | alterMigrationRule
+    | lockCluster
+    | unlockCluster
     ) SEMI?
     ;

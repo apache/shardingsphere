@@ -21,13 +21,17 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredDataSourceNamesConfigurationException;
+import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredGroupNameConfigurationException;
+import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,24 +50,26 @@ public final class DatabaseDiscoveryDataSourceRule {
     
     private final Properties heartbeatProps;
     
-    private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
+    private final DatabaseDiscoveryProvider provider;
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     private volatile String primaryDataSourceName;
     
     public DatabaseDiscoveryDataSourceRule(final DatabaseDiscoveryDataSourceRuleConfiguration config,
-                                           final Properties props, final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm) {
+                                           final Properties props, final DatabaseDiscoveryProvider provider) {
         checkConfiguration(config);
         groupName = config.getGroupName();
         dataSourceNames = config.getDataSourceNames();
         this.heartbeatProps = props;
-        this.databaseDiscoveryProviderAlgorithm = databaseDiscoveryProviderAlgorithm;
+        this.provider = provider;
     }
     
     private void checkConfiguration(final DatabaseDiscoveryDataSourceRuleConfiguration config) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getGroupName()), "Group name is required.");
-        Preconditions.checkArgument(null != config.getDataSourceNames() && !config.getDataSourceNames().isEmpty(), "Data source names are required.");
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(config.getGroupName()), MissingRequiredGroupNameConfigurationException::new);
+        ShardingSpherePreconditions.checkState(null != config.getDataSourceNames()
+                && !config.getDataSourceNames().isEmpty(), MissingRequiredDataSourceNamesConfigurationException::new);
     }
     
     /**
@@ -124,10 +130,13 @@ public final class DatabaseDiscoveryDataSourceRule {
      * @return data source mapper
      */
     public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(dataSourceNames.size(), 1);
-        for (String each : dataSourceNames) {
-            result.put(groupName, Collections.singletonList(each));
-        }
+        return Collections.singletonMap(groupName, getActualDataSourceNames());
+    }
+    
+    private Collection<String> getActualDataSourceNames() {
+        Collection<String> result = new LinkedHashSet<>();
+        result.add(primaryDataSourceName);
+        result.addAll(dataSourceNames);
         return result;
     }
 }

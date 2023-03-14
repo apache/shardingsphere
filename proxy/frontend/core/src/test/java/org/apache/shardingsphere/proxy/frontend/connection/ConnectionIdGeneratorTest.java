@@ -18,19 +18,18 @@
 package org.apache.shardingsphere.proxy.frontend.connection;
 
 import lombok.SneakyThrows;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.lang.reflect.Field;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ConnectionIdGeneratorTest {
     
-    @Before
-    @After
+    @BeforeEach
+    @AfterEach
     public void resetConnectionId() {
         setCurrentConnectionId(0);
     }
@@ -48,8 +47,6 @@ public final class ConnectionIdGeneratorTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setCurrentConnectionId(final int connectionId) {
-        Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
-        field.setAccessible(true);
-        field.set(ConnectionIdGenerator.getInstance(), connectionId);
+        Plugins.getMemberAccessor().set(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance(), connectionId);
     }
 }

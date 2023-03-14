@@ -14,7 +14,7 @@ ShardingSphere-JDBC 支持所有的数据库 JDBC 驱动和连接池。
 
 ```yaml
 dataSources: # 数据源配置，可配置多个 <data-source-name>
-  <data-source-name>: # 数据源名称
+  <data_source_name>: # 数据源名称
     dataSourceClassName: # 数据源完整类名
     driverClassName: # 数据库驱动类名，以数据库连接池自身配置为准
     jdbcUrl: # 数据库 URL 连接，以数据库连接池自身配置为准

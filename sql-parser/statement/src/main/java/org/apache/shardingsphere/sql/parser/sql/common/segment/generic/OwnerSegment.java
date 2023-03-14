@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
@@ -32,7 +31,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
 public final class OwnerSegment implements SQLSegment {
     
     private final int startIndex;

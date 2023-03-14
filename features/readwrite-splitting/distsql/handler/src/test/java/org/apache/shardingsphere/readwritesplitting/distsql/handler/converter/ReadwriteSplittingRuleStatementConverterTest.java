@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,11 +32,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ReadwriteSplittingRuleStatementConverterTest {
     
@@ -68,7 +67,7 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
         String actualLoadBalancerName = actualSingleRuleSegmentConvertResultLoadBalancers.keySet().iterator().next();
         assertThat(actualLoadBalancerName, is(expectedLoadBalancerName));
         AlgorithmConfiguration actualSphereAlgorithmConfig = actualSingleRuleSegmentConvertResultLoadBalancers.get(actualLoadBalancerName);
-        assertThat(actualSphereAlgorithmConfig.getType(), containsString(expectedSingleReadwriteSplittingRuleSegment.getLoadBalancer()));
+        assertThat(actualSphereAlgorithmConfig.getType(), is(expectedSingleReadwriteSplittingRuleSegment.getLoadBalancer()));
         assertThat(actualSphereAlgorithmConfig.getProps(), is(expectedSingleReadwriteSplittingRuleSegment.getProps()));
     }
     
@@ -96,17 +95,17 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
                             null == expectedReadwriteSplittingRuleSegment.getReadDataSources() ? Collections.emptyList() : expectedReadwriteSplittingRuleSegment.getReadDataSources()));
                     assertTrue(actualMultipleRuleSegmentConvertResultLoadBalancers.containsKey(expectedLoadBalancerName));
                     AlgorithmConfiguration actualSphereAlgorithmConfig = actualMultipleRuleSegmentConvertResultLoadBalancers.get(actualRuleConfig.getLoadBalancerName());
-                    assertThat(actualSphereAlgorithmConfig.getType(), containsString(expectedReadwriteSplittingRuleSegment.getLoadBalancer()));
+                    assertThat(actualSphereAlgorithmConfig.getType(), is(expectedReadwriteSplittingRuleSegment.getLoadBalancer()));
                     assertThat(actualSphereAlgorithmConfig.getProps(), is(expectedReadwriteSplittingRuleSegment.getProps()));
                 });
     }
     
-    private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration ruleConfiguration) {
-        return null == ruleConfiguration.getDynamicStrategy() ? ruleConfiguration.getStaticStrategy().getWriteDataSourceName() : null;
+    private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration ruleConfig) {
+        return null == ruleConfig.getDynamicStrategy() ? ruleConfig.getStaticStrategy().getWriteDataSourceName() : null;
     }
     
-    private Collection<String> getReadDataSourceNames(final ReadwriteSplittingDataSourceRuleConfiguration ruleConfiguration) {
-        return null == ruleConfiguration.getDynamicStrategy() ? ruleConfiguration.getStaticStrategy().getReadDataSourceNames() : Collections.emptyList();
+    private Collection<String> getReadDataSourceNames(final ReadwriteSplittingDataSourceRuleConfiguration ruleConfig) {
+        return null == ruleConfig.getDynamicStrategy() ? ruleConfig.getStaticStrategy().getReadDataSourceNames() : Collections.emptyList();
     }
     
     private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String writeDataSource,
@@ -115,6 +114,6 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
     }
     
     private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties props) {
-        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, "false", loadBalancer, props);
+        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, loadBalancer, props);
     }
 }

@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.shadow.checker.ShadowRuleConfigurationChecker
-org.apache.shardingsphere.shadow.checker.AlgorithmProvidedShadowRuleConfigurationChecker

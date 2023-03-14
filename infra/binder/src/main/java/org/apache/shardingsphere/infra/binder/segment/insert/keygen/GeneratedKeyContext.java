@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.insert.keygen;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Collection;
@@ -35,6 +36,9 @@ public final class GeneratedKeyContext {
     private final String columnName;
     
     private final boolean generated;
+    
+    @Setter
+    private boolean supportAutoIncrement;
     
     private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
 }

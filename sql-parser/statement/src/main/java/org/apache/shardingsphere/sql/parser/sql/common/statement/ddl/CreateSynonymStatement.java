@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Create synonym statement.
  */
-@ToString(callSuper = true)
 public abstract class CreateSynonymStatement extends AbstractSQLStatement implements DDLStatement {
 }

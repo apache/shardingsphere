@@ -17,93 +17,106 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * MySQL binlog event type.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/binlog-event-type.html">Binlog Event Type</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/binlog__event_8h_source.html">binlog_event.h</a>
  */
 @RequiredArgsConstructor
 @Getter
 public enum MySQLBinlogEventType {
     
-    UNKNOWN_EVENT(0x00),
+    UNKNOWN_EVENT(0),
     
-    START_EVENT_V3(0x01),
+    START_EVENT_V3(1),
     
-    QUERY_EVENT(0x02),
+    QUERY_EVENT(2),
     
-    STOP_EVENT(0x03),
+    STOP_EVENT(3),
     
-    ROTATE_EVENT(0x04),
+    ROTATE_EVENT(4),
     
-    INTVAR_EVENT(0x05),
+    INTVAR_EVENT(5),
     
-    LOAD_EVENT(0x06),
+    LOAD_EVENT(6),
     
-    SLAVE_EVENT(0x07),
+    SLAVE_EVENT(7),
     
-    CREATE_FILE_EVENT(0x08),
+    CREATE_FILE_EVENT(8),
     
-    APPEND_BLOCK_EVENT(0x09),
+    APPEND_BLOCK_EVENT(9),
     
-    EXEC_LOAD_EVENT(0x0a),
+    EXEC_LOAD_EVENT(10),
     
-    DELETE_FILE_EVENT(0x0b),
+    DELETE_FILE_EVENT(11),
     
-    NEW_LOAD_EVENT(0x0c),
+    NEW_LOAD_EVENT(12),
     
-    RAND_EVENT(0x0d),
+    RAND_EVENT(13),
     
-    USER_VAR_EVENT(0x0e),
+    USER_VAR_EVENT(14),
     
-    FORMAT_DESCRIPTION_EVENT(0x0f),
+    FORMAT_DESCRIPTION_EVENT(15),
     
-    XID_EVENT(0x10),
+    XID_EVENT(16),
     
-    BEGIN_LOAD_QUERY_EVENT(0x11),
+    BEGIN_LOAD_QUERY_EVENT(17),
     
-    EXECUTE_LOAD_QUERY_EVENT(0x12),
+    EXECUTE_LOAD_QUERY_EVENT(18),
     
-    TABLE_MAP_EVENT(0x13),
+    TABLE_MAP_EVENT(19),
     
-    WRITE_ROWS_EVENTv0(0x14),
+    WRITE_ROWS_EVENTv0(20),
     
-    UPDATE_ROWS_EVENTv0(0x15),
+    UPDATE_ROWS_EVENTv0(21),
     
-    DELETE_ROWS_EVENTv0(0x16),
+    DELETE_ROWS_EVENTv0(22),
     
-    WRITE_ROWS_EVENTv1(0x17),
+    WRITE_ROWS_EVENTv1(23),
     
-    UPDATE_ROWS_EVENTv1(0x18),
+    UPDATE_ROWS_EVENTv1(24),
     
-    DELETE_ROWS_EVENTv1(0x19),
+    DELETE_ROWS_EVENTv1(25),
     
-    INCIDENT_EVENT(0x1a),
+    INCIDENT_EVENT(26),
     
-    HEARTBEAT_EVENT(0x1b),
+    HEARTBEAT_LOG_EVENT(27),
     
-    IGNORABLE_EVENT(0x1c),
+    IGNORABLE_LOG_EVENT(28),
     
-    ROWS_QUERY_EVENT(0x1d),
+    ROWS_QUERY_LOG_EVENT(29),
     
-    WRITE_ROWS_EVENTv2(0x1e),
+    WRITE_ROWS_EVENTv2(30),
     
-    UPDATE_ROWS_EVENTv2(0x1f),
+    UPDATE_ROWS_EVENTv2(31),
     
-    DELETE_ROWS_EVENTv2(0x20),
+    DELETE_ROWS_EVENTv2(32),
     
-    GTID_EVENT(0x21),
+    GTID_LOG_EVENT(33),
     
-    ANONYMOUS_GTID_EVENT(0x22),
+    ANONYMOUS_GTID_LOG_EVENT(34),
     
-    PREVIOUS_GTIDS_EVENT(0x23);
+    PREVIOUS_GTIDS_LOG_EVENT(35),
+    
+    TRANSACTION_CONTEXT_EVENT(36),
+    
+    VIEW_CHANGE_EVENT(37),
+    
+    XA_PREPARE_LOG_EVENT(38),
+    
+    PARTIAL_UPDATE_ROWS_EVENT(39),
+    
+    TRANSACTION_PAYLOAD_EVENT(40),
+    
+    HEARTBEAT_LOG_EVENT_V2(41);
     
     private static final Map<Integer, MySQLBinlogEventType> VALUE_AND_EVENT_TYPE_MAP = new HashMap<>(values().length, 1);
     
@@ -116,13 +129,12 @@ public enum MySQLBinlogEventType {
     }
     
     /**
-     * Value of {@code MySQLBinlogEventType}.
+     * Get {@code MySQLBinlogEventType} by value.
      *
      * @param value value
      * @return MySQL binlog event type
      */
-    public static MySQLBinlogEventType valueOf(final int value) {
-        Preconditions.checkArgument(VALUE_AND_EVENT_TYPE_MAP.containsKey(value), "Can not find value `%s` in binlog event type", value);
-        return VALUE_AND_EVENT_TYPE_MAP.get(value);
+    public static Optional<MySQLBinlogEventType> valueOf(final int value) {
+        return Optional.ofNullable(VALUE_AND_EVENT_TYPE_MAP.get(value));
     }
 }

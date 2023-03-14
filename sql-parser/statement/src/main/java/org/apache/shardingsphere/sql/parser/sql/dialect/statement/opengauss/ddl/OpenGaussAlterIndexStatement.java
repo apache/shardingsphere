@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -29,7 +28,6 @@ import java.util.Optional;
  * OpenGauss alter index statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class OpenGaussAlterIndexStatement extends AlterIndexStatement implements OpenGaussStatement {
     
     private IndexSegment renameIndex;

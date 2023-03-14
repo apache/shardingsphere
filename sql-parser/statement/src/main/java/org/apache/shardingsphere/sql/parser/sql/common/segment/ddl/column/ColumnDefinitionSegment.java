@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
@@ -33,7 +32,6 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     
     private final int startIndex;

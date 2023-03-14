@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.hint;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,7 +25,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class SQLHintUtilsTest {
     
@@ -62,5 +62,19 @@ public final class SQLHintUtilsTest {
         Collection<String> actual = SQLHintUtils.getSplitterSQLHintValue("  sharding_audit1    sharding_audit2 ");
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsAll(Arrays.asList("sharding_audit1", "sharding_audit2")));
+    }
+    
+    @Test
+    public void assertGetSQLHintPropsWithDataSourceName() {
+        Properties actual = SQLHintUtils.getSQLHintProps("/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_0 */");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("DATA_SOURCE_NAME"), is("ds_0"));
+    }
+    
+    @Test
+    public void assertGetSQLHintPropsWithDataSourceNameAlias() {
+        Properties actual = SQLHintUtils.getSQLHintProps("/* ShardingSphere hint: dataSourceName=ds_0 */");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("dataSourceName"), is("ds_0"));
     }
 }

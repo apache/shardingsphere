@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.Collection;
@@ -29,7 +28,7 @@ import java.util.Optional;
 /**
  * Pipeline SQL builder.
  */
-public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
+public interface PipelineSQLBuilder extends TypedSPI {
     
     /**
      * Build create schema SQL.
@@ -42,28 +41,46 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
     }
     
     /**
-     * Build divisible inventory dump first SQL.
+     * Build divisible inventory dump SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
+     * @param columnNames column names
      * @param uniqueKey unique key
-     * @param uniqueKeyDataType unique key data type
-     * @param firstQuery whether it's the first time query
      * @return divisible inventory dump SQL
      */
-    String buildDivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
+    String buildDivisibleInventoryDumpSQL(String schemaName, String tableName, List<String> columnNames, String uniqueKey);
+    
+    /**
+     * Build divisible inventory dump SQL without end value.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param columnNames column names
+     * @param uniqueKey unique key
+     * @return divisible inventory dump SQL without end value
+     */
+    String buildDivisibleInventoryDumpSQLNoEnd(String schemaName, String tableName, List<String> columnNames, String uniqueKey);
     
     /**
      * Build indivisible inventory dump first SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
+     * @param columnNames column names
      * @param uniqueKey unique key
-     * @param uniqueKeyDataType unique key data type
-     * @param firstQuery whether it's the first time query
      * @return indivisible inventory dump SQL
      */
-    String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
+    String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, List<String> columnNames, String uniqueKey);
+    
+    /**
+     * Build no unique key inventory dump SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName tableName
+     * @return inventory dump all SQL
+     */
+    String buildNoUniqueKeyInventoryDumpSQL(String schemaName, String tableName);
     
     /**
      * Build insert SQL.
@@ -90,6 +107,7 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
      * @param record data record
      * @return filtered columns
      */
+    // TODO Consider remove extractUpdatedColumns. openGauss has special impl currently
     List<Column> extractUpdatedColumns(DataRecord record);
     
     /**
@@ -122,15 +140,25 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
     String buildCountSQL(String schemaName, String tableName);
     
     /**
-     * Build query SQL.
+     * Build estimated count SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
+     * @return estimated count sql
+     */
+    Optional<String> buildEstimatedCountSQL(String schemaName, String tableName);
+    
+    /**
+     * Build query all ordering SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param columnNames column names
      * @param uniqueKey unique key, it may be primary key, not null
      * @param firstQuery first query
      * @return query SQL
      */
-    String buildChunkedQuerySQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
+    String buildQueryAllOrderingSQL(String schemaName, String tableName, List<String> columnNames, String uniqueKey, boolean firstQuery);
     
     /**
      * Build check empty SQL.
@@ -146,10 +174,10 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
      *
      * @param schemaName schema name
      * @param tableName table name
-     * @param primaryKey primary key
+     * @param uniqueKey unique key
      * @return split SQL
      */
-    String buildSplitByPrimaryKeyRangeSQL(String schemaName, String tableName, String primaryKey);
+    String buildSplitByPrimaryKeyRangeSQL(String schemaName, String tableName, String uniqueKey);
     
     /**
      * Build CRC32 SQL.

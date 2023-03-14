@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public abstract class CopyStatement extends AbstractSQLStatement implements DMLStatement {
     
     private SimpleTableSegment tableSegment;

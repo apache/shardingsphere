@@ -30,6 +30,8 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Deco
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -39,6 +41,7 @@ import org.opengauss.util.PGobject;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -59,30 +62,45 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private final BaseTimestampUtils timestampUtils;
     
+    private final boolean decodeWithTX;
+    
+    public MppdbDecodingPlugin(final BaseTimestampUtils timestampUtils) {
+        this.timestampUtils = timestampUtils;
+        decodeWithTX = false;
+    }
+    
     @Override
     public AbstractWALEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
         AbstractWALEvent result;
-        char eventType = readOneChar(data);
-        result = '{' == eventType ? readTableEvent(readMppData(data)) : new PlaceholderEvent();
+        byte[] bytes = new byte[data.remaining()];
+        data.get(bytes);
+        String dataText = new String(bytes, StandardCharsets.UTF_8);
+        if (decodeWithTX) {
+            result = decodeDataWithTX(dataText);
+        } else {
+            result = decodeDataIgnoreTX(dataText);
+        }
         result.setLogSequenceNumber(logSequenceNumber);
         return result;
     }
     
-    private char readOneChar(final ByteBuffer data) {
-        return (char) data.get();
+    private AbstractWALEvent decodeDataWithTX(final String dataText) {
+        AbstractWALEvent result = new PlaceholderEvent();
+        if (dataText.startsWith("BEGIN")) {
+            int beginIndex = dataText.indexOf("BEGIN") + "BEGIN".length() + 1;
+            result = new BeginTXEvent(Long.parseLong(dataText.substring(beginIndex)));
+        } else if (dataText.startsWith("COMMIT")) {
+            int commitBeginIndex = dataText.indexOf("COMMIT") + "COMMIT".length() + 1;
+            int csnBeginIndex = dataText.indexOf("CSN") + "CSN".length() + 1;
+            result = new CommitTXEvent(Long.parseLong(dataText.substring(commitBeginIndex, dataText.indexOf(" ", commitBeginIndex))), Long.parseLong(dataText.substring(csnBeginIndex)));
+        } else if (dataText.startsWith("{")) {
+            result = readTableEvent(dataText);
+        }
+        return result;
     }
     
-    private String readMppData(final ByteBuffer data) {
-        StringBuilder mppData = new StringBuilder();
-        mppData.append('{');
-        int depth = 1;
-        while (0 != depth && data.hasRemaining()) {
-            char next = (char) data.get();
-            mppData.append(next);
-            int optDepth = '{' == next ? 1 : ('}' == next ? -1 : 0);
-            depth += optDepth;
-        }
-        return mppData.toString();
+    private AbstractWALEvent decodeDataIgnoreTX(final String dataText) {
+        return dataText.startsWith("{") ? readTableEvent(dataText) : new PlaceholderEvent();
     }
     
     private AbstractRowEvent readTableEvent(final String mppData) {

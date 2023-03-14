@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLComStartupPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -42,7 +42,7 @@ public final class PostgreSQLComStartupPacketTest {
         PostgreSQLPacketPayload payload = createPayload(parametersMap, packetMessageLength, byteBuf);
         PostgreSQLComStartupPacket actual = new PostgreSQLComStartupPacket(payload);
         assertThat(actual.getDatabase(), is("test_db"));
-        assertThat(actual.getUser(), is("postgres"));
+        assertThat(actual.getUsername(), is("postgres"));
         assertThat(actual.getClientEncoding(), is("UTF8"));
         assertThat(byteBuf.writerIndex(), is(packetMessageLength));
     }

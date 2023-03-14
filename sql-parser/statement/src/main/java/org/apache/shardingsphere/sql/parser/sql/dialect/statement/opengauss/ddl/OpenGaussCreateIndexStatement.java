@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
@@ -32,7 +31,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class OpenGaussCreateIndexStatement extends CreateIndexStatement implements OpenGaussStatement {
     
     private final boolean ifNotExists;

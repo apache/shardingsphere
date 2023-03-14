@@ -20,8 +20,9 @@ package org.apache.shardingsphere.sharding.route.engine.type.complex;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.exception.metadata.ShardingRuleNotFoundException;
+import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
@@ -43,6 +44,8 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     
     private final SQLStatementContext<?> sqlStatementContext;
     
+    private final HintValueContext hintValueContext;
+    
     private final ConfigurationProperties props;
     
     private final Collection<String> logicTables;
@@ -56,13 +59,13 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    routeContexts.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, sqlStatementContext, props).route(shardingRule));
+                    routeContexts.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, sqlStatementContext, hintValueContext, props).route(shardingRule));
                 }
                 shardingRule.findBindingTableRule(each).ifPresent(optional -> bindingTableNames.addAll(optional.getTableRules().keySet()));
             }
         }
         if (routeContexts.isEmpty()) {
-            throw new ShardingRuleNotFoundException(logicTables);
+            throw new ShardingTableRuleNotFoundException(logicTables);
         }
         if (1 == routeContexts.size()) {
             RouteContext newRouteContext = routeContexts.iterator().next();

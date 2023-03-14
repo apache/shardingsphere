@@ -56,10 +56,10 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         Preconditions.checkState(generatedKey.isPresent());
         Iterator<Comparable<?>> generatedValues = generatedKey.get().getGeneratedValues().iterator();
         int count = 0;
-        List<List<Object>> parameters = insertStatementContext.getGroupedParameters();
+        List<List<Object>> params = insertStatementContext.getGroupedParameters();
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             InsertValue insertValueToken = result.get().getInsertValues().get(count);
-            DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression(parameters, count)
+            DerivedSimpleExpressionSegment expressionSegment = isToAddDerivedLiteralExpression(params, count)
                     ? new DerivedLiteralExpressionSegment(generatedValues.next())
                     : new DerivedParameterMarkerExpressionSegment(each.getParameterCount());
             insertValueToken.getValues().add(expressionSegment);
@@ -77,7 +77,7 @@ public final class GeneratedKeyInsertValuesTokenGenerator extends BaseGeneratedK
         return Optional.empty();
     }
     
-    private boolean isToAddDerivedLiteralExpression(final List<List<Object>> parameters, final int insertValueCount) {
-        return parameters.get(insertValueCount).isEmpty();
+    private boolean isToAddDerivedLiteralExpression(final List<List<Object>> params, final int insertValueCount) {
+        return params.get(insertValueCount).isEmpty();
     }
 }

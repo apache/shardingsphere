@@ -30,20 +30,19 @@ import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -55,13 +54,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class SeataATShardingSphereTransactionManagerTest {
     
     private static final MockSeataServer MOCK_SEATA_SERVER = new MockSeataServer();
     
-    private static final String DATA_SOURCE_UNIQUE_NAME = "sharding_db.foo_ds";
+    private static final String DATA_SOURCE_UNIQUE_NAME = "sharding_db.ds_0";
     
     private final SeataATShardingSphereTransactionManager seataTransactionManager = new SeataATShardingSphereTransactionManager();
     
@@ -69,7 +69,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     private final Queue<Object> responseQueue = MOCK_SEATA_SERVER.getMessageHandler().getResponseQueue();
     
-    @BeforeClass
+    @BeforeAll
     public static void before() {
         Executors.newSingleThreadExecutor().submit(MOCK_SEATA_SERVER::start);
         while (true) {
@@ -79,20 +79,20 @@ public final class SeataATShardingSphereTransactionManagerTest {
         }
     }
     
-    @AfterClass
+    @AfterAll
     public static void after() {
         MOCK_SEATA_SERVER.shutdown();
     }
     
-    @Before
+    @BeforeEach
     public void setUp() {
-        seataTransactionManager.init(Collections.singletonMap("sharding_db.ds_0", DatabaseTypeFactory.getInstance("MySQL")),
-                Collections.singletonMap("sharding_db.ds_0", new ResourceDataSource(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource())), "Seata");
+        seataTransactionManager.init(Collections.singletonMap("sharding_db.ds_0", TypedSPILoader.getService(DatabaseType.class, "MySQL")),
+                Collections.singletonMap(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource()), "Seata");
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
-        ExecutorDataMap.getValue().clear();
+        SeataXIDContext.remove();
         RootContext.unbind();
         SeataTransactionHolder.clear();
         seataTransactionManager.close();
@@ -111,7 +111,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     @Test
     public void assertGetConnection() throws SQLException {
-        Connection actual = seataTransactionManager.getConnection("sharding_db", "foo_ds");
+        Connection actual = seataTransactionManager.getConnection("sharding_db", "ds_0");
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     
@@ -137,10 +137,10 @@ public final class SeataATShardingSphereTransactionManagerTest {
         assertResult();
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertCommitWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
-        seataTransactionManager.commit(false);
+        assertThrows(IllegalStateException.class, () -> seataTransactionManager.commit(false));
     }
     
     @Test
@@ -151,10 +151,10 @@ public final class SeataATShardingSphereTransactionManagerTest {
         assertResult();
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertRollbackWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
-        seataTransactionManager.rollback();
+        assertThrows(IllegalStateException.class, seataTransactionManager::rollback);
     }
     
     private void assertResult() {
@@ -175,32 +175,20 @@ public final class SeataATShardingSphereTransactionManagerTest {
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
     private Map<String, DataSource> getDataSourceMap() {
-        Field field = seataTransactionManager.getClass().getDeclaredField("dataSourceMap");
-        field.setAccessible(true);
-        return (Map<String, DataSource>) field.get(seataTransactionManager);
+        return (Map<String, DataSource>) Plugins.getMemberAccessor().get(seataTransactionManager.getClass().getDeclaredField("dataSourceMap"), seataTransactionManager);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setXID(final String xid) {
-        Field field = SeataTransactionHolder.get().getClass().getDeclaredField("xid");
-        field.setAccessible(true);
-        field.set(SeataTransactionHolder.get(), xid);
+        Plugins.getMemberAccessor().set(SeataTransactionHolder.get().getClass().getDeclaredField("xid"), SeataTransactionHolder.get(), xid);
         RootContext.bind(xid);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void releaseRpcClient() {
-        Field field = TmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized");
-        field.setAccessible(true);
-        field.set(TmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
-        field = TmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance");
-        field.setAccessible(true);
-        field.set(TmNettyRemotingClient.getInstance(), null);
-        field = RmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized");
-        field.setAccessible(true);
-        field.set(RmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
-        field = RmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance");
-        field.setAccessible(true);
-        field.set(RmNettyRemotingClient.getInstance(), null);
+        Plugins.getMemberAccessor().set(TmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized"), TmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
+        Plugins.getMemberAccessor().set(TmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), TmNettyRemotingClient.getInstance(), null);
+        Plugins.getMemberAccessor().set(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("initialized"), RmNettyRemotingClient.getInstance(), new AtomicBoolean(false));
+        Plugins.getMemberAccessor().set(RmNettyRemotingClient.getInstance().getClass().getDeclaredField("instance"), RmNettyRemotingClient.getInstance(), null);
     }
 }

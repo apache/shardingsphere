@@ -28,24 +28,24 @@ import java.util.Iterator;
 /**
  * SQL federation row enumerator.
  */
-public final class SQLFederationRowEnumerator implements Enumerator<Object[]> {
+public final class SQLFederationRowEnumerator<T> implements Enumerator<T> {
     
-    private final Collection<Object[]> rows;
+    private final Collection<T> rows;
     
     private final Collection<Statement> statements;
     
-    private Iterator<Object[]> iterator;
+    private Iterator<T> iterator;
     
-    private Object[] currentRow;
+    private T currentRow;
     
-    public SQLFederationRowEnumerator(final Collection<Object[]> rows, final Collection<Statement> statements) {
+    public SQLFederationRowEnumerator(final Collection<T> rows, final Collection<Statement> statements) {
         this.rows = rows;
         this.statements = statements;
         iterator = rows.iterator();
     }
     
     @Override
-    public Object[] current() {
+    public T current() {
         return currentRow;
     }
     

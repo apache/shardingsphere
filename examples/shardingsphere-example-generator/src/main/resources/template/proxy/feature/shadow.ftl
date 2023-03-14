@@ -26,7 +26,7 @@
         shadowAlgorithmNames:
           - user-id-insert-match-algorithm
           - user-id-select-match-algorithm
-          - simple-hint-algorithm
+          - sql-hint-algorithm
     shadowAlgorithms:
       user-id-insert-match-algorithm:
         type: REGEX_MATCH
@@ -40,7 +40,7 @@
           operation: insert
           column: user_id
           regex: "[1]"
-      simple-hint-algorithm:
-        type: SIMPLE_HINT
+      sql-hint-algorithm:
+        type: SQL_HINT
         props:
           foo: bar

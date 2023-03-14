@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss create synonym statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussCreateSynonymStatement extends CreateSynonymStatement implements OpenGaussStatement {
 }

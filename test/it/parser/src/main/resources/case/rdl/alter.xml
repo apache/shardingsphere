@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <alter-storage-unit sql-case-id="alter-storage-unit-simple-single-without-password">
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="" />
+    </alter-storage-unit>
+
+    <alter-storage-unit sql-case-id="alter-storage-unit-simple-single-with-password">
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
+    </alter-storage-unit>
+
+    <alter-storage-unit sql-case-id="alter-storage-unit-simple-multiple">
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
+        <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456" />
+    </alter-storage-unit>
+
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-without-password">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="" />
+    </alter-storage-unit>
+
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-with-password">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456" />
+    </alter-storage-unit>
+
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-multiple">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456" />
+        <data-source name="ds_1" url="jdbc:mysql://127.0.0.1:3306/test1" user="ROOT" password="123456" />
+    </alter-storage-unit>
+
+    <alter-storage-unit sql-case-id="alter-storage-unit-single-with-properties">
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
+            <property key="maxPoolSize" value="30" />
+        </data-source>
+    </alter-storage-unit>
+
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-with-empty-properties">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="" />
+    </alter-storage-unit>
+
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-with-properties">
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456">
+            <property key="maxPoolSize" value="30" />
+        </data-source>
+    </alter-storage-unit>
+    
+    <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule">
+        <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
+            <data-source>ms_group_0</data-source>
+            <data-source>ms_group_1</data-source>
+            <table-strategy algorithm-name="hash_mod">
+                <property key="sharding-count" value="4" />
+            </table-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
+        </rule>
+    </alter-sharding-auto-table-rule>
+
+    <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule-with-inline-expression">
+        <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
+            <table-strategy algorithm-name="hash_mod">
+                <property key="sharding-count" value="4" />
+            </table-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
+        </rule>
+    </alter-sharding-auto-table-rule>
+    
+    <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule-with-auditor">
+        <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
+            <data-source>ms_group_${0..1}</data-source>
+            <table-strategy algorithm-name="hash_mod">
+                <property key="sharding-count" value="4" />
+            </table-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
+            <audit-strategy allow-hint-disable="true">
+                <auditor auditor-name = "t_order_dml_sharding_conditions_0">
+                    <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+                </auditor>
+            </audit-strategy>
+        </rule>
+    </alter-sharding-auto-table-rule>
+
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
+        <rule name="t_order" key-generate-strategy-column="another_id">
+            <data-node>ms_group_${0..1}.t_order_${0..1}</data-node>
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <property key="algorithm-expression" value="ms_group_${order_id % 2}" />
+                </algorithm-segment>
+            </database-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
+        </rule>
+    </alter-sharding-table-rule>
+
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-complex">
+        <rule name="t_order" key-generate-strategy-column="another_id">
+            <data-node>ms_group_${0..1}_${0..1}.t_order_${0..1}</data-node>
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="complex" sharding-column="order_id,user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <property key="algorithm-expression" value="ms_group_${order_id % 2}_${user_id % 2}" />
+                </algorithm-segment>
+            </database-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
+        </rule>
+    </alter-sharding-table-rule>
+    
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-with-auditor">
+        <rule name="t_order" key-generate-strategy-column="another_id">
+            <data-node>ms_group_${0..1}.t_order_${0..1}</data-node>
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <property key="algorithm-expression" value="ms_group_${order_id % 2}" />
+                </algorithm-segment>
+            </database-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
+            <audit-strategy allow-hint-disable="true">
+                <auditor auditor-name = "t_order_dml_sharding_conditions_0">
+                    <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+                </auditor>
+            </audit-strategy>
+        </rule>
+    </alter-sharding-table-rule>
+    
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-with-complex-table-strategy-and-standard-database-strategy">
+        <rule name="t_order_item">
+            <data-node>ds_${0..1}.t_order_item_${0..1}</data-node>
+            <table-strategy type="complex" sharding-column="user_id,order_id">
+                <algorithm-segment algorithm-name="complex_inline">
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}_${order_id % 2}" />
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="inline">
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                </algorithm-segment>
+            </database-strategy>
+        </rule>
+    </alter-sharding-table-rule>
+    
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-with-none-table-strategy-and-hint-database-strategy">
+        <rule name="t_order_item">
+            <data-node>ds_${0..1}.t_order_item_${0..1}</data-node>
+            <database-strategy type="hint" sharding-column="user_id">
+                <algorithm-segment algorithm-name="hint_inline">
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                </algorithm-segment>
+            </database-strategy>
+            <table-strategy type="none" />
+        </rule>
+    </alter-sharding-table-rule>
+    
+    <alter-sharding-table-reference-rule sql-case-id="alter-sharding-table-reference-rule">
+        <rule name="reference_0" table-groups="t_order,t_order_item" />
+        <rule name="reference_1" table-groups="t_1,t_2" />
+    </alter-sharding-table-reference-rule>
+    
+    <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
+        <rule name="ms_group_0" auto-aware-resource="group_0" load-balancer="random">
+            <property key="read_weight" value="2:1" />
+        </rule>
+        <rule name="ms_group_1" write-data-source="primary_ds" load-balancer="random">
+            <read-data-source>replica_ds_0</read-data-source>
+            <read-data-source>replica_ds_1</read-data-source>
+        </rule>
+    </alter-readwrite-splitting-rule>
+
+    <alter-database-discovery-rule sql-case-id="alter-database-discovery-rule">
+        <rule name="ha_group_0" type="mgr">
+            <data-source>ds_0</data-source>
+            <data-source>ds_1</data-source>
+            <discovery-type algorithm-name="mgr">
+                <property key="groupName" value="92504d5b-6dec" />
+            </discovery-type>
+            <property key="keepAliveCron" value="0/5 * * * * ?" />
+        </rule>
+        <rule name="ha_group_1" type="mgr2">
+            <data-source>ds_2</data-source>
+            <data-source>ds_3</data-source>
+            <discovery-type algorithm-name="mgr2">
+                <property key="groupName" value="92504d5b-6dec-2" />
+            </discovery-type>
+            <property key="keepAliveCron" value="0/6 * * * * ?" />
+        </rule>
+    </alter-database-discovery-rule>
+    
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
+        <rule name="t_encrypt">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+                <encryptor algorithm-name="AES">
+                    <property key="aes-key-value" value="123456abc" />
+                </encryptor>
+            </column>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5" />
+            </column>
+        </rule>
+    </alter-encrypt-rule>
+
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-assisted-query-column">
+        <rule name="t_encrypt">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column="assisted_column">
+                <encryptor algorithm-name="AES">
+                    <property key="aes-key-value" value="123456abc" />
+                </encryptor>
+                <assisted-query-encryptor algorithm-name="MD5" />
+            </column>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5" />
+            </column>
+        </rule>
+    </alter-encrypt-rule>
+    
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-like-query-column">
+        <rule name="t_encrypt">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" like-query-column="like_column">
+                <encryptor algorithm-name="AES">
+                    <property key="aes-key-value" value="123456abc" />
+                </encryptor>
+                <like-query-encryptor algorithm-name="CHAR_DIGEST_LIKE" />
+            </column>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5" />
+            </column>
+        </rule>
+    </alter-encrypt-rule>
+    
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-query-with-cipher-column">
+        <rule name="t_encrypt" query-with-cipher-column="false">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+                <encryptor algorithm-name="AES">
+                    <property key="aes-key-value" value="123456abc" />
+                </encryptor>
+            </column>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5" />
+            </column>
+        </rule>
+    </alter-encrypt-rule>
+    
+    <alter-shadow-rule sql-case-id="alter-shadow-rule">
+        <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+            <table-rule table-name="t_order">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
+                    <algorithm algorithm-name="REGEX_MATCH">
+                        <property key="operation" value="insert" />
+                        <property key="column" value="user_id" />
+                        <property key="regex" value="[1]" />
+                    </algorithm>
+                </shadow-algorithm>
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_sql_hint_1">
+                    <algorithm algorithm-name="SQL_HINT"/>
+                </shadow-algorithm>
+            </table-rule>
+        </rule>
+    </alter-shadow-rule>
+    
+    <alter-default-shadow-algorithm sql-case-id="alter-default-shadow-algorithm">
+        <shadow-algorithm algorithm-id="default">
+            <algorithm algorithm-name="SQL_HINT"/>
+        </shadow-algorithm>
+    </alter-default-shadow-algorithm>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
+        <strategy default-type="TABLE" strategy-type="standard" sharding-column="order_id">
+            <algorithm-segment algorithm-name="INLINE">
+                <property key="algorithm-expression" value="t_order_${order_id % 2}" />
+            </algorithm-segment>
+        </strategy>
+    </alter-default-sharding-strategy>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-table-strategy-with-complex-strategy-type">
+        <strategy default-type="TABLE" strategy-type="complex" sharding-column="user_id,order_id">
+            <algorithm-segment algorithm-name="COMPLEX_INLINE">
+                <property key="algorithm-expression" value="t_order_${user_id % 2}_${order_id % 2}" />
+            </algorithm-segment>
+        </strategy>
+    </alter-default-sharding-strategy>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-table-strategy-with-hint-strategy-type">
+        <strategy default-type="TABLE" strategy-type="hint" sharding-column="user_id">
+            <algorithm-segment algorithm-name="HINT_INLINE">
+                <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+            </algorithm-segment>
+        </strategy>
+    </alter-default-sharding-strategy>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-table-strategy-with-none-strategy-type">
+        <strategy default-type="TABLE" strategy-type="none" />
+    </alter-default-sharding-strategy>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-database-strategy-with-complex-strategy-type">
+        <strategy default-type="DATABASE" strategy-type="complex" sharding-column="user_id,order_id">
+            <algorithm-segment algorithm-name="COMPLEX_INLINE">
+                <property key="algorithm-expression" value="t_order_${user_id % 2}_${order_id % 2}" />
+            </algorithm-segment>
+        </strategy>
+    </alter-default-sharding-strategy>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-database-strategy-with-hint-strategy-type">
+        <strategy default-type="DATABASE" strategy-type="hint" sharding-column="user_id">
+            <algorithm-segment algorithm-name="HINT_INLINE">
+                <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+            </algorithm-segment>
+        </strategy>
+    </alter-default-sharding-strategy>
+    
+    <alter-default-sharding-strategy sql-case-id="alter-default-sharding-database-strategy-with-none-strategy-type">
+        <strategy default-type="DATABASE" strategy-type="none" />
+    </alter-default-sharding-strategy>
+    
+    <alter-mask-rule sql-case-id="alter-mask-rule">
+        <rule name="t_mask">
+            <column name="phone_number">
+                <algorithm algorithm-name="MASK_FROM_X_TO_Y">
+                    <property key="from-x" value="1" />
+                    <property key="to-y" value="2" />
+                    <property key="replace-char" value="*" />
+                </algorithm>
+            </column>
+            <column name="address">
+                <algorithm algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </alter-mask-rule>
+</sql-parser-test-cases>

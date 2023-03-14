@@ -19,13 +19,15 @@ package org.apache.shardingsphere.shadow.distsql.converter;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.converter.ShadowRuleStatementConverter;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
-import org.junit.Test;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,21 +37,16 @@ public final class ShadowRuleStatementConverterTest {
     @Test
     public void assertConvert() {
         ShadowRuleConfiguration config = ShadowRuleStatementConverter.convert(Collections.singleton(createTableRuleSegment()));
-        assertThat(config.getDataSources().get("ruleName").getProductionDataSourceName(), is("source"));
-        assertThat(config.getDataSources().get("ruleName").getShadowDataSourceName(), is("shadow"));
+        ShadowDataSourceConfiguration shadowDataSourceConfig = config.getDataSources().iterator().next();
+        assertThat(shadowDataSourceConfig.getProductionDataSourceName(), is("source"));
+        assertThat(shadowDataSourceConfig.getShadowDataSourceName(), is("shadow"));
         assertThat(config.getTables().size(), is(1));
         assertThat(config.getShadowAlgorithms().size(), is(1));
         assertThat(config.getShadowAlgorithms().get("algorithmsName").getProps().getProperty("foo"), is("bar"));
     }
     
     private ShadowRuleSegment createTableRuleSegment() {
-        return new ShadowRuleSegment("ruleName", "source", "shadow",
-                Collections.singletonMap("t_order", Collections.singleton(new ShadowAlgorithmSegment("algorithmsName", new AlgorithmSegment("type", createProperties())))));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("foo", "bar");
-        return result;
+        return new ShadowRuleSegment("ruleName", "source", "shadow", Collections.singletonMap("t_order",
+                Collections.singleton(new ShadowAlgorithmSegment("algorithmsName", new AlgorithmSegment("type", PropertiesBuilder.build(new Property("foo", "bar")))))));
     }
 }

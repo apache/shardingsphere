@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DatabaseMetaDataNodeTest {
     

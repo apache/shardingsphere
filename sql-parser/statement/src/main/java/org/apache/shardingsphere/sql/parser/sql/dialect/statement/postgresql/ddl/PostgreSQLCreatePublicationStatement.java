@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreatePublicationStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL create publication statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLCreatePublicationStatement extends CreatePublicationStatement implements PostgreSQLStatement {
 }

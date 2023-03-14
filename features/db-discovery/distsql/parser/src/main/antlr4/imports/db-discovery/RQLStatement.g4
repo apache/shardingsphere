@@ -20,7 +20,7 @@ grammar RQLStatement;
 import BaseRule;
 
 showDatabaseDiscoveryRules
-    : SHOW DB_DISCOVERY RULES (FROM databaseName)?
+    : SHOW DB_DISCOVERY (RULE ruleName | RULES) (FROM databaseName)?
     ;
 
 showDatabaseDiscoveryTypes
@@ -35,6 +35,10 @@ countDatabaseDiscoveryRule
     : COUNT DB_DISCOVERY RULE (FROM databaseName)?
     ;
 
+ruleName
+    : IDENTIFIER_
+    ;
+
 databaseName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;

@@ -20,23 +20,23 @@ grammar RDLStatement;
 import BaseRule;
 
 createShadowRule
-    : CREATE SHADOW RULE shadowRuleDefinition (COMMA shadowRuleDefinition)*
+    : CREATE SHADOW RULE ifNotExists? shadowRuleDefinition (COMMA_ shadowRuleDefinition)*
     ;
 
 alterShadowRule
-    : ALTER SHADOW RULE shadowRuleDefinition (COMMA shadowRuleDefinition)*
+    : ALTER SHADOW RULE shadowRuleDefinition (COMMA_ shadowRuleDefinition)*
     ;
 
 dropShadowRule
-    : DROP SHADOW RULE ifExists? ruleName (COMMA ruleName)*
+    : DROP SHADOW RULE ifExists? ruleName (COMMA_ ruleName)*
     ;
 
 dropShadowAlgorithm
-    : DROP SHADOW ALGORITHM ifExists? algorithmName (COMMA algorithmName)*
+    : DROP SHADOW ALGORITHM ifExists? algorithmName (COMMA_ algorithmName)*
     ;
 
 createDefaultShadowAlgorithm
-    : CREATE DEFAULT SHADOW ALGORITHM algorithmDefinition
+    : CREATE DEFAULT SHADOW ALGORITHM ifNotExists? algorithmDefinition
     ;
 
 dropDefaultShadowAlgorithm
@@ -48,29 +48,33 @@ alterDefaultShadowAlgorithm
     ;
 
 shadowRuleDefinition
-    :  ruleName LP SOURCE EQ source COMMA SHADOW EQ shadow COMMA shadowTableRule (COMMA shadowTableRule)* RP
+    :  ruleName LP_ SOURCE EQ_ source COMMA_ SHADOW EQ_ shadow COMMA_ shadowTableRule (COMMA_ shadowTableRule)* RP_
     ;
 
 shadowTableRule
-    : tableName LP algorithmDefinition (COMMA algorithmDefinition)* RP
+    : tableName LP_ algorithmDefinition (COMMA_ algorithmDefinition)* RP_
     ;
 
 source
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 shadow
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 tableName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 algorithmName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;
 
 ifExists
     : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

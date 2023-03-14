@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShadowTest;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,13 +45,23 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     
     private static final String SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = ?";
     
+    @AfterEach
+    public void clean() throws SQLException {
+        try (Statement statement = getActualDataSources().get("shadow_jdbc_0").getConnection().createStatement()) {
+            statement.execute(CLEAN_SQL);
+        }
+        try (Statement statement = getActualDataSources().get("shadow_jdbc_1").getConnection().createStatement()) {
+            statement.execute(CLEAN_SQL);
+        }
+    }
+    
     @Test
     public void assertInsertNativeCase() throws SQLException {
-        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
-            statement.setObject(1, 2);
-            statement.setString(2, "cipher");
-            statement.setString(3, "plain");
-            statement.execute();
+        try (PreparedStatement preparedStatement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
+            preparedStatement.setObject(1, 2);
+            preparedStatement.setString(2, "cipher");
+            preparedStatement.setString(3, "plain");
+            preparedStatement.execute();
         }
         assertResultSet(true, 0, "cipher");
         assertResultSet(false, 1, "cipher");
@@ -72,11 +82,11 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     
     @Test
     public void assertInsertShadowCase() throws SQLException {
-        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
-            statement.setObject(1, 1);
-            statement.setString(2, "cipher");
-            statement.setString(3, "plain");
-            statement.execute();
+        try (PreparedStatement preparedStatement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
+            preparedStatement.setObject(1, 1);
+            preparedStatement.setString(2, "cipher");
+            preparedStatement.setString(3, "plain");
+            preparedStatement.execute();
         }
         assertResultSet(true, 1, "cipher");
         assertResultSet(false, 0, "cipher");
@@ -214,15 +224,5 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
         }
         assertResultSet(true, 0, "cipher_pwd");
         assertResultSet(false, 0, "cipher_pwd");
-    }
-    
-    @After
-    public void clean() throws SQLException {
-        try (Statement statement = getActualDataSources().get("shadow_jdbc_0").getConnection().createStatement()) {
-            statement.execute(CLEAN_SQL);
-        }
-        try (Statement statement = getActualDataSources().get("shadow_jdbc_1").getConnection().createStatement()) {
-            statement.execute(CLEAN_SQL);
-        }
     }
 }

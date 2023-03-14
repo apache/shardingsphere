@@ -29,10 +29,6 @@ import java.util.Collection;
 public final class AllPrivilegesPermittedShardingSpherePrivileges implements ShardingSpherePrivileges {
     
     @Override
-    public void setSuperPrivilege() {
-    }
-    
-    @Override
     public boolean hasPrivileges(final String database) {
         return true;
     }

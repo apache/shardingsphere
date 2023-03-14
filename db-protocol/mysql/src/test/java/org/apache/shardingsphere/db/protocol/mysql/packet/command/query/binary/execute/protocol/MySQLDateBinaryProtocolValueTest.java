@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.protocol;
 
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -30,18 +30,19 @@ import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLDateBinaryProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertReadWithZeroByte() throws SQLException {
-        new MySQLDateBinaryProtocolValue().read(payload);
+    @Test
+    public void assertReadWithZeroByte() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> new MySQLDateBinaryProtocolValue().read(payload, false));
     }
     
     @Test
@@ -49,7 +50,7 @@ public final class MySQLDateBinaryProtocolValueTest {
         when(payload.readInt1()).thenReturn(4, 12, 31);
         when(payload.readInt2()).thenReturn(2018);
         Calendar actual = Calendar.getInstance();
-        actual.setTimeInMillis(((Timestamp) new MySQLDateBinaryProtocolValue().read(payload)).getTime());
+        actual.setTimeInMillis(((Timestamp) new MySQLDateBinaryProtocolValue().read(payload, false)).getTime());
         assertThat(actual.get(Calendar.YEAR), is(2018));
         assertThat(actual.get(Calendar.MONTH), is(Calendar.DECEMBER));
         assertThat(actual.get(Calendar.DAY_OF_MONTH), is(31));
@@ -60,7 +61,7 @@ public final class MySQLDateBinaryProtocolValueTest {
         when(payload.readInt1()).thenReturn(7, 12, 31, 10, 59, 0);
         when(payload.readInt2()).thenReturn(2018);
         Calendar actual = Calendar.getInstance();
-        actual.setTimeInMillis(((Timestamp) new MySQLDateBinaryProtocolValue().read(payload)).getTime());
+        actual.setTimeInMillis(((Timestamp) new MySQLDateBinaryProtocolValue().read(payload, false)).getTime());
         assertThat(actual.get(Calendar.YEAR), is(2018));
         assertThat(actual.get(Calendar.MONTH), is(Calendar.DECEMBER));
         assertThat(actual.get(Calendar.DAY_OF_MONTH), is(31));
@@ -75,7 +76,7 @@ public final class MySQLDateBinaryProtocolValueTest {
         when(payload.readInt2()).thenReturn(2018);
         when(payload.readInt4()).thenReturn(232323);
         Calendar actual = Calendar.getInstance();
-        Timestamp actualTimestamp = (Timestamp) new MySQLDateBinaryProtocolValue().read(payload);
+        Timestamp actualTimestamp = (Timestamp) new MySQLDateBinaryProtocolValue().read(payload, false);
         actual.setTimeInMillis(actualTimestamp.getTime());
         assertThat(actual.get(Calendar.YEAR), is(2018));
         assertThat(actual.get(Calendar.MONTH), is(Calendar.DECEMBER));
@@ -86,10 +87,10 @@ public final class MySQLDateBinaryProtocolValueTest {
         assertThat(actualTimestamp.getNanos(), is(232323000));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertReadWithIllegalArgument() throws SQLException {
+    @Test
+    public void assertReadWithIllegalArgument() {
         when(payload.readInt1()).thenReturn(100);
-        new MySQLDateBinaryProtocolValue().read(payload);
+        assertThrows(SQLFeatureNotSupportedException.class, () -> new MySQLDateBinaryProtocolValue().read(payload, false));
     }
     
     @Test

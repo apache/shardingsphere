@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.orderby.item;
 
+import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlPostfixOperator;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -31,6 +37,14 @@ public final class ExpressionOrderByItemConverter implements SQLSegmentConverter
     
     @Override
     public Optional<SqlNode> convert(final ExpressionOrderByItemSegment segment) {
-        return null == segment ? Optional.empty() : new ExpressionConverter().convert(segment.getExpr());
+        Optional<SqlNode> result = null == segment ? Optional.empty() : new ExpressionConverter().convert(segment.getExpr());
+        if (!result.isPresent()) {
+            return Optional.empty();
+        }
+        if (segment.getNullsOrderType().isPresent()) {
+            SqlPostfixOperator nullsOrderType = NullsOrderType.FIRST.equals(segment.getNullsOrderType().get()) ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST;
+            result = Optional.of(new SqlBasicCall(nullsOrderType, Collections.singletonList(result.get()), SqlParserPos.ZERO));
+        }
+        return result;
     }
 }

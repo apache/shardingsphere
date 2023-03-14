@@ -42,7 +42,7 @@ loadBalancers:
 ## 影子算法
 
 ```yaml
-loadBalancers:
+shadowAlgorithms:
   # shadowAlgorithmName 由用户指定，需要和影子库规则中的 shadowAlgorithmNames 属性一致
   <shadowAlgorithmName>:
     # type 和 props，请参考影子库内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/builtin-algorithm/shadow/
@@ -57,6 +57,18 @@ loadBalancers:
 discoveryTypes:
   # discoveryTypeName 由用户指定，需要和数据库发现规则中的 discoveryTypeName 属性一致
   <discoveryTypeName>:
+    type: xxx
+    props:
+      xxx: xxx
+```
+
+## 脱敏算法
+
+```yaml
+maskAlgorithms:
+  # maskAlgorithmName 由用户指定，需要和脱敏规则中的 maskAlgorithm 属性一致
+  <maskAlgorithmName>:
+    # type 和 props，请参考脱敏内置算法：https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/builtin-algorithm/mask/
     type: xxx
     props:
       xxx: xxx

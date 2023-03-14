@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -33,7 +32,6 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class CommonTableExpressionSegment implements ExpressionSegment {
     
     private final int startIndex;

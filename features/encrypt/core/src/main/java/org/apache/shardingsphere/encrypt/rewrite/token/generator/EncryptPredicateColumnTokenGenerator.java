@@ -21,12 +21,12 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
@@ -95,9 +95,9 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             }
             // TODO remove foreach loop to improve performance
             if (isColumnSegmentIncludedInLikeExpression(whereSegments, each)) {
-                Optional<String> fuzzyQueryColumn = encryptTable.get().findFuzzyQueryColumn(each.getIdentifier().getValue());
-                if (fuzzyQueryColumn.isPresent()) {
-                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(fuzzyQueryColumn.get())));
+                Optional<String> likeQueryColumn = encryptTable.get().findLikeQueryColumn(each.getIdentifier().getValue());
+                if (likeQueryColumn.isPresent()) {
+                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(likeQueryColumn.get())));
                     continue;
                 } else {
                     throw new UnsupportedEncryptSQLException("LIKE");

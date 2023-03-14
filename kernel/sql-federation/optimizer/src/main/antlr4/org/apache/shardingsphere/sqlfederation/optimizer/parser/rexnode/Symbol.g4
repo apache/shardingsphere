@@ -37,3 +37,5 @@ COLON_:              ':';
 RANGE_:              '..';
 NEGETIVE_INFINITY_:  '-∞';
 POSITIVE_INFINITY_:  '+∞';
+QUESTION_:           '?';
+

@@ -47,47 +47,46 @@ public final class StandardParameterBuilder implements ParameterBuilder {
      * Add added parameters.
      * 
      * @param index parameters index to be added
-     * @param parameters parameters to be added
+     * @param params parameters to be added
      */
-    public void addAddedParameters(final int index, final Collection<Object> parameters) {
-        addedIndexAndParameters.put(index, parameters);
+    public void addAddedParameters(final int index, final Collection<Object> params) {
+        addedIndexAndParameters.put(index, params);
     }
     
     /**
      * Add replaced parameter.
      * 
      * @param index parameter index to be replaced
-     * @param parameter parameter to be replaced
+     * @param param parameter to be replaced
      */
-    public void addReplacedParameters(final int index, final Object parameter) {
-        replacedIndexAndParameters.put(index, parameter);
+    public void addReplacedParameters(final int index, final Object param) {
+        replacedIndexAndParameters.put(index, param);
     }
     
     @Override
     public List<Object> getParameters() {
-        List<Object> replacedParameters = new ArrayList<>(originalParameters);
+        List<Object> replacedParams = new ArrayList<>(originalParameters);
         for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
-            replacedParameters.set(entry.getKey(), entry.getValue());
+            replacedParams.set(entry.getKey(), entry.getValue());
         }
-        int maxParameterIndex = getMaxParameterIndex(originalParameters, addedIndexAndParameters);
+        int maxParamIndex = getMaxParameterIndex();
         List<Object> result = new LinkedList<>();
-        for (int index = 0; index <= maxParameterIndex; index++) {
-            List<Object> currentIndexParameters = new LinkedList<>();
-            if (replacedParameters.size() > index) {
-                currentIndexParameters.add(replacedParameters.get(index));
+        for (int index = 0; index <= maxParamIndex; index++) {
+            List<Object> currentIndexParams = new LinkedList<>();
+            if (replacedParams.size() > index) {
+                currentIndexParams.add(replacedParams.get(index));
             }
             if (addedIndexAndParameters.containsKey(index)) {
-                currentIndexParameters.addAll(addedIndexAndParameters.get(index));
+                currentIndexParams.addAll(addedIndexAndParameters.get(index));
             }
-            result.addAll(currentIndexParameters);
+            result.addAll(currentIndexParams);
         }
         return result;
     }
     
-    private int getMaxParameterIndex(final List<Object> originalParameters, final Map<Integer, Collection<Object>> addedIndexAndParameters) {
-        if (addedIndexAndParameters.isEmpty()) {
-            return originalParameters.size() - 1;
-        }
-        return Math.max(originalParameters.size() - 1, ((TreeMap<Integer, Collection<Object>>) addedIndexAndParameters).descendingMap().firstKey());
+    private int getMaxParameterIndex() {
+        return addedIndexAndParameters.isEmpty()
+                ? originalParameters.size() - 1
+                : Math.max(originalParameters.size() - 1, ((TreeMap<Integer, Collection<Object>>) addedIndexAndParameters).descendingMap().firstKey());
     }
 }

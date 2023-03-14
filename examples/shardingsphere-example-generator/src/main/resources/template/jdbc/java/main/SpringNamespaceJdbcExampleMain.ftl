@@ -30,6 +30,9 @@ public final class ExampleMain {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext("application.xml")) {
             ExampleService exampleService = applicationContext.getBean(ExampleService.class);
             exampleService.run();
+        <#if transaction=="xa-narayana">
+            System.exit(0);
+        </#if>
         }
     }
 }

@@ -100,6 +100,19 @@ public final class ShardingSphereDataNode {
     }
     
     /**
+     * Get table row path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param table table name
+     * @param uniqueKey unique key
+     * @return table meta data path
+     */
+    public static String getTableRowPath(final String databaseName, final String schemaName, final String table, final String uniqueKey) {
+        return String.join("/", getTablePath(databaseName, schemaName, table), uniqueKey);
+    }
+    
+    /**
      * Get database name.
      *
      * @param configNodeFullPath config node full path
@@ -154,8 +167,32 @@ public final class ShardingSphereDataNode {
      * @return table name
      */
     public static Optional<String> getTableName(final String tableMetaDataPath) {
-        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(tableMetaDataPath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get table name by row path.
+     *
+     * @param rowPath row data path
+     * @return table name
+     */
+    public static Optional<String> getTableNameByRowPath(final String rowPath) {
+        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rowPath);
+        return matcher.find() ? Optional.of(matcher.group(3)) : Optional.empty();
+    }
+    
+    /**
+     * Get row unique key.
+     *
+     * @param rowPath row data path
+     * @return row unique key
+     */
+    public static Optional<String> getRowUniqueKey(final String rowPath) {
+        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)" + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(rowPath);
         return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
     }
 }

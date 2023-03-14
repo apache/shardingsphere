@@ -19,24 +19,26 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
-import org.apache.shardingsphere.sharding.exception.algorithm.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
-import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class InlineShardingAlgorithmTest {
@@ -49,39 +51,22 @@ public final class InlineShardingAlgorithmTest {
     
     private InlineShardingAlgorithm negativeNumberInlineShardingAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setUp() {
-        inlineShardingAlgorithm = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INLINE", createAllowRangeQueryProperties()));
-        inlineShardingAlgorithmWithSimplified = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new AlgorithmConfiguration("INLINE", createDisallowRangeQueryProperties()));
-        negativeNumberInlineShardingAlgorithm = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INLINE", createNegativeAllowRangeQueryProperties()));
+        inlineShardingAlgorithm = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
+                PropertiesBuilder.build(new Property("algorithm-expression", "t_order_$->{order_id % 4}"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString())));
+        inlineShardingAlgorithmWithSimplified = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
+                PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 4}")));
+        negativeNumberInlineShardingAlgorithm = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
+                PropertiesBuilder.build(new Property("algorithm-expression", "t_order_$->{(order_id % 4).abs()}"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString())));
     }
     
-    private Properties createAllowRangeQueryProperties() {
-        Properties result = new Properties();
-        result.setProperty("algorithm-expression", "t_order_$->{order_id % 4}");
-        result.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
-        return result;
-    }
-    
-    private Properties createNegativeAllowRangeQueryProperties() {
-        Properties result = new Properties();
-        result.setProperty("algorithm-expression", "t_order_$->{(order_id % 4).abs()}");
-        result.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
-        return result;
-    }
-    
-    private Properties createDisallowRangeQueryProperties() {
-        Properties result = new Properties();
-        result.setProperty("algorithm-expression", "t_order_${order_id % 4}");
-        return result;
-    }
-    
-    @Test(expected = MismatchedInlineShardingAlgorithmExpressionAndColumnException.class)
+    @Test
     public void assertDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
-        inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "non_existent_column1", DATA_NODE_INFO, 0));
+        assertThrows(MismatchedInlineShardingAlgorithmExpressionAndColumnException.class,
+                () -> inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "non_existent_column1", DATA_NODE_INFO, 0)));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

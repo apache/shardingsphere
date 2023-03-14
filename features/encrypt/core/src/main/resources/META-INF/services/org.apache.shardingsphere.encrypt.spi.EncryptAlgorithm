@@ -18,4 +18,4 @@
 org.apache.shardingsphere.encrypt.algorithm.encrypt.MD5EncryptAlgorithm
 org.apache.shardingsphere.encrypt.algorithm.encrypt.AESEncryptAlgorithm
 org.apache.shardingsphere.encrypt.algorithm.encrypt.RC4EncryptAlgorithm
-org.apache.shardingsphere.encrypt.algorithm.fuzzy.CharDigestFuzzyEncryptAlgorithm
+org.apache.shardingsphere.encrypt.algorithm.like.CharDigestLikeEncryptAlgorithm

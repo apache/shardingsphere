@@ -1,0 +1,12 @@
+{{ if .Parent }}
+	{{ $name := trim (.Get "name") " " }}
+	{{ if not (.Parent.Scratch.Get "tabs") }}
+	    {{ .Parent.Scratch.Set "tabs" slice }}
+	{{ end }}
+	{{ with .Inner }}
+        {{ $.Parent.Scratch.Add "tabs" (dict "name" $name "content" . ) }}
+	{{ end }}
+{{ else }}
+	{{- errorf "[%s] %q: tab shortcode missing its parent" site.Language.Lang .Page.Path -}}
+{{ end}}
+

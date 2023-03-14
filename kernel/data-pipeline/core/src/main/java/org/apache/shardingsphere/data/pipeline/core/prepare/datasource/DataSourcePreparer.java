@@ -31,16 +31,16 @@ public interface DataSourcePreparer extends TypedSPI {
     /**
      * Prepare target schemas.
      *
-     * @param parameter prepare target schemas parameter
+     * @param param prepare target schemas parameter
      * @throws SQLException if prepare target schema fail
      */
-    void prepareTargetSchemas(PrepareTargetSchemasParameter parameter) throws SQLException;
+    void prepareTargetSchemas(PrepareTargetSchemasParameter param) throws SQLException;
     
     /**
      * Prepare target tables.
      *
-     * @param parameter prepare target tables parameter
+     * @param param prepare target tables parameter
      * @throws SQLException SQL exception
      */
-    void prepareTargetTables(PrepareTargetTablesParameter parameter) throws SQLException;
+    void prepareTargetTables(PrepareTargetTablesParameter param) throws SQLException;
 }

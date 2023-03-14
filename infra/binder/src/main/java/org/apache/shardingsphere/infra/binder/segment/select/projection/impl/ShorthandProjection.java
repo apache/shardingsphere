@@ -25,7 +25,9 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -38,11 +40,11 @@ public final class ShorthandProjection implements Projection {
     
     private final String owner;
     
-    private final Map<String, ColumnProjection> actualColumns = new LinkedHashMap<>();
+    private final Map<String, Projection> actualColumns = new LinkedHashMap<>();
     
-    public ShorthandProjection(final String owner, final Collection<ColumnProjection> columnProjections) {
+    public ShorthandProjection(final String owner, final Collection<Projection> projections) {
         this.owner = owner;
-        columnProjections.forEach(each -> actualColumns.put(each.getExpression().toLowerCase(), each));
+        projections.forEach(each -> actualColumns.put(each.getExpression().toLowerCase(), each));
     }
     
     @Override
@@ -67,5 +69,25 @@ public final class ShorthandProjection implements Projection {
      */
     public Optional<String> getOwner() {
         return Optional.ofNullable(owner);
+    }
+    
+    /**
+     * Get column projections.
+     *
+     * @return column projections
+     */
+    public Collection<ColumnProjection> getColumnProjections() {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        for (Entry<String, Projection> entry : actualColumns.entrySet()) {
+            if (entry.getValue() instanceof ColumnProjection) {
+                result.add((ColumnProjection) entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public Projection cloneWithOwner(final String ownerName) {
+        return new ShorthandProjection(ownerName, actualColumns.values());
     }
 }

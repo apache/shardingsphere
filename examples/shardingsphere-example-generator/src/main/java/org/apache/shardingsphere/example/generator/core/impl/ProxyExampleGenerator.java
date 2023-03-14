@@ -31,9 +31,10 @@ import java.util.Map;
  */
 public final class ProxyExampleGenerator implements ExampleGenerator {
     
-    public void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature, final String transaction) throws IOException, TemplateException {
-        GenerateUtil.generateDirs(templateConfig, dataModel, Collections.singleton("conf"), OUTPUT_PATH + RESOURCES_PATH);
-        String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, OUTPUT_PATH);
+    @Override
+    public void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String relativePath) throws IOException, TemplateException {
+        GenerateUtil.generateDirs(templateConfig, dataModel, Collections.singleton("conf"), relativePath + RESOURCES_PATH);
+        String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, relativePath);
         processFile(templateConfig, dataModel, outputPath);
     }
     

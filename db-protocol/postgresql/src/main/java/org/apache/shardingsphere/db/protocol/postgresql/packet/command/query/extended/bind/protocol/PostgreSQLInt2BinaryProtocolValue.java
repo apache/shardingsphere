@@ -31,11 +31,11 @@ public final class PostgreSQLInt2BinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
-        return payload.readInt2();
+        return payload.getByteBuf().readShort();
     }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeInt2((Integer) value);
+        payload.writeInt2(((Number) value).intValue());
     }
 }

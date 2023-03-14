@@ -19,26 +19,25 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.generic;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLOKPacketTest {
     
     @Mock
     private MySQLPacketPayload packetPayload;
     
     @Test
-    public void assertNewOKPacketWithSequenceId() {
-        MySQLOKPacket actual = new MySQLOKPacket(1, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-        assertThat(actual.getSequenceId(), is(1));
+    public void assertNewOKPacketWithStatusFlag() {
+        MySQLOKPacket actual = new MySQLOKPacket(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         assertThat(actual.getAffectedRows(), is(0L));
         assertThat(actual.getLastInsertId(), is(0L));
         assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
@@ -48,8 +47,7 @@ public final class MySQLOKPacketTest {
     
     @Test
     public void assertNewOKPacketWithAffectedRowsAndLastInsertId() {
-        MySQLOKPacket actual = new MySQLOKPacket(1, 100L, 9999L, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLOKPacket actual = new MySQLOKPacket(100L, 9999L, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         assertThat(actual.getAffectedRows(), is(100L));
         assertThat(actual.getLastInsertId(), is(9999L));
         assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
@@ -59,12 +57,11 @@ public final class MySQLOKPacketTest {
     
     @Test
     public void assertNewOKPacketWithPayload() {
-        when(packetPayload.readInt1()).thenReturn(1, MySQLOKPacket.HEADER);
+        when(packetPayload.readInt1()).thenReturn(MySQLOKPacket.HEADER);
         when(packetPayload.readInt2()).thenReturn(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0);
         when(packetPayload.readIntLenenc()).thenReturn(100L, 9999L);
         when(packetPayload.readStringEOF()).thenReturn("");
         MySQLOKPacket actual = new MySQLOKPacket(packetPayload);
-        assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getAffectedRows(), is(100L));
         assertThat(actual.getLastInsertId(), is(9999L));
         assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
@@ -74,7 +71,7 @@ public final class MySQLOKPacketTest {
     
     @Test
     public void assertWrite() {
-        new MySQLOKPacket(1, 100L, 9999L, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write(packetPayload);
+        new MySQLOKPacket(100L, 9999L, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write(packetPayload);
         verify(packetPayload).writeInt1(MySQLOKPacket.HEADER);
         verify(packetPayload).writeIntLenenc(100L);
         verify(packetPayload).writeIntLenenc(9999L);

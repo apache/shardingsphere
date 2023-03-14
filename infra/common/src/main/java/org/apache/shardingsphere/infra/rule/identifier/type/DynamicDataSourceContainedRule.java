@@ -58,7 +58,14 @@ public interface DynamicDataSourceContainedRule extends ShardingSphereRule {
     void restartHeartBeatJob(DataSourceStatusChangedEvent event);
     
     /**
-     * Close heart beat.
+     * Close single heart beat job.
+     *
+     * @param groupName group name
      */
-    void closeHeartBeatJob();
+    void closeSingleHeartBeatJob(String groupName);
+    
+    /**
+     * Close all heart beat job.
+     */
+    void closeAllHeartBeatJob();
 }

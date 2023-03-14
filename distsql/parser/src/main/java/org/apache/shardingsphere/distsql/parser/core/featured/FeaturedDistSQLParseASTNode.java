@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Featured dist SQL parse AST node.
+ * Featured DistSQL parse AST node.
  */
 @RequiredArgsConstructor
 @Getter

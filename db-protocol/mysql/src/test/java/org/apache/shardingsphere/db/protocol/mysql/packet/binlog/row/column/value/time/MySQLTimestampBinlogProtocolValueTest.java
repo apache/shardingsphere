@@ -19,10 +19,10 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.val
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
 
@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLTimestampBinlogProtocolValueTest {
     
     @Mock
@@ -41,7 +41,7 @@ public final class MySQLTimestampBinlogProtocolValueTest {
     
     @Test
     public void assertRead() {
-        int currentSeconds = new Long(System.currentTimeMillis() / 1000).intValue();
+        int currentSeconds = Long.valueOf(System.currentTimeMillis() / 1000).intValue();
         when(payload.readInt4()).thenReturn(currentSeconds);
         assertThat(new MySQLTimestampBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.getSimpleDateFormat().format(new Timestamp(currentSeconds * 1000L))));
     }

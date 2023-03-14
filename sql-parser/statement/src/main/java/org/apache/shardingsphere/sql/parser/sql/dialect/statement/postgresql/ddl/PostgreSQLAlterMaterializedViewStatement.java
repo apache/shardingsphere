@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL alter materialized view statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLAlterMaterializedViewStatement extends AlterMaterializedViewStatement implements PostgreSQLStatement {
 }

@@ -19,15 +19,18 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -45,7 +48,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class XATransactionDataSourceTest {
     
     @Mock
@@ -57,7 +61,7 @@ public final class XATransactionDataSourceTest {
     @Mock
     private Transaction transaction;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SystemException {
         when(xaTransactionManagerProvider.getTransactionManager()).thenReturn(transactionManager);
         when(transactionManager.getTransaction()).thenReturn(transaction);
@@ -65,8 +69,8 @@ public final class XATransactionDataSourceTest {
     
     @Test
     public void assertGetAtomikosConnection() throws SQLException, RollbackException, SystemException {
-        DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, DatabaseTypeFactory.getInstance("H2"), "ds1");
-        XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypeFactory.getInstance("H2"), "ds1", dataSource, xaTransactionManagerProvider);
+        DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         try (Connection ignored = transactionDataSource.getConnection()) {
             verify(xaTransactionManagerProvider, times(0)).getTransactionManager();
         }
@@ -74,8 +78,8 @@ public final class XATransactionDataSourceTest {
     
     @Test
     public void assertGetHikariConnection() throws SQLException, RollbackException, SystemException {
-        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypeFactory.getInstance("H2"), "ds1");
-        XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypeFactory.getInstance("H2"), "ds1", dataSource, xaTransactionManagerProvider);
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         try (Connection ignored = transactionDataSource.getConnection()) {
             verify(transaction).enlistResource(any(SingleXAResource.class));
             verify(transaction).registerSynchronization(any(Synchronization.class));
@@ -88,18 +92,17 @@ public final class XATransactionDataSourceTest {
     
     @Test
     public void assertCloseAtomikosDataSourceBean() {
-        DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, DatabaseTypeFactory.getInstance("H2"), "ds11");
-        XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypeFactory.getInstance("H2"), "ds11", dataSource, xaTransactionManagerProvider);
+        DataSource dataSource = DataSourceUtils.build(AtomikosDataSourceBean.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds11");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds11", dataSource, xaTransactionManagerProvider);
         transactionDataSource.close();
         verify(xaTransactionManagerProvider, times(0)).removeRecoveryResource(anyString(), any(XADataSource.class));
     }
     
     @Test
     public void assertCloseHikariDataSource() {
-        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, DatabaseTypeFactory.getInstance("H2"), "ds1");
-        XATransactionDataSource transactionDataSource = new XATransactionDataSource(DatabaseTypeFactory.getInstance("H2"), "ds1", dataSource, xaTransactionManagerProvider);
+        DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1");
+        XATransactionDataSource transactionDataSource = new XATransactionDataSource(TypedSPILoader.getService(DatabaseType.class, "H2"), "ds1", dataSource, xaTransactionManagerProvider);
         transactionDataSource.close();
         verify(xaTransactionManagerProvider).removeRecoveryResource(anyString(), any(XADataSource.class));
-        
     }
 }

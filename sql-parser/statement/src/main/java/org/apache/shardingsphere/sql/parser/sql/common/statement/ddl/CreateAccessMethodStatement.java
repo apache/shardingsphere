@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Create access method statement.
  */
-@ToString(callSuper = true)
 public abstract class CreateAccessMethodStatement extends AbstractSQLStatement implements DDLStatement {
 }

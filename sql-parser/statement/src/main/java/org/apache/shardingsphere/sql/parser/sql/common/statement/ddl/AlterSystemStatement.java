@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Alter system statement.
  */
 @Setter
-@ToString(callSuper = true)
 public abstract class AlterSystemStatement extends AbstractSQLStatement implements DDLStatement {
 }

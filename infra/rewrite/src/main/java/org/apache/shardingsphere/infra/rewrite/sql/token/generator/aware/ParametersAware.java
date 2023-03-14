@@ -27,7 +27,7 @@ public interface ParametersAware {
     /**
      * Set parameters.
      * 
-     * @param parameters parameters
+     * @param params parameters
      */
-    void setParameters(List<Object> parameters);
+    void setParameters(List<Object> params);
 }

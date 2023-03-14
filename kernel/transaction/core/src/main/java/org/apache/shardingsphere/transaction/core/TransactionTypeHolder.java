@@ -19,6 +19,7 @@ package org.apache.shardingsphere.transaction.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 /**
  * Hold transaction type for current thread.

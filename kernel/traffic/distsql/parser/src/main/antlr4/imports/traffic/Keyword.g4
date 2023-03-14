@@ -82,3 +82,19 @@ IF
 EXISTS
     : E X I S T S
     ;
+
+SQL_MATCH
+    : S Q L UL_ M A T C H
+    ;
+
+SQL_HINT
+    : S Q L UL_ H I N T
+    ;
+
+RANDOM
+    : R A N D O M
+    ;
+
+ROUND_ROBIN
+    : R O U N D UL_ R O B I N
+    ;

@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
 
@@ -31,7 +30,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -132,7 +130,7 @@ public final class ExecutorEngine implements AutoCloseable {
     }
     
     private <I, O> Collection<O> syncExecute(final ExecutionGroup<I> executionGroup, final ExecutorCallback<I, O> callback) throws SQLException {
-        return callback.execute(executionGroup.getInputs(), true, ExecutorDataMap.getValue());
+        return callback.execute(executionGroup.getInputs(), true);
     }
     
     private <I, O> Collection<Future<Collection<O>>> asyncExecute(final Iterator<ExecutionGroup<I>> executionGroups, final ExecutorCallback<I, O> callback) {
@@ -144,8 +142,7 @@ public final class ExecutorEngine implements AutoCloseable {
     }
     
     private <I, O> Future<Collection<O>> asyncExecute(final ExecutionGroup<I> executionGroup, final ExecutorCallback<I, O> callback) {
-        Map<String, Object> dataMap = ExecutorDataMap.getValue();
-        return executorServiceManager.getExecutorService().submit(() -> callback.execute(executionGroup.getInputs(), false, dataMap));
+        return executorServiceManager.getExecutorService().submit(() -> callback.execute(executionGroup.getInputs(), false));
     }
     
     private <O> List<O> getGroupResults(final Collection<O> firstResults, final Collection<Future<Collection<O>>> restFutures) throws SQLException {

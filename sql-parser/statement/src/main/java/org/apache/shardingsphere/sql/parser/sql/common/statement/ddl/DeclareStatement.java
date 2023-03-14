@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public abstract class DeclareStatement extends AbstractSQLStatement implements DDLStatement {
     
     private CursorNameSegment cursorName;

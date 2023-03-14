@@ -20,53 +20,29 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLColumnDefinition41PacketTest {
-    
-    @Mock
-    private ResultSetMetaData resultSetMetaData;
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertWriteWithResultSetMetaData() throws SQLException {
-        when(resultSetMetaData.getSchemaName(1)).thenReturn("logic_db");
-        when(resultSetMetaData.getTableName(1)).thenReturn("tbl");
-        when(resultSetMetaData.getColumnLabel(1)).thenReturn("id");
-        when(resultSetMetaData.getColumnName(1)).thenReturn("id");
-        when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(10);
-        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.INTEGER);
-        MySQLColumnDefinition41Packet actual = new MySQLColumnDefinition41Packet(1, resultSetMetaData, 1);
-        assertThat(actual.getSequenceId(), is(1));
-        actual.write(payload);
-        verifyWrite();
-    }
-    
-    @Test
     public void assertWriteWithPayload() {
-        when(payload.readInt1()).thenReturn(1, MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue(), 0);
+        when(payload.readInt1()).thenReturn(MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue(), 0);
         when(payload.readInt2()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
         when(payload.readInt4()).thenReturn(10);
         when(payload.readIntLenenc()).thenReturn(0x0cL);
         when(payload.readStringLenenc()).thenReturn("def", "logic_db", "tbl", "tbl", "id", "id");
         MySQLColumnDefinition41Packet actual = new MySQLColumnDefinition41Packet(payload);
-        assertThat(actual.getSequenceId(), is(1));
         actual.write(payload);
         verifyWrite();
     }

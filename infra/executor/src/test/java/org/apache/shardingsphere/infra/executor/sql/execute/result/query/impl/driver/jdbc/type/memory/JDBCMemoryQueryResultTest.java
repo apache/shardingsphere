@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.d
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.hamcrest.core.Is;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,10 +41,11 @@ import java.sql.Types;
 import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,11 +54,11 @@ public final class JDBCMemoryQueryResultTest {
     
     private final DatabaseType databaseType = new MySQLDatabaseType();
     
-    @Test(expected = SQLException.class)
+    @Test
     public void assertConstructorWithSqlException() throws SQLException {
         ResultSet resultSet = mockResultSet();
         when(resultSet.next()).thenThrow(new SQLException(""));
-        new JDBCMemoryQueryResult(resultSet, databaseType);
+        assertThrows(SQLException.class, () -> new JDBCMemoryQueryResult(resultSet, databaseType));
     }
     
     @Test

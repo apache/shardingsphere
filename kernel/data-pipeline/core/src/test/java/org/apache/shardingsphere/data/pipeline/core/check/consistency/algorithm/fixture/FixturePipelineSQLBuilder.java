@@ -29,12 +29,17 @@ import java.util.Optional;
 public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
-    public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
+    public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
         return "";
     }
     
     @Override
-    public String buildIndivisibleInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
+    public String buildDivisibleInventoryDumpSQLNoEnd(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
+        return "";
+    }
+    
+    @Override
+    public String buildIndivisibleInventoryDumpSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey) {
         return "";
     }
     
@@ -69,7 +74,12 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildChunkedQuerySQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
+    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
+        return Optional.empty();
+    }
+    
+    @Override
+    public String buildQueryAllOrderingSQL(final String schemaName, final String tableName, final List<String> columnNames, final String uniqueKey, final boolean firstQuery) {
         return "";
     }
     
@@ -79,13 +89,18 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildSplitByPrimaryKeyRangeSQL(final String schemaName, final String tableName, final String primaryKey) {
+    public String buildSplitByPrimaryKeyRangeSQL(final String schemaName, final String tableName, final String uniqueKey) {
         return "";
     }
     
     @Override
     public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
         return Optional.of(String.format("SELECT CRC32(%s) FROM %s", column, tableName));
+    }
+    
+    @Override
+    public String buildNoUniqueKeyInventoryDumpSQL(final String schemaName, final String tableName) {
+        return "";
     }
     
     @Override

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.executor;
 
 import org.apache.calcite.linq4j.Enumerable;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 /**
  * Table scan executor.
@@ -33,4 +33,13 @@ public interface TableScanExecutor {
      * @return query results
      */
     Enumerable<Object[]> execute(ShardingSphereTable table, ScanNodeExecutorContext scanContext);
+    
+    /**
+     * Execute.
+     *
+     * @param table table meta data
+     * @param scanContext filterable table scan context
+     * @return query results
+     */
+    Enumerable<Object> executeScalar(ShardingSphereTable table, ScanNodeExecutorContext scanContext);
 }

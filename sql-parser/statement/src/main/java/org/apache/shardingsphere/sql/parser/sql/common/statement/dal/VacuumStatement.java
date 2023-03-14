@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Vacuum statement.
  */
-@ToString(callSuper = true)
 public abstract class VacuumStatement extends AbstractSQLStatement implements DALStatement {
 }

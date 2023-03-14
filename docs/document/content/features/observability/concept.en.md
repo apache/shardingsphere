@@ -21,7 +21,7 @@ Tracing data between distributed services or internal processes will be collecte
 
 ## Metrics
 
-System statistical indicators are collected through probes and written to the time series database for display by third-party applications.
+System statistical indicators are collected through probes for display by third-party applications.
 
 ## Logging
 

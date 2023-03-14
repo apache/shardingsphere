@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public abstract class TableIndexSegment implements SQLSegment {
     
     private final int startIndex;

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
@@ -31,7 +30,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Setter
-@ToString
 public final class ShowFilterSegment implements SQLSegment {
     
     @Getter

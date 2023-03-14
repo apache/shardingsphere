@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -105,8 +105,18 @@ public final class ShardingSphereDatabase {
         return create(name, protocolType, databaseConfig, new LinkedList<>(), SystemSchemaBuilder.build(name, protocolType));
     }
     
-    private static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
-                                                 final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
+    /**
+     * Create database meta data.
+     *
+     * @param name database name
+     * @param protocolType database protocol type
+     * @param databaseConfig database configuration
+     * @param rules rules
+     * @param schemas schemas
+     * @return database meta data
+     */
+    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
+                                                final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
         ShardingSphereResourceMetaData resourceMetaData = createResourceMetaData(name, databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, ruleMetaData, schemas);
@@ -180,10 +190,13 @@ public final class ShardingSphereDatabase {
      */
     public synchronized void reloadRules(final Class<? extends ShardingSphereRule> ruleClass) {
         Collection<? extends ShardingSphereRule> toBeReloadedRules = ruleMetaData.findRules(ruleClass);
-        RuleConfiguration config = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
+        RuleConfiguration ruleConfig = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
+        Collection<ShardingSphereRule> databaseRules = new LinkedList<>(ruleMetaData.getRules());
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
-            ruleMetaData.getRules().removeAll(toBeReloadedRules);
-            ruleMetaData.getRules().add(((MutableDataNodeRule) optional).reloadRule(config, name, resourceMetaData.getDataSources(), ruleMetaData.getRules()));
+            databaseRules.removeAll(toBeReloadedRules);
+            databaseRules.add(((MutableDataNodeRule) optional).reloadRule(ruleConfig, name, resourceMetaData.getDataSources(), databaseRules));
         });
+        ruleMetaData.getRules().clear();
+        ruleMetaData.getRules().addAll(databaseRules);
     }
 }

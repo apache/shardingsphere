@@ -20,8 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobTypeFactory;
 
 /**
  * Pipeline job id utils.
@@ -49,8 +50,6 @@ public final class PipelineJobIdUtils {
         Preconditions.checkArgument(jobId.length() > 3, "Invalid jobId length, jobId=%s", jobId);
         Preconditions.checkArgument('j' == jobId.charAt(0), "Invalid jobId, first char=%s", jobId.charAt(0));
         String typeCode = jobId.substring(1, 3);
-        JobType result = JobType.valueOfByCode(typeCode);
-        Preconditions.checkNotNull(result, "Can not get job type by `%s`, job ID is `%s`", typeCode, jobId);
-        return result;
+        return JobTypeFactory.getInstance(typeCode);
     }
 }

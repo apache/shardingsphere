@@ -60,9 +60,10 @@ public final class EncryptRuleStatementConverter {
     
     private static EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String tableName, final EncryptColumnSegment columnSegment) {
         String assistedQueryEncryptorName = null == columnSegment.getAssistedQueryEncryptor() ? null : getAssistedQueryEncryptorName(tableName, columnSegment.getName());
-        String fuzzyQueryEncryptorName = null == columnSegment.getFuzzyQueryEncryptor() ? null : getFuzzyQueryEncryptorName(tableName, columnSegment.getName());
+        String likeQueryEncryptorName = null == columnSegment.getLikeQueryEncryptor() ? null : getLikeQueryEncryptorName(tableName, columnSegment.getName());
         return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(),
-                columnSegment.getFuzzyQueryColumn(), columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), assistedQueryEncryptorName, fuzzyQueryEncryptorName, null);
+                columnSegment.getLikeQueryColumn(), columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()),
+                assistedQueryEncryptorName, likeQueryEncryptorName, columnSegment.getQueryWithCipherColumn());
     }
     
     private static Map<String, AlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
@@ -72,8 +73,8 @@ public final class EncryptRuleStatementConverter {
             if (null != each.getAssistedQueryEncryptor()) {
                 result.put(getAssistedQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createAssistedQueryEncryptorConfiguration(each));
             }
-            if (null != each.getFuzzyQueryEncryptor()) {
-                result.put(getFuzzyQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createFuzzyQueryEncryptorConfiguration(each));
+            if (null != each.getLikeQueryEncryptor()) {
+                result.put(getLikeQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createLikeQueryEncryptorConfiguration(each));
             }
         }
         return result;
@@ -87,8 +88,8 @@ public final class EncryptRuleStatementConverter {
         return new AlgorithmConfiguration(columnSegment.getAssistedQueryEncryptor().getName(), columnSegment.getAssistedQueryEncryptor().getProps());
     }
     
-    private static AlgorithmConfiguration createFuzzyQueryEncryptorConfiguration(final EncryptColumnSegment columnSegment) {
-        return new AlgorithmConfiguration(columnSegment.getFuzzyQueryEncryptor().getName(), columnSegment.getFuzzyQueryEncryptor().getProps());
+    private static AlgorithmConfiguration createLikeQueryEncryptorConfiguration(final EncryptColumnSegment columnSegment) {
+        return new AlgorithmConfiguration(columnSegment.getLikeQueryEncryptor().getName(), columnSegment.getLikeQueryEncryptor().getProps());
     }
     
     private static String getEncryptorName(final String tableName, final String columnName) {
@@ -99,7 +100,7 @@ public final class EncryptRuleStatementConverter {
         return String.format("assist_%s_%s", tableName, columnName);
     }
     
-    private static String getFuzzyQueryEncryptorName(final String tableName, final String columnName) {
-        return String.format("fuzzy_%s_%s", tableName, columnName);
+    private static String getLikeQueryEncryptorName(final String tableName, final String columnName) {
+        return String.format("like_%s_%s", tableName, columnName);
     }
 }

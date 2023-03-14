@@ -52,6 +52,7 @@ public final class PostgreSQLBinaryProtocolValueFactory {
         setFloat8ArrayBinaryProtocolValue();
         setBoolArrayBinaryProtocolValue();
         setStringArrayBinaryProtocolValue();
+        setByteaBinaryProtocolValue();
     }
     
     private static void setUnspecifiedBinaryProtocolValue() {
@@ -133,6 +134,10 @@ public final class PostgreSQLBinaryProtocolValueFactory {
         BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR_ARRAY, new PostgreSQLStringArrayBinaryProtocolValue());
         BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.POSTGRESQL_TYPE_CHAR_ARRAY, new PostgreSQLStringArrayBinaryProtocolValue());
         BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.POSTGRESQL_TYPE_TEXT_ARRAY, new PostgreSQLStringArrayBinaryProtocolValue());
+    }
+    
+    private static void setByteaBinaryProtocolValue() {
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLColumnType.POSTGRESQL_TYPE_BYTEA, new PostgreSQLByteaBinaryProtocolValue());
     }
     
     /**

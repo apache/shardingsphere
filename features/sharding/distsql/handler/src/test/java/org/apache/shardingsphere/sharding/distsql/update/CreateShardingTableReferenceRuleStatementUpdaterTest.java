@@ -17,24 +17,30 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableReferenceRuleStatementUpdater;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableReferenceRuleStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@ExtendWith(MockitoExtension.class)
 public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -42,35 +48,42 @@ public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
     
     private final CreateShardingTableReferenceRuleStatementUpdater updater = new CreateShardingTableReferenceRuleStatementUpdater();
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithoutCurrentTableRule() {
-        updater.checkSQLStatement(database, createSQLStatement(), new ShardingRuleConfiguration());
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), new ShardingRuleConfiguration()));
     }
     
-    @Test(expected = DuplicateRuleException.class)
+    private CreateShardingTableReferenceRuleStatement createSQLStatement(final boolean ifNotExists, final String name, final String reference) {
+        Collection<TableReferenceRuleSegment> segments = new LinkedList<>();
+        segments.add(new TableReferenceRuleSegment(name, reference));
+        return new CreateShardingTableReferenceRuleStatement(ifNotExists, segments);
+    }
+    
+    @Test
     public void assertCheckSQLStatementWithDuplicateTables() {
-        List<TableReferenceRuleSegment> segments = Arrays.asList(new TableReferenceRuleSegment("t_order,t_order_item"), new TableReferenceRuleSegment("t_order,t_order_item"));
-        CreateShardingTableReferenceRuleStatement statement = new CreateShardingTableReferenceRuleStatement(segments);
-        updater.checkSQLStatement(database, statement, getCurrentRuleConfig());
+        assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "foo", "t_order,t_order_item"), getCurrentRuleConfig()));
     }
     
-    @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDifferentCaseDuplicateTables() {
-        List<TableReferenceRuleSegment> segments = Arrays.asList(new TableReferenceRuleSegment("T_ORDER,T_ORDER_ITEM"), new TableReferenceRuleSegment("t_order,t_order_item"));
-        CreateShardingTableReferenceRuleStatement statement = new CreateShardingTableReferenceRuleStatement(segments);
-        updater.checkSQLStatement(database, statement, getCurrentRuleConfig());
-    }
-    
-    private CreateShardingTableReferenceRuleStatement createSQLStatement() {
-        return new CreateShardingTableReferenceRuleStatement(Arrays.asList(new TableReferenceRuleSegment("t_order,t_order_item"), new TableReferenceRuleSegment("t_1,t_2")));
+    @Test
+    public void assertUpdateWithIfNotExists() {
+        CreateShardingTableReferenceRuleStatement sqlStatement = createSQLStatement(true, "foo", "t_order,t_order_item");
+        ShardingRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
+        updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
+        ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+        Collection<ShardingTableReferenceRuleConfiguration> referenceRuleConfigurations = currentRuleConfig.getBindingTableGroups();
+        assertThat(referenceRuleConfigurations.size(), is(1));
+        Iterator<ShardingTableReferenceRuleConfiguration> iterator = referenceRuleConfigurations.iterator();
+        assertThat(iterator.next().getReference(), is("t_1,t_2"));
     }
     
     private ShardingRuleConfiguration getCurrentRuleConfig() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order"));
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        result.getTables().add(new ShardingTableRuleConfiguration("t_1"));
-        result.getTables().add(new ShardingTableRuleConfiguration("t_2"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..2}"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item", "ds.t_order_item_${0..2}"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_1", "ds.t_1_${0..2}"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_2", "ds.t_2_${0..2}"));
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_1,t_2"));
         return result;
     }
 }

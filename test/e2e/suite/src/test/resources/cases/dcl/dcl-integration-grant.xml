@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<integration-test-cases>
+    <test-case sql="GRANT select, update, insert, delete on t_order to default_user" db-types="Oracle,SQLServer" />
+    <test-case sql="GRANT select, update, insert, delete on t_order to default_user with GRANT option" db-types="Oracle,SQLServer" />
+    <test-case sql="GRANT role2 to role3" db-types="Oracle,PostgreSQL,SQLServer" />
+    <test-case sql="GRANT ADVISOR, ALTER DATABASE to user_dev with admin option" db-types="Oracle" />
+    <test-case sql="GRANT ALL ON sharding_db.* TO 'user_dev'@'localhost'" db-types="MySQL" />
+    <test-case sql="GRANT ALL ON t_order TO 'user_dev'@'localhost'" db-types="MySQL" />
+    <test-case sql="GRANT ALL ON sharding_db.t_order TO 'user_dev'@'localhost'" db-types="MySQL" />
+    <test-case sql="GRANT select, update ON t_order TO 'user_dev'@'localhost'" db-types="MySQL" />
+</integration-test-cases>

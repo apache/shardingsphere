@@ -20,17 +20,17 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinlogEventFlag;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinlogEventType;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLBinlogEventHeaderTest {
     
     @Mock
@@ -42,7 +42,6 @@ public final class MySQLBinlogEventHeaderTest {
         when(payload.readInt1()).thenReturn(MySQLBinlogEventType.UNKNOWN_EVENT.getValue());
         when(payload.readInt2()).thenReturn(MySQLBinlogEventFlag.LOG_EVENT_BINLOG_IN_USE_F.getValue());
         MySQLBinlogEventHeader actual = new MySQLBinlogEventHeader(payload, 4);
-        assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getTimestamp(), is(1234567890));
         assertThat(actual.getEventType(), is(MySQLBinlogEventType.UNKNOWN_EVENT.getValue()));
         assertThat(actual.getServerId(), is(123456));

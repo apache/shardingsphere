@@ -61,6 +61,7 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         register(SqlStdOperatorTable.MULTIPLY);
         register(SqlStdOperatorTable.DIVIDE);
         register(SqlStdOperatorTable.LIKE);
+        register(SqlStdOperatorTable.NOT_LIKE);
     }
     
     private static void register(final SqlOperator sqlOperator) {
@@ -69,6 +70,10 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     
     private static void registerAlias() {
         REGISTRY.put("!=", SqlStdOperatorTable.NOT_EQUALS);
+        REGISTRY.put("~", SqlStdOperatorTable.POSIX_REGEX_CASE_SENSITIVE);
+        REGISTRY.put("~*", SqlStdOperatorTable.NEGATED_POSIX_REGEX_CASE_SENSITIVE);
+        REGISTRY.put("!~", SqlStdOperatorTable.NEGATED_POSIX_REGEX_CASE_SENSITIVE);
+        REGISTRY.put("!~*", SqlStdOperatorTable.NEGATED_POSIX_REGEX_CASE_INSENSITIVE);
     }
     
     @Override

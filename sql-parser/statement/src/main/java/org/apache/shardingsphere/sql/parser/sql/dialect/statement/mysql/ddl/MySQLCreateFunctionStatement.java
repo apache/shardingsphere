@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -29,7 +28,6 @@ import java.util.Optional;
  * MySQL create function statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class MySQLCreateFunctionStatement extends CreateFunctionStatement implements MySQLStatement {
     
     private RoutineBodySegment routineBody;

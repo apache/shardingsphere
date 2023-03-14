@@ -19,15 +19,13 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 
 /**
  * Abstract pipeline job id.
  */
 @Getter
-@ToString
 public abstract class AbstractPipelineJobId implements PipelineJobId {
     
     private final JobType jobType;

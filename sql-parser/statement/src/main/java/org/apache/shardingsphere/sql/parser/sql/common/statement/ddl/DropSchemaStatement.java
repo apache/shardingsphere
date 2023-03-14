@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
@@ -29,7 +28,6 @@ import java.util.LinkedList;
  * Drop schema statement.
  */
 @Getter
-@ToString(callSuper = true)
 public abstract class DropSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<IdentifierValue> schemaNames = new LinkedList<>();

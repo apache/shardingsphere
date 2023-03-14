@@ -18,17 +18,20 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingRuleConfigurationConverterTest {
     
     @Test
     public void assertFindAndConvertShardingRuleConfiguration() {
-        assertNotNull(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(Collections.singletonList(mock(YamlShardingRuleConfiguration.class))));
+        assertTrue(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(
+                Collections.singletonList(mock(YamlShardingRuleConfiguration.class))).isPresent(), "Sharding rule should be present");
+        assertFalse(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(Collections.emptyList()).isPresent(), "Sharding rule should be not present");
     }
 }

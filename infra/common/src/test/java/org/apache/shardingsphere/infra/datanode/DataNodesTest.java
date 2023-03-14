@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -141,12 +141,12 @@ public final class DataNodesTest {
     
     private Collection<ShardingSphereRule> mockDataNodeContainedRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        result.add(mockSingleTableRule());
+        result.add(mockSingleRule());
         result.add(mockShardingRule());
         return result;
     }
     
-    private ShardingSphereRule mockSingleTableRule() {
+    private ShardingSphereRule mockSingleRule() {
         DataNodeContainedRule result = mock(DataNodeContainedRule.class);
         when(result.getDataNodesByTableName("t_single")).thenReturn(Collections.singletonList(new DataNode("readwrite_ds", "t_single")));
         return result;

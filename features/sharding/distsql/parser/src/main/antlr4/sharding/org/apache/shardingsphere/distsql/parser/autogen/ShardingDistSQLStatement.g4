@@ -17,7 +17,7 @@
 
 grammar ShardingDistSQLStatement;
 
-import Symbol, RALStatement, RDLStatement, RQLStatement;
+import Symbol, RDLStatement, RQLStatement;
 
 execute
     : (createShardingTableRule
@@ -37,19 +37,12 @@ execute
     | showShardingTableReferenceRules
     | showBroadcastTableRules
     | showShardingAlgorithms
-    | setShardingHintDatabaseValue
-    | addShardingHintDatabaseValue
-    | addShardingHintTableValue
-    | showShardingHintStatus
-    | clearShardingHint
     | showShardingTableNodes
     | showShardingKeyGenerators
     | dropShardingKeyGenerator
     | showShardingAuditors
-    | createShardingAuditor
-    | alterShardingAuditor
     | dropShardingAuditor
-    | showShardingDefaultShardingStrategy
+    | showDefaultShardingStrategy
     | alterDefaultShardingStrategy
     | dropDefaultShardingStrategy
     | showUnusedShardingAlgorithms

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.api.shadow.column;
 
+import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 /**
@@ -31,4 +32,18 @@ public interface ColumnShadowAlgorithm<T extends Comparable<?>> extends ShadowAl
      * @return is need shadow or not
      */
     boolean isShadow(PreciseColumnShadowValue<T> columnShadowValue);
+    
+    /**
+     * Get shadow column.
+     * 
+     * @return shadow column
+     */
+    String getShadowColumn();
+    
+    /**
+     * Get shadow operation type.
+     *
+     * @return shadow operation type
+     */
+    ShadowOperationType getShadowOperationType();
 }

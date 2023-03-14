@@ -33,6 +33,11 @@ import java.util.stream.Collectors;
 public enum ConfigurationPropertyKey implements TypedPropertyKey {
     
     /**
+     * The system log level.
+     */
+    SYSTEM_LOG_LEVEL("system-log-level", LoggerLevel.INFO.name(), LoggerLevel.class, false),
+    
+    /**
      * Whether show SQL in log.
      */
     SQL_SHOW("sql-show", String.valueOf(Boolean.FALSE), boolean.class, false),
@@ -55,7 +60,7 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Whether validate table meta data consistency when application startup or updated.
      */
-    CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
+    CHECK_TABLE_META_DATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * SQL federation type.
@@ -100,11 +105,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class, false),
     
     /**
-     * Proxy backend driver type.
-     */
-    PROXY_BACKEND_DRIVER_TYPE("proxy-backend-driver-type", "JDBC", String.class, true),
-    
-    /**
      * Proxy MySQL default version.
      */
     PROXY_MYSQL_DEFAULT_VERSION("proxy-mysql-default-version", "5.7.22", String.class, false),
@@ -125,9 +125,9 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_INSTANCE_TYPE("proxy-instance-type", "Proxy", String.class, true),
     
     /**
-     * Proxy metadata collector enabled.
+     * CDC server port.
      */
-    PROXY_METADATA_COLLECTOR_ENABLED("proxy-metadata-collector-enabled", String.valueOf(Boolean.FALSE), boolean.class, true);
+    CDC_SERVER_PORT("cdc-server-port", "33071", int.class, true);
     
     private final String key;
     

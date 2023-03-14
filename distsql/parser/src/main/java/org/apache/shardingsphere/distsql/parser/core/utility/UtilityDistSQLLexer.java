@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementL
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for utility dist SQL.
+ * SQL lexer for utility DistSQL.
  */
 public final class UtilityDistSQLLexer extends UtilityDistSQLStatementLexer implements SQLLexer {
     

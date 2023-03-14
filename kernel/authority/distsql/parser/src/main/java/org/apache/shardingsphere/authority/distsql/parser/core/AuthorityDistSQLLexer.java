@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.AuthorityDistSQLStatemen
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for authority dist SQL.
+ * SQL lexer for authority DistSQL.
  */
 public final class AuthorityDistSQLLexer extends AuthorityDistSQLStatementLexer implements SQLLexer {
     

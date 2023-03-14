@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.infra.metadata.data.builder.dialect;
 
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Collections;
+import java.util.Map.Entry;
 
 /**
  * MySQL ShardingSphere data Builder.
@@ -38,6 +40,8 @@ public final class MySQLShardingSphereDataBuilder implements ShardingSphereDataB
     
     private static final String SHARDING_SPHERE = "shardingsphere";
     
+    private static final String CLUSTER_INFORMATION = "cluster_information";
+    
     @Override
     public ShardingSphereData build(final ShardingSphereMetaData metaData) {
         ShardingSphereData result = new ShardingSphereData();
@@ -46,8 +50,12 @@ public final class MySQLShardingSphereDataBuilder implements ShardingSphereDataB
             return result;
         }
         ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-        for (Map.Entry<String, ShardingSphereTable> entry : shardingSphereSchema.get().getTables().entrySet()) {
-            schemaData.getTableData().put(entry.getKey(), new ShardingSphereTableData(entry.getValue().getName(), new ArrayList<>(entry.getValue().getColumns().values())));
+        for (Entry<String, ShardingSphereTable> entry : shardingSphereSchema.get().getTables().entrySet()) {
+            ShardingSphereTableData tableData = new ShardingSphereTableData(entry.getValue().getName());
+            if (CLUSTER_INFORMATION.equals(entry.getKey())) {
+                tableData.getRows().add(new ShardingSphereRowData(Collections.singletonList(ShardingSphereVersion.VERSION)));
+            }
+            schemaData.getTableData().put(entry.getKey(), tableData);
         }
         ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
         databaseData.getSchemaData().put(SHARDING_SPHERE, schemaData);

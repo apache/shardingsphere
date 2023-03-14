@@ -1,0 +1,35 @@
+[Search-placeholder]
+other = "...البحث"
+
+[Clear-History]
+other = "مسح السجل"
+
+[Attachments-label]
+other = "مرفقات"
+
+[title-404]
+other = "خطأ"
+
+[message-404]
+other = ".¯\\_(ツ)_/¯أوبس. يبدو أن هذه الصفحة غير موجودة"
+
+[Go-to-homepage]
+other = "الذهاب إلى الصفحة الرئيسية"
+
+[Edit-this-page]
+other = "تعديل هذه الصفحة"
+
+[Shortcuts-Title]
+other = "المزيد"
+
+[Expand-title]
+other = "...قم بتوسيع"
+
+[Byte-symbol]
+other = "B"
+
+[Kilobyte-symbol]
+other = "KB"
+
+[Megabyte-symbol]
+other = "MB"

@@ -22,28 +22,28 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnTyp
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLBinlogRowsEventPacketTest {
     
     @Mock
@@ -57,7 +57,7 @@ public final class MySQLBinlogRowsEventPacketTest {
     
     private List<MySQLBinlogColumnDef> columnDefs;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         mockColumnDefs();
         when(payload.readInt6()).thenReturn(1L);
@@ -77,8 +77,8 @@ public final class MySQLBinlogRowsEventPacketTest {
         assertFalse(actual.getColumnsPresentBitmap().isNullParameter(0));
         assertNull(actual.getColumnsPresentBitmap2());
         MySQLPacketPayload packetPayload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        Serializable[] result = (Serializable[]) invokeMethod(actual, "readRow", new Class[]{List.class, MySQLPacketPayload.class}, new Object[]{columnDefs, packetPayload});
-        assertThat(result[0], is(0L));
+        assertThat(((Serializable[]) Plugins.getMemberAccessor()
+                .invoke(MySQLBinlogRowsEventPacket.class.getDeclaredMethod("readRow", List.class, MySQLPacketPayload.class), actual, columnDefs, packetPayload))[0], is(0L));
     }
     
     private void assertBinlogRowsEventV1BeforeRows(final MySQLBinlogRowsEventPacket actual) {
@@ -86,12 +86,5 @@ public final class MySQLBinlogRowsEventPacketTest {
         assertThat(actual.getFlags(), is(2));
         verify(payload, never()).skipReserved(2);
         assertThat(actual.getColumnNumber(), is(1));
-    }
-    
-    private static Object invokeMethod(final Object target, final String methodName, final Class<?>[] parameterTypes,
-                                       final Object[] parameterValues) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = target.getClass().getDeclaredMethod(methodName, parameterTypes);
-        method.setAccessible(true);
-        return method.invoke(target, parameterValues);
     }
 }

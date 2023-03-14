@@ -43,17 +43,17 @@ public final class PaginationContext {
     
     private final Long actualRowCount;
     
-    public PaginationContext(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> parameters) {
+    public PaginationContext(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> params) {
         hasPagination = null != offsetSegment || null != rowCountSegment;
         this.offsetSegment = offsetSegment;
         this.rowCountSegment = rowCountSegment;
-        actualOffset = null == offsetSegment ? 0L : getValue(offsetSegment, parameters);
-        actualRowCount = null == rowCountSegment ? null : getValue(rowCountSegment, parameters);
+        actualOffset = null == offsetSegment ? 0L : getValue(offsetSegment, params);
+        actualRowCount = null == rowCountSegment ? null : getValue(rowCountSegment, params);
     }
     
-    private long getValue(final PaginationValueSegment paginationValueSegment, final List<Object> parameters) {
+    private long getValue(final PaginationValueSegment paginationValueSegment, final List<Object> params) {
         if (paginationValueSegment instanceof ParameterMarkerPaginationValueSegment) {
-            Object obj = null == parameters || parameters.isEmpty() ? 0L : parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex());
+            Object obj = null == params || params.isEmpty() ? 0L : params.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex());
             return obj instanceof Long ? (long) obj : (int) obj;
         }
         return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();

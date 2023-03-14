@@ -29,7 +29,7 @@ public final class ShardingPluginException extends FeatureSQLException {
     
     private static final int FEATURE_CODE = 0;
     
-    public ShardingPluginException(final String reason, final Object... arguments) {
-        super(XOpenSQLState.GENERAL_ERROR, FEATURE_CODE, 99, "Sharding plugin error, reason is: " + reason, arguments);
+    public ShardingPluginException(final String reason, final Object... args) {
+        super(XOpenSQLState.GENERAL_ERROR, FEATURE_CODE, 99, "Sharding plugin error, reason is: " + reason, args);
     }
 }

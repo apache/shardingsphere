@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqltranslator.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 
 /**
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfi
  */
 @Getter
 @Setter
-public final class YamlSQLTranslatorRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlSQLTranslatorRuleConfiguration implements YamlGlobalRuleConfiguration {
     
     private String type;
     

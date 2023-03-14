@@ -17,17 +17,17 @@
 
 dataSources:
   write_ds_0:
-    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
   write_ds_0_read_0:
-    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
   write_ds_0_read_1:
-    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
   write_ds_1:
-    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
   write_ds_1_read_0:
-    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
   write_ds_1_read_1:
-    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
 
 rules:
 - !READWRITE_SPLITTING

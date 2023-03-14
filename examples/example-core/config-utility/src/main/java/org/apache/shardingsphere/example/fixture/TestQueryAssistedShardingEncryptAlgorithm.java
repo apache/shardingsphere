@@ -17,21 +17,10 @@
 
 package org.apache.shardingsphere.example.fixture;
 
-import lombok.Getter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-import java.util.Properties;
-
-@Getter
-public final class TestQueryAssistedShardingEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
-    
-    private Properties props;
-    
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
+public final class TestQueryAssistedShardingEncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {

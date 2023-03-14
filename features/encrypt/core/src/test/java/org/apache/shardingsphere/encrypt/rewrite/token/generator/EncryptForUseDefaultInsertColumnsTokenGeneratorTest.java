@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends EncryptGeneratorBaseTest {
@@ -39,7 +39,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends E
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setPreviousSQLTokens(Collections.emptyList());
-        assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_plain)"));
+        assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
     }
     
     @Test
@@ -47,6 +47,6 @@ public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends E
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setPreviousSQLTokens(getPreviousSQLTokens());
-        assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_plain)"));
+        assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
     }
 }

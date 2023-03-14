@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
+import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -43,7 +43,7 @@ public final class DropShardingAuditorStatementUpdater implements RuleDefinition
             return;
         }
         String databaseName = database.getName();
-        Collection<String> auditorNames = new LinkedList<>(sqlStatement.getAuditorNames());
+        Collection<String> auditorNames = new LinkedList<>(sqlStatement.getNames());
         checkExist(databaseName, auditorNames, currentRuleConfig, sqlStatement);
         checkInUsed(databaseName, auditorNames, currentRuleConfig);
     }
@@ -75,13 +75,13 @@ public final class DropShardingAuditorStatementUpdater implements RuleDefinition
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getAuditors().keySet().removeIf(sqlStatement.getAuditorNames()::contains);
+        currentRuleConfig.getAuditors().keySet().removeIf(sqlStatement.getNames()::contains);
         return false;
     }
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getAuditors().keySet(), sqlStatement.getAuditorNames()).isEmpty();
+        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getAuditors().keySet(), sqlStatement.getNames()).isEmpty();
     }
     
     @Override

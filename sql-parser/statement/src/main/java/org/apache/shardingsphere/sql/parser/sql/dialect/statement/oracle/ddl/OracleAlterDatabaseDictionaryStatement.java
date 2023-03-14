@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterDatabaseDictionaryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle alter database dictionary statement.
  */
-@ToString(callSuper = true)
 public final class OracleAlterDatabaseDictionaryStatement extends AlterDatabaseDictionaryStatement implements OracleStatement {
 }

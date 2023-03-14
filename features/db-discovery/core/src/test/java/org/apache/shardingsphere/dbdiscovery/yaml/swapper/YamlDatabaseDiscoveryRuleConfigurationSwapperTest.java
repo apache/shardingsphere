@@ -22,8 +22,9 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,7 +33,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class YamlDatabaseDiscoveryRuleConfigurationSwapperTest {
     
@@ -85,7 +86,7 @@ public final class YamlDatabaseDiscoveryRuleConfigurationSwapperTest {
     }
     
     private YamlDatabaseDiscoveryRuleConfigurationSwapper getYamlDatabaseDiscoveryRuleConfigurationSwapper() {
-        Optional<YamlDatabaseDiscoveryRuleConfigurationSwapper> result = YamlRuleConfigurationSwapperFactory.getAllInstances().stream()
+        Optional<YamlDatabaseDiscoveryRuleConfigurationSwapper> result = ShardingSphereServiceLoader.getServiceInstances(YamlRuleConfigurationSwapper.class).stream()
                 .filter(each -> each instanceof YamlDatabaseDiscoveryRuleConfigurationSwapper)
                 .map(each -> (YamlDatabaseDiscoveryRuleConfigurationSwapper) each)
                 .findFirst();

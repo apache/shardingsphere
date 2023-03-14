@@ -19,11 +19,20 @@ package org.apache.shardingsphere.infra.util.spi.type.typed;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * Typed SPI.
  */
 public interface TypedSPI {
+    
+    /**
+     * Initialize SPI.
+     *
+     * @param props properties to be initialized
+     */
+    default void init(Properties props) {
+    }
     
     /**
      * Get type.
@@ -41,5 +50,14 @@ public interface TypedSPI {
      */
     default Collection<String> getTypeAliases() {
         return Collections.emptyList();
+    }
+    
+    /**
+     * Judge whether default service provider.
+     *
+     * @return is default service provider or not
+     */
+    default boolean isDefault() {
+        return false;
     }
 }

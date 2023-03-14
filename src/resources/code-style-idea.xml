@@ -16,7 +16,8 @@
   -->
 
 <code_scheme name="ShardingSphere" version="173">
-  <option name="LINE_SEPARATOR" value="&#xA;" />
+  <option name="LINE_SEPARATOR" value="&#10;" />
+  <option name="RIGHT_MARGIN" value="200" />
   <JavaCodeStyleSettings>
     <option name="GENERATE_FINAL_LOCALS" value="true" />
     <option name="GENERATE_FINAL_PARAMETERS" value="true" />

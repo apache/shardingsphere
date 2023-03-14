@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.infra.binder;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,23 +38,29 @@ public final class QueryContext {
     
     private final List<Object> parameters;
     
-    private String sqlStatementDatabaseName;
+    @Getter(AccessLevel.NONE)
+    private final String databaseName;
     
-    public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
+    private final HintValueContext hintValueContext;
+    
+    public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params) {
+        this(sqlStatementContext, sql, params, new HintValueContext());
+    }
+    
+    public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext) {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
-        this.parameters = parameters;
-        if (sqlStatementContext instanceof TableAvailable) {
-            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> sqlStatementDatabaseName = optional);
-        }
+        parameters = params;
+        databaseName = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(null) : null;
+        this.hintValueContext = hintValueContext;
     }
     
     /**
-     * Find sql statement database name.
+     * Get database name from SQL statement.
      * 
-     * @return database name
+     * @return got database name
      */
-    public Optional<String> findSqlStatementDatabaseName() {
-        return Optional.ofNullable(sqlStatementDatabaseName);
+    public Optional<String> getDatabaseNameFromSQLStatement() {
+        return Optional.ofNullable(databaseName);
     }
 }

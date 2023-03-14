@@ -19,17 +19,17 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.generic;
 
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLErrPacketTest {
     
     @Mock
@@ -37,8 +37,7 @@ public final class MySQLErrPacketTest {
     
     @Test
     public void assertNewErrPacketWithServerErrorCode() {
-        MySQLErrPacket actual = new MySQLErrPacket(1, MySQLVendorError.ER_ACCESS_DENIED_ERROR, "root", "localhost", "root");
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLErrPacket actual = new MySQLErrPacket(MySQLVendorError.ER_ACCESS_DENIED_ERROR, "root", "localhost", "root");
         assertThat(actual.getErrorCode(), is(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getVendorCode()));
         assertThat(actual.getSqlState(), is(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getSqlState().getValue()));
         assertThat(actual.getErrorMessage(), is(String.format(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getReason(), "root", "localhost", "root")));
@@ -46,13 +45,12 @@ public final class MySQLErrPacketTest {
     
     @Test
     public void assertNewErrPacketWithPayload() {
-        when(payload.readInt1()).thenReturn(1, MySQLErrPacket.HEADER);
+        when(payload.readInt1()).thenReturn(MySQLErrPacket.HEADER);
         when(payload.readInt2()).thenReturn(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getVendorCode());
         when(payload.readStringFix(1)).thenReturn("#");
         when(payload.readStringFix(5)).thenReturn(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getSqlState().getValue());
         when(payload.readStringEOF()).thenReturn(String.format(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getReason(), "root", "localhost", "root"));
         MySQLErrPacket actual = new MySQLErrPacket(payload);
-        assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getVendorCode()));
         assertThat(actual.getSqlState(), is(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getSqlState().getValue()));
         assertThat(actual.getErrorMessage(), is(String.format(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getReason(), "root", "localhost", "root")));
@@ -60,7 +58,7 @@ public final class MySQLErrPacketTest {
     
     @Test
     public void assertWrite() {
-        new MySQLErrPacket(1, MySQLVendorError.ER_NO_DB_ERROR).write(payload);
+        new MySQLErrPacket(MySQLVendorError.ER_NO_DB_ERROR).write(payload);
         verify(payload).writeInt1(MySQLErrPacket.HEADER);
         verify(payload).writeInt2(1046);
         verify(payload).writeStringFix("#");

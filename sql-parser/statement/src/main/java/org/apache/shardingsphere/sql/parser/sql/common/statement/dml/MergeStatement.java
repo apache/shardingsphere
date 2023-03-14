@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.Ora
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public abstract class MergeStatement extends AbstractSQLStatement implements DMLStatement {
     
     private TableSegment target;

@@ -25,12 +25,12 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public final class LogbackTest {
@@ -49,7 +49,6 @@ public final class LogbackTest {
         assertTrue(encoder.getLayout() instanceof PatternLayout);
         PatternLayout layout = (PatternLayout) encoder.getLayout();
         assertThat(layout.getPattern(), is(DEFAULT_PATTERN));
-        assertThat(loggerContext.getLogger("org.apache.shardingsphere").getLevel(), is(Level.INFO));
         assertThat(loggerContext.getLogger("com.zaxxer.hikari").getLevel(), is(Level.ERROR));
         assertThat(loggerContext.getLogger("com.atomikos").getLevel(), is(Level.ERROR));
         assertThat(loggerContext.getLogger("io.netty").getLevel(), is(Level.ERROR));

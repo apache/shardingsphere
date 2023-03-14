@@ -24,16 +24,15 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -46,9 +45,7 @@ import static org.mockito.Mockito.when;
 
 public final class AdvancedSQLFederationExecutorTest {
     
-    private SQLFederationExecutor sqlFederationExecutor;
-    
-    @Before
+    @BeforeEach
     public void init() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
         tables.put("t_order_federate", createOrderTableMetaData());
@@ -61,8 +58,8 @@ public final class AdvancedSQLFederationExecutorTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getDatabase(databaseName)).thenReturn(database);
         when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        sqlFederationExecutor = new AdvancedSQLFederationExecutor();
-        sqlFederationExecutor.init(databaseName, schemaName, metaData, new ShardingSphereData(), mock(JDBCExecutor.class), mock(EventBusContext.class));
+        SQLFederationExecutor sqlFederationExecutor = new AdvancedSQLFederationExecutor();
+        sqlFederationExecutor.init(databaseName, schemaName, metaData, new ShardingSphereData(), mock(JDBCExecutor.class));
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {

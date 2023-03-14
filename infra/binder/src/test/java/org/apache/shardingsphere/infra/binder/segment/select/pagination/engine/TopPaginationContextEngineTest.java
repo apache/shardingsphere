@@ -29,23 +29,22 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.ro
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class TopPaginationContextEngineTest {
     
     private TopPaginationContextEngine topPaginationContextEngine;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         topPaginationContextEngine = new TopPaginationContextEngine();
     }
@@ -53,8 +52,7 @@ public final class TopPaginationContextEngineTest {
     @Test
     public void assertCreatePaginationContextWhenRowNumberPredicateNotPresent() {
         TopProjectionSegment topProjectionSegment = new TopProjectionSegment(0, 10, null, "rowNumberAlias");
-        List<Object> parameters = Collections.emptyList();
-        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(topProjectionSegment, Collections.emptyList(), parameters);
+        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(topProjectionSegment, Collections.emptyList(), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }

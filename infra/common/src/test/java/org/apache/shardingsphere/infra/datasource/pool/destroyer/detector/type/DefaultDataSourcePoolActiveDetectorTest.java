@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type;
 
-import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.junit.Test;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public final class DefaultDataSourcePoolActiveDetectorTest {
     

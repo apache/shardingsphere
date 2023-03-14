@@ -22,16 +22,17 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-distribution</artifactId>
-        <version>5.2.2-SNAPSHOT</version>
+        <version>5.3.2-SNAPSHOT</version>
     </parent>
     
     <artifactId>shardingsphere-proxy-native-distribution</artifactId>
     
     <properties>
-        <native.image.name>apache-shardingsphere-proxy-native</native.image.name>
-        <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
-        <native.maven.plugin.version>0.9.16</native.maven.plugin.version>
+        <native.maven.plugin.version>0.9.19</native.maven.plugin.version>
+        <imageName>apache-shardingsphere-proxy-native</imageName>
+        <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
+        <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
     </properties>
     
     <dependencies>
@@ -68,10 +69,62 @@
     
     <profiles>
         <profile>
-            <id>release</id>
+            <id>native</id>
+            <properties>
+                <hikari-cp.version>5.0.1</hikari-cp.version>
+                <truffle-api.version>22.3.1</truffle-api.version>
+                <caffeine.version>3.1.2</caffeine.version>
+            </properties>
             <build>
                 <finalName>apache-shardingsphere-${project.version}</finalName>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>${maven-compiler-plugin.version}</version>
+                        <configuration>
+                            <source>17</source>
+                            <target>17</target>
+                            <compilerArgument>--enable-preview</compilerArgument>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>${native.maven.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <fallback>false</fallback>
+                            <verbose>true</verbose>
+                            <buildArgs>
+                                <arg>--language:java</arg>
+                                <arg>--report-unsupported-elements-at-runtime</arg>
+                            </buildArgs>
+                            <jvmArgs>
+                                <arg>--enable-preview</arg>
+                            </jvmArgs>
+                            <metadataRepository>
+                                <enabled>true</enabled>
+                                <version>0.2.6</version>
+                            </metadataRepository>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                            <execution>
+                                <id>test-native</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>test</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <configuration>
@@ -92,60 +145,6 @@
                     <plugin>
                         <groupId>net.nicoulaj.maven.plugins</groupId>
                         <artifactId>checksum-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>native</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>${maven-compiler-plugin.version}</version>
-                        <configuration>
-                            <source>17</source>
-                            <target>17</target>
-                            <compilerArgument>--enable-preview</compilerArgument>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.graalvm.buildtools</groupId>
-                        <artifactId>native-maven-plugin</artifactId>
-                        <version>${native.maven.plugin.version}</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <imageName>${native.image.name}</imageName>
-                            <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
-                            <fallback>false</fallback>
-                            <verbose>true</verbose>
-                            <buildArgs>
-                                <arg>--report-unsupported-elements-at-runtime</arg>
-                            </buildArgs>
-                            <jvmArgs>
-                                <arg>--enable-preview</arg>
-                            </jvmArgs>
-                            <metadataRepository>
-                                <enabled>true</enabled>
-                            </metadataRepository>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>build-native</id>
-                                <goals>
-                                    <goal>compile-no-fork</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                            <execution>
-                                <id>test-native</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <phase>test</phase>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -175,8 +174,14 @@
                                         <argument>build</argument>
                                         <argument>--pull</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=${native.image.name}</argument>
+                                        <argument>APP_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>NATIVE_IMAGE_NAME=${imageName}</argument>
                                         <argument>.</argument>
+                                        <argument>-t</argument>
+                                        <argument>${proxy.image.repository}:${proxy.image.tag}</argument>
+                                        <argument>-t</argument>
+                                        <argument>${proxy.image.repository}:latest</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -235,7 +240,9 @@
                                         <argument>--platform</argument>
                                         <argument>${proxy.image.platform}</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=${native.image.name}</argument>
+                                        <argument>APP_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>NATIVE_IMAGE_NAME=${imageName}</argument>
                                         <argument>.</argument>
                                     </arguments>
                                 </configuration>
@@ -255,7 +262,9 @@
                                         <argument>--platform</argument>
                                         <argument>${proxy.image.platform}</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=${native.image.name}</argument>
+                                        <argument>APP_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>NATIVE_IMAGE_NAME=${imageName}</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
                                         <argument>${proxy.image.repository}:${proxy.image.tag}</argument>

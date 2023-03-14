@@ -20,9 +20,9 @@ package org.apache.shardingsphere.driver.jdbc.base;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.h2.tools.RunScript;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -45,10 +45,11 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     
     private static final String CONFIG_FILE = "config/config-sharding.yaml";
     
-    @BeforeClass
+    @BeforeAll
     public static void initShardingSphereDataSource() throws SQLException, IOException {
         if (null == dataSource) {
             dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
+            System.out.println(dataSource);
         }
     }
     
@@ -61,12 +62,12 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
                 AbstractShardingSphereDataSourceForShardingTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
     }
     
-    @Before
+    @BeforeEach
     public void initTable() {
         try {
-            Connection conn = dataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_data.sql"))));
-            conn.close();
+            Connection connection = dataSource.getConnection();
+            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_data.sql"))));
+            connection.close();
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
@@ -76,7 +77,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
         return dataSource;
     }
     
-    @AfterClass
+    @AfterAll
     public static void clear() throws Exception {
         if (null == dataSource) {
             return;

@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
+import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
 
 import java.util.Collection;
@@ -27,9 +26,13 @@ import java.util.Collection;
 /**
  * Create database discovery rule statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CreateDatabaseDiscoveryRuleStatement extends CreateRuleStatement {
     
-    private final Collection<AbstractDatabaseDiscoverySegment> rules;
+    private final Collection<DatabaseDiscoveryRuleSegment> rules;
+    
+    public CreateDatabaseDiscoveryRuleStatement(final boolean ifNotExists, final Collection<DatabaseDiscoveryRuleSegment> rules) {
+        super(ifNotExists);
+        this.rules = rules;
+    }
 }

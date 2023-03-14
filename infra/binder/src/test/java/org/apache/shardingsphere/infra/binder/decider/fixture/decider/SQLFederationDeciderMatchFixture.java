@@ -23,12 +23,13 @@ import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDecid
 import org.apache.shardingsphere.infra.binder.decider.fixture.rule.SQLFederationDeciderRuleMatchFixture;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 
 public final class SQLFederationDeciderMatchFixture implements SQLFederationDecider<SQLFederationDeciderRuleMatchFixture> {
     
     @Override
-    public void decide(final SQLFederationDeciderContext deciderContext, final QueryContext queryContext, final ShardingSphereDatabase database, final SQLFederationDeciderRuleMatchFixture rule,
-                       final ConfigurationProperties props) {
+    public void decide(final SQLFederationDeciderContext deciderContext, final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData,
+                       final ShardingSphereDatabase database, final SQLFederationDeciderRuleMatchFixture rule, final ConfigurationProperties props) {
         deciderContext.setUseSQLFederation(true);
     }
     

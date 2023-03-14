@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -34,13 +34,13 @@ import java.util.Date;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class EncryptMergedResultTest {
     
     @Mock
@@ -83,7 +83,7 @@ public final class EncryptMergedResultTest {
     @Test
     public void assertGetValueWithQueryWithCipherColumnAndMatchedEncryptorWithNotNullCiphertext() throws SQLException {
         when(mergedResult.getValue(1, Object.class)).thenReturn("VALUE");
-        EncryptAlgorithm<String, String> encryptAlgorithm = mock(EncryptAlgorithm.class);
+        StandardEncryptAlgorithm<String, String> encryptAlgorithm = mock(StandardEncryptAlgorithm.class);
         EncryptContext encryptContext = EncryptContextBuilder.build(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "order_id");
         when(encryptAlgorithm.decrypt("VALUE", encryptContext)).thenReturn("ORIGINAL_VALUE");
         when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
@@ -95,7 +95,7 @@ public final class EncryptMergedResultTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertGetValueWithQueryWithCipherColumnAndMatchedEncryptorWithNullCiphertext() throws SQLException {
-        EncryptAlgorithm<String, String> encryptAlgorithm = mock(EncryptAlgorithm.class);
+        StandardEncryptAlgorithm<String, String> encryptAlgorithm = mock(StandardEncryptAlgorithm.class);
         EncryptContext encryptContext = EncryptContextBuilder.build(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "order_id");
         when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
         when(metaData.isQueryWithCipherColumn("t_encrypt", "order_id")).thenReturn(true);

@@ -17,31 +17,30 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingTableReferenceRuleStatementUpdater;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableReferenceRuleStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class DropShardingTableReferenceRuleStatementUpdaterTest {
     
     private final DropShardingTableReferenceRuleStatementUpdater updater = new DropShardingTableReferenceRuleStatementUpdater();
@@ -49,95 +48,66 @@ public final class DropShardingTableReferenceRuleStatementUpdaterTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() {
-        updater.checkSQLStatement(database, createSQLStatement(), null);
-    }
-    
-    @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckSQLStatementWithoutExistedBindingTableRule() {
-        updater.checkSQLStatement(database, createSQLStatement(), new ShardingRuleConfiguration());
+    @Test
+    public void assertCheckWithoutCurrentRule() {
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, new DropShardingTableReferenceRuleStatement(false, Collections.singleton("notExisted")), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithIfExists() {
-        updater.checkSQLStatement(database, createSQLStatement(true, "t_1,t_2"), null);
+    public void assertCheckWithNotExistedShardingTableReferenceRule() {
+        assertThrows(MissingRequiredRuleException.class,
+                () -> updater.checkSQLStatement(database, new DropShardingTableReferenceRuleStatement(false, Collections.singleton("notExisted")), new ShardingRuleConfiguration()));
+    }
+    
+    @Test
+    public void assertCheckWithIfExists() {
+        DropShardingTableReferenceRuleStatement statement = new DropShardingTableReferenceRuleStatement(true, Collections.singleton("notExisted"));
+        updater.checkSQLStatement(database, statement, null);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.setBindingTableGroups(Collections.singletonList("t_3,t_4"));
-        updater.checkSQLStatement(database, createSQLStatement(true, "t_1,t_2"), shardingRuleConfig);
-    }
-    
-    @Test
-    public void assertDropAllCurrentRuleConfiguration() {
-        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        updater.updateCurrentRuleConfiguration(createSQLStatement(), currentRuleConfig);
-        assertTrue(currentRuleConfig.getBindingTableGroups().isEmpty());
+        shardingRuleConfig.setBindingTableGroups(Collections.singleton(new ShardingTableReferenceRuleConfiguration("foo", "t_3,t_4")));
+        updater.checkSQLStatement(database, statement, shardingRuleConfig);
     }
     
     @Test
     public void assertHasAnyOneToBeDropped() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        DropShardingTableReferenceRuleStatement sqlStatement = createSQLStatement(true, "t_1,t_2", "t_order,t_order_item");
+        DropShardingTableReferenceRuleStatement sqlStatement = new DropShardingTableReferenceRuleStatement(true, Arrays.asList("reference_0", "reference_1"));
         assertTrue(updater.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig));
+    }
+    
+    private ShardingRuleConfiguration createCurrentRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item", null));
+        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order", null));
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_0", "t_order,t_order_item"));
+        return result;
     }
     
     @Test
     public void assertHasNotAnyOneToBeDropped() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        DropShardingTableReferenceRuleStatement sqlStatement = createSQLStatement(true, "t_1,t_2");
+        DropShardingTableReferenceRuleStatement sqlStatement = new DropShardingTableReferenceRuleStatement(false, Collections.singleton("foo"));
         assertFalse(updater.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig));
     }
     
     @Test
-    public void assertDropSpecifiedCurrentRuleConfiguration() {
+    public void assertDropSpecifiedReferenceRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        currentRuleConfig.getBindingTableGroups().add("t_1,t_2");
-        DropShardingTableReferenceRuleStatement sqlStatement = createSQLStatement("t_1,t_2");
+        currentRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_1", "t_1,t_2"));
+        DropShardingTableReferenceRuleStatement sqlStatement = new DropShardingTableReferenceRuleStatement(false, Collections.singleton("reference_1"));
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
-        assertTrue(currentRuleConfig.getBindingTableGroups().contains("t_order,t_order_item"));
+        assertThat(currentRuleConfig.getBindingTableGroups().iterator().next().getReference(), is("t_order,t_order_item"));
     }
     
     @Test
-    public void assertDropRulesCurrentRuleConfigurationWithNoOrder() {
+    public void assertDropMultipleReferenceRules() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
-        DropShardingTableReferenceRuleStatement sqlStatement = createSQLStatement("t_3,t_2,t_1");
+        currentRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_1", "t_1,t_2,t_3"));
+        DropShardingTableReferenceRuleStatement sqlStatement = new DropShardingTableReferenceRuleStatement(false, Arrays.asList("reference_0", "reference_1"));
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
-        assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
-        assertTrue(currentRuleConfig.getBindingTableGroups().contains("t_order,t_order_item"));
-        assertFalse(currentRuleConfig.getBindingTableGroups().contains("t_1,t_2,t_3"));
-    }
-    
-    @Test
-    public void assertDropRulesCurrentRuleConfigurationWithDifferentCase() {
-        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
-        DropShardingTableReferenceRuleStatement sqlStatement = createSQLStatement("T_3,T_2,T_1");
-        updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
-        updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
-        assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
-        assertTrue(currentRuleConfig.getBindingTableGroups().contains("t_order,t_order_item"));
-        assertFalse(currentRuleConfig.getBindingTableGroups().contains("t_1,t_2,t_3"));
-    }
-    
-    private DropShardingTableReferenceRuleStatement createSQLStatement(final String... group) {
-        Collection<TableReferenceRuleSegment> segments = Arrays.stream(group).map(TableReferenceRuleSegment::new).collect(Collectors.toList());
-        return new DropShardingTableReferenceRuleStatement(false, segments);
-    }
-    
-    private DropShardingTableReferenceRuleStatement createSQLStatement(final boolean ifExists, final String... group) {
-        Collection<TableReferenceRuleSegment> segments = Arrays.stream(group).map(TableReferenceRuleSegment::new).collect(Collectors.toList());
-        return new DropShardingTableReferenceRuleStatement(ifExists, segments);
-    }
-    
-    private ShardingRuleConfiguration createCurrentRuleConfiguration() {
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order", null));
-        result.getBindingTableGroups().add("t_order,t_order_item");
-        return result;
+        assertTrue(currentRuleConfig.getBindingTableGroups().isEmpty());
     }
 }

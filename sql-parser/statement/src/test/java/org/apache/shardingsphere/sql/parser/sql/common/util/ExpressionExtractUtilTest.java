@@ -17,16 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.util;
 
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -117,5 +119,14 @@ public final class ExpressionExtractUtilTest {
         functionSegment.getParameters().add(param3);
         List<ParameterMarkerExpressionSegment> result = ExpressionExtractUtil.getParameterMarkerExpressions(Collections.singletonList(functionSegment));
         assertThat(result.size(), is(1));
+    }
+    
+    @Test
+    public void assertGetParameterMarkerExpressionsFromTypeCastExpression() {
+        ParameterMarkerExpressionSegment expected = new ParameterMarkerExpressionSegment(0, 0, 1, ParameterMarkerType.DOLLAR);
+        List<ExpressionSegment> input = Collections.singletonList(new TypeCastExpression(0, 0, "$2::varchar", expected, "varchar"));
+        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtil.getParameterMarkerExpressions(input);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(expected));
     }
 }

@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.dbdiscovery.rule.builder.DatabaseDiscoveryRuleBuilder
-org.apache.shardingsphere.dbdiscovery.rule.builder.AlgorithmProvidedDatabaseDiscoveryRuleBuilder

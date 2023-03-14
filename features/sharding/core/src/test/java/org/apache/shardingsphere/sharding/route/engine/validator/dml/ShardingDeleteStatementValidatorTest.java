@@ -33,48 +33,49 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class ShardingDeleteStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
     
-    @Test(expected = DMLWithMultipleShardingTablesException.class)
+    @Test
     public void assertPreValidateWhenDeleteMultiTablesForMySQL() {
-        assertPreValidateWhenDeleteMultiTables(new MySQLDeleteStatement());
+        assertThrows(DMLWithMultipleShardingTablesException.class, () -> assertPreValidateWhenDeleteMultiTables(new MySQLDeleteStatement()));
     }
     
-    @Test(expected = DMLWithMultipleShardingTablesException.class)
+    @Test
     public void assertPreValidateWhenDeleteMultiTablesForOracle() {
-        assertPreValidateWhenDeleteMultiTables(new OracleDeleteStatement());
+        assertThrows(DMLWithMultipleShardingTablesException.class, () -> assertPreValidateWhenDeleteMultiTables(new OracleDeleteStatement()));
     }
     
-    @Test(expected = DMLWithMultipleShardingTablesException.class)
+    @Test
     public void assertPreValidateWhenDeleteMultiTablesForPostgreSQL() {
-        assertPreValidateWhenDeleteMultiTables(new PostgreSQLDeleteStatement());
+        assertThrows(DMLWithMultipleShardingTablesException.class, () -> assertPreValidateWhenDeleteMultiTables(new PostgreSQLDeleteStatement()));
     }
     
-    @Test(expected = DMLWithMultipleShardingTablesException.class)
+    @Test
     public void assertPreValidateWhenDeleteMultiTablesForSQL92() {
-        assertPreValidateWhenDeleteMultiTables(new SQL92DeleteStatement());
+        assertThrows(DMLWithMultipleShardingTablesException.class, () -> assertPreValidateWhenDeleteMultiTables(new SQL92DeleteStatement()));
     }
     
-    @Test(expected = DMLWithMultipleShardingTablesException.class)
+    @Test
     public void assertPreValidateWhenDeleteMultiTablesForSQLServer() {
-        assertPreValidateWhenDeleteMultiTables(new SQLServerDeleteStatement());
+        assertThrows(DMLWithMultipleShardingTablesException.class, () -> assertPreValidateWhenDeleteMultiTables(new SQLServerDeleteStatement()));
     }
     
     private void assertPreValidateWhenDeleteMultiTables(final DeleteStatement sqlStatement) {

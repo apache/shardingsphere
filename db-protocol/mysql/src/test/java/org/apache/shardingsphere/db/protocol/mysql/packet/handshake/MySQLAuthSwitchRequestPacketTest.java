@@ -18,21 +18,21 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.handshake;
 
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLAuthSwitchRequestPacketTest {
     
     @Mock
-    private MySQLAuthPluginData authPluginData;
+    private MySQLAuthenticationPluginData authPluginData;
     
     @Mock
     private MySQLPacketPayload payload;
@@ -40,7 +40,7 @@ public final class MySQLAuthSwitchRequestPacketTest {
     @Test
     public void assertWrite() {
         when(authPluginData.getAuthenticationPluginData()).thenReturn(new byte[]{0x11, 0x22});
-        MySQLAuthSwitchRequestPacket authSwitchRequestPacket = new MySQLAuthSwitchRequestPacket(1, "plugin", authPluginData);
+        MySQLAuthSwitchRequestPacket authSwitchRequestPacket = new MySQLAuthSwitchRequestPacket("plugin", authPluginData);
         authSwitchRequestPacket.write(payload);
         verify(payload).writeInt1(0xfe);
         verify(payload, times(2)).writeStringNul(anyString());

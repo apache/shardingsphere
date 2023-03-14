@@ -25,6 +25,7 @@ import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.runtime.Bindable;
 import org.apache.calcite.schema.impl.AbstractSchema;
@@ -43,8 +44,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.SQLFederationDataContext;
 import org.apache.shardingsphere.sqlfederation.advanced.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.executor.FilterableTableScanExecutor;
@@ -69,7 +69,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Advanced sql federation executor.
+ * Advanced SQL federation executor.
  */
 public final class AdvancedSQLFederationExecutor implements SQLFederationExecutor {
     
@@ -89,13 +89,10 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     
     private JDBCExecutor jdbcExecutor;
     
-    private EventBusContext eventBusContext;
-    
     private ResultSet resultSet;
     
     @Override
-    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData data,
-                     final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
+    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData data, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
         this.optimizerContext = OptimizerContextFactory.create(metaData.getDatabases(), metaData.getGlobalRuleMetaData());
@@ -103,7 +100,6 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         this.props = metaData.getProps();
         this.data = data;
         this.jdbcExecutor = jdbcExecutor;
-        this.eventBusContext = eventBusContext;
     }
     
     @Override
@@ -111,18 +107,18 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         SQLStatementContext<?> sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Preconditions.checkArgument(sqlStatementContext instanceof SelectStatementContext, "SQL statement context must be select statement context.");
-        ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
+        ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
         ShardingSphereSchema schema = database.getSchema(schemaName);
         AbstractSchema sqlFederationSchema = createSQLFederationSchema(prepareEngine, database.getProtocolType(), schema, callback, federationContext);
-        Map<String, Object> parameters = createParameters(federationContext.getQueryContext().getParameters());
-        resultSet = execute((SelectStatementContext) sqlStatementContext, schema, sqlFederationSchema, parameters);
+        Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
+        resultSet = execute((SelectStatementContext) sqlStatementContext, schema, sqlFederationSchema, params);
         return resultSet;
     }
     
-    private Map<String, Object> createParameters(final List<Object> parameters) {
-        Map<String, Object> result = new HashMap<>(parameters.size(), 1);
+    private Map<String, Object> createParameters(final List<Object> params) {
+        Map<String, Object> result = new HashMap<>(params.size(), 1);
         int index = 0;
-        for (Object each : parameters) {
+        for (Object each : params) {
             result.put("?" + index++, each);
         }
         return result;
@@ -133,23 +129,23 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
                                                      final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
         // TODO replace FilterableTableScanExecutor with TranslatableTableScanExecutor
-        TableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, data, eventBusContext);
+        TableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, data);
         // TODO replace FilterableSchema with TranslatableSchema
         return new FilterableSchema(schemaName, schema, protocolType, JAVA_TYPE_FACTORY, executor);
     }
     
     @SuppressWarnings("unchecked")
-    private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> parameters) {
-        OptimizerParserContext parserContext = optimizerContext.getParserContexts().get(databaseName);
+    private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> params) {
+        OptimizerParserContext parserContext = optimizerContext.getParserContext(databaseName);
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName, sqlFederationSchema, JAVA_TYPE_FACTORY, connectionConfig);
         SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, JAVA_TYPE_FACTORY, parserContext.getDatabaseType(), connectionConfig);
         SqlToRelConverter converter = SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator,
                 SQLFederationPlannerUtil.createRelOptCluster(JAVA_TYPE_FACTORY), optimizerContext.getSqlParserRule(), parserContext.getDatabaseType(), true);
-        SQLOptimizeContext optimizeContext =
-                new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner()).optimize(selectStatementContext.getSqlStatement());
+        RelOptPlanner hepPlanner = optimizerContext.getPlannerContext(databaseName).getHepPlanner();
+        SQLOptimizeContext optimizeContext = new SQLOptimizeEngine(converter, hepPlanner).optimize(selectStatementContext.getSqlStatement());
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);
-        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(validator, converter, parameters)).enumerator();
+        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(validator, converter, params)).enumerator();
         return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, optimizeContext.getValidatedNodeType());
     }
     
@@ -163,6 +159,11 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         if (null != resultSet) {
             resultSet.close();
         }
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
     
     @Override

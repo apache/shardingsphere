@@ -19,16 +19,18 @@ package org.apache.shardingsphere.infra.hint;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,10 +44,20 @@ public final class SQLHintExtractorTest {
     }
     
     @Test
-    public void assertSQLHintSkipEncryptRewrite() {
+    public void assertSQLHintWriteRouteOnlyWithCommentString() {
+        assertTrue(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */").isHintWriteRouteOnly());
+    }
+    
+    @Test
+    public void assertSQLHintSkipSQLRewrite() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SKIP_ENCRYPT_REWRITE=true */", 0, 0)));
-        assertTrue(new SQLHintExtractor(statement).isHintSkipEncryptRewrite());
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */", 0, 0)));
+        assertTrue(new SQLHintExtractor(statement).isHintSkipSQLRewrite());
+    }
+    
+    @Test
+    public void assertSQLHintSkipSQLRewriteWithCommentString() {
+        assertTrue(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */").isHintSkipSQLRewrite());
     }
     
     @Test
@@ -58,45 +70,62 @@ public final class SQLHintExtractorTest {
     }
     
     @Test
+    public void assertSQLHintDisableAuditNamesWithCommentString() {
+        Collection<String> actual = new SQLHintExtractor("/* SHARDINGSPHERE_HINT: DISABLE_AUDIT_NAMES=sharding_audit1 sharding_audit2 */").findDisableAuditNames();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.containsAll(Arrays.asList("sharding_audit1", "sharding_audit2")));
+    }
+    
+    @Test
     public void assertSQLHintShardingDatabaseValue() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SHARDING_DATABASE_VALUE=10 */", 0, 0)));
-        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order"), is(new BigInteger("10")));
+        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order"), is(Collections.singletonList(new BigInteger("10"))));
     }
     
     @Test
     public void assertSQLHintShardingDatabaseValueWithTableName() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=10 */", 0, 0)));
-        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order"), is(new BigInteger("10")));
+        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order"), is(Collections.singletonList(new BigInteger("10"))));
+    }
+    
+    @Test
+    public void assertSQLHintShardingDatabaseValueWithCommentString() {
+        assertThat(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: SHARDING_DATABASE_VALUE=10 */").getHintShardingDatabaseValue("t_order"), is(Collections.singletonList(new BigInteger("10"))));
     }
     
     @Test
     public void assertSQLHintShardingDatabaseValueWithStringHintValue() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=a */", 0, 0)));
-        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order"), is("a"));
+        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order"), is(Collections.singletonList("a")));
     }
     
     @Test
     public void assertSQLHintShardingTableValue() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SHARDING_TABLE_VALUE=10 */", 0, 0)));
-        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is(new BigInteger("10")));
+        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is(Collections.singletonList(new BigInteger("10"))));
+    }
+    
+    @Test
+    public void assertSQLHintShardingTableValueWithCommentString() {
+        assertThat(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: SHARDING_TABLE_VALUE=10 */").getHintShardingTableValue("t_order"), is(Collections.singletonList(new BigInteger("10"))));
     }
     
     @Test
     public void assertSQLHintShardingTableValueWithTableName() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_TABLE_VALUE=10 */", 0, 0)));
-        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is(new BigInteger("10")));
+        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is(Collections.singletonList(new BigInteger("10"))));
     }
     
     @Test
     public void assertSQLHintShardingTableValueWithStringHintValue() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_TABLE_VALUE=a */", 0, 0)));
-        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is("a"));
+        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is(Collections.singletonList("a")));
     }
     
     @Test
@@ -108,6 +137,39 @@ public final class SQLHintExtractorTest {
     
     @Test
     public void assertSQLHintShadowWithCommentString() {
-        assertTrue(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */").isHintWriteRouteOnly());
+        assertTrue(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: SHADOW=true */").isShadow());
+    }
+    
+    @Test
+    public void assertFindHintDataSourceNameExist() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_1 */", 0, 0)));
+        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
+        assertTrue(dataSourceName.isPresent());
+        assertThat(dataSourceName.get(), is("ds_1"));
+    }
+    
+    @Test
+    public void assertFindHintDataSourceNameAliasExist() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* ShardingSphere hint: dataSourceName=ds_1 */", 0, 0)));
+        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
+        assertTrue(dataSourceName.isPresent());
+        assertThat(dataSourceName.get(), is("ds_1"));
+    }
+    
+    @Test
+    public void assertFindHintDataSourceNameNotExist() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* no hint */", 0, 0)));
+        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
+        assertFalse(dataSourceName.isPresent());
+    }
+    
+    @Test
+    public void assertFindHintDataSourceNameNotExistWithoutComment() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        Optional<String> dataSourceName = new SQLHintExtractor(statement).findHintDataSourceName();
+        assertFalse(dataSourceName.isPresent());
     }
 }

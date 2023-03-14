@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.yaml.swapper;
 
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 

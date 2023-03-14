@@ -21,7 +21,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,10 +29,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class YamlEncryptTableRuleConfigurationSwapperTest {
     
@@ -70,7 +70,7 @@ public final class YamlEncryptTableRuleConfigurationSwapperTest {
         encryptColumnRuleConfig.setLogicColumn("encrypt_column");
         encryptColumnRuleConfig.setCipherColumn("encrypt_cipher");
         encryptColumnRuleConfig.setAssistedQueryColumn("encrypt_assisted");
-        encryptColumnRuleConfig.setFuzzyQueryColumn("encrypt_fuzzy");
+        encryptColumnRuleConfig.setLikeQueryColumn("encrypt_like");
         encryptColumnRuleConfig.setPlainColumn("encrypt_plain");
         encryptColumnRuleConfig.setEncryptorName("test_encryptor");
         encryptColumnRuleConfig.setQueryWithCipherColumn(true);
@@ -89,7 +89,7 @@ public final class YamlEncryptTableRuleConfigurationSwapperTest {
         assertThat(actualEncryptColumnRuleConfig.getLogicColumn(), is("test_column"));
         assertThat(actualEncryptColumnRuleConfig.getCipherColumn(), is("encrypt_cipher"));
         assertThat(actualEncryptColumnRuleConfig.getAssistedQueryColumn(), is("encrypt_assisted"));
-        assertThat(actualEncryptColumnRuleConfig.getFuzzyQueryColumn(), is("encrypt_fuzzy"));
+        assertThat(actualEncryptColumnRuleConfig.getLikeQueryColumn(), is("encrypt_like"));
         assertThat(actualEncryptColumnRuleConfig.getPlainColumn(), is("encrypt_plain"));
         assertThat(actualEncryptColumnRuleConfig.getEncryptorName(), is("test_encryptor"));
         assertTrue(actualEncryptColumnRuleConfig.getQueryWithCipherColumn());

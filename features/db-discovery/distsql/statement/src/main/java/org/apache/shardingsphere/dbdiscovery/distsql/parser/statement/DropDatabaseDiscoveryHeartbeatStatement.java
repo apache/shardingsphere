@@ -28,10 +28,10 @@ import java.util.Collection;
 @Getter
 public final class DropDatabaseDiscoveryHeartbeatStatement extends DropRuleStatement {
     
-    private final Collection<String> heartbeatNames;
+    private final Collection<String> names;
     
-    public DropDatabaseDiscoveryHeartbeatStatement(final boolean ifExists, final Collection<String> heartbeatNames) {
+    public DropDatabaseDiscoveryHeartbeatStatement(final boolean ifExists, final Collection<String> names) {
         super(ifExists);
-        this.heartbeatNames = heartbeatNames;
+        this.names = names;
     }
 }

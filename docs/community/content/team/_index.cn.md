@@ -151,6 +151,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/10829171?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/sandynz" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/42492540?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -164,6 +169,9 @@ chapter = true
         </td>
         <td>
             <b>端正强</b>
+        </td>
+        <td>
+            <b>钟红胜</b>
         </td>
     </tr>
 </table>
@@ -293,11 +301,6 @@ chapter = true
     </tr>
     <tr>
         <td>
-            <a href="https://github.com/sandynz" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/42492540?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
-        <td>
             <a href="https://github.com/RaigorJiang" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/5668787?v=4" style="border-radius:50%; overflow:hidden">
             </a>
@@ -327,11 +330,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/35389145?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/zjcnb" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/33742097?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>钟红胜</b>
-        </td>
         <td>
             <b>江龙滔</b>
         </td>
@@ -350,13 +355,11 @@ chapter = true
         <td>
             <b>李国平</b>
         </td>
+        <td>
+            <b>赵锦超</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/zjcnb" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/33742097?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/tuichenchuxin" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/86938616?v=4" style="border-radius:50%; overflow:hidden">
@@ -387,11 +390,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/77398366?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/JiekerTime" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/76552510?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>赵锦超</b>
-        </td>
         <td>
             <b>陈出新</b>
         </td>
@@ -410,13 +415,11 @@ chapter = true
         <td>
             <b>马称</b>
         </td>
+        <td>
+            <b>张俊杰</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/JiekerTime" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/76552510?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/Swastyy" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/64654203?v=4" style="border-radius:50%; overflow:hidden">
@@ -437,11 +440,23 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/4112856?s=96&v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/azexcy" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/101622833?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/everly-gif" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/77877486?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/mlycore" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/22319610?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>张俊杰</b>        
-        </td>
         <td>
             <b>Swastika Gupta</b>
         </td>
@@ -453,6 +468,15 @@ chapter = true
         </td>
         <td>
             <b>孙念君</b>
+        </td>
+        <td>
+            <b>郭信泽</b>
+        </td>
+        <td>
+            <b>Everly Precia Suresh</b>
+        </td>
+        <td>
+            <b>苗立尧</b>
         </td>
     </tr>
 </table>

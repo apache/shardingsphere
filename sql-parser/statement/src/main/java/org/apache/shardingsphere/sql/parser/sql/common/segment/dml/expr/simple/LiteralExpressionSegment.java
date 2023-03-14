@@ -19,14 +19,12 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 /**
  * Literal expression segment.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public class LiteralExpressionSegment implements SimpleExpressionSegment {
     
     private final int startIndex;

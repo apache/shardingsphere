@@ -61,7 +61,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.DoStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
@@ -111,7 +111,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * SQL statement context factory.
@@ -122,31 +121,31 @@ public final class SQLStatementContextFactory {
     /**
      * Create SQL statement context.
      *
-     * @param databases databases
+     * @param metaData metaData
      * @param sqlStatement SQL statement
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabase> databases, final SQLStatement sqlStatement, final String defaultDatabaseName) {
-        return newInstance(databases, Collections.emptyList(), sqlStatement, defaultDatabaseName);
+    public static SQLStatementContext<?> newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+        return newInstance(metaData, Collections.emptyList(), sqlStatement, defaultDatabaseName);
     }
     
     /**
      * Create SQL statement context.
      *
-     * @param databases databases
-     * @param parameters SQL parameters
+     * @param metaData metaData
+     * @param params SQL parameters
      * @param sqlStatement SQL statement
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final Map<String, ShardingSphereDatabase> databases,
-                                                     final List<Object> parameters, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+    public static SQLStatementContext<?> newInstance(final ShardingSphereMetaData metaData,
+                                                     final List<Object> params, final SQLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(databases, parameters, (DMLStatement) sqlStatement, defaultDatabaseName);
+            return getDMLStatementContext(metaData, params, (DMLStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext(databases, parameters, (DDLStatement) sqlStatement, defaultDatabaseName);
+            return getDDLStatementContext(metaData, params, (DDLStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLStatementContext((DCLStatement) sqlStatement);
@@ -157,10 +156,10 @@ public final class SQLStatementContextFactory {
         return new CommonSQLStatementContext<>(sqlStatement);
     }
     
-    private static SQLStatementContext<?> getDMLStatementContext(final Map<String, ShardingSphereDatabase> databases,
-                                                                 final List<Object> parameters, final DMLStatement sqlStatement, final String defaultDatabaseName) {
+    private static SQLStatementContext<?> getDMLStatementContext(final ShardingSphereMetaData metaData,
+                                                                 final List<Object> params, final DMLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(databases, parameters, (SelectStatement) sqlStatement, defaultDatabaseName);
+            return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -169,7 +168,7 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(databases, parameters, (InsertStatement) sqlStatement, defaultDatabaseName);
+            return new InsertStatementContext(metaData, params, (InsertStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof CallStatement) {
             return new CallStatementContext((CallStatement) sqlStatement);
@@ -183,7 +182,7 @@ public final class SQLStatementContextFactory {
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    private static SQLStatementContext<?> getDDLStatementContext(final Map<String, ShardingSphereDatabase> databases, final List<Object> parameters,
+    private static SQLStatementContext<?> getDDLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
                                                                  final DDLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
             return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
@@ -234,7 +233,7 @@ public final class SQLStatementContextFactory {
             return new CommentStatementContext((CommentStatement) sqlStatement);
         }
         if (sqlStatement instanceof OpenGaussCursorStatement) {
-            return new CursorStatementContext(databases, parameters, (OpenGaussCursorStatement) sqlStatement, defaultDatabaseName);
+            return new CursorStatementContext(metaData, params, (OpenGaussCursorStatement) sqlStatement, defaultDatabaseName);
         }
         if (sqlStatement instanceof CloseStatement) {
             return new CloseStatementContext((CloseStatement) sqlStatement);

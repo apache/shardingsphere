@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.context.cursor.CursorDefinition;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -39,7 +39,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -56,13 +55,13 @@ public final class CursorStatementContext extends CommonSQLStatementContext<Open
     
     private final SelectStatementContext selectStatementContext;
     
-    public CursorStatementContext(final Map<String, ShardingSphereDatabase> databases, final List<Object> parameters,
+    public CursorStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
                                   final OpenGaussCursorStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         tablesContext = new TablesContext(getSimpleTableSegments(), getDatabaseType());
         extractWhereSegments(whereSegments, sqlStatement.getSelect());
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
-        selectStatementContext = new SelectStatementContext(databases, parameters, sqlStatement.getSelect(), defaultDatabaseName);
+        selectStatementContext = new SelectStatementContext(metaData, params, sqlStatement.getSelect(), defaultDatabaseName);
     }
     
     private Collection<SimpleTableSegment> getSimpleTableSegments() {

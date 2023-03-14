@@ -13,7 +13,7 @@ Data sharding YAML configuration is highly readable. The dependencies between sh
 rules:
 - !SHARDING
   tables: # Sharding table configuration
-    <logic-table-name> (+): # Logic table name
+    <logic_table_name> (+): # Logic table name
       actualDataNodes (?): # Describe data source names and actual tables (refer to Inline syntax rules)
       databaseStrategy (?): # Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
         standard: # For single sharding column scenario
@@ -31,8 +31,8 @@ rules:
         keyGeneratorName: # Key generator name
       auditStrategy: # Sharding audit strategy
         auditorNames: # Sharding auditor name
-          - <auditor-name>
-          - <auditor-name>
+          - <auditor_name>
+          - <auditor_name>
         allowHintDisable: true # Enable or disable sharding audit hint
   autoTables: # Auto Sharding table configuration
     t_order_auto: # Logic table name
@@ -45,8 +45,8 @@ rules:
     - <logic_table_name_1, logic_table_name_2, ...> 
     - <logic_table_name_1, logic_table_name_2, ...> 
   broadcastTables (+): # Broadcast tables
-    - <table-name>
-    - <table-name>
+    - <table_name>
+    - <table_name>
   defaultDatabaseStrategy: # Default strategy for database sharding
   defaultTableStrategy: # Default strategy for table sharding
   defaultKeyGenerateStrategy: # Default Key generator strategy
@@ -54,21 +54,21 @@ rules:
 
   # Sharding algorithm configuration
   shardingAlgorithms:
-    <sharding-algorithm-name> (+): # Sharding algorithm name
+    <sharding_algorithm_name> (+): # Sharding algorithm name
       type: # Sharding algorithm type
       props: # Sharding algorithm properties
       # ...
   
   # Key generate algorithm configuration
   keyGenerators:
-    <key-generate-algorithm-name> (+): # Key generate algorithm name
+    <key_generate_algorithm_name> (+): # Key generate algorithm name
       type: # Key generate algorithm type
       props: # Key generate algorithm properties
       # ...
   
   # Sharding audit algorithm configuration
   auditors:
-    <sharding-audit-algorithm-name> (+): # Sharding audit algorithm name
+    <sharding_audit_algorithm_name> (+): # Sharding audit algorithm name
       type: # Sharding audit algorithm type
       props: # Sharding audit algorithm properties
       # ...
@@ -106,7 +106,7 @@ rules:
       tableStrategy: 
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: t-order-inline
+          shardingAlgorithmName: t_order_inline
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
@@ -119,7 +119,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: t_order-item-inline
+          shardingAlgorithmName: t_order_item_inline
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
@@ -127,7 +127,7 @@ rules:
       actualDataNodes: ds_${0..1}.t_account_${0..1}
       tableStrategy:
         standard:
-          shardingAlgorithmName: t-account-inline
+          shardingAlgorithmName: t_account_inline
       keyGenerateStrategy:
         column: account_id
         keyGeneratorName: snowflake
@@ -139,24 +139,24 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: database-inline
+      shardingAlgorithmName: database_inline
   defaultTableStrategy:
     none:
   
   shardingAlgorithms:
-    database-inline:
+    database_inline:
       type: INLINE
       props:
         algorithm-expression: ds_${user_id % 2}
-    t-order-inline:
+    t_order_inline:
       type: INLINE
       props:
         algorithm-expression: t_order_${order_id % 2}
-    t_order-item-inline:
+    t_order_item_inline:
       type: INLINE
       props:
         algorithm-expression: t_order_item_${order_id % 2}
-    t-account-inline:
+    t_account_inline:
       type: INLINE
       props:
         algorithm-expression: t_account_${account_id % 2}

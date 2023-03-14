@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+import java.util.Map;
+
 /**
  * Yaml data consistency check job item progress.
  */
@@ -32,6 +34,8 @@ public final class YamlConsistencyCheckJobItemProgress implements YamlConfigurat
     
     private String tableNames;
     
+    private String ignoredTableNames;
+    
     private Long checkedRecordsCount;
     
     private Long recordsCount;
@@ -39,4 +43,6 @@ public final class YamlConsistencyCheckJobItemProgress implements YamlConfigurat
     private Long checkBeginTimeMillis;
     
     private Long checkEndTimeMillis;
+    
+    private Map<String, Object> tableCheckPositions;
 }

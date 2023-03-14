@@ -24,8 +24,8 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
@@ -49,19 +49,15 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
-    // TODO it's just used for openGauss
-    private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
-    
     @Override
-    public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
-        DatabaseType targetDatabaseType = parameter.getTargetDatabaseType();
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) throws SQLException {
+        DatabaseType targetDatabaseType = param.getTargetDatabaseType();
         if (!targetDatabaseType.isSchemaAvailable()) {
-            log.info("prepareTargetSchemas, target database does not support schema, ignore, targetDatabaseType={}", targetDatabaseType);
             return;
         }
-        CreateTableConfiguration createTableConfig = parameter.getCreateTableConfig();
+        CreateTableConfiguration createTableConfig = param.getCreateTableConfig();
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(targetDatabaseType).orElse(null);
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(targetDatabaseType.getType());
+        PipelineSQLBuilder sqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, targetDatabaseType.getType());
         Collection<String> createdSchemaNames = new HashSet<>();
         for (CreateTableEntry each : createTableConfig.getCreateTableEntries()) {
             String targetSchemaName = each.getTargetName().getSchemaName().getOriginal();
@@ -70,21 +66,18 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             }
             Optional<String> sql = sqlBuilder.buildCreateSchemaSQL(targetSchemaName);
             if (sql.isPresent()) {
-                executeCreateSchema(parameter.getDataSourceManager(), each.getTargetDataSourceConfig(), sql.get());
+                executeCreateSchema(param.getDataSourceManager(), each.getTargetDataSourceConfig(), sql.get());
                 createdSchemaNames.add(targetSchemaName);
             }
         }
-        log.info("prepareTargetSchemas, createdSchemaNames={}, defaultSchema={}", createdSchemaNames, defaultSchema);
     }
     
-    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) {
+    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
         log.info("prepareTargetSchemas, sql={}", sql);
         try (Connection connection = getCachedDataSource(dataSourceManager, targetDataSourceConfig).getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(sql);
             }
-        } catch (final SQLException ex) {
-            log.warn("create schema failed, error: {}", ex.getMessage());
         }
     }
     
@@ -92,21 +85,26 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return dataSourceManager.getDataSource(dataSourceConfig);
     }
     
-    protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
+    /**
+     * Execute target table SQL.
+     * 
+     * @param targetConnection target connection
+     * @param sql SQL
+     * @throws SQLException SQL exception
+     */
+    protected void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
         log.info("execute target table sql: {}", sql);
         try (Statement statement = targetConnection.createStatement()) {
             statement.execute(sql);
-        } catch (final SQLException ex) {
-            log.warn("execute target table sql failed", ex);
-            for (String ignoreMessage : IGNORE_EXCEPTION_MESSAGE) {
-                if (ex.getMessage().contains(ignoreMessage)) {
-                    return;
-                }
-            }
-            throw ex;
         }
     }
     
+    /**
+     * Add if not exists for create table SQL.
+     * 
+     * @param createTableSQL create table SQL
+     * @return create table if not existed SQL
+     */
     protected final String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;

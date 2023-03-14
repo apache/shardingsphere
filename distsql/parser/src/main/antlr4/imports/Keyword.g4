@@ -43,10 +43,6 @@ ALTER
     : A L T E R
     ;
 
-CLEAR
-    : C L E A R
-    ;
-
 DROP
     : D R O P
     ;
@@ -107,10 +103,6 @@ VARIABLES
     : V A R I A B L E S
     ;
 
-HINT
-    : H I N T
-    ;
-
 ENABLE
     : E N A B L E
     ;
@@ -133,6 +125,10 @@ SCHEMA
 
 DATABASE
     : D A T A B A S E
+    ;
+
+LOGICAL
+    : L O G I C A L
     ;
 
 SINGLE
@@ -243,24 +239,8 @@ UNUSED
     : U N U S E D
     ;
 
-PREPARE
-    : P R E P A R E
-    ;
-
-DISTSQL
-    : D I S T S Q L
-    ;
-
-APPLY
-    : A P P L Y
-    ;
-
 DISCARD
     : D I S C A R D
-    ;
-
-SINGLE_TABLE
-    : S I N G L E UL_ T A B L E
     ;
 
 INFO
@@ -345,4 +325,36 @@ REGISTER
 
 UNREGISTER
     : U N R E G I S T E R
+    ;
+
+GOVERNANCE
+    : G O V E R N A N C E
+    ;
+
+CENTER
+    : C E N T E R
+    ;
+
+LIKE
+    : L I K E
+    ;
+
+NOT
+    : N O T
+    ;
+
+LOCK
+    : L O C K
+    ;
+
+UNLOCK
+    : U N L O C K
+    ;
+
+CLUSTER
+    : C L U S T E R
+    ;
+
+LOCK_STRATEGY
+    : L O C K UL_ S T R A T E G Y
     ;

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.db.protocol.netty;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.db.protocol.CommonConstants;
-import org.junit.Test;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;
 

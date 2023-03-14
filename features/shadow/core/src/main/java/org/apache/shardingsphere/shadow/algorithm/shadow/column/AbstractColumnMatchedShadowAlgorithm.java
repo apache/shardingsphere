@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.algorithm.shadow.validator.ShadowValueValidator;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.column.PreciseColumnShadowValue;
+import org.apache.shardingsphere.shadow.exception.algorithm.ShadowAlgorithmInitializationException;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -30,14 +31,12 @@ import java.util.Properties;
 /**
  * Abstract column matched shadow algorithm.
  */
+@Getter
 public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShadowAlgorithm<Comparable<?>> {
     
     private static final String COLUMN_PROPS_KEY = "column";
     
     private static final String OPERATION_PROPS_KEY = "operation";
-    
-    @Getter
-    private Properties props;
     
     private String shadowColumn;
     
@@ -45,22 +44,22 @@ public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShad
     
     @Override
     public void init(final Properties props) {
-        this.props = props;
         shadowColumn = getShadowColumn(props);
         shadowOperationType = getShadowOperationType(props);
     }
     
     private String getShadowColumn(final Properties props) {
         String result = props.getProperty(COLUMN_PROPS_KEY);
-        Preconditions.checkNotNull(result, "Column shadow algorithm column cannot be null.");
+        ShardingSpherePreconditions.checkNotNull(result, () -> new ShadowAlgorithmInitializationException(getType(), "Column shadow algorithm column cannot be null"));
         return result;
     }
     
     private ShadowOperationType getShadowOperationType(final Properties props) {
         String operationType = props.getProperty(OPERATION_PROPS_KEY);
-        Preconditions.checkNotNull(operationType, "Column shadow algorithm operation cannot be null.");
+        ShardingSpherePreconditions.checkNotNull(operationType, () -> new ShadowAlgorithmInitializationException(getType(), "Column shadow algorithm operation cannot be null"));
         Optional<ShadowOperationType> result = ShadowOperationType.contains(operationType);
-        Preconditions.checkState(result.isPresent(), "Column shadow algorithm operation must be one of [select, insert, update, delete].");
+        ShardingSpherePreconditions.checkState(result.isPresent(),
+                () -> new ShadowAlgorithmInitializationException(getType(), "Column shadow algorithm operation must be one of [select, insert, update, delete]"));
         return result.get();
     }
     

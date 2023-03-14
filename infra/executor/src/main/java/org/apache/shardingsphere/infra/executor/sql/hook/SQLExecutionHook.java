@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.executor.sql.hook;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * SQL Execution hook.
@@ -32,12 +31,11 @@ public interface SQLExecutionHook {
      * 
      * @param dataSourceName data source name
      * @param sql SQL
-     * @param parameters parameters of SQL
+     * @param params SQL parameters
      * @param dataSourceMetaData data source meta data
      * @param isTrunkThread is execution in trunk thread
-     * @param shardingExecuteDataMap sharding execute data map
      */
-    void start(String dataSourceName, String sql, List<Object> parameters, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread, Map<String, Object> shardingExecuteDataMap);
+    void start(String dataSourceName, String sql, List<Object> params, DataSourceMetaData dataSourceMetaData, boolean isTrunkThread);
     
     /**
      * Handle when SQL execution finished success.

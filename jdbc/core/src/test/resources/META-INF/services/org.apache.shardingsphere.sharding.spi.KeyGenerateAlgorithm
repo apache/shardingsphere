@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.driver.fixture.keygen.IncrementKeyGenerateAlgorithmFixture
-org.apache.shardingsphere.driver.fixture.keygen.ResetIncrementKeyGenerateAlgorithmFixture
+org.apache.shardingsphere.test.e2e.driver.fixture.keygen.IncrementKeyGenerateAlgorithmFixture
+org.apache.shardingsphere.test.e2e.driver.fixture.keygen.ResetIncrementKeyGenerateAlgorithmFixture

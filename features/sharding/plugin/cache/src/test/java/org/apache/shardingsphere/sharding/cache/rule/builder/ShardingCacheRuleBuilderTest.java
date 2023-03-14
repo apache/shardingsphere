@@ -22,14 +22,17 @@ import org.apache.shardingsphere.sharding.cache.api.ShardingCacheOptions;
 import org.apache.shardingsphere.sharding.cache.api.ShardingCacheRuleConfiguration;
 import org.apache.shardingsphere.sharding.cache.rule.ShardingCacheRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 import org.hamcrest.CoreMatchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingCacheRuleBuilderTest {
@@ -37,22 +40,23 @@ public final class ShardingCacheRuleBuilderTest {
     @Test
     public void assertBuildShardingCacheRule() {
         ShardingRule expectedShardingRule = mock(ShardingRule.class);
-        ShardingCacheRuleConfiguration expectedConfiguration = new ShardingCacheRuleConfiguration(100, new ShardingCacheOptions(true, 1, 1));
-        DatabaseRule actual = new ShardingCacheRuleBuilder().build(expectedConfiguration, "", Collections.emptyMap(), Collections.singletonList(expectedShardingRule), null);
+        TimeServiceRule expectedTimeServiceRule = mock(TimeServiceRule.class);
+        ShardingCacheRuleConfiguration expectedConfig = new ShardingCacheRuleConfiguration(100, new ShardingCacheOptions(true, 1, 1));
+        DatabaseRule actual = new ShardingCacheRuleBuilder().build(expectedConfig, "", Collections.emptyMap(), Arrays.asList(expectedShardingRule, expectedTimeServiceRule), null);
         assertThat(actual, instanceOf(ShardingCacheRule.class));
         ShardingCacheRule actualShardingCacheRule = (ShardingCacheRule) actual;
-        assertThat(actualShardingCacheRule.getConfiguration(), is(expectedConfiguration));
+        assertThat(actualShardingCacheRule.getConfiguration(), is(expectedConfig));
         assertThat(actualShardingCacheRule.getShardingRule(), is(expectedShardingRule));
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertBuildShardingCacheRuleWithoutShardingRule() {
-        new ShardingCacheRuleBuilder().build(null, "", Collections.emptyMap(), Collections.emptyList(), null);
+        assertThrows(IllegalStateException.class, () -> new ShardingCacheRuleBuilder().build(null, "", Collections.emptyMap(), Collections.emptyList(), null));
     }
     
     @Test
     public void assertGetOrder() {
-        assertThat(new ShardingCacheRuleBuilder().getOrder(), is(-8));
+        assertThat(new ShardingCacheRuleBuilder().getOrder(), is(-9));
     }
     
     @Test

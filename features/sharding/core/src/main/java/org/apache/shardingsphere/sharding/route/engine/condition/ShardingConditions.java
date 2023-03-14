@@ -35,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sub
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -88,7 +87,7 @@ public final class ShardingConditions {
      */
     public void merge() {
         if (conditions.size() > 1) {
-            List<ShardingCondition> result = new ArrayList<>();
+            Collection<ShardingCondition> result = new LinkedList<>();
             result.add(conditions.remove(conditions.size() - 1));
             while (!conditions.isEmpty()) {
                 findUniqueShardingCondition(result, conditions.remove(conditions.size() - 1)).ifPresent(result::add);
@@ -97,7 +96,7 @@ public final class ShardingConditions {
         }
     }
     
-    private Optional<ShardingCondition> findUniqueShardingCondition(final List<ShardingCondition> conditions, final ShardingCondition condition) {
+    private Optional<ShardingCondition> findUniqueShardingCondition(final Collection<ShardingCondition> conditions, final ShardingCondition condition) {
         for (ShardingCondition each : conditions) {
             if (isSameShardingCondition(rule, condition, each)) {
                 return Optional.empty();

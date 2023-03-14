@@ -17,26 +17,25 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropBroadcastTableRuleStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropBroadcastTableRuleStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class DropBroadcastTableRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -44,14 +43,14 @@ public final class DropBroadcastTableRuleStatementUpdaterTest {
     
     private final DropBroadcastTableRuleStatementUpdater updater = new DropBroadcastTableRuleStatementUpdater();
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithoutCurrentRule() {
-        updater.checkSQLStatement(database, createSQLStatement("t_order"), null);
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order"), null));
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithoutExistBroadcastTableRule() {
-        updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration());
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration()));
     }
     
     @Test
@@ -67,16 +66,16 @@ public final class DropBroadcastTableRuleStatementUpdaterTest {
         assertTrue(updater.hasAnyOneToBeDropped(createSQLStatement(true, "t_order"), createCurrentRuleConfiguration()));
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
+    @Test
     public void assertCheckSQLStatementWithBroadcastTableRuleAreNotTheSame() {
-        updater.checkSQLStatement(database, createSQLStatement("t_order_item"), createCurrentRuleConfiguration());
+        assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order_item"), createCurrentRuleConfiguration()));
     }
     
     @Test
     public void assertDropSpecifiedRule() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        updater.updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig);
-        updater.updateCurrentRuleConfiguration(createSQLStatement("t_address"), currentRuleConfig);
+        assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig));
+        assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement("t_address"), currentRuleConfig));
         assertTrue(currentRuleConfig.getBroadcastTables().isEmpty());
     }
     
@@ -96,20 +95,15 @@ public final class DropBroadcastTableRuleStatementUpdaterTest {
     }
     
     private DropBroadcastTableRuleStatement createSQLStatement(final String tableName) {
-        return null == tableName ? new DropBroadcastTableRuleStatement(false, Collections.emptyList())
-                : new DropBroadcastTableRuleStatement(false, Collections.singleton(tableName));
+        return null == tableName ? new DropBroadcastTableRuleStatement(false, Collections.emptyList()) : new DropBroadcastTableRuleStatement(false, Collections.singleton(tableName));
     }
     
     private DropBroadcastTableRuleStatement createSQLStatement(final boolean ifExists, final String tableName) {
-        return null == tableName
-                ? new DropBroadcastTableRuleStatement(false, Collections.emptyList())
-                : new DropBroadcastTableRuleStatement(ifExists, Collections.singleton(tableName));
+        return null == tableName ? new DropBroadcastTableRuleStatement(false, Collections.emptyList()) : new DropBroadcastTableRuleStatement(ifExists, Collections.singleton(tableName));
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order", null));
         result.getBroadcastTables().add("t_order");
         result.getBroadcastTables().add("t_address");
         return result;

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class PostgreSQLRowDescriptionPacketTest {
     
     @Mock
@@ -41,7 +41,7 @@ public final class PostgreSQLRowDescriptionPacketTest {
     @Test
     public void assertWrite() {
         PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("name", 1, Types.VARCHAR, 4, null);
-        PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(1, Collections.singletonList(description));
+        PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(Collections.singletonList(description));
         packet.write(payload);
         verify(payload, times(2)).writeInt2(1);
         verify(payload).writeStringNul("name");
@@ -55,7 +55,7 @@ public final class PostgreSQLRowDescriptionPacketTest {
     
     @Test
     public void getMessageType() {
-        PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(0, Collections.emptyList());
+        PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(Collections.emptyList());
         assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.ROW_DESCRIPTION));
     }
 }

@@ -18,32 +18,31 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableReferenceRuleSegment;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Create sharding table reference rule statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CreateShardingTableReferenceRuleStatement extends CreateRuleStatement {
     
     private final Collection<TableReferenceRuleSegment> rules;
     
+    public CreateShardingTableReferenceRuleStatement(final boolean ifNotExists, final Collection<TableReferenceRuleSegment> rules) {
+        super(ifNotExists);
+        this.rules = rules;
+    }
+    
     /**
-     * Get table references.
+     * Get table names.
      *
-     * @return table references
+     * @return table names
      */
-    public Collection<String> getTableReferences() {
-        Collection<String> result = new LinkedList<>();
-        for (TableReferenceRuleSegment each : rules) {
-            result.addAll(each.getTableReference());
-        }
-        return result;
+    public Collection<String> getTableNames() {
+        return rules.stream().flatMap(each -> each.getTableNames().stream()).collect(Collectors.toList());
     }
 }

@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.InstanceContextAware;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.sharding.exception.algorithm.keygen.KeyGenerateAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.algorithm.keygen.SnowflakeClockMoveBackException;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Calendar;
@@ -61,12 +62,11 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
     
-    private static final long DEFAULT_WORKER_ID = 0;
+    private static final int DEFAULT_WORKER_ID = 0;
     
     @Setter
     private static TimeService timeService = new TimeService();
     
-    @Getter
     private Properties props;
     
     private int maxVibrationOffset;
@@ -108,7 +108,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private int getMaxVibrationOffset(final Properties props) {
         int result = Integer.parseInt(props.getOrDefault(MAX_VIBRATION_OFFSET_KEY, DEFAULT_VIBRATION_VALUE).toString());
-        Preconditions.checkArgument(result >= 0 && result <= SEQUENCE_MASK, "Illegal max vibration offset.");
+        ShardingSpherePreconditions.checkState(result >= 0 && result <= SEQUENCE_MASK, () -> new KeyGenerateAlgorithmInitializationException(getType(), "Illegal max vibration offset."));
         return result;
     }
     
@@ -131,7 +131,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
             sequence = sequenceOffset;
         }
         lastMilliseconds = currentMilliseconds;
-        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (getWorkerId() << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
+        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | ((long) getWorkerId() << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -140,8 +140,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
             return false;
         }
         long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
-        Preconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds,
-                "Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds", lastMilliseconds, currentMilliseconds);
+        ShardingSpherePreconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds, () -> new SnowflakeClockMoveBackException(lastMilliseconds, currentMilliseconds));
         Thread.sleep(timeDifferenceMilliseconds);
         return true;
     }
@@ -159,7 +158,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
         sequenceOffset = sequenceOffset >= maxVibrationOffset ? 0 : sequenceOffset + 1;
     }
     
-    private long getWorkerId() {
+    private int getWorkerId() {
         return null == instanceContext ? DEFAULT_WORKER_ID : instanceContext.getWorkerId();
     }
     

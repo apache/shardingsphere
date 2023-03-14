@@ -19,16 +19,16 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.management;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLBinlogFormatDescriptionEventPacketTest {
     
     private static final String MYSQL_SERVER_VERSION = "5.7.14-log" + new String(new byte[40]);
@@ -50,7 +50,6 @@ public final class MySQLBinlogFormatDescriptionEventPacketTest {
         assertThat(actual.getMysqlServerVersion(), is(MYSQL_SERVER_VERSION.getBytes()));
         assertThat(actual.getCreateTimestamp(), is(1234567890));
         assertThat(actual.getEventHeaderLength(), is(19));
-        assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getBinlogEventHeader(), is(binlogEventHeader));
     }
 }

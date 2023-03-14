@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
 import static org.hamcrest.CoreMatchers.is;

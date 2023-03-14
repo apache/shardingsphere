@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Co
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitPreparedContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EndContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LockContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrepareTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelationExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReleaseSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackContext;
@@ -36,7 +37,9 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Sa
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.StartTransactionContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrepareTransactionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TransactionModeItemContext;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitPreparedStatement;
@@ -68,7 +71,43 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new PostgreSQLSetTransactionStatement();
+        PostgreSQLSetTransactionStatement result = new PostgreSQLSetTransactionStatement();
+        if (null != ctx.transactionModeList()) {
+            ctx.transactionModeList().transactionModeItem().forEach(each -> {
+                result.setAccessMode(getTransactionAccessType(each));
+                result.setIsolationLevel(getTransactionIsolationLevel(each));
+            });
+        }
+        return result;
+    }
+    
+    private TransactionAccessType getTransactionAccessType(final TransactionModeItemContext modeItemContext) {
+        if (null != modeItemContext.ONLY()) {
+            return TransactionAccessType.READ_ONLY;
+        }
+        if (null != modeItemContext.WRITE()) {
+            return TransactionAccessType.READ_WRITE;
+        }
+        return null;
+    }
+    
+    private TransactionIsolationLevel getTransactionIsolationLevel(final TransactionModeItemContext modeItemContext) {
+        if (null == modeItemContext.isoLevel()) {
+            return null;
+        }
+        if (null != modeItemContext.isoLevel().UNCOMMITTED()) {
+            return TransactionIsolationLevel.READ_UNCOMMITTED;
+        }
+        if (null != modeItemContext.isoLevel().COMMITTED()) {
+            return TransactionIsolationLevel.READ_COMMITTED;
+        }
+        if (null != modeItemContext.isoLevel().REPEATABLE()) {
+            return TransactionIsolationLevel.REPEATABLE_READ;
+        }
+        if (null != modeItemContext.isoLevel().SERIALIZABLE()) {
+            return TransactionIsolationLevel.SERIALIZABLE;
+        }
+        return null;
     }
     
     @Override

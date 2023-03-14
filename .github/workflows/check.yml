@@ -35,13 +35,17 @@ on:
       - 'src/resources/**'
       - '.github/workflows/checkstyle-and-license-check.yml'
       - 'examples/shardingsphere-example-generator/**'
-      - 'test/integration-agent-test/plugins/**'
+      - 'test/e2e/agent/plugins/**'
       - '!examples/**'
       - '!*.md'
+  workflow_dispatch:
 
 concurrency:
   group: check-${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+env:
+  REPOSITORY_NAME: shardingsphere
 
 jobs:
   check-checkstyle:
@@ -53,9 +57,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Run checkstyle
         run: ./mvnw checkstyle:check -T1C
 

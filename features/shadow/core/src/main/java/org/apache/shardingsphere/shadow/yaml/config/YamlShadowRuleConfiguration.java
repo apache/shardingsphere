@@ -35,13 +35,13 @@ import java.util.Map;
 @Setter
 public final class YamlShadowRuleConfiguration implements YamlRuleConfiguration {
     
-    private String defaultShadowAlgorithmName;
-    
     private Map<String, YamlShadowDataSourceConfiguration> dataSources = new LinkedHashMap<>();
     
     private Map<String, YamlShadowTableConfiguration> tables = new LinkedHashMap<>();
     
     private Map<String, YamlAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
+    
+    private String defaultShadowAlgorithmName;
     
     @Override
     public Class<ShadowRuleConfiguration> getRuleConfigurationType() {

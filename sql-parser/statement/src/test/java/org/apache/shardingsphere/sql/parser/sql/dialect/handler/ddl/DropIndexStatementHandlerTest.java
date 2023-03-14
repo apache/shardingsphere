@@ -25,12 +25,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerDropIndexStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class DropIndexStatementHandlerTest {
     
@@ -72,7 +72,7 @@ public final class DropIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertIfExistsForPostgres() {
+    public void assertIfExistsForPostgreSQL() {
         assertFalse(DropIndexStatementHandler.ifExists(new PostgreSQLDropIndexStatement(false)));
         assertTrue(DropIndexStatementHandler.ifExists(new PostgreSQLDropIndexStatement(true)));
     }

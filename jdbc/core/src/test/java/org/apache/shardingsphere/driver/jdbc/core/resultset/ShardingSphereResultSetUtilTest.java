@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

@@ -55,43 +55,43 @@
 #      dataSourceNames:
 #        - shadowDataSource
 #      shadowAlgorithmNames:
-#        - user-id-insert-match-algorithm
-#        - user-id-select-match-algorithm
+#        - user_id_insert_match_algorithm
+#        - user_id_select_match_algorithm
 #    t_order_item:
 #      dataSourceNames:
 #        - shadowDataSource
 #      shadowAlgorithmNames:
-#        - user-id-insert-match-algorithm
-#        - user-id-update-match-algorithm
-#        - user-id-select-match-algorithm
+#        - user_id_insert_match_algorithm
+#        - user_id_update_match_algorithm
+#        - user_id_select_match_algorithm
 #    t_address:
 #      dataSourceNames:
 #        - shadowDataSource
 #      shadowAlgorithmNames:
-#        - user-id-insert-match-algorithm
-#        - user-id-select-match-algorithm
-#        - simple-hint-algorithm
+#        - user_id_insert_match_algorithm
+#        - user_id_select_match_algorithm
+#        - sql_hint_algorithm
 #  shadowAlgorithms:
-#    user-id-insert-match-algorithm:
+#    user_id_insert_match_algorithm:
 #      type: REGEX_MATCH
 #      props:
 #        operation: insert
 #        column: user_id
 #        regex: "[1]"
-#    user-id-update-match-algorithm:
+#    user_id_update_match_algorithm:
 #      type: REGEX_MATCH
 #      props:
 #        operation: update
 #        column: user_id
 #        regex: "[1]"
-#    user-id-select-match-algorithm:
+#    user_id_select_match_algorithm:
 #      type: REGEX_MATCH
 #      props:
 #        operation: select
 #        column: user_id
 #        regex: "[1]"
-#    simple-hint-algorithm:
-#      type: SIMPLE_HINT
+#    sql_hint_algorithm:
+#      type: SQL_HINT
 #      props:
 #        foo: bar
 
@@ -134,42 +134,42 @@
 #      dataSourceNames:
 #        - shadowDataSource
 #      shadowAlgorithmNames:
-#        - user-id-insert-match-algorithm
-#        - user-id-select-match-algorithm
+#        - user_id_insert_match_algorithm
+#        - user_id_select_match_algorithm
 #    t_order_item:
 #      dataSourceNames:
 #        - shadowDataSource
 #      shadowAlgorithmNames:
-#        - user-id-insert-match-algorithm
-#        - user-id-update-match-algorithm
-#        - user-id-select-match-algorithm
+#        - user_id_insert_match_algorithm
+#        - user_id_update_match_algorithm
+#        - user_id_select_match_algorithm
 #    t_address:
 #      dataSourceNames:
 #        - shadowDataSource
 #      shadowAlgorithmNames:
-#        - user-id-insert-match-algorithm
-#        - user-id-select-match-algorithm
-#        - simple-hint-algorithm
+#        - user_id_insert_match_algorithm
+#        - user_id_select_match_algorithm
+#        - sql_hint_algorithm
 #  shadowAlgorithms:
-#    user-id-insert-match-algorithm:
+#    user_id_insert_match_algorithm:
 #      type: REGEX_MATCH
 #      props:
 #        operation: insert
 #        column: user_id
 #        regex: "[1]"
-#    user-id-update-match-algorithm:
+#    user_id_update_match_algorithm:
 #      type: REGEX_MATCH
 #      props:
 #        operation: update
 #        column: user_id
 #        regex: "[1]"
-#    user-id-select-match-algorithm:
+#    user_id_select_match_algorithm:
 #      type: REGEX_MATCH
 #      props:
 #        operation: select
 #        column: user_id
 #        regex: "[1]"
-#    simple-hint-algorithm:
-#      type: SIMPLE_HINT
+#    sql_hint_algorithm:
+#      type: SQL_HINT
 #      props:
 #        foo: bar

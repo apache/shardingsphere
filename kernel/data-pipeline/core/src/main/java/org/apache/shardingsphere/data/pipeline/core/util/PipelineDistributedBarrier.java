@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.core.util;
 
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +28,7 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit;
  * Pipeline distributed barrier.
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineDistributedBarrier {
     
     private static final PipelineDistributedBarrier INSTANCE = new PipelineDistributedBarrier();
@@ -50,12 +51,7 @@ public final class PipelineDistributedBarrier {
         }
     };
     
-    private final Map<String, InnerCountDownLatchHolder> countDownLatchMap = new ConcurrentHashMap<>();
-    
-    @SneakyThrows(ConcurrentException.class)
-    private static ClusterPersistRepository getRepository() {
-        return REPOSITORY_LAZY_INITIALIZER.get();
-    }
+    private final Map<String, InnerCountDownLatchHolder> countDownLatchHolders = new ConcurrentHashMap<>();
     
     /**
      * Get instance.
@@ -66,15 +62,20 @@ public final class PipelineDistributedBarrier {
         return INSTANCE;
     }
     
+    @SneakyThrows(ConcurrentException.class)
+    private static ClusterPersistRepository getRepository() {
+        return REPOSITORY_LAZY_INITIALIZER.get();
+    }
+    
     /**
-     * Register count down latch.
+     * Register distributed barrier.
      *
      * @param barrierPath barrier path
      * @param totalCount total count
      */
     public void register(final String barrierPath, final int totalCount) {
         getRepository().persist(barrierPath, "");
-        countDownLatchMap.computeIfAbsent(barrierPath, k -> new InnerCountDownLatchHolder(totalCount, new CountDownLatch(1)));
+        countDownLatchHolders.computeIfAbsent(barrierPath, key -> new InnerCountDownLatchHolder(totalCount, new CountDownLatch(1)));
     }
     
     /**
@@ -85,7 +86,6 @@ public final class PipelineDistributedBarrier {
      */
     public void persistEphemeralChildrenNode(final String barrierPath, final int shardingItem) {
         if (!getRepository().isExisted(barrierPath)) {
-            log.info("barrier path {} not exist, ignore", barrierPath);
             return;
         }
         String key = String.join("/", barrierPath, Integer.toString(shardingItem));
@@ -100,7 +100,7 @@ public final class PipelineDistributedBarrier {
      */
     public void unregister(final String barrierPath) {
         getRepository().delete(String.join("/", barrierPath));
-        InnerCountDownLatchHolder holder = countDownLatchMap.remove(barrierPath);
+        InnerCountDownLatchHolder holder = countDownLatchHolders.remove(barrierPath);
         if (null != holder) {
             holder.getCountDownLatch().countDown();
         }
@@ -115,7 +115,7 @@ public final class PipelineDistributedBarrier {
      * @return true if the count reached zero and false if the waiting time elapsed before the count reached zero
      */
     public boolean await(final String barrierPath, final long timeout, final TimeUnit timeUnit) {
-        InnerCountDownLatchHolder holder = countDownLatchMap.get(barrierPath);
+        InnerCountDownLatchHolder holder = countDownLatchHolders.get(barrierPath);
         if (null == holder) {
             return false;
         }
@@ -131,22 +131,17 @@ public final class PipelineDistributedBarrier {
     }
     
     /**
-     * Check child node count equal sharding count.
+     * notify children node count check.
      *
-     * @param event event
+     * @param nodePath node path
      */
-    public void checkChildrenNodeCount(final DataChangedEvent event) {
-        if (Strings.isNullOrEmpty(event.getKey())) {
+    public void notifyChildrenNodeCountCheck(final String nodePath) {
+        if (Strings.isNullOrEmpty(nodePath)) {
             return;
         }
-        String barrierPath = event.getKey().substring(0, event.getKey().lastIndexOf("/"));
-        InnerCountDownLatchHolder holder = countDownLatchMap.get(barrierPath);
-        if (null == holder) {
-            return;
-        }
-        List<String> childrenKeys = getRepository().getChildrenKeys(barrierPath);
-        log.info("children keys: {}, total count: {}", childrenKeys, holder.getTotalCount());
-        if (childrenKeys.size() == holder.getTotalCount()) {
+        String barrierPath = nodePath.substring(0, nodePath.lastIndexOf("/"));
+        InnerCountDownLatchHolder holder = countDownLatchHolders.get(barrierPath);
+        if (null != holder && getRepository().getChildrenKeys(barrierPath).size() == holder.getTotalCount()) {
             holder.getCountDownLatch().countDown();
         }
     }

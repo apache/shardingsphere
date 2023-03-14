@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
@@ -31,15 +33,15 @@ import java.util.Collection;
 public class SystemSchemaUtil {
     
     /**
-     * Judge whether sql statement contains system schema or not.
+     * Judge whether SQL statement contains system schema or not.
      *
      * @param databaseType databaseType
      * @param schemaNames schema names
      * @param database database
-     * @return whether sql statement contains system schema or not
+     * @return whether SQL statement contains system schema or not
      */
     public static boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames, final ShardingSphereDatabase database) {
-        if (database.isComplete()) {
+        if (database.isComplete() && !(databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType)) {
             return false;
         }
         for (String each : schemaNames) {

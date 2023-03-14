@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.postgresql.jdbc.TimestampUtils;
+import org.postgresql.util.PSQLException;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 
 /**
  * Binary protocol value for date for PostgreSQL.
@@ -28,16 +31,22 @@ public final class PostgreSQLDateBinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public int getColumnLength(final Object value) {
-        return 8;
+        return 4;
     }
     
+    @SneakyThrows(PSQLException.class)
     @Override
     public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
-        return payload.readInt8();
+        byte[] binaryDate = new byte[4];
+        payload.getByteBuf().readBytes(binaryDate);
+        return new TimestampUtils(false, null).toDateBin(null, binaryDate);
     }
     
+    @SneakyThrows(PSQLException.class)
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeInt8(((Timestamp) value).getTime());
+        byte[] binaryDate = new byte[4];
+        new TimestampUtils(false, null).toBinDate(null, binaryDate, (Date) value);
+        payload.writeBytes(binaryDate);
     }
 }

@@ -19,10 +19,11 @@ package org.apache.shardingsphere.infra.rewrite.context;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -62,18 +63,20 @@ public final class SQLRewriteContext {
     private final ConnectionContext connectionContext;
     
     public SQLRewriteContext(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
-                             final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters, final ConnectionContext connectionContext) {
+                             final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params, final ConnectionContext connectionContext) {
         this.databaseName = databaseName;
         this.schemas = schemas;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
-        this.parameters = parameters;
+        parameters = params;
         this.connectionContext = connectionContext;
-        addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
+        if (!((CommonSQLStatementContext<?>) sqlStatementContext).isHintSkipSQLRewrite()) {
+            addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
+        }
         parameterBuilder = ((sqlStatementContext instanceof InsertStatementContext) && (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()))
                 ? new GroupedParameterBuilder(
                         ((InsertStatementContext) sqlStatementContext).getGroupedParameters(), ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
-                : new StandardParameterBuilder(parameters);
+                : new StandardParameterBuilder(params);
     }
     
     /**

@@ -32,10 +32,11 @@ public interface MySQLBinaryProtocolValue {
      * Read binary protocol value.
      *
      * @param payload payload operation for MySQL packet
+     * @param unsigned is unsigned value
      * @return binary value result
      * @throws SQLException SQL exception
      */
-    Object read(MySQLPacketPayload payload) throws SQLException;
+    Object read(MySQLPacketPayload payload, boolean unsigned) throws SQLException;
     
     /**
      * Write binary protocol value.

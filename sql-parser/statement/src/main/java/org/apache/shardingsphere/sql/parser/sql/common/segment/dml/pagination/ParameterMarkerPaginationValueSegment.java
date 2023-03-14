@@ -23,11 +23,4 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.Parameter
  * Pagination value segment for parameter marker.
  */
 public interface ParameterMarkerPaginationValueSegment extends PaginationValueSegment, ParameterMarkerSegment {
-    
-    /**
-     * Get parameter index.
-     * 
-     * @return parameter index
-     */
-    int getParameterIndex();
 }

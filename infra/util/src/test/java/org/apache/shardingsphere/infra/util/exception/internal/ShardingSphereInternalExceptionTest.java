@@ -18,12 +18,18 @@
 package org.apache.shardingsphere.infra.util.exception.internal;
 
 import org.apache.shardingsphere.infra.util.exception.internal.fixture.ShardingSphereInternalExceptionFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public final class ShardingSphereInternalExceptionTest {
+    
+    @Test
+    public void assertGetMessageWithNoArgsConstructor() {
+        assertNull(new ShardingSphereInternalExceptionFixture().getMessage());
+    }
     
     @Test
     public void assertGetMessage() {

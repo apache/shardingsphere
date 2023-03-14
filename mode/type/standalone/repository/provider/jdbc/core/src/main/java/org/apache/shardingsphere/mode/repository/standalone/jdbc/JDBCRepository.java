@@ -21,11 +21,11 @@ import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.props.JDBCRepositoryProperties;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.props.JDBCRepositoryPropertyKey;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRepositoryProvider;
-import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRepositoryProviderFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -66,7 +66,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
         try (
                 Connection connection = hikariDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            provider = JDBCRepositoryProviderFactory.getInstance(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
+            provider = TypedSPILoader.getService(JDBCRepositoryProvider.class, jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
             if (!jdbcUrl.contains(H2_FILE_MODE_KEY)) {
                 statement.execute(provider.dropTableSQL());
             }
@@ -169,7 +169,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
             preparedStatement.setString(1, value);
             preparedStatement.setString(2, key);
             preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (final SQLException ex) {
             log.error("Update {} data to key: {} failed", getType(), key, ex);
         }
     }
@@ -182,7 +182,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
             preparedStatement.setString(1, key);
             preparedStatement.executeUpdate();
         } catch (final SQLException ex) {
-            log.error(String.format("Delete %s data by key: {} failed", getType()), key, ex);
+            log.error("Delete {} data by key: {} failed", getType(), key, ex);
         }
     }
     
@@ -194,5 +194,10 @@ public final class JDBCRepository implements StandalonePersistRepository {
     @Override
     public String getType() {
         return "JDBC";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

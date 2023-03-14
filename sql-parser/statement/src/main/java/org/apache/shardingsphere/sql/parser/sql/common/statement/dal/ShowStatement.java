@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
  */
 @RequiredArgsConstructor
 @Getter
-@ToString(callSuper = true)
 public abstract class ShowStatement extends AbstractSQLStatement implements DALStatement {
     
     private final String name;

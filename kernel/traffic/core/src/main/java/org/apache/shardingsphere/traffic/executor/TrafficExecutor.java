@@ -20,7 +20,6 @@ package org.apache.shardingsphere.traffic.executor;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,17 +48,17 @@ public final class TrafficExecutor implements AutoCloseable {
         return callback.execute(statement, sqlUnit.getSql());
     }
     
-    private void cacheStatement(final List<Object> parameters, final Statement statement) throws SQLException {
+    private void cacheStatement(final List<Object> params, final Statement statement) throws SQLException {
         this.statement = statement;
-        setParameters(statement, parameters);
+        setParameters(statement, params);
     }
     
-    private void setParameters(final Statement statement, final List<Object> parameters) throws SQLException {
+    private void setParameters(final Statement statement, final List<Object> params) throws SQLException {
         if (!(statement instanceof PreparedStatement)) {
             return;
         }
         int index = 1;
-        for (Object each : parameters) {
+        for (Object each : params) {
             ((PreparedStatement) statement).setObject(index++, each);
         }
     }
@@ -77,9 +76,7 @@ public final class TrafficExecutor implements AutoCloseable {
     @Override
     public void close() throws SQLException {
         if (null != statement) {
-            Connection connection = statement.getConnection();
             statement.close();
-            connection.close();
         }
     }
 }

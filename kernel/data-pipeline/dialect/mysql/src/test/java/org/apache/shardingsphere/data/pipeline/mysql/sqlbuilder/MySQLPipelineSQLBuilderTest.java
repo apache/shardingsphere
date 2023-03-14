@@ -20,13 +20,13 @@ package org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class MySQLPipelineSQLBuilderTest {
     
@@ -60,5 +60,21 @@ public final class MySQLPipelineSQLBuilderTest {
         result.addColumn(new Column("c2", "", true, false));
         result.addColumn(new Column("c3", "", true, false));
         return result;
+    }
+    
+    @Test
+    public void assertQuoteKeyword() {
+        String tableName = "CASCADE";
+        String actualCountSql = sqlBuilder.buildCountSQL(null, tableName);
+        assertThat(actualCountSql, is(String.format("SELECT COUNT(*) FROM %s", sqlBuilder.quote(tableName))));
+        actualCountSql = sqlBuilder.buildCountSQL(null, tableName.toLowerCase());
+        assertThat(actualCountSql, is(String.format("SELECT COUNT(*) FROM %s", sqlBuilder.quote(tableName.toLowerCase()))));
+    }
+    
+    @Test
+    public void assertBuilderEstimateCountSQLWithoutKeyword() {
+        Optional<String> actual = sqlBuilder.buildEstimatedCountSQL(null, "t_order");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 't_order'"));
     }
 }

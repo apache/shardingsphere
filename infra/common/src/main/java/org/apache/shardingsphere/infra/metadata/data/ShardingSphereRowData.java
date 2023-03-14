@@ -20,7 +20,11 @@ package org.apache.shardingsphere.infra.metadata.data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.List;
 
 /**
@@ -28,8 +32,31 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class ShardingSphereRowData {
     
+    @EqualsAndHashCode.Include
+    private final String uniqueKey;
+    
     private final List<Object> rows;
+    
+    public ShardingSphereRowData(final List<Object> rows) {
+        uniqueKey = generateUniqueKey(rows);
+        this.rows = rows;
+    }
+    
+    private String generateUniqueKey(final List<Object> rows) {
+        StringBuilder uniqueKeyText = new StringBuilder();
+        for (Object each : rows) {
+            uniqueKeyText.append(null == each ? "" : each.toString()).append("|");
+        }
+        return useMd5GenerateUniqueKey(uniqueKeyText);
+    }
+    
+    @SneakyThrows
+    private String useMd5GenerateUniqueKey(final StringBuilder uniqueKeyText) {
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        md5.update(StandardCharsets.UTF_8.encode(uniqueKeyText.toString()));
+        return String.format("%032x", new BigInteger(1, md5.digest()));
+    }
 }

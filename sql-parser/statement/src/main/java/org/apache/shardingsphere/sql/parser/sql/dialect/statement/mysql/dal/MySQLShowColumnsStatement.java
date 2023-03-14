@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -33,7 +32,6 @@ import java.util.Optional;
  * MySQL show columns statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class MySQLShowColumnsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     @Getter

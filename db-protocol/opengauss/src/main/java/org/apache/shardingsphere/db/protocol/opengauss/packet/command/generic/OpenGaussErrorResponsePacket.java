@@ -122,9 +122,9 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        for (Entry<Character, String> each : fields.entrySet()) {
-            payload.writeInt1(each.getKey());
-            payload.writeStringNul(each.getValue());
+        for (Entry<Character, String> entry : fields.entrySet()) {
+            payload.writeInt1(entry.getKey());
+            payload.writeStringNul(entry.getValue());
         }
         payload.writeInt1(0);
     }

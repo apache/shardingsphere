@@ -8,7 +8,7 @@ weight = 1
 ```yaml
 mode (?): # 不配置则默认单机模式
   type: # 运行模式类型。可选配置：Standalone、Cluster
-  repository (?): # 久化仓库配置
+  repository (?): # 持久化仓库配置
 ```
 
 ### 单机模式
@@ -68,7 +68,18 @@ mode:
       timeToLiveSeconds: 60
 ```
 
+使用持久化仓库需要额外引入对应的 Maven 依赖，推荐使用：
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-cluster-mode-repository-zookeeper</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
 ## 相关参考
 
 - [ZooKeeper 注册中心安装与使用](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
 - 持久化仓库类型的详情，请参见[内置持久化仓库类型列表](/cn/user-manual/common-config/builtin-algorithm/metadata-repository/)。
+- 持久化仓库的可选实现，请参见[ShardingSphere-JDBC 可选插件](/cn/user-manual/shardingsphere-jdbc/optional-plugins/)。

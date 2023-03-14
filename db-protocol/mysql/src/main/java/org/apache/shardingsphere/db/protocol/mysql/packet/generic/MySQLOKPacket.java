@@ -37,8 +37,6 @@ public final class MySQLOKPacket implements MySQLPacket {
      */
     public static final int HEADER = 0x00;
     
-    private final int sequenceId;
-    
     private final long affectedRows;
     
     private final long lastInsertId;
@@ -49,16 +47,15 @@ public final class MySQLOKPacket implements MySQLPacket {
     
     private final String info;
     
-    public MySQLOKPacket(final int sequenceId, final int statusFlag) {
-        this(sequenceId, 0L, 0L, statusFlag, 0, "");
+    public MySQLOKPacket(final int statusFlag) {
+        this(0L, 0L, statusFlag, 0, "");
     }
     
-    public MySQLOKPacket(final int sequenceId, final long affectedRows, final long lastInsertId, final int statusFlag) {
-        this(sequenceId, affectedRows, lastInsertId, statusFlag, 0, "");
+    public MySQLOKPacket(final long affectedRows, final long lastInsertId, final int statusFlag) {
+        this(affectedRows, lastInsertId, statusFlag, 0, "");
     }
     
     public MySQLOKPacket(final MySQLPacketPayload payload) {
-        sequenceId = payload.readInt1();
         Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL OK packet must be `0x00`.");
         affectedRows = payload.readIntLenenc();
         lastInsertId = payload.readIntLenenc();

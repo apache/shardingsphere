@@ -5,7 +5,7 @@ weight = 9
 
 ## 背景信息
 
-ShardingSphere 涵盖了很多功能，例如，分库分片、读写分离、高可用、数据脱敏等。这些功能用户可以单独进行使用，也可以配合一起使用，下面是基于 JAVA API 的配置示例。
+ShardingSphere 涵盖了很多功能，例如，分库分片、读写分离、高可用、数据加密等。这些功能用户可以单独进行使用，也可以配合一起使用，下面是基于 JAVA API 的配置示例。
 
 ## 配置示例
 
@@ -71,16 +71,17 @@ private static Map<String, DatabaseDiscoveryHeartBeatConfiguration> createDiscov
     return result;
 }
 
-// 数据脱敏配置
+// 数据加密配置
 public EncryptRuleConfiguration createEncryptRuleConfiguration() {
     Properties props = new Properties();
     props.setProperty("aes-key-value", "123456");
-    EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "username_plain", "name_encryptor", null);
-    EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor", null);
+    EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "", "username_plain", "name_encryptor", null);
+    EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "like_pwd", "", "pwd_encryptor", null);
     EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest), null);
     Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
     encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
     encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
+    encryptAlgorithmConfigs.put("like_encryptor", new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
     EncryptRuleConfiguration result = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
     return result;
 }

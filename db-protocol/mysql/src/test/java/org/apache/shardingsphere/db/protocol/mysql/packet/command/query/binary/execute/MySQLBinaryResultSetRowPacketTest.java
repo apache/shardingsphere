@@ -21,18 +21,16 @@ import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLBinaryResultSetRowPacketTest {
     
     @Mock
@@ -41,8 +39,7 @@ public final class MySQLBinaryResultSetRowPacketTest {
     @Test
     public void assertWrite() {
         BinaryRow row = new BinaryRow(Arrays.asList(new BinaryCell(MySQLBinaryColumnType.MYSQL_TYPE_STRING, "value"), new BinaryCell(MySQLBinaryColumnType.MYSQL_TYPE_STRING, null)));
-        MySQLBinaryResultSetRowPacket actual = new MySQLBinaryResultSetRowPacket(1, row);
-        assertThat(actual.getSequenceId(), is(1));
+        MySQLBinaryResultSetRowPacket actual = new MySQLBinaryResultSetRowPacket(row);
         actual.write(payload);
         verify(payload).writeInt1(0x00);
         verify(payload).writeInt1(0x08);

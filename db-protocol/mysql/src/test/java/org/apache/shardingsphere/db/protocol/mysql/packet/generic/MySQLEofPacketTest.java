@@ -19,43 +19,41 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.generic;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLEofPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNewEofPacketWithSequenceId() {
-        MySQLEofPacket actual = new MySQLEofPacket(1, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
-        assertThat(actual.getSequenceId(), is(1));
+    public void assertNewEofPacketWithStatusFlag() {
+        MySQLEofPacket actual = new MySQLEofPacket(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getStatusFlags(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test
     public void assertNewEofPacketWithPayload() {
-        when(payload.readInt1()).thenReturn(5, MySQLEofPacket.HEADER);
+        when(payload.readInt1()).thenReturn(MySQLEofPacket.HEADER);
         when(payload.readInt2()).thenReturn(0, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         MySQLEofPacket actual = new MySQLEofPacket(payload);
-        assertThat(actual.getSequenceId(), is(5));
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getStatusFlags(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test
     public void assertWrite() {
-        new MySQLEofPacket(1, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write(payload);
+        new MySQLEofPacket(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write(payload);
         verify(payload).writeInt1(MySQLEofPacket.HEADER);
         verify(payload).writeInt2(0);
         verify(payload).writeInt2(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());

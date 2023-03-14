@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -36,13 +37,13 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class GroupByValueTest {
     
     @Mock
     private QueryResult queryResult;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         when(queryResult.getValue(1, Object.class)).thenReturn("1");
         when(queryResult.getValue(3, Object.class)).thenReturn("3");
@@ -51,8 +52,8 @@ public final class GroupByValueTest {
     @Test
     public void assertGetGroupByValues() throws SQLException {
         List<?> actual = new GroupByValue(queryResult, Arrays.asList(
-                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
-                createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC)))).getGroupValues();
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)),
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, NullsOrderType.FIRST)))).getGroupValues();
         List<?> expected = Arrays.asList("1", "3");
         assertThat(actual, is(expected));
     }
@@ -60,11 +61,11 @@ public final class GroupByValueTest {
     @Test
     public void assertGroupByValueEquals() throws SQLException {
         GroupByValue groupByValue1 = new GroupByValue(queryResult, Arrays.asList(
-                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
-                createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)),
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, NullsOrderType.FIRST))));
         GroupByValue groupByValue2 = new GroupByValue(queryResult, Arrays.asList(
-                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
-                createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)),
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, NullsOrderType.FIRST))));
         assertThat(groupByValue1, is(groupByValue2));
         assertThat(groupByValue2, is(groupByValue1));
         assertThat(groupByValue1.hashCode(), is(groupByValue2.hashCode()));
@@ -73,11 +74,11 @@ public final class GroupByValueTest {
     @Test
     public void assertGroupByValueNotEquals() throws SQLException {
         GroupByValue groupByValue1 = new GroupByValue(queryResult, Arrays.asList(
-                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC)),
-                createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, OrderDirection.ASC))));
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)),
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, NullsOrderType.FIRST))));
         GroupByValue groupByValue2 = new GroupByValue(queryResult, Arrays.asList(
-                createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, OrderDirection.ASC)),
-                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.ASC))));
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST)),
+                createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         assertThat(groupByValue1, not(groupByValue2));
         assertThat(groupByValue1.hashCode(), not(groupByValue2.hashCode()));
     }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementLe
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for kernel dist SQL.
+ * SQL lexer for kernel DistSQL.
  */
 public final class KernelDistSQLLexer extends KernelDistSQLStatementLexer implements SQLLexer {
     

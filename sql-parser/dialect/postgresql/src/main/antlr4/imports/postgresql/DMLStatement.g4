@@ -124,9 +124,8 @@ selectNoParens
 selectClauseN
     : simpleSelect
     | selectWithParens
-    | selectClauseN UNION allOrDistinct? selectClauseN
     | selectClauseN INTERSECT allOrDistinct? selectClauseN
-    | selectClauseN EXCEPT allOrDistinct? selectClauseN
+    | selectClauseN (UNION | EXCEPT) allOrDistinct? selectClauseN
     ;
 
 simpleSelect
@@ -237,7 +236,7 @@ limitClause
 
 offsetClause
     : OFFSET selectOffsetValue
-    | OFFSET selectFetchFirstValue rowOrRows
+    | OFFSET selectOffsetValue rowOrRows
     ;
 
 selectLimitValue

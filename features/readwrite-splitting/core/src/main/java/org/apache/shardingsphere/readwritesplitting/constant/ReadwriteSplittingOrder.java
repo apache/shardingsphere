@@ -29,10 +29,5 @@ public final class ReadwriteSplittingOrder {
     /**
      * Readwrite-splitting order.
      */
-    public static final int ORDER = 30;
-    
-    /**
-     * Algorithm provider readwrite-splitting order.
-     */
-    public static final int ALGORITHM_PROVIDER_ORDER = ORDER + 1;
+    public static final int ORDER = 40;
 }

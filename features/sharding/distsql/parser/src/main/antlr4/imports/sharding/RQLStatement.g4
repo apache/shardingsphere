@@ -24,7 +24,7 @@ showShardingTableRules
     ;
 
 showShardingTableReferenceRules
-    : SHOW SHARDING TABLE REFERENCE RULES (FROM databaseName)?
+    : SHOW SHARDING TABLE REFERENCE (RULE ruleName | RULES) (FROM databaseName)?
     ;
 
 showBroadcastTableRules
@@ -47,7 +47,7 @@ showShardingKeyGenerators
     : SHOW SHARDING KEY GENERATORS (FROM databaseName)?
     ;
 
-showShardingDefaultShardingStrategy
+showDefaultShardingStrategy
     : SHOW DEFAULT SHARDING STRATEGY (FROM databaseName)?
     ;
 
@@ -84,5 +84,5 @@ tableRule
     ;
 
 databaseName
-    : IDENTIFIER
+    : IDENTIFIER_
     ;

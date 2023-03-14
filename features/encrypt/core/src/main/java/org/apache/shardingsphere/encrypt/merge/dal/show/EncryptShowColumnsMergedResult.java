@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal.show;
 
-import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -42,7 +43,8 @@ public abstract class EncryptShowColumnsMergedResult implements MergedResult {
     private final EncryptRule encryptRule;
     
     protected EncryptShowColumnsMergedResult(final SQLStatementContext<?> sqlStatementContext, final EncryptRule encryptRule) {
-        Preconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getAllTables().size());
+        ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getAllTables().size(),
+                () -> new UnsupportedEncryptSQLException("SHOW COLUMNS FOR MULTI TABLE"));
         tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         this.encryptRule = encryptRule;
     }
@@ -58,7 +60,8 @@ public abstract class EncryptShowColumnsMergedResult implements MergedResult {
             return false;
         }
         String columnName = getOriginalValue(COLUMN_FIELD_INDEX, String.class).toString();
-        while (encryptTable.get().getAssistedQueryColumns().contains(columnName) || encryptTable.get().getPlainColumns().contains(columnName)) {
+        while (encryptTable.get().getAssistedQueryColumns().contains(columnName) || encryptTable.get().getLikeQueryColumns().contains(columnName)
+                || encryptTable.get().getPlainColumns().contains(columnName)) {
             hasNext = nextValue();
             if (!hasNext) {
                 return false;

@@ -67,7 +67,6 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @Override
     public Collection<RuleConfiguration> load(final String databaseName) {
         return isExisted(databaseName)
-                // TODO process algorithm provided configuration
                 ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName,
                         getDatabaseActiveVersion(databaseName))), Collection.class, true))
                 : new LinkedList<>();

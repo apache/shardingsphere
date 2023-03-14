@@ -19,10 +19,8 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Drop sharding table reference rules statement.
@@ -30,23 +28,10 @@ import java.util.LinkedList;
 @Getter
 public final class DropShardingTableReferenceRuleStatement extends DropRuleStatement {
     
-    private final Collection<TableReferenceRuleSegment> rules;
+    private final Collection<String> names;
     
-    public DropShardingTableReferenceRuleStatement(final boolean ifExists, final Collection<TableReferenceRuleSegment> rules) {
+    public DropShardingTableReferenceRuleStatement(final boolean ifExists, final Collection<String> names) {
         super(ifExists);
-        this.rules = rules;
-    }
-    
-    /**
-     * Get table references.
-     *
-     * @return table references
-     */
-    public Collection<String> getTableReferences() {
-        Collection<String> result = new LinkedList<>();
-        for (TableReferenceRuleSegment each : rules) {
-            result.add(each.getTableGroup());
-        }
-        return result;
+        this.names = names;
     }
 }

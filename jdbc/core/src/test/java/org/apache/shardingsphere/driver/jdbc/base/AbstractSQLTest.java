@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.base;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.h2.tools.RunScript;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 import javax.sql.DataSource;
 import java.io.InputStreamReader;
@@ -37,7 +37,7 @@ public abstract class AbstractSQLTest {
     
     private static final Map<String, DataSource> ACTUAL_DATA_SOURCES = new HashMap<>();
     
-    @BeforeClass
+    @BeforeAll
     public static synchronized void initializeDataSource() throws SQLException {
         for (String each : ACTUAL_DATA_SOURCE_NAMES) {
             createDataSources(each);
@@ -50,15 +50,15 @@ public abstract class AbstractSQLTest {
     }
     
     private static void initializeSchema(final String dataSourceName) throws SQLException {
-        try (Connection conn = ACTUAL_DATA_SOURCES.get(dataSourceName).getConnection()) {
+        try (Connection connection = ACTUAL_DATA_SOURCES.get(dataSourceName).getConnection()) {
             if ("encrypt".equals(dataSourceName)) {
-                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_encrypt_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_encrypt_init.sql"))));
             } else if ("shadow_jdbc_0".equals(dataSourceName) || "shadow_jdbc_1".equals(dataSourceName)) {
-                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_shadow_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_shadow_init.sql"))));
             } else if ("single_jdbc".equals(dataSourceName)) {
-                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/single_jdbc_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/single_jdbc_init.sql"))));
             } else {
-                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_init.sql"))));
             }
         }
     }
@@ -69,6 +69,7 @@ public abstract class AbstractSQLTest {
         result.setJdbcUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", dataSourceName));
         result.setUsername("sa");
         result.setPassword("");
+        result.setMinimumIdle(0);
         result.setMaximumPoolSize(50);
         return result;
     }

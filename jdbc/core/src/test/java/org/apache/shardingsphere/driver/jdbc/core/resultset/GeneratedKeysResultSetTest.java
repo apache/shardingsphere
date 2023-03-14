@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -28,9 +28,10 @@ import java.sql.Statement;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class GeneratedKeysResultSetTest {
@@ -39,7 +40,7 @@ public final class GeneratedKeysResultSetTest {
     
     private GeneratedKeysResultSet actualResultSet;
     
-    @Before
+    @BeforeEach
     public void init() {
         actualResultSet = new GeneratedKeysResultSet("order_id", Arrays.<Comparable<?>>asList(1L, 2L).iterator(), statement);
     }
@@ -63,10 +64,10 @@ public final class GeneratedKeysResultSetTest {
         assertTrue(actualResultSet.isClosed());
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertThrowExceptionWhenInvokeClosedResultSet() {
         actualResultSet.close();
-        actualResultSet.getType();
+        assertThrows(IllegalStateException.class, () -> actualResultSet.getType());
     }
     
     @Test

@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.dbdiscovery.checker;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
+import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredDBDiscoveryConfigurationException;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -34,7 +35,8 @@ public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConf
     
     @Override
     public void check(final String databaseName, final DatabaseDiscoveryRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
-        config.getDataSources().forEach(each -> Preconditions.checkState(!each.getDiscoveryTypeName().isEmpty(), "No available database discovery rule configuration in database `%s.", databaseName));
+        config.getDataSources().forEach(each -> ShardingSpherePreconditions.checkState(!each.getDiscoveryTypeName().isEmpty(),
+                () -> new MissingRequiredDBDiscoveryConfigurationException(databaseName)));
     }
     
     @Override

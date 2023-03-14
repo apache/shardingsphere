@@ -28,29 +28,37 @@ alterTransactionRule
     ;
 
 transactionRuleDefinition
-    : LP DEFAULT EQ defaultType (COMMA providerDefinition)?
+    : LP_ DEFAULT EQ_ defaultType (COMMA_ providerDefinition)?
     ;
 
 providerDefinition
-    : TYPE LP NAME EQ providerName (COMMA propertiesDefinition)? RP
+    : TYPE LP_ NAME EQ_ providerName (COMMA_ propertiesDefinition)? RP_
     ;
 
 defaultType
-    : STRING
+    : STRING_ | buildInDefaultTransactionType
+    ;
+
+buildInDefaultTransactionType
+    : LOCAL | XA | BASE
     ;
 
 providerName
-    : STRING
+    : STRING_ | buildInProviderTypeName
+    ;
+
+buildInProviderTypeName
+    : ATOMIKOS | NARAYANA | BITRONIX
     ;
 
 propertiesDefinition
-    : PROPERTIES LP properties? RP
+    : PROPERTIES LP_ properties? RP_
     ;
 
 properties
-    : property (COMMA property)*
+    : property (COMMA_ property)*
     ;
 
 property
-    : key=STRING EQ value=STRING
+    : key=STRING_ EQ_ value=STRING_
     ;

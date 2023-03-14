@@ -20,14 +20,14 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class SystemSchemaBuilderTest {
     
@@ -48,7 +48,7 @@ public final class SystemSchemaBuilderTest {
         assertTrue(actual.containsKey("shardingsphere"));
         assertThat(actual.get("information_schema").getTables().size(), is(3));
         assertThat(actual.get("pg_catalog").getTables().size(), is(6));
-        assertThat(actual.get("shardingsphere").getTables().size(), is(1));
+        assertThat(actual.get("shardingsphere").getTables().size(), is(2));
     }
     
     @Test
@@ -58,6 +58,6 @@ public final class SystemSchemaBuilderTest {
         assertTrue(actual.containsKey("pg_catalog"));
         assertTrue(actual.containsKey("shardingsphere"));
         assertThat(actual.get("pg_catalog").getTables().size(), is(2));
-        assertThat(actual.get("shardingsphere").getTables().size(), is(1));
+        assertThat(actual.get("shardingsphere").getTables().size(), is(2));
     }
 }

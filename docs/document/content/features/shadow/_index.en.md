@@ -34,5 +34,3 @@ In order to improve the accuracy of stress testing and reduce the testing cost u
 
 - [Java API: shadow DB ](/en/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)
 - [YAML configuration: shadow DB ](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/shadow/)
-- [Spring Boot Starter: shadow DB ](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/shadow/)
-- [Spring Namespace: shadow DB ](/en/user-manual/shardingsphere-jdbc/spring-namespace/rules/shadow/)

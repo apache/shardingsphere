@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.mysql.datasource;
 
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtensionFactory;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -27,13 +27,13 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class MySQLJdbcQueryPropertiesExtensionTest {
     
     @Test
     public void assertExtendQueryProperties() {
-        Optional<JdbcQueryPropertiesExtension> extension = JdbcQueryPropertiesExtensionFactory.getInstance("MySQL");
+        Optional<JdbcQueryPropertiesExtension> extension = TypedSPILoader.findService(JdbcQueryPropertiesExtension.class, "MySQL");
         assertTrue(extension.isPresent());
         assertExtension(extension.get());
         assertQueryProperties(extension.get().extendQueryProperties());
@@ -45,12 +45,14 @@ public final class MySQLJdbcQueryPropertiesExtensionTest {
     }
     
     private void assertQueryProperties(final Properties actual) {
-        assertThat(actual.size(), equalTo(6));
+        assertThat(actual.size(), equalTo(8));
         assertThat(actual.getProperty("useSSL"), equalTo(Boolean.FALSE.toString()));
+        assertThat(actual.getProperty("useServerPrepStmts"), equalTo(Boolean.FALSE.toString()));
         assertThat(actual.getProperty("rewriteBatchedStatements"), equalTo(Boolean.TRUE.toString()));
         assertThat(actual.getProperty("yearIsDateType"), equalTo(Boolean.FALSE.toString()));
         assertThat(actual.getProperty("zeroDateTimeBehavior"), equalTo("convertToNull"));
         assertThat(actual.getProperty("noDatetimeStringSync"), equalTo(Boolean.TRUE.toString()));
         assertThat(actual.getProperty("jdbcCompliantTruncation"), equalTo(Boolean.FALSE.toString()));
+        assertThat(actual.getProperty("netTimeoutForStreamingResults"), equalTo("600"));
     }
 }

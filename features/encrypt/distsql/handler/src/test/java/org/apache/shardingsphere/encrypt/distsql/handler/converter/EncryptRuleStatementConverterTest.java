@@ -21,11 +21,12 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
-import org.junit.Test;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,15 +45,9 @@ public final class EncryptRuleStatementConverterTest {
     }
     
     private Collection<EncryptColumnSegment> createColumns() {
-        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "fuzzy_column",
-                new AlgorithmSegment("MD5", createProperties()),
-                new AlgorithmSegment("MD5", createProperties()),
-                new AlgorithmSegment("CHAR_DIGEST_FUZZY", createProperties())));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("MD5-key", "MD5-value");
-        return result;
+        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
+                new AlgorithmSegment("MD5", PropertiesBuilder.build(new Property("MD5-key", "MD5-value"))),
+                new AlgorithmSegment("MD5", PropertiesBuilder.build(new Property("MD5-key", "MD5-value"))),
+                new AlgorithmSegment("CHAR_DIGEST_LIKE", PropertiesBuilder.build(new Property("MD5-key", "MD5-value"))), null));
     }
 }

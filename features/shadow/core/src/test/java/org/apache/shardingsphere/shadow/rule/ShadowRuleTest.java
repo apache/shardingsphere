@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
-import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +33,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,39 +41,28 @@ public final class ShadowRuleTest {
     
     private ShadowRule shadowRule;
     
-    @Before
+    @BeforeEach
     public void init() {
-        shadowRule = new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration());
+        shadowRule = new ShadowRule(createShadowRuleConfiguration());
     }
     
-    private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
-        AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
+    private ShadowRuleConfiguration createShadowRuleConfiguration() {
+        ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.setDataSources(createDataSources());
         result.setTables(createTables());
         result.setShadowAlgorithms(createShadowAlgorithms());
         return result;
     }
     
-    private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
-        Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("simple-hint-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("SIMPLE_HINT", createHintProperties())));
-        result.put("user-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "insert"))));
-        result.put("user-id-update-regex-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "update"))));
-        result.put("order-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("order_id", "insert"))));
-        return result;
-    }
-    
-    private Properties createHintProperties() {
-        Properties result = new Properties();
-        result.setProperty("shadow", Boolean.TRUE.toString());
-        return result;
-    }
-    
-    private Properties createColumnProperties(final String column, final String operation) {
-        Properties result = new Properties();
-        result.setProperty("column", column);
-        result.setProperty("operation", operation);
-        result.setProperty("regex", "[1]");
+    private Map<String, AlgorithmConfiguration> createShadowAlgorithms() {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
+        result.put("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()))));
+        result.put("user-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("column", "user_id"), new Property("operation", "insert"), new Property("regex", "[1]"))));
+        result.put("user-id-update-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("column", "user_id"), new Property("operation", "update"), new Property("regex", "[1]"))));
+        result.put("order-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
+                PropertiesBuilder.build(new Property("column", "order_id"), new Property("operation", "insert"), new Property("regex", "[1]"))));
         return result;
     }
     
@@ -87,7 +75,7 @@ public final class ShadowRuleTest {
     
     private Collection<String> createShadowAlgorithmNames(final String tableName) {
         Collection<String> result = new LinkedList<>();
-        result.add("simple-hint-algorithm");
+        result.add("sql-hint-algorithm");
         if ("t_user".equals(tableName)) {
             result.add("user-id-insert-regex-algorithm");
             result.add("user-id-update-regex-algorithm");
@@ -97,15 +85,15 @@ public final class ShadowRuleTest {
         return result;
     }
     
-    private Map<String, ShadowDataSourceConfiguration> createDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>(2, 1);
-        result.put("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow"));
-        result.put("shadow-data-source-1", new ShadowDataSourceConfiguration("ds1", "ds1_shadow"));
+    private Collection<ShadowDataSourceConfiguration> createDataSources() {
+        Collection<ShadowDataSourceConfiguration> result = new LinkedList<>();
+        result.add(new ShadowDataSourceConfiguration("shadow-data-source-0", "ds", "ds_shadow"));
+        result.add(new ShadowDataSourceConfiguration("shadow-data-source-1", "ds1", "ds1_shadow"));
         return result;
     }
     
     @Test
-    public void assertNewShadowRulSuccessByAlgorithmProvidedShadowRuleConfiguration() {
+    public void assertNewShadowRulSuccessByShadowRuleConfiguration() {
         assertShadowDataSourceMappings(shadowRule.getShadowDataSourceMappings());
         assertShadowTableRules(shadowRule.getShadowTableRules());
     }

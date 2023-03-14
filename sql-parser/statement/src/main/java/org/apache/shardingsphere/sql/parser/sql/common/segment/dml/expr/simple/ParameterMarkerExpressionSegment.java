@@ -21,8 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
@@ -35,7 +34,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 @EqualsAndHashCode
 public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment, ProjectionSegment, AliasAvailable, ParameterMarkerSegment {
     
@@ -60,5 +58,10 @@ public class ParameterMarkerExpressionSegment implements SimpleExpressionSegment
     @Override
     public Optional<String> getAlias() {
         return null == alias ? Optional.empty() : Optional.ofNullable(alias.getIdentifier().getValue());
+    }
+    
+    @Override
+    public int getParameterIndex() {
+        return parameterMarkerIndex;
     }
 }

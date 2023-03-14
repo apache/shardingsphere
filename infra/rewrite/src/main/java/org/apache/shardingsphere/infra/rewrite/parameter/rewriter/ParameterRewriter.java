@@ -40,9 +40,9 @@ public interface ParameterRewriter<T extends SQLStatementContext<?>> {
     /**
      * Rewrite SQL parameters.
      * 
-     * @param parameterBuilder parameter builder
+     * @param paramBuilder parameter builder
      * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      */
-    void rewrite(ParameterBuilder parameterBuilder, T sqlStatementContext, List<Object> parameters);
+    void rewrite(ParameterBuilder paramBuilder, T sqlStatementContext, List<Object> params);
 }

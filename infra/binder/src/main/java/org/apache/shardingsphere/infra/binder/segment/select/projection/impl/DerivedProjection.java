@@ -50,4 +50,9 @@ public final class DerivedProjection implements Projection {
     public String getColumnLabel() {
         return getAlias().orElse(expression);
     }
+    
+    @Override
+    public Projection cloneWithOwner(final String ownerName) {
+        return new DerivedProjection(expression, alias, derivedProjection);
+    }
 }

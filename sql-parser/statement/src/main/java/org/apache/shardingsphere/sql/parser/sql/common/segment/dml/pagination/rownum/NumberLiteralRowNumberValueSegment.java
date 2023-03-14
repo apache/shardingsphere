@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 
 /**
  * Row number value segment for number literal.
  */
 @Getter
-@ToString(callSuper = true)
 public final class NumberLiteralRowNumberValueSegment extends RowNumberValueSegment implements NumberLiteralPaginationValueSegment {
     
     private final long value;

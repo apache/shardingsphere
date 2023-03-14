@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.d
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.sql.ResultSet;
@@ -30,7 +29,7 @@ import java.util.Collection;
  * Dialect query result data row loader.
  */
 @SingletonSPI
-public interface DialectQueryResultDataRowLoader extends TypedSPI, RequiredSPI {
+public interface DialectQueryResultDataRowLoader extends TypedSPI {
     
     /**
      * Load rows.

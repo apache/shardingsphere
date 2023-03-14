@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.example.generator.core;
 
+import com.google.common.base.Strings;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
@@ -33,16 +34,25 @@ import java.util.Properties;
  */
 public interface ExampleGenerator extends TypedSPI {
     
-    String OUTPUT_PATH = "./examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
+    String DEFAULT_OUTPUT = "./examples/shardingsphere-example-generator/target/generated-sources/";
+    
+    String PROJECT_PATH = "shardingsphere-${product}-sample/${feature?replace(',', '-')}--${framework}--${mode}--${transaction}/";
     
     String RESOURCES_PATH = "src/main/resources";
+    
+    default String buildOutputPath(YamlExampleConfiguration exampleConfig) {
+        if (Strings.isNullOrEmpty(exampleConfig.getOutput())) {
+            return DEFAULT_OUTPUT + PROJECT_PATH;
+        }
+        return exampleConfig.getOutput() + PROJECT_PATH;
+    }
     
     default void generate(final Configuration templateConfig, final YamlExampleConfiguration exampleConfig) throws IOException, TemplateException {
         for (String eachMode : exampleConfig.getModes()) {
             for (String eachTransaction : exampleConfig.getTransactions()) {
                 for (String eachFramework : exampleConfig.getFrameworks()) {
                     for (String eachFeature : GenerateUtil.generateCombination(exampleConfig.getFeatures())) {
-                        generate(templateConfig, buildDataModel(exampleConfig.getProps(), eachMode, eachTransaction, eachFramework, eachFeature), eachFeature, eachFramework, eachTransaction);
+                        generate(templateConfig, buildDataModel(exampleConfig.getProps(), eachMode, eachTransaction, eachFramework, eachFeature), buildOutputPath(exampleConfig));
                     }
                 }
             }
@@ -65,10 +75,8 @@ public interface ExampleGenerator extends TypedSPI {
      * Generate.
      * @param templateConfig template configuration
      * @param dataModel data model
-     * @param framework framework
-     * @param feature feature
      * @throws IOException IO exception
      * @throws TemplateException template exception
      */
-    void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String framework, final String feature, String transaction) throws IOException, TemplateException;
+    void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String outputPath) throws IOException, TemplateException;
 }

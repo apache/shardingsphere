@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.metadata.data;
 
-import org.apache.shardingsphere.data.pipeline.spi.data.collector.ShardingSphereDataCollector;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -25,8 +24,9 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollector;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -36,7 +36,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,18 +50,36 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
     
     private static final String MYSQL_TABLE_ROWS_AND_DATA_LENGTH = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'";
     
+    private static final String POSTGRESQL_TABLE_ROWS_LENGTH = "SELECT RELTUPLES FROM PG_CLASS WHERE RELNAMESPACE = (SELECT OID FROM PG_NAMESPACE WHERE NSPNAME='%s') AND RELNAME = '%s'";
+    
+    private static final String POSTGRESQL_TABLE_DATA_LENGTH = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH  FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME='%s' AND RELNAME = '%s'";
+    
+    private static final String OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH = "SELECT  RELTUPLES AS TABLE_ROWS, PG_TABLE_SIZE('%s') AS DATA_LENGTH FROM PG_CLASS WHERE RELNAME = '%s'";
+    
     @Override
-    public Optional<ShardingSphereTableData> collect(final ShardingSphereDatabase shardingSphereDatabase, final ShardingSphereTable table) throws SQLException {
-        Optional<ShardingRule> shardingRule = shardingSphereDatabase.getRuleMetaData().findSingleRule(ShardingRule.class);
-        if (!shardingRule.isPresent()) {
-            return Optional.empty();
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
+                                                     final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
+        ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
+        DatabaseType protocolType = shardingSphereDatabases.values().iterator().next().getProtocolType();
+        if (protocolType instanceof PostgreSQLDatabaseType || protocolType instanceof OpenGaussDatabaseType) {
+            collectFromDatabase(shardingSphereDatabases.get(databaseName), result);
+        } else {
+            for (ShardingSphereDatabase each : shardingSphereDatabases.values()) {
+                collectFromDatabase(each, result);
+            }
         }
-        return Optional.of(collectForShardingStatisticTable(shardingSphereDatabase, shardingRule.get(), table));
+        return result.getRows().isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
-    private ShardingSphereTableData collectForShardingStatisticTable(final ShardingSphereDatabase shardingSphereDatabase, final ShardingRule shardingRule,
-                                                                     final ShardingSphereTable table) throws SQLException {
-        ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS, new ArrayList<>(table.getColumns().values()));
+    private void collectFromDatabase(final ShardingSphereDatabase shardingSphereDatabase, final ShardingSphereTableData tableData) throws SQLException {
+        Optional<ShardingRule> shardingRule = shardingSphereDatabase.getRuleMetaData().findSingleRule(ShardingRule.class);
+        if (!shardingRule.isPresent()) {
+            return;
+        }
+        collectForShardingStatisticTable(shardingSphereDatabase, shardingRule.get(), tableData);
+    }
+    
+    private void collectForShardingStatisticTable(final ShardingSphereDatabase shardingSphereDatabase, final ShardingRule shardingRule, final ShardingSphereTableData tableData) throws SQLException {
         int count = 1;
         for (TableRule each : shardingRule.getTableRules().values()) {
             for (DataNode dataNode : each.getActualDataNodes()) {
@@ -72,18 +89,22 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
                 row.add(each.getLogicTable());
                 row.add(dataNode.getDataSourceName());
                 row.add(dataNode.getTableName());
-                addTableRowsAndDataLength(shardingSphereDatabase.getResourceMetaData().getDataSources(), dataNode, row, shardingSphereDatabase.getProtocolType());
-                result.getRows().add(new ShardingSphereRowData(row));
+                addTableRowsAndDataLength(shardingSphereDatabase.getResourceMetaData().getStorageTypes(), shardingSphereDatabase.getResourceMetaData().getDataSources(), dataNode, row);
+                tableData.getRows().add(new ShardingSphereRowData(row));
             }
         }
-        return result;
     }
     
-    private void addTableRowsAndDataLength(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row, final DatabaseType databaseType) throws SQLException {
+    private void addTableRowsAndDataLength(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources,
+                                           final DataNode dataNode, final List<Object> row) throws SQLException {
+        DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());
         if (databaseType instanceof MySQLDatabaseType) {
             addForMySQL(dataSources, dataNode, row);
-        } else if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            // TODO get postgres rows and data length
+        } else if (databaseType instanceof PostgreSQLDatabaseType) {
+            addForPostgreSQL(dataSources, dataNode, row);
+        } else if (databaseType instanceof OpenGaussDatabaseType) {
+            addForOpenGauss(dataSources, dataNode, row);
+        } else {
             row.add(BigDecimal.ZERO);
             row.add(BigDecimal.ZERO);
         }
@@ -97,6 +118,48 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(String.format(MYSQL_TABLE_ROWS_AND_DATA_LENGTH, connection.getCatalog(), dataNode.getTableName()))) {
+                if (resultSet.next()) {
+                    tableRows = resultSet.getBigDecimal("TABLE_ROWS");
+                    dataLength = resultSet.getBigDecimal("DATA_LENGTH");
+                }
+            }
+        }
+        row.add(tableRows);
+        row.add(dataLength);
+    }
+    
+    private void addForPostgreSQL(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row) throws SQLException {
+        DataSource dataSource = dataSources.get(dataNode.getDataSourceName());
+        BigDecimal tableRows = BigDecimal.ZERO;
+        BigDecimal dataLength = BigDecimal.ZERO;
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_ROWS_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
+                if (resultSet.next()) {
+                    tableRows = resultSet.getBigDecimal("TABLE_ROWS");
+                }
+            }
+            try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_DATA_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
+                if (resultSet.next()) {
+                    dataLength = resultSet.getBigDecimal("DATA_LENGTH");
+                }
+            }
+        }
+        row.add(tableRows);
+        row.add(dataLength);
+    }
+    
+    private void addForOpenGauss(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row) throws SQLException {
+        DataSource dataSource = dataSources.get(dataNode.getDataSourceName());
+        BigDecimal tableRows = BigDecimal.ZERO;
+        BigDecimal dataLength = BigDecimal.ZERO;
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            try (
+                    ResultSet resultSet = statement
+                            .executeQuery(String.format(OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH, dataNode.getTableName(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
                     tableRows = resultSet.getBigDecimal("TABLE_ROWS");
                     dataLength = resultSet.getBigDecimal("DATA_LENGTH");

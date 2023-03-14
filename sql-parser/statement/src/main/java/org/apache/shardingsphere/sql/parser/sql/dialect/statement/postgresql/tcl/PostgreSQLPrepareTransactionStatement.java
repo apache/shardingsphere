@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.PrepareTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL prepare transaction statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLPrepareTransactionStatement extends PrepareTransactionStatement implements PostgreSQLStatement {
 }

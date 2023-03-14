@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterHierarchyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle alter hierarchy statement.
  */
-@ToString(callSuper = true)
 public final class OracleAlterHierarchyStatement extends AlterHierarchyStatement implements OracleStatement {
 }
