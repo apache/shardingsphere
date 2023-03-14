@@ -68,7 +68,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
     
     public IndexesMigrationE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
+        super(testParam, new MigrationJobType());
     }
     
     @Parameters(name = "{0}")
@@ -183,7 +183,6 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private void assertMigrationSuccess(final String sqlPattern, final String shardingColumn, final KeyGenerateAlgorithm keyGenerateAlgorithm,
                                         final String consistencyCheckAlgorithmType, final Callable<Void> incrementalTaskFn) throws Exception {
-        getContainerComposer().initEnvironment(getContainerComposer().getDatabaseType(), new MigrationJobType());
         getContainerComposer().sourceExecuteWithLog(String.format(sqlPattern, SOURCE_TABLE_ORDER_NAME));
         try (Connection connection = getContainerComposer().getSourceDataSource().getConnection()) {
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, SOURCE_TABLE_ORDER_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);

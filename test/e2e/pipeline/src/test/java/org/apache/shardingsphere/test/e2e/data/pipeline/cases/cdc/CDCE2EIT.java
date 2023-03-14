@@ -96,7 +96,7 @@ public final class CDCE2EIT {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     
     public CDCE2EIT(final PipelineTestParameter testParam) {
-        containerComposer = new PipelineContainerComposer(testParam);
+        containerComposer = new PipelineContainerComposer(testParam, new CDCJobType());
     }
     
     @Parameters(name = "{0}")
@@ -125,7 +125,6 @@ public final class CDCE2EIT {
     public void assertCDCDataImportSuccess() throws SQLException, InterruptedException {
         // make sure the program time zone same with the database server at CI.
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        containerComposer.initEnvironment(containerComposer.getDatabaseType(), new CDCJobType());
         for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
             containerComposer.registerStorageUnit(each);
         }
@@ -207,8 +206,9 @@ public final class CDCE2EIT {
     }
     
     private List<Map<String, Object>> listOrderRecords(final String tableNameWithSchema) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(
-                containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false), containerComposer.getUsername(), containerComposer.getPassword())) {
+        try (
+                Connection connection = DriverManager.getConnection(
+                        containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false), containerComposer.getUsername(), containerComposer.getPassword())) {
             ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", tableNameWithSchema));
             return containerComposer.transformResultSetToList(resultSet);
         }

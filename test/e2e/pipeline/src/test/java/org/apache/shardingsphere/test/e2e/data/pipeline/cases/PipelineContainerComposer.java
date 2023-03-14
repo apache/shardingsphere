@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -108,7 +109,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     private Thread increaseTaskThread;
     
-    public PipelineContainerComposer(final PipelineTestParameter testParam) {
+    public PipelineContainerComposer(final PipelineTestParameter testParam, final JobType jobType) {
         databaseType = testParam.getDatabaseType();
         containerComposer = PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER
                 ? new DockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage(), testParam.getStorageContainerCount())
@@ -123,16 +124,11 @@ public final class PipelineContainerComposer implements AutoCloseable {
         }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineContainerComposer.class.getClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
         containerComposer.start();
+        init(jobType);
     }
     
-    /**
-     * Initialize environment.
-     * 
-     * @param databaseType database type
-     * @param jobType job type
-     * @throws SQLException SQL exception
-     */
-    public void initEnvironment(final DatabaseType databaseType, final JobType jobType) throws SQLException {
+    @SneakyThrows(SQLException.class)
+    private void init(final JobType jobType) {
         sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
         proxyDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(containerComposer.getProxyJdbcUrl(PROXY_DATABASE)),
                 ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);

@@ -50,7 +50,7 @@ public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
     private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
     
     public MariaDBMigrationE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
+        super(testParam, new MigrationJobType());
     }
     
     @Parameters(name = "{0}")
@@ -70,7 +70,6 @@ public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
-        getContainerComposer().initEnvironment(getContainerComposer().getDatabaseType(), new MigrationJobType());
         String sqlPattern = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
         getContainerComposer().sourceExecuteWithLog(String.format(sqlPattern, SOURCE_TABLE_ORDER_NAME));
         try (Connection connection = getContainerComposer().getSourceDataSource().getConnection()) {

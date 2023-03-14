@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.MigrationDistSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
@@ -52,8 +53,8 @@ public abstract class AbstractMigrationE2EIT {
     
     private final PipelineContainerComposer containerComposer;
     
-    public AbstractMigrationE2EIT(final PipelineTestParameter testParam) {
-        containerComposer = new PipelineContainerComposer(testParam);
+    public AbstractMigrationE2EIT(final PipelineTestParameter testParam, final JobType jobType) {
+        containerComposer = new PipelineContainerComposer(testParam, jobType);
         migrationDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(AbstractMigrationE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
     }
     

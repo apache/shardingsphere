@@ -53,7 +53,7 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
     
     public RulesMigrationE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
+        super(testParam, new MigrationJobType());
     }
     
     @Parameters(name = "{0}")
@@ -84,7 +84,6 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void assertMigrationSuccess(final Callable<Void> addRuleFn) throws Exception {
-        getContainerComposer().initEnvironment(getContainerComposer().getDatabaseType(), new MigrationJobType());
         getContainerComposer().createSourceOrderTable(SOURCE_TABLE_ORDER_NAME);
         try (Connection connection = getContainerComposer().getSourceDataSource().getConnection()) {
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, new UUIDKeyGenerateAlgorithm(), SOURCE_TABLE_ORDER_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);

@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
     public TextPrimaryKeyMigrationE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
+        super(testParam, new MigrationJobType());
     }
     
     @Parameters(name = "{0}")
@@ -71,7 +71,6 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @Test
     public void assertTextPrimaryMigrationSuccess() throws SQLException, InterruptedException {
-        getContainerComposer().initEnvironment(getContainerComposer().getDatabaseType(), new MigrationJobType());
         getContainerComposer().createSourceOrderTable(getSourceTableOrderName());
         try (Connection connection = getContainerComposer().getSourceDataSource().getConnection()) {
             UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
