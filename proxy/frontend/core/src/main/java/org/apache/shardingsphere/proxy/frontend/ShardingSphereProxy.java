@@ -20,14 +20,17 @@ package org.apache.shardingsphere.proxy.frontend;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerDomainSocketChannel;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.unix.DomainSocketAddress;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.SneakyThrows;
@@ -66,7 +69,32 @@ public final class ShardingSphereProxy {
             close();
         }
     }
-    
+
+    /**
+     * Start ShardingSphere-Proxy with DomainSocket.
+     *
+     * @param socketPath socket path
+     */
+    public void start(final String socketPath) {
+        if (!Epoll.isAvailable()) {
+            log.error("Epoll is unavailable, DomainSocket can't start.");
+            return;
+        }
+        try {
+            ChannelFuture future = startDomainSocket(socketPath);
+            future.addListener((ChannelFutureListener) futureParams -> {
+                if (futureParams.isSuccess()) {
+                    log.info("The listening address for DomainSocket is {}", socketPath);
+                } else {
+                    log.error("DomainSocket failed to start.");
+                    futureParams.cause().printStackTrace();
+                }
+            });
+        } catch (final InterruptedException ignored) {
+            close();
+        }
+    }
+
     private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
         createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
@@ -78,7 +106,15 @@ public final class ShardingSphereProxy {
         }
         return futures;
     }
-    
+
+    private ChannelFuture startDomainSocket(final String socketPath) throws InterruptedException {
+        createEventLoopGroup();
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        initServerBootstrap(bootstrap, new DomainSocketAddress(socketPath));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+        return bootstrap.bind();
+    }
+
     private void accept(final List<ChannelFuture> futures) throws InterruptedException {
         log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType());
         for (ChannelFuture future : futures) {
@@ -87,8 +123,12 @@ public final class ShardingSphereProxy {
     }
     
     private void createEventLoopGroup() {
-        bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
-        workerGroup = getWorkerGroup();
+        if (null == bossGroup) {
+            bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
+        }
+        if (null == workerGroup) {
+            workerGroup = getWorkerGroup();
+        }
     }
     
     private EventLoopGroup getWorkerGroup() {
@@ -98,7 +138,6 @@ public final class ShardingSphereProxy {
     
     private void initServerBootstrap(final ServerBootstrap bootstrap) {
         Integer backLog = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_NETTY_BACKLOG);
-        
         bootstrap.group(bossGroup, workerGroup)
                 .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                 .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))
@@ -110,7 +149,15 @@ public final class ShardingSphereProxy {
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
     }
-    
+
+    private void initServerBootstrap(final ServerBootstrap bootstrap, final DomainSocketAddress localDomainSocketAddress) {
+        bootstrap.group(bossGroup, workerGroup)
+                .channel(EpollServerDomainSocketChannel.class)
+                .localAddress(localDomainSocketAddress)
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
+    }
+
     private void close() {
         if (null != bossGroup) {
             bossGroup.shutdownGracefully();
