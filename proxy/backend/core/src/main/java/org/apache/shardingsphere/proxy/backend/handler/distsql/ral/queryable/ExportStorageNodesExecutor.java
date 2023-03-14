@@ -50,6 +50,7 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {
+        checkSQLStatement(metaData, sqlStatement);
         String exportedData = generateExportData(metaData, sqlStatement);
         if (sqlStatement.getFilePath().isPresent()) {
             String filePath = sqlStatement.getFilePath().get();
@@ -59,6 +60,12 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
         }
         return Collections.singleton(
                 new LocalDataQueryResultRow(ProxyContext.getInstance().getContextManager().getInstanceContext().getInstance().getCurrentInstanceId(), LocalDateTime.now(), exportedData));
+    }
+    
+    private void checkSQLStatement(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {
+        if (Objects.nonNull(sqlStatement.getDatabaseName()) && null == metaData.getDatabase(sqlStatement.getDatabaseName())) {
+            throw new IllegalArgumentException(String.format("database %s is not existed", sqlStatement.getDatabaseName()));
+        }
     }
     
     private String generateExportData(final ShardingSphereMetaData metaData, final ExportStorageNodesStatement sqlStatement) {

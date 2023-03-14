@@ -61,6 +61,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -82,14 +83,19 @@ public final class ExportStorageNodesExecutorTest {
     }
     
     @Test
+    public void assertExecuteWithWrongDatabaseName() {
+        ContextManager contextManager = mockEmptyContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
+        ExportStorageNodesStatement sqlStatement = new ExportStorageNodesStatement("foo", null);
+        assertThrows(IllegalArgumentException.class, () -> new ExportStorageNodesExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement));
+    }
+    
+    @Test
     public void assertExecuteWithEmptyMetaData() {
         ContextManager contextManager = mockEmptyContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
-        when(database.getName()).thenReturn("empty_metadata");
-        when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
-        when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
-        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ExportStorageNodesStatement sqlStatement = new ExportStorageNodesStatement(null, null);
         Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         assertThat(actual.size(), is(1));
