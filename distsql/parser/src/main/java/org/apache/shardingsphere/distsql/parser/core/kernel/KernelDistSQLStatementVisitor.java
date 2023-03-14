@@ -304,7 +304,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitExportStorageNodes(final ExportStorageNodesContext ctx) {
-        return new ExportStorageNodesStatement(null == ctx.filePath() ? null : getIdentifierValue(ctx.filePath()));
+        return new ExportStorageNodesStatement(null == ctx.databaseName() ? null : getIdentifierValue(ctx.databaseName()), null == ctx.filePath() ? null : getIdentifierValue(ctx.filePath()));
     }
     
     @Override
