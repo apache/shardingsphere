@@ -38,18 +38,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class CDCSchemaTableUtilTest {
+public final class CDCSchemaTableUtilTest {
     
     @Test
     public void assertParseSchemaTableExpression() {
         Map<String, ShardingSphereSchema> schemas = new HashMap<>();
-        schemas.put("test", mockSchema());
-        schemas.put("public", mockSchema());
+        schemas.put("public", mockedPublicSchema());
+        schemas.put("test", mockedTestSchema());
         ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new OpenGaussDatabaseType(), null, null, schemas);
         List<SchemaTable> schemaTables = Arrays.asList(SchemaTable.newBuilder().setSchema("public").setTable("t_order").build(),
                 SchemaTable.newBuilder().setSchema("test").setTable("*").build());
         Map<String, Set<String>> expected = new HashMap<>();
-        expected.put("test", new HashSet<>(Arrays.asList("t_order", "t_order_item")));
+        expected.put("test", new HashSet<>(Arrays.asList("t_order_item", "t_order_item2")));
         expected.put("public", Collections.singleton("t_order"));
         Map<String, Set<String>> actual = CDCSchemaTableUtil.parseSchemaTableExpression(database, schemaTables);
         assertThat(actual, is(expected));
@@ -60,30 +60,36 @@ public class CDCSchemaTableUtilTest {
         schemaTables = Collections.singletonList(SchemaTable.newBuilder().setSchema("*").setTable("t_order").build());
         actual = CDCSchemaTableUtil.parseSchemaTableExpression(database, schemaTables);
         expected = new HashMap<>();
-        expected.put("test", Collections.singleton("t_order"));
         expected.put("public", Collections.singleton("t_order"));
         assertThat(actual, is(expected));
     }
     
-    private ShardingSphereSchema mockSchema() {
+    private ShardingSphereSchema mockedPublicSchema() {
         Map<String, ShardingSphereTable> tables = new HashMap<>();
         tables.put("t_order", mock(ShardingSphereTable.class));
+        tables.put("t_order2", mock(ShardingSphereTable.class));
+        return new ShardingSphereSchema(tables, Collections.emptyMap());
+    }
+    
+    private ShardingSphereSchema mockedTestSchema() {
+        Map<String, ShardingSphereTable> tables = new HashMap<>();
         tables.put("t_order_item", mock(ShardingSphereTable.class));
+        tables.put("t_order_item2", mock(ShardingSphereTable.class));
         return new ShardingSphereSchema(tables, Collections.emptyMap());
     }
     
     @Test
     public void assertParseTableExpression() {
         Map<String, ShardingSphereSchema> schemas = new HashMap<>();
-        schemas.put("sharding_db", mockSchema());
+        schemas.put("sharding_db", mockedPublicSchema());
         ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new MySQLDatabaseType(), null, null, schemas);
         List<String> schemaTables = Collections.singletonList("*");
         Collection<String> actualWildcardTable = CDCSchemaTableUtil.parseTableExpression(database, schemaTables);
-        Set<String> expectedWildcardTable = new HashSet<>(Arrays.asList("t_order", "t_order_item"));
+        Set<String> expectedWildcardTable = new HashSet<>(Arrays.asList("t_order", "t_order2"));
         assertThat(actualWildcardTable, is(expectedWildcardTable));
-        schemaTables = Collections.singletonList("t_order");
+        schemaTables = Collections.singletonList("public_table1");
         Collection<String> actualSingleTable = CDCSchemaTableUtil.parseTableExpression(database, schemaTables);
-        Set<String> expectedSingleTable = new HashSet<>(Collections.singletonList("t_order"));
+        Set<String> expectedSingleTable = new HashSet<>(Collections.singletonList("public_table1"));
         assertThat(actualSingleTable, is(expectedSingleTable));
     }
 }

@@ -49,26 +49,26 @@ public final class DataRecordResultConvertUtilTest {
     @Test
     public void assertConvertDataRecordToRecord() throws InvalidProtocolBufferException, SQLException {
         DataRecord dataRecord = new DataRecord(new IntegerPrimaryKeyPosition(0, 1), 2);
-        dataRecord.addColumn(new Column("BigInteger", BigInteger.ONE, false, true));
-        dataRecord.addColumn(new Column("BigDecimal", BigDecimal.valueOf(123), false, false));
-        dataRecord.addColumn(new Column("Long", Long.MAX_VALUE, false, false));
-        dataRecord.addColumn(new Column("Integer", Integer.MAX_VALUE, false, false));
-        dataRecord.addColumn(new Column("LocalTime", LocalTime.now(), false, false));
-        Blob mockBlob = mock(Blob.class);
-        when(mockBlob.getBytes(anyLong(), anyInt())).thenReturn(new byte[0]);
-        dataRecord.addColumn(new Column("Blob", mockBlob, false, false));
-        Clob mockClob = mock(Clob.class);
-        when(mockClob.getSubString(anyLong(), anyInt())).thenReturn("");
-        dataRecord.addColumn(new Column("Clob", mockClob, false, false));
-        dataRecord.addColumn(new Column("Timestamp", new Timestamp(System.currentTimeMillis()), false, false));
+        dataRecord.addColumn(new Column("order_id", BigInteger.ONE, false, true));
+        dataRecord.addColumn(new Column("price", BigDecimal.valueOf(123), false, false));
+        dataRecord.addColumn(new Column("user_id", Long.MAX_VALUE, false, false));
+        dataRecord.addColumn(new Column("item_id", Integer.MAX_VALUE, false, false));
+        dataRecord.addColumn(new Column("create_time", LocalTime.now(), false, false));
+        Blob mockedBlob = mock(Blob.class);
+        when(mockedBlob.getBytes(anyLong(), anyInt())).thenReturn(new byte[]{-1, 0, 1});
+        dataRecord.addColumn(new Column("data_blob", mockedBlob, false, false));
+        Clob mockedClob = mock(Clob.class);
+        when(mockedClob.getSubString(anyLong(), anyInt())).thenReturn("clob\n");
+        dataRecord.addColumn(new Column("text_clob", mockedClob, false, false));
+        dataRecord.addColumn(new Column("update_time", new Timestamp(System.currentTimeMillis()), false, false));
         dataRecord.setTableName("t_order");
         dataRecord.setType("INSERT");
-        Record originRecord = DataRecordResultConvertUtil.convertDataRecordToRecord("test", null, dataRecord);
         TypeRegistry registry = TypeRegistry.newBuilder().add(CDCResponseProtocol.getDescriptor().getFile().getMessageTypes()).add(WrappersProto.getDescriptor().getMessageTypes())
                 .add(TimestampProto.getDescriptor().getMessageTypes()).build();
-        String print = JsonFormat.printer().usingTypeRegistry(registry).print(originRecord);
-        Builder newRecord = Record.newBuilder();
-        JsonFormat.parser().usingTypeRegistry(registry).merge(print, newRecord);
-        assertEquals(newRecord.build(), originRecord);
+        Record expectedRecord = DataRecordResultConvertUtil.convertDataRecordToRecord("test", null, dataRecord);
+        String print = JsonFormat.printer().usingTypeRegistry(registry).print(expectedRecord);
+        Builder actualRecord = Record.newBuilder();
+        JsonFormat.parser().usingTypeRegistry(registry).merge(print, actualRecord);
+        assertEquals(actualRecord.build(), expectedRecord);
     }
 }
