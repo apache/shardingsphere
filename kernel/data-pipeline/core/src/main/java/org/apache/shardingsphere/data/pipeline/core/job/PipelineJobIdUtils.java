@@ -52,29 +52,6 @@ public final class PipelineJobIdUtils {
     }
     
     /**
-     * Parse job id.
-     *
-     * @param jobId job id
-     * @return pipeline job id
-     */
-    @SneakyThrows(DecoderException.class)
-    public static BasePipelineJobId parseBaseJobId(final String jobId) {
-        verifyJobId(jobId);
-        String typeCode = jobId.substring(1, 3);
-        String formatVersion = jobId.substring(3, 5);
-        Preconditions.checkArgument(BasePipelineJobId.CURRENT_VERSION.equals(formatVersion), "Format version doesn't match, formatVersion=" + formatVersion);
-        char instanceType = jobId.charAt(5);
-        short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
-        String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);
-        return new BasePipelineJobId(JobTypeFactory.getInstance(typeCode), new PipelineContextKey(InstanceTypeUtil.decode(instanceType), databaseName));
-    }
-    
-    private static void verifyJobId(final String jobId) {
-        Preconditions.checkArgument(jobId.length() > 10, "Invalid jobId length, jobId=%s", jobId);
-        Preconditions.checkArgument('j' == jobId.charAt(0), "Invalid jobId, first char=%s", jobId.charAt(0));
-    }
-    
-    /**
      * Parse job type.
      *
      * @param jobId job id
@@ -84,5 +61,27 @@ public final class PipelineJobIdUtils {
         verifyJobId(jobId);
         String typeCode = jobId.substring(1, 3);
         return JobTypeFactory.getInstance(typeCode);
+    }
+    
+    private static void verifyJobId(final String jobId) {
+        Preconditions.checkArgument(jobId.length() > 10, "Invalid jobId length, jobId=%s", jobId);
+        Preconditions.checkArgument('j' == jobId.charAt(0), "Invalid jobId, first char=%s", jobId.charAt(0));
+    }
+    
+    /**
+     * Parse context key.
+     *
+     * @param jobId job id
+     * @return pipeline context key
+     */
+    @SneakyThrows(DecoderException.class)
+    public static PipelineContextKey parseContextKey(final String jobId) {
+        verifyJobId(jobId);
+        String formatVersion = jobId.substring(3, 5);
+        Preconditions.checkArgument(BasePipelineJobId.CURRENT_VERSION.equals(formatVersion), "Format version doesn't match, formatVersion=" + formatVersion);
+        char instanceType = jobId.charAt(5);
+        short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
+        String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);
+        return new PipelineContextKey(InstanceTypeUtil.decode(instanceType), databaseName);
     }
 }

@@ -37,9 +37,9 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.ConsistencyCheckJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.UncompletedConsistencyCheckJobExistsException;
-import org.apache.shardingsphere.data.pipeline.core.job.BasePipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobItemProgressSwapper;
@@ -107,9 +107,8 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
                 throw new UncompletedConsistencyCheckJobExistsException(latestCheckJobId.get());
             }
         }
-        BasePipelineJobId baseJobId = PipelineJobIdUtils.parseBaseJobId(parentJobId);
-        String result = marshalJobId(latestCheckJobId.map(s -> new ConsistencyCheckJobId(parentJobId, s, baseJobId.getContextKey()))
-                .orElseGet(() -> new ConsistencyCheckJobId(parentJobId, baseJobId.getContextKey())));
+        PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
+        String result = marshalJobId(latestCheckJobId.map(s -> new ConsistencyCheckJobId(parentJobId, s, contextKey)).orElseGet(() -> new ConsistencyCheckJobId(parentJobId, contextKey)));
         repositoryAPI.persistLatestCheckJobId(parentJobId, result);
         repositoryAPI.deleteCheckJobResult(parentJobId, result);
         dropJob(result);
@@ -213,8 +212,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         Optional<Integer> previousSequence = ConsistencyCheckSequence.getPreviousSequence(
                 checkJobIds.stream().map(ConsistencyCheckJobId::parseSequence).collect(Collectors.toList()), ConsistencyCheckJobId.parseSequence(latestCheckJobId));
         if (previousSequence.isPresent()) {
-            BasePipelineJobId baseJobId = PipelineJobIdUtils.parseBaseJobId(parentJobId);
-            String checkJobId = marshalJobId(new ConsistencyCheckJobId(parentJobId, previousSequence.get(), baseJobId.getContextKey()));
+            String checkJobId = marshalJobId(new ConsistencyCheckJobId(parentJobId, previousSequence.get(), PipelineJobIdUtils.parseContextKey(parentJobId)));
             repositoryAPI.persistLatestCheckJobId(parentJobId, checkJobId);
         } else {
             repositoryAPI.deleteLatestCheckJobId(parentJobId);
