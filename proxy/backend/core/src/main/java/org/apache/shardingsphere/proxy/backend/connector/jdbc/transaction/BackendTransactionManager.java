@@ -48,7 +48,7 @@ public final class BackendTransactionManager implements TransactionManager {
     
     private final ShardingSphereTransactionManager shardingSphereTransactionManager;
     
-    private final Collection<TransactionHook> transactionHooks = ShardingSphereServiceLoader.getServiceInstances(TransactionHook.class);
+    private final Collection<TransactionHook> transactionHooks;
     
     public BackendTransactionManager(final BackendConnection backendConnection) {
         connection = backendConnection;
@@ -57,6 +57,7 @@ public final class BackendTransactionManager implements TransactionManager {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
         shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
+        transactionHooks = ShardingSphereServiceLoader.getServiceInstances(TransactionHook.class);
     }
     
     @Override
