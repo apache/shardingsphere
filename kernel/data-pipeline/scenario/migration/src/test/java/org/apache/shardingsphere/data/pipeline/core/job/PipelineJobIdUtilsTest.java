@@ -20,26 +20,31 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class PipelineJobIdUtilsTest {
     
     @Test
-    public void assertParseJobType() {
-        PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY, "sharding_db");
-        MigrationJobId pipelineJobId = new MigrationJobId(Collections.singletonList("t_order:ds_0.t_order_0,ds_0.t_order_1"), contextKey);
-        // TODO now verify jobId (PipelineContextKey json)
-        String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
-        JobType actualJobType = PipelineJobIdUtils.parseJobType(jobId);
-        assertThat(actualJobType, instanceOf(MigrationJobType.class));
+    public void assertParse() {
+        for (InstanceType each : InstanceType.values()) {
+            assertParse0(each);
+        }
     }
     
-    // TODO now assertParseJobId
+    private void assertParse0(final InstanceType instanceType) {
+        PipelineContextKey contextKey = new PipelineContextKey(instanceType, "sharding_db");
+        MigrationJobId pipelineJobId = new MigrationJobId(Collections.singletonList("t_order:ds_0.t_order_0,ds_0.t_order_1"), contextKey);
+        String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
+        assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(MigrationJobType.class));
+        PipelineContextKey actualContextKey = PipelineJobIdUtils.parseContextKey(jobId);
+        assertThat(actualContextKey.getInstanceType(), is(instanceType));
+        assertThat(actualContextKey.getDatabaseName(), is("sharding_db"));
+    }
 }

@@ -17,7 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.util;
 
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 public final class InstanceTypeUtilTest {
     
-    // TODO now InstanceTypeUtilTest
+    @Test
+    public void assertEncodeAndDecode() {
+        for (InstanceType each : InstanceType.values()) {
+            assertThat(InstanceTypeUtil.decode(InstanceTypeUtil.encode(each)), is(each));
+        }
+    }
 }
