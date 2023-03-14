@@ -67,6 +67,8 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
     
+    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    
     public IndexesMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
     }
@@ -191,7 +193,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         addMigrationSourceResource();
         addMigrationTargetResource();
         getContainerComposer().proxyExecuteWithLog(String.format(ORDER_TABLE_SHARDING_RULE_FORMAT, shardingColumn), 2);
-        startMigration(SOURCE_TABLE_ORDER_NAME, getContainerComposer().getTargetTableOrderName());
+        startMigration(SOURCE_TABLE_ORDER_NAME, TARGET_TABLE_ORDER_NAME);
         String jobId = listJobId().get(0);
         getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         incrementalTaskFn.call();

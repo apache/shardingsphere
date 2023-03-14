@@ -52,6 +52,8 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
     
+    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    
     public RulesMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
     }
@@ -93,7 +95,7 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
         if (null != addRuleFn) {
             addRuleFn.call();
         }
-        startMigration(SOURCE_TABLE_ORDER_NAME, getContainerComposer().getTargetTableOrderName());
+        startMigration(SOURCE_TABLE_ORDER_NAME, TARGET_TABLE_ORDER_NAME);
         String jobId = listJobId().get(0);
         getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         getContainerComposer().waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));

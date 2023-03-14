@@ -52,6 +52,8 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     
     private static final String SOURCE_TABLE_ORDER_NAME = "t_order_copy";
     
+    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    
     public PostgreSQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
     }
@@ -115,7 +117,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
         startMigrationByJobId(jobId);
         // must refresh firstly, otherwise proxy can't get schema and table info
         getContainerComposer().proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
-        getContainerComposer().assertProxyOrderRecordExist(String.join(".", PipelineContainerComposer.SCHEMA_NAME, getContainerComposer().getTargetTableOrderName()), recordId);
+        getContainerComposer().assertProxyOrderRecordExist(String.join(".", PipelineContainerComposer.SCHEMA_NAME, TARGET_TABLE_ORDER_NAME), recordId);
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }
     

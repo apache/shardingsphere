@@ -49,6 +49,8 @@ public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
     
+    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    
     public MariaDBMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
     }
@@ -80,7 +82,7 @@ public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
         addMigrationSourceResource();
         addMigrationTargetResource();
         createTargetOrderTableRule();
-        startMigration(SOURCE_TABLE_ORDER_NAME, getContainerComposer().getTargetTableOrderName());
+        startMigration(SOURCE_TABLE_ORDER_NAME, TARGET_TABLE_ORDER_NAME);
         String jobId = listJobId().get(0);
         getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         getContainerComposer().sourceExecuteWithLog("INSERT INTO t_order (order_id, user_id, status) VALUES ('a1', 1, 'OK')");
