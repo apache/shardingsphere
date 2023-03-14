@@ -25,7 +25,7 @@ mv community/public/* target/community/
 
 mkdir target/blog
 cd blog
-docker run --rm -it --volume $(pwd):/opt/input docker-hugo:latest
+docker run --rm -it --volume $(pwd):/opt/input  docker-hugo:latest
 find ../blog/public/ -name '*.html' -exec sed -i -e 's|[[:space:]]*<option id="\([a-zA-Z]\+\)" value="|<option id="\1" value="/blog|g' {} \;
 cd public/en
 sed -i -e 's/cn/en/g' index.html
