@@ -53,7 +53,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     private static final String SOURCE_TABLE_ORDER_NAME = "t_order_copy";
     
     public PostgreSQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
+        super(testParam, new MigrationJobType());
     }
     
     @Parameters(name = "{0}")
@@ -73,7 +73,6 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
-        getContainerComposer().initEnvironment(getContainerComposer().getDatabaseType(), new MigrationJobType());
         addMigrationProcessConfig();
         createSourceSchema(PipelineContainerComposer.SCHEMA_NAME);
         getContainerComposer().createSourceOrderTable(SOURCE_TABLE_ORDER_NAME);

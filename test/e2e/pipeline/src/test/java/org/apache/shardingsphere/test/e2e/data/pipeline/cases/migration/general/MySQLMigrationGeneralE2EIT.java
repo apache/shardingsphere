@@ -55,7 +55,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     private static final String SOURCE_TABLE_ORDER_NAME = "t_order_copy";
     
     public MySQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
+        super(testParam, new MigrationJobType());
     }
     
     @Parameters(name = "{0}")
@@ -73,7 +73,6 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
-        getContainerComposer().initEnvironment(getContainerComposer().getDatabaseType(), new MigrationJobType());
         addMigrationProcessConfig();
         getContainerComposer().createSourceOrderTable(SOURCE_TABLE_ORDER_NAME);
         getContainerComposer().createSourceOrderItemTable();
