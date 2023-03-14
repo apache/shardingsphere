@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
+// TODO should extend to ShardingSphereExternalException
 public final class HBaseOperationException extends RuntimeException {
     
     private static final long serialVersionUID = -2361593557266150170L;
