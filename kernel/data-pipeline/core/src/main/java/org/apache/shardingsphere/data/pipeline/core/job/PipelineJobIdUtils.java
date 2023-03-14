@@ -25,6 +25,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.util.InstanceTypeUtil;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobTypeFactory;
@@ -44,9 +45,9 @@ public final class PipelineJobIdUtils {
      * @return job id common prefix
      */
     public static String marshalJobIdCommonPrefix(final PipelineJobId pipelineJobId) {
-        String databaseNameHex = Hex.encodeHexString(pipelineJobId.getDatabaseName().getBytes(StandardCharsets.UTF_8), true);
+        String databaseNameHex = Hex.encodeHexString(pipelineJobId.getContextKey().getDatabaseName().getBytes(StandardCharsets.UTF_8), true);
         String databaseNameLengthHex = Hex.encodeHexString(Shorts.toByteArray((short) databaseNameHex.length()), true);
-        char instanceType = InstanceTypeUtil.encode(pipelineJobId.getInstanceType());
+        char instanceType = InstanceTypeUtil.encode(pipelineJobId.getContextKey().getInstanceType());
         return 'j' + pipelineJobId.getJobType().getTypeCode() + pipelineJobId.getFormatVersion() + instanceType + databaseNameLengthHex + databaseNameHex;
     }
     
@@ -65,7 +66,7 @@ public final class PipelineJobIdUtils {
         char instanceType = jobId.charAt(5);
         short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
         String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);
-        return new BasePipelineJobId(JobTypeFactory.getInstance(typeCode), InstanceTypeUtil.decode(instanceType), databaseName);
+        return new BasePipelineJobId(JobTypeFactory.getInstance(typeCode), new PipelineContextKey(InstanceTypeUtil.decode(instanceType), databaseName));
     }
     
     private static void verifyJobId(final String jobId) {

@@ -25,11 +25,13 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collections;
@@ -79,7 +81,8 @@ public final class JobConfigurationBuilder {
     }
     
     private static String generateJobId(final YamlMigrationJobConfiguration yamlJobConfig) {
-        MigrationJobId migrationJobId = new MigrationJobId(yamlJobConfig.getJobShardingDataNodes(), RandomStringUtils.randomAlphabetic(32));
+        PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY, RandomStringUtils.randomAlphabetic(32));
+        MigrationJobId migrationJobId = new MigrationJobId(yamlJobConfig.getJobShardingDataNodes(), contextKey);
         return new MigrationJobAPI().marshalJobId(migrationJobId);
     }
     

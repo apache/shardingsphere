@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.BasePipelineJobId;
 
 import java.util.List;
@@ -30,15 +31,10 @@ import java.util.List;
 @ToString(callSuper = true)
 public final class MigrationJobId extends BasePipelineJobId {
     
-    public static final String CURRENT_VERSION = "01";
-    
     private final List<String> jobShardingDataNodes;
     
-    private final String targetDatabaseName;
-    
-    public MigrationJobId(final List<String> jobShardingDataNodes, final String targetDatabaseName) {
-        super(new MigrationJobType(), CURRENT_VERSION);
+    public MigrationJobId(final List<String> jobShardingDataNodes, final PipelineContextKey contextKey) {
+        super(new MigrationJobType(), contextKey);
         this.jobShardingDataNodes = jobShardingDataNodes;
-        this.targetDatabaseName = targetDatabaseName;
     }
 }
