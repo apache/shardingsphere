@@ -89,12 +89,13 @@ public final class CDCBackendHandler {
         Collection<String> tableNames;
         Set<String> schemaTableNames = new HashSet<>();
         if (database.getProtocolType().isSchemaAvailable()) {
-            schemaTableNameMap = CDCSchemaTableUtil.parseSchemaTableExpression(database, requestBody.getSourceSchemaTablesList());
+            schemaTableNameMap = CDCSchemaTableUtil.parseTableExpressionWithSchema(database, requestBody.getSourceSchemaTablesList());
             // TODO if different schema have same table names, table name may be overwritten, because the table name at sharding rule not contain schema.
             tableNames = schemaTableNameMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
             schemaTableNameMap.forEach((k, v) -> v.forEach(tableName -> schemaTableNames.add(k.isEmpty() ? tableName : String.join(".", k, tableName))));
         } else {
-            schemaTableNames.addAll(CDCSchemaTableUtil.parseTableExpression(database, requestBody.getSourceSchemaTablesList().stream().map(SchemaTable::getTable).collect(Collectors.toList())));
+            schemaTableNames.addAll(CDCSchemaTableUtil.parseTableExpressionWithoutSchema(database, requestBody.getSourceSchemaTablesList().stream().map(SchemaTable::getTable)
+                    .collect(Collectors.toList())));
             tableNames = schemaTableNames;
         }
         if (tableNames.isEmpty()) {

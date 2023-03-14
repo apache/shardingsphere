@@ -39,13 +39,13 @@ import java.util.Set;
 public final class CDCSchemaTableUtil {
     
     /**
-     * Parse schema table expression.
+     * Parse table expression with schema.
      *
      * @param database database
      * @param schemaTables schema tables
      * @return map key is schema, value is table names
      */
-    public static Map<String, Set<String>> parseSchemaTableExpression(final ShardingSphereDatabase database, final Collection<SchemaTable> schemaTables) {
+    public static Map<String, Set<String>> parseTableExpressionWithSchema(final ShardingSphereDatabase database, final Collection<SchemaTable> schemaTables) {
         Map<String, Set<String>> result = new HashMap<>();
         Collection<String> systemSchemas = database.getProtocolType().getSystemSchemas();
         Optional<SchemaTable> allSchemaTablesOptional = schemaTables.stream().filter(each -> "*".equals(each.getTable()) && ("*".equals(each.getSchema()) || each.getSchema().isEmpty())).findFirst();
@@ -89,13 +89,13 @@ public final class CDCSchemaTableUtil {
     }
     
     /**
-     * Parse table expression.
+     * Parse table expression without schema.
      *
      * @param database database
      * @param tableNames table names
      * @return parsed table names
      */
-    public static Collection<String> parseTableExpression(final ShardingSphereDatabase database, final List<String> tableNames) {
+    public static Collection<String> parseTableExpressionWithoutSchema(final ShardingSphereDatabase database, final List<String> tableNames) {
         Optional<String> allTablesOptional = tableNames.stream().filter("*"::equals).findFirst();
         Set<String> allTableNames = new HashSet<>(database.getSchema(database.getName()).getAllTableNames());
         return allTablesOptional.isPresent() ? allTableNames : new HashSet<>(tableNames);
