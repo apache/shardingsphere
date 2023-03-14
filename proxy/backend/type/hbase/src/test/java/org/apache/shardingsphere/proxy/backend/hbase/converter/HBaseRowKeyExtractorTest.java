@@ -21,26 +21,25 @@ import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLSta
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
-public class HBaseDatabaseRowKeysConverterAdapterTest {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public final class HBaseRowKeyExtractorTest {
     
     @Test
-    public void assertGetRowKeysFromInExpression() {
+    public void assertGetRowKeys() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey in ('1', '2') ");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
-        HBaseDatabaseRowKeysConverterAdapter adapter = new HBaseDatabaseRowKeysConverterAdapter();
-        if (whereSegment.isPresent()) {
-            List<String> rowKeys = adapter.getRowKeysFromWhereSegmentByIn((InExpression) whereSegment.get().getExpr());
-            List<String> actual = Arrays.asList("1", "2");
-            assertEquals(rowKeys, actual);
-        } else {
-            fail();
-        }
+        assertTrue(whereSegment.isPresent());
+        List<String> actual = Arrays.asList("1", "2");
+        List<String> expected = HBaseRowKeyExtractor.getRowKeys((InExpression) whereSegment.get().getExpr());
+        assertThat(actual, is(expected));
     }
 }

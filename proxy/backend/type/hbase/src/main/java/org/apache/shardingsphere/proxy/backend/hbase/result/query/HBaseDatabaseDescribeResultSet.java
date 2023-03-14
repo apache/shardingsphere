@@ -61,8 +61,7 @@ public final class HBaseDatabaseDescribeResultSet implements HBaseDatabaseQueryR
      */
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("Name", "TableAttributes", "FlushPolicyClassName", "MaxFileSize", "MemStoreFlushSize",
-                "Priority", "RegionReplication", "RegionSplitPolicyClassName", "CustomizedValues");
+        return Arrays.asList("Name", "TableAttributes", "FlushPolicyClassName", "MaxFileSize", "MemStoreFlushSize", "Priority", "RegionReplication", "RegionSplitPolicyClassName", "CustomizedValues");
     }
     
     /**

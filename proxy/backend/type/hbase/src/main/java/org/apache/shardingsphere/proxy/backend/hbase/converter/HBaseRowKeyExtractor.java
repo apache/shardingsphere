@@ -17,23 +17,39 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * HBase database row keys converter adapter.
+ * HBase row key extractor.
  */
-public class HBaseDatabaseRowKeysConverterAdapter {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class HBaseRowKeyExtractor {
     
-    protected List<String> getRowKeysFromWhereSegmentByIn(final InExpression expression) {
-        return ((ListExpression) expression.getRight()).getItems().stream().map(this::getValueByExpressionSegment).collect(Collectors.toList());
+    /**
+     * Get row keys from binary operation expression.
+     * 
+     * @param expr binary operation expression
+     * @return row keys
+     */
+    public static String getRowKey(final BinaryOperationExpression expr) {
+        return String.valueOf(((LiteralExpressionSegment) expr.getRight()).getLiterals());
     }
     
-    protected String getValueByExpressionSegment(final ExpressionSegment item) {
-        return String.valueOf(((LiteralExpressionSegment) item).getLiterals());
+    /**
+     * Get row keys from in expression.
+     * 
+     * @param expr in expression
+     * @return row keys
+     */
+    public static List<String> getRowKeys(final InExpression expr) {
+        return ((ListExpression) expr.getRight()).getItems().stream().map(each -> String.valueOf(((LiteralExpressionSegment) each).getLiterals())).collect(Collectors.toList());
     }
 }

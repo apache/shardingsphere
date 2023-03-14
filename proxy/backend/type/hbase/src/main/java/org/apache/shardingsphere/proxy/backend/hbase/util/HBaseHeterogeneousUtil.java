@@ -27,15 +27,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * heterogeneous util.
+ * HBase heterogeneous util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class HeterogeneousUtil {
+public final class HBaseHeterogeneousUtil {
     
     /**
-     * Is Crc ProjectionSegment.
-     * @param projectionSegment projectionSegment
-     * @return result
+     * Whether crc projection segment.
+     * 
+     * @param projectionSegment projection segment
+     * @return Is crc projection segment or not
      */
     public static boolean isCrcProjectionSegment(final ProjectionSegment projectionSegment) {
         
@@ -47,10 +48,11 @@ public class HeterogeneousUtil {
     }
     
     /**
-     * convert prepared statement to literal statement.
-     * @param source sql statement
-     * @param target parameter marker
-     * @param replacements parameters
+     * Convert prepared statement to literal statement.
+     * 
+     * @param source source
+     * @param target target
+     * @param replacements replacements
      * @return literal statement
      */
     public static String replaceSQLStatementWithParameters(final String source, final CharSequence target, final Object... replacements) {
@@ -72,8 +74,9 @@ public class HeterogeneousUtil {
     }
     
     /**
-     * Return true if use * in SELECT Statement.
-     * @param statementContext Select Statement Context
+     * Return true if use * in SELECT statement.
+     * 
+     * @param statementContext select statement context
      * @return is use shorthand projection
      */
     public static boolean isUseShorthandProjection(final SelectStatementContext statementContext) {

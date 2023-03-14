@@ -15,46 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.converter;
+package org.apache.shardingsphere.proxy.backend.hbase.converter.type;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.hadoop.hbase.client.Operation;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.FlushStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseRegionReloadOperation;
+
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
- * HBase database region reload converter.
+ * HBase region reload operation converter.
  */
 @RequiredArgsConstructor
-public final class HBaseRegionReloadConverter implements HBaseDatabaseConverter {
+public final class HBaseRegionReloadOperationConverter implements HBaseOperationConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;
     
-    private Operation getOperation() {
-        return new Operation() {
-            
-            @Override
-            public Map<String, Object> getFingerprint() {
-                return new TreeMap<>();
-            }
-            
-            @Override
-            public Map<String, Object> toMap(final int i) {
-                return new TreeMap<>();
-            }
-        };
-    }
-    
     @Override
     public HBaseOperation convert() {
-        List<String> tables = ((FlushStatementContext) sqlStatementContext).getAllTables()
-                .stream().map(simpleTableSegment -> simpleTableSegment.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
-        
-        return new HBaseOperation(String.join(",", tables), getOperation());
+        List<String> tables = ((FlushStatementContext) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
+        return new HBaseOperation(String.join(",", tables), new HBaseRegionReloadOperation());
     }
 }

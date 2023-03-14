@@ -71,7 +71,7 @@ public final class HBaseContext implements AutoCloseable {
     /**
      * Get instance of HBase context.
      *
-     * @return instance of HBase context
+     * @return got instance
      */
     public static HBaseContext getInstance() {
         return INSTANCE;

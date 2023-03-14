@@ -152,5 +152,4 @@ public final class HBaseRegionWarmUpContext {
         tableCount.set(0);
         executeCount.set(0);
     }
-    
 }

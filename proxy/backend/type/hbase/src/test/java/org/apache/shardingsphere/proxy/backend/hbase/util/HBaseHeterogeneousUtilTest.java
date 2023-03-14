@@ -21,18 +21,19 @@ import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLSta
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.assertTrue;
 
-public class HeterogeneousUtilTest {
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public final class HBaseHeterogeneousUtilTest {
     
     @Test
     public void assertCrc32ProjectionSegment() {
         String sql = "SELECT /*+ HBase */ rowKey, crc32(concat_ws('#',rowKey)) from t_order where rowKey in (1, 2, 3)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         List<ProjectionSegment> projectionSegments = new ArrayList<>(((SelectStatement) sqlStatement).getProjections().getProjections());
-        assertTrue(HeterogeneousUtil.isCrcProjectionSegment(projectionSegments.get(1)));
+        assertTrue(HBaseHeterogeneousUtil.isCrcProjectionSegment(projectionSegments.get(1)));
     }
 }

@@ -22,26 +22,25 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.Table;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBaseProperties;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBasePropertyKey;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -52,36 +51,21 @@ import static org.mockito.Mockito.when;
 @Getter
 public abstract class AbstractHBaseDatabaseQueryResultSetTest {
     
-    private final Table table = mock(Table.class, RETURNS_DEEP_STUBS);
+    @Mock
+    private Admin admin;
     
-    private final Admin admin = mock(HBaseAdmin.class, RETURNS_DEEP_STUBS);
-    
-    private final Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-    
-    private final TablesContext tablesContext = mock(TablesContext.class, RETURNS_DEEP_STUBS);
-    
-    private Collection<String> tableNames;
-    
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
-        Properties props = createProperties();
-        HBaseProperties hBaseProperties = new HBaseProperties(props);
-        HBaseContext.getInstance().setProps(hBaseProperties);
-        tableNames = new ArrayList<>();
-        tableNames.add("t_test_table");
-        when(tablesContext.getTableNames()).thenReturn(tableNames);
+        Properties props = PropertiesBuilder.build(new Property(HBasePropertyKey.WARM_UP_THREAD_NUM.getKey(), String.valueOf(1)));
+        HBaseContext.getInstance().setProps(new HBaseProperties(props));
         HTableDescriptor[] tableDescriptors = createHTableDescriptors();
         when(admin.tableExists(any())).thenReturn(true);
         when(admin.getTableDescriptor(any())).thenReturn(tableDescriptors[0]);
         when(admin.listTables()).thenReturn(tableDescriptors);
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getAdmin()).thenReturn(admin);
-        when(connection.getTable(any())).thenReturn(table);
+        when(connection.getTable(any())).thenReturn(mock(Table.class));
         HBaseContext.getInstance().init(Collections.singletonMap("cluster_lj", connection));
-    }
-    
-    private Properties createProperties() {
-        return PropertiesBuilder.build(
-                new Property(HBasePropertyKey.WARM_UP_THREAD_NUM.getKey(), String.valueOf(1)));
     }
     
     private HTableDescriptor[] createHTableDescriptors() {
@@ -99,7 +83,7 @@ public abstract class AbstractHBaseDatabaseQueryResultSetTest {
         return new HTableDescriptor[]{descriptor};
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
         HBaseContext.getInstance().close();
     }

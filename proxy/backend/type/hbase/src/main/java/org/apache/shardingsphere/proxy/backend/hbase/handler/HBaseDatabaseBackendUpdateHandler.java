@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.impl;
+package org.apache.shardingsphere.proxy.backend.hbase.handler;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +23,12 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
-import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseDatabaseConverter;
-import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseDatabaseConverterFactory;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverterFactory;
 import org.apache.shardingsphere.proxy.backend.hbase.result.update.HBaseDatabaseUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
 import java.util.Collection;
 
 /**
@@ -50,9 +50,8 @@ public final class HBaseDatabaseBackendUpdateHandler implements DatabaseBackendH
     @Override
     public UpdateResponseHeader execute() {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
-        HBaseDatabaseConverter converter = HBaseDatabaseConverterFactory.newInstance(sqlStatementContext);
-        HBaseOperation hbaseOperation = converter.convert();
-        Collection<UpdateResult> updateResults = updater.executeUpdate(hbaseOperation);
+        HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
+        Collection<UpdateResult> updateResults = updater.executeUpdate(converter.convert());
         return new UpdateResponseHeader(sqlStatement, updateResults);
     }
 }

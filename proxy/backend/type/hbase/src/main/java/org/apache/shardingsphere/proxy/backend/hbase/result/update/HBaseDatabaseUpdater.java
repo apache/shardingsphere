@@ -24,15 +24,14 @@ import java.util.Collection;
 
 /**
  * HBase backend updater.
- *
  */
 public interface HBaseDatabaseUpdater extends TypedSPI {
     
     /**
      * Execute HBase operation.
      *
-     * @param hbaseOperation HBase operation
+     * @param operation HBase operation
      * @return affected rows
      */
-    Collection<UpdateResult> executeUpdate(HBaseOperation hbaseOperation);
+    Collection<UpdateResult> executeUpdate(HBaseOperation operation);
 }

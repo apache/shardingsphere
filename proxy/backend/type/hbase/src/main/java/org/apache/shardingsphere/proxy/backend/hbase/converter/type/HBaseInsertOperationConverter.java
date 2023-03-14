@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.converter;
+package org.apache.shardingsphere.proxy.backend.hbase.converter.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Put;
@@ -25,41 +25,38 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseInsertOperation;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * HBase database insert converter.
+ * HBase insert operation converter.
  */
 @RequiredArgsConstructor
-public final class HBaseDatabaseInsertConverter implements HBaseDatabaseConverter {
+public final class HBaseInsertOperationConverter implements HBaseOperationConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;
     
-    /**
-     * Convert SQL statement to HBase operation.
-     *
-     * @return HBase operation
-     */
     @Override
     public HBaseOperation convert() {
-        InsertStatementContext context = (InsertStatementContext) sqlStatementContext;
-        String tableName = context.getTablesContext().getTableNames().iterator().next();
-        return new HBaseOperation(tableName, new HBaseInsertOperationAdapter(createHBaseRequest(context)));
+        InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
+        String tableName = insertStatementContext.getTablesContext().getTableNames().iterator().next();
+        return new HBaseOperation(tableName, new HBaseInsertOperation(createHBaseRequest(insertStatementContext)));
     }
     
-    private Put generateHBaseRequest(final InsertStatementContext context, final InsertValueContext insertValueContext) {
-        List<String> columns = context.getInsertColumnNames();
+    private List<Put> createHBaseRequest(final InsertStatementContext insertStatementContext) {
+        return insertStatementContext.getInsertValueContexts().stream().map(each -> generateHBaseRequest(insertStatementContext, each)).collect(Collectors.toList());
+    }
+    
+    private Put generateHBaseRequest(final InsertStatementContext insertStatementContext, final InsertValueContext insertValueContext) {
+        List<String> columns = insertStatementContext.getInsertColumnNames();
         List<Object> values = insertValueContext.getValueExpressions().stream().map(each -> ((LiteralExpressionSegment) each).getLiterals()).collect(Collectors.toList());
         Put result = new Put(Bytes.toBytes(String.valueOf(values.get(0))));
         for (int i = 1; i < columns.size(); i++) {
             result.addColumn(Bytes.toBytes(HBaseContext.getInstance().getColumnFamily()), Bytes.toBytes(String.valueOf(columns.get(i))), Bytes.toBytes(String.valueOf(values.get(i))));
         }
         return result;
-    }
-    
-    private List<Put> createHBaseRequest(final InsertStatementContext context) {
-        return context.getInsertValueContexts().stream().map(each -> generateHBaseRequest(context, each)).collect(Collectors.toList());
     }
 }
