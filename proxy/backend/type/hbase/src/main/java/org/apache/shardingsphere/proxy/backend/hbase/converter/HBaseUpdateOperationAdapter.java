@@ -15,27 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.config;
+package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import java.util.HashMap;
+import lombok.RequiredArgsConstructor;
+import org.apache.hadoop.hbase.client.Operation;
+import org.apache.hadoop.hbase.client.Put;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.TreeMap;
 
 /**
- * YAML rule configuration for HBase.
+ * HBase database update operation adapter.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlHBaseConfiguration implements YamlConfiguration {
+public final class HBaseUpdateOperationAdapter extends Operation {
     
-    private String databaseName;
+    private final String tableName;
     
-    private Map<String, Object> commonDataSourceProps;
+    private final List<Put> puts;
     
-    private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
+    @Override
+    public Map<String, Object> getFingerprint() {
+        return new TreeMap<>();
+    }
     
-    private Properties props;
+    @Override
+    public Map<String, Object> toMap(final int i) {
+        return new TreeMap<>();
+    }
 }

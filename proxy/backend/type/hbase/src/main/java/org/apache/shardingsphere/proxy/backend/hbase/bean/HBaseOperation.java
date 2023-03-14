@@ -15,27 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.config;
+package org.apache.shardingsphere.proxy.backend.hbase.bean;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import lombok.RequiredArgsConstructor;
+import org.apache.hadoop.hbase.client.Operation;
 
-/**
- * YAML rule configuration for HBase.
- */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlHBaseConfiguration implements YamlConfiguration {
+public final class HBaseOperation {
     
-    private String databaseName;
+    private final String tableName;
     
-    private Map<String, Object> commonDataSourceProps;
-    
-    private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
-    
-    private Properties props;
+    private final Operation operation;
 }

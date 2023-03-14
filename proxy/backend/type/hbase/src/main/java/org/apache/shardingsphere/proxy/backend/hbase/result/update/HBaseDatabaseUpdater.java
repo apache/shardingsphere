@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.config;
+package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
+import java.util.Collection;
 
 /**
- * YAML rule configuration for HBase.
+ * HBase backend updater.
+ *
  */
-@Getter
-@Setter
-public final class YamlHBaseConfiguration implements YamlConfiguration {
+public interface HBaseDatabaseUpdater extends TypedSPI {
     
-    private String databaseName;
-    
-    private Map<String, Object> commonDataSourceProps;
-    
-    private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
-    
-    private Properties props;
+    /**
+     * Execute HBase operation.
+     *
+     * @param hbaseOperation HBase operation
+     * @return affected rows
+     */
+    Collection<UpdateResult> executeUpdate(HBaseOperation hbaseOperation);
 }

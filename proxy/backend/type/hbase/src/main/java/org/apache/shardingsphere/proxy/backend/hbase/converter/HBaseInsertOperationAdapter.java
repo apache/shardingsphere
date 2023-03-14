@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.connector;
+package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
-import org.apache.hadoop.hbase.client.Table;
-import java.io.IOException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.hadoop.hbase.client.Operation;
+import org.apache.hadoop.hbase.client.Put;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
- * HBase query callback.
- * 
- * @param <T> type of result
+ * HBase database insert operation adapter.
  */
-public interface HBaseQueryCallback<T> {
+@RequiredArgsConstructor
+@Getter
+public final class HBaseInsertOperationAdapter extends Operation {
     
-    /**
-     * Execute in HBase.
-     * 
-     * @param table table
-     * @return execute result
-     * @throws IOException IO exception
-     * 
-     */
-    T executeInHBase(Table table) throws IOException;
+    private final List<Put> puts;
     
+    @Override
+    public Map<String, Object> getFingerprint() {
+        return new TreeMap<>();
+    }
+    
+    @Override
+    public Map<String, Object> toMap(final int i) {
+        return new TreeMap<>();
+    }
 }

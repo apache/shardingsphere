@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.connector;
+package org.apache.shardingsphere.proxy.backend.hbase.executor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,6 +24,9 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseAdminCallback;
+import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseQueryCallback;
+import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseUpdateCallback;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 

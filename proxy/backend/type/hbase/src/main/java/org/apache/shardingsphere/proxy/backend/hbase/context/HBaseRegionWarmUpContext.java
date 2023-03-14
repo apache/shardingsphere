@@ -20,9 +20,11 @@ package org.apache.shardingsphere.proxy.backend.hbase.context;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.RegionLocator;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseCluster;
-import org.apache.shardingsphere.proxy.backend.hbase.connector.HBaseTaskExecutorManager;
+import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
+import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseTaskExecutorManager;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -72,6 +74,25 @@ public final class HBaseRegionWarmUpContext {
         executorManager.submit(() -> loadRegionInfo(tableName, hbaseCluster));
     }
     
+    /**
+     * Load one table region info.
+     *
+     * @param tableName table name
+     * @param connection HBase connection
+     */
+    public void loadRegionInfo(final String tableName, final Connection connection) {
+        HBaseRegionWarmUpContext.getInstance().addExecuteCount();
+        try {
+            if (connection == null) {
+                return;
+            }
+            RegionLocator regionLocator = connection.getRegionLocator(TableName.valueOf(tableName));
+            regionLocator.getAllRegionLocations();
+        } catch (IOException e) {
+            throw new HBaseOperationException(String.format("table: %s warm up error, getRegionLocator execute error reason is  %s", tableName, e));
+        }
+    }
+    
     private void loadRegionInfo(final String tableName, final HBaseCluster hbaseCluster) {
         try {
             RegionLocator regionLocator = hbaseCluster.getConnection().getRegionLocator(TableName.valueOf(tableName));
@@ -112,7 +133,7 @@ public final class HBaseRegionWarmUpContext {
     /**
      * Sync execute.
      * 
-     * @param clusterName clusterName
+     * @param clusterName cluster name
      */
     public void syncExecuteWarmUp(final String clusterName) {
         while (executeCount.get() < tableCount.get()) {

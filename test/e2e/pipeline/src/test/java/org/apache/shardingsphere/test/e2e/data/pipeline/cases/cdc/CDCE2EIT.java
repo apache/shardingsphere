@@ -137,8 +137,9 @@ public final class CDCE2EIT {
         log.info("init data begin: {}", LocalDateTime.now());
         DataSourceExecuteUtil.execute(jdbcDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_ORDER_NAME), dataPair.getLeft());
         log.info("init data end: {}", LocalDateTime.now());
-        try (Connection connection = DriverManager.getConnection(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
-                containerComposer.getUsername(), containerComposer.getPassword())) {
+        try (
+                Connection connection = DriverManager.getConnection(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
+                        containerComposer.getUsername(), containerComposer.getPassword())) {
             initSchemaAndTable(connection, 0);
         }
         startCDCClient();

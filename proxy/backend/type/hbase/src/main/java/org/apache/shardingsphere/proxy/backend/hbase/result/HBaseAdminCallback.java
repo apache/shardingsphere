@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.connector;
+package org.apache.shardingsphere.proxy.backend.hbase.result;
 
-import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.client.Admin;
 import java.io.IOException;
 
 /**
- * HBase update callback.
+ * Call back for HBase operation.
+ *
+ * @param <T> type of result
  */
-public interface HBaseUpdateCallback {
+public interface HBaseAdminCallback<T> {
     
     /**
      * Execute in HBase.
      *
-     * @param table table
+     * @param admin execute in HBase table
+     * @return execute result
      * @throws IOException IO exception
      */
-    void executeInHBase(Table table) throws IOException;
+    T executeInHBase(Admin admin) throws IOException;
 }
