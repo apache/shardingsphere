@@ -144,7 +144,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     protected void dropJob(final String jobId) {
-        PipelineAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
+        PipelineAPIFactory.getJobOperateAPI(PipelineJobIdUtils.parseContextKey(jobId)).remove(String.valueOf(jobId), null);
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
     }
     
