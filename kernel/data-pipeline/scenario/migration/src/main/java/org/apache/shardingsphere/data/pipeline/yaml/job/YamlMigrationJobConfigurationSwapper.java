@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.yaml.job;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
@@ -39,7 +38,6 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
     public YamlMigrationJobConfiguration swapToYamlConfiguration(final MigrationJobConfiguration data) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setJobId(data.getJobId());
-        result.setInstanceType(data.getInstanceType().name());
         result.setTargetDatabaseName(data.getTargetDatabaseName());
         result.setSourceDatabaseType(data.getSourceDatabaseType());
         result.setTargetDatabaseType(data.getTargetDatabaseType());
@@ -57,7 +55,7 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
     
     @Override
     public MigrationJobConfiguration swapToObject(final YamlMigrationJobConfiguration yamlConfig) {
-        return new MigrationJobConfiguration(yamlConfig.getJobId(), InstanceType.valueOf(yamlConfig.getInstanceType()), yamlConfig.getDatabaseName(),
+        return new MigrationJobConfiguration(yamlConfig.getJobId(), yamlConfig.getDatabaseName(),
                 yamlConfig.getSourceDatabaseType(), yamlConfig.getTargetDatabaseType(),
                 yamlConfig.getSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
                         entry -> dataSourceConfigSwapper.swapToObject(entry.getValue()), (key, value) -> value, LinkedHashMap::new)),

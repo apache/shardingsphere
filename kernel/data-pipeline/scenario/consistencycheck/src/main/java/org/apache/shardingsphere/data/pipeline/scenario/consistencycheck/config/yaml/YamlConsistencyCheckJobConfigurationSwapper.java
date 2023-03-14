@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml;
 
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
@@ -31,8 +30,6 @@ public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlCo
     public YamlConsistencyCheckJobConfiguration swapToYamlConfiguration(final ConsistencyCheckJobConfiguration data) {
         YamlConsistencyCheckJobConfiguration result = new YamlConsistencyCheckJobConfiguration();
         result.setJobId(data.getJobId());
-        result.setInstanceType(data.getInstanceType().name());
-        result.setDatabaseName(data.getDatabaseName());
         result.setParentJobId(data.getParentJobId());
         result.setAlgorithmTypeName(data.getAlgorithmTypeName());
         result.setAlgorithmProps(data.getAlgorithmProps());
@@ -41,8 +38,7 @@ public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlCo
     
     @Override
     public ConsistencyCheckJobConfiguration swapToObject(final YamlConsistencyCheckJobConfiguration yamlConfig) {
-        return new ConsistencyCheckJobConfiguration(yamlConfig.getJobId(), InstanceType.valueOf(yamlConfig.getInstanceType()), yamlConfig.getDatabaseName(),
-                yamlConfig.getParentJobId(), yamlConfig.getAlgorithmTypeName(), yamlConfig.getAlgorithmProps());
+        return new ConsistencyCheckJobConfiguration(yamlConfig.getJobId(), yamlConfig.getParentJobId(), yamlConfig.getAlgorithmTypeName(), yamlConfig.getAlgorithmProps());
     }
     
     /**

@@ -86,12 +86,12 @@ public final class PipelineJobPreparerUtils {
     /**
      * Get SQL parser engine.
      *
-     * @param databaseName database name
+     * @param targetDatabaseName target database name
      * @return SQL parser engine
      */
-    public static ShardingSphereSQLParserEngine getSQLParserEngine(final String databaseName) {
+    public static ShardingSphereSQLParserEngine getSQLParserEngine(final String targetDatabaseName) {
         ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        ShardingSphereDatabase database = metaData.getDatabase(targetDatabaseName);
         DatabaseType databaseType = database.getProtocolType();
         if (databaseType instanceof BranchDatabaseType) {
             databaseType = ((BranchDatabaseType) databaseType).getTrunkDatabaseType();
