@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 /**
  * Base pipeline job id.
@@ -32,14 +32,11 @@ public class BasePipelineJobId implements PipelineJobId {
     
     private final JobType jobType;
     
-    private final InstanceType instanceType;
+    private final PipelineContextKey contextKey;
     
-    private final String databaseName;
-    
-    public BasePipelineJobId(final JobType jobType, final InstanceType instanceType, final String databaseName) {
+    public BasePipelineJobId(final JobType jobType, final PipelineContextKey contextKey) {
         this.jobType = jobType;
-        this.instanceType = instanceType;
-        this.databaseName = databaseName;
+        this.contextKey = contextKey;
     }
     
     @Override

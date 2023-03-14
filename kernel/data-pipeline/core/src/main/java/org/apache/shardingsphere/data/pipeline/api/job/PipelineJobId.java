@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 /**
  * Pipeline job id.
@@ -40,16 +40,9 @@ public interface PipelineJobId {
     String getFormatVersion();
     
     /**
-     * Get instance type.
+     * Get pipeline context key.
      *
-     * @return instance type
+     * @return context key
      */
-    InstanceType getInstanceType();
-    
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    String getDatabaseName();
+    PipelineContextKey getContextKey();
 }
