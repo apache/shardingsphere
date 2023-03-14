@@ -37,6 +37,11 @@ public final class HBaseDatabaseInsertConverter implements HBaseDatabaseConverte
     
     private final SQLStatementContext<?> sqlStatementContext;
     
+    /**
+     * Convert SQL statement to HBase operation.
+     *
+     * @return HBase operation
+     */
     @Override
     public HBaseOperation convert() {
         InsertStatementContext context = (InsertStatementContext) sqlStatementContext;

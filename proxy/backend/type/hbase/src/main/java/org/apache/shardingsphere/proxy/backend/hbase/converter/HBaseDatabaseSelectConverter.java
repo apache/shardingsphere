@@ -54,6 +54,11 @@ public final class HBaseDatabaseSelectConverter extends HBaseDatabaseRowKeysConv
     
     private final SQLStatementContext<?> sqlStatementContext;
     
+    /**
+     * Convert SQL statement to HBase operation.
+     *
+     * @return HBase operation
+     */
     @Override
     public HBaseOperation convert() {
         SelectStatementContext context = (SelectStatementContext) sqlStatementContext;
@@ -64,7 +69,7 @@ public final class HBaseDatabaseSelectConverter extends HBaseDatabaseRowKeysConv
         }
     }
     
-    boolean isUseGetRequest(final SelectStatementContext context) {
+    private boolean isUseGetRequest(final SelectStatementContext context) {
         return context.getWhereSegments().stream().findFirst().isPresent()
                 && (context.getWhereSegments().stream().findFirst().get().getExpr() instanceof BinaryOperationExpression
                         || context.getWhereSegments().stream().findFirst().get().getExpr() instanceof InExpression);

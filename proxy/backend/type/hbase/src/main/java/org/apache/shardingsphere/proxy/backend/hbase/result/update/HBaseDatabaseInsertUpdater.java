@@ -37,6 +37,12 @@ public final class HBaseDatabaseInsertUpdater implements HBaseDatabaseUpdater {
         return MySQLInsertStatement.class.getCanonicalName();
     }
     
+    /**
+     * Execute HBase operation.
+     *
+     * @param hbaseOperation HBase operation
+     * @return affected rows
+     */
     @Override
     public Collection<UpdateResult> executeUpdate(final HBaseOperation hbaseOperation) {
         List<Put> puts = ((HBaseInsertOperationAdapter) hbaseOperation.getOperation()).getPuts();

@@ -33,11 +33,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * HBase database update converter.
+ */
 @RequiredArgsConstructor
 public final class HBaseDatabaseUpdateConverter extends HBaseDatabaseRowKeysConverterAdapter implements HBaseDatabaseConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;
     
+    /**
+     * Convert SQL statement to HBase operation.
+     *
+     * @return HBase operation
+     */
     @Override
     public HBaseOperation convert() {
         UpdateStatementContext context = (UpdateStatementContext) sqlStatementContext;

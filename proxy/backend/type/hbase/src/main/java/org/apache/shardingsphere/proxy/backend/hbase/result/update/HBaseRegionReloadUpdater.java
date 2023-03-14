@@ -34,6 +34,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class HBaseRegionReloadUpdater implements HBaseDatabaseUpdater {
     
+    /**
+     * Execute HBase operation.
+     *
+     * @param hbaseOperation HBase operation
+     * @return affected rows
+     */
     @Override
     public Collection<UpdateResult> executeUpdate(final HBaseOperation hbaseOperation) {
         List<String> tables = Arrays.asList(hbaseOperation.getTableName().split(","));

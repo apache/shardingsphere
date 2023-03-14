@@ -39,6 +39,11 @@ public final class HBaseDatabaseDeleteConverter extends HBaseDatabaseRowKeysConv
     
     private final SQLStatementContext<?> sqlStatementContext;
     
+    /**
+     * Convert SQL statement to HBase operation.
+     *
+     * @return HBase operation
+     */
     @Override
     public HBaseOperation convert() {
         DeleteStatementContext context = (DeleteStatementContext) sqlStatementContext;

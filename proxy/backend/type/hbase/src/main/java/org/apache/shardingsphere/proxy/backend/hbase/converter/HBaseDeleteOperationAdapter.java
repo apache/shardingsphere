@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * HBase database delete converter.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class HBaseDeleteOperationAdapter extends Operation {

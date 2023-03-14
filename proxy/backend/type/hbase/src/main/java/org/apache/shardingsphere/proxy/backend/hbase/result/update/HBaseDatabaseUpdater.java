@@ -30,6 +30,7 @@ public interface HBaseDatabaseUpdater extends TypedSPI {
     
     /**
      * Execute HBase operation.
+     *
      * @param hbaseOperation HBase operation
      * @return affected rows
      */

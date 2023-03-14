@@ -31,6 +31,12 @@ import java.util.Collections;
  */
 public final class HBaseDatabaseUpdateUpdater implements HBaseDatabaseUpdater {
     
+    /**
+     * Execute HBase operation.
+     *
+     * @param hbaseOperation HBase operation
+     * @return affected rows
+     */
     @Override
     public Collection<UpdateResult> executeUpdate(final HBaseOperation hbaseOperation) {
         if (hbaseOperation.getOperation() instanceof HBaseUpdateOperationAdapter) {

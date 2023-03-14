@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.converter;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Operation;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.FlushStatementContext;
@@ -29,13 +30,10 @@ import java.util.stream.Collectors;
 /**
  * HBase database region reload converter.
  */
+@RequiredArgsConstructor
 public final class HBaseRegionReloadConverter implements HBaseDatabaseConverter {
     
     private final SQLStatementContext<?> sqlStatementContext;
-    
-    public HBaseRegionReloadConverter(final SQLStatementContext<?> sqlStatementContext) {
-        this.sqlStatementContext = sqlStatementContext;
-    }
     
     private Operation getOperation() {
         return new Operation() {

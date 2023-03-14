@@ -72,7 +72,7 @@ public final class HBaseDatabaseGetResultSet implements HBaseDatabaseQueryResult
     private long maxLimitResultSize;
     
     /**
-     * init data.
+     * Init data.
      *
      * @param sqlStatementContext SQL statement context.
      */
