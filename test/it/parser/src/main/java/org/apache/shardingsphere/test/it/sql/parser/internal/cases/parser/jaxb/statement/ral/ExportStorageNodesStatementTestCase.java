@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.connector;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral;
 
-import org.apache.hadoop.hbase.client.Admin;
-import java.io.IOException;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 
 /**
- * Call back for HBase operation.
- *
- * @param <T> type of result
+ * Export storage nodes statement test case.
  */
-public interface HBaseAdminCallback<T> {
-    
-    /**
-     * Execute in HBase.
-     *
-     * @param admin execute in HBase table
-     * @return execute result
-     * @throws IOException IO exception
-     */
-    T executeInHBase(Admin admin) throws IOException;
+public final class ExportStorageNodesStatementTestCase extends DatabaseContainedTestCase {
 }

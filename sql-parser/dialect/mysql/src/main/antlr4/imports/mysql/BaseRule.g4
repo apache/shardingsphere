@@ -1004,8 +1004,9 @@ repairType
     
 castFunction
     : CAST LP_ expr AS dataType RP_
+    | CAST LP_ expr AT TIME ZONE expr AS DATETIME typeDatetimePrecision? RP_
     ;
-    
+
 convertFunction
     : CONVERT LP_ expr COMMA_ castType RP_
     | CONVERT LP_ expr USING charsetName RP_

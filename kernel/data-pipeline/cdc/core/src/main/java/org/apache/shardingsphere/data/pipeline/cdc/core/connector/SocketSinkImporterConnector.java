@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.connector;
 
 import io.netty.channel.Channel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -38,6 +37,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertU
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -69,8 +69,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
     @Setter
     private volatile boolean incrementalTaskRunning = true;
     
-    @Getter
-    private final String database;
+    private final ShardingSphereDatabase database;
     
     private final Channel channel;
     
@@ -86,7 +85,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
     
     private Thread incrementalImporterTask;
     
-    public SocketSinkImporterConnector(final Channel channel, final String database, final int jobShardingCount, final Collection<String> schemaTableNames,
+    public SocketSinkImporterConnector(final Channel channel, final ShardingSphereDatabase database, final int jobShardingCount, final Collection<String> schemaTableNames,
                                        final Comparator<DataRecord> dataRecordComparator) {
         this.channel = channel;
         this.database = database;
@@ -142,7 +141,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
                 continue;
             }
             DataRecord dataRecord = (DataRecord) each;
-            records.add(DataRecordResultConvertUtil.convertDataRecordToRecord(database, tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
+            records.add(DataRecordResultConvertUtil.convertDataRecordToRecord(database.getName(), tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
         }
         String ackId = CDCAckHolder.getInstance().bindAckIdWithPosition(importerDataRecordMap);
         DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecords(records).setAckId(ackId).build();

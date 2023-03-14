@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.connector;
+package org.apache.shardingsphere.proxy.backend.hbase.bean;
 
-import org.apache.hadoop.hbase.client.Table;
-import java.io.IOException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.hadoop.hbase.client.Operation;
 
 /**
- * HBase query callback.
- * 
- * @param <T> type of result
+ * HBase operation.
  */
-public interface HBaseQueryCallback<T> {
+@RequiredArgsConstructor
+@Getter
+public final class HBaseOperation {
     
-    /**
-     * Execute in HBase.
-     * 
-     * @param table table
-     * @return execute result
-     * @throws IOException IO exception
-     * 
-     */
-    T executeInHBase(Table table) throws IOException;
+    private final String tableName;
     
+    private final Operation operation;
 }

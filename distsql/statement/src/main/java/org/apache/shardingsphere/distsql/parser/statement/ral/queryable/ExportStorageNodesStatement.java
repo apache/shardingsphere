@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
@@ -27,6 +28,9 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public final class ExportStorageNodesStatement extends QueryableRALStatement {
+    
+    @Getter
+    private final String databaseName;
     
     private final String filePath;
     

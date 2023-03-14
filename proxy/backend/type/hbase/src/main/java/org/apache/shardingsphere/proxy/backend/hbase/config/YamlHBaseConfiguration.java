@@ -33,7 +33,7 @@ public final class YamlHBaseConfiguration implements YamlConfiguration {
     
     private String databaseName;
     
-    private Map<String, Object> dataSourceCommon;
+    private Map<String, Object> commonDataSourceProps;
     
     private Map<String, YamlHBaseParameter> dataSources = new HashMap<>();
     
