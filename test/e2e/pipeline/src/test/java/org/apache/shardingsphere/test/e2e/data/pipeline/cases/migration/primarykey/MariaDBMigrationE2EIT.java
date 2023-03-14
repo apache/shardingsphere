@@ -47,9 +47,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
     
-    private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
+    private static final String SOURCE_TABLE_NAME = "t_order";
     
-    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    private static final String TARGET_TABLE_NAME = "t_order";
     
     public MariaDBMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
@@ -73,16 +73,16 @@ public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
         String sqlPattern = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-        getContainerComposer().sourceExecuteWithLog(String.format(sqlPattern, SOURCE_TABLE_ORDER_NAME));
+        getContainerComposer().sourceExecuteWithLog(String.format(sqlPattern, SOURCE_TABLE_NAME));
         try (Connection connection = getContainerComposer().getSourceDataSource().getConnection()) {
             KeyGenerateAlgorithm generateAlgorithm = new UUIDKeyGenerateAlgorithm();
-            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, generateAlgorithm, SOURCE_TABLE_ORDER_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
+            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, generateAlgorithm, SOURCE_TABLE_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         }
         addMigrationProcessConfig();
         addMigrationSourceResource();
         addMigrationTargetResource();
         createTargetOrderTableRule();
-        startMigration(SOURCE_TABLE_ORDER_NAME, TARGET_TABLE_ORDER_NAME);
+        startMigration(SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
         String jobId = listJobId().get(0);
         getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         getContainerComposer().sourceExecuteWithLog("INSERT INTO t_order (order_id, user_id, status) VALUES ('a1', 1, 'OK')");
@@ -91,7 +91,7 @@ public final class MariaDBMigrationE2EIT extends AbstractMigrationE2EIT {
         assertCheckMigrationSuccess(jobId, "CRC32_MATCH");
         commitMigrationByJobId(jobId);
         getContainerComposer().proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
-        assertThat(getContainerComposer().getTargetTableRecordsCount(SOURCE_TABLE_ORDER_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
+        assertThat(getContainerComposer().getTargetTableRecordsCount(SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
         List<String> lastJobIds = listJobId();
         assertTrue(lastJobIds.isEmpty());
     }

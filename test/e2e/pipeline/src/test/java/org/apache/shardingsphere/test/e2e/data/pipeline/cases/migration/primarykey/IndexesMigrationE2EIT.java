@@ -65,9 +65,9 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             + "TYPE(NAME=\"hash_mod\",PROPERTIES(\"sharding-count\"=\"6\"))\n"
             + ");";
     
-    private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
+    private static final String SOURCE_TABLE_NAME = "t_order";
     
-    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    private static final String TARGET_TABLE_NAME = "t_order";
     
     public IndexesMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
@@ -185,15 +185,15 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private void assertMigrationSuccess(final String sqlPattern, final String shardingColumn, final KeyGenerateAlgorithm keyGenerateAlgorithm,
                                         final String consistencyCheckAlgorithmType, final Callable<Void> incrementalTaskFn) throws Exception {
-        getContainerComposer().sourceExecuteWithLog(String.format(sqlPattern, SOURCE_TABLE_ORDER_NAME));
+        getContainerComposer().sourceExecuteWithLog(String.format(sqlPattern, SOURCE_TABLE_NAME));
         try (Connection connection = getContainerComposer().getSourceDataSource().getConnection()) {
-            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, SOURCE_TABLE_ORDER_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
+            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, SOURCE_TABLE_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         }
         addMigrationProcessConfig();
         addMigrationSourceResource();
         addMigrationTargetResource();
         getContainerComposer().proxyExecuteWithLog(String.format(ORDER_TABLE_SHARDING_RULE_FORMAT, shardingColumn), 2);
-        startMigration(SOURCE_TABLE_ORDER_NAME, TARGET_TABLE_ORDER_NAME);
+        startMigration(SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
         String jobId = listJobId().get(0);
         getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         incrementalTaskFn.call();
@@ -203,7 +203,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         }
         commitMigrationByJobId(jobId);
         getContainerComposer().proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
-        assertThat(getContainerComposer().getTargetTableRecordsCount(SOURCE_TABLE_ORDER_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
+        assertThat(getContainerComposer().getTargetTableRecordsCount(SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
         List<String> lastJobIds = listJobId();
         assertTrue(lastJobIds.isEmpty());
     }

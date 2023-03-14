@@ -52,9 +52,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
-    private static final String SOURCE_TABLE_ORDER_NAME = "t_order_copy";
+    private static final String SOURCE_TABLE_NAME = "t_order_copy";
     
-    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    private static final String TARGET_TABLE_NAME = "t_order";
     
     public MySQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
@@ -76,7 +76,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     @Test
     public void assertMigrationSuccess() throws SQLException, InterruptedException {
         addMigrationProcessConfig();
-        getContainerComposer().createSourceOrderTable(SOURCE_TABLE_ORDER_NAME);
+        getContainerComposer().createSourceOrderTable(SOURCE_TABLE_NAME);
         getContainerComposer().createSourceOrderItemTable();
         addMigrationSourceResource();
         addMigrationTargetResource();
@@ -85,15 +85,15 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         createTargetOrderItemTableRule();
         Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(getContainerComposer().getDatabaseType(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         log.info("init data begin: {}", LocalDateTime.now());
-        DataSourceExecuteUtil.execute(getContainerComposer().getSourceDataSource(), getContainerComposer().getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_ORDER_NAME), dataPair.getLeft());
+        DataSourceExecuteUtil.execute(getContainerComposer().getSourceDataSource(), getContainerComposer().getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
         DataSourceExecuteUtil.execute(getContainerComposer().getSourceDataSource(), getContainerComposer().getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
-        startMigration(SOURCE_TABLE_ORDER_NAME, TARGET_TABLE_ORDER_NAME);
+        startMigration(SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
         startMigration("t_order_item", "t_order_item");
-        String orderJobId = getJobIdByTableName("ds_0." + SOURCE_TABLE_ORDER_NAME);
+        String orderJobId = getJobIdByTableName("ds_0." + SOURCE_TABLE_NAME);
         getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", orderJobId));
         getContainerComposer().startIncrementTask(
-                new E2EIncrementalTask(getContainerComposer().getSourceDataSource(), SOURCE_TABLE_ORDER_NAME, new SnowflakeKeyGenerateAlgorithm(), getContainerComposer().getDatabaseType(), 30));
+                new E2EIncrementalTask(getContainerComposer().getSourceDataSource(), SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), getContainerComposer().getDatabaseType(), 30));
         assertMigrationSuccessById(orderJobId, "DATA_MATCH");
         String orderItemJobId = getJobIdByTableName("ds_0.t_order_item");
         assertMigrationSuccessById(orderItemJobId, "DATA_MATCH");

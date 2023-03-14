@@ -50,9 +50,9 @@ import static org.hamcrest.Matchers.is;
 @Slf4j
 public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     
-    private static final String SOURCE_TABLE_ORDER_NAME = "t_order";
+    private static final String SOURCE_TABLE_NAME = "t_order";
     
-    private static final String TARGET_TABLE_ORDER_NAME = "t_order";
+    private static final String TARGET_TABLE_NAME = "t_order";
     
     public RulesMigrationE2EIT(final PipelineTestParameter testParam) {
         super(testParam, new MigrationJobType());
@@ -86,22 +86,22 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void assertMigrationSuccess(final Callable<Void> addRuleFn) throws Exception {
-        getContainerComposer().createSourceOrderTable(SOURCE_TABLE_ORDER_NAME);
+        getContainerComposer().createSourceOrderTable(SOURCE_TABLE_NAME);
         try (Connection connection = getContainerComposer().getSourceDataSource().getConnection()) {
-            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, new UUIDKeyGenerateAlgorithm(), SOURCE_TABLE_ORDER_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
+            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, new UUIDKeyGenerateAlgorithm(), SOURCE_TABLE_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         }
         addMigrationSourceResource();
         addMigrationTargetResource();
         if (null != addRuleFn) {
             addRuleFn.call();
         }
-        startMigration(SOURCE_TABLE_ORDER_NAME, TARGET_TABLE_ORDER_NAME);
+        startMigration(SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
         String jobId = listJobId().get(0);
         getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         getContainerComposer().waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         commitMigrationByJobId(jobId);
         getContainerComposer().proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
-        assertThat(getContainerComposer().getTargetTableRecordsCount(SOURCE_TABLE_ORDER_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT));
+        assertThat(getContainerComposer().getTargetTableRecordsCount(SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT));
     }
 }
