@@ -98,18 +98,17 @@ public final class PipelineAPIFactory {
     /**
      * Get registry center.
      *
+     * @param contextKey context key
      * @return Coordinator registry center
      */
-    public static CoordinatorRegistryCenter getRegistryCenter() {
-        return RegistryCenterHolder.getInstance();
+    public static CoordinatorRegistryCenter getRegistryCenter(final PipelineContextKey contextKey) {
+        return RegistryCenterHolder.getInstance(contextKey);
     }
     
     @Getter
     private static final class ElasticJobAPIHolder {
         
         private static final Map<PipelineContextKey, ElasticJobAPIHolder> INSTANCE_MAP = new ConcurrentHashMap<>();
-        
-        private final PipelineContextKey contextKey;
         
         private final JobStatisticsAPI jobStatisticsAPI;
         
@@ -118,7 +117,6 @@ public final class PipelineAPIFactory {
         private final JobOperateAPI jobOperateAPI;
         
         private ElasticJobAPIHolder(final PipelineContextKey contextKey) {
-            this.contextKey = contextKey;
             ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContextManager.getContext(contextKey).getModeConfig().getRepository();
             String namespace = repositoryConfig.getNamespace() + PipelineMetaDataNode.getElasticJobNamespace();
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(repositoryConfig.getServerLists(), namespace, null);
@@ -144,23 +142,27 @@ public final class PipelineAPIFactory {
     
     private static final class RegistryCenterHolder {
         
-        private static volatile CoordinatorRegistryCenter instance;
+        private static final Map<PipelineContextKey, CoordinatorRegistryCenter> INSTANCE_MAP = new ConcurrentHashMap<>();
         
-        public static CoordinatorRegistryCenter getInstance() {
-            if (null == instance) {
-                synchronized (PipelineAPIFactory.class) {
-                    if (null == instance) {
-                        instance = createRegistryCenter();
-                    }
+        public static CoordinatorRegistryCenter getInstance(final PipelineContextKey contextKey) {
+            // TODO Extract common method; Reduce lock time
+            CoordinatorRegistryCenter result = INSTANCE_MAP.get(contextKey);
+            if (null != result) {
+                return result;
+            }
+            synchronized (INSTANCE_MAP) {
+                result = INSTANCE_MAP.get(contextKey);
+                if (null == result) {
+                    result = createRegistryCenter(contextKey);
+                    INSTANCE_MAP.put(contextKey, result);
                 }
             }
-            return instance;
+            return result;
         }
         
-        private static CoordinatorRegistryCenter createRegistryCenter() {
+        private static CoordinatorRegistryCenter createRegistryCenter(final PipelineContextKey contextKey) {
             CoordinatorRegistryCenterInitializer registryCenterInitializer = new CoordinatorRegistryCenterInitializer();
-            // TODO now get modeConfig
-            ModeConfiguration modeConfig = PipelineContextManager.getContext(null).getModeConfig();
+            ModeConfiguration modeConfig = PipelineContextManager.getContext(contextKey).getModeConfig();
             String clusterType = modeConfig.getRepository().getType();
             if ("ZooKeeper".equals(clusterType)) {
                 return registryCenterInitializer.createZookeeperRegistryCenter(modeConfig, PipelineMetaDataNode.getElasticJobNamespace());
