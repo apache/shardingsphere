@@ -184,6 +184,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, database, metaDataContexts.getMetaData().getGlobalRuleMetaData(),
                 metaDataContexts.getMetaData().getProps(), backendConnection.getConnectionSession().getConnectionContext());
         result.add(executionContext);
+        // TODO support logical SQL optimize to generate multiple logical SQL
         return result;
     }
     
