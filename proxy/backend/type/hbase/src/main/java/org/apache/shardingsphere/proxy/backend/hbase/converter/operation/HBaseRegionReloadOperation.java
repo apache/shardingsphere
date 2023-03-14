@@ -15,34 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.converter;
+package org.apache.shardingsphere.proxy.backend.hbase.converter.operation;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Operation;
-import java.util.List;
+
+import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
- * HBase database delete converter.
+ * HBase region reload operation.
  */
-@RequiredArgsConstructor
-@Getter
-public final class HBaseDeleteOperationAdapter extends Operation {
-    
-    private final String tableName;
-    
-    private final List<Delete> deletes;
+public final class HBaseRegionReloadOperation extends Operation {
     
     @Override
     public Map<String, Object> getFingerprint() {
-        return new TreeMap<>();
+        return Collections.emptyMap();
     }
     
     @Override
     public Map<String, Object> toMap(final int i) {
-        return new TreeMap<>();
+        return Collections.emptyMap();
     }
 }

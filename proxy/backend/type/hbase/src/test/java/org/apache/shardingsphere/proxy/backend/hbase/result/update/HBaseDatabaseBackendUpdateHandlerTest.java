@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.proxy.backend.hbase.impl.HBaseDatabaseBackendUpdateHandler;
+import org.apache.shardingsphere.proxy.backend.hbase.handler.HBaseDatabaseBackendUpdateHandler;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

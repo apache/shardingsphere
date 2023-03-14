@@ -15,29 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.converter;
+package org.apache.shardingsphere.proxy.backend.hbase.converter.type;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverterFactory;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseDeleteOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.Test;
-import static org.hamcrest.CoreMatchers.equalTo;
+import org.junit.jupiter.api.Test;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class HBaseDatabaseDeleteConverterTest {
+public final class HBaseDeleteOperationConverterTest {
     
     @Test
     public void assertConvert() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getDeleteStatement());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
-        HBaseDatabaseConverter converter = HBaseDatabaseConverterFactory.newInstance(sqlStatementContext);
+        HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation hbaseOperation = converter.convert();
-        assertThat(hbaseOperation.getTableName(), equalTo(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
+        assertThat(hbaseOperation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
         assertThat(hbaseOperation.getOperation(), instanceOf(Delete.class));
     }
     
@@ -46,10 +49,10 @@ public final class HBaseDatabaseDeleteConverterTest {
         String sql = " delete /*+ hbase */ from t_test_order where rowKey in ('2', '1')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
-        HBaseDatabaseConverter converter = HBaseDatabaseConverterFactory.newInstance(sqlStatementContext);
+        HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation hBaseOperation = converter.convert();
-        assertThat(hBaseOperation.getTableName(), equalTo(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
-        assertThat(hBaseOperation.getOperation(), instanceOf(HBaseDeleteOperationAdapter.class));
-        assertThat(((HBaseDeleteOperationAdapter) hBaseOperation.getOperation()).getDeletes().size(), is(2));
+        assertThat(hBaseOperation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
+        assertThat(hBaseOperation.getOperation(), instanceOf(HBaseDeleteOperation.class));
+        assertThat(((HBaseDeleteOperation) hBaseOperation.getOperation()).getDeletes().size(), is(2));
     }
 }

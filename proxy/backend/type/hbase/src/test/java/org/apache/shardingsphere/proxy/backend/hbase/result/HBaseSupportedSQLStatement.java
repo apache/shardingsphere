@@ -26,7 +26,7 @@ import java.util.Properties;
 /**
  * SQL Statement which supported in HBase.
  */
-public class HBaseSupportedSQLStatement {
+public final class HBaseSupportedSQLStatement {
     
     public static final String HBASE_DATABASE_TABLE_NAME = "t_test_order";
     

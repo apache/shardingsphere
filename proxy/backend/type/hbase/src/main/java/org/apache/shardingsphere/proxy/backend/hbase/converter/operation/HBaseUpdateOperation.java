@@ -15,19 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.converter;
+package org.apache.shardingsphere.proxy.backend.hbase.converter.operation;
 
-import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.hadoop.hbase.client.Operation;
+import org.apache.hadoop.hbase.client.Put;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Convert SQL statement to HBase operation.
+ * HBase update operation.
  */
-public interface HBaseDatabaseConverter {
+@RequiredArgsConstructor
+@Getter
+public final class HBaseUpdateOperation extends Operation {
     
-    /**
-     * Convert SQL statement to HBase operation.
-     * 
-     * @return HBase operation
-     */
-    HBaseOperation convert();
+    private final List<Put> puts;
+    
+    @Override
+    public Map<String, Object> getFingerprint() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Map<String, Object> toMap(final int i) {
+        return Collections.emptyMap();
+    }
 }

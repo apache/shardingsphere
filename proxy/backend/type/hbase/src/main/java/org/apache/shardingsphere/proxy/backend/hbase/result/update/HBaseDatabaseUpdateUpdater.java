@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
-import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseUpdateOperationAdapter;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseUpdateOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import java.util.Collection;
@@ -31,21 +31,14 @@ import java.util.Collections;
  */
 public final class HBaseDatabaseUpdateUpdater implements HBaseDatabaseUpdater {
     
-    /**
-     * Execute HBase operation.
-     *
-     * @param hbaseOperation HBase operation
-     * @return affected rows
-     */
     @Override
-    public Collection<UpdateResult> executeUpdate(final HBaseOperation hbaseOperation) {
-        if (hbaseOperation.getOperation() instanceof HBaseUpdateOperationAdapter) {
-            HBaseExecutor.executeUpdate(hbaseOperation.getTableName(), table -> table.put(((HBaseUpdateOperationAdapter) hbaseOperation.getOperation()).getPuts()));
-            return Collections.singletonList(new UpdateResult(((HBaseUpdateOperationAdapter) hbaseOperation.getOperation()).getPuts().size(), 0));
-        } else {
-            HBaseExecutor.executeUpdate(hbaseOperation.getTableName(), table -> table.put((Put) hbaseOperation.getOperation()));
-            return Collections.singletonList(new UpdateResult(1, 0));
+    public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) {
+        if (operation.getOperation() instanceof HBaseUpdateOperation) {
+            HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.put(((HBaseUpdateOperation) operation.getOperation()).getPuts()));
+            return Collections.singleton(new UpdateResult(((HBaseUpdateOperation) operation.getOperation()).getPuts().size(), 0));
         }
+        HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.put((Put) operation.getOperation()));
+        return Collections.singleton(new UpdateResult(1, 0));
     }
     
     @Override
