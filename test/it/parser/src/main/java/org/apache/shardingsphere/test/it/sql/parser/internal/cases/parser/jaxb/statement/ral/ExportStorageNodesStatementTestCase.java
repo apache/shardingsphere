@@ -15,29 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.distsql.export;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 
 /**
- * Exported storage node.
+ * Export storage nodes statement test case.
  */
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class ExportedStorageNode {
-    
-    private String ip;
-    
-    private String port;
-    
-    private String username;
-    
-    private String password;
-    
-    private String database;
+public final class ExportStorageNodesStatementTestCase extends DatabaseContainedTestCase {
 }
