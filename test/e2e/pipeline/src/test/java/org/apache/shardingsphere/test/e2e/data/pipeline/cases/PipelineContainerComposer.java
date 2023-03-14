@@ -79,8 +79,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     public static final String SCHEMA_NAME = "test";
     
-    private static final String PROXY_DATABASE = "sharding_db";
-    
     public static final String DS_0 = "pipeline_it_0";
     
     public static final String DS_1 = "pipeline_it_1";
@@ -92,6 +90,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
     public static final String DS_4 = "pipeline_it_4";
     
     public static final int TABLE_INIT_ROW_COUNT = 3000;
+    
+    private static final String PROXY_DATABASE = "sharding_db";
     
     private final BaseContainerComposer containerComposer;
     
