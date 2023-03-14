@@ -81,8 +81,9 @@ public final class PipelineAPIFactory {
      * @param contextKey context key
      * @return job configuration API
      */
-    public static JobConfigurationAPI getJobConfigurationAPI(final PipelineContextKey contextKey) {
-        return ElasticJobAPIHolder.getInstance(contextKey).getJobConfigurationAPI();
+    public static JobConfigurationAPI getJobConfigurationAPI() {
+        // TODO now getJobConfigurationAPI
+        return ElasticJobAPIHolder.getInstance(null).getJobConfigurationAPI();
     }
     
     /**
@@ -91,8 +92,9 @@ public final class PipelineAPIFactory {
      * @param contextKey context key
      * @return job operate API
      */
-    public static JobOperateAPI getJobOperateAPI(final PipelineContextKey contextKey) {
-        return ElasticJobAPIHolder.getInstance(contextKey).getJobOperateAPI();
+    public static JobOperateAPI getJobOperateAPI() {
+        // TODO now getJobOperateAPI
+        return ElasticJobAPIHolder.getInstance(null).getJobOperateAPI();
     }
     
     /**
@@ -159,7 +161,8 @@ public final class PipelineAPIFactory {
         
         private static CoordinatorRegistryCenter createRegistryCenter() {
             CoordinatorRegistryCenterInitializer registryCenterInitializer = new CoordinatorRegistryCenterInitializer();
-            ModeConfiguration modeConfig = PipelineContext.getModeConfig();
+            // TODO now get modeConfig
+            ModeConfiguration modeConfig = PipelineContextManager.getContext(null).getModeConfig();
             return registryCenterInitializer.createRegistryCenter(modeConfig, PipelineMetaDataNode.getElasticJobNamespace());
         }
     }
