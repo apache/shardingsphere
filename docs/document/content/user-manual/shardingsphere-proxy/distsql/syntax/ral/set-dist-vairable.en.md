@@ -40,7 +40,7 @@ agentPluginsEnable ::=
 
 - `agent_plugins_enable` is use to set the `agent` plugins enable status, the default value is `FALSE`
 
-- `system_log_level` is the system log level, only affects the log printing of `PROXY`, the default value is `DUBUG`
+- `system_log_level` is the system log level, only affects the log printing of `PROXY`, the default value is `INFO`
 
 ### Example
 
