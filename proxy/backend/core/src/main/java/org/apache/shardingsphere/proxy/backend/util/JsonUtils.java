@@ -63,7 +63,7 @@ public final class JsonUtils {
      *
      * @param value json string
      * @param clazz target Object
-     * @param <T>   the type of return Object data
+     * @param <T> the type of return Object data
      * @return target Object data
      */
     @SneakyThrows(JsonProcessingException.class)
