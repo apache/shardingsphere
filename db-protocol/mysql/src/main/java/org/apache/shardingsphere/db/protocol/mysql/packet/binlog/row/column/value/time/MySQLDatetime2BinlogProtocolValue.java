@@ -22,6 +22,8 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.valu
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * MySQL DATETIME2 binlog protocol value.
@@ -46,15 +48,16 @@ public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProto
     
     private Serializable readDatetime(final MySQLBinlogColumnDef columnDef, final long datetime, final MySQLPacketPayload payload) {
         long datetimeWithoutSign = datetime & (0x8000000000L - 1);
-        return readDate(datetimeWithoutSign >> 17) + " " + readTime(datetimeWithoutSign % (1 << 17)) + new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-    }
-    
-    private String readDate(final long date) {
+        long date = datetimeWithoutSign >> 17;
         long yearAndMonth = date >> 5;
-        return String.format("%d-%02d-%02d", yearAndMonth / 13, yearAndMonth % 13, date % (1 << 5));
-    }
-    
-    private String readTime(final long time) {
-        return String.format("%02d:%02d:%02d", time >> 12, (time >> 6) % (1 << 6), time % (1 << 6));
+        int year = (int) (yearAndMonth / 13);
+        int month = (int) (yearAndMonth % 13);
+        int day = (int) (date % (1 << 5));
+        long time = datetimeWithoutSign % (1 << 17);
+        int hour = (int) (time >> 12);
+        int minute = (int) ((time >> 6) % (1 << 6));
+        int second = (int) (time % (1 << 6));
+        MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
+        return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, fractionalSeconds.getNanos()));
     }
 }

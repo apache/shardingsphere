@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.hbase.client.Operation;
 
+/**
+ * HBase operation.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class HBaseOperation {

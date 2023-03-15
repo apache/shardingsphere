@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Exported storage nodes.
@@ -35,5 +36,5 @@ import java.util.Collection;
 public class ExportedStorageNodes {
     
     @JsonProperty("storage_nodes")
-    private Collection<ExportedStorageNode> storageNodes;
+    private Map<String, Collection<ExportedStorageNode>> storageNodes;
 }
