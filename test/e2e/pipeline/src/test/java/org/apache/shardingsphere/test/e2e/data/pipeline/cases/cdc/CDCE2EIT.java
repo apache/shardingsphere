@@ -48,7 +48,6 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.Pipeline
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -93,76 +92,68 @@ public final class CDCE2EIT {
     
     private static final String SOURCE_TABLE_NAME = "t_order";
     
-    private final PipelineContainerComposer containerComposer;
-    
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    
-    public CDCE2EIT(final PipelineTestParameter testParam) {
-        containerComposer = new PipelineContainerComposer(testParam, new CDCJobType());
-    }
-    
-    @AfterEach
-    public void tearDown() {
-        containerComposer.close();
-    }
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertCDCDataImportSuccess() throws SQLException, InterruptedException {
-        // make sure the program time zone same with the database server at CI.
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
-            containerComposer.registerStorageUnit(each);
+    public void assertCDCDataImportSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new CDCJobType())) {
+            // make sure the program time zone same with the database server at CI.
+            TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+            for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
+                containerComposer.registerStorageUnit(each);
+            }
+            createOrderTableRule(containerComposer);
+            try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
+                initSchemaAndTable(containerComposer, connection, 2);
+            }
+            DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
+            Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), 20);
+            log.info("init data begin: {}", LocalDateTime.now());
+            DataSourceExecuteUtil.execute(jdbcDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
+            log.info("init data end: {}", LocalDateTime.now());
+            try (
+                    Connection connection = DriverManager.getConnection(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
+                            containerComposer.getUsername(), containerComposer.getPassword())) {
+                initSchemaAndTable(containerComposer, connection, 0);
+            }
+            startCDCClient(containerComposer);
+            Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW STREAMING LIST").isEmpty());
+            String jobId = containerComposer.queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
+            containerComposer.waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
+            containerComposer.startIncrementTask(new E2EIncrementalTask(jdbcDataSource, SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20));
+            containerComposer.getIncreaseTaskThread().join(10000L);
+            List<Map<String, Object>> actualProxyList;
+            try (Connection connection = jdbcDataSource.getConnection()) {
+                ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", getOrderTableNameWithSchema(containerComposer)));
+                actualProxyList = containerComposer.transformResultSetToList(resultSet);
+            }
+            Awaitility.await().atMost(20, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS)
+                    .until(() -> listOrderRecords(containerComposer, getOrderTableNameWithSchema(containerComposer)).size() == actualProxyList.size());
+            SchemaTableName schemaTableName = containerComposer.getDatabaseType().isSchemaAvailable()
+                    ? new SchemaTableName(new SchemaName(PipelineContainerComposer.SCHEMA_NAME), new TableName(SOURCE_TABLE_NAME))
+                    : new SchemaTableName(new SchemaName(null), new TableName(SOURCE_TABLE_NAME));
+            PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(
+                    containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
+                    containerComposer.getUsername(), containerComposer.getPassword()), containerComposer.getDatabaseType());
+            PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(jdbcDataSource, containerComposer.getDatabaseType());
+            StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
+            PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(PipelineContainerComposer.SCHEMA_NAME, "t_order");
+            PipelineColumnMetaData primaryKeyMetaData = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
+            ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0);
+            SingleTableInventoryDataConsistencyChecker checker = new SingleTableInventoryDataConsistencyChecker("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
+                    tableMetaData.getColumnNames(), primaryKeyMetaData, null, progressContext);
+            DataConsistencyCheckResult checkResult = checker.check(new DataMatchDataConsistencyCalculateAlgorithm());
+            assertTrue(checkResult.isMatched());
         }
-        createOrderTableRule();
-        try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
-            initSchemaAndTable(connection, 2);
-        }
-        DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
-        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), 20);
-        log.info("init data begin: {}", LocalDateTime.now());
-        DataSourceExecuteUtil.execute(jdbcDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
-        log.info("init data end: {}", LocalDateTime.now());
-        try (
-                Connection connection = DriverManager.getConnection(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
-                        containerComposer.getUsername(), containerComposer.getPassword())) {
-            initSchemaAndTable(connection, 0);
-        }
-        startCDCClient();
-        Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW STREAMING LIST").isEmpty());
-        String jobId = containerComposer.queryForListWithLog("SHOW STREAMING LIST").get(0).get("id").toString();
-        containerComposer.waitIncrementTaskFinished(String.format("SHOW STREAMING STATUS '%s'", jobId));
-        containerComposer.startIncrementTask(new E2EIncrementalTask(jdbcDataSource, SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20));
-        containerComposer.getIncreaseTaskThread().join(10000L);
-        List<Map<String, Object>> actualProxyList;
-        try (Connection connection = jdbcDataSource.getConnection()) {
-            ResultSet resultSet = connection.createStatement().executeQuery(String.format("SELECT * FROM %s ORDER BY order_id ASC", getOrderTableNameWithSchema()));
-            actualProxyList = containerComposer.transformResultSetToList(resultSet);
-        }
-        Awaitility.await().atMost(20, TimeUnit.SECONDS).pollInterval(2, TimeUnit.SECONDS).until(() -> listOrderRecords(getOrderTableNameWithSchema()).size() == actualProxyList.size());
-        SchemaTableName schemaTableName = containerComposer.getDatabaseType().isSchemaAvailable()
-                ? new SchemaTableName(new SchemaName(PipelineContainerComposer.SCHEMA_NAME), new TableName(SOURCE_TABLE_NAME))
-                : new SchemaTableName(new SchemaName(null), new TableName(SOURCE_TABLE_NAME));
-        PipelineDataSourceWrapper targetDataSource = new PipelineDataSourceWrapper(StorageContainerUtil.generateDataSource(
-                containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
-                containerComposer.getUsername(), containerComposer.getPassword()), containerComposer.getDatabaseType());
-        PipelineDataSourceWrapper sourceDataSource = new PipelineDataSourceWrapper(jdbcDataSource, containerComposer.getDatabaseType());
-        StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(targetDataSource);
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(PipelineContainerComposer.SCHEMA_NAME, "t_order");
-        PipelineColumnMetaData primaryKeyMetaData = tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0));
-        ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0);
-        SingleTableInventoryDataConsistencyChecker checker = new SingleTableInventoryDataConsistencyChecker("", sourceDataSource, targetDataSource, schemaTableName, schemaTableName,
-                tableMetaData.getColumnNames(), primaryKeyMetaData, null, progressContext);
-        DataConsistencyCheckResult checkResult = checker.check(new DataMatchDataConsistencyCalculateAlgorithm());
-        assertTrue(checkResult.isMatched());
     }
     
-    private void createOrderTableRule() throws SQLException {
+    private void createOrderTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(CREATE_SHARDING_RULE_SQL, 2);
     }
     
-    private void initSchemaAndTable(final Connection connection, final int sleepSeconds) throws SQLException {
+    private void initSchemaAndTable(final PipelineContainerComposer containerComposer, final Connection connection, final int sleepSeconds) throws SQLException {
         containerComposer.createSchema(connection, sleepSeconds);
         String sql = containerComposer.getExtraSQLCommand().getCreateTableOrder(SOURCE_TABLE_NAME);
         log.info("create table sql: {}", sql);
@@ -172,7 +163,7 @@ public final class CDCE2EIT {
         }
     }
     
-    private void startCDCClient() {
+    private void startCDCClient(final PipelineContainerComposer containerComposer) {
         ImportDataSourceParameter importDataSourceParam = new ImportDataSourceParameter(containerComposer.appendExtraParameter(
                 containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false, 0)), containerComposer.getUsername(), containerComposer.getPassword());
         StartCDCClientParameter parameter = new StartCDCClientParameter(importDataSourceParam);
@@ -193,7 +184,7 @@ public final class CDCE2EIT {
         });
     }
     
-    private List<Map<String, Object>> listOrderRecords(final String tableNameWithSchema) throws SQLException {
+    private List<Map<String, Object>> listOrderRecords(final PipelineContainerComposer containerComposer, final String tableNameWithSchema) throws SQLException {
         try (
                 Connection connection = DriverManager.getConnection(
                         containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false), containerComposer.getUsername(), containerComposer.getPassword())) {
@@ -202,7 +193,7 @@ public final class CDCE2EIT {
         }
     }
     
-    private String getOrderTableNameWithSchema() {
+    private String getOrderTableNameWithSchema(final PipelineContainerComposer containerComposer) {
         return containerComposer.getDatabaseType().isSchemaAvailable() ? String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
     }
     
