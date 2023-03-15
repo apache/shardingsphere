@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.TableColumn;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,18 +57,17 @@ public final class OpenGaussSQLBuilder extends AbstractSQLBuilder {
     }
     
     @Override
-    public String buildInsertSQL(final Record record) {
-        String insertSql = super.buildInsertSQL(record);
-        List<String> uniqueKeyNamesList = record.getTableMetaData().getUniqueKeyNamesList();
-        if (uniqueKeyNamesList.isEmpty()) {
+    public String buildInsertSQL(final Record record, final List<String> uniqueKeyNames) {
+        String insertSql = super.buildInsertSQL(record, uniqueKeyNames);
+        if (uniqueKeyNames.isEmpty()) {
             return insertSql;
         }
         StringBuilder updateValue = new StringBuilder();
-        for (String each : record.getAfterMap().keySet()) {
-            if (uniqueKeyNamesList.contains(each)) {
+        for (TableColumn each : record.getAfterList()) {
+            if (uniqueKeyNames.contains(each.getName())) {
                 continue;
             }
-            updateValue.append(quote(each)).append("=EXCLUDED.").append(quote(each)).append(",");
+            updateValue.append(quote(each.getName())).append("=EXCLUDED.").append(quote(each.getName())).append(",");
         }
         updateValue.setLength(updateValue.length() - 1);
         return insertSql + " ON DUPLICATE KEY UPDATE " + updateValue;

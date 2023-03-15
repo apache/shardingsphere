@@ -20,11 +20,14 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.TableMetaData;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.MetaData;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.TableColumn;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 /**
  * Abstract SQL builder.
@@ -76,8 +79,8 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
     }
     
     @Override
-    public String buildInsertSQL(final Record record) {
-        String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + record.getTableMetaData().getTableName();
+    public String buildInsertSQL(final Record record, final List<String> uniqueKeyNames) {
+        String sqlCacheKey = INSERT_SQL_CACHE_KEY_PREFIX + record.getMetaData().getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
             sqlCacheMap.put(sqlCacheKey, buildInsertSQLInternal(record));
         }
@@ -87,26 +90,27 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
     private String buildInsertSQLInternal(final Record record) {
         StringBuilder columnsLiteral = new StringBuilder();
         StringBuilder holder = new StringBuilder();
-        for (String each : record.getAfterMap().keySet()) {
-            columnsLiteral.append(String.format("%s,", quote(each)));
+        for (TableColumn each : record.getAfterList()) {
+            columnsLiteral.append(String.format("%s,", quote(each.getName())));
             holder.append("?,");
         }
         columnsLiteral.setLength(columnsLiteral.length() - 1);
         holder.setLength(holder.length() - 1);
-        TableMetaData tableMetaData = record.getTableMetaData();
-        return String.format("INSERT INTO %s(%s) VALUES(%s)", getQualifiedTableName(tableMetaData.getSchema(), tableMetaData.getTableName()), columnsLiteral, holder);
+        MetaData metaData = record.getMetaData();
+        return String.format("INSERT INTO %s(%s) VALUES(%s)", getQualifiedTableName(metaData.getSchema(), metaData.getTableName()), columnsLiteral, holder);
     }
     
     @Override
-    public String buildUpdateSQL(final Record record) {
-        TableMetaData tableMetaData = record.getTableMetaData();
-        String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + tableMetaData.getTableName();
+    public String buildUpdateSQL(final Record record, final List<String> uniqueKeyNames) {
+        MetaData metaData = record.getMetaData();
+        String sqlCacheKey = UPDATE_SQL_CACHE_KEY_PREFIX + metaData.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(tableMetaData.getSchema(), tableMetaData.getTableName(), record.getBeforeMap().keySet(), tableMetaData.getUniqueKeyNamesList()));
+            List<String> columnNames = record.getBeforeList().stream().map(TableColumn::getName).collect(Collectors.toList());
+            sqlCacheMap.put(sqlCacheKey, buildUpdateSQLInternal(metaData.getSchema(), metaData.getTableName(), columnNames, uniqueKeyNames));
         }
         StringBuilder updatedColumnString = new StringBuilder();
-        for (String each : record.getAfterMap().keySet()) {
-            updatedColumnString.append(String.format("%s = ?,", quote(each)));
+        for (TableColumn each : record.getAfterList()) {
+            updatedColumnString.append(String.format("%s = ?,", quote(each.getName())));
         }
         updatedColumnString.setLength(updatedColumnString.length() - 1);
         return String.format(sqlCacheMap.get(sqlCacheKey), updatedColumnString);
@@ -132,16 +136,17 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
      * @return delete SQL
      */
     @Override
-    public String buildDeleteSQL(final Record record) {
-        TableMetaData tableMetaData = record.getTableMetaData();
-        String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + tableMetaData.getTableName();
+    public String buildDeleteSQL(final Record record, final List<String> uniqueKeyNames) {
+        MetaData metaData = record.getMetaData();
+        String sqlCacheKey = DELETE_SQL_CACHE_KEY_PREFIX + metaData.getTableName();
         if (!sqlCacheMap.containsKey(sqlCacheKey)) {
-            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(tableMetaData.getSchema(), tableMetaData.getTableName(), record.getBeforeMap().keySet(), tableMetaData.getUniqueKeyNamesList()));
+            List<String> columnNames = record.getBeforeList().stream().map(TableColumn::getName).collect(Collectors.toList());
+            sqlCacheMap.put(sqlCacheKey, buildDeleteSQLInternal(metaData.getSchema(), metaData.getTableName(), columnNames, uniqueKeyNames));
         }
         return sqlCacheMap.get(sqlCacheKey);
     }
     
-    private String buildDeleteSQLInternal(final String schemaName, final String tableName, final Collection<String> columnNames, final Collection<String> uniqueKeyNames) {
+    private String buildDeleteSQLInternal(final String schemaName, final String tableName, final List<String> columnNames, final List<String> uniqueKeyNames) {
         return String.format("DELETE FROM %s WHERE %s", getQualifiedTableName(schemaName, tableName), buildWhereSQL(columnNames, uniqueKeyNames));
     }
 }

@@ -20,20 +20,19 @@ package org.apache.shardingsphere.data.pipeline.cdc.util;
 import com.google.protobuf.BoolValue;
 import com.google.protobuf.BytesValue;
 import com.google.protobuf.DoubleValue;
+import com.google.protobuf.Empty;
 import com.google.protobuf.FloatValue;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.Int64Value;
 import com.google.protobuf.Message;
 import com.google.protobuf.StringValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigDecimalValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigIntegerValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.LocalTimeValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.NullValue;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,7 +44,7 @@ public final class ColumnValueConvertUtilTest {
     @Test
     public void assertConvertToProtobufMessage() {
         Message actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(null);
-        assertTrue(actualMessage instanceof NullValue);
+        assertTrue(actualMessage instanceof Empty);
         actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(1);
         assertTrue(actualMessage instanceof Int32Value);
         assertThat(((Int32Value) actualMessage).getValue(), is(1));
@@ -59,8 +58,8 @@ public final class ColumnValueConvertUtilTest {
         assertTrue(actualMessage instanceof Int64Value);
         assertThat(((Int64Value) actualMessage).getValue(), is(1L));
         actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(new BigInteger("1234"));
-        assertTrue(actualMessage instanceof BigIntegerValue);
-        assertThat(new BigInteger(((BigIntegerValue) actualMessage).getValue().toByteArray()), is(new BigInteger("1234")));
+        assertTrue(actualMessage instanceof StringValue);
+        assertThat(new BigInteger(((StringValue) actualMessage).getValue()), is(new BigInteger("1234")));
         actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(1.0F);
         assertTrue(actualMessage instanceof FloatValue);
         assertThat(((FloatValue) actualMessage).getValue(), is(1.0F));
@@ -68,8 +67,8 @@ public final class ColumnValueConvertUtilTest {
         assertTrue(actualMessage instanceof DoubleValue);
         assertThat(((DoubleValue) actualMessage).getValue(), is(1.23));
         actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(new BigDecimal("100"));
-        assertTrue(actualMessage instanceof BigDecimalValue);
-        assertThat(((BigDecimalValue) actualMessage).getValue(), is("100"));
+        assertTrue(actualMessage instanceof StringValue);
+        assertThat(((StringValue) actualMessage).getValue(), is("100"));
         actualMessage = ColumnValueConvertUtil.convertToProtobufMessage("abcd");
         assertTrue(actualMessage instanceof StringValue);
         assertThat(((StringValue) actualMessage).getValue(), is("abcd"));
@@ -91,10 +90,19 @@ public final class ColumnValueConvertUtilTest {
         assertTrue(actualMessage instanceof com.google.protobuf.Timestamp);
         assertThat(((com.google.protobuf.Timestamp) actualMessage).getNanos(), is(now.toInstant().getNano()));
         actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(now.toLocalDateTime().toLocalTime());
-        assertTrue(actualMessage instanceof LocalTimeValue);
-        assertThat(((LocalTimeValue) actualMessage).getValue(), is(now.toLocalDateTime().toLocalTime().toString()));
+        assertTrue(actualMessage instanceof Int64Value);
+        assertThat(((Int64Value) actualMessage).getValue(), is(now.toLocalDateTime().toLocalTime().toNanoOfDay()));
         actualMessage = ColumnValueConvertUtil.convertToProtobufMessage("123456".getBytes());
         assertTrue(actualMessage instanceof BytesValue);
         assertThat(((BytesValue) actualMessage).getValue().toByteArray(), is("123456".getBytes()));
+        OffsetTime offsetTime = OffsetTime.now();
+        actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(offsetTime);
+        assertTrue(actualMessage instanceof Int64Value);
+        assertThat(((Int64Value) actualMessage).getValue(), is(offsetTime.toLocalTime().toNanoOfDay()));
+        OffsetDateTime offsetDateTime = OffsetDateTime.now();
+        actualMessage = ColumnValueConvertUtil.convertToProtobufMessage(offsetDateTime);
+        assertTrue(actualMessage instanceof com.google.protobuf.Timestamp);
+        assertThat(((com.google.protobuf.Timestamp) actualMessage).getSeconds(), is(offsetDateTime.toEpochSecond()));
+        assertThat(((com.google.protobuf.Timestamp) actualMessage).getNanos(), is(offsetDateTime.getNano()));
     }
 }

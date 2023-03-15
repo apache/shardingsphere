@@ -21,11 +21,13 @@ import com.google.protobuf.Any;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.StringValue;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.TableMetaData;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.MetaData;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.TableColumn;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,27 +37,27 @@ public final class MySQLSQLBuilderTest {
     @Test
     public void assertBuildInsertSQLWithUniqueKey() {
         MySQLSQLBuilder sqlBuilder = new MySQLSQLBuilder();
-        TableMetaData tableMetaData = TableMetaData.newBuilder().setTableName("t_order").addUniqueKeyNames("order_id").setDatabase("cdc_db").build();
-        Record record = Record.newBuilder().setTableMetaData(tableMetaData).putAllAfter(buildAfterMap()).build();
-        String actualSql = sqlBuilder.buildInsertSQL(record);
+        MetaData metaData = MetaData.newBuilder().setTableName("t_order").setDatabase("cdc_db").build();
+        Record record = Record.newBuilder().setMetaData(metaData).addAllAfter(buildAfter()).build();
+        String actualSql = sqlBuilder.buildInsertSQL(record, Collections.singletonList("order_id"));
         String expectedSql = "INSERT INTO t_order(order_id,user_id,status) VALUES(?,?,?) ON DUPLICATE KEY UPDATE user_id=VALUES(user_id),status=VALUES(status)";
         assertThat(actualSql, is(expectedSql));
     }
     
-    private Map<String, Any> buildAfterMap() {
-        Map<String, Any> result = new LinkedHashMap<>();
-        result.put("order_id", Any.pack(Int32Value.of(1)));
-        result.put("user_id", Any.pack(Int32Value.of(2)));
-        result.put("status", Any.pack(StringValue.of("OK")));
+    private List<TableColumn> buildAfter() {
+        List<TableColumn> result = new LinkedList<>();
+        result.add(TableColumn.newBuilder().setName("order_id").setValue(Any.pack(Int32Value.of(1))).build());
+        result.add(TableColumn.newBuilder().setName("user_id").setValue(Any.pack(Int32Value.of(2))).build());
+        result.add(TableColumn.newBuilder().setName("status").setValue(Any.pack(StringValue.of("OK"))).build());
         return result;
     }
     
     @Test
     public void assertBuildInsertSQLWithoutUniqueKey() {
         MySQLSQLBuilder sqlBuilder = new MySQLSQLBuilder();
-        TableMetaData tableMetaData = TableMetaData.newBuilder().setTableName("t_order").setDatabase("cdc_db").build();
-        Record record = Record.newBuilder().setTableMetaData(tableMetaData).putAllAfter(buildAfterMap()).build();
-        String actualSql = sqlBuilder.buildInsertSQL(record);
+        MetaData tableMetaData = MetaData.newBuilder().setTableName("t_order").setDatabase("cdc_db").build();
+        Record record = Record.newBuilder().setMetaData(tableMetaData).addAllAfter(buildAfter()).build();
+        String actualSql = sqlBuilder.buildInsertSQL(record, Collections.emptyList());
         String expectedSql = "INSERT INTO t_order(order_id,user_id,status) VALUES(?,?,?)";
         assertThat(actualSql, is(expectedSql));
     }

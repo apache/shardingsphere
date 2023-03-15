@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
+import java.util.List;
+
 /**
  * SQL builder.
  */
@@ -28,23 +30,26 @@ public interface SQLBuilder {
      * Build insert SQL.
      *
      * @param record data record
+     * @param uniqueKeyNames unique key names
      * @return insert SQL
      */
-    String buildInsertSQL(Record record);
+    String buildInsertSQL(Record record, List<String> uniqueKeyNames);
     
     /**
      * Build update SQL.
      *
      * @param record record
+     * @param uniqueKeyNames unique key names
      * @return update SQL
      */
-    String buildUpdateSQL(Record record);
+    String buildUpdateSQL(Record record, List<String> uniqueKeyNames);
     
     /**
      * Build delete SQL.
      *
      * @param record record
+     * @param uniqueKeyNames unique key names
      * @return update SQL
      */
-    String buildDeleteSQL(Record record);
+    String buildDeleteSQL(Record record, List<String> uniqueKeyNames);
 }
