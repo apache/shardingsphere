@@ -100,7 +100,7 @@ public final class ExportStorageNodesExecutorTest {
         Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(3), is("{\"storage_nodes\":[]}"));
+        assertThat(row.getCell(3), is("{\"storage_nodes\":{}}"));
     }
     
     private ContextManager mockEmptyContextManager() {
