@@ -35,11 +35,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class HBaseDatabaseDescribeResultSetTest extends AbstractHBaseDatabaseQueryResultSetTest {
+public final class HBaseDescribeResultSetTest extends AbstractHBaseQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        HBaseDatabaseQueryResultSet resultSet = new HBaseDatabaseDescribeResultSet();
+        HBaseQueryResultSet resultSet = new HBaseDescribeResultSet();
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
         when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));
         when(context.getTablesContext().getTableNames().iterator().next()).thenReturn(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME);
@@ -58,7 +58,7 @@ public final class HBaseDatabaseDescribeResultSetTest extends AbstractHBaseDatab
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
         when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));
         when(context.getTablesContext().getTableNames().iterator().next()).thenReturn(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME);
-        assertThrows(IllegalArgumentException.class, () -> new HBaseDatabaseDescribeResultSet().init(context));
+        assertThrows(IllegalArgumentException.class, () -> new HBaseDescribeResultSet().init(context));
     }
     
     @Test
@@ -67,6 +67,6 @@ public final class HBaseDatabaseDescribeResultSetTest extends AbstractHBaseDatab
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
         when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));
         when(context.getTablesContext().getTableNames().iterator().next()).thenReturn(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME);
-        assertThrows(HBaseOperationException.class, () -> new HBaseDatabaseDescribeResultSet().init(context));
+        assertThrows(HBaseOperationException.class, () -> new HBaseDescribeResultSet().init(context));
     }
 }

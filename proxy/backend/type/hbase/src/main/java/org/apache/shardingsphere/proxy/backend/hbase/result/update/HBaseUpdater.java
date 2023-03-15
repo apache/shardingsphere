@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.exception;
+package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
+import java.util.Collection;
 
 /**
- * HBase operation exception.
+ * HBase backend updater.
  */
-@RequiredArgsConstructor
-@Getter
-public final class HBaseOperationException extends ShardingSphereExternalException {
+public interface HBaseUpdater extends TypedSPI {
     
-    private static final long serialVersionUID = -2361593557266150170L;
-    
-    private final String errorInfo;
+    /**
+     * Execute HBase operation.
+     *
+     * @param operation HBase operation
+     * @return affected rows
+     */
+    Collection<UpdateResult> executeUpdate(HBaseOperation operation);
 }

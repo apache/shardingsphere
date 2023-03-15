@@ -20,28 +20,29 @@ package org.apache.shardingsphere.proxy.backend.hbase.result.update;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
-import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseInsertOperation;
+import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseUpdateOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
-
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
- * HBase database insert updater.
+ * HBase update updater.
  */
-public final class HBaseDatabaseInsertUpdater implements HBaseDatabaseUpdater {
+public final class HBaseUpdateUpdater implements HBaseUpdater {
     
     @Override
     public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) {
-        List<Put> puts = ((HBaseInsertOperation) operation.getOperation()).getPuts();
-        HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.put(puts));
-        return Collections.singleton(new UpdateResult(puts.size(), 0));
+        if (operation.getOperation() instanceof HBaseUpdateOperation) {
+            HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.put(((HBaseUpdateOperation) operation.getOperation()).getPuts()));
+            return Collections.singleton(new UpdateResult(((HBaseUpdateOperation) operation.getOperation()).getPuts().size(), 0));
+        }
+        HBaseExecutor.executeUpdate(operation.getTableName(), table -> table.put((Put) operation.getOperation()));
+        return Collections.singleton(new UpdateResult(1, 0));
     }
     
     @Override
     public String getType() {
-        return MySQLInsertStatement.class.getCanonicalName();
+        return MySQLUpdateStatement.class.getCanonicalName();
     }
 }

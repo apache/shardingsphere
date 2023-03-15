@@ -54,10 +54,10 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
- * Result set for HBase databases.
+ * Result get for HBase.
  */
 @Slf4j
-public final class HBaseDatabaseGetResultSet implements HBaseDatabaseQueryResultSet {
+public final class HBaseGetResultSet implements HBaseQueryResultSet {
     
     private SelectStatementContext statementContext;
     

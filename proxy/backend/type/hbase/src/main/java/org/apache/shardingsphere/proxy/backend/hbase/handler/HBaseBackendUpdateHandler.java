@@ -25,22 +25,22 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverterFactory;
-import org.apache.shardingsphere.proxy.backend.hbase.result.update.HBaseDatabaseUpdater;
+import org.apache.shardingsphere.proxy.backend.hbase.result.update.HBaseUpdater;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 
 /**
- * HBase database backend updater handler.
+ * HBase backend updater handler.
  */
 @RequiredArgsConstructor
 @Getter
-public final class HBaseDatabaseBackendUpdateHandler implements DatabaseBackendHandler {
+public final class HBaseBackendUpdateHandler implements DatabaseBackendHandler {
     
     private final SQLStatement sqlStatement;
     
-    private final HBaseDatabaseUpdater updater;
+    private final HBaseUpdater updater;
     
     /**
      * Execute HBase update handler.
