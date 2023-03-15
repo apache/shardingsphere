@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.primarykey;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -31,10 +30,12 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironme
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,6 +44,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -55,8 +57,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 3) multiple columns primary key, first column type is VARCHAR.
  * 4) multiple columns unique key, first column type is BIGINT.
  */
-@RunWith(Parameterized.class)
-@Slf4j
 public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String ORDER_TABLE_SHARDING_RULE_FORMAT = "CREATE SHARDING TABLE RULE t_order(\n"
@@ -69,52 +69,35 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String TARGET_TABLE_NAME = "t_order";
     
-    public IndexesMigrationE2EIT(final PipelineTestParameter testParam) {
-        super(testParam, new MigrationJobType());
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertNoUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+            String sql;
+            String consistencyCheckAlgorithmType;
+            if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
+                sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                // DATA_MATCH doesn't supported, could not order by records
+                consistencyCheckAlgorithmType = "CRC32_MATCH";
+            } else if (containerComposer.getDatabaseType() instanceof PostgreSQLDatabaseType) {
+                sql = "CREATE TABLE %s (order_id varchar(255) NOT NULL,user_id int NOT NULL,status varchar(255) NULL)";
+                consistencyCheckAlgorithmType = null;
+            } else {
+                return;
+            }
+            KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
+            Object uniqueKey = keyGenerateAlgorithm.generateKey();
+            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
+                insertOneOrder(containerComposer, uniqueKey);
+                containerComposer.assertProxyOrderRecordExist("t_order", uniqueKey);
+                return null;
+            });
+        }
     }
     
-    @Parameters(name = "{0}")
-    public static Collection<PipelineTestParameter> getTestParameters() {
-        Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.NONE) {
-            return result;
-        }
-        List<String> mysqlVersion = PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType());
-        if (!mysqlVersion.isEmpty()) {
-            result.add(new PipelineTestParameter(new MySQLDatabaseType(), mysqlVersion.get(0), "env/common/none.xml"));
-        }
-        List<String> postgresqlVersion = PipelineE2EEnvironment.getInstance().listStorageContainerImages(new PostgreSQLDatabaseType());
-        if (!postgresqlVersion.isEmpty()) {
-            result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), postgresqlVersion.get(0), "env/common/none.xml"));
-        }
-        return result;
-    }
-    
-    @Test
-    public void assertNoUniqueKeyMigrationSuccess() throws Exception {
-        String sql;
-        String consistencyCheckAlgorithmType;
-        if (getContainerComposer().getDatabaseType() instanceof MySQLDatabaseType) {
-            sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-            // DATA_MATCH doesn't supported, could not order by records
-            consistencyCheckAlgorithmType = "CRC32_MATCH";
-        } else if (getContainerComposer().getDatabaseType() instanceof PostgreSQLDatabaseType) {
-            sql = "CREATE TABLE %s (order_id varchar(255) NOT NULL,user_id int NOT NULL,status varchar(255) NULL)";
-            consistencyCheckAlgorithmType = null;
-        } else {
-            return;
-        }
-        KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-        Object uniqueKey = keyGenerateAlgorithm.generateKey();
-        assertMigrationSuccess(sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
-            insertOneOrder(uniqueKey);
-            getContainerComposer().assertProxyOrderRecordExist("t_order", uniqueKey);
-            return null;
-        });
-    }
-    
-    private void insertOneOrder(final Object uniqueKey) throws SQLException {
-        try (PreparedStatement preparedStatement = getContainerComposer().getSourceDataSource().getConnection().prepareStatement("INSERT INTO t_order (order_id,user_id,status) VALUES (?,?,?)")) {
+    private void insertOneOrder(final PipelineContainerComposer containerComposer, final Object uniqueKey) throws SQLException {
+        try (PreparedStatement preparedStatement = containerComposer.getSourceDataSource().getConnection().prepareStatement("INSERT INTO t_order (order_id,user_id,status) VALUES (?,?,?)")) {
             preparedStatement.setObject(1, uniqueKey);
             preparedStatement.setObject(2, 1);
             preparedStatement.setObject(3, "OK");
@@ -123,88 +106,123 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         }
     }
     
-    @Test
-    public void assertMultiPrimaryKeyMigrationSuccess() throws Exception {
-        String sql;
-        String consistencyCheckAlgorithmType;
-        if (getContainerComposer().getDatabaseType() instanceof MySQLDatabaseType) {
-            sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`,`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-            consistencyCheckAlgorithmType = "CRC32_MATCH";
-        } else {
-            return;
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertMultiPrimaryKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+            String sql;
+            String consistencyCheckAlgorithmType;
+            if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
+                sql = "CREATE TABLE `%s` (`order_id` VARCHAR(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`,`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                consistencyCheckAlgorithmType = "CRC32_MATCH";
+            } else {
+                return;
+            }
+            KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
+            Object uniqueKey = keyGenerateAlgorithm.generateKey();
+            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
+                insertOneOrder(containerComposer, uniqueKey);
+                containerComposer.assertProxyOrderRecordExist("t_order", uniqueKey);
+                return null;
+            });
         }
-        KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-        Object uniqueKey = keyGenerateAlgorithm.generateKey();
-        assertMigrationSuccess(sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
-            insertOneOrder(uniqueKey);
-            getContainerComposer().assertProxyOrderRecordExist("t_order", uniqueKey);
-            return null;
-        });
     }
     
-    @Test
-    public void assertMultiUniqueKeyMigrationSuccess() throws Exception {
-        String sql;
-        String consistencyCheckAlgorithmType;
-        if (getContainerComposer().getDatabaseType() instanceof MySQLDatabaseType) {
-            sql = "CREATE TABLE `%s` (`order_id` BIGINT NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), UNIQUE KEY (`order_id`,`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-            consistencyCheckAlgorithmType = "DATA_MATCH";
-        } else {
-            return;
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertMultiUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+            String sql;
+            String consistencyCheckAlgorithmType;
+            if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
+                sql = "CREATE TABLE `%s` (`order_id` BIGINT NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), UNIQUE KEY (`order_id`,`user_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                consistencyCheckAlgorithmType = "DATA_MATCH";
+            } else {
+                return;
+            }
+            KeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
+            Object uniqueKey = keyGenerateAlgorithm.generateKey();
+            assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
+                insertOneOrder(containerComposer, uniqueKey);
+                containerComposer.assertProxyOrderRecordExist("t_order", uniqueKey);
+                return null;
+            });
         }
-        KeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Object uniqueKey = keyGenerateAlgorithm.generateKey();
-        assertMigrationSuccess(sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
-            insertOneOrder(uniqueKey);
-            getContainerComposer().assertProxyOrderRecordExist("t_order", uniqueKey);
-            return null;
-        });
     }
     
-    @Test
-    public void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess() throws Exception {
-        String sql;
-        String consistencyCheckAlgorithmType;
-        if (getContainerComposer().getDatabaseType() instanceof MySQLDatabaseType) {
-            sql = "CREATE TABLE `%s` (`order_id` VARBINARY(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-            // DATA_MATCH doesn't supported: Order by value must implements Comparable
-            consistencyCheckAlgorithmType = "CRC32_MATCH";
-        } else {
-            return;
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+            String sql;
+            String consistencyCheckAlgorithmType;
+            if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
+                sql = "CREATE TABLE `%s` (`order_id` VARBINARY(64) NOT NULL, `user_id` INT NOT NULL, `status` varchar(255), PRIMARY KEY (`order_id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+                // DATA_MATCH doesn't supported: Order by value must implements Comparable
+                consistencyCheckAlgorithmType = "CRC32_MATCH";
+            } else {
+                return;
+            }
+            KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
+            // TODO Insert binary string in VARBINARY column. But KeyGenerateAlgorithm.generateKey() require returning Comparable, and byte[] is not Comparable
+            byte[] uniqueKey = new byte[]{-1, 0, 1};
+            assertMigrationSuccess(containerComposer, sql, "order_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
+                insertOneOrder(containerComposer, uniqueKey);
+                // TODO Select by byte[] from proxy doesn't work, so unhex function is used for now
+                containerComposer.assertProxyOrderRecordExist(String.format("SELECT 1 FROM t_order WHERE order_id=UNHEX('%s')", Hex.encodeHexString(uniqueKey)));
+                return null;
+            });
         }
-        KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-        // TODO Insert binary string in VARBINARY column. But KeyGenerateAlgorithm.generateKey() require returning Comparable, and byte[] is not Comparable
-        byte[] uniqueKey = new byte[]{-1, 0, 1};
-        assertMigrationSuccess(sql, "order_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, () -> {
-            insertOneOrder(uniqueKey);
-            // TODO Select by byte[] from proxy doesn't work, so unhex function is used for now
-            getContainerComposer().assertProxyOrderRecordExist(String.format("SELECT 1 FROM t_order WHERE order_id=UNHEX('%s')", Hex.encodeHexString(uniqueKey)));
-            return null;
-        });
     }
     
-    private void assertMigrationSuccess(final String sqlPattern, final String shardingColumn, final KeyGenerateAlgorithm keyGenerateAlgorithm,
+    private void assertMigrationSuccess(final PipelineContainerComposer containerComposer, final String sqlPattern, final String shardingColumn, final KeyGenerateAlgorithm keyGenerateAlgorithm,
                                         final String consistencyCheckAlgorithmType, final Callable<Void> incrementalTaskFn) throws Exception {
-        getContainerComposer().sourceExecuteWithLog(String.format(sqlPattern, SOURCE_TABLE_NAME));
-        try (Connection connection = getContainerComposer().getSourceDataSource().getConnection()) {
+        containerComposer.sourceExecuteWithLog(String.format(sqlPattern, SOURCE_TABLE_NAME));
+        try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, SOURCE_TABLE_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         }
-        addMigrationProcessConfig();
-        addMigrationSourceResource();
-        addMigrationTargetResource();
-        getContainerComposer().proxyExecuteWithLog(String.format(ORDER_TABLE_SHARDING_RULE_FORMAT, shardingColumn), 2);
-        startMigration(SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
-        String jobId = listJobId().get(0);
-        getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        addMigrationProcessConfig(containerComposer);
+        addMigrationSourceResource(containerComposer);
+        addMigrationTargetResource(containerComposer);
+        containerComposer.proxyExecuteWithLog(String.format(ORDER_TABLE_SHARDING_RULE_FORMAT, shardingColumn), 2);
+        startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
+        String jobId = listJobId(containerComposer).get(0);
+        containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         incrementalTaskFn.call();
-        getContainerComposer().waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         if (null != consistencyCheckAlgorithmType) {
-            assertCheckMigrationSuccess(jobId, consistencyCheckAlgorithmType);
+            assertCheckMigrationSuccess(containerComposer, jobId, consistencyCheckAlgorithmType);
         }
-        commitMigrationByJobId(jobId);
-        getContainerComposer().proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
-        assertThat(getContainerComposer().getTargetTableRecordsCount(SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
-        List<String> lastJobIds = listJobId();
+        commitMigrationByJobId(containerComposer, jobId);
+        containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
+        assertThat(containerComposer.getTargetTableRecordsCount(SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
+        List<String> lastJobIds = listJobId(containerComposer);
         assertTrue(lastJobIds.isEmpty());
+    }
+    
+    private static boolean isEnabled() {
+        return PipelineEnvTypeEnum.NONE != PipelineE2EEnvironment.getInstance().getItEnvType()
+                && (!PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType()).isEmpty()
+                || !PipelineE2EEnvironment.getInstance().listStorageContainerImages(new PostgreSQLDatabaseType()).isEmpty());
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            Collection<Arguments> result = new LinkedList<>();
+            List<String> mysqlVersion = PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType());
+            if (!mysqlVersion.isEmpty()) {
+                result.add(Arguments.of(new PipelineTestParameter(new MySQLDatabaseType(), mysqlVersion.get(0), "env/common/none.xml")));
+            }
+            List<String> postgresqlVersion = PipelineE2EEnvironment.getInstance().listStorageContainerImages(new PostgreSQLDatabaseType());
+            if (!postgresqlVersion.isEmpty()) {
+                result.add(Arguments.of(new PipelineTestParameter(new PostgreSQLDatabaseType(), postgresqlVersion.get(0), "env/common/none.xml")));
+            }
+            return result.stream();
+        }
     }
 }

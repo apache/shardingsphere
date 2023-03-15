@@ -21,14 +21,11 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.MigrationDistSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
-import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
-import org.junit.After;
 import org.opengauss.util.PSQLException;
 
 import javax.xml.bind.JAXB;
@@ -49,21 +46,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public abstract class AbstractMigrationE2EIT {
     
-    private final PipelineContainerComposer containerComposer;
-    
     private final MigrationDistSQLCommand migrationDistSQL;
     
-    public AbstractMigrationE2EIT(final PipelineTestParameter testParam, final JobType jobType) {
-        containerComposer = new PipelineContainerComposer(testParam, jobType);
+    public AbstractMigrationE2EIT() {
         migrationDistSQL = JAXB.unmarshal(Objects.requireNonNull(AbstractMigrationE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
     }
     
-    @After
-    public final void tearDown() {
-        containerComposer.close();
-    }
-    
-    protected void addMigrationSourceResource() throws SQLException {
+    protected void addMigrationSourceResource(final PipelineContainerComposer containerComposer) throws SQLException {
         if (PipelineEnvTypeEnum.NATIVE == PipelineE2EEnvironment.getInstance().getItEnvType()) {
             try {
                 containerComposer.proxyExecuteWithLog("UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_0", 2);
@@ -77,7 +66,7 @@ public abstract class AbstractMigrationE2EIT {
         containerComposer.addResource(addSourceResource);
     }
     
-    protected void addMigrationTargetResource() throws SQLException {
+    protected void addMigrationTargetResource(final PipelineContainerComposer containerComposer) throws SQLException {
         String addTargetResource = migrationDistSQL.getRegisterMigrationTargetStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
                 .replace("${password}", containerComposer.getPassword())
                 .replace("${ds2}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_2, true)))
@@ -88,7 +77,7 @@ public abstract class AbstractMigrationE2EIT {
         assertThat(resources.size(), is(3));
     }
     
-    protected void createSourceSchema(final String schemaName) throws SQLException {
+    protected void createSourceSchema(final PipelineContainerComposer containerComposer, final String schemaName) throws SQLException {
         if (DatabaseTypeUtil.isPostgreSQL(containerComposer.getDatabaseType())) {
             containerComposer.sourceExecuteWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
             return;
@@ -107,53 +96,53 @@ public abstract class AbstractMigrationE2EIT {
         }
     }
     
-    protected void createTargetOrderTableRule() throws SQLException {
+    protected void createTargetOrderTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderTableRule(), 2);
     }
     
-    protected void createTargetOrderTableEncryptRule() throws SQLException {
+    protected void createTargetOrderTableEncryptRule(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderTableEncryptRule(), 2);
     }
     
-    protected void createTargetOrderItemTableRule() throws SQLException {
+    protected void createTargetOrderItemTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderItemTableRule(), 2);
     }
     
-    protected void startMigration(final String sourceTableName, final String targetTableName) throws SQLException {
+    protected void startMigration(final PipelineContainerComposer containerComposer, final String sourceTableName, final String targetTableName) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getMigrationSingleTable(sourceTableName, targetTableName), 5);
     }
     
-    protected void startMigrationWithSchema(final String sourceTableName, final String targetTableName) throws SQLException {
+    protected void startMigrationWithSchema(final PipelineContainerComposer containerComposer, final String sourceTableName, final String targetTableName) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
     }
     
-    protected void addMigrationProcessConfig() throws SQLException {
+    protected void addMigrationProcessConfig(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(migrationDistSQL.getAlterMigrationRule(), 0);
     }
     
-    protected void stopMigrationByJobId(final String jobId) throws SQLException {
+    protected void stopMigrationByJobId(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
         containerComposer.proxyExecuteWithLog(String.format("STOP MIGRATION '%s'", jobId), 1);
     }
     
-    protected void startMigrationByJobId(final String jobId) throws SQLException {
+    protected void startMigrationByJobId(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
         containerComposer.proxyExecuteWithLog(String.format("START MIGRATION '%s'", jobId), 1);
     }
     
-    protected void commitMigrationByJobId(final String jobId) throws SQLException {
+    protected void commitMigrationByJobId(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException {
         containerComposer.proxyExecuteWithLog(String.format("COMMIT MIGRATION '%s'", jobId), 1);
     }
     
-    protected List<String> listJobId() {
+    protected List<String> listJobId(final PipelineContainerComposer containerComposer) {
         List<Map<String, Object>> jobList = containerComposer.queryForListWithLog("SHOW MIGRATION LIST");
         return jobList.stream().map(a -> a.get("id").toString()).collect(Collectors.toList());
     }
     
-    protected String getJobIdByTableName(final String tableName) {
+    protected String getJobIdByTableName(final PipelineContainerComposer containerComposer, final String tableName) {
         List<Map<String, Object>> jobList = containerComposer.queryForListWithLog("SHOW MIGRATION LIST");
         return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find " + tableName + " table")).get("id").toString();
     }
     
-    protected void assertCheckMigrationSuccess(final String jobId, final String algorithmType) throws SQLException {
+    protected void assertCheckMigrationSuccess(final PipelineContainerComposer containerComposer, final String jobId, final String algorithmType) throws SQLException {
         containerComposer.proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType), 0);
         // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
         List<Map<String, Object>> resultList = Collections.emptyList();

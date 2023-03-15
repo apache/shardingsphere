@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.general;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
@@ -27,16 +26,17 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironme
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -46,62 +46,63 @@ import static org.hamcrest.Matchers.is;
  * 1) no any rule.
  * 2) only encrypt rule.
  */
-@RunWith(Parameterized.class)
-@Slf4j
 public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String SOURCE_TABLE_NAME = "t_order";
     
     private static final String TARGET_TABLE_NAME = "t_order";
     
-    public RulesMigrationE2EIT(final PipelineTestParameter testParam) {
-        super(testParam, new MigrationJobType());
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<PipelineTestParameter> getTestParameters() {
-        Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.NONE) {
-            return result;
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertNoRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+            assertMigrationSuccess(containerComposer, null);
         }
-        List<String> versions = PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType());
-        if (versions.isEmpty()) {
-            return result;
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertOnlyEncryptRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+            assertMigrationSuccess(containerComposer, () -> {
+                createTargetOrderTableEncryptRule(containerComposer);
+                return null;
+            });
         }
-        result.add(new PipelineTestParameter(new MySQLDatabaseType(), versions.get(0), "env/scenario/primary_key/text_primary_key/mysql.xml"));
-        return result;
     }
     
-    @Test
-    public void assertNoRuleMigrationSuccess() throws Exception {
-        assertMigrationSuccess(null);
-    }
-    
-    @Test
-    public void assertOnlyEncryptRuleMigrationSuccess() throws Exception {
-        assertMigrationSuccess(() -> {
-            createTargetOrderTableEncryptRule();
-            return null;
-        });
-    }
-    
-    private void assertMigrationSuccess(final Callable<Void> addRuleFn) throws Exception {
-        getContainerComposer().createSourceOrderTable(SOURCE_TABLE_NAME);
-        try (Connection connection = getContainerComposer().getSourceDataSource().getConnection()) {
+    private void assertMigrationSuccess(final PipelineContainerComposer containerComposer, final Callable<Void> addRuleFn) throws Exception {
+        containerComposer.createSourceOrderTable(SOURCE_TABLE_NAME);
+        try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, new UUIDKeyGenerateAlgorithm(), SOURCE_TABLE_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         }
-        addMigrationSourceResource();
-        addMigrationTargetResource();
+        addMigrationSourceResource(containerComposer);
+        addMigrationTargetResource(containerComposer);
         if (null != addRuleFn) {
             addRuleFn.call();
         }
-        startMigration(SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
-        String jobId = listJobId().get(0);
-        getContainerComposer().waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        getContainerComposer().waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        assertCheckMigrationSuccess(jobId, "DATA_MATCH");
-        commitMigrationByJobId(jobId);
-        getContainerComposer().proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
-        assertThat(getContainerComposer().getTargetTableRecordsCount(SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT));
+        startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
+        String jobId = listJobId(containerComposer).get(0);
+        containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
+        commitMigrationByJobId(containerComposer, jobId);
+        containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA", 1);
+        assertThat(containerComposer.getTargetTableRecordsCount(SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT));
+    }
+    
+    private static boolean isEnabled() {
+        return PipelineEnvTypeEnum.NONE != PipelineE2EEnvironment.getInstance().getItEnvType() && !PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType()).isEmpty();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            List<String> versions = PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType());
+            return Stream.of(Arguments.of(new PipelineTestParameter(new MySQLDatabaseType(), versions.get(0), "env/scenario/primary_key/text_primary_key/mysql.xml")));
+        }
     }
 }
