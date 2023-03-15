@@ -53,6 +53,11 @@ public final class ShardingSphereProxy {
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
+
+    public ShardingSphereProxy() {
+        createEventLoopGroup();
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+    }
     
     /**
      * Start ShardingSphere-Proxy.
@@ -96,10 +101,8 @@ public final class ShardingSphereProxy {
     }
 
     private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
-        createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
         initServerBootstrap(bootstrap);
-        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
         List<ChannelFuture> futures = new ArrayList<>();
         for (String address : addresses) {
             futures.add(bootstrap.bind(address, port).sync());
@@ -108,10 +111,8 @@ public final class ShardingSphereProxy {
     }
 
     private ChannelFuture startDomainSocket(final String socketPath) throws InterruptedException {
-        createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
         initServerBootstrap(bootstrap, new DomainSocketAddress(socketPath));
-        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
         return bootstrap.bind();
     }
 
@@ -123,12 +124,8 @@ public final class ShardingSphereProxy {
     }
     
     private void createEventLoopGroup() {
-        if (null == bossGroup) {
-            bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
-        }
-        if (null == workerGroup) {
-            workerGroup = getWorkerGroup();
-        }
+        bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
+        workerGroup = getWorkerGroup();
     }
     
     private EventLoopGroup getWorkerGroup() {
