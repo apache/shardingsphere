@@ -15,37 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.core.provider;
+package org.apache.shardingsphere.globalclock.core.executor;
 
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-import java.util.Properties;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * Global clock provider.
+ * Global clock transaction executor.
  */
 @SingletonSPI
-public interface GlobalClockProvider extends TypedSPI {
+public interface GlobalClockTransactionExecutor extends TypedSPI {
     
     /**
-     * Initialize global clock provider.
+     * Send snapshot timestamp.
      *
-     * @param props properties to be initialized
+     * @param connections connections
+     * @param globalTimestamp global timestamp
+     * @throws SQLException SQL exception
      */
-    void init(Properties props);
+    void sendSnapshotTimestamp(Collection<Connection> connections, long globalTimestamp) throws SQLException;
     
     /**
-     * Get current timestamp.
+     * Send commit timestamp.
      *
-     * @return current timestamp
+     * @param connections connections
+     * @param globalTimestamp global timestamp
+     * @throws SQLException SQL exception
      */
-    long getCurrentTimestamp();
-    
-    /**
-     * Get next timestamp.
-     *
-     * @return next timestamp
-     */
-    long getNextTimestamp();
+    void sendCommitTimestamp(Collection<Connection> connections, long globalTimestamp) throws SQLException;
 }
