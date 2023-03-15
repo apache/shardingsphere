@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import java.util.Collection;
 
 /**
- * Query result set for HBase databases.
+ * Query result set for HBase.
  */
-public interface HBaseDatabaseQueryResultSet extends TypedSPI {
+public interface HBaseQueryResultSet extends TypedSPI {
     
     /**
      * Initialize data.

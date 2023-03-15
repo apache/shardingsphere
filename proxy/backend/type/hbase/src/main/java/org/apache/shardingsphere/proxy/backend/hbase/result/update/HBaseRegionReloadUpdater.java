@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * HBase database region reload updater.
  */
-public final class HBaseRegionReloadUpdater implements HBaseDatabaseUpdater {
+public final class HBaseRegionReloadUpdater implements HBaseUpdater {
     
     @Override
     public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) {
