@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,16 +15,10 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
-    <test-case sql="PREVIEW SELECT * FROM t_user_item">
-        <assertion expected-data-file="preview_sql.xml" />
-    </test-case>
-    
-    <test-case sql="PREVIEW SELECT * FROM t_single_table s INNER JOIN t_user_item i ON s.single_id = i.item_id WHERE i.user_id = 1">
-        <assertion expected-data-file="preview_federation_select.xml" />
-    </test-case>
-    
-    <test-case sql="PREVIEW /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME = write_ds_0, SKIP_SQL_REWRITE = true */ SELECT * FROM t_user_item">
-        <assertion expected-data-file="preview_sql_hint.xml" />
-    </test-case>
-</integration-test-cases>
+<dataset>
+    <metadata>
+        <column name="data_source_name" />
+        <column name="actual_sql" />
+    </metadata>
+    <row values="write_ds_0| /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME = write_ds_0, SKIP_SQL_REWRITE = true */ SELECT * FROM t_user_item" />
+</dataset>
