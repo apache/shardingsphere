@@ -85,19 +85,15 @@ public final class ShardingSphereProxy {
             log.error("Epoll is unavailable, DomainSocket can't start.");
             return;
         }
-        try {
-            ChannelFuture future = startDomainSocket(socketPath);
-            future.addListener((ChannelFutureListener) futureParams -> {
-                if (futureParams.isSuccess()) {
-                    log.info("The listening address for DomainSocket is {}", socketPath);
-                } else {
-                    log.error("DomainSocket failed to start.");
-                    futureParams.cause().printStackTrace();
-                }
-            });
-        } catch (final InterruptedException ignored) {
-            close();
-        }
+        ChannelFuture future = startDomainSocket(socketPath);
+        future.addListener((ChannelFutureListener) futureParams -> {
+            if (futureParams.isSuccess()) {
+                log.info("The listening address for DomainSocket is {}", socketPath);
+            } else {
+                log.error("DomainSocket failed to start:{}", futureParams.cause().getMessage());
+                futureParams.cause().printStackTrace();
+            }
+        });
     }
     
     private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
@@ -110,7 +106,7 @@ public final class ShardingSphereProxy {
         return futures;
     }
     
-    private ChannelFuture startDomainSocket(final String socketPath) throws InterruptedException {
+    private ChannelFuture startDomainSocket(final String socketPath) {
         ServerBootstrap bootstrap = new ServerBootstrap();
         initServerBootstrap(bootstrap, new DomainSocketAddress(socketPath));
         return bootstrap.bind();
@@ -156,12 +152,8 @@ public final class ShardingSphereProxy {
     }
     
     private void close() {
-        if (null != bossGroup) {
-            bossGroup.shutdownGracefully();
-        }
-        if (null != workerGroup) {
-            workerGroup.shutdownGracefully();
-        }
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
         BackendExecutorContext.getInstance().getExecutorEngine().close();
     }
 }
