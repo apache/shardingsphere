@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseTy
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
@@ -55,7 +55,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     private static final String SOURCE_TABLE_NAME = "t_order_copy";
     
     private static final String TARGET_TABLE_NAME = "t_order";
-        
+    
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
@@ -116,9 +116,7 @@ public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EI
     }
     
     private static boolean isEnabled() {
-        return PipelineEnvTypeEnum.NONE != PipelineE2EEnvironment.getInstance().getItEnvType()
-                && (!PipelineE2EEnvironment.getInstance().listStorageContainerImages(new PostgreSQLDatabaseType()).isEmpty()
-                || !PipelineE2EEnvironment.getInstance().listStorageContainerImages(new OpenGaussDatabaseType()).isEmpty());
+        return PipelineE2ECondition.isEnabled(new PostgreSQLDatabaseType(), new OpenGaussDatabaseType());
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
