@@ -27,9 +27,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * HBase database delete updater.
+ * HBase delete updater.
  */
-public final class HBaseDatabaseDeleteUpdater implements HBaseDatabaseUpdater {
+public final class HBaseDeleteUpdater implements HBaseUpdater {
     
     @Override
     public Collection<UpdateResult> executeUpdate(final HBaseOperation operation) {

@@ -34,12 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class HBaseDatabaseListResultSetTest extends AbstractHBaseDatabaseQueryResultSetTest {
+public final class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getShowTableStatement());
-        HBaseDatabaseQueryResultSet resultSet = new HBaseDatabaseListResultSet();
+        HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
         when(context.getSqlStatement()).thenReturn((MySQLShowTablesStatement) sqlStatement);
         resultSet.init(context);
@@ -53,7 +53,7 @@ public final class HBaseDatabaseListResultSetTest extends AbstractHBaseDatabaseQ
     @Test
     public void assertGetRowDataFromRemoteHBaseCluster() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("show /*+ hbase */ tables from cluster_lj");
-        HBaseDatabaseQueryResultSet resultSet = new HBaseDatabaseListResultSet();
+        HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
         when(context.getSqlStatement()).thenReturn((MySQLShowTablesStatement) sqlStatement);
         resultSet.init(context);
@@ -68,7 +68,7 @@ public final class HBaseDatabaseListResultSetTest extends AbstractHBaseDatabaseQ
     @Test
     public void assertGetRowDataByLike() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("show /*+ hbase */ tables  like 't_test' ");
-        HBaseDatabaseQueryResultSet resultSet = new HBaseDatabaseListResultSet();
+        HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
         when(context.getSqlStatement()).thenReturn((MySQLShowTablesStatement) sqlStatement);
         resultSet.init(context);
@@ -84,7 +84,7 @@ public final class HBaseDatabaseListResultSetTest extends AbstractHBaseDatabaseQ
     @Test
     public void assertGetRowDataError() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("show /*+ hbase */ tables from cluster_do_not_exists");
-        HBaseDatabaseQueryResultSet resultSet = new HBaseDatabaseListResultSet();
+        HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
         when(context.getSqlStatement()).thenReturn((MySQLShowTablesStatement) sqlStatement);
         assertThrows(HBaseOperationException.class, () -> resultSet.init(context));

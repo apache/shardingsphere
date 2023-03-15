@@ -32,9 +32,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Result set for HBase databases describe.
+ * Result set for HBase describe.
  */
-public final class HBaseDatabaseDescribeResultSet implements HBaseDatabaseQueryResultSet {
+public final class HBaseDescribeResultSet implements HBaseQueryResultSet {
     
     private Iterator<HTableDescriptor> iterator;
     
