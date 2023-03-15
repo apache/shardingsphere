@@ -53,7 +53,7 @@ public final class ShardingSphereProxy {
     private EventLoopGroup bossGroup;
     
     private EventLoopGroup workerGroup;
-
+    
     public ShardingSphereProxy() {
         createEventLoopGroup();
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
@@ -74,7 +74,7 @@ public final class ShardingSphereProxy {
             close();
         }
     }
-
+    
     /**
      * Start ShardingSphere-Proxy with DomainSocket.
      *
@@ -99,7 +99,7 @@ public final class ShardingSphereProxy {
             close();
         }
     }
-
+    
     private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
         ServerBootstrap bootstrap = new ServerBootstrap();
         initServerBootstrap(bootstrap);
@@ -109,13 +109,13 @@ public final class ShardingSphereProxy {
         }
         return futures;
     }
-
+    
     private ChannelFuture startDomainSocket(final String socketPath) throws InterruptedException {
         ServerBootstrap bootstrap = new ServerBootstrap();
         initServerBootstrap(bootstrap, new DomainSocketAddress(socketPath));
         return bootstrap.bind();
     }
-
+    
     private void accept(final List<ChannelFuture> futures) throws InterruptedException {
         log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getInstanceContext().getModeConfiguration().getType());
         for (ChannelFuture future : futures) {
@@ -146,7 +146,7 @@ public final class ShardingSphereProxy {
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
     }
-
+    
     private void initServerBootstrap(final ServerBootstrap bootstrap, final DomainSocketAddress localDomainSocketAddress) {
         bootstrap.group(bossGroup, workerGroup)
                 .channel(EpollServerDomainSocketChannel.class)
@@ -154,7 +154,7 @@ public final class ShardingSphereProxy {
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
     }
-
+    
     private void close() {
         if (null != bossGroup) {
             bossGroup.shutdownGracefully();
