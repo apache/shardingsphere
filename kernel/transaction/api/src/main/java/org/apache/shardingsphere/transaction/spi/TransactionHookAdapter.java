@@ -28,7 +28,7 @@ import java.util.Collection;
 /**
  * ShardingSphere transaction hook adapter.
  */
-public class TransactionHookAdapter implements TransactionHook {
+public abstract class TransactionHookAdapter implements TransactionHook {
     
     @Override
     public void beforeBegin(final TransactionConnectionContext transactionContext) {

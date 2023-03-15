@@ -25,7 +25,7 @@ import java.util.Collection;
 /**
  * OpenGauss global clock transaction executor.
  */
-public class OpenGaussGlobalClockTransactionExecutor implements GlobalClockTransactionExecutor {
+public final class OpenGaussGlobalClockTransactionExecutor implements GlobalClockTransactionExecutor {
     
     @Override
     public void sendSnapshotTimestamp(final Collection<Connection> connections, final long globalTimestamp) throws SQLException {

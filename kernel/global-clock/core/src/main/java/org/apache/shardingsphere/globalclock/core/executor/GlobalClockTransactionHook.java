@@ -34,7 +34,7 @@ import java.util.Properties;
 /**
  * Global clock transaction hook.
  */
-public class GlobalClockTransactionHook extends TransactionHookAdapter {
+public final class GlobalClockTransactionHook extends TransactionHookAdapter {
     
     private GlobalClockProvider globalClockProvider;
     
@@ -105,6 +105,6 @@ public class GlobalClockTransactionHook extends TransactionHookAdapter {
     
     @Override
     public String getType() {
-        return "GlobalClock";
+        return "GLOBAL_CLOCK";
     }
 }
