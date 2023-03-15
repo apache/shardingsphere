@@ -35,10 +35,20 @@ public final class ShardingSphereServiceLoader<T> {
     
     private static final Map<Class<?>, ShardingSphereServiceLoader<?>> LOADERS = new ConcurrentHashMap<>();
     
+    private static final int LOAD_LOCKS_COUNT = 16;
+    
+    private static final Object[] LOAD_LOCKS = new Object[LOAD_LOCKS_COUNT];
+    
     private final Class<T> serviceInterface;
     
     @Getter
     private final Collection<T> services;
+    
+    static {
+        for (int i = 0; i < LOAD_LOCKS_COUNT; i++) {
+            LOAD_LOCKS[i] = new Object();
+        }
+    }
     
     private ShardingSphereServiceLoader(final Class<T> serviceInterface) {
         this.serviceInterface = serviceInterface;
@@ -73,7 +83,7 @@ public final class ShardingSphereServiceLoader<T> {
         if (null != result) {
             return (Collection<T>) result.getServiceInstances();
         }
-        synchronized (LOADERS) {
+        synchronized (LOAD_LOCKS[serviceInterface.hashCode() % LOAD_LOCKS_COUNT]) {
             result = LOADERS.get(serviceInterface);
             if (null == result) {
                 result = new ShardingSphereServiceLoader<>(serviceInterface);
