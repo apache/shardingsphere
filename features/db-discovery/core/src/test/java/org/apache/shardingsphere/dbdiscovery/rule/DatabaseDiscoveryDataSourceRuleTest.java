@@ -69,6 +69,7 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
     public void assertGetDataSourceMapper() {
         databaseDiscoveryDataSourceRule.changePrimaryDataSourceName("ds_1");
         assertThat(databaseDiscoveryDataSourceRule.getDataSourceMapper(),
-                is(Collections.singletonMap("test_pr", new LinkedHashSet<>(Arrays.asList(new DataSourceRoleInfo("ds_1", DataSourceRole.PRIMARY), new DataSourceRoleInfo("ds_0", DataSourceRole.MEMBER))))));
+                is(Collections.singletonMap("test_pr",
+                        new LinkedHashSet<>(Arrays.asList(new DataSourceRoleInfo("ds_1", DataSourceRole.PRIMARY), new DataSourceRoleInfo("ds_0", DataSourceRole.MEMBER))))));
     }
 }
