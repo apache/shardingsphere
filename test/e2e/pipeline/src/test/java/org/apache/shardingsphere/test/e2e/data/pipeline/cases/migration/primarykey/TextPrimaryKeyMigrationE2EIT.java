@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseTy
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
@@ -80,10 +80,7 @@ public class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private static boolean isEnabled() {
-        return PipelineEnvTypeEnum.NONE != PipelineE2EEnvironment.getInstance().getItEnvType()
-                && (!PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType()).isEmpty()
-                || !PipelineE2EEnvironment.getInstance().listStorageContainerImages(new PostgreSQLDatabaseType()).isEmpty()
-                || !PipelineE2EEnvironment.getInstance().listStorageContainerImages(new OpenGaussDatabaseType()).isEmpty());
+        return PipelineE2ECondition.isEnabled(new MySQLDatabaseType(), new PostgreSQLDatabaseType(), new OpenGaussDatabaseType());
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
