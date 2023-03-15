@@ -25,26 +25,22 @@ import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateA
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
-import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ECondition;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -57,6 +53,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 3) multiple columns primary key, first column type is VARCHAR.
  * 4) multiple columns unique key, first column type is BIGINT.
  */
+@PipelineE2ESettings(fetchSingle = true, database = {
+        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"),
+        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/common/none.xml")})
 public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String ORDER_TABLE_SHARDING_RULE_FORMAT = "CREATE SHARDING TABLE RULE t_order(\n"
@@ -71,7 +70,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     public void assertNoUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             String sql;
@@ -108,7 +107,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     public void assertMultiPrimaryKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             String sql;
@@ -131,7 +130,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     public void assertMultiUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             String sql;
@@ -154,7 +153,7 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     public void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             String sql;
@@ -205,22 +204,5 @@ public final class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static boolean isEnabled() {
         return PipelineE2ECondition.isEnabled(new MySQLDatabaseType(), new PostgreSQLDatabaseType());
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            Collection<Arguments> result = new LinkedList<>();
-            List<String> mysqlVersion = PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType());
-            if (!mysqlVersion.isEmpty()) {
-                result.add(Arguments.of(new PipelineTestParameter(new MySQLDatabaseType(), mysqlVersion.get(0), "env/common/none.xml")));
-            }
-            List<String> postgresqlVersion = PipelineE2EEnvironment.getInstance().listStorageContainerImages(new PostgreSQLDatabaseType());
-            if (!postgresqlVersion.isEmpty()) {
-                result.add(Arguments.of(new PipelineTestParameter(new PostgreSQLDatabaseType(), postgresqlVersion.get(0), "env/common/none.xml")));
-            }
-            return result.stream();
-        }
     }
 }

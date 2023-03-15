@@ -35,23 +35,21 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTabl
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
@@ -62,9 +60,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -72,13 +68,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * CDC E2E IT.
  */
+@PipelineE2ESettings(database = {
+        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/general/mysql.xml"),
+        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/general/postgresql.xml")})
 @Slf4j
 public final class CDCE2EIT {
     
@@ -95,7 +93,7 @@ public final class CDCE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     public void assertCDCDataImportSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
         if (TimeZone.getDefault() != TimeZone.getTimeZone("UTC") && PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
             // make sure the time zone of locally running program same with the database server at CI.
@@ -198,25 +196,8 @@ public final class CDCE2EIT {
     }
     
     private static boolean isEnabled() {
-        // TODO fix later
-        // return PipelineE2ECondition.isEnabled();
+        // TODO xinze fix it
+        // return PipelineE2ECondition.isEnabled(new MySQLDatabaseType(), new OpenGaussDatabaseType());
         return false;
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            Collection<Arguments> result = new LinkedList<>();
-            MySQLDatabaseType mysqlDatabaseType = new MySQLDatabaseType();
-            for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(mysqlDatabaseType)) {
-                result.add(Arguments.of(new PipelineTestParameter(mysqlDatabaseType, each, "env/scenario/general/mysql.xml")));
-            }
-            OpenGaussDatabaseType openGaussDatabaseType = new OpenGaussDatabaseType();
-            for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(openGaussDatabaseType)) {
-                result.add(Arguments.of(new PipelineTestParameter(openGaussDatabaseType, each, "env/scenario/general/postgresql.xml")));
-            }
-            return result.stream();
-        }
     }
 }

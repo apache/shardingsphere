@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.data.pipeline.cases;
+package org.apache.shardingsphere.test.e2e.data.pipeline.framework.param;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

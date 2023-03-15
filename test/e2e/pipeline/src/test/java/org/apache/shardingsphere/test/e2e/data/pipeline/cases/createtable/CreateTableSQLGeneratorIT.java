@@ -23,11 +23,13 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorAssertionEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorOutputEntity;
-import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ECondition;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
@@ -39,10 +41,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQ
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.sql.DataSource;
@@ -57,20 +56,15 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@PipelineE2ESettings(database = {
+        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/create-table-generator/mysql/create-table-sql-generator.xml"),
+        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/scenario/create-table-generator/postgresql/create-table-sql-generator.xml"),
+        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/create-table-generator/opengauss/create-table-sql-generator.xml")})
 public final class CreateTableSQLGeneratorIT {
-    
-    private static final String POSTGRES_CASE_FILE_PATH = "postgresql/create-table-sql-generator.xml";
-    
-    private static final String MYSQL_CASE_FILE_PATH = "mysql/create-table-sql-generator.xml";
-    
-    private static final String OPEN_GAUSS_CASE_FILE_PATH = "opengauss/create-table-sql-generator.xml";
-    
-    private static final String PARENT_PATH = "env/scenario/create-table-generator";
     
     private static final String DEFAULT_SCHEMA = "public";
     
@@ -87,7 +81,7 @@ public final class CreateTableSQLGeneratorIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     public void assertGenerateCreateTableSQL(final PipelineTestParameter testParam) throws SQLException {
         startStorageContainer(testParam.getDatabaseType(), testParam.getStorageContainerImage());
         CreateTableSQLGeneratorAssertionsRootEntity rootEntity = JAXB.unmarshal(
@@ -143,23 +137,5 @@ public final class CreateTableSQLGeneratorIT {
     
     private static boolean isEnabled() {
         return PipelineE2ECondition.isEnabled(new MySQLDatabaseType(), new PostgreSQLDatabaseType(), new OpenGaussDatabaseType());
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            Collection<PipelineTestParameter> result = new LinkedList<>();
-            for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType())) {
-                result.add(new PipelineTestParameter(new MySQLDatabaseType(), each, String.join("/", PARENT_PATH, MYSQL_CASE_FILE_PATH)));
-            }
-            for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(new PostgreSQLDatabaseType())) {
-                result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), each, String.join("/", PARENT_PATH, POSTGRES_CASE_FILE_PATH)));
-            }
-            for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(new OpenGaussDatabaseType())) {
-                result.add(new PipelineTestParameter(new OpenGaussDatabaseType(), each, String.join("/", PARENT_PATH, OPEN_GAUSS_CASE_FILE_PATH)));
-            }
-            return result.stream().map(Arguments::of);
-        }
     }
 }
