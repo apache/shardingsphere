@@ -31,6 +31,7 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -58,12 +59,23 @@ public final class ExpressionExtractUtilTest {
         ExpressionSegment rightExpressionSegment = new BinaryOperationExpression(28, 39, columnSegment2, parameterMarkerExpressionSegment2, "=", "status=?");
         BinaryOperationExpression expression = new BinaryOperationExpression(28, 54, leftExpressionSegment, rightExpressionSegment, "AND", "order_id=? AND status=?");
         Collection<AndPredicate> actual = ExpressionExtractUtil.getAndPredicates(expression);
+
         assertThat(actual.size(), is(1));
         AndPredicate andPredicate = actual.iterator().next();
         assertThat(andPredicate.getPredicates().size(), is(2));
         Iterator<ExpressionSegment> iterator = andPredicate.getPredicates().iterator();
         assertThat(iterator.next(), is(leftExpressionSegment));
         assertThat(iterator.next(), is(rightExpressionSegment));
+
+        Collection<AndPredicate> result = new LinkedList<>();
+        Collection<AndPredicate> actual2 = ExpressionExtractUtil.getAndPredicates(result,expression);
+        assertThat(actual2.size(), is(1));
+        AndPredicate andPredicate2 = actual2.iterator().next();
+        assertThat(andPredicate2.getPredicates().size(), is(2));
+        Iterator<ExpressionSegment> iterator2 = andPredicate.getPredicates().iterator();
+        assertThat(iterator2.next(), is(leftExpressionSegment));
+        assertThat(iterator2.next(), is(rightExpressionSegment));
+
     }
     
     @Test

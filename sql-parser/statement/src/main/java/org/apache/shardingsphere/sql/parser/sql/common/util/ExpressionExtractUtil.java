@@ -38,10 +38,10 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExpressionExtractUtil {
-    
+
     /**
      * Get and predicate collection.
-     * 
+     *
      * @param expression expression segment
      * @return and predicate collection
      */
@@ -50,7 +50,12 @@ public final class ExpressionExtractUtil {
         extractAndPredicates(result, expression);
         return result;
     }
-    
+
+    public static Collection<AndPredicate> getAndPredicates(Collection<AndPredicate> result, final ExpressionSegment expression) {
+        extractAndPredicates(result, expression);
+        return result;
+    }
+
     private static void extractAndPredicates(final Collection<AndPredicate> result, final ExpressionSegment expression) {
         if (!(expression instanceof BinaryOperationExpression)) {
             result.add(createAndPredicate(expression));
@@ -64,13 +69,16 @@ public final class ExpressionExtractUtil {
         } else if (logicalOperator.isPresent() && LogicalOperator.AND == logicalOperator.get()) {
             Collection<AndPredicate> predicates = getAndPredicates(binaryExpression.getRight());
             for (AndPredicate each : getAndPredicates(binaryExpression.getLeft())) {
+                if (result.contains(each)) {
+                    continue;
+                }
                 extractCombinedAndPredicates(result, each, predicates);
             }
         } else {
             result.add(createAndPredicate(expression));
         }
     }
-    
+
     private static void extractCombinedAndPredicates(final Collection<AndPredicate> result, final AndPredicate current, final Collection<AndPredicate> predicates) {
         for (AndPredicate each : predicates) {
             AndPredicate predicate = new AndPredicate();
@@ -79,16 +87,16 @@ public final class ExpressionExtractUtil {
             result.add(predicate);
         }
     }
-    
+
     private static AndPredicate createAndPredicate(final ExpressionSegment expression) {
         AndPredicate result = new AndPredicate();
         result.getPredicates().add(expression);
         return result;
     }
-    
+
     /**
      * Get parameter marker expression collection.
-     * 
+     *
      * @param expressions expression collection
      * @return parameter marker expression collection
      */
@@ -97,7 +105,7 @@ public final class ExpressionExtractUtil {
         extractParameterMarkerExpressions(result, expressions);
         return result;
     }
-    
+
     private static void extractParameterMarkerExpressions(final List<ParameterMarkerExpressionSegment> result, final Collection<ExpressionSegment> expressions) {
         for (ExpressionSegment each : expressions) {
             if (each instanceof ParameterMarkerExpressionSegment) {
