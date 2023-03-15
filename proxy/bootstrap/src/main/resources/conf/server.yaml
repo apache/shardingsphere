@@ -42,9 +42,9 @@
 #  privilege:
 #    type: ALL_PERMITTED
 #
-#transaction:
-#  defaultType: XA
-#  providerType: Atomikos
+transaction:
+  defaultType: XA
+  providerType: Atomikos
 #
 #sqlParser:
 #  sqlCommentParseEnabled: false
