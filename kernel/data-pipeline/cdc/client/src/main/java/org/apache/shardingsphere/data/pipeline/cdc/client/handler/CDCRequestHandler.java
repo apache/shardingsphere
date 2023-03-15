@@ -23,8 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.StreamDataEvent;
-import org.apache.shardingsphere.data.pipeline.cdc.client.importer.DataSourceImporter;
-import org.apache.shardingsphere.data.pipeline.cdc.client.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
@@ -49,11 +47,11 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     private final StartCDCClientParameter parameter;
     
-    private final Importer importer;
+    private final RecordConsumer consumer;
     
     public CDCRequestHandler(final StartCDCClientParameter parameter) {
         this.parameter = parameter;
-        importer = new DataSourceImporter(parameter.getDatabaseType(), parameter.getImportDataSourceParameter());
+        consumer = parameter.getRecordConsumer();
     }
     
     @Override
@@ -92,21 +90,18 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     private void processDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {
         List<Record> recordsList = result.getRecordsList();
-        for (Record each : recordsList) {
-            try {
-                importer.write(each);
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                throw new RuntimeException(ex);
-            }
+        try {
+            consumer.consume(recordsList);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw new RuntimeException(ex);
         }
         ctx.channel().writeAndFlush(CDCRequest.newBuilder().setType(Type.ACK_STREAMING).setAckStreamingRequestBody(AckStreamingRequestBody.newBuilder().setAckId(result.getAckId()).build()).build());
     }
     
     @Override
-    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
-        importer.close();
+    public void channelInactive(final ChannelHandlerContext ctx) {
         ctx.fireChannelInactive();
     }
     

@@ -34,10 +34,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.sql.Timestamp;
 
 /**
- * Any value convert.
+ * Protobuf any value convert.
  */
 @Slf4j
-public final class AnyValueConvert {
+public final class ProtobufAnyValueConverter {
     
     /**
      * Convert any to object.

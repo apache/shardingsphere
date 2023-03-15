@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.importer;
+package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
+import java.util.Collection;
+
 /**
- * Importer.
+ * Record consumer.
  */
-public interface Importer {
+public interface RecordConsumer {
     
     /**
-     * Write record.
+     * Consume records.
      *
-     * @param record record
+     * @param records records.
      * @throws Exception exception
      */
-    void write(Record record) throws Exception;
-    
-    /**
-     * Close importer.
-     *
-     * @throws Exception exception
-     */
-    void close() throws Exception;
+    void consume(Collection<Record> records) throws Exception;
 }

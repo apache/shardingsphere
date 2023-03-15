@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.cdc.client.handler.RecordConsumer;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 
 import java.util.List;
@@ -31,8 +32,6 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public final class StartCDCClientParameter {
-    
-    private String databaseType;
     
     private String address;
     
@@ -48,5 +47,5 @@ public final class StartCDCClientParameter {
     
     private boolean full;
     
-    private final ImportDataSourceParameter importDataSourceParameter;
+    private final RecordConsumer recordConsumer;
 }
