@@ -831,6 +831,7 @@ notOperator
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
     | booleanPrimary SAFE_EQ_ predicate
+    | booleanPrimary MEMBER OF LP_ (expr) RP_
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | booleanPrimary assignmentOperator predicate
