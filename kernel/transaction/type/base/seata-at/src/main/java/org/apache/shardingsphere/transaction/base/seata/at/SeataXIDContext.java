@@ -20,12 +20,18 @@ package org.apache.shardingsphere.transaction.base.seata.at;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Seata xid context.
  */
+@Slf4j
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SeataXIDContext {
+    
+    private static AtomicInteger count = new AtomicInteger();
     
     private static final TransmittableThreadLocal<String> XID = new TransmittableThreadLocal<>();
     
@@ -53,6 +59,7 @@ public final class SeataXIDContext {
      * @param xid xid
      */
     public static void set(final String xid) {
+        caller("set" + xid);
         XID.set(xid);
     }
     
@@ -60,6 +67,13 @@ public final class SeataXIDContext {
      * Remove xid.
      */
     public static void remove() {
+        caller("remove");
         XID.remove();
+    }
+    
+    private static void caller(String curr) {
+        String className = Thread.currentThread().getStackTrace()[3].getClassName();
+        String methodName = Thread.currentThread().getStackTrace()[3].getMethodName();
+        log.error("className:{}, methodName:{}, curr:{}, count:{}", className, methodName, curr, count.getAndIncrement());
     }
 }
