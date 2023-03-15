@@ -23,11 +23,11 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorAssertionEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.entity.CreateTableSQLGeneratorOutputEntity;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
-import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
@@ -77,8 +77,6 @@ public final class CreateTableSQLGeneratorIT {
     private static final String DEFAULT_DATABASE = "pipeline_it_0";
     
     private static final Pattern REPLACE_LINE_SPACE = Pattern.compile("\\s*|\t|\r|\n");
-    
-    private static final PipelineE2EEnvironment ENV = PipelineE2EEnvironment.getInstance();
     
     private DockerStorageContainer storageContainer;
     
@@ -144,7 +142,7 @@ public final class CreateTableSQLGeneratorIT {
     }
     
     private static boolean isEnabled() {
-        return ENV.getItEnvType() != PipelineEnvTypeEnum.NONE && (!ENV.getMysqlVersions().isEmpty() || !ENV.getPostgresqlVersions().isEmpty() || !ENV.getOpenGaussVersions().isEmpty());
+        return PipelineE2ECondition.isEnabled(new MySQLDatabaseType(), new PostgreSQLDatabaseType(), new OpenGaussDatabaseType());
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
@@ -152,13 +150,13 @@ public final class CreateTableSQLGeneratorIT {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             Collection<PipelineTestParameter> result = new LinkedList<>();
-            for (String each : ENV.getMysqlVersions()) {
+            for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType())) {
                 result.add(new PipelineTestParameter(new MySQLDatabaseType(), each, String.join("/", PARENT_PATH, MYSQL_CASE_FILE_PATH)));
             }
-            for (String each : ENV.getPostgresqlVersions()) {
+            for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(new PostgreSQLDatabaseType())) {
                 result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), each, String.join("/", PARENT_PATH, POSTGRES_CASE_FILE_PATH)));
             }
-            for (String each : ENV.getOpenGaussVersions()) {
+            for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(new OpenGaussDatabaseType())) {
                 result.add(new PipelineTestParameter(new OpenGaussDatabaseType(), each, String.join("/", PARENT_PATH, OPEN_GAUSS_CASE_FILE_PATH)));
             }
             return result.stream().map(Arguments::of);
