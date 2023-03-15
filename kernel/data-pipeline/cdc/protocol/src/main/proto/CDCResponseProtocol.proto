@@ -61,7 +61,7 @@ message DataRecordResult {
     message MetaData {
       string database = 1;
       optional string schema = 2;
-      string table_name = 3;
+      string table = 3;
     }
     MetaData meta_data = 3;
     int64 transaction_commit_millis = 4;
@@ -82,5 +82,5 @@ message DataRecordResult {
     optional string ddl_SQL = 7;
   }
   string ack_id = 1;
-  repeated Record records = 2;
+  repeated Record record = 2;
 }

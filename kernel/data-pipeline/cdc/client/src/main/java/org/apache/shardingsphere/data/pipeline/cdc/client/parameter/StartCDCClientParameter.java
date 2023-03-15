@@ -20,10 +20,11 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.parameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.cdc.client.handler.RecordConsumer;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Start CDC client parameter.
@@ -47,5 +48,5 @@ public final class StartCDCClientParameter {
     
     private boolean full;
     
-    private final RecordConsumer recordConsumer;
+    private final Consumer<List<Record>> consumer;
 }

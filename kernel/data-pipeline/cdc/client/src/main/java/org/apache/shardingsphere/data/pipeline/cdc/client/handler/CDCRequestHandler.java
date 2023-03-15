@@ -38,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * CDC request handler.
@@ -47,18 +48,18 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     private final StartCDCClientParameter parameter;
     
-    private final RecordConsumer consumer;
+    private final Consumer<List<Record>> consumer;
     
     public CDCRequestHandler(final StartCDCClientParameter parameter) {
         this.parameter = parameter;
-        consumer = parameter.getRecordConsumer();
+        consumer = parameter.getConsumer();
     }
     
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
         if (evt instanceof StreamDataEvent) {
             StreamDataRequestBody streamDataRequestBody = StreamDataRequestBody.newBuilder().setDatabase(parameter.getDatabase()).setFull(parameter.isFull())
-                    .addAllSourceSchemaTables(parameter.getSchemaTables()).build();
+                    .addAllSourceSchemaTable(parameter.getSchemaTables()).build();
             CDCRequest request = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setType(Type.STREAM_DATA).setStreamDataRequestBody(streamDataRequestBody).build();
             ctx.writeAndFlush(request);
         }
@@ -89,9 +90,9 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     }
     
     private void processDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {
-        List<Record> recordsList = result.getRecordsList();
+        List<Record> recordsList = result.getRecordList();
         try {
-            consumer.consume(recordsList);
+            consumer.accept(recordsList);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

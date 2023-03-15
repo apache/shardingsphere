@@ -173,7 +173,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "database not allowed to be empty"));
             return;
         }
-        if (requestBody.getSourceSchemaTablesList().isEmpty()) {
+        if (requestBody.getSourceSchemaTableList().isEmpty()) {
             ctx.writeAndFlush(CDCResponseGenerator.failed(request.getRequestId(), CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR, "Illegal stream data request parameter"));
             return;
         }

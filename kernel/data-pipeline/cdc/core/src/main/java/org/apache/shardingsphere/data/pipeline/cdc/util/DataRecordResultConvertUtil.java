@@ -51,7 +51,7 @@ public final class DataRecordResultConvertUtil {
             before.add(TableColumn.newBuilder().setName(column.getName()).setValue(Any.pack(ColumnValueConvertUtil.convertToProtobufMessage(column.getOldValue()))).build());
             after.add(TableColumn.newBuilder().setName(column.getName()).setValue(Any.pack(ColumnValueConvertUtil.convertToProtobufMessage(column.getValue()))).build());
         }
-        MetaData metaData = MetaData.newBuilder().setDatabase(database).setSchema(Strings.nullToEmpty(schema)).setTableName(dataRecord.getTableName()).build();
+        MetaData metaData = MetaData.newBuilder().setDatabase(database).setSchema(Strings.nullToEmpty(schema)).setTable(dataRecord.getTableName()).build();
         DataChangeType dataChangeType = DataChangeType.UNKNOWN;
         if (IngestDataChangeType.INSERT.equals(dataRecord.getType())) {
             dataChangeType = DataChangeType.INSERT;

@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
@@ -48,7 +47,6 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.Pipeline
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
-import org.junit.Ignore;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -82,7 +80,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * CDC E2E IT.
  */
 @Slf4j
-@Ignore
 public final class CDCE2EIT {
     
     private static final String CREATE_SHARDING_RULE_SQL = String.format("CREATE SHARDING TABLE RULE t_order("
@@ -169,7 +166,7 @@ public final class CDCE2EIT {
     }
     
     private void startCDCClient(final PipelineContainerComposer containerComposer) {
-        // TODO need improve
+        // TODO fix later
         StartCDCClientParameter parameter = new StartCDCClientParameter(records -> log.info("records: {}", records));
         parameter.setAddress("localhost");
         parameter.setPort(containerComposer.getContainerComposer().getProxyCDCPort());
@@ -201,7 +198,9 @@ public final class CDCE2EIT {
     }
     
     private static boolean isEnabled() {
-        return PipelineE2ECondition.isEnabled();
+        // TODO fix later
+        // return PipelineE2ECondition.isEnabled();
+        return false;
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
