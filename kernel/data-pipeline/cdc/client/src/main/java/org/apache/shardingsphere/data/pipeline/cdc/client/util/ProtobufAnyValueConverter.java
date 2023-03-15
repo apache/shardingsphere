@@ -21,29 +21,23 @@ import com.google.protobuf.Any;
 import com.google.protobuf.BoolValue;
 import com.google.protobuf.BytesValue;
 import com.google.protobuf.DoubleValue;
+import com.google.protobuf.Empty;
 import com.google.protobuf.FloatValue;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.Int64Value;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.StringValue;
+import com.google.protobuf.UInt32Value;
+import com.google.protobuf.UInt64Value;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigDecimalValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigIntegerValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BlobValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ClobValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.LocalTimeValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.NullValue;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.time.LocalTime;
 
 /**
- * Any value convert.
+ * Protobuf any value converter.
  */
 @Slf4j
-public final class AnyValueConvert {
+public final class ProtobufAnyValueConverter {
     
     /**
      * Convert any to object.
@@ -53,7 +47,7 @@ public final class AnyValueConvert {
      * @throws InvalidProtocolBufferException invalid protocol buffer exception
      */
     public static Object convertToObject(final Any any) throws InvalidProtocolBufferException {
-        if (null == any || any.is(NullValue.class)) {
+        if (null == any || any.is(Empty.class)) {
             return null;
         }
         if (any.is(StringValue.class)) {
@@ -68,17 +62,17 @@ public final class AnyValueConvert {
         if (any.is(Int64Value.class)) {
             return any.unpack(Int64Value.class).getValue();
         }
-        if (any.is(BigIntegerValue.class)) {
-            return new BigInteger(any.unpack(BigIntegerValue.class).getValue().toByteArray());
+        if (any.is(UInt32Value.class)) {
+            return any.unpack(UInt64Value.class).getValue();
+        }
+        if (any.is(UInt64Value.class)) {
+            return any.unpack(UInt64Value.class).getValue();
         }
         if (any.is(FloatValue.class)) {
             return any.unpack(FloatValue.class).getValue();
         }
         if (any.is(DoubleValue.class)) {
             return any.unpack(DoubleValue.class).getValue();
-        }
-        if (any.is(BigDecimalValue.class)) {
-            return new BigDecimal(any.unpack(BigDecimalValue.class).getValue());
         }
         if (any.is(BoolValue.class)) {
             return any.unpack(BoolValue.class).getValue();
@@ -88,15 +82,6 @@ public final class AnyValueConvert {
         }
         if (any.is(com.google.protobuf.Timestamp.class)) {
             return converProtobufTimestamp(any.unpack(com.google.protobuf.Timestamp.class));
-        }
-        if (any.is(LocalTimeValue.class)) {
-            return LocalTime.parse(any.unpack(LocalTimeValue.class).getValue());
-        }
-        if (any.is(ClobValue.class)) {
-            return any.unpack(ClobValue.class).getValue();
-        }
-        if (any.is(BlobValue.class)) {
-            return any.unpack(BlobValue.class).getValue().toByteArray();
         }
         // TODO can't use JsonFormat, might change the original value without error prompt. there need to cover more types,
         log.error("not support unpack value={}", any);
