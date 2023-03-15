@@ -18,9 +18,13 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 
@@ -32,8 +36,8 @@ public final class FixtureDataSourceContainedRule implements DatabaseRule, DataS
     }
     
     @Override
-    public DataSourceMapperInfo getDataSourceMapper() {
-        return new DataSourceMapperInfo();
+    public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
+        return Collections.emptyMap();
     }
     
     @Override

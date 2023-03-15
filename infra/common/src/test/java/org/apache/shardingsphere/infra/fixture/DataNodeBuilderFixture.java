@@ -30,7 +30,7 @@ public final class DataNodeBuilderFixture implements DataNodeBuilder<FixtureRule
     public Collection<DataNode> build(final Collection<DataNode> dataNodes, final FixtureRule rule) {
         Collection<DataNode> result = new LinkedList<>();
         for (DataNode each : dataNodes) {
-            result.addAll(DataNodeUtil.buildDataNode(each, rule.getDataSourceMapper().getMapper()));
+            result.addAll(DataNodeUtil.buildDataNode(each, rule.getDataSourceMapper()));
         }
         return result;
     }

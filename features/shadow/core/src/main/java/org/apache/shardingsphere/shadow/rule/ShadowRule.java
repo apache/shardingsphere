@@ -20,11 +20,10 @@ package org.apache.shardingsphere.shadow.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
 import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
 import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -239,9 +238,9 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     }
     
     @Override
-    public DataSourceMapperInfo getDataSourceMapper() {
-        DataSourceMapperInfo result = new DataSourceMapperInfo();
-        shadowDataSourceMappings.forEach((key, value) -> result.getDataSources().put(key, createShadowDataSources(value)));
+    public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
+        Map<String, Collection<DataSourceRoleInfo>> result = new LinkedHashMap<>();
+        shadowDataSourceMappings.forEach((key, value) -> result.put(key, createShadowDataSources(value)));
         return result;
     }
     

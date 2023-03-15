@@ -119,7 +119,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         ReadwriteSplittingRuleConfiguration config = createContainsOtherRulesDatasourceConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class, RETURNS_DEEP_STUBS);
-        when(dataSourceContainedRule.getDataSourceMapper().getMapper().containsKey("otherDatasourceName")).thenReturn(true);
+        when(dataSourceContainedRule.getDataSourceMapper().containsKey("otherDatasourceName")).thenReturn(true);
         checker.check("test", config, mockDataSources(), Collections.singleton(dataSourceContainedRule));
     }
     

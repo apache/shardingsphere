@@ -61,7 +61,7 @@ public final class CountShadowRuleExecutor implements RQLExecutor<CountShadowRul
     }
     
     private void addShadowData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final ShadowRule rule) {
-        addData(rowMap, SHADOW, databaseName, () -> rule.getDataSourceMapper().getMapper().size());
+        addData(rowMap, SHADOW, databaseName, () -> rule.getDataSourceMapper().size());
     }
     
     private void addData(final Map<String, LinkedList<Object>> rowMap, final String dataKey, final String databaseName, final Supplier<Integer> apply) {

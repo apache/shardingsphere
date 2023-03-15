@@ -20,17 +20,18 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.query;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CountDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,10 +74,10 @@ public final class CountDatabaseDiscoveryRuleExecutorTest {
     
     private DatabaseDiscoveryRule mockDatabaseDiscoveryRule() {
         DatabaseDiscoveryRule result = mock(DatabaseDiscoveryRule.class);
-        DataSourceMapperInfo dataSourceMapperInfo = new DataSourceMapperInfo();
-        dataSourceMapperInfo.getDataSources().put("ds_0", Collections.singletonList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY)));
-        dataSourceMapperInfo.getDataSources().put("ds_1", Collections.singletonList(new DataSourceRoleInfo("ds_1", DataSourceRole.MEMBER)));
-        when(result.getDataSourceMapper()).thenReturn(dataSourceMapperInfo);
+        Map<String, Collection<DataSourceRoleInfo>> dataSources = new LinkedHashMap<>();
+        dataSources.put("ds_0", Collections.singletonList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY)));
+        dataSources.put("ds_1", Collections.singletonList(new DataSourceRoleInfo("ds_1", DataSourceRole.MEMBER)));
+        when(result.getDataSourceMapper()).thenReturn(dataSources);
         return result;
     }
 }

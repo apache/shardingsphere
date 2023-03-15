@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CountReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.junit.jupiter.api.Test;
@@ -32,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -74,10 +74,10 @@ public final class CountReadwriteSplittingRuleExecutorTest {
     
     private ReadwriteSplittingRule mockReadwriteSplittingRule() {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
-        DataSourceMapperInfo dataSourceMapperInfo = new DataSourceMapperInfo(Collections.singletonMap("readwrite_splitting",
+        Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = Collections.singletonMap("readwrite_splitting",
                 Arrays.asList(new DataSourceRoleInfo("write_ds", DataSourceRole.PRIMARY),
-                        new DataSourceRoleInfo("read_ds", DataSourceRole.MEMBER))));
-        when(result.getDataSourceMapper()).thenReturn(dataSourceMapperInfo);
+                        new DataSourceRoleInfo("read_ds", DataSourceRole.MEMBER)));
+        when(result.getDataSourceMapper()).thenReturn(dataSourceMapper);
         return result;
     }
 }

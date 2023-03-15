@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -46,8 +48,8 @@ public final class DataNodeUtilTest {
     @Test
     public void assertBuildDataNodeWithSameDataSource() {
         DataNode dataNode = new DataNode("readwrite_ds.t_order");
-        Map<String, Collection<String>> dataSources = new LinkedHashMap<>();
-        dataSources.put("readwrite_ds", Arrays.asList("ds_0", "shadow_ds_0"));
+        Map<String, Collection<DataSourceRoleInfo>> dataSources = new LinkedHashMap<>();
+        dataSources.put("readwrite_ds", Arrays.asList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY), new DataSourceRoleInfo("shadow_ds_0", DataSourceRole.MEMBER)));
         Collection<DataNode> dataNodes = DataNodeUtil.buildDataNode(dataNode, dataSources);
         assertThat(dataNodes.size(), is(2));
         Iterator<DataNode> iterator = dataNodes.iterator();
@@ -58,8 +60,8 @@ public final class DataNodeUtilTest {
     @Test
     public void assertBuildDataNodeWithoutSameDataSource() {
         DataNode dataNode = new DataNode("read_ds.t_order");
-        Map<String, Collection<String>> dataSources = new LinkedHashMap<>();
-        dataSources.put("readwrite_ds", Arrays.asList("ds_0", "shadow_ds_0"));
+        Map<String, Collection<DataSourceRoleInfo>> dataSources = new LinkedHashMap<>();
+        dataSources.put("readwrite_ds", Arrays.asList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY), new DataSourceRoleInfo("shadow_ds_0", DataSourceRole.MEMBER)));
         Collection<DataNode> dataNodes = DataNodeUtil.buildDataNode(dataNode, dataSources);
         assertThat(dataNodes.size(), is(1));
         assertThat(dataNodes.iterator().next().getDataSourceName(), is("read_ds"));

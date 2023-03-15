@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * ShardingSphere rule which contains data source.
@@ -30,5 +33,5 @@ public interface DataSourceContainedRule extends ShardingSphereRule {
      *
      * @return data source mapper
      */
-    DataSourceMapperInfo getDataSourceMapper();
+    Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper();
 }

@@ -35,7 +35,7 @@ public final class DatabaseDiscoveryDataNodeBuilder implements DataNodeBuilder<D
     public Collection<DataNode> build(final Collection<DataNode> dataNodes, final DatabaseDiscoveryRule rule) {
         Collection<DataNode> result = new LinkedList<>();
         for (DataNode each : dataNodes) {
-            result.addAll(DataNodeUtil.buildDataNode(each, rule.getDataSourceMapper().getMapper()));
+            result.addAll(DataNodeUtil.buildDataNode(each, rule.getDataSourceMapper()));
         }
         return result;
     }

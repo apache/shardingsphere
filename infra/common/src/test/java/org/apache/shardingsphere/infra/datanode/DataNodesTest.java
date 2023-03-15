@@ -17,20 +17,21 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -130,10 +131,10 @@ public final class DataNodesTest {
     
     private ShardingSphereRule mockDataSourceContainedRule() {
         DataSourceContainedRule result = mock(FixtureRule.class);
-        DataSourceMapperInfo mapper = new DataSourceMapperInfo();
-        mapper.getDataSources().put("readwrite_ds", Arrays.asList(new DataSourceRoleInfo("primary_ds", DataSourceRole.PRIMARY),
+        Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = new LinkedHashMap<>();
+        dataSourceMapper.put("readwrite_ds", Arrays.asList(new DataSourceRoleInfo("primary_ds", DataSourceRole.PRIMARY),
                 new DataSourceRoleInfo("replica_ds_0", DataSourceRole.MEMBER), new DataSourceRoleInfo("replica_ds_1", DataSourceRole.MEMBER)));
-        when(result.getDataSourceMapper()).thenReturn(mapper);
+        when(result.getDataSourceMapper()).thenReturn(dataSourceMapper);
         return result;
     }
     

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -78,7 +78,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
                 continue;
             }
             Collection<String> actualDataSources = new HashSet<>();
-            each.getDataSourceMapper().getMapper().values().forEach(actualDataSources::addAll);
+            each.getDataSourceMapper().values().stream().flatMap(Collection::stream).forEach(eachDataSource -> actualDataSources.add(eachDataSource.getName()));
             result.addAll(actualDataSources);
         }
         for (DataNodeContainedRule each : database.getRuleMetaData().findRules(DataNodeContainedRule.class)) {
