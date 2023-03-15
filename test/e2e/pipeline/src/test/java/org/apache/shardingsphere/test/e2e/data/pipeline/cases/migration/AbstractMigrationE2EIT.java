@@ -73,16 +73,16 @@ public abstract class AbstractMigrationE2EIT {
         }
         String addSourceResource = migrationDistSQLCommand.getRegisterMigrationSourceStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
                 .replace("${password}", containerComposer.getPassword())
-                .replace("${ds0}", containerComposer.appendExtraParam(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_0, true)));
+                .replace("${ds0}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_0, true)));
         containerComposer.addResource(addSourceResource);
     }
     
     protected void addMigrationTargetResource() throws SQLException {
         String addTargetResource = migrationDistSQLCommand.getRegisterMigrationTargetStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
                 .replace("${password}", containerComposer.getPassword())
-                .replace("${ds2}", containerComposer.appendExtraParam(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_2, true)))
-                .replace("${ds3}", containerComposer.appendExtraParam(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_3, true)))
-                .replace("${ds4}", containerComposer.appendExtraParam(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, true)));
+                .replace("${ds2}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_2, true)))
+                .replace("${ds3}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_3, true)))
+                .replace("${ds4}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, true)));
         containerComposer.addResource(addTargetResource);
         List<Map<String, Object>> resources = containerComposer.queryForListWithLog("SHOW STORAGE UNITS from sharding_db");
         assertThat(resources.size(), is(3));

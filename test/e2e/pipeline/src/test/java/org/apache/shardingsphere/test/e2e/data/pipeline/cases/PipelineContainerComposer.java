@@ -79,8 +79,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     public static final String SCHEMA_NAME = "test";
     
-    public static final String PROXY_DATABASE = "sharding_db";
-    
     public static final String DS_0 = "pipeline_it_0";
     
     public static final String DS_1 = "pipeline_it_1";
@@ -93,6 +91,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     public static final int TABLE_INIT_ROW_COUNT = 3000;
     
+    private static final String PROXY_DATABASE = "sharding_db";
+    
     private final BaseContainerComposer containerComposer;
     
     private final ExtraSQLCommand extraSQLCommand;
@@ -103,9 +103,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     private final String password;
     
-    private DataSource sourceDataSource;
+    private final DataSource sourceDataSource;
     
-    private DataSource proxyDataSource;
+    private final DataSource proxyDataSource;
     
     private Thread increaseTaskThread;
     
@@ -124,19 +124,15 @@ public final class PipelineContainerComposer implements AutoCloseable {
         }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineContainerComposer.class.getClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
         containerComposer.start();
+        sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParameter(getActualJdbcUrlTemplate(DS_0, false)), username, password);
+        proxyDataSource = StorageContainerUtil.generateDataSource(
+                appendExtraParameter(containerComposer.getProxyJdbcUrl(PROXY_DATABASE)), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
         init(jobType);
     }
     
     @SneakyThrows(SQLException.class)
     private void init(final JobType jobType) {
-        sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
-        proxyDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(containerComposer.getProxyJdbcUrl(PROXY_DATABASE)),
-                ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
-        String defaultDatabaseName = "";
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            defaultDatabaseName = "postgres";
-        }
-        String jdbcUrl = containerComposer.getProxyJdbcUrl(defaultDatabaseName);
+        String jdbcUrl = containerComposer.getProxyJdbcUrl(DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType) ? "postgres" : "");
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
             cleanUpPipelineJobs(connection, jobType);
             cleanUpProxyDatabase(connection);
@@ -145,21 +141,30 @@ public final class PipelineContainerComposer implements AutoCloseable {
         cleanUpDataSource();
     }
     
-    /**
-     * Append extra parameter.
-     * 
-     * @param jdbcUrl JDBC URL
-     * @return appended JDBC URL
-     */
-    public String appendExtraParam(final String jdbcUrl) {
-        String result = jdbcUrl;
-        if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
-            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
+    private void cleanUpPipelineJobs(final Connection connection, final JobType jobType) throws SQLException {
+        if (PipelineEnvTypeEnum.NATIVE != PipelineE2EEnvironment.getInstance().getItEnvType()) {
+            return;
         }
-        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType()) || DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
-            result = new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified")));
+        String jobTypeName = jobType.getTypeName();
+        for (Map<String, Object> each : queryJobs(connection, jobTypeName)) {
+            String jobId = each.get("id").toString();
+            Map<String, Object> jobInfo = queryForListWithLog(String.format("SHOW %s STATUS '%s'", jobTypeName, jobId)).get(0);
+            String status = jobInfo.get("status").toString();
+            if (JobStatus.FINISHED.name().equals(status)) {
+                connection.createStatement().execute(String.format("COMMIT %s '%s'", jobTypeName, jobId));
+            } else {
+                connection.createStatement().execute(String.format("ROLLBACK %s '%s'", jobTypeName, jobId));
+            }
         }
-        return result;
+    }
+    
+    private List<Map<String, Object>> queryJobs(final Connection connection, final String jobTypeName) {
+        try {
+            return transformResultSetToList(connection.createStatement().executeQuery(String.format("SHOW %s LIST", jobTypeName)));
+        } catch (final SQLException ex) {
+            log.warn("{} execute failed, message {}", String.format("SHOW %s LIST", jobTypeName), ex.getMessage());
+            return Collections.emptyList();
+        }
     }
     
     private void cleanUpProxyDatabase(final Connection connection) {
@@ -174,32 +179,11 @@ public final class PipelineContainerComposer implements AutoCloseable {
         }
     }
     
-    private void cleanUpPipelineJobs(final Connection connection, final JobType jobType) throws SQLException {
-        if (PipelineEnvTypeEnum.NATIVE != PipelineE2EEnvironment.getInstance().getItEnvType()) {
-            return;
-        }
-        String jobTypeName = jobType.getTypeName();
-        List<Map<String, Object>> jobList;
-        try {
-            ResultSet resultSet = connection.createStatement().executeQuery(String.format("SHOW %s LIST", jobTypeName));
-            jobList = transformResultSetToList(resultSet);
-        } catch (final SQLException ex) {
-            log.warn("{} execute failed, message {}", String.format("SHOW %s LIST", jobTypeName), ex.getMessage());
-            return;
-        }
-        if (jobList.isEmpty()) {
-            return;
-        }
-        for (Map<String, Object> each : jobList) {
-            String jobId = each.get("id").toString();
-            Map<String, Object> jobInfo = queryForListWithLog(String.format("SHOW %s STATUS '%s'", jobTypeName, jobId)).get(0);
-            String status = jobInfo.get("status").toString();
-            if (JobStatus.FINISHED.name().equals(status)) {
-                connection.createStatement().execute(String.format("COMMIT %s '%s'", jobTypeName, jobId));
-            } else {
-                connection.createStatement().execute(String.format("ROLLBACK %s '%s'", jobTypeName, jobId));
-            }
-        }
+    private void createProxyDatabase(final Connection connection) throws SQLException {
+        String sql = String.format("CREATE DATABASE %s", PROXY_DATABASE);
+        log.info("Create proxy database {}", PROXY_DATABASE);
+        connection.createStatement().execute(sql);
+        ThreadUtil.sleep(2, TimeUnit.SECONDS);
     }
     
     private void cleanUpDataSource() {
@@ -211,11 +195,20 @@ public final class PipelineContainerComposer implements AutoCloseable {
         }
     }
     
-    private void createProxyDatabase(final Connection connection) throws SQLException {
-        String sql = String.format("CREATE DATABASE %s", PROXY_DATABASE);
-        log.info("create proxy database {}", PROXY_DATABASE);
-        connection.createStatement().execute(sql);
-        ThreadUtil.sleep(2, TimeUnit.SECONDS);
+    /**
+     * Append extra parameter.
+     * 
+     * @param jdbcUrl JDBC URL
+     * @return appended JDBC URL
+     */
+    public String appendExtraParameter(final String jdbcUrl) {
+        if (DatabaseTypeUtil.isMySQL(databaseType)) {
+            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
+        }
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
+            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified")));
+        }
+        return jdbcUrl;
     }
     
     /**
@@ -228,7 +221,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
                 .replace("${user}", getUsername())
                 .replace("${password}", getPassword())
-                .replace("${url}", appendExtraParam(getActualJdbcUrlTemplate(storageUnitName, true)));
+                .replace("${url}", appendExtraParameter(getActualJdbcUrlTemplate(storageUnitName, true)));
         proxyExecuteWithLog(registerStorageUnitTemplate, 2);
     }
     
@@ -270,15 +263,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
         return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
-    }
-    
-    /**
-     * Get target table order name.
-     * 
-     * @return target table order name
-     */
-    public String getTargetTableOrderName() {
-        return "t_order";
     }
     
     /**
@@ -399,12 +383,12 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 ResultSet resultSet = connection.createStatement().executeQuery(sql);
                 return transformResultSetToList(resultSet);
             } catch (final SQLException ex) {
-                log.error("data access error", ex);
+                log.error("Data access error.", ex);
             }
             ThreadUtil.sleep(3, TimeUnit.SECONDS);
             retryNumber++;
         }
-        throw new RuntimeException("can't get result from proxy");
+        throw new RuntimeException("Can not get result from proxy.");
     }
     
     /**
