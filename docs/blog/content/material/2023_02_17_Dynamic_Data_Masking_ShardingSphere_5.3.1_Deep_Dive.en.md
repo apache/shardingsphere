@@ -30,7 +30,7 @@ As shown in the figure below, the ShardingSphere microkernelalready includes cor
 
 This means that users only need to implement `ResultDecoratorEngine` and `ResultDecorator` in the merger to achieve the function.
 
-![img](C:\Users\sphere\Documents\GitHub\shardingsphere\docs\blog\static\img\2023_02_17_Dynamic_Data_Masking_ShardingSphere_5.3.1_Deep_Dive1.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_17_Dynamic_Data_Masking_ShardingSphere_5.3.1_Deep_Dive1.png)
 
 In order to implement the data masking function, the `shardingsphere-mask` module is added to the features. This module contains `shardingsphere-mask-api`, `shardingsphere-mask-core` and `shardingsphere-mask-distsql`. The functions of each module are as follows:
 
@@ -46,7 +46,7 @@ Users can use the function alone, or with sharding, encryption, and other functi
 
 The following figure shows the relationship between the current functions of the ShardingSphere kernel, which can be generally divided into three levels: Column Level, Table Level, and Database Level.
 
-![img](C:\Users\sphere\Documents\GitHub\shardingsphere\docs\blog\static\img\2023_02_17_Dynamic_Data_Masking_ShardingSphere_5.3.1_Deep_Dive2.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_17_Dynamic_Data_Masking_ShardingSphere_5.3.1_Deep_Dive2.png)
 
 Column Level includes data encryption and data masking for improving columns. Table Level includes data sharding and built-in single table management.
 
@@ -175,7 +175,7 @@ public interface MaskAlgorithm<I, O> {
 
 Built-in masking algorithms can be mainly divided into three types, hash mask, cover mask, and replace mask. The specific algorithms are listed as follows：
 
-![img](C:\Users\sphere\Documents\GitHub\shardingsphere\docs\blog\static\img\2023_02_17_Dynamic_Data_Masking_ShardingSphere_5.3.1_Deep_Dive3.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_17_Dynamic_Data_Masking_ShardingSphere_5.3.1_Deep_Dive3.png)
 
 The data masking algorithm is still in continuous improvement. For more about the algorithm parameters, please refer to [Data Masking Algorithm](https://shardingsphere.apache.org/document/5.3.1/en/user-manual/common-config/builtin-algorithm/mask/).
 
