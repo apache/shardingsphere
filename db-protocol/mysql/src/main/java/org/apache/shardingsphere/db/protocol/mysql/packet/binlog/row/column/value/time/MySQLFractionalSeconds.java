@@ -34,10 +34,10 @@ public final class MySQLFractionalSeconds {
     
     public MySQLFractionalSeconds(final int columnMeta, final MySQLPacketPayload payload) {
         fractionalSecondsPrecision = columnMeta;
-        nanos = readFraction(payload);
+        nanos = convertFractionalSecondsToNanos(payload);
     }
     
-    private int readFraction(final MySQLPacketPayload payload) {
+    private int convertFractionalSecondsToNanos(final MySQLPacketPayload payload) {
         switch (fractionalSecondsPrecision) {
             case 1:
             case 2:
