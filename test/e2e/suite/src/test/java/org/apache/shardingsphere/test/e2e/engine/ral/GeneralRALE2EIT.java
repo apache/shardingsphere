@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrate
 import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -31,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRALE2EIT extends BaseRALE2EIT {
@@ -58,8 +60,8 @@ public final class GeneralRALE2EIT extends BaseRALE2EIT {
         if (null == getAssertion().getAssertionSQL()) {
             assertResultSet(statement, getSQL());
         } else {
-            statement.execute(getSQL());
-            sleep(2000);
+            final boolean executionResult = statement.execute(getSQL());
+            Awaitility.await().atLeast(2, TimeUnit.SECONDS).until(() -> executionResult);
             assertResultSet(statement, getAssertion().getAssertionSQL().getSql());
         }
     }

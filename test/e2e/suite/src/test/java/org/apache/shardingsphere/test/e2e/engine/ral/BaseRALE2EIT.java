@@ -34,7 +34,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -74,7 +73,6 @@ public abstract class BaseRALE2EIT extends SingleE2EIT {
                 preparedStatement.executeUpdate();
             }
         }
-        sleep(1000);
     }
     
     private void executeDestroySQLs(final Connection connection) throws SQLException {
@@ -85,14 +83,6 @@ public abstract class BaseRALE2EIT extends SingleE2EIT {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
-        }
-        sleep(1000);
-    }
-    
-    protected void sleep(final long timeout) {
-        try {
-            TimeUnit.MILLISECONDS.sleep(timeout);
-        } catch (final InterruptedException ignored) {
         }
     }
     
