@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,16 +27,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class SeataIDContextTest {
     
-    @AfterEach
-    public void tearDown() {
-        SeataXIDContext.remove();
-    }
-    
     @Test
     public void assertIsEmpty() {
         assertTrue(SeataXIDContext.isEmpty());
         SeataXIDContext.set("xid");
         assertFalse(SeataXIDContext.isEmpty());
+        SeataXIDContext.remove();
     }
     
     @Test
@@ -45,6 +40,7 @@ public final class SeataIDContextTest {
         assertNull(SeataXIDContext.get());
         SeataXIDContext.set("xid");
         assertThat(SeataXIDContext.get(), is("xid"));
+        SeataXIDContext.remove();
     }
     
     @Test
@@ -54,6 +50,7 @@ public final class SeataIDContextTest {
         assertThat(SeataXIDContext.get(), is("xid"));
         SeataXIDContext.set("xid-2");
         assertThat(SeataXIDContext.get(), is("xid-2"));
+        SeataXIDContext.remove();
     }
     
     @Test
@@ -63,5 +60,6 @@ public final class SeataIDContextTest {
         assertThat(SeataXIDContext.get(), is("xid"));
         SeataXIDContext.remove();
         assertNull(SeataXIDContext.get());
+        SeataXIDContext.remove();
     }
 }
