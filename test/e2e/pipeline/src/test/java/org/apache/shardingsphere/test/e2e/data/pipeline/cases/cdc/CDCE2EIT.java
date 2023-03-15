@@ -48,11 +48,13 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.Pipeline
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
@@ -72,13 +74,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * CDC E2E IT.
  */
-@RunWith(Parameterized.class)
 @Slf4j
 public final class CDCE2EIT {
     
@@ -99,29 +101,14 @@ public final class CDCE2EIT {
         containerComposer = new PipelineContainerComposer(testParam, new CDCJobType());
     }
     
-    @Parameters(name = "{0}")
-    public static Collection<PipelineTestParameter> getTestParameters() {
-        Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.NONE) {
-            return result;
-        }
-        MySQLDatabaseType mysqlDatabaseType = new MySQLDatabaseType();
-        for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(mysqlDatabaseType)) {
-            result.add(new PipelineTestParameter(mysqlDatabaseType, each, "env/scenario/general/mysql.xml"));
-        }
-        OpenGaussDatabaseType openGaussDatabaseType = new OpenGaussDatabaseType();
-        for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(openGaussDatabaseType)) {
-            result.add(new PipelineTestParameter(openGaussDatabaseType, each, "env/scenario/general/postgresql.xml"));
-        }
-        return result;
-    }
-    
-    @After
+    @AfterEach
     public void tearDown() {
         containerComposer.close();
     }
     
-    @Test
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertCDCDataImportSuccess() throws SQLException, InterruptedException {
         // make sure the program time zone same with the database server at CI.
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -217,5 +204,26 @@ public final class CDCE2EIT {
     
     private String getOrderTableNameWithSchema() {
         return containerComposer.getDatabaseType().isSchemaAvailable() ? String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
+    }
+    
+    private static boolean isEnabled() {
+        return PipelineEnvTypeEnum.NONE != PipelineE2EEnvironment.getInstance().getItEnvType();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            Collection<Arguments> result = new LinkedList<>();
+            MySQLDatabaseType mysqlDatabaseType = new MySQLDatabaseType();
+            for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(mysqlDatabaseType)) {
+                result.add(Arguments.of(new PipelineTestParameter(mysqlDatabaseType, each, "env/scenario/general/mysql.xml")));
+            }
+            OpenGaussDatabaseType openGaussDatabaseType = new OpenGaussDatabaseType();
+            for (String each : PipelineE2EEnvironment.getInstance().listStorageContainerImages(openGaussDatabaseType)) {
+                result.add(Arguments.of(new PipelineTestParameter(openGaussDatabaseType, each, "env/scenario/general/postgresql.xml")));
+            }
+            return result.stream();
+        }
     }
 }

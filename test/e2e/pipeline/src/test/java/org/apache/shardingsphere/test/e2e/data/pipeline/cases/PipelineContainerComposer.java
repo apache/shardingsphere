@@ -285,25 +285,25 @@ public final class PipelineContainerComposer implements AutoCloseable {
     /**
      * Create source order table.
      * 
-     * @param sourceTableOrderName source table order name 
+     * @param sourceTableName source table name 
      * @throws SQLException SQL exception
      */
-    public void createSourceOrderTable(final String sourceTableOrderName) throws SQLException {
-        sourceExecuteWithLog(getExtraSQLCommand().getCreateTableOrder(sourceTableOrderName));
+    public void createSourceOrderTable(final String sourceTableName) throws SQLException {
+        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrder(sourceTableName));
     }
     
     /**
      * Create source table index list.
      * 
      * @param schema schema
-     * @param sourceTableOrderName source table order name
+     * @param sourceTableName source table name
      * @throws SQLException SQL exception
      */
-    public void createSourceTableIndexList(final String schema, final String sourceTableOrderName) throws SQLException {
+    public void createSourceTableIndexList(final String schema, final String sourceTableName) throws SQLException {
         if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
-            sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.%s ( user_id )", schema, sourceTableOrderName));
+            sourceExecuteWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.%s ( user_id )", schema, sourceTableName));
         } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
-            sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.%s ( user_id )", schema, sourceTableOrderName));
+            sourceExecuteWithLog(String.format("CREATE INDEX idx_user_id ON %s.%s ( user_id )", schema, sourceTableName));
         }
     }
     
@@ -311,11 +311,11 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * Create source comment on list.
      * 
      * @param schema schema
-     * @param sourceTableOrderName source table order name
+     * @param sourceTableName source table name
      * @throws SQLException SQL exception
      */
-    public void createSourceCommentOnList(final String schema, final String sourceTableOrderName) throws SQLException {
-        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.%s.user_id IS 'user id'", schema, sourceTableOrderName));
+    public void createSourceCommentOnList(final String schema, final String sourceTableName) throws SQLException {
+        sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.%s.user_id IS 'user id'", schema, sourceTableName));
     }
     
     /**
