@@ -68,6 +68,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -97,6 +98,10 @@ public final class CDCE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertCDCDataImportSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
+        if (TimeZone.getDefault() != TimeZone.getTimeZone("UTC") && PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
+            // make sure the time zone of locally running program same with the database server at CI.
+            TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        }
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new CDCJobType())) {
             for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
                 containerComposer.registerStorageUnit(each);
@@ -196,7 +201,9 @@ public final class CDCE2EIT {
     }
     
     private static boolean isEnabled() {
-        return PipelineEnvTypeEnum.NONE != PipelineE2EEnvironment.getInstance().getItEnvType();
+        return PipelineEnvTypeEnum.NONE != PipelineE2EEnvironment.getInstance().getItEnvType()
+                && (!PipelineE2EEnvironment.getInstance().listStorageContainerImages(new MySQLDatabaseType()).isEmpty()
+                || !PipelineE2EEnvironment.getInstance().listStorageContainerImages(new OpenGaussDatabaseType()).isEmpty());
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
