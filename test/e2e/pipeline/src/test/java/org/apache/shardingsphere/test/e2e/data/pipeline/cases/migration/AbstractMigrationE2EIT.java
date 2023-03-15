@@ -49,13 +49,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public abstract class AbstractMigrationE2EIT {
     
-    private final MigrationDistSQLCommand migrationDistSQLCommand;
-    
     private final PipelineContainerComposer containerComposer;
+    
+    private final MigrationDistSQLCommand migrationDistSQL;
     
     public AbstractMigrationE2EIT(final PipelineTestParameter testParam, final JobType jobType) {
         containerComposer = new PipelineContainerComposer(testParam, jobType);
-        migrationDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(AbstractMigrationE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
+        migrationDistSQL = JAXB.unmarshal(Objects.requireNonNull(AbstractMigrationE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
     }
     
     @After
@@ -71,14 +71,14 @@ public abstract class AbstractMigrationE2EIT {
                 log.warn("Drop sharding_db failed, maybe it's not exist. error msg={}", ex.getMessage());
             }
         }
-        String addSourceResource = migrationDistSQLCommand.getRegisterMigrationSourceStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
+        String addSourceResource = migrationDistSQL.getRegisterMigrationSourceStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
                 .replace("${password}", containerComposer.getPassword())
                 .replace("${ds0}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_0, true)));
         containerComposer.addResource(addSourceResource);
     }
     
     protected void addMigrationTargetResource() throws SQLException {
-        String addTargetResource = migrationDistSQLCommand.getRegisterMigrationTargetStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
+        String addTargetResource = migrationDistSQL.getRegisterMigrationTargetStorageUnitTemplate().replace("${user}", containerComposer.getUsername())
                 .replace("${password}", containerComposer.getPassword())
                 .replace("${ds2}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_2, true)))
                 .replace("${ds3}", containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_3, true)))
@@ -108,27 +108,27 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     protected void createTargetOrderTableRule() throws SQLException {
-        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableRule(), 2);
+        containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderTableRule(), 2);
     }
     
     protected void createTargetOrderTableEncryptRule() throws SQLException {
-        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableEncryptRule(), 2);
+        containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderTableEncryptRule(), 2);
     }
     
     protected void createTargetOrderItemTableRule() throws SQLException {
-        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderItemTableRule(), 2);
+        containerComposer.proxyExecuteWithLog(migrationDistSQL.getCreateTargetOrderItemTableRule(), 2);
     }
     
     protected void startMigration(final String sourceTableName, final String targetTableName) throws SQLException {
-        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTable(sourceTableName, targetTableName), 5);
+        containerComposer.proxyExecuteWithLog(migrationDistSQL.getMigrationSingleTable(sourceTableName, targetTableName), 5);
     }
     
     protected void startMigrationWithSchema(final String sourceTableName, final String targetTableName) throws SQLException {
-        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
+        containerComposer.proxyExecuteWithLog(migrationDistSQL.getMigrationSingleTableWithSchema(sourceTableName, targetTableName), 5);
     }
     
     protected void addMigrationProcessConfig() throws SQLException {
-        containerComposer.proxyExecuteWithLog(migrationDistSQLCommand.getAlterMigrationRule(), 0);
+        containerComposer.proxyExecuteWithLog(migrationDistSQL.getAlterMigrationRule(), 0);
     }
     
     protected void stopMigrationByJobId(final String jobId) throws SQLException {
