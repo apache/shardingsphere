@@ -20,10 +20,7 @@ package org.apache.shardingsphere.infra.fixture;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
 
 import static org.mockito.Mockito.mock;
 
@@ -35,8 +32,8 @@ public final class FixtureRule implements DatabaseRule, DataSourceContainedRule 
     }
     
     @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        return Collections.emptyMap();
+    public DataSourceMapperInfo getDataSourceMapper() {
+        return new DataSourceMapperInfo();
     }
     
     @Override

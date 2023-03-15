@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReus
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -168,10 +169,10 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     }
     
     @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>();
+    public DataSourceMapperInfo getDataSourceMapper() {
+        DataSourceMapperInfo result = new DataSourceMapperInfo();
         for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-            result.put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingStrategy().getAllDataSources());
+            result.getDataSources().put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingStrategy().getAllDataSources());
         }
         return result;
     }

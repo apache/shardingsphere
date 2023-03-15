@@ -34,7 +34,6 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -75,8 +74,8 @@ public final class DatabaseDiscoveryRuleTest {
     @Test
     public void assertGetDataSourceMapper() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        Map<String, Collection<String>> actual = databaseDiscoveryRule.getDataSourceMapper();
-        assertThat(actual, is(Collections.singletonMap("replica_ds", new HashSet<>(Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1")))));
+        Map<String, Collection<String>> actual = databaseDiscoveryRule.getDataSourceMapper().getMapper();
+        assertThat(actual, is(Collections.singletonMap("replica_ds", Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1"))));
     }
     
     @Test

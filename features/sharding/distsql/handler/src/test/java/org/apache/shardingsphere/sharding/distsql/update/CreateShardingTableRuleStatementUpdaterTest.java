@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -258,8 +259,8 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         }
         
         @Override
-        public Map<String, Collection<String>> getDataSourceMapper() {
-            return Collections.singletonMap("logic_ds", null);
+        public DataSourceMapperInfo getDataSourceMapper() {
+            return new DataSourceMapperInfo(Collections.singletonMap("logic_ds", Collections.emptyList()));
         }
         
         @Override

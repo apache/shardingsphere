@@ -21,6 +21,9 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CountReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.junit.jupiter.api.Test;
@@ -71,7 +74,10 @@ public final class CountReadwriteSplittingRuleExecutorTest {
     
     private ReadwriteSplittingRule mockReadwriteSplittingRule() {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
-        when(result.getDataSourceMapper()).thenReturn(Collections.singletonMap("readwrite_splitting", Arrays.asList("write_ds", "read_ds")));
+        DataSourceMapperInfo dataSourceMapperInfo = new DataSourceMapperInfo(Collections.singletonMap("readwrite_splitting",
+                Arrays.asList(new DataSourceRoleInfo("write_ds", DataSourceRole.PRIMARY),
+                        new DataSourceRoleInfo("read_ds", DataSourceRole.MEMBER))));
+        when(result.getDataSourceMapper()).thenReturn(dataSourceMapperInfo);
         return result;
     }
 }

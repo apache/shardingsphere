@@ -19,9 +19,7 @@ package org.apache.shardingsphere.infra.rule.identifier.type;
 
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
-
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
 
 /**
  * Static data source contained rule.
@@ -33,7 +31,7 @@ public interface StaticDataSourceContainedRule extends ShardingSphereRule {
      *
      * @return data source mapper
      */
-    Map<String, Collection<String>> getDataSourceMapper();
+    DataSourceMapperInfo getDataSourceMapper();
     
     /**
      * Update data source status.

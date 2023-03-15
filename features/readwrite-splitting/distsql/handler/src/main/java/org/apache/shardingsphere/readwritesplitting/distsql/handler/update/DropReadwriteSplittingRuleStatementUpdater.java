@@ -78,7 +78,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
                 continue;
             }
             Collection<String> actualDataSources = new HashSet<>();
-            each.getDataSourceMapper().values().forEach(actualDataSources::addAll);
+            each.getDataSourceMapper().getMapper().values().forEach(actualDataSources::addAll);
             result.addAll(actualDataSources);
         }
         for (DataNodeContainedRule each : database.getRuleMetaData().findRules(DataNodeContainedRule.class)) {

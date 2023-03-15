@@ -100,7 +100,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     
     private boolean containsInOtherRules(final String datasourceName, final Collection<ShardingSphereRule> rules) {
         for (ShardingSphereRule each : rules) {
-            if (each instanceof DataSourceContainedRule && ((DataSourceContainedRule) each).getDataSourceMapper().containsKey(datasourceName)) {
+            if (each instanceof DataSourceContainedRule && ((DataSourceContainedRule) each).getDataSourceMapper().getMapper().containsKey(datasourceName)) {
                 return true;
             }
         }

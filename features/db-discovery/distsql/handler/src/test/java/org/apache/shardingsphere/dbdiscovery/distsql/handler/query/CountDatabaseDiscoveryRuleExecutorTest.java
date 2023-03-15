@@ -23,13 +23,14 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,10 +73,10 @@ public final class CountDatabaseDiscoveryRuleExecutorTest {
     
     private DatabaseDiscoveryRule mockDatabaseDiscoveryRule() {
         DatabaseDiscoveryRule result = mock(DatabaseDiscoveryRule.class);
-        Map<String, Collection<String>> datasourceMapper = new HashMap<>(2, 1);
-        datasourceMapper.put("ds_0", Collections.singletonList("ds_0"));
-        datasourceMapper.put("ds_1", Collections.singletonList("ds_1"));
-        when(result.getDataSourceMapper()).thenReturn(datasourceMapper);
+        DataSourceMapperInfo dataSourceMapperInfo = new DataSourceMapperInfo();
+        dataSourceMapperInfo.getDataSources().put("ds_0", Collections.singletonList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY)));
+        dataSourceMapperInfo.getDataSources().put("ds_1", Collections.singletonList(new DataSourceRoleInfo("ds_1", DataSourceRole.MEMBER)));
+        when(result.getDataSourceMapper()).thenReturn(dataSourceMapperInfo);
         return result;
     }
 }

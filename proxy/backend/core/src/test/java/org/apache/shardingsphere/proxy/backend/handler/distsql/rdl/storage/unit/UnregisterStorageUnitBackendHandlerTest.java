@@ -28,6 +28,9 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -128,7 +131,7 @@ public final class UnregisterStorageUnitBackendHandlerTest {
     public void assertStorageUnitNameInUseExecute() {
         when(ruleMetaData.findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
-        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
+        when(shadowRule.getDataSourceMapper()).thenReturn(new DataSourceMapperInfo(Collections.singletonMap("", Collections.singleton(new DataSourceRoleInfo("foo_ds", DataSourceRole.PRIMARY)))));
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
@@ -176,7 +179,7 @@ public final class UnregisterStorageUnitBackendHandlerTest {
     public void assertStorageUnitNameInUseWithIfExists() {
         when(ruleMetaData.findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
-        when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
+        when(shadowRule.getDataSourceMapper()).thenReturn(new DataSourceMapperInfo(Collections.singletonMap("", Collections.singleton(new DataSourceRoleInfo("foo_ds", DataSourceRole.PRIMARY)))));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true);
         assertThrows(DistSQLException.class, () -> handler.execute("foo_db", unregisterStorageUnitStatement));

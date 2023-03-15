@@ -61,7 +61,7 @@ public final class CountDatabaseDiscoveryRuleExecutor implements RQLExecutor<Cou
     }
     
     private void addDBDiscoveryData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final DatabaseDiscoveryRule rule) {
-        addData(rowMap, DB_DISCOVERY, databaseName, () -> rule.getDataSourceMapper().size());
+        addData(rowMap, DB_DISCOVERY, databaseName, () -> rule.getDataSourceMapper().getMapper().size());
     }
     
     private void addData(final Map<String, LinkedList<Object>> rowMap, final String dataKey, final String databaseName, final Supplier<Integer> apply) {

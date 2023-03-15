@@ -91,7 +91,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceContainedRule builtRule) {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapper().entrySet()) {
+        for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapper().getMapper().entrySet()) {
             for (String each : entry.getValue()) {
                 if (dataSourceMap.containsKey(each)) {
                     result.putIfAbsent(entry.getKey(), dataSourceMap.remove(each));

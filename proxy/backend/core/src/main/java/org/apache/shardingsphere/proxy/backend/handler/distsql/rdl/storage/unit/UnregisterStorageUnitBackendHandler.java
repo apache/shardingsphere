@@ -106,7 +106,7 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
     
     private Collection<String> getInUsedResourceNames(final DataSourceContainedRule rule) {
         Collection<String> result = new HashSet<>();
-        for (Collection<String> each : rule.getDataSourceMapper().values()) {
+        for (Collection<String> each : rule.getDataSourceMapper().getMapper().values()) {
             result.addAll(each);
         }
         return result;

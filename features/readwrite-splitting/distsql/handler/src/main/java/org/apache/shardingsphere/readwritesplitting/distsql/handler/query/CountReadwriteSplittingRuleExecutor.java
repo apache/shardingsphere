@@ -58,7 +58,7 @@ public final class CountReadwriteSplittingRuleExecutor implements RQLExecutor<Co
     }
     
     private void addReadwriteSplittingData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final ReadwriteSplittingRule rule) {
-        addData(rowMap, READWRITE_SPLITTING, databaseName, () -> rule.getDataSourceMapper().size());
+        addData(rowMap, READWRITE_SPLITTING, databaseName, () -> rule.getDataSourceMapper().getMapper().size());
     }
     
     private void addData(final Map<String, LinkedList<Object>> rowMap, final String dataKey, final String databaseName, final Supplier<Integer> apply) {

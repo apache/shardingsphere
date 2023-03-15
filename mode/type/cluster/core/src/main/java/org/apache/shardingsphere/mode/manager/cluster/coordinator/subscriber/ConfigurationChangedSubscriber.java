@@ -138,7 +138,7 @@ public final class ConfigurationChangedSubscriber {
     }
     
     private void disableDataSources(final StorageNodeDataSource storageNodeDataSource, final StaticDataSourceContainedRule rule, final QualifiedDatabase database) {
-        for (Entry<String, Collection<String>> entry : rule.getDataSourceMapper().entrySet()) {
+        for (Entry<String, Collection<String>> entry : rule.getDataSourceMapper().getMapper().entrySet()) {
             if (!database.getGroupName().equals(entry.getKey())) {
                 continue;
             }

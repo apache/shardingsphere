@@ -21,6 +21,9 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.shadow.distsql.handler.query.CountShadowRuleExecutor;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CountShadowRuleStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -29,9 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,11 +74,11 @@ public final class CountShadowRuleExecutorTest {
     }
     
     private ShadowRule mockShadowRule() {
-        Map<String, Collection<String>> shadowDataSourceMappings = new HashMap<>();
-        shadowDataSourceMappings.put("shadow-data-source-0", Arrays.asList("ds", "ds_shadow"));
-        shadowDataSourceMappings.put("shadow-data-source-1", Arrays.asList("ds1", "ds1_shadow"));
         ShadowRule result = mock(ShadowRule.class);
-        when(result.getDataSourceMapper()).thenReturn(shadowDataSourceMappings);
+        DataSourceMapperInfo mapper = new DataSourceMapperInfo();
+        mapper.getDataSources().put("shadow-data-source-0", Arrays.asList(new DataSourceRoleInfo("ds", DataSourceRole.PRODUCTION), new DataSourceRoleInfo("ds_shadow", DataSourceRole.SHADOW)));
+        mapper.getDataSources().put("shadow-data-source-1", Arrays.asList(new DataSourceRoleInfo("ds1", DataSourceRole.PRODUCTION), new DataSourceRoleInfo("ds1_shadow", DataSourceRole.SHADOW)));
+        when(result.getDataSourceMapper()).thenReturn(mapper);
         return result;
     }
 }

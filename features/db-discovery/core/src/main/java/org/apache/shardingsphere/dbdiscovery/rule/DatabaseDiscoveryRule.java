@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceMapperInfo;
 import org.apache.shardingsphere.infra.schedule.CronJob;
 import org.apache.shardingsphere.infra.schedule.ScheduleContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -151,10 +152,10 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
     }
     
     @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>();
+    public DataSourceMapperInfo getDataSourceMapper() {
+        DataSourceMapperInfo result = new DataSourceMapperInfo();
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-            result.putAll(entry.getValue().getDataSourceMapper());
+            result.getDataSources().putAll(entry.getValue().getDataSourceMapper());
         }
         return result;
     }

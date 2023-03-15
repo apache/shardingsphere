@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,35 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.strategy;
+package org.apache.shardingsphere.infra.datasource.mapper;
 
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
-
-import java.util.Collection;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Readwrite splitting strategy.
+ * Data source role info.
  */
-public interface ReadwriteSplittingStrategy {
+@Getter
+@Setter
+@EqualsAndHashCode
+@AllArgsConstructor
+public class DataSourceRoleInfo {
     
-    /**
-     * Get write data source.
-     *
-     * @return write data source
-     */
-    String getWriteDataSource();
+    private String name;
     
-    /**
-     * Get read data sources.
-     * @return read data sources
-     */
-    List<String> getReadDataSources();
-    
-    /**
-     * Get all data sources.
-     *
-     * @return all data sources
-     */
-    Collection<DataSourceRoleInfo> getAllDataSources();
+    private DataSourceRole role;
 }
