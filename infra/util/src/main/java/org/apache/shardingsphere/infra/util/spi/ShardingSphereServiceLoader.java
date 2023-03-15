@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.util.spi;
 
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
@@ -26,7 +27,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * ShardingSphere service loader.
@@ -37,16 +37,26 @@ public final class ShardingSphereServiceLoader<T> {
     
     private final Class<T> serviceInterface;
     
-    private final AtomicReference<Collection<T>> services = new AtomicReference<>();
+    @Getter
+    private final Collection<T> services;
     
     private ShardingSphereServiceLoader(final Class<T> serviceInterface) {
         this.serviceInterface = serviceInterface;
         validate();
+        services = load();
     }
     
     private void validate() {
         Preconditions.checkNotNull(serviceInterface, "SPI interface is null.");
         Preconditions.checkArgument(serviceInterface.isInterface(), "SPI interface `%s` is not interface.", serviceInterface);
+    }
+    
+    private Collection<T> load() {
+        Collection<T> result = new LinkedList<>();
+        for (T each : ServiceLoader.load(serviceInterface)) {
+            result.add(each);
+        }
+        return result;
     }
     
     /**
@@ -81,36 +91,13 @@ public final class ShardingSphereServiceLoader<T> {
     @SuppressWarnings("unchecked")
     private Collection<T> createNewServiceInstances() {
         Collection<T> result = new LinkedList<>();
-        for (Object each : lazyLoad()) {
+        for (Object each : services) {
             result.add((T) each.getClass().getDeclaredConstructor().newInstance());
         }
         return result;
     }
     
-    private Collection<T> lazyLoad() {
-        Collection<T> result = services.get();
-        if (null != result) {
-            return result;
-        }
-        synchronized (services) {
-            result = services.get();
-            if (null == result) {
-                result = load();
-                services.set(result);
-            }
-        }
-        return result;
-    }
-    
-    private Collection<T> load() {
-        Collection<T> result = new LinkedList<>();
-        for (T each : ServiceLoader.load(serviceInterface)) {
-            result.add(each);
-        }
-        return result;
-    }
-    
     private Collection<T> getSingletonServiceInstances() {
-        return lazyLoad();
+        return services;
     }
 }
