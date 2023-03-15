@@ -88,9 +88,6 @@ public final class ProxyConfigurationLoader {
         if (null != serverConfiguration.getTransaction()) {
             serverConfiguration.getRules().add(serverConfiguration.getTransaction());
         }
-        if (null != serverConfiguration.getGlobalClock()) {
-            serverConfiguration.getRules().add(serverConfiguration.getGlobalClock());
-        }
         if (null != serverConfiguration.getSqlParser()) {
             serverConfiguration.getRules().add(serverConfiguration.getSqlParser());
         }
