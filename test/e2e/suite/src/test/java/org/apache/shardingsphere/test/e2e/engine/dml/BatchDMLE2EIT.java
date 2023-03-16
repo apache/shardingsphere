@@ -29,6 +29,8 @@ import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrate
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -41,7 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class BatchDMLE2EIT extends BatchE2EIT {
     
-    public BatchDMLE2EIT(final CaseTestParameter testParam) {
+    public BatchDMLE2EIT(final CaseTestParameter testParam) throws SQLException, JAXBException, IOException, ParseException {
         super(testParam);
     }
     
@@ -53,15 +55,15 @@ public final class BatchDMLE2EIT extends BatchE2EIT {
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
         int[] actualUpdateCounts;
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
             actualUpdateCounts = executeBatchForPreparedStatement(connection);
         }
         assertDataSets(actualUpdateCounts);
     }
     
     private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getItCase().getSql())) {
-            for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getTestParam().getTestCaseContext().getTestCase().getSql())) {
+            for (IntegrationTestCaseAssertion each : getTestParam().getTestCaseContext().getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
@@ -78,9 +80,9 @@ public final class BatchDMLE2EIT extends BatchE2EIT {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         try (
-                Connection connection = getTargetDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(getItCase().getSql())) {
-            for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
+                Connection connection = getContainerComposer().getTargetDataSource().getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(getTestParam().getTestCaseContext().getTestCase().getSql())) {
+            for (IntegrationTestCaseAssertion each : getTestParam().getTestCaseContext().getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             preparedStatement.clearBatch();

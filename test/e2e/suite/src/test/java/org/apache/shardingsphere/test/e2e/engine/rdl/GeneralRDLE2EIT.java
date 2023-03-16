@@ -49,7 +49,7 @@ public final class GeneralRDLE2EIT extends BaseRDLE2EIT {
     @Test
     public void assertExecute() throws SQLException, ParseException {
         assertNotNull(getAssertion().getAssertionSQL(), "Assertion SQL is required");
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(statement);
                 sleep();
