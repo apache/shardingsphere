@@ -54,7 +54,7 @@ public final class SchemaMetaDataLoaderTest {
     @BeforeEach
     public void setUp() throws SQLException {
         ResultSet tableResultSet = mockTableResultSet();
-        when(dataSource.getConnection().getMetaData().getTables("catalog", "public", null, new String[]{"TABLE", "VIEW"})).thenReturn(tableResultSet);
+        when(dataSource.getConnection().getMetaData().getTables("catalog", "public", null, new String[]{"TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"})).thenReturn(tableResultSet);
         when(dataSource.getConnection().getCatalog()).thenReturn("catalog");
         when(dataSource.getConnection().getSchema()).thenReturn("public");
         ResultSet schemaResultSet = mockSchemaResultSet();
