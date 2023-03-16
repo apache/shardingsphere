@@ -22,6 +22,8 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionVi
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -36,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
@@ -78,7 +81,8 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     @Test
     public void assertCheckSQLStatementWithInUsed() throws RuleDefinitionViolationException {
         DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class);
-        when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton("readwrite_ds")));
+        Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = Collections.singletonMap("foo_ds", Collections.singleton(new DataSourceRoleInfo("readwrite_ds", DataSourceRole.PRIMARY)));
+        when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(dataSourceMapper);
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(dataSourceContainedRule));
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getAllDataNodes()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton(new DataNode("readwrite_ds.tbl"))));

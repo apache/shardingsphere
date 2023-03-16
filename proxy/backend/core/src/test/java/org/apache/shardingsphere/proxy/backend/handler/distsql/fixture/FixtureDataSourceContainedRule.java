@@ -15,25 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.strategy.type;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
-import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class DynamicReadwriteSplittingStrategyTest {
+public final class FixtureDataSourceContainedRule implements DatabaseRule, DataSourceContainedRule {
     
-    @Test
-    public void assertGetDataSourceMapper() {
-        DynamicReadwriteSplittingStrategy dynamicReadwriteSplittingStrategy = new DynamicReadwriteSplittingStrategy("database_discovery_ds",
-                mock(DynamicDataSourceContainedRule.class));
-        assertThat(dynamicReadwriteSplittingStrategy.getAllDataSources(), is(Collections.singletonList(new DataSourceRoleInfo("database_discovery_ds", DataSourceRole.PRIMARY))));
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return mock(RuleConfiguration.class);
+    }
+    
+    @Override
+    public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public String getType() {
+        return FixtureDataSourceContainedRule.class.getSimpleName();
     }
 }

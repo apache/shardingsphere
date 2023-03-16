@@ -29,6 +29,7 @@ import org.apache.shardingsphere.dbdiscovery.heartbeat.HeartbeatJob;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
@@ -151,8 +152,8 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
     }
     
     @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>();
+    public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
+        Map<String, Collection<DataSourceRoleInfo>> result = new LinkedHashMap<>();
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             result.putAll(entry.getValue().getDataSourceMapper());
         }
