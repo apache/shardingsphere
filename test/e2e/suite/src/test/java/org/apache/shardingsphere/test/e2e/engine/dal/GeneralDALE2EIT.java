@@ -46,7 +46,7 @@ public final class GeneralDALE2EIT extends BaseDALE2EIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(getSQL());
                 assertExecuteResult(statement);

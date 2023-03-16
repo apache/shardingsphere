@@ -34,7 +34,8 @@ public abstract class BaseDCLE2EIT extends SingleE2EIT {
     
     @Before
     public final void init() throws Exception {
-        authorityEnvironmentManager = new AuthorityEnvironmentManager(new ScenarioCommonPath(getScenario()).getAuthorityFile(), getActualDataSourceMap(), getDatabaseType());
+        authorityEnvironmentManager = new AuthorityEnvironmentManager(
+                new ScenarioCommonPath(getTestParam().getScenario()).getAuthorityFile(), getContainerComposer().getActualDataSourceMap(), getTestParam().getDatabaseType());
         authorityEnvironmentManager.initialize();
     }
     

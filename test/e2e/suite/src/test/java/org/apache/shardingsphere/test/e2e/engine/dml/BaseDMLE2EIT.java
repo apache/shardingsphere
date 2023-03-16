@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.engine.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
@@ -60,7 +61,7 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
     
     @Before
     public final void init() throws Exception {
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(getTestParam().getScenario()).getDataSetFile(Type.ACTUAL), getContainerComposer().getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
@@ -75,7 +76,7 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
         DataSetMetaData expectedDataSetMetaData = getDataSet().getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DataSource dataSource = getActualDataSourceMap().get(dataNode.getDataSourceName());
+            DataSource dataSource = getContainerComposer().getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
@@ -92,9 +93,10 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
     }
     
     private String generateFetchActualDataSQL(final DataNode dataNode) throws SQLException {
-        Optional<DatabaseAssertionMetaData> databaseAssertionMetaData = DatabaseAssertionMetaDataFactory.newInstance(getDatabaseType());
+        Optional<DatabaseAssertionMetaData> databaseAssertionMetaData = DatabaseAssertionMetaDataFactory.newInstance(getTestParam().getDatabaseType());
         if (databaseAssertionMetaData.isPresent()) {
-            String primaryKeyColumnName = databaseAssertionMetaData.get().getPrimaryKeyColumnName(getActualDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
+            String primaryKeyColumnName = databaseAssertionMetaData.get().getPrimaryKeyColumnName(
+                    getContainerComposer().getActualDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
             return String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
         }
         return String.format("SELECT * FROM %s", dataNode.getTableName());
@@ -123,10 +125,11 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
     
     private void assertValue(final ResultSet actual, final int columnIndex, final String expected) throws SQLException {
         if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
-            if (!NOT_VERIFY_FLAG.equals(expected)) {
+            if (!E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
                 assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actual.getDate(columnIndex)), is(expected));
             }
-        } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()))) {
+        } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
+                && ("PostgreSQL".equals(getTestParam().getDatabaseType().getType()) || "openGauss".equals(getTestParam().getDatabaseType().getType()))) {
             assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
         } else if (isPostgreSQLOrOpenGaussMoney(actual.getMetaData().getColumnTypeName(columnIndex))) {
             assertThat(actual.getString(columnIndex), is(expected));
@@ -138,7 +141,7 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
     }
     
     private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName) {
-        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()));
+        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(getTestParam().getDatabaseType().getType()) || "openGauss".equals(getTestParam().getDatabaseType().getType()));
     }
     
     protected void assertGeneratedKeys(final ResultSet generatedKeys) throws SQLException {
