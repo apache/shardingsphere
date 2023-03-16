@@ -40,6 +40,10 @@ import java.util.stream.Collectors;
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleE2EIT {
     
+    @Rule
+    @Getter(AccessLevel.NONE)
+    public E2EWatcher watcher = new E2EWatcher();
+    
     private final AssertionTestParameter testParam;
             
     private final E2EContainerComposer containerComposer;
@@ -51,10 +55,6 @@ public abstract class SingleE2EIT {
     private final DataSet dataSet;
     
     private final DataSet generatedKeyDataSet;
-    
-    @Rule
-    @Getter(AccessLevel.NONE)
-    public E2EWatcher watcher = new E2EWatcher();
     
     public SingleE2EIT(final AssertionTestParameter testParam) {
         this.testParam = testParam;
