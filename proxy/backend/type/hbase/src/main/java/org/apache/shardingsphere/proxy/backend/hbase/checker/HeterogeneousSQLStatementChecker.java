@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.result;
+package org.apache.shardingsphere.proxy.backend.hbase.checker;
 
-import org.apache.hadoop.hbase.client.Table;
-import java.io.IOException;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * HBase query callback.
- * 
- * @param <T> type of result
+ * Check where clause.
+ * @param <T> SQL statement
  */
-public interface HBaseQueryCallback<T> {
+public interface HeterogeneousSQLStatementChecker<T extends SQLStatement> {
     
     /**
-     * Execute in HBase.
-     * 
-     * @param table table
-     * @return execute result
-     * @throws IOException IO exception
+     * Get SQL statement.
+     *
+     * @return SQL statement
      */
-    T executeInHBase(Table table) throws IOException;
+    T getSqlStatement();
+    
+    /**
+     * do check.
+     */
+    void execute();
 }

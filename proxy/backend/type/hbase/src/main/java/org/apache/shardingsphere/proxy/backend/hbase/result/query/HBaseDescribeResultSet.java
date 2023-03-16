@@ -82,7 +82,8 @@ public final class HBaseDescribeResultSet implements HBaseQueryResultSet {
     @Override
     public Collection<Object> getRowData() {
         HTableDescriptor descriptor = iterator.next();
-        return Arrays.asList(descriptor.getNameAsString(), descriptor.toStringTableAttributes(), descriptor.getFlushPolicyClassName(), descriptor.getMaxFileSize(),
+        return Arrays.asList(descriptor.getNameAsString(), descriptor.toStringTableAttributes(),
+                descriptor.getFlushPolicyClassName(), descriptor.getMaxFileSize(),
                 descriptor.getMemStoreFlushSize(), descriptor.getPriority(), descriptor.getRegionReplication(), descriptor.getRegionSplitPolicyClassName(),
                 descriptor.toStringCustomizedValues());
     }

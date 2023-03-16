@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.result;
 
-import org.apache.hadoop.hbase.client.Table;
-import java.io.IOException;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * HBase query callback.
- * 
- * @param <T> type of result
+ * HBase backend handler.
  */
-public interface HBaseQueryCallback<T> {
+public interface HBaseBackendHandler extends ProxyBackendHandler {
     
     /**
-     * Execute in HBase.
-     * 
-     * @param table table
-     * @return execute result
-     * @throws IOException IO exception
+     * Get row data objects.
+     *
+     * @return row data
      */
-    T executeInHBase(Table table) throws IOException;
+    default Collection<Object> getRowDataObjects() {
+        return Collections.emptyList();
+    }
+    
 }
