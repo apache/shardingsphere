@@ -50,6 +50,10 @@ public final class SingleTableDataNodeLoaderTest {
     
     private static final String VIEW_TYPE = "VIEW";
     
+    private static final String SYSTEM_TABLE_TYPE = "SYSTEM TABLE";
+    
+    private static final String SYSTEM_VIEW_TYPE = "SYSTEM VIEW";
+    
     private static final String TABLE_NAME = "TABLE_NAME";
     
     private Map<String, DataSource> dataSourceMap;
@@ -65,7 +69,7 @@ public final class SingleTableDataNodeLoaderTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getCatalog()).thenReturn(dataSourceName);
         ResultSet resultSet = mockResultSet(tableNames);
-        when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
+        when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})).thenReturn(resultSet);
         return new MockedDataSource(connection);
     }
     

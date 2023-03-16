@@ -287,7 +287,7 @@ public final class MySQLAdminExecutorCreatorTest {
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
         when(mySQLSelectStatement.getFrom()).thenReturn(tableSegment);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
-        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select ENGINE from ENGINES", "");
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select ENGINE from ENGINES", "information_schema");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(DefaultDatabaseMetaDataExecutor.class));
     }
@@ -300,9 +300,12 @@ public final class MySQLAdminExecutorCreatorTest {
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
         when(mySQLSelectStatement.getFrom()).thenReturn(tableSegment);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
-        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select SCHEMA_NAME from SCHEMATA", "");
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select SCHEMA_NAME from SCHEMATA", "information_schema");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(SelectInformationSchemataExecutor.class));
+        when(ProxyContext.getInstance().getDatabase("information_schema").isComplete()).thenReturn(true);
+        actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select SCHEMA_NAME from SCHEMATA", "information_schema");
+        assertFalse(actual.isPresent());
     }
     
     @Test
