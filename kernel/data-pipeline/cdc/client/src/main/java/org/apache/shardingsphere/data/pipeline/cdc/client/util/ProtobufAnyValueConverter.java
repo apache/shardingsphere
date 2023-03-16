@@ -27,8 +27,10 @@ import com.google.protobuf.Int32Value;
 import com.google.protobuf.Int64Value;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.StringValue;
+import com.google.protobuf.Struct;
 import com.google.protobuf.UInt32Value;
 import com.google.protobuf.UInt64Value;
+import com.google.protobuf.util.JsonFormat;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
@@ -82,6 +84,9 @@ public final class ProtobufAnyValueConverter {
         }
         if (any.is(com.google.protobuf.Timestamp.class)) {
             return converProtobufTimestamp(any.unpack(com.google.protobuf.Timestamp.class));
+        }
+        if (any.is(Struct.class)) {
+            return JsonFormat.printer().print(any.unpack(Struct.class));
         }
         // TODO can't use JsonFormat, might change the original value without error prompt. there need to cover more types,
         log.error("not support unpack value={}", any);
