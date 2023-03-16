@@ -59,7 +59,7 @@ jobs:
       - name: Build examples with Maven
         run: ./mvnw -T1C -B -f examples/pom.xml clean package
   
-  ci-JDK8:
+  ci-jdk8:
     if: github.repository == 'apache/shardingsphere'
     name: CI - JDK 8 on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
