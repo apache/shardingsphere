@@ -47,9 +47,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-/**
- * Data source record consumer.
- */
 @Slf4j
 public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
     
@@ -69,30 +66,34 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
     public void accept(final List<Record> records) {
         long insertCount = records.stream().filter(each -> DataChangeType.INSERT == each.getDataChangeType()).count();
         if (insertCount == records.size()) {
-            Record firstRecord = records.get(0);
-            MetaData metaData = firstRecord.getMetaData();
-            PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
-            List<String> columnNames = firstRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
-            String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
-            String insertSQL = SQLBuilderUtil.buildInsertSQL(columnNames, tableName);
-            try (
-                    Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
-                for (Record each : records) {
-                    List<TableColumn> tableColumns = each.getAfterList();
-                    for (int i = 0; i < tableColumns.size(); i++) {
-                        preparedStatement.setObject(i + 1, convertValueFromAny(tableMetaData, tableColumns.get(i)));
-                    }
-                    preparedStatement.addBatch();
-                }
-                preparedStatement.executeBatch();
-            } catch (final SQLException ex) {
-                throw new RuntimeException(ex);
-            }
+            batchInsertRecords(records);
             return;
         }
         for (Record record : records) {
             write(record);
+        }
+    }
+    
+    private void batchInsertRecords(final List<Record> records) {
+        Record firstRecord = records.get(0);
+        MetaData metaData = firstRecord.getMetaData();
+        PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
+        List<String> columnNames = firstRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
+        String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
+        String insertSQL = SQLBuilderUtil.buildInsertSQL(columnNames, tableName);
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+            for (Record each : records) {
+                List<TableColumn> tableColumns = each.getAfterList();
+                for (int i = 0; i < tableColumns.size(); i++) {
+                    preparedStatement.setObject(i + 1, convertValueFromAny(tableMetaData, tableColumns.get(i)));
+                }
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
     
