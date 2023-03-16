@@ -19,5 +19,4 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.base;
 
 // TODO remove later
 public abstract class BaseIncrementTask implements Runnable {
-    
 }

@@ -57,7 +57,7 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
     public final void init() throws Exception {
         assertNotNull(getAssertion().getInitialSQL(), "Init SQL is required");
         assertNotNull(getAssertion().getInitialSQL().getAffectedTable(), "Expected affected table is required");
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
     }
@@ -77,7 +77,7 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
     @After
     public final void tearDown() throws SQLException {
         if (null != getAssertion().getDestroySQL()) {
-            try (Connection connection = getTargetDataSource().getConnection()) {
+            try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
                 executeDestroySQLs(connection);
             }
         }
@@ -113,7 +113,7 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
     
     private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
-            try (Connection connection = getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = getContainerComposer().getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 assertNotContainsTable(connection, each.getTableName());
             }
         }
@@ -126,7 +126,7 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            try (Connection connection = getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = getContainerComposer().getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
             }
         }
@@ -151,7 +151,7 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
     private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            try (Connection connection = getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = getContainerComposer().getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualIndexes(connection, each.getTableName()));
             }
         }
@@ -182,11 +182,11 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
     
     private void assertColumnMetaData(final DataSetColumn actual, final DataSetColumn expected) {
         assertThat("Mismatched column name.", actual.getName(), is(expected.getName()));
-        if ("MySQL".equals(getDatabaseType().getType()) && "integer".equals(expected.getType())) {
+        if ("MySQL".equals(getTestParam().getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int"));
-        } else if ("PostgreSQL".equals(getDatabaseType().getType()) && "integer".equals(expected.getType())) {
+        } else if ("PostgreSQL".equals(getTestParam().getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int4"));
-        } else if ("openGauss".equals(getDatabaseType().getType()) && "integer".equals(expected.getType())) {
+        } else if ("openGauss".equals(getTestParam().getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int4"));
         } else {
             assertThat("Mismatched column type.", actual.getType(), is(expected.getType()));

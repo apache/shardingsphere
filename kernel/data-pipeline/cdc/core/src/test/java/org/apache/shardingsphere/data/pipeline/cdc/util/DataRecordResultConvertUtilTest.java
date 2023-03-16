@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
+import com.google.protobuf.EmptyProto;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.TimestampProto;
 import com.google.protobuf.TypeRegistry;
@@ -25,7 +26,6 @@ import com.google.protobuf.util.JsonFormat;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponseProtocol;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.Builder;
 import org.junit.Test;
@@ -34,9 +34,14 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -53,7 +58,12 @@ public final class DataRecordResultConvertUtilTest {
         dataRecord.addColumn(new Column("price", BigDecimal.valueOf(123), false, false));
         dataRecord.addColumn(new Column("user_id", Long.MAX_VALUE, false, false));
         dataRecord.addColumn(new Column("item_id", Integer.MAX_VALUE, false, false));
+        dataRecord.addColumn(new Column("create_date", LocalDate.now(), false, false));
+        dataRecord.addColumn(new Column("create_date2", Date.valueOf(LocalDate.now()), false, false));
         dataRecord.addColumn(new Column("create_time", LocalTime.now(), false, false));
+        dataRecord.addColumn(new Column("create_time2", OffsetTime.now(), false, false));
+        dataRecord.addColumn(new Column("create_datetime", LocalDateTime.now(), false, false));
+        dataRecord.addColumn(new Column("create_datetime2", OffsetDateTime.now(), false, false));
         Blob mockedBlob = mock(Blob.class);
         when(mockedBlob.getBytes(anyLong(), anyInt())).thenReturn(new byte[]{-1, 0, 1});
         dataRecord.addColumn(new Column("data_blob", mockedBlob, false, false));
@@ -63,8 +73,8 @@ public final class DataRecordResultConvertUtilTest {
         dataRecord.addColumn(new Column("update_time", new Timestamp(System.currentTimeMillis()), false, false));
         dataRecord.setTableName("t_order");
         dataRecord.setType("INSERT");
-        TypeRegistry registry = TypeRegistry.newBuilder().add(CDCResponseProtocol.getDescriptor().getFile().getMessageTypes()).add(WrappersProto.getDescriptor().getMessageTypes())
-                .add(TimestampProto.getDescriptor().getMessageTypes()).build();
+        TypeRegistry registry = TypeRegistry.newBuilder().add(EmptyProto.getDescriptor().getMessageTypes()).add(TimestampProto.getDescriptor().getMessageTypes())
+                .add(WrappersProto.getDescriptor().getMessageTypes()).build();
         Record expectedRecord = DataRecordResultConvertUtil.convertDataRecordToRecord("test", null, dataRecord);
         String print = JsonFormat.printer().usingTypeRegistry(registry).print(expectedRecord);
         Builder actualRecord = Record.newBuilder();

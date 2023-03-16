@@ -15,36 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.sqlbuilder;
-
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
+package org.apache.shardingsphere.infra.datasource.mapper;
 
 /**
- * SQL builder.
+ * Data source role.
  */
-public interface SQLBuilder {
-    
-    /**
-     * Build insert SQL.
-     *
-     * @param record data record
-     * @return insert SQL
-     */
-    String buildInsertSQL(Record record);
-    
-    /**
-     * Build update SQL.
-     *
-     * @param record record
-     * @return update SQL
-     */
-    String buildUpdateSQL(Record record);
-    
-    /**
-     * Build delete SQL.
-     *
-     * @param record record
-     * @return update SQL
-     */
-    String buildDeleteSQL(Record record);
+public enum DataSourceRole {
+    PRIMARY, MEMBER, PRODUCTION, SHADOW
 }

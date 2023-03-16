@@ -114,4 +114,12 @@ public final class BootstrapArgumentsTest {
         assertTrue(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "true"}).getForce());
         assertTrue(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "TrUe"}).getForce());
     }
+    
+    @Test
+    public void assertGetSocketPath() {
+        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1,/tmp/shardingsphere.sock"}).getSocketPath(), is(Optional.of("/tmp/shardingsphere.sock")));
+        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "1.1.1.1,127.0.0.1,/tmp/shardingsphere.sock"}).getSocketPath(), is(Optional.of("/tmp/shardingsphere.sock")));
+        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1,/tmp/shardingsphere.sock"}).getAddresses(), is(Collections.singletonList("127.0.0.1")));
+        assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "1.1.1.1,127.0.0.1,/tmp/shardingsphere.sock"}).getAddresses(), is(Arrays.asList("1.1.1.1", "127.0.0.1")));
+    }
 }

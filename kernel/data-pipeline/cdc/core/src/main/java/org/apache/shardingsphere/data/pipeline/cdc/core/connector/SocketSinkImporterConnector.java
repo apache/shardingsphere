@@ -144,7 +144,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
             records.add(DataRecordResultConvertUtil.convertDataRecordToRecord(database.getName(), tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
         }
         String ackId = CDCAckHolder.getInstance().bindAckIdWithPosition(importerDataRecordMap);
-        DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecords(records).setAckId(ackId).build();
+        DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecord(records).setAckId(ackId).build();
         channel.writeAndFlush(CDCResponseGenerator.succeedBuilder("").setDataRecordResult(dataRecordResult).build());
     }
     

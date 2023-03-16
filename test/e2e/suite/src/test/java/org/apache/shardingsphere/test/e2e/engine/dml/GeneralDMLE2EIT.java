@@ -51,7 +51,7 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
         int actualUpdateCount;
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
         }
         assertDataSet(actualUpdateCount);
@@ -75,7 +75,7 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     @Test
     public void assertExecute() throws SQLException, ParseException {
         int actualUpdateCount;
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeForStatement(connection) : executeForPreparedStatement(connection);
         }
         assertDataSet(actualUpdateCount);

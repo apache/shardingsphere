@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.client.importer;
+package org.apache.shardingsphere.infra.datasource.mapper;
 
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Importer.
+ * Data source role info.
  */
-public interface Importer {
+@Getter
+@Setter
+@EqualsAndHashCode
+@AllArgsConstructor
+public final class DataSourceRoleInfo {
     
-    /**
-     * Write record.
-     *
-     * @param record record
-     * @throws Exception exception
-     */
-    void write(Record record) throws Exception;
+    private String name;
     
-    /**
-     * Close importer.
-     *
-     * @throws Exception exception
-     */
-    void close() throws Exception;
+    private DataSourceRole role;
 }

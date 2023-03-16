@@ -47,7 +47,7 @@ import java.util.Map.Entry;
  * Export utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ExportUtils {
+public final class ExportUtils {
     
     /**
      * Export configuration data to specified file.
@@ -71,7 +71,7 @@ public class ExportUtils {
     
     /**
      * Generate configuration data of ShardingSphere database.
-     * 
+     *
      * @param database ShardingSphere database
      * @return configuration data
      */

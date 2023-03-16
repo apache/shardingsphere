@@ -20,11 +20,13 @@ package org.apache.shardingsphere.dbdiscovery.rule;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredDataSourceNamesConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProvider;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -66,6 +68,8 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
     @Test
     public void assertGetDataSourceMapper() {
         databaseDiscoveryDataSourceRule.changePrimaryDataSourceName("ds_1");
-        assertThat(databaseDiscoveryDataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("test_pr", new HashSet<>(Arrays.asList("ds_1", "ds_0")))));
+        assertThat(databaseDiscoveryDataSourceRule.getDataSourceMapper(),
+                is(Collections.singletonMap("test_pr",
+                        new LinkedHashSet<>(Arrays.asList(new DataSourceRoleInfo("ds_1", DataSourceRole.PRIMARY), new DataSourceRoleInfo("ds_0", DataSourceRole.MEMBER))))));
     }
 }
