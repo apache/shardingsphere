@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.proxy.frontend.netty;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.socket.SocketChannel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -31,12 +32,13 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
  * Server handler initializer.
  */
 @RequiredArgsConstructor
-public final class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
+@Slf4j
+public final class ServerHandlerInitializer extends ChannelInitializer<Channel> {
     
     private final DatabaseType databaseType;
     
     @Override
-    protected void initChannel(final SocketChannel socketChannel) {
+    protected void initChannel(final Channel socketChannel) {
         DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = TypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, databaseType.getType());
         databaseProtocolFrontendEngine.initChannel(socketChannel);
         ChannelPipeline pipeline = socketChannel.pipeline();
