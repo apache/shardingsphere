@@ -64,6 +64,7 @@ public final class DataRecordResultConvertUtilTest {
         dataRecord.addColumn(new Column("create_time2", OffsetTime.now(), false, false));
         dataRecord.addColumn(new Column("create_datetime", LocalDateTime.now(), false, false));
         dataRecord.addColumn(new Column("create_datetime2", OffsetDateTime.now(), false, false));
+        dataRecord.addColumn(new Column("empty", null, false, false));
         Blob mockedBlob = mock(Blob.class);
         when(mockedBlob.getBytes(anyLong(), anyInt())).thenReturn(new byte[]{-1, 0, 1});
         dataRecord.addColumn(new Column("data_blob", mockedBlob, false, false));
