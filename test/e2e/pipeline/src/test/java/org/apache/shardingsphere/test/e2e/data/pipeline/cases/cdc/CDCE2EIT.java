@@ -35,12 +35,15 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.SingleTabl
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
@@ -164,8 +167,10 @@ public final class CDCE2EIT {
     }
     
     private void startCDCClient(final PipelineContainerComposer containerComposer) {
-        // TODO fix later
-        StartCDCClientParameter parameter = new StartCDCClientParameter(records -> log.info("records: {}", records));
+        DataSource dataSource = StorageContainerUtil.generateDataSource(containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false)),
+                containerComposer.getUsername(), containerComposer.getPassword());
+        DataSourceRecordConsumer dataSourceRecordConsumer = new DataSourceRecordConsumer(dataSource, containerComposer.getDatabaseType());
+        StartCDCClientParameter parameter = new StartCDCClientParameter(dataSourceRecordConsumer);
         parameter.setAddress("localhost");
         parameter.setPort(containerComposer.getContainerComposer().getProxyCDCPort());
         parameter.setUsername(ProxyContainerConstants.USERNAME);
@@ -196,8 +201,6 @@ public final class CDCE2EIT {
     }
     
     private static boolean isEnabled() {
-        // TODO xinze fix it
-        // return PipelineE2ECondition.isEnabled(new MySQLDatabaseType(), new OpenGaussDatabaseType());
-        return false;
+        return PipelineE2ECondition.isEnabled(new MySQLDatabaseType(), new OpenGaussDatabaseType());
     }
 }
