@@ -15,38 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.config.yaml.loader;
+package org.apache.shardingsphere.agent.core.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvisorsConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
-import org.apache.shardingsphere.agent.core.yaml.AgentYamlConstructor;
-import org.apache.shardingsphere.agent.core.yaml.AgentYamlEngine;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Optional;
+import java.io.InputStream;
 
 /**
- * Plugin configuration loader.
+ * Agent YAML engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class YamlPluginConfigurationLoader {
+public final class AgentYamlEngine {
     
     /**
-     * Load plugin configurations.
+     * Unmarshal YAML agent configuration YAML.
      *
-     * @param yamlFile yaml file
-     * @return plugin configurations
-     * @throws IOException IO exception
+     * @param inputStream input stream
+     * @return YAML agent configuration
+     * @throws IOException IO Exception
      */
-    public static Optional<YamlAgentConfiguration> load(final File yamlFile) throws IOException {
-        Yaml yaml = new Yaml(new AgentYamlConstructor(YamlAgentConfiguration.class));
-        try (FileInputStream fileInputStream = new FileInputStream(yamlFile)) {
-            YamlAgentConfiguration result = AgentYamlEngine.unmarshalYamlAgentConfiguration(fileInputStream);
-            return null == result ? Optional.empty() : Optional.of(result);
-        }
+    public static YamlAgentConfiguration unmarshalYamlAgentConfiguration(final InputStream inputStream) {
+        return new Yaml(new AgentYamlConstructor(YamlAgentConfiguration.class)).loadAs(inputStream, YamlAgentConfiguration.class);
+    }
+    
+    /**
+     * Unmarshal YAML advisors configuration YAML.
+     *
+     * @param inputStream input stream
+     * @return YAML advisors configuration
+     * @throws IOException IO Exception
+     */
+    public static YamlAdvisorsConfiguration unmarshalYamlAdvisorsConfiguration(final InputStream inputStream) {
+        return new Yaml(new AgentYamlConstructor(YamlAdvisorsConfiguration.class)).loadAs(inputStream, YamlAdvisorsConfiguration.class);
     }
 }
