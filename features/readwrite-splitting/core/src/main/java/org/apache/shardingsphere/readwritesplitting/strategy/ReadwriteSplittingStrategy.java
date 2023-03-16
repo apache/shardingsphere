@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.readwritesplitting.strategy;
 
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -43,5 +45,5 @@ public interface ReadwriteSplittingStrategy {
      *
      * @return all data sources
      */
-    Collection<String> getAllDataSources();
+    Collection<DataSourceRoleInfo> getAllDataSources();
 }

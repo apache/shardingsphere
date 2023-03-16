@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.strategy.type;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 
 import java.util.Collection;
@@ -45,10 +47,12 @@ public final class StaticReadwriteSplittingStrategy implements ReadwriteSplittin
     }
     
     @Override
-    public Collection<String> getAllDataSources() {
-        Collection<String> result = new LinkedList<>();
-        result.add(writeDataSourceName);
-        result.addAll(readDataSourceNames);
+    public Collection<DataSourceRoleInfo> getAllDataSources() {
+        Collection<DataSourceRoleInfo> result = new LinkedList<>();
+        result.add(new DataSourceRoleInfo(writeDataSourceName, DataSourceRole.PRIMARY));
+        readDataSourceNames.forEach(each -> {
+            result.add(new DataSourceRoleInfo(each, DataSourceRole.MEMBER));
+        });
         return result;
     }
 }

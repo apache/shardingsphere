@@ -74,6 +74,7 @@
     <sql-case id="select_where_with_simple_expr_with_exists_subquery" value="SELECT * FROM t_order WHERE EXISTS (SELECT order_id FROM t_order_item WHERE status &gt; ? )" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_odbc_escape_syntax" value="SELECT * FROM t_order WHERE {ts ?}" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_json_extract_sign" value="SELECT * FROM t_order WHERE order_id -&gt;&quot;$[1]&quot;" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_json_member_of" value="SELECT * FROM t_order WHERE order_id member of(&quot;[1,2,3]&quot;)" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_json_unquote_extract_sign" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; &quot;$[1]&quot;" db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_json_contains" value="SELECT * FROM t_order WHERE JSON_CONTAINS(order_msg -> '$[*].code', 'x', '$') " db-types="MySQL" />
     <sql-case id="select_where_with_simple_expr_with_json_contains_and_limit" value="SELECT id, order_info->'$.id' FROM t_order where json_contains(order_info, ?, '$.id') limit ?, ?" db-types="MySQL" />

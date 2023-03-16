@@ -171,11 +171,17 @@ public final class BackendTransactionManagerTest {
         when(transactionStatus.isInTransaction()).thenReturn(inTransaction);
         backendTransactionManager = new BackendTransactionManager(backendConnection);
         setLocalTransactionManager();
+        setTransactionHooks();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setLocalTransactionManager() {
         Plugins.getMemberAccessor().set(BackendTransactionManager.class.getDeclaredField("localTransactionManager"), backendTransactionManager, localTransactionManager);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setTransactionHooks() {
+        Plugins.getMemberAccessor().set(BackendTransactionManager.class.getDeclaredField("transactionHooks"), backendTransactionManager, Collections.emptyList());
     }
     
     private ContextManager mockContextManager() {

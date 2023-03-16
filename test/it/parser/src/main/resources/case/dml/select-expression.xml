@@ -1697,6 +1697,28 @@
         </where>
     </select>
 
+    <select sql-case-id="select_where_with_simple_expr_with_json_member_of">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="56">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="56">
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="35"/>
+                    </left>
+                    <operator>MEMBER OF</operator>
+                    <right>
+                        <expression-projection text="&quot;[1,2,3]&quot;" start-index="47" stop-index="55" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_where_with_simple_expr_with_json_unquote_extract_sign">
         <from start-index="14" stop-index="20">
             <simple-table name="t_order" start-index="14" stop-index="20" />
