@@ -44,10 +44,6 @@ public abstract class SingleE2EIT {
             
     private final E2EContainerComposer containerComposer;
     
-    @Rule
-    @Getter(AccessLevel.NONE)
-    public E2EWatcher watcher = new E2EWatcher();
-    
     private final SQLExecuteType sqlExecuteType;
     
     private final IntegrationTestCaseAssertion assertion;
@@ -55,6 +51,10 @@ public abstract class SingleE2EIT {
     private final DataSet dataSet;
     
     private final DataSet generatedKeyDataSet;
+    
+    @Rule
+    @Getter(AccessLevel.NONE)
+    public E2EWatcher watcher = new E2EWatcher();
     
     public SingleE2EIT(final AssertionTestParameter testParam) {
         this.testParam = testParam;
