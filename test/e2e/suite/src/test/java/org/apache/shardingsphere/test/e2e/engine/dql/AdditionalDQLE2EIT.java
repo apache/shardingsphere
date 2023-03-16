@@ -54,7 +54,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
         // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
-        if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
+        if (isPostgreSQLOrOpenGauss(getTestParam().getDatabaseType().getType())) {
             return;
         }
         if (isUseXMLAsExpectedDataset()) {
@@ -67,7 +67,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
         // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
-        if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
+        if (isPostgreSQLOrOpenGauss(getTestParam().getDatabaseType().getType())) {
             return;
         }
         if (isUseXMLAsExpectedDataset()) {
@@ -80,7 +80,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
         // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
-        if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
+        if (isPostgreSQLOrOpenGauss(getTestParam().getDatabaseType().getType())) {
             return;
         }
         if (isUseXMLAsExpectedDataset()) {
@@ -93,7 +93,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
         // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
-        if (isPostgreSQLOrOpenGauss(getDatabaseType().getType())) {
+        if (isPostgreSQLOrOpenGauss(getTestParam().getDatabaseType().getType())) {
             return;
         }
         if (isUseXMLAsExpectedDataset()) {
@@ -113,7 +113,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
             return;
         }
         try (
-                Connection connection = getTargetDataSource().getConnection();
+                Connection connection = getContainerComposer().getTargetDataSource().getConnection();
                 Statement statement = 2 == resultSetTypes.length ? connection.createStatement(resultSetTypes[0], resultSetTypes[1])
                         : connection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2]);
                 ResultSet resultSet = statement.executeQuery(getSQL())) {
@@ -123,7 +123,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteQueryWithExpectedDataSource(final int... resultSetTypes) throws SQLException, ParseException {
         try (
-                Connection actualConnection = getTargetDataSource().getConnection();
+                Connection actualConnection = getContainerComposer().getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteQueryForStatementWithResultSetTypes(actualConnection, expectedConnection, resultSetTypes);
@@ -172,7 +172,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
             return;
         }
         try (
-                Connection connection = getTargetDataSource().getConnection();
+                Connection connection = getContainerComposer().getTargetDataSource().getConnection();
                 Statement statement = 2 == resultSetTypes.length ? connection.createStatement(resultSetTypes[0], resultSetTypes[1])
                         : connection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2])) {
             assertTrue(statement.execute(getSQL()), "Not a query statement.");
@@ -183,7 +183,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteWithExpectedDataSource(final int... resultSetTypes) throws SQLException, ParseException {
         try (
-                Connection actualConnection = getTargetDataSource().getConnection();
+                Connection actualConnection = getContainerComposer().getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteForStatementWithResultSetTypes(actualConnection, expectedConnection, resultSetTypes);

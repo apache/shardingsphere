@@ -21,31 +21,30 @@ import com.google.protobuf.BoolValue;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.BytesValue;
 import com.google.protobuf.DoubleValue;
+import com.google.protobuf.Empty;
 import com.google.protobuf.FloatValue;
 import com.google.protobuf.Int32Value;
 import com.google.protobuf.Int64Value;
 import com.google.protobuf.Message;
 import com.google.protobuf.StringValue;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigDecimalValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BigIntegerValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.BlobValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ClobValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.LocalTimeValue;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.NullValue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Column value convert util.
@@ -53,15 +52,20 @@ import java.util.Date;
 @Slf4j
 public final class ColumnValueConvertUtil {
     
+    private static final long MILLISECONDS_PER_SECOND = TimeUnit.SECONDS.toMillis(1);
+    
+    private static final long NANOSECONDS_PER_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1);
+    
     /**
      * Convert java object to protobuf message.
      *
      * @param object object
      * @return protobuf message
      */
+    @SuppressWarnings("deprecation")
     public static Message convertToProtobufMessage(final Object object) {
         if (null == object) {
-            return NullValue.newBuilder().build();
+            return Empty.getDefaultInstance();
         }
         if (object instanceof Integer) {
             return Int32Value.of((int) object);
@@ -76,7 +80,7 @@ public final class ColumnValueConvertUtil {
             return Int64Value.of((long) object);
         }
         if (object instanceof BigInteger) {
-            return BigIntegerValue.newBuilder().setValue(ByteString.copyFrom(((BigInteger) object).toByteArray())).build();
+            return StringValue.of(object.toString());
         }
         if (object instanceof Float) {
             return FloatValue.of((float) object);
@@ -85,7 +89,7 @@ public final class ColumnValueConvertUtil {
             return DoubleValue.of((double) object);
         }
         if (object instanceof BigDecimal) {
-            return BigDecimalValue.newBuilder().setValue(object.toString()).build();
+            return StringValue.of(object.toString());
         }
         if (object instanceof String) {
             return StringValue.of(object.toString());
@@ -96,6 +100,16 @@ public final class ColumnValueConvertUtil {
         if (object instanceof byte[]) {
             return BytesValue.of(ByteString.copyFrom((byte[]) object));
         }
+        if (object instanceof Time) {
+            java.sql.Time time = (java.sql.Time) object;
+            long millis = (int) (time.getTime() % MILLISECONDS_PER_SECOND);
+            int nanosOfSecond = (int) (millis * NANOSECONDS_PER_MILLISECOND);
+            LocalTime localTime = LocalTime.of(time.getHours(), time.getMinutes(), time.getSeconds(), nanosOfSecond);
+            return Int64Value.of(localTime.toNanoOfDay());
+        }
+        if (object instanceof java.sql.Date) {
+            return Int64Value.of((((java.sql.Date) object).toLocalDate()).toEpochDay());
+        }
         if (object instanceof Date) {
             return converToProtobufTimestamp((Date) object);
         }
@@ -103,11 +117,17 @@ public final class ColumnValueConvertUtil {
             return converToProtobufTimestamp(Timestamp.valueOf((LocalDateTime) object));
         }
         if (object instanceof LocalDate) {
-            return converToProtobufTimestamp(Timestamp.valueOf(((LocalDate) object).atStartOfDay()));
+            return Int64Value.of(((LocalDate) object).toEpochDay());
         }
         if (object instanceof LocalTime) {
-            LocalTime localTime = (LocalTime) object;
-            return LocalTimeValue.newBuilder().setValue(localTime.toString()).build();
+            return Int64Value.of(((LocalTime) object).toNanoOfDay());
+        }
+        if (object instanceof OffsetDateTime) {
+            LocalDateTime localDateTime = ((OffsetDateTime) object).toLocalDateTime();
+            return converToProtobufTimestamp(Timestamp.valueOf(localDateTime));
+        }
+        if (object instanceof OffsetTime) {
+            return Int64Value.of(((OffsetTime) object).toLocalTime().toNanoOfDay());
         }
         if (object instanceof ZonedDateTime) {
             return converToProtobufTimestamp(Timestamp.valueOf(((ZonedDateTime) object).toLocalDateTime()));
@@ -119,7 +139,7 @@ public final class ColumnValueConvertUtil {
         if (object instanceof Clob) {
             Clob clob = (Clob) object;
             try {
-                return ClobValue.newBuilder().setValue(clob.getSubString(1, (int) clob.length())).build();
+                return StringValue.of(clob.getSubString(1, (int) clob.length()));
             } catch (final SQLException ex) {
                 log.error("get clob length failed", ex);
                 throw new RuntimeException(ex);
@@ -128,7 +148,7 @@ public final class ColumnValueConvertUtil {
         if (object instanceof Blob) {
             Blob blob = (Blob) object;
             try {
-                return BlobValue.newBuilder().setValue(ByteString.copyFrom(blob.getBytes(1, (int) blob.length()))).build();
+                return BytesValue.of(ByteString.copyFrom(blob.getBytes(1, (int) blob.length())));
             } catch (final SQLException ex) {
                 log.error("get blob bytes failed", ex);
                 throw new RuntimeException(ex);

@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client.example;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
-import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.ImportDataSourceParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 
 import java.util.Collections;
 
+@Slf4j
 public final class Bootstrap {
     
     /**
@@ -35,8 +36,7 @@ public final class Bootstrap {
         // Pay attention to the time zone, to avoid the problem of incorrect time zone, it is best to ensure that the time zone of the program is consistent with the time zone of the database server
         // and mysql-connector-java 5.x version will ignore serverTimezone jdbc parameter and use the default time zone in the program
         // TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        ImportDataSourceParameter importDataSourceParam = new ImportDataSourceParameter("jdbc:opengauss://localhost:5432/cdc_db?stringtype=unspecified", "gaussdb", "Root@123");
-        StartCDCClientParameter parameter = new StartCDCClientParameter(importDataSourceParam);
+        StartCDCClientParameter parameter = new StartCDCClientParameter(records -> log.info("records: {}", records));
         parameter.setAddress("127.0.0.1");
         parameter.setPort(33071);
         parameter.setUsername("root");
@@ -44,8 +44,6 @@ public final class Bootstrap {
         parameter.setDatabase("sharding_db");
         parameter.setFull(true);
         parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable("t_order").build()));
-        // support MySQL, PostgreSQL, openGauss
-        parameter.setDatabaseType("openGauss");
         CDCClient cdcClient = new CDCClient(parameter);
         cdcClient.start();
     }
