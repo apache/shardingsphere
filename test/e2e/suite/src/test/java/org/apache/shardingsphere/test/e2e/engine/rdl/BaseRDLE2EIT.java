@@ -48,7 +48,7 @@ public abstract class BaseRDLE2EIT extends SingleE2EIT {
     
     @Before
     public final void init() throws Exception {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
     }
@@ -56,7 +56,7 @@ public abstract class BaseRDLE2EIT extends SingleE2EIT {
     @After
     public final void tearDown() throws Exception {
         if (null != getAssertion().getDestroySQL()) {
-            try (Connection connection = getTargetDataSource().getConnection()) {
+            try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
                 executeDestroySQLs(connection);
             }
         }

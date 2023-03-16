@@ -25,20 +25,28 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.runner.ParallelParameterized;
 import org.apache.shardingsphere.test.e2e.framework.watcher.E2EWatcher;
+import org.junit.AfterClass;
 import org.junit.Rule;
+import org.junit.runner.RunWith;
 
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RunWith(ParallelParameterized.class)
 @Getter(AccessLevel.PROTECTED)
-public abstract class SingleE2EIT extends BaseE2EIT {
+public abstract class SingleE2EIT {
     
     @Rule
     @Getter(AccessLevel.NONE)
     public E2EWatcher watcher = new E2EWatcher();
+    
+    private final AssertionTestParameter testParam;
+            
+    private final E2EContainerComposer containerComposer;
     
     private final SQLExecuteType sqlExecuteType;
     
@@ -49,23 +57,30 @@ public abstract class SingleE2EIT extends BaseE2EIT {
     private final DataSet generatedKeyDataSet;
     
     public SingleE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
+        this.testParam = testParam;
+        containerComposer = new E2EContainerComposer(testParam);
         sqlExecuteType = testParam.getSqlExecuteType();
         assertion = testParam.getAssertion();
         dataSet = null == assertion || null == assertion.getExpectedDataFile()
                 ? null
-                : DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), getMode(), assertion.getExpectedDataFile());
+                : DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), assertion.getExpectedDataFile());
         generatedKeyDataSet = null == assertion || null == assertion.getExpectedGeneratedKeyDataFile()
                 ? null
-                : DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), getMode(), assertion.getExpectedGeneratedKeyDataFile());
+                : DataSetLoader.load(
+                        testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), assertion.getExpectedGeneratedKeyDataFile());
     }
     
     protected final String getSQL() throws ParseException {
-        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(getItCase().getSql()) : getItCase().getSql();
+        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(testParam.getTestCaseContext().getTestCase().getSql()) : testParam.getTestCaseContext().getTestCase().getSql();
     }
     
     private String getLiteralSQL(final String sql) throws ParseException {
         List<Object> params = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
         return params.isEmpty() ? sql : String.format(sql.replace("%", "ÿ").replace("?", "%s"), params.toArray()).replace("ÿ", "%").replace("%%", "%").replace("'%'", "'%%'");
+    }
+    
+    @AfterClass
+    public static void closeContainers() {
+        E2EContainerComposer.closeContainers();
     }
 }

@@ -67,19 +67,19 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
     @Before
     public final void init() throws Exception {
         fillDataOnlyOnce();
-        expectedDataSource = null == getAssertion().getExpectedDataSourceName() || 1 == getExpectedDataSourceMap().size()
-                ? getExpectedDataSourceMap().values().iterator().next()
-                : getExpectedDataSourceMap().get(getAssertion().getExpectedDataSourceName());
+        expectedDataSource = null == getAssertion().getExpectedDataSourceName() || 1 == getContainerComposer().getExpectedDataSourceMap().size()
+                ? getContainerComposer().getExpectedDataSourceMap().values().iterator().next()
+                : getContainerComposer().getExpectedDataSourceMap().get(getAssertion().getExpectedDataSourceName());
         useXMLAsExpectedDataset = null != getAssertion().getExpectedDataFile();
     }
     
     private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
-        if (!FILLED_SUITES.contains(getItKey())) {
+        if (!FILLED_SUITES.contains(getTestParam().getKey())) {
             synchronized (FILLED_SUITES) {
-                if (!FILLED_SUITES.contains(getItKey())) {
-                    new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap()).fillData();
-                    new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.EXPECTED), getExpectedDataSourceMap()).fillData();
-                    FILLED_SUITES.add(getItKey());
+                if (!FILLED_SUITES.contains(getTestParam().getKey())) {
+                    new DataSetEnvironmentManager(new ScenarioDataPath(getTestParam().getScenario()).getDataSetFile(Type.ACTUAL), getContainerComposer().getActualDataSourceMap()).fillData();
+                    new DataSetEnvironmentManager(new ScenarioDataPath(getTestParam().getScenario()).getDataSetFile(Type.EXPECTED), getContainerComposer().getExpectedDataSourceMap()).fillData();
+                    FILLED_SUITES.add(getTestParam().getKey());
                 }
             }
         }

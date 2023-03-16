@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.engine;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
@@ -29,10 +30,14 @@ import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.runner.ParallelParameterized;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,6 +45,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Comparator;
@@ -51,25 +57,26 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public abstract class BatchE2EIT extends BaseE2EIT {
+@RunWith(ParallelParameterized.class)
+public abstract class BatchE2EIT {
+    
+    @Getter
+    private final CaseTestParameter testParam;
+    
+    @Getter
+    private final E2EContainerComposer containerComposer;
     
     private final Collection<DataSet> dataSets = new LinkedList<>();
     
-    private final String parentPath;
+    private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    private DataSetEnvironmentManager dataSetEnvironmentManager;
-    
-    public BatchE2EIT(final CaseTestParameter testParam) {
-        super(testParam);
-        parentPath = testParam.getTestCaseContext().getParentPath();
-    }
-    
-    @Before
-    public void init() throws Exception {
-        for (IntegrationTestCaseAssertion each : getItCase().getAssertions()) {
-            dataSets.add(DataSetLoader.load(parentPath, getScenario(), getDatabaseType(), getMode(), each.getExpectedDataFile()));
+    public BatchE2EIT(final CaseTestParameter testParam) throws JAXBException, IOException, SQLException, ParseException {
+        this.testParam = testParam;
+        containerComposer = new E2EContainerComposer(testParam);
+        for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+            dataSets.add(DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
@@ -78,13 +85,18 @@ public abstract class BatchE2EIT extends BaseE2EIT {
         dataSetEnvironmentManager.cleanData();
     }
     
+    @AfterClass
+    public static void closeContainers() {
+        E2EContainerComposer.closeContainers();
+    }
+    
     protected final void assertDataSets(final int[] actualUpdateCounts) throws SQLException {
         DataSet expected = getDataSet(actualUpdateCounts);
         assertThat("Only support single table for DML.", expected.getMetaDataList().size(), is(1));
         DataSetMetaData expectedDataSetMetaData = expected.getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DataSource dataSource = getActualDataSourceMap().get(dataNode.getDataSourceName());
+            DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
@@ -155,10 +167,11 @@ public abstract class BatchE2EIT extends BaseE2EIT {
             int columnIndex = 1;
             for (String expected : expectedDatSetRows.get(count).splitValues(", ")) {
                 if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
-                    if (!NOT_VERIFY_FLAG.equals(expected)) {
+                    if (!E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actual.getDate(columnIndex)), is(expected));
                     }
-                } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()))) {
+                } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
+                        && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType()))) {
                     assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
                 } else if (isPostgreSQLOrOpenGaussMoney(actual.getMetaData().getColumnTypeName(columnIndex))) {
                     assertThat(actual.getString(columnIndex), is(expected));
@@ -175,6 +188,6 @@ public abstract class BatchE2EIT extends BaseE2EIT {
     }
     
     private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName) {
-        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(getDatabaseType().getType()) || "openGauss".equals(getDatabaseType().getType()));
+        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType()));
     }
 }

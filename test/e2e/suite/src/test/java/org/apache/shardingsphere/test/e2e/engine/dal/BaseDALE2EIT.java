@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.engine.dal;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.engine.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 
@@ -88,7 +89,7 @@ public abstract class BaseDALE2EIT extends SingleE2EIT {
     }
     
     private void assertDateValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
-        if (NOT_VERIFY_FLAG.equals(expected)) {
+        if (E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
             return;
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
