@@ -48,7 +48,7 @@ public final class GeneralDCLE2EIT extends BaseDCLE2EIT {
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
         String sql = getSQL();
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.executeUpdate(sql);
@@ -64,7 +64,7 @@ public final class GeneralDCLE2EIT extends BaseDCLE2EIT {
     @Test
     public void assertExecute() throws SQLException, ParseException {
         String sql = getSQL();
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(sql);

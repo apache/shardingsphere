@@ -49,7 +49,7 @@ public final class GeneralDDLE2EIT extends BaseDDLE2EIT {
     
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 executeUpdateForStatement(connection);
             } else {
@@ -75,7 +75,7 @@ public final class GeneralDDLE2EIT extends BaseDDLE2EIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
+        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 executeForStatement(connection);
             } else {
