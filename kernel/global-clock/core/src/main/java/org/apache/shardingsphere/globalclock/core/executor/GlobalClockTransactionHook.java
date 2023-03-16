@@ -40,7 +40,7 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
     
     private GlobalClockTransactionExecutor globalClockTransactionExecutor;
     
-    private LockDefinition lockDefinition = new GlobalLockDefinition("global_clock");
+    private final LockDefinition lockDefinition = new GlobalLockDefinition("global_clock");
     
     private boolean enabled;
     
