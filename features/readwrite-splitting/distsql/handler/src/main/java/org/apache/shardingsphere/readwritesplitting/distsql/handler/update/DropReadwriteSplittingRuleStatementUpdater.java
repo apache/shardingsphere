@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.RuleDefinitionVi
 import org.apache.shardingsphere.distsql.handler.exception.rule.RuleInUsedException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -77,9 +79,8 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
             if (each instanceof ReadwriteSplittingRule) {
                 continue;
             }
-            Collection<String> actualDataSources = new HashSet<>();
-            each.getDataSourceMapper().values().stream().flatMap(Collection::stream).forEach(eachDataSource -> actualDataSources.add(eachDataSource.getName()));
-            result.addAll(actualDataSources);
+            result.addAll(each.getDataSourceMapper().values().stream().flatMap(Collection::stream)
+                    .map(DataSourceRoleInfo::getName).collect(Collectors.toCollection(LinkedHashSet::new)));
         }
         for (DataNodeContainedRule each : database.getRuleMetaData().findRules(DataNodeContainedRule.class)) {
             Collection<DataNode> actualDataNodes = new HashSet<>();

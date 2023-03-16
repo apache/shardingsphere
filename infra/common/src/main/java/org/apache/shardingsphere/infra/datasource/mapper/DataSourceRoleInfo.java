@@ -29,7 +29,7 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode
 @AllArgsConstructor
-public class DataSourceRoleInfo {
+public final class DataSourceRoleInfo {
     
     private String name;
     

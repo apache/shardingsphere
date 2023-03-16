@@ -74,10 +74,10 @@ public final class CountDatabaseDiscoveryRuleExecutorTest {
     
     private DatabaseDiscoveryRule mockDatabaseDiscoveryRule() {
         DatabaseDiscoveryRule result = mock(DatabaseDiscoveryRule.class);
-        Map<String, Collection<DataSourceRoleInfo>> dataSources = new LinkedHashMap<>();
-        dataSources.put("ds_0", Collections.singletonList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY)));
-        dataSources.put("ds_1", Collections.singletonList(new DataSourceRoleInfo("ds_1", DataSourceRole.MEMBER)));
-        when(result.getDataSourceMapper()).thenReturn(dataSources);
+        Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = new LinkedHashMap<>();
+        dataSourceMapper.put("ds_0", Collections.singletonList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY)));
+        dataSourceMapper.put("ds_1", Collections.singletonList(new DataSourceRoleInfo("ds_1", DataSourceRole.MEMBER)));
+        when(result.getDataSourceMapper()).thenReturn(dataSourceMapper);
         return result;
     }
 }
