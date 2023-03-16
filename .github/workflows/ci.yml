@@ -56,7 +56,7 @@ env:
 
 jobs:
   ci:
-    name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
+    name: CI - on JDK ${{ matrix.java-version }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -78,18 +78,16 @@ jobs:
         run: ./mvnw -T1C -B -ntp clean install
       - name: Build examples with Maven
         run: ./mvnw -T1C -B -f examples/pom.xml clean package -DskipTests
-      - name: Setup JDK 8 for Test
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Run tests with JDK 8
+      - name: Run tests with JDK ${{ matrix.java-version }}
         run: ./mvnw -T1C -B -ntp -fae test
 
   test-coverage:
     if: github.repository == 'apache/shardingsphere'
-    name: Test coverage report
+    name: Test coverage report on JDK ${{ matrix.java-version }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [ 11, 19 ]
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
@@ -102,15 +100,8 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: ${{ matrix.java-version }}
       - name: Build with Maven
         run: ./mvnw -T1C -B -ntp clean install -DskipTests
-      - name: Setup JDK 8 for Test
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Test with Maven
-        run: ./mvnw -T1C -B -ntp test cobertura:cobertura -Djacoco.skip=false
       - name: Upload to Codecov
         run: bash <(curl -s https://codecov.io/bash)
