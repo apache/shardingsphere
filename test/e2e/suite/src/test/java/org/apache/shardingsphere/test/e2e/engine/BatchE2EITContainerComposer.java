@@ -30,10 +30,6 @@ import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelParameterized;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -57,10 +53,11 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(ParallelParameterized.class)
-public abstract class BatchE2EIT {
+/**
+ * Batch E2E IT container composer.
+ */
+public final class BatchE2EITContainerComposer implements AutoCloseable {
     
-    @Getter
     private final CaseTestParameter testParam;
     
     @Getter
@@ -70,7 +67,7 @@ public abstract class BatchE2EIT {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BatchE2EIT(final CaseTestParameter testParam) throws JAXBException, IOException, SQLException, ParseException {
+    public BatchE2EITContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException, SQLException, ParseException {
         this.testParam = testParam;
         containerComposer = new E2EContainerComposer(testParam);
         for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
@@ -80,17 +77,13 @@ public abstract class BatchE2EIT {
         dataSetEnvironmentManager.fillData();
     }
     
-    @After
-    public void tearDown() {
-        dataSetEnvironmentManager.cleanData();
-    }
-    
-    @AfterClass
-    public static void closeContainers() {
-        E2EContainerComposer.closeContainers();
-    }
-    
-    protected final void assertDataSets(final int[] actualUpdateCounts) throws SQLException {
+    /**
+     * Assert data sets.
+     * 
+     * @param actualUpdateCounts actual update counts
+     * @throws SQLException SQL exception
+     */
+    public void assertDataSets(final int[] actualUpdateCounts) throws SQLException {
         DataSet expected = getDataSet(actualUpdateCounts);
         assertThat("Only support single table for DML.", expected.getMetaDataList().size(), is(1));
         DataSetMetaData expectedDataSetMetaData = expected.getMetaDataList().get(0);
@@ -189,5 +182,11 @@ public abstract class BatchE2EIT {
     
     private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName) {
         return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType()));
+    }
+    
+    @Override
+    public void close() {
+        dataSetEnvironmentManager.cleanData();
+        E2EContainerComposer.closeContainers();
     }
 }

@@ -45,7 +45,7 @@ public abstract class SingleE2EIT {
     public E2EWatcher watcher = new E2EWatcher();
     
     private final AssertionTestParameter testParam;
-            
+    
     private final E2EContainerComposer containerComposer;
     
     private final SQLExecuteType sqlExecuteType;

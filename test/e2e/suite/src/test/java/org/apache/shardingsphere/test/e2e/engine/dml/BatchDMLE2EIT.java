@@ -20,14 +20,15 @@ package org.apache.shardingsphere.test.e2e.engine.dml;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
-import org.apache.shardingsphere.test.e2e.engine.BatchE2EIT;
+import org.apache.shardingsphere.test.e2e.engine.BatchE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
-import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -35,35 +36,29 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@ParallelRunningStrategy(ParallelLevel.SCENARIO)
-public final class BatchDMLE2EIT extends BatchE2EIT {
+public final class BatchDMLE2EIT {
     
-    public BatchDMLE2EIT(final CaseTestParameter testParam) throws SQLException, JAXBException, IOException, ParseException {
-        super(testParam);
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<E2ETestParameter> getTestParameters() {
-        return E2ETestParameterFactory.getCaseTestParameters(SQLCommandType.DML);
-    }
-    
-    @Test
-    public void assertExecuteBatch() throws SQLException, ParseException {
-        int[] actualUpdateCounts;
-        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
-            actualUpdateCounts = executeBatchForPreparedStatement(connection);
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecuteBatch(final CaseTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        try (BatchE2EITContainerComposer containerComposer = new BatchE2EITContainerComposer(testParam)) {
+            int[] actualUpdateCounts;
+            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+                actualUpdateCounts = executeBatchForPreparedStatement(testParam, connection);
+            }
+            containerComposer.assertDataSets(actualUpdateCounts);
         }
-        assertDataSets(actualUpdateCounts);
     }
     
-    private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getTestParam().getTestCaseContext().getTestCase().getSql())) {
-            for (IntegrationTestCaseAssertion each : getTestParam().getTestCaseContext().getTestCase().getAssertions()) {
+    private int[] executeBatchForPreparedStatement(final CaseTestParameter testParam, final Connection connection) throws SQLException, ParseException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {
+            for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
@@ -77,16 +72,32 @@ public final class BatchDMLE2EIT extends BatchE2EIT {
         preparedStatement.addBatch();
     }
     
-    @Test
-    public void assertClearBatch() throws SQLException, ParseException {
-        try (
-                Connection connection = getContainerComposer().getTargetDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(getTestParam().getTestCaseContext().getTestCase().getSql())) {
-            for (IntegrationTestCaseAssertion each : getTestParam().getTestCaseContext().getTestCase().getAssertions()) {
-                addBatch(preparedStatement, each);
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertClearBatch(final CaseTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        try (BatchE2EITContainerComposer containerComposer = new BatchE2EITContainerComposer(testParam)) {
+            try (
+                    Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {
+                for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
+                    addBatch(preparedStatement, each);
+                }
+                preparedStatement.clearBatch();
+                assertThat(preparedStatement.executeBatch().length, is(0));
             }
-            preparedStatement.clearBatch();
-            assertThat(preparedStatement.executeBatch().length, is(0));
+        }
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestParameterFactory.containsTestParameter();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return E2ETestParameterFactory.getCaseTestParameters(SQLCommandType.DML).stream().map(Arguments::of);
         }
     }
 }
