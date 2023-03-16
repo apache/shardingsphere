@@ -36,7 +36,8 @@ public final class YamlAdvisorsConfigurationSwapperTest {
     
     @Test
     public void assertSwapToObject() {
-        Collection<AdvisorConfiguration> actual = YamlAdvisorsConfigurationSwapper.swap(AgentYamlEngine.unmarshalYamlAdvisorsConfiguration(getClass().getResourceAsStream("/META-INF/conf/advisors.yaml")), "FIXTURE");
+        Collection<AdvisorConfiguration> actual = YamlAdvisorsConfigurationSwapper.swap(
+                AgentYamlEngine.unmarshalYamlAdvisorsConfiguration(getClass().getResourceAsStream("/META-INF/conf/advisors.yaml")), "FIXTURE");
         assertThat(actual.size(), is(1));
         assertAdvisorConfiguration(actual.iterator().next());
     }
