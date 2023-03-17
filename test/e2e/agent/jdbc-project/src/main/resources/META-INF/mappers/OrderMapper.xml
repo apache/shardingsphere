@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.apache.shardingsphere.test.e2e.agent.jdbc.project.mapper.OrderMapper">
+    
+    <resultMap id="BaseResultMap" type="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="uuid" property="uuid" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_deleted" property="deleted" />
+    </resultMap>
+    
+    <update id="createTable">
+        CREATE TABLE IF NOT EXISTS t_order (
+                id BIGINT NOT NULL,
+                user_id BIGINT DEFAULT NULL,
+                uuid VARCHAR(36) DEFAULT NULL,
+                status VARCHAR(32) DEFAULT NULL,
+                create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+                update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+                is_deleted TINYINT(1) NOT NULL DEFAULT 0,
+                PRIMARY KEY (id)
+            );
+    </update>
+    
+    <update id="dropTable">
+        DROP TABLE IF EXISTS t_order;
+    </update>
+    
+    <insert id="insertWithStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order" useGeneratedKeys="true" keyProperty="id" statementType="STATEMENT">
+        insert into t_order(user_id, uuid, status, create_time) value (${userId}, '${uuid}', '${status}', '${createTime}')
+    </insert>
+    
+    <insert id="insertWithPreparedStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order" useGeneratedKeys="true" keyProperty="id" statementType="PREPARED">
+        insert into t_order(user_id, uuid, status, create_time) value (#{userId}, #{uuid}, #{status}, #{createTime})
+    </insert>
+    
+    <delete id="deleteWithStatement" parameterType="java.lang.Long" statementType="STATEMENT">
+        delete from t_order where id=${id}
+    </delete>
+    
+    <delete id="deleteWithPreparedStatement" parameterType="java.lang.Long" statementType="PREPARED">
+        delete from t_order where id=#{id}
+    </delete>
+    
+    <select id="selectAllWithStatement" resultMap="BaseResultMap" statementType="STATEMENT">
+        select * from t_order
+    </select>
+    
+    <select id="selectAllWithPreparedStatement" resultMap="BaseResultMap" statementType="PREPARED">
+        select * from t_order
+    </select>
+    
+    <update id="updateWithStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order" statementType="STATEMENT">
+        update t_order set uuid='${uuid}', status='${status}', is_deleted=${deleted} where id=${id}
+    </update>
+    
+    <update id="updateWithPreparedStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order" statementType="PREPARED">
+        update t_order set uuid=#{uuid}, status=#{status}, is_deleted=#{deleted} where id=#{id}
+    </update>
+    
+</mapper>

@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.jdbc.project;
+package org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@SpringBootApplication
-public class Application {
+import java.time.LocalDateTime;
+
+/**
+ * Base entity.
+ */
+@Getter
+@Setter
+@ToString
+public class BaseEntity {
     
-    /**
-     * Main.
-     *
-     * @param args args
-     */
-    public static void main(final String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+    private Boolean deleted;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateTime;
 }
