@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.readwritesplitting.spi;
 
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
 
 import java.util.List;
 
 /**
  * Read query load-balance algorithm.
  */
-public interface ReadQueryLoadBalanceAlgorithm extends TypedSPI {
+public interface ReadQueryLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Get data source.
