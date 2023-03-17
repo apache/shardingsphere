@@ -43,7 +43,7 @@ public final class AgentYamlEngine {
     
     /**
      * Unmarshal YAML advisors configuration YAML.
-     * 
+     *
      * @param inputStream input stream
      * @return YAML advisors configuration
      */
