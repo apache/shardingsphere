@@ -30,6 +30,7 @@
     
     <modules>
         <module>plugins</module>
+        <module>jdbc-project</module>
     </modules>
     
     <properties>
