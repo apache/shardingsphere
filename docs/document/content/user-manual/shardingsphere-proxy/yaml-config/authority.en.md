@@ -9,12 +9,12 @@ In ShardingSphere-Proxy, user authentication and authorization information is co
 
 Thanks to ShardingSphere's pluggable architecture, Proxy provides two levels of privilege providers, namely: 
 
-- `ALL_PERMITTED`: each user has all privileges without special authorization;
-- `DATABASE_PERMITTED`: grant the user privileges on the specified logical databases, defined by `user-database-mappings`.
+- `ALL_PERMITTED`: each user has all privileges without special authorization.
+- `DATABASE_PERMITTED`: grants the user privileges on the specified logical databases, defined by `user-database-mappings`.
 
 The administrator can choose which privilege provider to use as needed when configuring `authority`. 
 
-## Parameter
+## Parameters
 
 ```yaml
 authority:
@@ -43,15 +43,15 @@ authority:
        password: sharding
 ```
 
-illustrate:
+Explanation:
 - Two users are defined: `root@%` and `sharding`;
 - `authenticationMethodName` is not specified for `root@127.0.0.1`, Proxy will automatically choose the authentication method according to the frontend protocol;
-- privilege provider is not specified, the default `ALL_PERMITTED` will be used;
+- Privilege provider is not specified, the default `ALL_PERMITTED` will be used;
 
 
 ### Authentication configuration
 
-Custom authentication configuration can meet the needs of users in some specific scenarios.
+The custom authentication configuration allows users to greater leeway to set their own custom configurations according to their scenarios. 
 Taking `openGauss` as the frontend protocol type as an example, its default authentication method is `scram-sha-256`.
 If the user `sharding` needs to use an old version of the psql client (which does not support `scram-sha-256`) to connect to the Proxy, the administrator may allow sharding to use the `md5` method for password authentication.
 The configuration is as follows:
@@ -71,7 +71,7 @@ authority:
      type: ALL_PERMITTED
 ```
 
-illustrate:
+Explanation:
 - Two users are defined: `root@127.0.0.1` and `sharding`;
 - Use `MD5` method for password authentication for `sharding`;
 - Authentication method is not specified for `root@127.0.0.1`, Proxy will automatically choose one according to the frontend protocol;
@@ -92,7 +92,7 @@ authority:
     type: ALL_PERMITTED
 ```
 
-illustrate:
+Explanation:
 - Two users are defined: `root@127.0.0.1` and `sharding`;
 - `authenticators` and `authenticationMethodName` are not defined, Proxy will automatically choose the authentication method according to the frontend protocol;
 - The privilege provider `ALL_PERMITTED` is specified.
@@ -112,11 +112,11 @@ authority:
       user-database-mappings: root@127.0.0.1=*, sharding=test_db, sharding=sharding_db
 ```
 
-illustrate:
+Explanation:
 - Two users are defined: `root@127.0.0.1` and `sharding`;
 - `authenticators` and `authenticationMethodName` are not defined, Proxy will automatically choose the authentication method according to the frontend protocol;
 - The privilege provider `DATABASE_PERMITTED` is specified, authorize `root@127.0.0.1` to access all logical databases (`*`), and user `sharding` can only access `test_db` and `sharding_db`.
 
 ## Related References
 
-Please refer to [Authority Provider](/en/dev-manual/proxy) for specific implementation of authority provider.
+Please refer to [Authority Provider](/en/dev-manual/proxy) for the specific implementation of authority provider.
