@@ -82,6 +82,6 @@ public final class PipelineJobIdUtils {
         char instanceType = jobId.charAt(5);
         short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
         String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);
-        return new PipelineContextKey(InstanceTypeUtil.decode(instanceType), databaseName);
+        return PipelineContextKey.build(InstanceTypeUtil.decode(instanceType), databaseName);
     }
 }

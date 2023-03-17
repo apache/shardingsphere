@@ -33,7 +33,7 @@ public final class CDCJobIdTest {
     
     @Test
     public void parseJobType() {
-        PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY, "sharding_db");
+        PipelineContextKey contextKey = PipelineContextKey.build(InstanceType.PROXY, "sharding_db");
         CDCJobId pipelineJobId = new CDCJobId(Arrays.asList("test", "t_order"), false, contextKey);
         String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
         JobType actualJobType = PipelineJobIdUtils.parseJobType(jobId);

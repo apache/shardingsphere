@@ -81,7 +81,7 @@ public final class JobConfigurationBuilder {
     }
     
     private static String generateJobId(final YamlMigrationJobConfiguration yamlJobConfig) {
-        PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY, RandomStringUtils.randomAlphabetic(32));
+        PipelineContextKey contextKey = PipelineContextKey.build(InstanceType.PROXY, RandomStringUtils.randomAlphabetic(32));
         MigrationJobId migrationJobId = new MigrationJobId(yamlJobConfig.getJobShardingDataNodes(), contextKey);
         return new MigrationJobAPI().marshalJobId(migrationJobId);
     }

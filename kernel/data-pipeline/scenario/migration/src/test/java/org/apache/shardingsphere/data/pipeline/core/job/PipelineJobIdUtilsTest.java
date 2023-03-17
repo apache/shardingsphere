@@ -39,7 +39,7 @@ public final class PipelineJobIdUtilsTest {
     }
     
     private void assertParse0(final InstanceType instanceType) {
-        PipelineContextKey contextKey = new PipelineContextKey(instanceType, "sharding_db");
+        PipelineContextKey contextKey = PipelineContextKey.build(instanceType, "sharding_db");
         MigrationJobId pipelineJobId = new MigrationJobId(Collections.singletonList("t_order:ds_0.t_order_0,ds_0.t_order_1"), contextKey);
         String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
         assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(MigrationJobType.class));

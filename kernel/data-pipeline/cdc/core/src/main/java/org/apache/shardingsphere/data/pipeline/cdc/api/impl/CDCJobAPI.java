@@ -73,7 +73,6 @@ import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -204,8 +203,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     private String generateJobId(final YamlCDCJobConfiguration config) {
         // TODO generate parameter add sink type
-        PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY, config.getDatabaseName());
-        CDCJobId jobId = new CDCJobId(config.getSchemaTableNames(), config.isFull(), contextKey);
+        CDCJobId jobId = new CDCJobId(config.getSchemaTableNames(), config.isFull(), PipelineContextKey.buildForProxy(config.getDatabaseName()));
         return marshalJobId(jobId);
     }
     

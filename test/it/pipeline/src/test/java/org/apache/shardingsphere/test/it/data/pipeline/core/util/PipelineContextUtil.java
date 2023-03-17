@@ -39,7 +39,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.context.Migrat
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -71,8 +70,8 @@ public final class PipelineContextUtil {
     @SneakyThrows
     public static void mockModeConfigAndContextManager() {
         EmbedTestingServer.start();
-        PipelineContextKey pipelineContextKey = new PipelineContextKey(InstanceType.PROXY, null);
-        if (null != PipelineContextManager.getContext(pipelineContextKey)) {
+        PipelineContextKey contextKey = PipelineContextKey.buildForProxy();
+        if (null != PipelineContextManager.getContext(contextKey)) {
             return;
         }
         ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(
@@ -84,7 +83,7 @@ public final class PipelineContextUtil {
         MetaDataPersistService persistService = new MetaDataPersistService(getClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository()));
         MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), persistService);
         PipelineContext pipelineContext = new PipelineContext(modeConfig, new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
-        PipelineContextManager.putContext(pipelineContextKey, pipelineContext);
+        PipelineContextManager.putContext(contextKey, pipelineContext);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

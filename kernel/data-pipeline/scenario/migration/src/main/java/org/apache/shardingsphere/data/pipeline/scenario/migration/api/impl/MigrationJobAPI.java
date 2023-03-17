@@ -244,7 +244,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     private String generateJobId(final YamlMigrationJobConfiguration config) {
-        PipelineContextKey contextKey = new PipelineContextKey(InstanceType.PROXY, config.getDatabaseName());
+        PipelineContextKey contextKey = PipelineContextKey.build(InstanceType.PROXY, config.getDatabaseName());
         MigrationJobId jobId = new MigrationJobId(config.getJobShardingDataNodes(), contextKey);
         return marshalJobId(jobId);
     }

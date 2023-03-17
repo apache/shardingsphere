@@ -42,12 +42,12 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
             log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
             return;
         }
-        PipelineContextManager.putContext(new PipelineContextKey(instanceType, databaseName), new PipelineContext(modeConfig, contextManager));
+        PipelineContextManager.putContext(PipelineContextKey.build(instanceType, databaseName), new PipelineContext(modeConfig, contextManager));
         PipelineJobWorker.initialize();
     }
     
     @Override
     public void onDestroyed(final InstanceType instanceType, final String databaseName) {
-        PipelineContextManager.removeContext(new PipelineContextKey(instanceType, databaseName));
+        PipelineContextManager.removeContext(PipelineContextKey.build(instanceType, databaseName));
     }
 }

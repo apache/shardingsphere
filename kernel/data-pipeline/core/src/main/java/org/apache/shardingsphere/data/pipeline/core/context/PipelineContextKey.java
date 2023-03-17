@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.context;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -26,13 +27,43 @@ import java.util.Objects;
 /**
  * Pipeline context key.
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class PipelineContextKey {
     
     private final InstanceType instanceType;
     
     private final String databaseName;
+    
+    /**
+     * Build context key.
+     *
+     * @param instanceType instance type
+     * @param databaseName database name
+     * @return context key
+     */
+    public static PipelineContextKey build(final InstanceType instanceType, final String databaseName) {
+        return new PipelineContextKey(instanceType, databaseName);
+    }
+    
+    /**
+     * Build context key for proxy.
+     *
+     * @return context key
+     */
+    public static PipelineContextKey buildForProxy() {
+        return new PipelineContextKey(InstanceType.PROXY, "");
+    }
+    
+    /**
+     * Build context key for proxy.
+     *
+     * @param databaseName database name
+     * @return context key
+     */
+    public static PipelineContextKey buildForProxy(final String databaseName) {
+        return new PipelineContextKey(InstanceType.PROXY, databaseName);
+    }
     
     @Override
     public boolean equals(final Object o) {
