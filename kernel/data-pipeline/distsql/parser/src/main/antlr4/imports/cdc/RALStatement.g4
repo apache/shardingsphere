@@ -28,5 +28,5 @@ showStreamingStatus
     ;
 
 jobId
-    : INT_ | STRING_
+    : INT_ | IDENTIFIER_ | STRING_
     ;
