@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 
@@ -30,6 +31,7 @@ import java.util.Optional;
 /**
  * Shorthand projection.
  */
+@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
@@ -38,11 +40,6 @@ public final class ShorthandProjection implements Projection {
     private final String owner;
     
     private final Collection<Projection> actualColumns;
-    
-    public ShorthandProjection(final String owner, final Collection<Projection> projections) {
-        this.owner = owner;
-        actualColumns = projections;
-    }
     
     @Override
     public String getExpression() {
