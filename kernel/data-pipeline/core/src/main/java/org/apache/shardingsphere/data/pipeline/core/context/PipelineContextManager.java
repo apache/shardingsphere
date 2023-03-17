@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.context;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,9 +34,6 @@ public final class PipelineContextManager {
      * @return context
      */
     public static PipelineContext getContext(final PipelineContextKey key) {
-        if (key.getInstanceType() == InstanceType.PROXY && null != key.getDatabaseName()) {
-            return CONTEXT_MAP.get(new PipelineContextKey(key.getInstanceType(), null));
-        }
         return CONTEXT_MAP.get(key);
     }
     

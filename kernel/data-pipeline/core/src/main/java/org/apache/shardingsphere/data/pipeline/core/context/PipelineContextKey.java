@@ -17,20 +17,41 @@
 
 package org.apache.shardingsphere.data.pipeline.core.context;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+
+import java.util.Objects;
 
 /**
  * Pipeline context key.
  */
 @RequiredArgsConstructor
-@EqualsAndHashCode
 @Getter
 public final class PipelineContextKey {
     
     private final InstanceType instanceType;
     
     private final String databaseName;
+    
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final PipelineContextKey that = (PipelineContextKey) o;
+        return instanceType == that.instanceType && Objects.equals(filterDatabaseName(this), filterDatabaseName(that));
+    }
+    
+    private static String filterDatabaseName(final PipelineContextKey contextKey) {
+        return contextKey.getInstanceType() == InstanceType.PROXY ? "" : contextKey.getDatabaseName();
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(instanceType, filterDatabaseName(this));
+    }
 }
