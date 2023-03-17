@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.spi;
+package org.apache.shardingsphere.infra.util.spi.type.typed.algorithm;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
- * Encrypt algorithm.
+ * ShardingSphere algorithm SPI.
  */
-public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
+public interface ShardingSphereAlgorithm extends TypedSPI {
 }
