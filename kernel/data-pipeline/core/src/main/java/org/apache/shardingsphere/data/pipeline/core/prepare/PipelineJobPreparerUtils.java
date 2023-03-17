@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.BasicDataSourceChecker;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
@@ -86,11 +85,11 @@ public final class PipelineJobPreparerUtils {
     /**
      * Get SQL parser engine.
      *
+     * @param metaData meta data
      * @param targetDatabaseName target database name
      * @return SQL parser engine
      */
-    public static ShardingSphereSQLParserEngine getSQLParserEngine(final String targetDatabaseName) {
-        ShardingSphereMetaData metaData = PipelineContext.getContextManager().getMetaDataContexts().getMetaData();
+    public static ShardingSphereSQLParserEngine getSQLParserEngine(final ShardingSphereMetaData metaData, final String targetDatabaseName) {
         ShardingSphereDatabase database = metaData.getDatabase(targetDatabaseName);
         DatabaseType databaseType = database.getProtocolType();
         if (databaseType instanceof BranchDatabaseType) {
