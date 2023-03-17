@@ -28,10 +28,11 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.PipelineJobPreparerUtils;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
@@ -92,29 +93,30 @@ public final class MigrationJobPreparer {
     
     private void prepareAndCheckTargetWithLock(final MigrationJobItemContext jobItemContext) throws SQLException {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
-        String lockName = "prepare-" + jobConfig.getJobId();
-        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        if (!jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem()).isPresent()) {
+        String jobId = jobConfig.getJobId();
+        String lockName = "prepare-" + jobId;
+        LockContext lockContext = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobId)).getContextManager().getInstanceContext().getLockContext();
+        if (!jobAPI.getJobItemProgress(jobId, jobItemContext.getShardingItem()).isPresent()) {
             jobAPI.persistJobItemProgress(jobItemContext);
         }
         LockDefinition lockDefinition = new GlobalLockDefinition(lockName);
         long startTimeMillis = System.currentTimeMillis();
         if (lockContext.tryLock(lockDefinition, 600000)) {
-            log.info("try lock success, jobId={}, shardingItem={}, cost {} ms", jobConfig.getJobId(), jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
+            log.info("try lock success, jobId={}, shardingItem={}, cost {} ms", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
             try {
-                JobOffsetInfo offsetInfo = jobAPI.getJobOffsetInfo(jobConfig.getJobId());
+                JobOffsetInfo offsetInfo = jobAPI.getJobOffsetInfo(jobId);
                 if (!offsetInfo.isTargetSchemaTableCreated()) {
                     jobItemContext.setStatus(JobStatus.PREPARING);
-                    jobAPI.updateJobItemStatus(jobConfig.getJobId(), jobItemContext.getShardingItem(), JobStatus.PREPARING);
+                    jobAPI.updateJobItemStatus(jobId, jobItemContext.getShardingItem(), JobStatus.PREPARING);
                     prepareAndCheckTarget(jobItemContext);
-                    jobAPI.persistJobOffsetInfo(jobConfig.getJobId(), new JobOffsetInfo(true));
+                    jobAPI.persistJobOffsetInfo(jobId, new JobOffsetInfo(true));
                 }
             } finally {
-                log.info("unlock, jobId={}, shardingItem={}, cost {} ms", jobConfig.getJobId(), jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
+                log.info("unlock, jobId={}, shardingItem={}, cost {} ms", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
                 lockContext.unlock(lockDefinition);
             }
         } else {
-            log.warn("jobId={}, shardingItem={} try lock failed", jobConfig.getJobId(), jobItemContext.getShardingItem());
+            log.warn("jobId={}, shardingItem={} try lock failed", jobId, jobItemContext.getShardingItem());
         }
     }
     

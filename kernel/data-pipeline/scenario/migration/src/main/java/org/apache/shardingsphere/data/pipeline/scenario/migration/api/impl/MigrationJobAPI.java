@@ -51,8 +51,8 @@ import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractInventoryIn
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.RegisterMigrationSourceStorageUnitException;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.UnregisterMigrationSourceStorageUnitException;
@@ -170,7 +170,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             }
         }
         result.setSources(configSources);
-        PipelineDataSourceConfiguration targetPipelineDataSourceConfig = buildTargetPipelineDataSourceConfiguration(param.getTargetDatabaseName());
+        ShardingSphereDatabase targetDatabase = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getTargetDatabaseName());
+        PipelineDataSourceConfiguration targetPipelineDataSourceConfig = buildTargetPipelineDataSourceConfiguration(targetDatabase);
         result.setTarget(buildYamlPipelineDataSourceConfiguration(targetPipelineDataSourceConfig.getType(), targetPipelineDataSourceConfig.getParameter()));
         result.setTargetDatabaseType(targetPipelineDataSourceConfig.getDatabaseType().getType());
         List<JobDataNodeEntry> tablesFirstDataNodes = sourceDataNodes.entrySet().stream()
@@ -190,14 +191,13 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         return result;
     }
     
-    private PipelineDataSourceConfiguration buildTargetPipelineDataSourceConfiguration(final String targetDatabaseName) {
+    private PipelineDataSourceConfiguration buildTargetPipelineDataSourceConfiguration(final ShardingSphereDatabase targetDatabase) {
         Map<String, Map<String, Object>> targetDataSourceProps = new HashMap<>();
-        ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(targetDatabaseName);
         for (Entry<String, DataSource> entry : targetDatabase.getResourceMetaData().getDataSources().entrySet()) {
             Map<String, Object> dataSourceProps = swapper.swapToMap(DataSourcePropertiesCreator.create(entry.getValue()));
             targetDataSourceProps.put(entry.getKey(), dataSourceProps);
         }
-        YamlRootConfiguration targetRootConfig = buildYamlRootConfiguration(targetDatabaseName, targetDataSourceProps, targetDatabase.getRuleMetaData().getConfigurations());
+        YamlRootConfiguration targetRootConfig = buildYamlRootConfiguration(targetDatabase.getName(), targetDataSourceProps, targetDatabase.getRuleMetaData().getConfigurations());
         return new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
     }
     
