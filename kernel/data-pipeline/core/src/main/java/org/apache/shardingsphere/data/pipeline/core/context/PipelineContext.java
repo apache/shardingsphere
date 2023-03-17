@@ -38,8 +38,8 @@ public final class PipelineContext {
      *
      * @return context manager
      */
-    public static ContextManager getContextManager() {
+    public ContextManager getContextManager() {
         // TODO now getContextManager
-        return null;
+        return contextManager;
     }
 }

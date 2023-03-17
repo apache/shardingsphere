@@ -38,6 +38,15 @@ public final class PipelineContextManager {
     }
     
     /**
+     * Get context.
+     *
+     * @return context
+     */
+    public static PipelineContext getProxyContext() {
+        return CONTEXT_MAP.get(PipelineContextKey.buildForProxy());
+    }
+    
+    /**
      * Put context.
      *
      * @param key key

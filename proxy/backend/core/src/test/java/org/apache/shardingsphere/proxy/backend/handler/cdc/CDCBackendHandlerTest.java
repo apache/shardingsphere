@@ -26,6 +26,9 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRe
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -74,7 +77,7 @@ public final class CDCBackendHandlerTest {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
-        when(PipelineContext.getContextManager()).thenReturn(contextManager);
+        PipelineContextManager.putContext(PipelineContextKey.buildForProxy(), new PipelineContext(mock(ModeConfiguration.class), contextManager));
     }
     
     private static Map<String, ShardingSphereDatabase> getDatabases() {
