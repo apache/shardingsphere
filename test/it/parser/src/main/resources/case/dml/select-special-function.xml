@@ -63,18 +63,18 @@
         </projections>
     </select>
     <select sql-case-id="select_cast">
-        <projections start-index="7" stop-index="42">
-            <expression-projection text="CAST(c AT TIME ZONE 'UTC' AS DATETIME)" start-index="7" stop-index="42">
+        <projections start-index="7" stop-index="44">
+            <expression-projection text="CAST(c AT TIME ZONE 'UTC' AS DATETIME)" start-index="7" stop-index="44">
                 <expr>
-                    <function function-name="CAST" start-index="7" stop-index="42" text="CAST(c AT TIME ZONE 'UTC' AS DATETIME)">
+                    <function function-name="CAST" start-index="7" stop-index="44" text="CAST(c AT TIME ZONE 'UTC' AS DATETIME)">
                         <parameter>
-                            <literal-expression value="c" start-index="12" stop-index="12" />
+                            <column name="c" start-index="12" stop-index="12" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="UTC" start-index="24" stop-index="29" />
+                            <literal-expression value="UTC" start-index="27" stop-index="31" />
                         </parameter>
                         <parameter>
-                            <data-type value="DATETIME" start-index="34" stop-index="41" />
+                            <data-type value="DATETIME" start-index="36" stop-index="43" />
                         </parameter>
                     </function>
                 </expr>
