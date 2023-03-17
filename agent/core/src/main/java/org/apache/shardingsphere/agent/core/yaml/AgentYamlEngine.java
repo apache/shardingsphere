@@ -23,7 +23,6 @@ import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvis
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -37,7 +36,6 @@ public final class AgentYamlEngine {
      *
      * @param inputStream input stream
      * @return YAML agent configuration
-     * @throws IOException IO Exception
      */
     public static YamlAgentConfiguration unmarshalYamlAgentConfiguration(final InputStream inputStream) {
         return new Yaml(new AgentYamlConstructor(YamlAgentConfiguration.class)).loadAs(inputStream, YamlAgentConfiguration.class);
@@ -48,7 +46,6 @@ public final class AgentYamlEngine {
      *
      * @param inputStream input stream
      * @return YAML advisors configuration
-     * @throws IOException IO Exception
      */
     public static YamlAdvisorsConfiguration unmarshalYamlAdvisorsConfiguration(final InputStream inputStream) {
         return new Yaml(new AgentYamlConstructor(YamlAdvisorsConfiguration.class)).loadAs(inputStream, YamlAdvisorsConfiguration.class);
