@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 /**
  * Base pipeline job id.
@@ -36,7 +37,8 @@ public class BasePipelineJobId implements PipelineJobId {
     
     public BasePipelineJobId(final JobType jobType, final PipelineContextKey contextKey) {
         this.jobType = jobType;
-        this.contextKey = contextKey;
+        // In proxy mode, database name is not necessary to persisted in job id.
+        this.contextKey = contextKey.getInstanceType() == InstanceType.PROXY ? new PipelineContextKey(contextKey.getInstanceType(), "") : contextKey;
     }
     
     @Override
