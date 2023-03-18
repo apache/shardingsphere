@@ -93,7 +93,7 @@ public abstract class BaseDMLE2EIT {
         }
     }
     
-    private void assertDataSet(final AssertionTestParameter testParam, 
+    private void assertDataSet(final AssertionTestParameter testParam,
                                final PreparedStatement actualPreparedStatement, final DataSetMetaData expectedDataSetMetaData, final List<DataSetRow> expectedDataSetRows) throws SQLException {
         try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
             assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetaData.getColumns());
