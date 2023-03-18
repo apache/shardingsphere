@@ -24,10 +24,8 @@ import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.junit.After;
-import org.junit.Before;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -47,26 +45,27 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public abstract class BaseDDLE2EIT extends SingleE2EIT {
+public abstract class BaseDDLE2EIT {
     
-    public BaseDDLE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
-    }
-    
-    @Before
-    public final void init() throws Exception {
-        assertNotNull(getAssertion().getInitialSQL(), "Init SQL is required");
-        assertNotNull(getAssertion().getInitialSQL().getAffectedTable(), "Expected affected table is required");
-        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
-            executeInitSQLs(connection);
+    /**
+     * Init.
+     * 
+     * @param containerComposer container composer
+     * @throws SQLException SQL exception
+     */
+    public final void init(final SingleE2EITContainerComposer containerComposer) throws SQLException {
+        assertNotNull(containerComposer.getAssertion().getInitialSQL(), "Init SQL is required");
+        assertNotNull(containerComposer.getAssertion().getInitialSQL().getAffectedTable(), "Expected affected table is required");
+        try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+            executeInitSQLs(containerComposer, connection);
         }
     }
     
-    private synchronized void executeInitSQLs(final Connection connection) throws SQLException {
-        if (null == getAssertion().getInitialSQL().getSql()) {
+    private synchronized void executeInitSQLs(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException {
+        if (null == containerComposer.getAssertion().getInitialSQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
@@ -74,20 +73,25 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
         }
     }
     
-    @After
-    public final void tearDown() throws SQLException {
-        if (null != getAssertion().getDestroySQL()) {
-            try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
-                executeDestroySQLs(connection);
+    /**
+     * Tear down.
+     * 
+     * @param containerComposer container composer
+     * @throws SQLException SQL exception
+     */
+    public final void tearDown(final SingleE2EITContainerComposer containerComposer) throws SQLException {
+        if (null != containerComposer.getAssertion().getDestroySQL()) {
+            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+                executeDestroySQLs(containerComposer, connection);
             }
         }
     }
     
-    private void executeDestroySQLs(final Connection connection) throws SQLException {
-        if (null == getAssertion().getDestroySQL().getSql()) {
+    private void executeDestroySQLs(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException {
+        if (null == containerComposer.getAssertion().getDestroySQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getDestroySQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
@@ -95,25 +99,25 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
         }
     }
     
-    protected final void assertTableMetaData() throws SQLException {
-        String tableName = getAssertion().getInitialSQL().getAffectedTable();
-        DataSetMetaData expected = getDataSet().findMetaData(tableName);
+    protected final void assertTableMetaData(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException {
+        String tableName = containerComposer.getAssertion().getInitialSQL().getAffectedTable();
+        DataSetMetaData expected = containerComposer.getDataSet().findMetaData(tableName);
         Collection<DataNode> dataNodes = new InlineExpressionParser(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
         if (expected.getColumns().isEmpty()) {
-            assertNotContainsTable(dataNodes);
+            assertNotContainsTable(containerComposer, dataNodes);
             return;
         }
-        assertTableMetaData(getActualColumns(dataNodes), getActualIndexes(dataNodes), expected);
+        assertTableMetaData(testParam, getActualColumns(containerComposer, dataNodes), getActualIndexes(containerComposer, dataNodes), expected);
     }
     
-    private void assertTableMetaData(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetaData expected) {
-        assertColumnMetaData(actualColumns, expected.getColumns());
+    private void assertTableMetaData(final AssertionTestParameter testParam, final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetaData expected) {
+        assertColumnMetaData(testParam, actualColumns, expected.getColumns());
         assertIndexMetaData(actualIndexes, expected.getIndexes());
     }
     
-    private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
+    private void assertNotContainsTable(final SingleE2EITContainerComposer containerComposer, final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
-            try (Connection connection = getContainerComposer().getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = containerComposer.getContainerComposer().getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 assertNotContainsTable(connection, each.getTableName());
             }
         }
@@ -123,10 +127,10 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
         assertFalse(connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next(), String.format("Table `%s` should not existed", tableName));
     }
     
-    private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
+    private List<DataSetColumn> getActualColumns(final SingleE2EITContainerComposer containerComposer, final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            try (Connection connection = getContainerComposer().getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = containerComposer.getContainerComposer().getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
             }
         }
@@ -148,10 +152,10 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
         }
     }
     
-    private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
+    private List<DataSetIndex> getActualIndexes(final SingleE2EITContainerComposer containerComposer, final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            try (Connection connection = getContainerComposer().getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = containerComposer.getContainerComposer().getActualDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualIndexes(connection, each.getTableName()));
             }
         }
@@ -173,20 +177,20 @@ public abstract class BaseDDLE2EIT extends SingleE2EIT {
         }
     }
     
-    private void assertColumnMetaData(final List<DataSetColumn> actual, final List<DataSetColumn> expected) {
+    private void assertColumnMetaData(final AssertionTestParameter testParam, final List<DataSetColumn> actual, final List<DataSetColumn> expected) {
         assertThat("Size of actual columns is different with size of expected columns.", actual.size(), is(expected.size()));
         for (int i = 0; i < actual.size(); i++) {
-            assertColumnMetaData(actual.get(i), expected.get(i));
+            assertColumnMetaData(testParam, actual.get(i), expected.get(i));
         }
     }
     
-    private void assertColumnMetaData(final DataSetColumn actual, final DataSetColumn expected) {
+    private void assertColumnMetaData(final AssertionTestParameter testParam, final DataSetColumn actual, final DataSetColumn expected) {
         assertThat("Mismatched column name.", actual.getName(), is(expected.getName()));
-        if ("MySQL".equals(getTestParam().getDatabaseType().getType()) && "integer".equals(expected.getType())) {
+        if ("MySQL".equals(testParam.getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int"));
-        } else if ("PostgreSQL".equals(getTestParam().getDatabaseType().getType()) && "integer".equals(expected.getType())) {
+        } else if ("PostgreSQL".equals(testParam.getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int4"));
-        } else if ("openGauss".equals(getTestParam().getDatabaseType().getType()) && "integer".equals(expected.getType())) {
+        } else if ("openGauss".equals(testParam.getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int4"));
         } else {
             assertThat("Mismatched column type.", actual.getType(), is(expected.getType()));

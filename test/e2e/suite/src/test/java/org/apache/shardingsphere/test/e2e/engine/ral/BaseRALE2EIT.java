@@ -21,10 +21,7 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
-import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,35 +38,41 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public abstract class BaseRALE2EIT extends SingleE2EIT {
+public abstract class BaseRALE2EIT {
     
-    public BaseRALE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
-    }
-    
-    @Before
-    public final void init() throws Exception {
-        if (null != getAssertion().getInitialSQL()) {
-            try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
-                executeInitSQLs(connection);
+    /**
+     * Init.
+     *
+     * @param containerComposer container composer
+     * @throws SQLException SQL exception
+     */
+    public final void init(final SingleE2EITContainerComposer containerComposer) throws SQLException {
+        if (null != containerComposer.getAssertion().getInitialSQL()) {
+            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+                executeInitSQLs(containerComposer, connection);
             }
         }
     }
     
-    @After
-    public final void tearDown() throws Exception {
-        if (null != getAssertion().getDestroySQL()) {
-            try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
-                executeDestroySQLs(connection);
+    /**
+     * Tear down.
+     * 
+     * @param containerComposer container composer
+     * @throws SQLException SQL exception
+     */
+    public final void tearDown(final SingleE2EITContainerComposer containerComposer) throws SQLException {
+        if (null != containerComposer.getAssertion().getDestroySQL()) {
+            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+                executeDestroySQLs(containerComposer, connection);
             }
         }
     }
     
-    private void executeInitSQLs(final Connection connection) throws SQLException {
-        if (null == getAssertion().getInitialSQL().getSql()) {
+    private void executeInitSQLs(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException {
+        if (null == containerComposer.getAssertion().getInitialSQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
@@ -77,16 +80,16 @@ public abstract class BaseRALE2EIT extends SingleE2EIT {
         sleep(1000);
     }
     
-    private void executeDestroySQLs(final Connection connection) throws SQLException {
-        if (null == getAssertion().getDestroySQL().getSql()) {
+    private void executeDestroySQLs(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException {
+        if (null == containerComposer.getAssertion().getDestroySQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getDestroySQL().getSql())) {
+        for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
         }
-        sleep(1000);
+        sleep(1000L);
     }
     
     protected void sleep(final long timeout) {
@@ -96,22 +99,22 @@ public abstract class BaseRALE2EIT extends SingleE2EIT {
         }
     }
     
-    protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
-        assertMetaData(resultSet.getMetaData(), getExpectedColumns());
-        assertRows(resultSet, getNotAssertionColumns(), getDataSet().getRows());
+    protected final void assertResultSet(final SingleE2EITContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
+        assertMetaData(resultSet.getMetaData(), getExpectedColumns(containerComposer));
+        assertRows(resultSet, getNotAssertionColumns(containerComposer), containerComposer.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns() {
+    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EITContainerComposer containerComposer) {
         Collection<DataSetColumn> result = new LinkedList<>();
-        for (DataSetMetaData each : getDataSet().getMetaDataList()) {
+        for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
         }
         return result;
     }
     
-    private Collection<String> getNotAssertionColumns() {
+    private Collection<String> getNotAssertionColumns(final SingleE2EITContainerComposer containerComposer) {
         Collection<String> result = new LinkedList<>();
-        for (DataSetMetaData each : getDataSet().getMetaDataList()) {
+        for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns().stream().filter(column -> "false".equals(column.getAssertion())).map(DataSetColumn::getName).collect(Collectors.toList()));
         }
         return result;

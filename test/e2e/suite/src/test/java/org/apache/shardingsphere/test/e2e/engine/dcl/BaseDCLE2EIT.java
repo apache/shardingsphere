@@ -17,29 +17,36 @@
 
 package org.apache.shardingsphere.test.e2e.engine.dcl;
 
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
 
-public abstract class BaseDCLE2EIT extends SingleE2EIT {
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.sql.SQLException;
+
+public abstract class BaseDCLE2EIT {
     
     private AuthorityEnvironmentManager authorityEnvironmentManager;
     
-    public BaseDCLE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
-    }
-    
-    @Before
-    public final void init() throws Exception {
+    /**
+     * Init.
+     * 
+     * @param testParam test parameter
+     * @param containerComposer container composer
+     * @throws JAXBException JAXB exception
+     * @throws IOException IO exception
+     * @throws SQLException SQL exception
+     */
+    public final void init(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws JAXBException, IOException, SQLException {
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
-                new ScenarioCommonPath(getTestParam().getScenario()).getAuthorityFile(), getContainerComposer().getActualDataSourceMap(), getTestParam().getDatabaseType());
+                new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getContainerComposer().getActualDataSourceMap(), testParam.getDatabaseType());
         authorityEnvironmentManager.initialize();
     }
     
-    @After
+    @AfterEach
     public final void tearDown() throws Exception {
         authorityEnvironmentManager.clean();
     }
