@@ -99,8 +99,9 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             log.warn("shardingItem {} tasks runner exists, ignore", shardingItem);
             return false;
         }
-        PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
-        PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
+        String jobId = tasksRunner.getJobItemContext().getJobId();
+        PipelineJobProgressPersistService.addJobProgressPersistContext(jobId, shardingItem);
+        PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId)).persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(jobId), shardingItem);
         return true;
     }
     

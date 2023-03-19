@@ -83,6 +83,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -131,7 +132,7 @@ public final class MigrationJobAPITest {
         assertTrue(jobId.isPresent());
         assertFalse(getJobConfigurationPOJO(jobId.get()).isDisabled());
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
-        when(PipelineDistributedBarrier.getInstance()).thenReturn(mockBarrier);
+        when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
         jobAPI.stop(jobId.get());
         assertTrue(getJobConfigurationPOJO(jobId.get()).isDisabled());
         jobAPI.startDisabledJob(jobId.get());
@@ -145,7 +146,7 @@ public final class MigrationJobAPITest {
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
-        when(PipelineDistributedBarrier.getInstance()).thenReturn(mockBarrier);
+        when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
         jobAPI.rollback(jobId.get());
         assertNull(getJobConfigurationPOJO(jobId.get()));
     }
@@ -157,7 +158,7 @@ public final class MigrationJobAPITest {
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
-        when(PipelineDistributedBarrier.getInstance()).thenReturn(mockBarrier);
+        when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
         jobAPI.commit(jobId.get());
         assertNull(getJobConfigurationPOJO(jobId.get()));
     }

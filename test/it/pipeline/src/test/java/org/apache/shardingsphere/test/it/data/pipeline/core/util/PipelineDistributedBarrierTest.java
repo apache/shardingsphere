@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
@@ -44,7 +45,7 @@ public final class PipelineDistributedBarrierTest {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
+        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
         String parentPath = "/barrier";
         instance.register(parentPath, 1);
         Map<?, ?> countDownLatchMap = (Map<?, ?>) Plugins.getMemberAccessor().get(PipelineDistributedBarrier.class.getDeclaredField("countDownLatchHolders"), instance);
@@ -59,7 +60,7 @@ public final class PipelineDistributedBarrierTest {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
+        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         instance.register(barrierEnablePath, 1);
         instance.persistEphemeralChildrenNode(barrierEnablePath, 1);
