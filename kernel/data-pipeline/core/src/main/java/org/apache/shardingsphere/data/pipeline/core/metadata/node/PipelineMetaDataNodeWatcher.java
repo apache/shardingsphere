@@ -31,6 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -62,8 +63,10 @@ public final class PipelineMetaDataNodeWatcher {
     
     private void dispatchEvent0(final DataChangedEvent event) {
         for (Entry<Pattern, PipelineMetaDataChangedEventHandler> entry : listenerMap.entrySet()) {
-            if (entry.getKey().matcher(event.getKey()).matches()) {
-                entry.getValue().handle(event);
+            Matcher matcher = entry.getKey().matcher(event.getKey());
+            if (matcher.matches()) {
+                String jobId = matcher.group(1);
+                entry.getValue().handle(jobId, event);
                 return;
             }
         }
