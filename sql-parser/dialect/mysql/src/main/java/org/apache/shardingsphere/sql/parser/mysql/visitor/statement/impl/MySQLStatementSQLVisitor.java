@@ -908,10 +908,10 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
                 result.getParameters().add((LiteralExpressionSegment) expr);
             }
         }
-        if (ctx.dataType() != null) {
+        if (null != ctx.dataType()) {
             result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         }
-        if (ctx.DATETIME() != null) {
+        if (null != ctx.DATETIME()) {
             DataTypeSegment dataType = new DataTypeSegment();
             dataType.setDataTypeName(ctx.DATETIME().getText());
             dataType.setStartIndex(ctx.DATETIME().getSymbol().getStartIndex());
