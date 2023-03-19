@@ -479,6 +479,18 @@ chapter = true
             <b>Liyao Miao</b>
         </td>
     </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/gxxiong" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/31501876?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>Gaoxiang Xiong</b>
+        </td>
+    </tr>
 </table>
 
 ## Contributors
