@@ -40,7 +40,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropDatabaseStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,7 +83,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
         setGovernanceMetaDataContexts(false);
     }

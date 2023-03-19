@@ -51,7 +51,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+    public void assertExecuteQueryWithResultSetTypeAndConcurrency(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
@@ -69,8 +69,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final AssertionTestParameter testParam)
-            throws SQLException, ParseException, JAXBException, IOException {
+    public void assertExecuteQueryWithResultSetTypeAndConcurrencyAndHoldability(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
@@ -88,7 +87,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertExecuteWithResultSetTypeAndResultSetConcurrency(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+    public void assertExecuteWithResultSetTypeAndConcurrency(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
@@ -106,7 +105,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+    public void assertExecuteWithResultSetTypeAndConcurrencyAndHoldability(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643

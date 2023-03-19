@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.Builder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -43,7 +43,8 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
@@ -80,6 +81,6 @@ public final class DataRecordResultConvertUtilTest {
         String print = JsonFormat.printer().usingTypeRegistry(registry).print(expectedRecord);
         Builder actualRecord = Record.newBuilder();
         JsonFormat.parser().usingTypeRegistry(registry).merge(print, actualRecord);
-        assertEquals(actualRecord.build(), expectedRecord);
+        assertThat(actualRecord.build(), is(expectedRecord));
     }
 }
