@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.distsql.handler.update.AlterDefaultSha
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -51,7 +51,7 @@ public final class AlterDefaultShardingStrategyStatementUpdaterTest {
     
     private final AlterDefaultShardingStrategyStatementUpdater updater = new AlterDefaultShardingStrategyStatementUpdater();
     
-    @Before
+    @BeforeEach
     public void before() {
         when(database.getName()).thenReturn("test");
     }
