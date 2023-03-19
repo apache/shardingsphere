@@ -916,7 +916,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             dataType.setDataTypeName(ctx.DATETIME().getText());
             dataType.setStartIndex(ctx.DATETIME().getSymbol().getStartIndex());
             dataType.setStopIndex(ctx.DATETIME().getSymbol().getStopIndex());
-            if (ctx.typeDatetimePrecision() != null) {
+            if (null != ctx.typeDatetimePrecision()) {
                 dataType.setDataLength((DataTypeLengthSegment) visit(ctx.typeDatetimePrecision()));
             }
             result.getParameters().add(dataType);
