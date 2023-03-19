@@ -19,37 +19,44 @@ package org.apache.shardingsphere.test.e2e.engine.dcl;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
-import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Collection;
+import java.util.stream.Stream;
 
-@ParallelRunningStrategy(ParallelLevel.SCENARIO)
+@ExtendWith(E2EITExtension.class)
 public final class GeneralDCLE2EIT extends BaseDCLE2EIT {
     
-    public GeneralDCLE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+            init(testParam, containerComposer);
+            assertExecuteUpdate(containerComposer);
+        }
     }
     
-    @Parameters(name = "{0}")
-    public static Collection<AssertionTestParameter> getTestParameters() {
-        return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DCL);
-    }
-    
-    @Test
-    public void assertExecuteUpdate() throws SQLException, ParseException {
-        String sql = getSQL();
-        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == getSqlExecuteType()) {
+    private void assertExecuteUpdate(final SingleE2EITContainerComposer containerComposer) throws ParseException, SQLException {
+        String sql = containerComposer.getSQL();
+        try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+            if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.executeUpdate(sql);
                 }
@@ -61,11 +68,20 @@ public final class GeneralDCLE2EIT extends BaseDCLE2EIT {
         }
     }
     
-    @Test
-    public void assertExecute() throws SQLException, ParseException {
-        String sql = getSQL();
-        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == getSqlExecuteType()) {
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+            init(testParam, containerComposer);
+            assertExecute(containerComposer);
+        }
+    }
+    
+    private void assertExecute(final SingleE2EITContainerComposer containerComposer) throws ParseException, SQLException {
+        String sql = containerComposer.getSQL();
+        try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+            if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(sql);
                 }
@@ -74,6 +90,18 @@ public final class GeneralDCLE2EIT extends BaseDCLE2EIT {
                     preparedStatement.execute();
                 }
             }
+        }
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestParameterFactory.containsTestParameter();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DCL).stream().map(Arguments::of);
         }
     }
 }

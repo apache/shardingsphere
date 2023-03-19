@@ -18,55 +18,72 @@
 package org.apache.shardingsphere.test.e2e.engine.ral;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
-import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Collection;
+import java.util.stream.Stream;
 
-@ParallelRunningStrategy(ParallelLevel.SCENARIO)
+@ExtendWith(E2EITExtension.class)
 public final class GeneralRALE2EIT extends BaseRALE2EIT {
     
-    public GeneralRALE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
+        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+            init(containerComposer);
+            assertExecute(containerComposer);
+            tearDown(containerComposer);
+        }
     }
     
-    @Parameters(name = "{0}")
-    public static Collection<AssertionTestParameter> getTestParameters() {
-        return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RAL);
-    }
-    
-    @Test
-    public void assertExecute() throws SQLException, ParseException {
-        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
-            try (
-                    Statement statement = connection.createStatement()) {
-                assertResultSet(statement);
+    private void assertExecute(final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException {
+        try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                assertResultSet(containerComposer, statement);
             }
         }
     }
     
-    private void assertResultSet(final Statement statement) throws SQLException, ParseException {
-        if (null == getAssertion().getAssertionSQL()) {
-            assertResultSet(statement, getSQL());
+    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException, ParseException {
+        if (null == containerComposer.getAssertion().getAssertionSQL()) {
+            assertResultSet(containerComposer, statement, containerComposer.getSQL());
         } else {
-            statement.execute(getSQL());
+            statement.execute(containerComposer.getSQL());
             sleep(2000);
-            assertResultSet(statement, getAssertion().getAssertionSQL().getSql());
+            assertResultSet(containerComposer, statement, containerComposer.getAssertion().getAssertionSQL().getSql());
         }
     }
     
-    private void assertResultSet(final Statement statement, final String sql) throws SQLException {
+    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final Statement statement, final String sql) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(sql)) {
-            assertResultSet(resultSet);
+            assertResultSet(containerComposer, resultSet);
+        }
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestParameterFactory.containsTestParameter();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RAL).stream().map(Arguments::of);
         }
     }
 }

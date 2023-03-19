@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.engine;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
@@ -25,26 +24,19 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelParameterized;
-import org.apache.shardingsphere.test.e2e.framework.watcher.E2EWatcher;
-import org.junit.AfterClass;
-import org.junit.Rule;
-import org.junit.runner.RunWith;
 
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RunWith(ParallelParameterized.class)
-@Getter(AccessLevel.PROTECTED)
-public abstract class SingleE2EIT {
+/**
+ * Single E2E IT container composer.
+ */
+@Getter
+public final class SingleE2EITContainerComposer implements AutoCloseable {
     
-    @Rule
-    @Getter(AccessLevel.NONE)
-    public E2EWatcher watcher = new E2EWatcher();
-    
-    private final AssertionTestParameter testParam;
+    private final String sql;
     
     private final E2EContainerComposer containerComposer;
     
@@ -56,8 +48,8 @@ public abstract class SingleE2EIT {
     
     private final DataSet generatedKeyDataSet;
     
-    public SingleE2EIT(final AssertionTestParameter testParam) {
-        this.testParam = testParam;
+    public SingleE2EITContainerComposer(final AssertionTestParameter testParam) {
+        sql = testParam.getTestCaseContext().getTestCase().getSql();
         containerComposer = new E2EContainerComposer(testParam);
         sqlExecuteType = testParam.getSqlExecuteType();
         assertion = testParam.getAssertion();
@@ -70,8 +62,14 @@ public abstract class SingleE2EIT {
                         testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), assertion.getExpectedGeneratedKeyDataFile());
     }
     
-    protected final String getSQL() throws ParseException {
-        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(testParam.getTestCaseContext().getTestCase().getSql()) : testParam.getTestCaseContext().getTestCase().getSql();
+    /**
+     * Get SQL.
+     * 
+     * @return SQL
+     * @throws ParseException parse exception
+     */
+    public String getSQL() throws ParseException {
+        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(sql) : sql;
     }
     
     private String getLiteralSQL(final String sql) throws ParseException {
@@ -79,8 +77,8 @@ public abstract class SingleE2EIT {
         return params.isEmpty() ? sql : String.format(sql.replace("%", "ÿ").replace("?", "%s"), params.toArray()).replace("ÿ", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
     
-    @AfterClass
-    public static void closeContainers() {
+    @Override
+    public void close() {
         E2EContainerComposer.closeContainers();
     }
 }

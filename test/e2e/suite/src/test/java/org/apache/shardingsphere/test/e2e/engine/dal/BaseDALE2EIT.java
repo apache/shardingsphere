@@ -21,8 +21,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.E2EContainerComposer;
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
-import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -37,20 +36,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public abstract class BaseDALE2EIT extends SingleE2EIT {
+public abstract class BaseDALE2EIT {
     
-    public BaseDALE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
+    protected final void assertResultSet(final SingleE2EITContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
+        assertMetaData(resultSet.getMetaData(), getExpectedColumns(containerComposer));
+        assertRows(resultSet, containerComposer.getDataSet().getRows());
     }
     
-    protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
-        assertMetaData(resultSet.getMetaData(), getExpectedColumns());
-        assertRows(resultSet, getDataSet().getRows());
-    }
-    
-    private Collection<DataSetColumn> getExpectedColumns() {
+    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EITContainerComposer containerComposer) {
         Collection<DataSetColumn> result = new LinkedList<>();
-        for (DataSetMetaData each : getDataSet().getMetaDataList()) {
+        for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
         }
         return result;
