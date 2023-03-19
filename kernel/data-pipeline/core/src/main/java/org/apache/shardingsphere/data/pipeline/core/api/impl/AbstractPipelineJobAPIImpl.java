@@ -84,7 +84,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     public Optional<String> start(final PipelineJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
         ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobId));
-        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
+        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId));
         String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobId);
         if (repositoryAPI.isExisted(jobConfigKey)) {
             log.warn("jobId already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
@@ -143,8 +143,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     protected void dropJob(final String jobId) {
-        PipelineAPIFactory.getJobOperateAPI(PipelineJobIdUtils.parseContextKey(jobId)).remove(String.valueOf(jobId), null);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
+        PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
+        PipelineAPIFactory.getJobOperateAPI(contextKey).remove(String.valueOf(jobId), null);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).deleteJob(jobId);
     }
     
     protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) throws PipelineJobNotFoundException {
@@ -160,7 +161,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     @Override
     public String getJobItemErrorMessage(final String jobId, final int shardingItem) {
-        return Optional.ofNullable(PipelineAPIFactory.getGovernanceRepositoryAPI().getJobItemErrorMessage(jobId, shardingItem)).orElse("");
+        return Optional.ofNullable(PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemErrorMessage(jobId, shardingItem)).orElse("");
     }
     
     @Override
@@ -170,11 +171,11 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         if (null != error) {
             value = error instanceof Throwable ? ExceptionUtils.getStackTrace((Throwable) error) : error.toString();
         }
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persist(key, value);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persist(key, value);
     }
     
     @Override
     public void cleanJobItemErrorMessage(final String jobId, final int shardingItem) {
-        PipelineAPIFactory.getGovernanceRepositoryAPI().cleanJobItemErrorMessage(jobId, shardingItem);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).cleanJobItemErrorMessage(jobId, shardingItem);
     }
 }

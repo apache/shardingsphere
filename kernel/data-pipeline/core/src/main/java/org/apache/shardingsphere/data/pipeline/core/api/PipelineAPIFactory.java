@@ -24,7 +24,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.GovernanceRepositoryAPIImpl;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
@@ -35,6 +34,7 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
@@ -47,22 +47,24 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineAPIFactory {
     
-    private static final LazyInitializer<GovernanceRepositoryAPI> REPOSITORY_API_LAZY_INITIALIZER = new LazyInitializer<GovernanceRepositoryAPI>() {
-        
-        @Override
-        protected GovernanceRepositoryAPI initialize() {
-            return new GovernanceRepositoryAPIImpl((ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository());
-        }
-    };
+    private static final Map<PipelineContextKey, LazyInitializer<GovernanceRepositoryAPI>> GOVERNANCE_REPOSITORY_API_MAP = new ConcurrentHashMap<>();
     
     /**
      * Get governance repository API.
      *
+     * @param contextKey context key
      * @return governance repository API
      */
     @SneakyThrows(ConcurrentException.class)
-    public static GovernanceRepositoryAPI getGovernanceRepositoryAPI() {
-        return REPOSITORY_API_LAZY_INITIALIZER.get();
+    public static GovernanceRepositoryAPI getGovernanceRepositoryAPI(final PipelineContextKey contextKey) {
+        return GOVERNANCE_REPOSITORY_API_MAP.computeIfAbsent(contextKey, key -> new LazyInitializer<GovernanceRepositoryAPI>() {
+            
+            @Override
+            protected GovernanceRepositoryAPI initialize() {
+                ContextManager contextManager = PipelineContextManager.getContext(contextKey).getContextManager();
+                return new GovernanceRepositoryAPIImpl((ClusterPersistRepository) contextManager.getMetaDataContexts().getPersistService().getRepository());
+            }
+        }).get();
     }
     
     /**
