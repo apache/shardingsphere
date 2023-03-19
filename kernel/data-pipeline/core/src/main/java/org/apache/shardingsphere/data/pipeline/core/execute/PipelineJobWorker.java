@@ -20,6 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.execute;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNodeWatcher;
 
 /**
@@ -32,8 +34,10 @@ public final class PipelineJobWorker {
     
     /**
      * Initialize job worker.
+     *
+     * @param contextKey context key
      */
-    public static void initialize() {
+    public static void initialize(final PipelineContextKey contextKey) {
         if (WORKER_INITIALIZED.get()) {
             return;
         }
@@ -42,7 +46,7 @@ public final class PipelineJobWorker {
                 return;
             }
             log.info("start worker initialization");
-            PipelineMetaDataNodeWatcher.getInstance();
+            PipelineMetaDataNodeWatcher.getInstance(contextKey);
             WORKER_INITIALIZED.set(true);
             log.info("worker initialization done");
         }

@@ -42,8 +42,9 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
             log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
             return;
         }
-        PipelineContextManager.putContext(PipelineContextKey.build(instanceType, databaseName), new PipelineContext(modeConfig, contextManager));
-        PipelineJobWorker.initialize();
+        PipelineContextKey contextKey = PipelineContextKey.build(instanceType, databaseName);
+        PipelineContextManager.putContext(contextKey, new PipelineContext(modeConfig, contextManager));
+        PipelineJobWorker.initialize(contextKey);
     }
     
     @Override
