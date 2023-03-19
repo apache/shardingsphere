@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class DataNodeTest {
@@ -56,7 +55,7 @@ public final class DataNodeTest {
         assertThat(dataNode, is(new DataNode("ds_0.tbl_0")));
         assertThat(dataNode, is(dataNode));
         assertThat(dataNode, not(new DataNode("ds_0.tbl_1")));
-        assertNotEquals(null, dataNode);
+        assertThat(dataNode, not(null));
     }
     
     @Test
