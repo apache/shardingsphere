@@ -136,7 +136,7 @@ public final class SelectDatabaseExecutorTest {
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }
     
-    private static ContextManager mockContextManager(final ShardingSphereDatabase... databases) {
+    private ContextManager mockContextManager(final ShardingSphereDatabase... databases) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(Arrays.stream(databases).collect(Collectors.toMap(ShardingSphereDatabase::getName, each -> each, (key, value) -> value)),

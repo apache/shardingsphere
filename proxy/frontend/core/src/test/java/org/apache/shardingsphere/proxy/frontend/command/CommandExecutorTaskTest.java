@@ -102,6 +102,8 @@ public final class CommandExecutorTaskTest {
     public void setup() {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(handlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(
+                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
     }
     
     @Test
@@ -112,8 +114,6 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(
-                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
         actual.run();
         verify(queryCommandExecutor).close();
         verify(backendConnection).closeExecutionResources();
@@ -128,8 +128,6 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(
-                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
         actual.run();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
@@ -148,8 +146,6 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(
-                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
         actual.run();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
@@ -169,8 +165,6 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getErrorPacket(mockException)).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.of(databasePacket));
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(
-                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
         actual.run();
         verify(handlerContext, times(2)).write(databasePacket);
         verify(handlerContext).flush();
@@ -187,8 +181,6 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getErrorPacket(any(RuntimeException.class))).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.of(databasePacket));
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(
-                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
         actual.run();
         verify(handlerContext, times(2)).write(databasePacket);
         verify(handlerContext).flush();

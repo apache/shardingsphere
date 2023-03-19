@@ -65,7 +65,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdaterTest 
                 () -> updater.executeUpdate("foo_db", new AlterReadwriteSplittingStorageUnitStatusStatement(new DatabaseSegment(1, 1, new IdentifierValue("foo_db")), "group", "read_ds", "ENABLE")));
     }
     
-    private static ContextManager mockContextManager() {
+    private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getInstanceContext().isCluster()).thenReturn(true);
         return result;

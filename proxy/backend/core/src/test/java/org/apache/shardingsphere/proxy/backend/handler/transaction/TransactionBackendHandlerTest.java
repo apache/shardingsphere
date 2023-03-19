@@ -56,7 +56,7 @@ public final class TransactionBackendHandlerTest {
         assertThat(new TransactionBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
-    private static ContextManager mockContextManager() {
+    private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mock(TransactionRule.class))));
         return result;
