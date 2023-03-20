@@ -28,7 +28,6 @@ import org.testcontainers.lifecycle.Startable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.concurrent.TimeUnit;
 
 /**
  * IT containers.
@@ -101,7 +100,7 @@ public final class ITContainers implements Startable {
                 .forEach(each -> {
                     while (!(each.isRunning() && each.isHealthy())) {
                         try {
-                            TimeUnit.MILLISECONDS.sleep(500L);
+                            Thread.sleep(500L);
                         } catch (final InterruptedException ignored) {
                         }
                     }

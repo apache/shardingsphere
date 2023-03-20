@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -92,7 +91,7 @@ public abstract class BaseRDLE2EIT {
     
     protected void sleep() {
         try {
-            TimeUnit.SECONDS.sleep(2L);
+            Thread.sleep(2000L);
         } catch (final InterruptedException ignored) {
         }
     }

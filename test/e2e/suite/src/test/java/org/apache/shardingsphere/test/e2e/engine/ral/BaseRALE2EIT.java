@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -92,9 +91,9 @@ public abstract class BaseRALE2EIT {
         sleep(1000L);
     }
     
-    protected void sleep(final long timeout) {
+    protected void sleep(final long timeoutMillis) {
         try {
-            TimeUnit.MILLISECONDS.sleep(timeout);
+            Thread.sleep(timeoutMillis);
         } catch (final InterruptedException ignored) {
         }
     }

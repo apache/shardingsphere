@@ -1,7 +1,7 @@
 +++
 title = "A Distributed Database Load Balancing Architecture Based on ShardingSphere: Demo and User Case"
 weight = 87
-chapter = true 
+chapter = true
 +++
 
 This post introduces how to build a distributed database load-balancing architecture based on ShardingSphere, and the impact of introducing load balancing with a user case.

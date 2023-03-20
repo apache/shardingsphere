@@ -35,7 +35,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataRecordUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtil;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
@@ -211,6 +210,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
         
         private final int batchSize;
         
+        @SneakyThrows(InterruptedException.class)
         @Override
         public void run() {
             while (incrementalTaskRunning) {
@@ -224,7 +224,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
                     dataRecords.add(minimumDataRecord);
                 }
                 if (dataRecords.isEmpty()) {
-                    ThreadUtil.sleep(200, TimeUnit.MILLISECONDS);
+                    Thread.sleep(200L);
                 } else {
                     writeImmediately(dataRecords, cdcAckPositionMap);
                 }
