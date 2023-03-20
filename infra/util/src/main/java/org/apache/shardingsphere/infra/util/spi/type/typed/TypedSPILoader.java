@@ -137,6 +137,9 @@ public final class TypedSPILoader {
      * @return check result
      */
     public static <T extends TypedSPI> boolean checkService(final Class<T> spiClass, final String type, final Properties props) {
+        if (null == type) {
+            return findService(spiClass).isPresent();
+        }
         Collection<T> serviceInstances = ShardingSphereServiceLoader.getServiceInstances(spiClass);
         for (T each : serviceInstances) {
             if (matchesType(type, each)) {
