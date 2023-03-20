@@ -32,14 +32,4 @@ public final class PipelineContext {
     private final ModeConfiguration modeConfig;
     
     private final ContextManager contextManager;
-    
-    /**
-     * Get context manager.
-     *
-     * @return context manager
-     */
-    public ContextManager getContextManager() {
-        // TODO now getContextManager
-        return contextManager;
-    }
 }
