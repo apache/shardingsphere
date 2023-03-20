@@ -60,7 +60,9 @@ public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpda
     private void checkAlgorithmNames(final AlterTrafficRuleStatement sqlStatement) {
         sqlStatement.getSegments().forEach(each -> {
             TypedSPILoader.checkService(TrafficAlgorithm.class, each.getAlgorithm().getName(), each.getAlgorithm().getProps());
-            TypedSPILoader.checkService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName(), each.getLoadBalancer().getProps());
+            if (null != each.getLoadBalancer()) {
+                TypedSPILoader.checkService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName(), each.getLoadBalancer().getProps());
+            }
         });
     }
     
