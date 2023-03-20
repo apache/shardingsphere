@@ -485,10 +485,18 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/31501876?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/Qianyi951015" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/57847965?s=64&v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
             <b>熊高祥</b>
+        </td>
+        <td>
+            <b>汪子超</b>
         </td>
     </tr>
 </table>
