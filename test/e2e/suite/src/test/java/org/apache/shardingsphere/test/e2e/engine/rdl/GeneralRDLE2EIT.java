@@ -75,7 +75,7 @@ public final class GeneralRDLE2EIT extends BaseRDLE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter();
+        return E2ETestParameterFactory.containsTestParameter() && !E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RDL).isEmpty();
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {

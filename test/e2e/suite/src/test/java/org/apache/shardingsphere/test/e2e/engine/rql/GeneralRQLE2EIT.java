@@ -60,7 +60,7 @@ public final class GeneralRQLE2EIT extends BaseRQLE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter();
+        return E2ETestParameterFactory.containsTestParameter() && !E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RQL).isEmpty();
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
