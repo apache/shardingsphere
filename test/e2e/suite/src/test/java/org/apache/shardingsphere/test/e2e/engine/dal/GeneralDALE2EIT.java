@@ -45,6 +45,7 @@ public final class GeneralDALE2EIT extends BaseDALE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
+        // TODO make sure DCL test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
         }
