@@ -64,7 +64,6 @@ public final class SingleE2EITContainerComposer implements AutoCloseable {
     
     /**
      * Get SQL.
-     * 
      * @return SQL
      * @throws ParseException parse exception
      */
