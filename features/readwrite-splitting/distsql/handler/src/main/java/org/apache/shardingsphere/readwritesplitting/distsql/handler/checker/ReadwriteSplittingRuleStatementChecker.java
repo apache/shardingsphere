@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.checker;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
@@ -41,7 +40,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -219,8 +217,6 @@ public final class ReadwriteSplittingRuleStatementChecker {
     }
     
     private static void checkLoadBalancers(final Collection<ReadwriteSplittingRuleSegment> segments) {
-        Collection<String> notExistedLoadBalancers = segments.stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).filter(Objects::nonNull).distinct()
-                .filter(each -> !TypedSPILoader.contains(ReadQueryLoadBalanceAlgorithm.class, each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(notExistedLoadBalancers.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers));
+        segments.forEach(each -> TypedSPILoader.checkService(ReadQueryLoadBalanceAlgorithm.class, each.getLoadBalancer(), each.getProps()));
     }
 }

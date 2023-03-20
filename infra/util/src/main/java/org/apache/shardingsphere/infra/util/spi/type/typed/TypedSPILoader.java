@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -45,7 +46,7 @@ public final class TypedSPILoader {
     
     /**
      * Find service.
-     *
+     * 
      * @param spiClass typed SPI class
      * @param type type
      * @param <T> SPI class type
@@ -57,7 +58,7 @@ public final class TypedSPILoader {
     
     /**
      * Find service.
-     *
+     * 
      * @param spiClass typed SPI class
      * @param type type
      * @param props properties
@@ -103,7 +104,7 @@ public final class TypedSPILoader {
     
     /**
      * Get service.
-     *
+     * 
      * @param spiClass typed SPI class
      * @param type type
      * @param <T> SPI class type
@@ -124,5 +125,25 @@ public final class TypedSPILoader {
      */
     public static <T extends TypedSPI> T getService(final Class<T> spiClass, final String type, final Properties props) {
         return findService(spiClass, type, props).orElseGet(() -> findService(spiClass).orElseThrow(() -> new ServiceProviderNotFoundServerException(spiClass)));
+    }
+    
+    /**
+     * Check service.
+     * 
+     * @param spiClass typed SPI class
+     * @param type type
+     * @param props properties
+     * @param <T> SPI class type
+     * @return check result
+     */
+    public static <T extends TypedSPI> boolean checkService(final Class<T> spiClass, final String type, final Properties props) {
+        Collection<T> serviceInstances = ShardingSphereServiceLoader.getServiceInstances(spiClass);
+        for (T each : serviceInstances) {
+            if (matchesType(type, each)) {
+                each.init(null == props ? new Properties() : convertToStringTypedProperties(props));
+                return true;
+            }
+        }
+        throw new ServiceProviderNotFoundServerException(spiClass, type);
     }
 }

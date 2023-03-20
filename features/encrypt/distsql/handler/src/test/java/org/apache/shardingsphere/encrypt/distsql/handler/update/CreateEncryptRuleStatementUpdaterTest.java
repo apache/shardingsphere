@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -26,7 +25,11 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -59,7 +62,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     @Test
     public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
+        assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
     @Test
@@ -76,12 +79,21 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     @Test
     public void assertCreateEncryptRuleWithIfNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
-        CreateEncryptRuleStatement sqlStatement = createSQLStatement(true, "AES");
+        CreateEncryptRuleStatement sqlStatement = createAESEncryptRuleSQLStatement(true);
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         EncryptRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, sqlStatement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
         assertThat(currentRuleConfig.getTables().size(), is(2));
         assertTrue(currentRuleConfig.getEncryptors().isEmpty());
+    }
+    
+    private CreateEncryptRuleStatement createAESEncryptRuleSQLStatement(final boolean ifNotExists) {
+        EncryptColumnSegment tEncryptColumnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
+                new AlgorithmSegment("AES", PropertiesBuilder.build(new Property("aes-key-value", "abc"))), null, null, null);
+        EncryptRuleSegment tEncryptRuleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(tEncryptColumnSegment), null);
+        Collection<EncryptRuleSegment> rules = new LinkedList<>();
+        rules.add(tEncryptRuleSegment);
+        return new CreateEncryptRuleStatement(ifNotExists, rules);
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final boolean ifNotExists, final String encryptorName) {
@@ -106,5 +118,29 @@ public final class CreateEncryptRuleStatementUpdaterTest {
         rules.add(new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList(), null));
         rules.add(new EncryptTableRuleConfiguration("t_order", Collections.emptyList(), null));
         return new EncryptRuleConfiguration(rules, new HashMap<>());
+    }
+    
+    @Test
+    public void assertCreateAESEncryptRuleWithPropertiesNotExists() {
+        EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
+        CreateEncryptRuleStatement sqlStatement = createWrongAESEncryptorSQLStatement();
+        assertThrows(EncryptAlgorithmInitializationException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentRuleConfig));
+    }
+    
+    private CreateEncryptRuleStatement createWrongAESEncryptorSQLStatement() {
+        EncryptColumnSegment tEncryptColumnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
+                new AlgorithmSegment("AES", new Properties()),
+                new AlgorithmSegment("AES", new Properties()),
+                new AlgorithmSegment("AES", new Properties()), null);
+        EncryptColumnSegment tOrderColumnSegment = new EncryptColumnSegment("order_id", "order_cipher", "order_plain", "assisted_column", "like_column",
+                new AlgorithmSegment("AES", new Properties()),
+                new AlgorithmSegment("AES", new Properties()),
+                new AlgorithmSegment("AES", new Properties()), null);
+        EncryptRuleSegment tEncryptRuleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(tEncryptColumnSegment), null);
+        EncryptRuleSegment tOrderRuleSegment = new EncryptRuleSegment("t_order", Collections.singleton(tOrderColumnSegment), null);
+        Collection<EncryptRuleSegment> rules = new LinkedList<>();
+        rules.add(tEncryptRuleSegment);
+        rules.add(tOrderRuleSegment);
+        return new CreateEncryptRuleStatement(true, rules);
     }
 }

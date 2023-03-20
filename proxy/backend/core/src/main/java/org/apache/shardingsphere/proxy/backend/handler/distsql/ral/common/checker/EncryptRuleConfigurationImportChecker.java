@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -63,9 +61,7 @@ public final class EncryptRuleConfigurationImportChecker {
     }
     
     private void checkEncryptors(final EncryptRuleConfiguration currentRuleConfig) {
-        Collection<String> notExistedAlgorithms = currentRuleConfig.getEncryptors().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPILoader.contains(EncryptAlgorithm.class, each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Encryptors", notExistedAlgorithms));
+        currentRuleConfig.getEncryptors().values().forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getType(), each.getProps()));
     }
     
     private void checkTableEncryptorsExisted(final EncryptRuleConfiguration configuration, final String databaseName) {
