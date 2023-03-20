@@ -48,6 +48,8 @@ public abstract class BaseDCLE2EIT {
     
     @AfterEach
     public final void tearDown() throws Exception {
-        authorityEnvironmentManager.clean();
+        if (null != authorityEnvironmentManager) {
+            authorityEnvironmentManager.clean();
+        }
     }
 }
