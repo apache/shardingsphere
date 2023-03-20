@@ -22,115 +22,80 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import java.util.Optional;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class CommonHeterogeneousSQLStatementCheckerTest {
     
     @Test
     public void assertIsSinglePoint() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey = '1'");
-        CommonHeterogeneousSQLStatementChecker<SQLStatement> commonHeterogeneousSQLStatementChecker = new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
-        commonHeterogeneousSQLStatementChecker.checkIsSinglePointQuery(sqlStatement.getWhere());
+        new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere());
     }
     
     @Test
     public void assertIsSinglePointWithErrorKey() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where a = '1'");
-        CommonHeterogeneousSQLStatementChecker<SQLStatement> commonHeterogeneousSQLStatementChecker = new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
-        try {
-            commonHeterogeneousSQLStatementChecker.checkIsSinglePointQuery(sqlStatement.getWhere());
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "a is not a allowed key");
-        }
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere()));
+        assertThat(ex.getMessage(), is("a is not a allowed key"));
     }
     
     @Test
     public void assertIsSinglePointWithErrorOperation() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey between '1' and '2' ");
-        CommonHeterogeneousSQLStatementChecker<SQLStatement> commonHeterogeneousSQLStatementChecker = new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
-        try {
-            commonHeterogeneousSQLStatementChecker.checkIsSinglePointQuery(sqlStatement.getWhere());
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "Only Support BinaryOperationExpression");
-        }
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere()));
+        assertThat(ex.getMessage(), is("Only Support BinaryOperationExpression"));
     }
     
     @Test
     public void assertInExpression() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey in ('1', '2') ");
-        CommonHeterogeneousSQLStatementChecker<SQLStatement> commonHeterogeneousSQLStatementChecker = new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
-        if (whereSegment.isPresent()) {
-            commonHeterogeneousSQLStatementChecker.checkInExpressionIsExpected(whereSegment.get().getExpr());
-        } else {
-            fail();
-        }
+        assertTrue(whereSegment.isPresent());
+        new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkInExpressionIsExpected(whereSegment.get().getExpr());
     }
     
     @Test
     public void assertInExpressionWithNotIn() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey not in ('1', '2') ");
-        CommonHeterogeneousSQLStatementChecker<SQLStatement> commonHeterogeneousSQLStatementChecker = new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
-        if (whereSegment.isPresent()) {
-            try {
-                commonHeterogeneousSQLStatementChecker.checkInExpressionIsExpected(whereSegment.get().getExpr());
-                fail();
-            } catch (IllegalArgumentException e) {
-                assertEquals(e.getMessage(), "Do not supported `not in`");
-            }
-        } else {
-            fail();
-        }
+        assertTrue(whereSegment.isPresent());
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkInExpressionIsExpected(whereSegment.get().getExpr()));
+        assertThat(ex.getMessage(), is("Do not supported `not in`"));
     }
     
     @Test
     public void assertInExpressionWithErrorKey() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where a in ('1', '2') ");
-        CommonHeterogeneousSQLStatementChecker<SQLStatement> commonHeterogeneousSQLStatementChecker = new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
-        if (whereSegment.isPresent()) {
-            try {
-                commonHeterogeneousSQLStatementChecker.checkInExpressionIsExpected(whereSegment.get().getExpr());
-                fail();
-            } catch (IllegalArgumentException e) {
-                assertEquals(e.getMessage(), "a is not a allowed key");
-            }
-        } else {
-            fail();
-        }
+        assertTrue(whereSegment.isPresent());
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkInExpressionIsExpected(whereSegment.get().getExpr()));
+        assertThat(ex.getMessage(), is("a is not a allowed key"));
     }
     
     @Test
     public void assertIsAllowExpressionSegment() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey BETWEEN 'v1' AND 'v2' ");
-        CommonHeterogeneousSQLStatementChecker<SQLStatement> commonHeterogeneousSQLStatementChecker = new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
-        if (whereSegment.isPresent()) {
-            BetweenExpression betweenExpression = (BetweenExpression) whereSegment.get().getExpr();
-            assertTrue(commonHeterogeneousSQLStatementChecker.isAllowExpressionSegment(betweenExpression.getBetweenExpr()));
-            assertTrue(commonHeterogeneousSQLStatementChecker.isAllowExpressionSegment(betweenExpression.getAndExpr()));
-        } else {
-            fail();
-        }
+        assertTrue(whereSegment.isPresent());
+        BetweenExpression betweenExpression = (BetweenExpression) whereSegment.get().getExpr();
+        CommonHeterogeneousSQLStatementChecker<SQLStatement> commonHeterogeneousSQLStatementChecker = new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
+        assertTrue(commonHeterogeneousSQLStatementChecker.isAllowExpressionSegment(betweenExpression.getBetweenExpr()));
+        assertTrue(commonHeterogeneousSQLStatementChecker.isAllowExpressionSegment(betweenExpression.getAndExpr()));
     }
     
     @Test
     public void assertIsAllowExpressionSegmentError() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey = '1'");
-        CommonHeterogeneousSQLStatementChecker<SQLStatement> commonHeterogeneousSQLStatementChecker = new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
-        if (whereSegment.isPresent()) {
-            assertFalse(commonHeterogeneousSQLStatementChecker.isAllowExpressionSegment(whereSegment.get().getExpr()));
-        } else {
-            fail();
-        }
+        assertTrue(whereSegment.isPresent());
+        assertFalse(new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).isAllowExpressionSegment(whereSegment.get().getExpr()));
     }
 }
