@@ -15,133 +15,197 @@
 # limitations under the License.
 #
 
-name: PARAMETERS
+name: EVENTS
 columns:
-  specific_catalog:
+  event_catalog:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: SPECIFIC_CATALOG
+    name: EVENT_CATALOG
     primaryKey: false
     unsigned: false
     visible: true
-  specific_schema:
+  event_schema:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: SPECIFIC_SCHEMA
+    name: EVENT_SCHEMA
     primaryKey: false
     unsigned: false
     visible: true
-  specific_name:
+  event_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: SPECIFIC_NAME
+    name: EVENT_NAME
     primaryKey: false
     unsigned: false
     visible: true
-  ordinal_position:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: ORDINAL_POSITION
-    primaryKey: false
-    unsigned: false
-    visible: true
-  parameter_mode:
+  definer:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: PARAMETER_MODE
+    name: DEFINER
     primaryKey: false
     unsigned: false
     visible: true
-  parameter_name:
+  time_zone:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: PARAMETER_NAME
+    name: TIME_ZONE
     primaryKey: false
     unsigned: false
     visible: true
-  data_type:
+  event_body:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: DATA_TYPE
+    name: EVENT_BODY
     primaryKey: false
     unsigned: false
     visible: true
-  character_maximum_length:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: CHARACTER_MAXIMUM_LENGTH
-    primaryKey: false
-    unsigned: false
-    visible: true
-  character_octet_length:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: CHARACTER_OCTET_LENGTH
-    primaryKey: false
-    unsigned: false
-    visible: true
-  numeric_precision:
-    caseSensitive: false
-    dataType: -5
-    generated: false
-    name: NUMERIC_PRECISION
-    primaryKey: false
-    unsigned: true
-    visible: true
-  numeric_scale:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: NUMERIC_SCALE
-    primaryKey: false
-    unsigned: false
-    visible: true
-  datetime_precision:
-    caseSensitive: false
-    dataType: -5
-    generated: false
-    name: DATETIME_PRECISION
-    primaryKey: false
-    unsigned: true
-    visible: true
-  character_set_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: CHARACTER_SET_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  collation_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: COLLATION_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  dtd_identifier:
+  event_definition:
     caseSensitive: false
     dataType: -1
     generated: false
-    name: DTD_IDENTIFIER
+    name: EVENT_DEFINITION
     primaryKey: false
     unsigned: false
     visible: true
-  routine_type:
+  event_type:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: ROUTINE_TYPE
+    name: EVENT_TYPE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  execute_at:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: EXECUTE_AT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  interval_value:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: INTERVAL_VALUE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  interval_field:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: INTERVAL_FIELD
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sql_mode:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SQL_MODE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  starts:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: STARTS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ends:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: ENDS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  status:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: STATUS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  on_completion:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ON_COMPLETION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  created:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: CREATED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_altered:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_ALTERED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_executed:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_EXECUTED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_comment:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_COMMENT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  originator:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: ORIGINATOR
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_set_client:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CHARACTER_SET_CLIENT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collation_connection:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COLLATION_CONNECTION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  database_collation:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DATABASE_COLLATION
     primaryKey: false
     unsigned: false
     visible: true

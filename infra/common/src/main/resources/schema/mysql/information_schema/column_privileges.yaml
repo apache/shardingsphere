@@ -15,45 +15,61 @@
 # limitations under the License.
 #
 
-name: SCHEMATA
+name: COLUMN_PRIVILEGES
 columns:
-  catalog_name:
+  grantee:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: CATALOG_NAME
+    name: GRANTEE
     primaryKey: false
     unsigned: false
     visible: true
-  schema_name:
+  table_catalog:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: SCHEMA_NAME
+    name: TABLE_CATALOG
     primaryKey: false
     unsigned: false
     visible: true
-  default_character_set_name:
+  table_schema:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: DEFAULT_CHARACTER_SET_NAME
+    name: TABLE_SCHEMA
     primaryKey: false
     unsigned: false
     visible: true
-  default_collation_name:
+  table_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: DEFAULT_COLLATION_NAME
+    name: TABLE_NAME
     primaryKey: false
     unsigned: false
     visible: true
-  sql_path:
+  column_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: SQL_PATH
+    name: COLUMN_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  privilege_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PRIVILEGE_TYPE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_grantable:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IS_GRANTABLE
     primaryKey: false
     unsigned: false
     visible: true
