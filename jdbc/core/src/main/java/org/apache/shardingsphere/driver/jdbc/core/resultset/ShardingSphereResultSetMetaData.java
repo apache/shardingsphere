@@ -28,7 +28,9 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -50,6 +52,9 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     @Override
     public int getColumnCount() throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext) {
+            if (isAllSingleTable()) {
+                return resultSetMetaData.getColumnCount();
+            }
             if (hasSelectExpandProjections()) {
                 return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size();
             }
@@ -95,6 +100,9 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
+        if (isAllSingleTable()) {
+            return resultSetMetaData.getColumnLabel(column);
+        }
         if (hasSelectExpandProjections()) {
             checkColumnIndex(column);
             Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
@@ -107,6 +115,9 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnName(final int column) throws SQLException {
+        if (isAllSingleTable()) {
+            return resultSetMetaData.getColumnName(column);
+        }
         if (hasSelectExpandProjections()) {
             checkColumnIndex(column);
             Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
@@ -122,6 +133,20 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private boolean hasSelectExpandProjections() {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
+    }
+    
+    private boolean isAllSingleTable() {
+        return sqlStatementContext.getTablesContext().getTableNames().stream().allMatch(each -> !containsInImmutableDataNodeContainedRule(each)
+                && !containsInColumnContainedRule(each));
+    }
+    
+    private boolean containsInImmutableDataNodeContainedRule(final String tableName) {
+        return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
+                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
+    }
+    
+    private boolean containsInColumnContainedRule(final String tableName) {
+        return database.getRuleMetaData().findRules(ColumnContainedRule.class).stream().anyMatch(each -> each.getTables().contains(tableName));
     }
     
     private void checkColumnIndex(final int column) throws SQLException {
