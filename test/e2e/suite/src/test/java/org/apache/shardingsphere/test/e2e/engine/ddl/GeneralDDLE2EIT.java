@@ -48,7 +48,7 @@ public final class GeneralDDLE2EIT extends BaseDDLE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException {
-        // TODO make sure DCL test case can not be null
+        // TODO make sure DDL test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
         }
@@ -84,6 +84,10 @@ public final class GeneralDDLE2EIT extends BaseDDLE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertExecute(final AssertionTestParameter testParam) throws Exception {
+        // TODO make sure DDL test case can not be null
+        if (null == testParam.getTestCaseContext()) {
+            return;
+        }
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(containerComposer);
             try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
