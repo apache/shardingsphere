@@ -51,7 +51,7 @@ public final class MySQLMGRDiscoveryE2EIT {
     private static boolean isEnabled() {
         // TODO jinchao Fix it
         return false;
-//        return !DiscoveryE2ETestEnvironment.getInstance().listStorageContainerImages(DATABASE_TYPE).isEmpty();
+        // return !DiscoveryE2ETestEnvironment.getInstance().listStorageContainerImages(DATABASE_TYPE).isEmpty();
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
