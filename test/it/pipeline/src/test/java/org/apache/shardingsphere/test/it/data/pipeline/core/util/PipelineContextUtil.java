@@ -60,6 +60,8 @@ import java.util.Map;
 
 public final class PipelineContextUtil {
     
+    private static final PipelineContextKey CONTEXT_KEY = PipelineContextKey.buildForProxy();
+    
     private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance(PipelineContextUtil.class.getSimpleName());
     
     private static final PipelineChannelCreator PIPELINE_CHANNEL_CREATOR = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY");
@@ -70,7 +72,7 @@ public final class PipelineContextUtil {
     @SneakyThrows
     public static void mockModeConfigAndContextManager() {
         EmbedTestingServer.start();
-        PipelineContextKey contextKey = PipelineContextKey.buildForProxy();
+        PipelineContextKey contextKey = getContextKey();
         if (null != PipelineContextManager.getContext(contextKey)) {
             return;
         }
@@ -112,6 +114,15 @@ public final class PipelineContextUtil {
      */
     public static PipelineColumnMetaData mockOrderIdColumnMetaData() {
         return new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "int", false, true, true);
+    }
+    
+    /**
+     * Get context key.
+     *
+     * @return context key
+     */
+    public static PipelineContextKey getContextKey() {
+        return CONTEXT_KEY;
     }
     
     /**

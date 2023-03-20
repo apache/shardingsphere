@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.it.data.pipeline.scenario.consistencychec
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
@@ -49,7 +48,7 @@ public final class ConsistencyCheckJobTest {
     public void assertBuildPipelineJobItemContext() throws ReflectiveOperationException {
         String checkJobId = "j0201001";
         Map<String, Object> expectTableCheckPosition = Collections.singletonMap("t_order", 100);
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextKey.buildForProxy()).persistJobItemProgress(checkJobId, 0,
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtil.getContextKey()).persistJobItemProgress(checkJobId, 0,
                 YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectTableCheckPosition)));
         ConsistencyCheckJob consistencyCheckJob = new ConsistencyCheckJob();
         Plugins.getMemberAccessor().invoke(AbstractPipelineJob.class.getDeclaredMethod("setJobId", String.class), consistencyCheckJob, checkJobId);

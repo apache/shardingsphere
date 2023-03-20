@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipel
 import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineProcessConfigurationPersistService;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -59,7 +58,7 @@ public final class PipelineProcessConfigurationPersistServiceTest {
         PipelineProcessConfiguration processConfig = new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);
         PipelineProcessConfigurationPersistService persistService = new PipelineProcessConfigurationPersistService();
         JobType jobType = new MigrationJobType();
-        persistService.persist(PipelineContextKey.buildForProxy(), jobType, processConfig);
+        persistService.persist(PipelineContextUtil.getContextKey(), jobType, processConfig);
         String actualYamlText = YamlEngine.marshal(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(persistService.load(jobType)));
         assertThat(actualYamlText, is(expectedYamlText));
     }

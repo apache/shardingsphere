@@ -32,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobI
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
@@ -106,12 +105,12 @@ public final class MigrationJobAPITest {
         props.put("jdbcUrl", jdbcUrl);
         props.put("username", "root");
         props.put("password", "root");
-        jobAPI.addMigrationSourceResources(PipelineContextKey.buildForProxy(), Collections.singletonMap("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props)));
+        jobAPI.addMigrationSourceResources(PipelineContextUtil.getContextKey(), Collections.singletonMap("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props)));
     }
     
     @AfterAll
     public static void afterClass() {
-        jobAPI.dropMigrationSourceResources(PipelineContextKey.buildForProxy(), Collections.singletonList("ds_0"));
+        jobAPI.dropMigrationSourceResources(PipelineContextUtil.getContextKey(), Collections.singletonList("ds_0"));
     }
     
     @Test
@@ -336,7 +335,7 @@ public final class MigrationJobAPITest {
         String jobId = optional.get();
         YamlInventoryIncrementalJobItemProgress yamlJobItemProgress = new YamlInventoryIncrementalJobItemProgress();
         yamlJobItemProgress.setStatus(JobStatus.RUNNING.name());
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextKey.buildForProxy()).persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtil.getContextKey()).persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
         List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId);
         assertThat(jobItemInfos.size(), is(1));
         InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
@@ -353,7 +352,7 @@ public final class MigrationJobAPITest {
         yamlJobItemProgress.setProcessedRecordsCount(100);
         yamlJobItemProgress.setInventoryRecordsCount(50);
         String jobId = optional.get();
-        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextKey.buildForProxy()).persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtil.getContextKey()).persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
         List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId);
         InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
         assertThat(jobItemInfo.getJobItemProgress().getStatus(), is(JobStatus.EXECUTE_INCREMENTAL_TASK));
