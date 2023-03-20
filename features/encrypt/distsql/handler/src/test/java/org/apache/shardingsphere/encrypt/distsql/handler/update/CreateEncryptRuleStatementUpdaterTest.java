@@ -90,10 +90,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     private CreateEncryptRuleStatement createAESEncryptRuleSQLStatement(final boolean ifNotExists) {
         EncryptColumnSegment tEncryptColumnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 new AlgorithmSegment("AES", PropertiesBuilder.build(new Property("aes-key-value", "abc"))), null, null, null);
-        EncryptRuleSegment tEncryptRuleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(tEncryptColumnSegment), null);
-        Collection<EncryptRuleSegment> rules = new LinkedList<>();
-        rules.add(tEncryptRuleSegment);
-        return new CreateEncryptRuleStatement(ifNotExists, rules);
+        return new CreateEncryptRuleStatement(ifNotExists, Collections.singleton(new EncryptRuleSegment("t_encrypt", Collections.singleton(tEncryptColumnSegment), null)));
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final boolean ifNotExists, final String encryptorName) {
