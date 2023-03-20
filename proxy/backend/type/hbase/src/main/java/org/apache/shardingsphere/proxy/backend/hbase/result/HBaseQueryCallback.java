@@ -35,5 +35,4 @@ public interface HBaseQueryCallback<T> {
      * @throws IOException IO exception
      */
     T executeInHBase(Table table) throws IOException;
-    
 }

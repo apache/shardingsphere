@@ -109,7 +109,7 @@ XA transactions ensure the ACID features (Atomicity, Consistency, Isolation, Dur
 ![Figure 7 BASE Transactions](https://miro.medium.com/max/704/0*qglHQJqz-I1CGcPB)
 
 
-SharingSphere integrates SEATA, as it provides an automatic transaction mode(AT) to automatically generate compensation operations. As shown in the grey box of Figure 7, SEATA has three roles: 1) The Transaction Coordinator(TC) maintains the state of global and branch transactions and drives global commits or rollbacks; 2)The Transaction Manager(TM) defines the scope of global transactions; 3)Resource Manager(RM) manages resources and drive branch transactions to commit or rollback.
+ShardingSphere integrates SEATA, as it provides an automatic transaction mode(AT) to automatically generate compensation operations. As shown in the grey box of Figure 7, SEATA has three roles: 1) The Transaction Coordinator(TC) maintains the state of global and branch transactions and drives global commits or rollbacks; 2)The Transaction Manager(TM) defines the scope of global transactions; 3)Resource Manager(RM) manages resources and drive branch transactions to commit or rollback.
 
 The user application only needs to interact with ShardingSphere with a standard database connection. The BASE transaction in ShardingSphere is a 2PC process where ShardingSphere plays the role of TM and RM in SEATA. the BASE transaction process is shown in Figure 8.
 ![Figure 8 BASE Transaction Process](https://miro.medium.com/max/1400/0*jx0kLeEidPT5mwqx)

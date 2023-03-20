@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
+import org.apache.shardingsphere.test.e2e.data.pipeline.util.SQLBuilderUtil;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -87,35 +88,20 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
     private void insertOrder(final Object[] orderInsertData) {
         String sql;
         if (databaseType instanceof MySQLDatabaseType) {
-            sql = buildInsertSQL(MYSQL_COLUMN_NAMES);
+            sql = SQLBuilderUtil.buildInsertSQL(MYSQL_COLUMN_NAMES, orderTableName);
         } else if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            sql = buildInsertSQL(POSTGRESQL_COLUMN_NAMES);
+            sql = SQLBuilderUtil.buildInsertSQL(POSTGRESQL_COLUMN_NAMES, orderTableName);
         } else {
             throw new UnsupportedOperationException();
         }
         DataSourceExecuteUtil.execute(dataSource, sql, orderInsertData);
     }
     
-    private String buildInsertSQL(final List<String> columnNames) {
-        StringBuilder sql = new StringBuilder("INSERT INTO %s (");
-        for (String each : columnNames) {
-            sql.append(each).append(",");
-        }
-        sql.setLength(sql.length() - 1);
-        sql.append(") ").append("VALUES").append("(");
-        for (int i = 0; i < columnNames.size(); i++) {
-            sql.append("?,");
-        }
-        sql.setLength(sql.length() - 1);
-        sql.append(")");
-        return String.format(sql.toString(), orderTableName);
-    }
-    
     private void updateOrderById(final Object orderId) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int randomInt = random.nextInt(-100, 100);
         if (databaseType instanceof MySQLDatabaseType) {
-            String sql = String.format(buildUpdateSQL(ignoreShardingColumns(MYSQL_COLUMN_NAMES), "?"), orderTableName);
+            String sql = SQLBuilderUtil.buildUpdateSQL(ignoreShardingColumns(MYSQL_COLUMN_NAMES), orderTableName, "?");
             log.info("update sql: {}", sql);
             int randomUnsignedInt = random.nextInt(10, 100);
             LocalDateTime now = LocalDateTime.now();
@@ -125,7 +111,7 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
             return;
         }
         if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            String sql = String.format(buildUpdateSQL(ignoreShardingColumns(POSTGRESQL_COLUMN_NAMES), "?"), orderTableName);
+            String sql = SQLBuilderUtil.buildUpdateSQL(ignoreShardingColumns(POSTGRESQL_COLUMN_NAMES), orderTableName, "?");
             log.info("update sql: {}", sql);
             DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{"中文测试", randomInt, BigDecimal.valueOf(10000), true, new byte[]{}, "char", "varchar", PipelineCaseHelper.generateFloat(),
                     PipelineCaseHelper.generateDouble(), PipelineCaseHelper.generateJsonString(10, true), PipelineCaseHelper.generateJsonString(20, true), "text-update", LocalDate.now(),
@@ -133,28 +119,18 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         }
     }
     
-    private String buildUpdateSQL(final List<String> columnNames, final String placeholder) {
-        StringBuilder sql = new StringBuilder("UPDATE %s SET ");
-        for (String each : columnNames) {
-            sql.append(each).append("=").append(placeholder).append(",");
-        }
-        sql.setLength(sql.length() - 1);
-        sql.append(" WHERE order_id=?");
-        return sql.toString();
-    }
-    
     private List<String> ignoreShardingColumns(final List<String> columnNames) {
         return new ArrayList<>(columnNames.subList(2, columnNames.size()));
     }
     
     private void deleteOrderById(final Object orderId) {
-        String sql = String.format("DELETE FROM %s WHERE order_id = ?", orderTableName);
+        String sql = SQLBuilderUtil.buildDeleteSQL(orderTableName, "order_id");
         DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{orderId});
     }
     
     private void setNullToAllFields(final Object orderId) {
         if (databaseType instanceof MySQLDatabaseType) {
-            String sql = String.format(buildUpdateSQL(ignoreShardingColumns(MYSQL_COLUMN_NAMES), "null"), orderTableName);
+            String sql = SQLBuilderUtil.buildUpdateSQL(ignoreShardingColumns(MYSQL_COLUMN_NAMES), orderTableName, "null");
             DataSourceExecuteUtil.execute(dataSource, sql, new Object[]{orderId});
         }
     }

@@ -49,41 +49,21 @@ message StreamDataResult {
   string streaming_id = 1;
 }
 
-message NullValue {
-
-}
-
-message BigIntegerValue {
-  bytes value = 1;
-}
-
-message BigDecimalValue {
-  string value = 1;
-}
-
-message LocalTimeValue {
-  string value = 1;
-}
-
-message ClobValue {
-  string value = 1;
-}
-
-message BlobValue {
-  bytes value = 1;
+message TableColumn {
+  string name = 1;
+  google.protobuf.Any value = 2;
 }
 
 message DataRecordResult {
   message Record {
-    map<string, google.protobuf.Any> before = 1;
-    map<string, google.protobuf.Any> after = 2;
-    message TableMetaData {
+    repeated TableColumn before = 1;
+    repeated TableColumn after = 2;
+    message MetaData {
       string database = 1;
       optional string schema = 2;
-      string table_name = 3;
-      repeated string unique_key_names = 4;
+      string table = 3;
     }
-    TableMetaData table_meta_data = 3;
+    MetaData meta_data = 3;
     int64 transaction_commit_millis = 4;
     enum DataChangeType {
       UNKNOWN = 0;
@@ -102,5 +82,5 @@ message DataRecordResult {
     optional string ddl_SQL = 7;
   }
   string ack_id = 1;
-  repeated Record records = 2;
+  repeated Record record = 2;
 }

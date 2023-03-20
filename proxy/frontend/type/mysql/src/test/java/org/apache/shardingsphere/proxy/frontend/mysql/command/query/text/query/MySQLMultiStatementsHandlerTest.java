@@ -98,7 +98,7 @@ public final class MySQLMultiStatementsHandlerTest {
         return result;
     }
     
-    private static ContextManager mockContextManager() {
+    private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getAllInstanceDataSourceNames())
                 .thenReturn(Collections.singletonList("foo_ds"));

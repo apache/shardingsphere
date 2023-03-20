@@ -31,7 +31,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -99,7 +99,7 @@ public final class DataSourcePropertiesTest {
     
     @Test
     public void assertNotEqualsWithNullValue() {
-        assertNotEquals(null, new DataSourceProperties(MockedDataSource.class.getName(), new HashMap<>()));
+        assertNotEquals(new DataSourceProperties(MockedDataSource.class.getName(), new HashMap<>()), null);
     }
     
     @Test

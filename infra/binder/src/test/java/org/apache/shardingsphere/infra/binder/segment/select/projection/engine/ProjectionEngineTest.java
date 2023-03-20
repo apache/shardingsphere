@@ -59,9 +59,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -236,10 +235,10 @@ public final class ProjectionEngineTest {
         Collection<ColumnProjection> columnProjections = new LinkedList<>();
         columnProjections.add(new ColumnProjection(null, "name", null));
         assertThat(((ShorthandProjection) actual.get()).getColumnProjections(), is(columnProjections));
-        Map<String, Projection> actualColumns = new LinkedHashMap<>();
-        actualColumns.put("name", new ColumnProjection(null, "name", null));
-        actualColumns.put("nvl(leave_date, '20991231')", new ExpressionProjection("nvl(leave_date, '20991231')", "leave_date"));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(actualColumns));
+        Collection<Projection> expectedColumnProjections = new LinkedHashSet<>();
+        expectedColumnProjections.add(new ColumnProjection(null, "name", null));
+        expectedColumnProjections.add(new ExpressionProjection("nvl(leave_date, '20991231')", "leave_date"));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(expectedColumnProjections));
     }
     
     @Test
@@ -308,42 +307,42 @@ public final class ProjectionEngineTest {
         return result;
     }
     
-    private Map<String, Projection> crateExpectedColumnsWithoutOwnerForPostgreSQL() {
-        Map<String, Projection> result = new LinkedHashMap<>();
-        result.put("o.user_id", new ColumnProjection("o", "user_id", null));
-        result.put("o.order_id", new ColumnProjection("o", "order_id", null));
-        result.put("o.creation_date", new ColumnProjection("o", "creation_date", null));
-        result.put("o.status", new ColumnProjection("o", "status", null));
-        result.put("o.merchant_id", new ColumnProjection("o", "merchant_id", null));
-        result.put("o.remark", new ColumnProjection("o", "remark", null));
-        result.put("i.item_id", new ColumnProjection("i", "item_id", null));
-        result.put("i.product_id", new ColumnProjection("i", "product_id", null));
-        result.put("i.quantity", new ColumnProjection("i", "quantity", null));
+    private Collection<Projection> crateExpectedColumnsWithoutOwnerForPostgreSQL() {
+        Collection<Projection> result = new LinkedHashSet<>();
+        result.add(new ColumnProjection("o", "user_id", null));
+        result.add(new ColumnProjection("o", "order_id", null));
+        result.add(new ColumnProjection("o", "creation_date", null));
+        result.add(new ColumnProjection("o", "status", null));
+        result.add(new ColumnProjection("o", "merchant_id", null));
+        result.add(new ColumnProjection("o", "remark", null));
+        result.add(new ColumnProjection("i", "item_id", null));
+        result.add(new ColumnProjection("i", "product_id", null));
+        result.add(new ColumnProjection("i", "quantity", null));
         return result;
     }
     
-    private Map<String, Projection> crateExpectedColumnsWithoutOwnerForMySQL() {
-        Map<String, Projection> result = new LinkedHashMap<>();
-        result.put("i.order_id", new ColumnProjection("i", "order_id", null));
-        result.put("i.user_id", new ColumnProjection("i", "user_id", null));
-        result.put("i.creation_date", new ColumnProjection("i", "creation_date", null));
-        result.put("i.item_id", new ColumnProjection("i", "item_id", null));
-        result.put("i.product_id", new ColumnProjection("i", "product_id", null));
-        result.put("i.quantity", new ColumnProjection("i", "quantity", null));
-        result.put("o.status", new ColumnProjection("o", "status", null));
-        result.put("o.merchant_id", new ColumnProjection("o", "merchant_id", null));
-        result.put("o.remark", new ColumnProjection("o", "remark", null));
+    private Collection<Projection> crateExpectedColumnsWithoutOwnerForMySQL() {
+        Collection<Projection> result = new LinkedHashSet<>();
+        result.add(new ColumnProjection("i", "order_id", null));
+        result.add(new ColumnProjection("i", "user_id", null));
+        result.add(new ColumnProjection("i", "creation_date", null));
+        result.add(new ColumnProjection("i", "item_id", null));
+        result.add(new ColumnProjection("i", "product_id", null));
+        result.add(new ColumnProjection("i", "quantity", null));
+        result.add(new ColumnProjection("o", "status", null));
+        result.add(new ColumnProjection("o", "merchant_id", null));
+        result.add(new ColumnProjection("o", "remark", null));
         return result;
     }
     
-    private Map<String, Projection> crateExpectedColumnsWithOwner() {
-        Map<String, Projection> result = new LinkedHashMap<>();
-        result.put("o.order_id", new ColumnProjection("o", "order_id", null));
-        result.put("o.user_id", new ColumnProjection("o", "user_id", null));
-        result.put("o.status", new ColumnProjection("o", "status", null));
-        result.put("o.merchant_id", new ColumnProjection("o", "merchant_id", null));
-        result.put("o.remark", new ColumnProjection("o", "remark", null));
-        result.put("o.creation_date", new ColumnProjection("o", "creation_date", null));
+    private Collection<Projection> crateExpectedColumnsWithOwner() {
+        Collection<Projection> result = new LinkedHashSet<>();
+        result.add(new ColumnProjection("o", "order_id", null));
+        result.add(new ColumnProjection("o", "user_id", null));
+        result.add(new ColumnProjection("o", "status", null));
+        result.add(new ColumnProjection("o", "merchant_id", null));
+        result.add(new ColumnProjection("o", "remark", null));
+        result.add(new ColumnProjection("o", "creation_date", null));
         return result;
     }
     

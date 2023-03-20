@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,40 +27,43 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class SeataIDContextTest {
     
-    @AfterEach
-    public void tearDown() {
+    @Test
+    public void assertIsEmpty() {
+        SeataXIDContext.remove();
+        assertTrue(SeataXIDContext.isEmpty());
+        SeataXIDContext.set("xid");
+        assertFalse(SeataXIDContext.isEmpty());
         SeataXIDContext.remove();
     }
     
     @Test
-    public void assertIsEmpty() {
-        assertTrue(SeataXIDContext.isEmpty());
-        SeataXIDContext.set("xid");
-        assertFalse(SeataXIDContext.isEmpty());
-    }
-    
-    @Test
     public void assertGet() {
+        SeataXIDContext.remove();
         assertNull(SeataXIDContext.get());
         SeataXIDContext.set("xid");
         assertThat(SeataXIDContext.get(), is("xid"));
+        SeataXIDContext.remove();
     }
     
     @Test
     public void assertSet() {
+        SeataXIDContext.remove();
         assertNull(SeataXIDContext.get());
         SeataXIDContext.set("xid");
         assertThat(SeataXIDContext.get(), is("xid"));
         SeataXIDContext.set("xid-2");
         assertThat(SeataXIDContext.get(), is("xid-2"));
+        SeataXIDContext.remove();
     }
     
     @Test
     public void assertRemove() {
+        SeataXIDContext.remove();
         assertNull(SeataXIDContext.get());
         SeataXIDContext.set("xid");
         assertThat(SeataXIDContext.get(), is("xid"));
         SeataXIDContext.remove();
         assertNull(SeataXIDContext.get());
+        SeataXIDContext.remove();
     }
 }

@@ -24,13 +24,12 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.DataChangeType;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.TableMetaData;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record.MetaData;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.TableColumn;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Data record result convert util.
@@ -46,18 +45,13 @@ public final class DataRecordResultConvertUtil {
      * @return record
      */
     public static Record convertDataRecordToRecord(final String database, final String schema, final DataRecord dataRecord) {
-        Map<String, Any> beforeMap = new LinkedHashMap<>();
-        Map<String, Any> afterMap = new LinkedHashMap<>();
-        List<String> uniqueKeyNames = new LinkedList<>();
+        List<TableColumn> before = new LinkedList<>();
+        List<TableColumn> after = new LinkedList<>();
         for (Column column : dataRecord.getColumns()) {
-            beforeMap.put(column.getName(), Any.pack(ColumnValueConvertUtil.convertToProtobufMessage(column.getOldValue())));
-            afterMap.put(column.getName(), Any.pack(ColumnValueConvertUtil.convertToProtobufMessage(column.getValue())));
-            if (column.isUniqueKey()) {
-                uniqueKeyNames.add(column.getName());
-            }
+            before.add(TableColumn.newBuilder().setName(column.getName()).setValue(Any.pack(ColumnValueConvertUtil.convertToProtobufMessage(column.getOldValue()))).build());
+            after.add(TableColumn.newBuilder().setName(column.getName()).setValue(Any.pack(ColumnValueConvertUtil.convertToProtobufMessage(column.getValue()))).build());
         }
-        TableMetaData metaData = TableMetaData.newBuilder().setDatabase(database).setSchema(Strings.nullToEmpty(schema)).setTableName(dataRecord.getTableName())
-                .addAllUniqueKeyNames(uniqueKeyNames).build();
+        MetaData metaData = MetaData.newBuilder().setDatabase(database).setSchema(Strings.nullToEmpty(schema)).setTable(dataRecord.getTableName()).build();
         DataChangeType dataChangeType = DataChangeType.UNKNOWN;
         if (IngestDataChangeType.INSERT.equals(dataRecord.getType())) {
             dataChangeType = DataChangeType.INSERT;
@@ -66,6 +60,6 @@ public final class DataRecordResultConvertUtil {
         } else if (IngestDataChangeType.DELETE.equals(dataRecord.getType())) {
             dataChangeType = DataChangeType.DELETE;
         }
-        return DataRecordResult.Record.newBuilder().setTableMetaData(metaData).putAllBefore(beforeMap).putAllAfter(afterMap).setDataChangeType(dataChangeType).build();
+        return DataRecordResult.Record.newBuilder().setMetaData(metaData).addAllBefore(before).addAllAfter(after).setDataChangeType(dataChangeType).build();
     }
 }
