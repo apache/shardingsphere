@@ -51,7 +51,7 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
-        // TODO make sure DCL test case can not be null
+        // TODO make sure DML test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
         }
@@ -86,6 +86,10 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        // TODO make sure DML test case can not be null
+        if (null == testParam.getTestCaseContext()) {
+            return;
+        }
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(testParam, containerComposer);
             int actualUpdateCount;
