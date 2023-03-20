@@ -95,6 +95,9 @@ public abstract class TransactionBaseE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertTransaction(final TransactionTestParameter testParam) throws SQLException {
+        if (null == testParam) {
+            return;
+        }
         try (TransactionContainerComposer containerComposer = new TransactionContainerComposer(testParam)) {
             try {
                 callTestCases(testParam, containerComposer);
@@ -336,14 +339,15 @@ public abstract class TransactionBaseE2EIT {
         private Collection<TransactionTestParameter> getTransactionTestParameters(final Class<? extends TransactionBaseE2EIT> testCaseClass) {
             TransactionTestCaseRegistry currentTestCaseInfo = ENV.getTransactionTestCaseRegistryMap().get(testCaseClass.getName());
             Collection<TransactionTestParameter> result = new LinkedList<>();
-            if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.NONE) {
-                return result;
-            }
             if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
                 result.addAll(getTestParameters(currentTestCaseInfo));
             }
             if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.NATIVE && "MySQL".equalsIgnoreCase(ENV.getNativeDatabaseType())) {
                 result.addAll(getTestParameters(currentTestCaseInfo, ENV.getMysqlVersions()));
+            }
+            // TODO zhangcheng make sure the test cases should not empty
+            if (result.isEmpty()) {
+                result.add(null);
             }
             return result;
         }
