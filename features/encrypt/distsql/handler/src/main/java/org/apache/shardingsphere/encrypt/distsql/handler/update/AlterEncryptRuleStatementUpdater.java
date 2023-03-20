@@ -90,7 +90,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
             encryptors.add(column.getAssistedQueryEncryptor());
             encryptors.add(column.getLikeQueryEncryptor());
         }));
-        encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.getService(EncryptAlgorithm.class, each.getName(), each.getProps()));
+        encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getName(), each.getProps()));
     }
     
     @Override
