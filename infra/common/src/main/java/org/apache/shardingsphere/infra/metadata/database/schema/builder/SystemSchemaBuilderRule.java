@@ -36,7 +36,8 @@ import java.util.Map;
 public enum SystemSchemaBuilderRule {
     
     MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", new HashSet<>(Arrays.asList("character_sets", "collation_character_set_applicability", "collations", "column_privileges", "columns",
-            "engines", "events", "files", "global_status", "global_variables", "parameters", "routines", "schemata", "tables", "views"))),
+            "engines", "events", "files", "global_status", "global_variables", "innodb_buffer_page", "innodb_buffer_page_lru", "innodb_buffer_pool_stats", "innodb_cmp", "innodb_cmp_per_index",
+            "innodb_cmp_per_index_reset", "innodb_cmp_reset","parameters", "routines", "schemata", "tables", "views"))),
     
     MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Collections.singleton("db"))),
     
