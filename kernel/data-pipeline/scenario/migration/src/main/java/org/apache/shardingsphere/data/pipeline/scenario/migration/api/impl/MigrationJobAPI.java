@@ -433,9 +433,10 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     /**
      * Add migration source resources.
      *
+     * @param contextKey context key
      * @param dataSourcePropsMap data source properties map
      */
-    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public void addMigrationSourceResources(final PipelineContextKey contextKey, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(getJobType());
         Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourcePropsMap.size(), 1);
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
@@ -446,22 +447,23 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new RegisterMigrationSourceStorageUnitException(duplicateDataSourceNames));
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
         result.putAll(dataSourcePropsMap);
-        dataSourcePersistService.persist(getJobType(), result);
+        dataSourcePersistService.persist(contextKey, getJobType(), result);
     }
     
     /**
      * Drop migration source resources.
      *
+     * @param contextKey context key
      * @param resourceNames resource names
      */
-    public void dropMigrationSourceResources(final Collection<String> resourceNames) {
+    public void dropMigrationSourceResources(final PipelineContextKey contextKey, final Collection<String> resourceNames) {
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(getJobType());
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(noExistResources.isEmpty(), () -> new UnregisterMigrationSourceStorageUnitException(noExistResources));
         for (String each : resourceNames) {
             metaDataDataSource.remove(each);
         }
-        dataSourcePersistService.persist(getJobType(), metaDataDataSource);
+        dataSourcePersistService.persist(contextKey, getJobType(), metaDataDataSource);
     }
     
     /**

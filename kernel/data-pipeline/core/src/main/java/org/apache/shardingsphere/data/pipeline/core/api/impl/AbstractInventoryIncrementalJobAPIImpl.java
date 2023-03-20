@@ -91,7 +91,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Override
     public void alterProcessConfiguration(final PipelineContextKey contextKey, final PipelineProcessConfiguration processConfig) {
         // TODO check rateLimiter type match or not
-        processConfigPersistService.persist(getJobType(), processConfig);
+        processConfigPersistService.persist(contextKey, getJobType(), processConfig);
     }
     
     @Override

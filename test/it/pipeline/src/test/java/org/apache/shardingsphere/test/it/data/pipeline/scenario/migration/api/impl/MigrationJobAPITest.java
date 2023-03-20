@@ -106,12 +106,12 @@ public final class MigrationJobAPITest {
         props.put("jdbcUrl", jdbcUrl);
         props.put("username", "root");
         props.put("password", "root");
-        jobAPI.addMigrationSourceResources(Collections.singletonMap("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props)));
+        jobAPI.addMigrationSourceResources(PipelineContextKey.buildForProxy(), Collections.singletonMap("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props)));
     }
     
     @AfterAll
     public static void afterClass() {
-        jobAPI.dropMigrationSourceResources(Collections.singletonList("ds_0"));
+        jobAPI.dropMigrationSourceResources(PipelineContextKey.buildForProxy(), Collections.singletonList("ds_0"));
     }
     
     @Test

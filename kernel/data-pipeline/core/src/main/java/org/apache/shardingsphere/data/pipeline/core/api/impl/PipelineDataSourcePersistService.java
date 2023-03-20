@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.api.impl;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineMetaDataPersistService;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -51,11 +52,11 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
     }
     
     @Override
-    public void persist(final JobType jobType, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public void persist(final PipelineContextKey contextKey, final JobType jobType, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         Map<String, Map<String, Object>> dataSourceMap = new LinkedHashMap<>(dataSourcePropsMap.size());
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             dataSourceMap.put(entry.getKey(), swapper.swapToMap(entry.getValue()));
         }
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistMetaDataDataSources(jobType, YamlEngine.marshal(dataSourceMap));
+        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).persistMetaDataDataSources(jobType, YamlEngine.marshal(dataSourceMap));
     }
 }
