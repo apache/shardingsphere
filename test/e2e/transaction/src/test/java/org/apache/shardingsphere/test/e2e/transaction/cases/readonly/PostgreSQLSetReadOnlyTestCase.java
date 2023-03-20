@@ -22,11 +22,12 @@ import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBas
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
-import org.junit.Assert;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * PostgreSQL set read only transaction integration test.
@@ -55,7 +56,7 @@ public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
             executeWithLog(connection2, "update account set balance = 100 where id = 2;");
             log.info("Using the driver of postgresql:42.4.1 expect to update successfully.");
         } catch (final SQLException ex) {
-            Assert.fail("Update failed, should be successfully.");
+            fail("Update failed, should be successfully.");
         }
     }
 }

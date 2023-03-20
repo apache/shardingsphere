@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.watcher;
+package org.apache.shardingsphere.test.e2e.framework;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestWatcher;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 /**
- * E2E test watcher.
+ * E2E IT extension.
  */
 @Slf4j
-public final class E2EWatcher extends TestWatcher {
+public final class E2EITExtension implements TestWatcher {
     
     @Override
-    protected void failed(final Throwable cause, final Description description) {
-        log.error("Error case: {}, message: {}", description.getMethodName(), getStackTrace(cause));
-        super.failed(cause, description);
+    public void testFailed(final ExtensionContext context, final Throwable cause) {
+        log.error("Error case: {}, message: {}", context.getRequiredTestMethod().getName(), getStackTrace(cause));
     }
     
     private String getStackTrace(final Throwable cause) {

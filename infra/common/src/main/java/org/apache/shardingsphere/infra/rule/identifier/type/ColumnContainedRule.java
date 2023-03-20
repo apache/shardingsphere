@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.runner.executor.key.impl;
+package org.apache.shardingsphere.infra.rule.identifier.type;
 
-import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.e2e.framework.runner.executor.key.ParallelRunnerExecutorKeyProvider;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import java.util.Collection;
 
 /**
- * Case parallel runner executor key provider.
+ * ShardingSphere rule which contains column.
  */
-public final class CaseParallelRunnerExecutorKeyProvider implements ParallelRunnerExecutorKeyProvider {
+public interface ColumnContainedRule extends ShardingSphereRule {
     
-    @Override
-    public String getKey(final E2ETestParameter testParam) {
-        return testParam.getDatabaseType().getType();
-    }
-    
-    @Override
-    public ParallelLevel getParallelLevel() {
-        return ParallelLevel.CASE;
-    }
+    /**
+     * Get tables.
+     *
+     * @return tables
+     */
+    Collection<String> getTables();
 }

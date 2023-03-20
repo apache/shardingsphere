@@ -82,7 +82,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
         return Collections.singletonMap("foo_db", database);
     }
     
-    private static ContextManager mockContextManager(final Map<String, ShardingSphereDatabase> databases, final Properties props) {
+    private ContextManager mockContextManager(final Map<String, ShardingSphereDatabase> databases, final Properties props) {
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(props)));
         return new ContextManager(metaDataContexts, mock(InstanceContext.class));

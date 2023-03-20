@@ -20,84 +20,90 @@ package org.apache.shardingsphere.test.e2e.engine.dql;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
-import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ParallelRunningStrategy(ParallelLevel.CASE)
+@ExtendWith(E2EITExtension.class)
 public final class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
-    public GeneralDQLE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<AssertionTestParameter> getTestParameters() {
-        return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DQL);
-    }
-    
-    @Test
-    public void assertExecuteQuery() throws SQLException, ParseException {
-        if (isUseXMLAsExpectedDataset()) {
-            assertExecuteQueryWithXmlExpected();
-        } else {
-            assertExecuteQueryWithExpectedDataSource();
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecuteQuery(final AssertionTestParameter testParam) throws SQLException, ParseException, IOException, JAXBException {
+        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+            init(testParam, containerComposer);
+            if (isUseXMLAsExpectedDataset()) {
+                assertExecuteQueryWithXmlExpected(testParam, containerComposer);
+            } else {
+                assertExecuteQueryWithExpectedDataSource(containerComposer);
+            }
         }
+        
     }
     
-    private void assertExecuteQueryWithXmlExpected() throws SQLException, ParseException {
+    private void assertExecuteQueryWithXmlExpected(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException {
         // TODO Fix jdbc adapter
-        if ("jdbc".equals(getAdapter())) {
+        if ("jdbc".equals(testParam.getAdapter())) {
             return;
         }
         try (
-                Connection connection = getContainerComposer().getTargetDataSource().getConnection();
+                Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSQL())) {
-            assertResultSet(resultSet);
+                ResultSet resultSet = statement.executeQuery(containerComposer.getSQL())) {
+            assertResultSet(containerComposer, resultSet);
         }
     }
     
-    private void assertExecuteQueryWithExpectedDataSource() throws SQLException, ParseException {
+    private void assertExecuteQueryWithExpectedDataSource(final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException {
         try (
-                Connection actualConnection = getContainerComposer().getTargetDataSource().getConnection();
+                Connection actualConnection = containerComposer.getContainerComposer().getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                assertExecuteQueryForStatement(actualConnection, expectedConnection);
+            if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
+                assertExecuteQueryForStatement(containerComposer, actualConnection, expectedConnection);
             } else {
-                assertExecuteQueryForPreparedStatement(actualConnection, expectedConnection);
+                assertExecuteQueryForPreparedStatement(containerComposer, actualConnection, expectedConnection);
             }
         }
     }
     
-    private void assertExecuteQueryForStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+    private void assertExecuteQueryForStatement(final SingleE2EITContainerComposer containerComposer,
+                                                final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 Statement actualStatement = actualConnection.createStatement();
-                ResultSet actualResultSet = actualStatement.executeQuery(getSQL());
+                ResultSet actualResultSet = actualStatement.executeQuery(containerComposer.getSQL());
                 Statement expectedStatement = expectedConnection.createStatement();
-                ResultSet expectedResultSet = expectedStatement.executeQuery(getSQL())) {
+                ResultSet expectedResultSet = expectedStatement.executeQuery(containerComposer.getSQL())) {
             assertResultSet(actualResultSet, expectedResultSet);
         }
     }
     
-    private void assertExecuteQueryForPreparedStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+    private void assertExecuteQueryForPreparedStatement(final SingleE2EITContainerComposer containerComposer,
+                                                        final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
-                PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL());
-                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(getSQL())) {
-            for (SQLValue each : getAssertion().getSQLValues()) {
+                PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(containerComposer.getSQL());
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(containerComposer.getSQL())) {
+            for (SQLValue each : containerComposer.getAssertion().getSQLValues()) {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
                 expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
@@ -109,46 +115,52 @@ public final class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    @Test
-    public void assertExecute() throws SQLException, ParseException {
-        if (isUseXMLAsExpectedDataset()) {
-            assertExecuteWithXmlExpected();
-        } else {
-            assertExecuteWithExpectedDataSource();
-        }
-    }
-    
-    private void assertExecuteWithXmlExpected() throws SQLException, ParseException {
-        // TODO Fix jdbc adapter
-        if ("jdbc".equals(getAdapter())) {
-            return;
-        }
-        try (
-                Connection connection = getContainerComposer().getTargetDataSource().getConnection();
-                Statement statement = connection.createStatement()) {
-            assertTrue(statement.execute(getSQL()), "Not a query statement.");
-            ResultSet resultSet = statement.getResultSet();
-            assertResultSet(resultSet);
-        }
-    }
-    
-    private void assertExecuteWithExpectedDataSource() throws SQLException, ParseException {
-        try (
-                Connection actualConnection = getContainerComposer().getTargetDataSource().getConnection();
-                Connection expectedConnection = getExpectedDataSource().getConnection()) {
-            if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                assertExecuteForStatement(actualConnection, expectedConnection);
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+            init(testParam, containerComposer);
+            if (isUseXMLAsExpectedDataset()) {
+                assertExecuteWithXmlExpected(testParam, containerComposer);
             } else {
-                assertExecuteForPreparedStatement(actualConnection, expectedConnection);
+                assertExecuteWithExpectedDataSource(containerComposer);
             }
         }
     }
     
-    private void assertExecuteForStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+    private void assertExecuteWithXmlExpected(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException {
+        // TODO Fix jdbc adapter
+        if ("jdbc".equals(testParam.getAdapter())) {
+            return;
+        }
+        try (
+                Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection();
+                Statement statement = connection.createStatement()) {
+            assertTrue(statement.execute(containerComposer.getSQL()), "Not a query statement.");
+            ResultSet resultSet = statement.getResultSet();
+            assertResultSet(containerComposer, resultSet);
+        }
+    }
+    
+    private void assertExecuteWithExpectedDataSource(final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException {
+        try (
+                Connection actualConnection = containerComposer.getContainerComposer().getTargetDataSource().getConnection();
+                Connection expectedConnection = getExpectedDataSource().getConnection()) {
+            if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
+                assertExecuteForStatement(containerComposer, actualConnection, expectedConnection);
+            } else {
+                assertExecuteForPreparedStatement(containerComposer, actualConnection, expectedConnection);
+            }
+        }
+    }
+    
+    private void assertExecuteForStatement(final SingleE2EITContainerComposer containerComposer,
+                                           final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
                 Statement actualStatement = actualConnection.createStatement();
                 Statement expectedStatement = expectedConnection.createStatement()) {
-            assertTrue(actualStatement.execute(getSQL()) && expectedStatement.execute(getSQL()), "Not a query statement.");
+            assertTrue(actualStatement.execute(containerComposer.getSQL()) && expectedStatement.execute(containerComposer.getSQL()), "Not a query statement.");
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
                     ResultSet expectedResultSet = expectedStatement.getResultSet()) {
@@ -157,11 +169,12 @@ public final class GeneralDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteForPreparedStatement(final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
+    private void assertExecuteForPreparedStatement(final SingleE2EITContainerComposer containerComposer,
+                                                   final Connection actualConnection, final Connection expectedConnection) throws SQLException, ParseException {
         try (
-                PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(getSQL());
-                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(getSQL())) {
-            for (SQLValue each : getAssertion().getSQLValues()) {
+                PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(containerComposer.getSQL());
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(containerComposer.getSQL())) {
+            for (SQLValue each : containerComposer.getAssertion().getSQLValues()) {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
                 expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
@@ -171,6 +184,18 @@ public final class GeneralDQLE2EIT extends BaseDQLE2EIT {
                     ResultSet expectedResultSet = expectedPreparedStatement.getResultSet()) {
                 assertResultSet(actualResultSet, expectedResultSet);
             }
+        }
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestParameterFactory.containsTestParameter();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DQL).stream().map(Arguments::of);
         }
     }
 }

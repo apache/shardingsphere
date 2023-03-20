@@ -15,20 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor;
+package org.apache.shardingsphere.proxy.backend.hbase.checker;
 
-import java.time.LocalDateTime;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Local date time convertor for CosId.
+ * Check where clause.
+ * @param <T> SQL statement
  */
-public interface CosIdLocalDateTimeConvertor {
+public interface HeterogeneousSQLStatementChecker<T extends SQLStatement> {
     
     /**
-     * To local date time.
-     * 
-     * @param value value to be converted
-     * @return converted local date time
+     * Get SQL statement.
+     *
+     * @return SQL statement
      */
-    LocalDateTime toLocalDateTime(Comparable<?> value);
+    T getSqlStatement();
+    
+    /**
+     * do check.
+     */
+    void execute();
 }

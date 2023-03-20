@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.runner.executor.key;
+package org.apache.shardingsphere.proxy.backend.hbase.result;
 
-import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Parallel runner executor key provider.
+ * HBase backend handler.
  */
-public interface ParallelRunnerExecutorKeyProvider {
+public interface HBaseBackendHandler extends ProxyBackendHandler {
     
     /**
-     * Get key.
-     * 
-     * @param testParam test parameter
-     * @return parallel runner executor key
+     * Get row data objects.
+     *
+     * @return row data
      */
-    String getKey(E2ETestParameter testParam);
+    default Collection<Object> getRowDataObjects() {
+        return Collections.emptyList();
+    }
     
-    /**
-     * Get parallel level.
-     * 
-     * @return parallel level
-     */
-    ParallelLevel getParallelLevel();
 }

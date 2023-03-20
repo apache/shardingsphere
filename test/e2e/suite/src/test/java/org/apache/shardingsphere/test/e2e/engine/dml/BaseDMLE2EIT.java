@@ -23,17 +23,18 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.E2EContainerComposer;
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaData;
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,6 +42,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
@@ -49,54 +51,61 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public abstract class BaseDMLE2EIT extends SingleE2EIT {
+public abstract class BaseDMLE2EIT {
     
     private static final String DATA_COLUMN_DELIMITER = ", ";
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BaseDMLE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
-    }
-    
-    @Before
-    public final void init() throws Exception {
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(getTestParam().getScenario()).getDataSetFile(Type.ACTUAL), getContainerComposer().getActualDataSourceMap());
+    /**
+     * Init.
+     *
+     * @param testParam test parameter
+     * @param containerComposer container composer
+     * @throws SQLException SQL exception
+     * @throws ParseException parse exception
+     * @throws IOException IO exception
+     * @throws JAXBException JAXB exception
+     */
+    public final void init(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException, IOException, JAXBException {
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(
+                new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getContainerComposer().getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
-    @After
+    @AfterEach
     public final void tearDown() {
         dataSetEnvironmentManager.cleanData();
     }
     
-    protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
-        assertThat("Only support single table for DML.", getDataSet().getMetaDataList().size(), is(1));
-        assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
-        DataSetMetaData expectedDataSetMetaData = getDataSet().getMetaDataList().get(0);
+    protected final void assertDataSet(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer, final int actualUpdateCount) throws SQLException {
+        assertThat("Only support single table for DML.", containerComposer.getDataSet().getMetaDataList().size(), is(1));
+        assertThat(actualUpdateCount, is(containerComposer.getDataSet().getUpdateCount()));
+        DataSetMetaData expectedDataSetMetaData = containerComposer.getDataSet().getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DataSource dataSource = getContainerComposer().getActualDataSourceMap().get(dataNode.getDataSourceName());
+            DataSource dataSource = containerComposer.getContainerComposer().getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
-                assertDataSet(preparedStatement, expectedDataSetMetaData, getDataSet().findRows(dataNode));
+                    PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(testParam, containerComposer, dataNode))) {
+                assertDataSet(testParam, preparedStatement, expectedDataSetMetaData, containerComposer.getDataSet().findRows(dataNode));
             }
         }
     }
     
-    private void assertDataSet(final PreparedStatement actualPreparedStatement, final DataSetMetaData expectedDataSetMetaData, final List<DataSetRow> expectedDataSetRows) throws SQLException {
+    private void assertDataSet(final AssertionTestParameter testParam,
+                               final PreparedStatement actualPreparedStatement, final DataSetMetaData expectedDataSetMetaData, final List<DataSetRow> expectedDataSetRows) throws SQLException {
         try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
             assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetaData.getColumns());
-            assertRows(actualResultSet, expectedDataSetRows);
+            assertRows(testParam, actualResultSet, expectedDataSetRows);
         }
     }
     
-    private String generateFetchActualDataSQL(final DataNode dataNode) throws SQLException {
-        Optional<DatabaseAssertionMetaData> databaseAssertionMetaData = DatabaseAssertionMetaDataFactory.newInstance(getTestParam().getDatabaseType());
+    private String generateFetchActualDataSQL(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer, final DataNode dataNode) throws SQLException {
+        Optional<DatabaseAssertionMetaData> databaseAssertionMetaData = DatabaseAssertionMetaDataFactory.newInstance(testParam.getDatabaseType());
         if (databaseAssertionMetaData.isPresent()) {
             String primaryKeyColumnName = databaseAssertionMetaData.get().getPrimaryKeyColumnName(
-                    getContainerComposer().getActualDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
+                    containerComposer.getContainerComposer().getActualDataSourceMap().get(dataNode.getDataSourceName()), dataNode.getTableName());
             return String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
         }
         return String.format("SELECT * FROM %s", dataNode.getTableName());
@@ -110,12 +119,12 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
         }
     }
     
-    private void assertRows(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
+    private void assertRows(final AssertionTestParameter testParam, final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
         int rowCount = 0;
         while (actual.next()) {
             int columnIndex = 1;
             for (String each : expected.get(rowCount).splitValues(DATA_COLUMN_DELIMITER)) {
-                assertValue(actual, columnIndex, each);
+                assertValue(testParam, actual, columnIndex, each);
                 columnIndex++;
             }
             rowCount++;
@@ -123,15 +132,15 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
         assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
     }
     
-    private void assertValue(final ResultSet actual, final int columnIndex, final String expected) throws SQLException {
+    private void assertValue(final AssertionTestParameter testParam, final ResultSet actual, final int columnIndex, final String expected) throws SQLException {
         if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
             if (!E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
                 assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actual.getDate(columnIndex)), is(expected));
             }
         } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
-                && ("PostgreSQL".equals(getTestParam().getDatabaseType().getType()) || "openGauss".equals(getTestParam().getDatabaseType().getType()))) {
+                && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType()))) {
             assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
-        } else if (isPostgreSQLOrOpenGaussMoney(actual.getMetaData().getColumnTypeName(columnIndex))) {
+        } else if (isPostgreSQLOrOpenGaussMoney(testParam, actual.getMetaData().getColumnTypeName(columnIndex))) {
             assertThat(actual.getString(columnIndex), is(expected));
         } else if (Types.BINARY == actual.getMetaData().getColumnType(columnIndex)) {
             assertThat(actual.getObject(columnIndex), is(expected.getBytes(StandardCharsets.UTF_8)));
@@ -140,16 +149,16 @@ public abstract class BaseDMLE2EIT extends SingleE2EIT {
         }
     }
     
-    private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName) {
-        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(getTestParam().getDatabaseType().getType()) || "openGauss".equals(getTestParam().getDatabaseType().getType()));
+    private boolean isPostgreSQLOrOpenGaussMoney(final AssertionTestParameter testParam, final String columnTypeName) {
+        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType()));
     }
     
-    protected void assertGeneratedKeys(final ResultSet generatedKeys) throws SQLException {
-        if (null == getGeneratedKeyDataSet()) {
+    protected void assertGeneratedKeys(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer, final ResultSet generatedKeys) throws SQLException {
+        if (null == containerComposer.getGeneratedKeyDataSet()) {
             return;
         }
-        assertThat("Only support single table for DML.", getGeneratedKeyDataSet().getMetaDataList().size(), is(1));
-        assertMetaData(generatedKeys.getMetaData(), getGeneratedKeyDataSet().getMetaDataList().get(0).getColumns());
-        assertRows(generatedKeys, getGeneratedKeyDataSet().getRows());
+        assertThat("Only support single table for DML.", containerComposer.getGeneratedKeyDataSet().getMetaDataList().size(), is(1));
+        assertMetaData(generatedKeys.getMetaData(), containerComposer.getGeneratedKeyDataSet().getMetaDataList().get(0).getColumns());
+        assertRows(testParam, generatedKeys, containerComposer.getGeneratedKeyDataSet().getRows());
     }
 }

@@ -18,40 +18,56 @@
 package org.apache.shardingsphere.test.e2e.engine.rql;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
-import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Collection;
+import java.util.stream.Stream;
 
-@ParallelRunningStrategy(ParallelLevel.CASE)
+@ExtendWith(E2EITExtension.class)
 public final class GeneralRQLE2EIT extends BaseRQLE2EIT {
     
-    public GeneralRQLE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
+        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+            assertExecute(containerComposer);
+        }
     }
     
-    @Parameters(name = "{0}")
-    public static Collection<AssertionTestParameter> getTestParameters() {
-        return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RQL);
-    }
-    
-    @Test
-    public void assertExecute() throws SQLException, ParseException {
-        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
+    private void assertExecute(final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException {
+        try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
             try (
                     Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(getSQL())) {
-                assertResultSet(resultSet);
+                    ResultSet resultSet = statement.executeQuery(containerComposer.getSQL())) {
+                assertResultSet(containerComposer, resultSet);
             }
+        }
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestParameterFactory.containsTestParameter();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RQL).stream().map(Arguments::of);
         }
     }
 }

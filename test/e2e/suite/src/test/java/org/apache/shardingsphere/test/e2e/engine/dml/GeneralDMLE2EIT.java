@@ -20,81 +20,105 @@ package org.apache.shardingsphere.test.e2e.engine.dml;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy;
-import org.apache.shardingsphere.test.e2e.framework.runner.ParallelRunningStrategy.ParallelLevel;
-import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@ParallelRunningStrategy(ParallelLevel.SCENARIO)
+@ExtendWith(E2EITExtension.class)
 public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     
-    public GeneralDMLE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<AssertionTestParameter> getTestParameters() {
-        return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DML);
-    }
-    
-    @Test
-    public void assertExecuteUpdate() throws SQLException, ParseException {
-        int actualUpdateCount;
-        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
-            actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+            init(testParam, containerComposer);
+            int actualUpdateCount;
+            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+                actualUpdateCount = SQLExecuteType.Literal == containerComposer.getSqlExecuteType()
+                        ? executeUpdateForStatement(containerComposer, connection)
+                        : executeUpdateForPreparedStatement(containerComposer, connection);
+            }
+            assertDataSet(testParam, containerComposer, actualUpdateCount);
         }
-        assertDataSet(actualUpdateCount);
     }
     
-    private int executeUpdateForStatement(final Connection connection) throws SQLException, ParseException {
+    private int executeUpdateForStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(getSQL());
+            return statement.executeUpdate(containerComposer.getSQL());
         }
     }
     
-    private int executeUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
-            for (SQLValue each : getAssertion().getSQLValues()) {
+    private int executeUpdateForPreparedStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
+            for (SQLValue each : containerComposer.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             return preparedStatement.executeUpdate();
         }
     }
     
-    @Test
-    public void assertExecute() throws SQLException, ParseException {
-        int actualUpdateCount;
-        try (Connection connection = getContainerComposer().getTargetDataSource().getConnection()) {
-            actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeForStatement(connection) : executeForPreparedStatement(connection);
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+            init(testParam, containerComposer);
+            int actualUpdateCount;
+            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+                actualUpdateCount = SQLExecuteType.Literal == containerComposer.getSqlExecuteType()
+                        ? executeForStatement(containerComposer, connection)
+                        : executeForPreparedStatement(containerComposer, connection);
+            }
+            assertDataSet(testParam, containerComposer, actualUpdateCount);
         }
-        assertDataSet(actualUpdateCount);
     }
     
-    private int executeForStatement(final Connection connection) throws SQLException, ParseException {
+    private int executeForStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse(statement.execute(getSQL()), "Not a DML statement.");
+            assertFalse(statement.execute(containerComposer.getSQL()), "Not a DML statement.");
             return statement.getUpdateCount();
         }
     }
     
-    private int executeForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
-            for (SQLValue each : getAssertion().getSQLValues()) {
+    private int executeForPreparedStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
+            for (SQLValue each : containerComposer.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             assertFalse(preparedStatement.execute(), "Not a DML statement.");
             return preparedStatement.getUpdateCount();
+        }
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestParameterFactory.containsTestParameter();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DML).stream().map(Arguments::of);
         }
     }
 }

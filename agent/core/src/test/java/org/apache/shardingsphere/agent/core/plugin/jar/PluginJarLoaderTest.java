@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.plugin.jar;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class PluginJarLoaderTest {
+public final class PluginJarLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
@@ -41,10 +41,6 @@ public class PluginJarLoaderTest {
     }
     
     private String getResourceURL() throws UnsupportedEncodingException {
-        return URLDecoder.decode(
-                Objects.requireNonNull(PluginJarLoader.class.getClassLoader().getResource(""))
-                        .getFile(),
-                "UTF8");
+        return URLDecoder.decode(Objects.requireNonNull(PluginJarLoader.class.getClassLoader().getResource("")).getFile(), "UTF8");
     }
-    
 }
