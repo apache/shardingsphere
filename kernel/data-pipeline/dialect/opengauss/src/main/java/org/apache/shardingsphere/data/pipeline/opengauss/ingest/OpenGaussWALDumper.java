@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDump
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussLogicalReplication;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.MppdbDecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode.OpenGaussLogSequenceNumber;
@@ -78,6 +78,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
         this.decodeWithTX = dumperConfig.isDecodeWithTX();
     }
     
+    @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
         PGReplicationStream stream = null;
@@ -87,7 +88,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
-                    ThreadUtil.sleep(10L);
+                    Thread.sleep(10L);
                     continue;
                 }
                 AbstractWALEvent event = decodingPlugin.decode(message, new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));

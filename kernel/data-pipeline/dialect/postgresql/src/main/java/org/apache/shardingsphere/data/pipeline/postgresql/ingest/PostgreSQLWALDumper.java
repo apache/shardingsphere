@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDump
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.PostgreSQLLogicalReplication;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALEventConverter;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
@@ -69,6 +69,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
         logicalReplication = new PostgreSQLLogicalReplication();
     }
     
+    @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
         // TODO use unified PgConnection
@@ -81,7 +82,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
-                    ThreadUtil.sleep(10L);
+                    Thread.sleep(10L);
                     continue;
                 }
                 AbstractWALEvent event = decodingPlugin.decode(message, new PostgreSQLLogSequenceNumber(stream.getLastReceiveLSN()));
