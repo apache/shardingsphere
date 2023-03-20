@@ -19,89 +19,73 @@ package org.apache.shardingsphere.proxy.backend.hbase.checker;
 
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class HeterogeneousUpdateStatementCheckerTest {
-    
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
     
     @Test
     public void assertExecuteUpdateStatement() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getUpdateStatement());
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
     public void assertUpdateWithFunction() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("Assigment must is literal or parameter marker");
         String sql = "update /*+ hbase */ t_test_order set age = 10, name = 'bob', time = now() where rowKey = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("Assigment must is literal or parameter marker"));
     }
     
     @Test
     public void assertOperatorIsNotEqual() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("Only Supported `=` operator");
         String sql = "update /*+ hbase */ t_test_order set age = 10 where rowKey > 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("Only Supported `=` operator"));
     }
     
     @Test
     public void assertColumnIsNotRowKey() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("is not a allowed key");
         String sql = "update /*+ hbase */ t_test_order set age = 10 where age = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("age is not a allowed key"));
     }
     
     @Test
     public void assertLeftIsNotColumn() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("left segment must is ColumnSegment");
         String sql = "update /*+ hbase */ t_test_order set age = 10 where 1 = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("left segment must is ColumnSegment"));
     }
     
     @Test
     public void assertMultiExpression() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("Do not supported Multiple expressions");
         String sql = "update /*+ hbase */ t_test_order set age = 10 WHERE order_id = ? AND user_id = ? AND status=?";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("Do not supported Multiple expressions"));
     }
     
     @Test
     public void assertNotWhereSegment() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("Must Have Where Segment");
         String sql = "update /*+ hbase */ t_test_order set age = 10 ";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("Must Have Where Segment"));
     }
     
     @Test
     public void assertUpdateRowKey() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("Do not allow update rowKey");
         String sql = "update /*+ hbase */ t_test_order set rowKey = 10 where rowKey = 'kid'";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("Do not allow update rowKey"));
     }
 }
