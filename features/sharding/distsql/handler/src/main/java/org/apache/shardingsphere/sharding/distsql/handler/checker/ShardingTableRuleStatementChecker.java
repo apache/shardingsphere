@@ -251,27 +251,23 @@ public final class ShardingTableRuleStatementChecker {
     
     private static void checkKeyGenerators(final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) {
         Set<String> notExistKeyGenerator = new LinkedHashSet<>(rules.size());
-        Set<String> requiredKeyGenerators = new LinkedHashSet<>(rules.size());
+        Set<AlgorithmSegment> requiredKeyGenerators = new LinkedHashSet<>(rules.size());
         rules.stream().map(AbstractTableRuleSegment::getKeyGenerateStrategySegment).filter(Objects::nonNull)
                 .peek(each -> each.getKeyGenerateAlgorithmName()
                         .filter(optional -> null == currentRuleConfig || !currentRuleConfig.getKeyGenerators().containsKey(optional)).ifPresent(notExistKeyGenerator::add))
-                .filter(each -> !each.getKeyGenerateAlgorithmName().isPresent()).forEach(each -> requiredKeyGenerators.add(each.getKeyGenerateAlgorithmSegment().getName()));
+                .filter(each -> !each.getKeyGenerateAlgorithmName().isPresent()).forEach(each -> requiredKeyGenerators.add(each.getKeyGenerateAlgorithmSegment()));
         ShardingSpherePreconditions.checkState(notExistKeyGenerator.isEmpty(), () -> new MissingRequiredAlgorithmException("key generator", notExistKeyGenerator));
-        Collection<String> invalidKeyGenerators = requiredKeyGenerators.stream()
-                .distinct().filter(each -> !TypedSPILoader.contains(KeyGenerateAlgorithm.class, each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(invalidKeyGenerators.isEmpty(), () -> new InvalidAlgorithmConfigurationException("key generator", invalidKeyGenerators));
+        requiredKeyGenerators.forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getName(), each.getProps()));
     }
     
     private static void checkAuditors(final Collection<AbstractTableRuleSegment> rules) {
         Collection<AuditStrategySegment> auditStrategySegments = rules.stream().map(AbstractTableRuleSegment::getAuditStrategySegment).filter(Objects::nonNull).collect(Collectors.toList());
-        Set<String> requiredAuditors = new LinkedHashSet<>();
+        Set<AlgorithmSegment> requiredAuditors = new LinkedHashSet<>();
         for (AuditStrategySegment each : auditStrategySegments) {
             requiredAuditors.addAll(each.getAuditorSegments().stream()
-                    .map(ShardingAuditorSegment::getAlgorithmSegment).collect(Collectors.toList()).stream().map(AlgorithmSegment::getName).collect(Collectors.toList()));
+                    .map(ShardingAuditorSegment::getAlgorithmSegment).collect(Collectors.toList()));
         }
-        Collection<String> invalidAuditors = requiredAuditors.stream()
-                .distinct().filter(each -> !TypedSPILoader.contains(ShardingAuditAlgorithm.class, each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(invalidAuditors.isEmpty(), () -> new InvalidAlgorithmConfigurationException("auditor", invalidAuditors));
+        requiredAuditors.forEach(each -> TypedSPILoader.checkService(ShardingAuditAlgorithm.class, each.getName(), each.getProps()));
     }
     
     private static void checkAutoTableRule(final Collection<AbstractTableRuleSegment> rules) {

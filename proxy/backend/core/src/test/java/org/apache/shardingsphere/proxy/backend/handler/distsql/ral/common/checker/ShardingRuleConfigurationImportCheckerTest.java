@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
@@ -53,12 +53,12 @@ public final class ShardingRuleConfigurationImportCheckerTest {
     
     @Test
     public void assertCheckKeyGenerators() {
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidKeyGeneratorRuleConfiguration()));
+        assertThrows(ServiceProviderNotFoundServerException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidKeyGeneratorRuleConfiguration()));
     }
     
     @Test
     public void assertCheckShardingAlgorithms() {
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidShardingAlgorithmRuleConfiguration()));
+        assertThrows(ServiceProviderNotFoundServerException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidShardingAlgorithmRuleConfiguration()));
     }
     
     private ShardingRuleConfiguration createDuplicatedTablesRuleConfiguration() {
