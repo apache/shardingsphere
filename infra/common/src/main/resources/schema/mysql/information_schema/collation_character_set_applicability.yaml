@@ -15,45 +15,21 @@
 # limitations under the License.
 #
 
-name: SCHEMATA
+name: COLLATION_CHARACTER_SET_APPLICABILITY
 columns:
-  catalog_name:
+  collation_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: CATALOG_NAME
+    name: COLLATION_NAME
     primaryKey: false
     unsigned: false
     visible: true
-  schema_name:
+  character_set_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: SCHEMA_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  default_character_set_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: DEFAULT_CHARACTER_SET_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  default_collation_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: DEFAULT_COLLATION_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  sql_path:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: SQL_PATH
+    name: CHARACTER_SET_NAME
     primaryKey: false
     unsigned: false
     visible: true

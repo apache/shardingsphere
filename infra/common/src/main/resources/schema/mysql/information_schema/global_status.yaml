@@ -15,45 +15,21 @@
 # limitations under the License.
 #
 
-name: SCHEMATA
+name: GLOBAL_STATUS
 columns:
-  catalog_name:
+  variable_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: CATALOG_NAME
+    name: VARIABLE_NAME
     primaryKey: false
     unsigned: false
     visible: true
-  schema_name:
+  variable_value:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: SCHEMA_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  default_character_set_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: DEFAULT_CHARACTER_SET_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  default_collation_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: DEFAULT_COLLATION_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  sql_path:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: SQL_PATH
+    name: VARIABLE_VALUE
     primaryKey: false
     unsigned: false
     visible: true

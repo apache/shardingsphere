@@ -23,6 +23,7 @@ columns:
     generated: false
     name: ENGINE
     primaryKey: false
+    unsigned: false
     visible: true
   support:
     caseSensitive: false
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: SUPPORT
     primaryKey: false
+    unsigned: false
     visible: true
   comment:
     caseSensitive: false
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: COMMENT
     primaryKey: false
+    unsigned: false
     visible: true
   transactions:
     caseSensitive: false
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: TRANSACTIONS
     primaryKey: false
+    unsigned: false
     visible: true
   xa:
     caseSensitive: false
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: XA
     primaryKey: false
+    unsigned: false
     visible: true
   savepoints:
     caseSensitive: false
@@ -58,4 +63,5 @@ columns:
     generated: false
     name: SAVEPOINTS
     primaryKey: false
+    unsigned: false
     visible: true
