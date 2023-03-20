@@ -273,7 +273,7 @@ public final class MigrationJobAPITest {
     @Test
     public void assertAddMigrationSourceResources() {
         PipelineDataSourcePersistService persistService = new PipelineDataSourcePersistService();
-        Map<String, DataSourceProperties> actual = persistService.load(new MigrationJobType());
+        Map<String, DataSourceProperties> actual = persistService.load(PipelineContextUtil.getContextKey(), new MigrationJobType());
         assertTrue(actual.containsKey("ds_0"));
     }
     
@@ -281,20 +281,20 @@ public final class MigrationJobAPITest {
     public void assertCreateJobConfigFailedOnMoreThanOneSourceTable() {
         List<SourceTargetEntry> sourceTargetEntries = Stream.of("t_order_0", "t_order_1")
                 .map(each -> new SourceTargetEntry("logic_db", new DataNode("ds_0", each), "t_order")).collect(Collectors.toList());
-        assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.createJobAndStart(new MigrateTableStatement(sourceTargetEntries, "logic_db")));
+        assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.createJobAndStart(PipelineContextUtil.getContextKey(), new MigrateTableStatement(sourceTargetEntries, "logic_db")));
     }
     
     @Test
     public void assertCreateJobConfigFailedOnDataSourceNotExist() {
         List<SourceTargetEntry> sourceTargetEntries = Collections.singletonList(new SourceTargetEntry("logic_db", new DataNode("ds_not_exists", "t_order"), "t_order"));
-        assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.createJobAndStart(new MigrateTableStatement(sourceTargetEntries, "logic_db")));
+        assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.createJobAndStart(PipelineContextUtil.getContextKey(), new MigrateTableStatement(sourceTargetEntries, "logic_db")));
     }
     
     @Test
     public void assertCreateJobConfig() throws SQLException {
         initIntPrimaryEnvironment();
         SourceTargetEntry sourceTargetEntry = new SourceTargetEntry("logic_db", new DataNode("ds_0", "t_order"), "t_order");
-        String jobId = jobAPI.createJobAndStart(new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), "logic_db"));
+        String jobId = jobAPI.createJobAndStart(PipelineContextUtil.getContextKey(), new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), "logic_db"));
         MigrationJobConfiguration actual = jobAPI.getJobConfiguration(jobId);
         assertThat(actual.getTargetDatabaseName(), is("logic_db"));
         List<JobDataNodeLine> dataNodeLines = actual.getJobShardingDataNodes();
@@ -309,7 +309,7 @@ public final class MigrationJobAPITest {
     }
     
     private void initIntPrimaryEnvironment() throws SQLException {
-        Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(new MigrationJobType());
+        Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(PipelineContextUtil.getContextKey(), new MigrationJobType());
         DataSourceProperties dataSourceProps = metaDataDataSource.get("ds_0");
         try (
                 PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(dataSourceProps), databaseType);
@@ -322,7 +322,7 @@ public final class MigrationJobAPITest {
     
     @Test
     public void assertShowMigrationSourceResources() {
-        Collection<Collection<Object>> actual = jobAPI.listMigrationSourceResources();
+        Collection<Collection<Object>> actual = jobAPI.listMigrationSourceResources(PipelineContextUtil.getContextKey());
         assertThat(actual.size(), is(1));
         Collection<Object> objects = actual.iterator().next();
         assertThat(objects.toArray()[0], is("ds_0"));

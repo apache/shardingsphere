@@ -30,10 +30,11 @@ public interface PipelineMetaDataPersistService<T> {
     /**
      * Load meta data.
      *
+     * @param contextKey context key
      * @param jobType job type, nullable
      * @return configurations
      */
-    T load(JobType jobType);
+    T load(PipelineContextKey contextKey, JobType jobType);
     
     /**
      * Persist meta data.

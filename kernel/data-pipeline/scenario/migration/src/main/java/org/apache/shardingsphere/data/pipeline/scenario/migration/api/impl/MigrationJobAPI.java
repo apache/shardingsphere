@@ -130,19 +130,20 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     /**
      * Create job migration config and start.
      *
+     * @param contextKey context key
      * @param param create migration job parameter
      * @return job id
      */
-    public String createJobAndStart(final MigrateTableStatement param) {
-        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(buildYamlJobConfiguration(param));
+    public String createJobAndStart(final PipelineContextKey contextKey, final MigrateTableStatement param) {
+        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(buildYamlJobConfiguration(contextKey, param));
         start(jobConfig);
         return jobConfig.getJobId();
     }
     
-    private YamlMigrationJobConfiguration buildYamlJobConfiguration(final MigrateTableStatement param) {
+    private YamlMigrationJobConfiguration buildYamlJobConfiguration(final PipelineContextKey contextKey, final MigrateTableStatement param) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setTargetDatabaseName(param.getTargetDatabaseName());
-        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(new MigrationJobType());
+        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, new MigrationJobType());
         Map<String, List<DataNode>> sourceDataNodes = new LinkedHashMap<>();
         Map<String, YamlPipelineDataSourceConfiguration> configSources = new LinkedHashMap<>();
         List<SourceTargetEntry> sourceTargetEntries = new ArrayList<>(new HashSet<>(param.getSourceTargetEntries())).stream().sorted(Comparator.comparing(SourceTargetEntry::getTargetTableName)
@@ -437,7 +438,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
      * @param dataSourcePropsMap data source properties map
      */
     public void addMigrationSourceResources(final PipelineContextKey contextKey, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(getJobType());
+        Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(contextKey, getJobType());
         Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourcePropsMap.size(), 1);
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             if (existDataSources.containsKey(entry.getKey())) {
@@ -457,7 +458,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
      * @param resourceNames resource names
      */
     public void dropMigrationSourceResources(final PipelineContextKey contextKey, final Collection<String> resourceNames) {
-        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(getJobType());
+        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, getJobType());
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(noExistResources.isEmpty(), () -> new UnregisterMigrationSourceStorageUnitException(noExistResources));
         for (String each : resourceNames) {
@@ -469,10 +470,11 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     /**
      * Query migration source resources list.
      *
+     * @param contextKey context key
      * @return migration source resources
      */
-    public Collection<Collection<Object>> listMigrationSourceResources() {
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = dataSourcePersistService.load(getJobType());
+    public Collection<Collection<Object>> listMigrationSourceResources(final PipelineContextKey contextKey) {
+        Map<String, DataSourceProperties> dataSourcePropertiesMap = dataSourcePersistService.load(contextKey, getJobType());
         Collection<Collection<Object>> result = new ArrayList<>(dataSourcePropertiesMap.size());
         for (Entry<String, DataSourceProperties> entry : dataSourcePropertiesMap.entrySet()) {
             String dataSourceName = entry.getKey();

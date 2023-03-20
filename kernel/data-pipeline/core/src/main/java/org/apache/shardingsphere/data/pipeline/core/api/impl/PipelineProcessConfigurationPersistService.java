@@ -35,8 +35,8 @@ public final class PipelineProcessConfigurationPersistService implements Pipelin
     private final YamlPipelineProcessConfigurationSwapper swapper = new YamlPipelineProcessConfigurationSwapper();
     
     @Override
-    public PipelineProcessConfiguration load(final JobType jobType) {
-        String yamlText = PipelineAPIFactory.getGovernanceRepositoryAPI().getMetaDataProcessConfiguration(jobType);
+    public PipelineProcessConfiguration load(final PipelineContextKey contextKey, final JobType jobType) {
+        String yamlText = PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getMetaDataProcessConfiguration(jobType);
         if (Strings.isNullOrEmpty(yamlText)) {
             return null;
         }

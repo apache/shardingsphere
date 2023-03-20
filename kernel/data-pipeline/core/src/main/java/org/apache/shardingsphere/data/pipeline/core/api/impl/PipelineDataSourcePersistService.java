@@ -40,8 +40,8 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
     
     @Override
     @SuppressWarnings("unchecked")
-    public Map<String, DataSourceProperties> load(final JobType jobType) {
-        String dataSourcesProps = PipelineAPIFactory.getGovernanceRepositoryAPI().getMetaDataDataSources(jobType);
+    public Map<String, DataSourceProperties> load(final PipelineContextKey contextKey, final JobType jobType) {
+        String dataSourcesProps = PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getMetaDataDataSources(jobType);
         if (Strings.isNullOrEmpty(dataSourcesProps)) {
             return Collections.emptyMap();
         }
