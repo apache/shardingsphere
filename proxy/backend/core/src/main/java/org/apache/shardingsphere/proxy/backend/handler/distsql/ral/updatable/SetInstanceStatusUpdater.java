@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.metadata.compute.event.ComputeNodeStatusChangedEvent;
+import org.apache.shardingsphere.mode.event.compute.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 /**
