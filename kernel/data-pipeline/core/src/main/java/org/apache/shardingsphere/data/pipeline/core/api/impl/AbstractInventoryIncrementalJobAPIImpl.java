@@ -41,6 +41,7 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsis
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtil;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgressSwapper;
@@ -88,13 +89,13 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     public abstract InventoryIncrementalProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     @Override
-    public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+    public void alterProcessConfiguration(final PipelineContextKey contextKey, final PipelineProcessConfiguration processConfig) {
         // TODO check rateLimiter type match or not
         processConfigPersistService.persist(getJobType(), processConfig);
     }
     
     @Override
-    public PipelineProcessConfiguration showProcessConfiguration() {
+    public PipelineProcessConfiguration showProcessConfiguration(final PipelineContextKey contextKey) {
         PipelineProcessConfiguration result = processConfigPersistService.load(getJobType());
         result = PipelineProcessConfigurationUtil.convertWithDefaultValue(result);
         return result;
