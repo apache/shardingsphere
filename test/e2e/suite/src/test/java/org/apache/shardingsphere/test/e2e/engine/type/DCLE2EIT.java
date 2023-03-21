@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
-import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
+import org.apache.shardingsphere.test.e2e.framework.E2EExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -40,7 +40,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 
-@ExtendWith(E2EITExtension.class)
+@ExtendWith(E2EExtension.class)
 @E2ETestCaseSettings(SQLCommandType.DCL)
 public final class DCLE2EIT {
     

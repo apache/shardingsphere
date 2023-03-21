@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
-import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
+import org.apache.shardingsphere.test.e2e.framework.E2EExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -50,7 +50,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(E2EITExtension.class)
+@ExtendWith(E2EExtension.class)
 @E2ETestCaseSettings(SQLCommandType.RAL)
 public final class RALE2EIT {
     
