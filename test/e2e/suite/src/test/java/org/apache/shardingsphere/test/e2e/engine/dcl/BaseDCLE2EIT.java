@@ -48,6 +48,9 @@ public abstract class BaseDCLE2EIT {
     
     @AfterEach
     public final void tearDown() throws Exception {
-        authorityEnvironmentManager.clean();
+        // TODO make sure DCL test case can not be null
+        if (null != authorityEnvironmentManager) {
+            authorityEnvironmentManager.clean();
+        }
     }
 }

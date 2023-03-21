@@ -75,7 +75,10 @@ public abstract class BaseDMLE2EIT {
     
     @AfterEach
     public final void tearDown() {
-        dataSetEnvironmentManager.cleanData();
+        // TODO make sure DML test case can not be null
+        if (null != dataSetEnvironmentManager) {
+            dataSetEnvironmentManager.cleanData();
+        }
     }
     
     protected final void assertDataSet(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer, final int actualUpdateCount) throws SQLException {

@@ -35,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 @ExtendWith(E2EITExtension.class)
@@ -44,6 +45,10 @@ public final class GeneralRALE2EIT extends BaseRALE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
+        // TODO make sure RAL test case can not be null
+        if (null == testParam.getTestCaseContext()) {
+            return;
+        }
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(containerComposer);
             assertExecute(containerComposer);
@@ -76,14 +81,16 @@ public final class GeneralRALE2EIT extends BaseRALE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter();
+        return E2ETestParameterFactory.containsTestParameter() && !E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RAL).isEmpty();
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RAL).stream().map(Arguments::of);
+            Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RAL);
+            // TODO make sure RAL test case can not be null
+            return result.isEmpty() ? Stream.of(Arguments.of(new AssertionTestParameter(null, null, null, null, null, null, null))) : result.stream().map(Arguments::of);
         }
     }
 }

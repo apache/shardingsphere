@@ -35,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -46,6 +47,10 @@ public final class GeneralRDLE2EIT extends BaseRDLE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
+        // TODO make sure RDL test case can not be null
+        if (null == testParam.getTestCaseContext()) {
+            return;
+        }
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(containerComposer);
             assertExecute(testParam, containerComposer);
@@ -75,14 +80,16 @@ public final class GeneralRDLE2EIT extends BaseRDLE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter();
+        return E2ETestParameterFactory.containsTestParameter() && !E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RDL).isEmpty();
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RDL).stream().map(Arguments::of);
+            Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RDL);
+            // TODO make sure RDL test case can not be null
+            return result.isEmpty() ? Stream.of(Arguments.of(new AssertionTestParameter(null, null, null, null, null, null, null))) : result.stream().map(Arguments::of);
         }
     }
 }

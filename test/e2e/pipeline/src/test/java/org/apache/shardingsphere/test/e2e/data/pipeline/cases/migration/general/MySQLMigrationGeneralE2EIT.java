@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.general
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -41,7 +40,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -82,7 +80,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             assertMigrationSuccessById(containerComposer, orderJobId, "DATA_MATCH");
             String orderItemJobId = getJobIdByTableName(containerComposer, "ds_0.t_order_item");
             assertMigrationSuccessById(containerComposer, orderItemJobId, "DATA_MATCH");
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
+            Thread.sleep(2000L);
             assertMigrationSuccessById(containerComposer, orderItemJobId, "CRC32_MATCH");
             for (String each : listJobId(containerComposer)) {
                 commitMigrationByJobId(containerComposer, each);

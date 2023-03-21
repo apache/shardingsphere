@@ -28,7 +28,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
@@ -74,12 +73,12 @@ public final class AgentTestActionExtension implements BeforeEachCallback {
     private void sleep() {
         if (!hasSleep) {
             log.info("Waiting to collect data ...");
-            TimeUnit.MILLISECONDS.sleep(getSleepTime());
+            Thread.sleep(getSleepMilliseconds());
             hasSleep = true;
         }
     }
     
-    private Long getSleepTime() {
+    private Long getSleepMilliseconds() {
         return Long.valueOf(E2ETestEnvironment.getInstance().getProps().getProperty("collect.data.wait.milliseconds", "0"));
     }
 }
