@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.util.InstanceTypeUtil;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobTypeFactory;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 import java.nio.charset.StandardCharsets;
 
@@ -45,10 +46,12 @@ public final class PipelineJobIdUtils {
      * @return job id common prefix
      */
     public static String marshalJobIdCommonPrefix(final PipelineJobId pipelineJobId) {
-        String databaseNameHex = Hex.encodeHexString(pipelineJobId.getContextKey().getDatabaseName().getBytes(StandardCharsets.UTF_8), true);
+        InstanceType instanceType = pipelineJobId.getContextKey().getInstanceType();
+        String databaseName = instanceType == InstanceType.PROXY ? "" : pipelineJobId.getContextKey().getDatabaseName();
+        String databaseNameHex = Hex.encodeHexString(databaseName.getBytes(StandardCharsets.UTF_8), true);
         String databaseNameLengthHex = Hex.encodeHexString(Shorts.toByteArray((short) databaseNameHex.length()), true);
-        char instanceType = InstanceTypeUtil.encode(pipelineJobId.getContextKey().getInstanceType());
-        return 'j' + pipelineJobId.getJobType().getTypeCode() + pipelineJobId.getFormatVersion() + instanceType + databaseNameLengthHex + databaseNameHex;
+        char encodedInstanceType = InstanceTypeUtil.encode(instanceType);
+        return 'j' + pipelineJobId.getJobType().getTypeCode() + pipelineJobId.getFormatVersion() + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
     }
     
     /**

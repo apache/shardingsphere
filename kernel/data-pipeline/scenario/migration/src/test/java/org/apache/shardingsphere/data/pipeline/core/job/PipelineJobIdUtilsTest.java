@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.jupiter.api.Test;
 
@@ -41,10 +42,10 @@ public final class PipelineJobIdUtilsTest {
     private void assertParse0(final InstanceType instanceType) {
         PipelineContextKey contextKey = PipelineContextKey.build(instanceType, "sharding_db");
         MigrationJobId pipelineJobId = new MigrationJobId(Collections.singletonList("t_order:ds_0.t_order_0,ds_0.t_order_1"), contextKey);
-        String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
+        String jobId = new MigrationJobAPI().marshalJobId(pipelineJobId);
         assertThat(PipelineJobIdUtils.parseJobType(jobId), instanceOf(MigrationJobType.class));
         PipelineContextKey actualContextKey = PipelineJobIdUtils.parseContextKey(jobId);
         assertThat(actualContextKey.getInstanceType(), is(instanceType));
-        assertThat(actualContextKey.getDatabaseName(), is("sharding_db"));
+        assertThat(actualContextKey.getDatabaseName(), is(instanceType == InstanceType.PROXY ? "" : "sharding_db"));
     }
 }
