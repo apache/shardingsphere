@@ -19,6 +19,7 @@ package org.apache.shardingsphere.globalclock.core.executor;
 
 import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -40,7 +41,7 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
     
     private GlobalClockTransactionExecutor globalClockTransactionExecutor;
     
-    private final LockDefinition lockDefinition = new GlobalLockDefinition("global_clock");
+    private final LockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.GLOBAL_LOCK.getLockName());
     
     private boolean enabled;
     
