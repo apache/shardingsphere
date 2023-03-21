@@ -32,7 +32,7 @@ on:
       - 'test/pom.xml'
       - 'test/e2e/fixture/**'
       - 'test/e2e/env/**'
-      - 'test/e2e/transaction/**'
+      - 'test/e2e/operation/transaction/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -48,7 +48,7 @@ on:
       - 'test/pom.xml'
       - 'test/e2e/fixture/**'
       - 'test/e2e/env/**'
-      - 'test/e2e/transaction/**'
+      - 'test/e2e/operation/transaction/**'
       - '!*.md'
   workflow_dispatch:
 
@@ -85,15 +85,15 @@ jobs:
           distribution: 'temurin'
           java-version: 11
       - name: Build Transaction IT image
-        run: ./mvnw -B clean install -am -pl test/e2e/transaction -Pit.env.docker -DskipTests
+        run: ./mvnw -B clean install -am -pl test/e2e/operation/transaction -Pit.env.docker -DskipTests
       - name: Setup JDK 8 for Test
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
       - name: Run MySQL Transaction E2E Test
-        run: ./mvnw -nsu -B install -f test/e2e/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.mysql.version=${{ env.mysql_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/operation/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.mysql.version=${{ env.mysql_version }}
       - name: Run PostgreSQL Transaction E2E Test
-        run: ./mvnw -nsu -B install -f test/e2e/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/operation/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
       - name: Run OpenGauss Transaction E2E Test
-        run: ./mvnw -nsu -B install -f test/e2e/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
+        run: ./mvnw -nsu -B install -f test/e2e/operation/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
