@@ -31,7 +31,7 @@
     <modules>
         <module>fixture</module>
         <module>env</module>
-        <module>suite</module>
+        <module>sql</module>
         <module>driver</module>
         <module>pipeline</module>
         <module>transaction</module>
