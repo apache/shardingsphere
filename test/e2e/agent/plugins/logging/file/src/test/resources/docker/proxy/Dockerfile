@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM eclipse-temurin:8-jdk
+FROM eclipse-temurin:11-jdk
 
 ARG APP_NAME
 ENV WAIT_VERSION 2.7.2
