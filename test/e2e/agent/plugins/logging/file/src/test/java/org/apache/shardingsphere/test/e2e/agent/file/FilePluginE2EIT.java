@@ -33,10 +33,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public final class FilePluginE2EIT {
     
     @Test
-    public void assertProxyWithAgent() {
-        assertTrue(new File(LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())).exists(), String.format("The file `%s` does not exist",
-                LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())));
+    public void assertWithAgent() {
+        assertTrue(new File(LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())).exists(),
+                String.format("The file `%s` does not exist", LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())));
         Collection<String> actualLogLines = LogLoader.getLogLines(E2ETestEnvironment.getInstance().isAdaptedProxy());
+        if (E2ETestEnvironment.getInstance().isAdaptedProxy()) {
+            assertProxyWithAgent(actualLogLines);
+        } else {
+            assertJdbcWithAgent(actualLogLines);
+        }
+    }
+    
+    private void assertProxyWithAgent(final Collection<String> actualLogLines) {
+        ContentAssert.assertIs(actualLogLines, "Build meta data contexts finished, cost\\s(?=[1-9]+\\d*)");
+    }
+    
+    private void assertJdbcWithAgent(final Collection<String> actualLogLines) {
         ContentAssert.assertIs(actualLogLines, "Build meta data contexts finished, cost\\s(?=[1-9]+\\d*)");
     }
 }

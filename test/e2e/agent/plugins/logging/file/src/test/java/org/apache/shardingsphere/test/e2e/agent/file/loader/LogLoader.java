@@ -74,7 +74,6 @@ public final class LogLoader {
      * @return log file path
      */
     public static String getLogFilePath(final boolean isAdaptedProxy) {
-        String path = isAdaptedProxy ? String.join(File.separator, "target", "logs", "stdout.log") : String.join(File.separator, "target", "jdbc-project", "logs", "stdout.log");
-        return String.join(File.separator, path);
+        return String.join(File.separator, Paths.get("").toAbsolutePath().toString(), String.join(File.separator, "target", isAdaptedProxy ? "proxy" : "jdbc", "logs", "stdout.log"));
     }
 }

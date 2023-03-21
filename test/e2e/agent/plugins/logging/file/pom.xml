@@ -30,6 +30,9 @@
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
         <mysql-connector-java.version>8.0.31</mysql-connector-java.version>
+        
+        <docker.proxy.context.directory>target/proxy</docker.proxy.context.directory>
+        <docker.proxy.compose.file>${project.basedir}/src/test/resources/docker/proxy/docker-compose.yml</docker.proxy.compose.file>
         <docker.jdbc.context.directory>target/jdbc</docker.jdbc.context.directory>
         <docker.jdbc.compose.file>${project.basedir}/src/test/resources/docker/jdbc/docker-compose.yml</docker.jdbc.compose.file>
     </properties>
@@ -73,7 +76,7 @@
     
     <profiles>
         <profile>
-            <id>it.env.file</id>
+            <id>it.env.proxy.file</id>
             <properties>
                 <it.env>file</it.env>
             </properties>
@@ -83,16 +86,37 @@
                         <artifactId>maven-resources-plugin</artifactId>
                         <executions>
                             <execution>
+                                <id>copy-dockerfile</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <outputDirectory>${docker.proxy.context.directory}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/test/resources/docker/proxy/</directory>
+                                            <includes>
+                                                <include>Dockerfile</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>copy-resources</id>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <phase>validate</phase>
                                 <configuration>
-                                    <outputDirectory>target/</outputDirectory>
+                                    <outputDirectory>${docker.proxy.context.directory}</outputDirectory>
                                     <resources>
                                         <resource>
                                             <directory>${project.basedir}/../../../../../../distribution/proxy/target/</directory>
+                                            <includes>
+                                                <include>${docker.proxy.distribution.name}.tar.gz</include>
+                                            </includes>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -107,8 +131,10 @@
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
                             <buildArgs>
-                                <APP_NAME>${docker.distribution.name}</APP_NAME>
+                                <APP_NAME>${docker.proxy.distribution.name}</APP_NAME>
                             </buildArgs>
+                            <contextDirectory>${docker.proxy.context.directory}</contextDirectory>
+                            <dockerfile>${docker.proxy.context.directory}/Dockerfile</dockerfile>
                         </configuration>
                         <executions>
                             <execution>
@@ -130,7 +156,7 @@
                                 </goals>
                                 <phase>pre-integration-test</phase>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
+                                    <composeFile>${docker.proxy.compose.file}</composeFile>
                                     <detachedMode>true</detachedMode>
                                 </configuration>
                             </execution>
@@ -141,7 +167,7 @@
                                 </goals>
                                 <phase>post-integration-test</phase>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
+                                    <composeFile>${docker.proxy.compose.file}</composeFile>
                                     <removeVolumes>true</removeVolumes>
                                 </configuration>
                             </execution>
@@ -152,7 +178,7 @@
         </profile>
         
         <profile>
-            <id>it.env.file.jdbc</id>
+            <id>it.env.jdbc.file</id>
             <properties>
                 <it.env>file</it.env>
             </properties>
@@ -162,7 +188,7 @@
                         <artifactId>maven-resources-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>copy-app-dockerfile</id>
+                                <id>copy-dockerfile</id>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
@@ -180,7 +206,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>copy-app-resources</id>
+                                <id>copy-resources</id>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>

@@ -97,6 +97,7 @@ public final class E2ETestEnvironment {
             log.info("Proxy with agent environment initialization failed ...");
             return false;
         }
+        log.info("Proxy with agent environment initialized successfully ...");
         return true;
     }
     
@@ -109,10 +110,9 @@ public final class E2ETestEnvironment {
                 Connection connection = DriverManager.getConnection(url, username, password);
                 Statement statement = connection.createStatement()) {
             statement.execute("SELECT 1");
-        } catch (final SQLException ignore) {
+        } catch (final SQLException ignored) {
             return false;
         }
-        log.info("Proxy with agent environment initialized successfully ...");
         return true;
     }
     
@@ -135,6 +135,7 @@ public final class E2ETestEnvironment {
             log.info("Jdbc project with agent environment initialization failed ...");
             return false;
         }
+        log.info("Jdbc project with agent environment initialized successfully ...");
         return true;
     }
     
@@ -144,11 +145,9 @@ public final class E2ETestEnvironment {
         String selectAllUrl = props.getProperty("jdbc.path.select.all");
         try {
             Response response = OkHttpUtils.getInstance().getResponse(String.join("", baseUrl, selectAllUrl));
-            log.info("count:{}", response.body().string());
             return response.isSuccessful();
-        } catch (final IOException ignore) {
+        } catch (final IOException ignored) {
         }
-        log.info("Jdbc project with agent environment initialized successfully ...");
         return false;
     }
 }
