@@ -25,11 +25,9 @@ import org.apache.shardingsphere.test.e2e.engine.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
-import org.apache.shardingsphere.test.e2e.framework.E2EExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -49,7 +47,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(E2EExtension.class)
 @E2ETestCaseSettings(SQLCommandType.DAL)
 public final class DALE2EIT {
     
