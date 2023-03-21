@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.e2e.engine.dcl;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
+import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
@@ -27,10 +29,7 @@ import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameter
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.xml.bind.JAXBException;
@@ -40,17 +39,16 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.stream.Stream;
 
 @ExtendWith(E2EITExtension.class)
+@E2ETestCaseSettings(SQLCommandType.DCL)
 public final class DCLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
-        // TODO make sure DCL test case can not be null
+        // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
         }
@@ -79,9 +77,9 @@ public final class DCLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
-        // TODO make sure DCL test case can not be null
+        // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
         }
@@ -110,15 +108,5 @@ public final class DCLE2EIT {
     
     private static boolean isEnabled() {
         return E2ETestParameterFactory.containsTestParameter();
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DCL);
-            // TODO make sure DCL test case can not be null
-            return result.isEmpty() ? Stream.of(Arguments.of(new AssertionTestParameter(null, null, null, null, null, null, null))) : result.stream().map(Arguments::of);
-        }
     }
 }

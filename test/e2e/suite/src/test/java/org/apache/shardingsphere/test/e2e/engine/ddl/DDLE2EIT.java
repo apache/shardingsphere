@@ -26,16 +26,15 @@ import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
+import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
@@ -51,7 +50,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -59,13 +57,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(E2EITExtension.class)
+@E2ETestCaseSettings(SQLCommandType.DDL)
 public final class DDLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException {
-        // TODO make sure DDL test case can not be null
+        // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
         }
@@ -99,9 +98,9 @@ public final class DDLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecute(final AssertionTestParameter testParam) throws Exception {
-        // TODO make sure DDL test case can not be null
+        // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
         }
@@ -292,15 +291,5 @@ public final class DDLE2EIT {
     
     private static boolean isEnabled() {
         return E2ETestParameterFactory.containsTestParameter();
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DDL);
-            // TODO make sure DDL test case can not be null
-            return result.isEmpty() ? Stream.of(Arguments.of(new AssertionTestParameter(null, null, null, null, null, null, null))) : result.stream().map(Arguments::of);
-        }
     }
 }
