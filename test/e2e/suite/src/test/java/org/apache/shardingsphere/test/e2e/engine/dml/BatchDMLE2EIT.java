@@ -49,7 +49,7 @@ public final class BatchDMLE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertExecuteBatch(final CaseTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
-        // TODO make sure DML test case can not be null
+        // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
         }
@@ -82,7 +82,7 @@ public final class BatchDMLE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     public void assertClearBatch(final CaseTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
-        // TODO make sure DML test case can not be null
+        // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
         }
@@ -108,7 +108,7 @@ public final class BatchDMLE2EIT {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             Collection<E2ETestParameter> result = E2ETestParameterFactory.getCaseTestParameters(SQLCommandType.DML);
-            // TODO make sure DML test case can not be null
+            // TODO make sure test case can not be null
             return result.isEmpty() ? Stream.of(Arguments.of(new CaseTestParameter(null, null, null, null, null))) : result.stream().map(Arguments::of);
         }
     }
