@@ -93,8 +93,8 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
                 return;
             }
             Map<String, Object> standardProperties = DataSourcePropertiesCreator.create(value).getConnectionPropertySynonyms().getStandardProperties();
-            ExportedStorageNode exportedStorageNode = new ExportedStorageNode(dataSourceMetaData.getHostname(), String.valueOf(dataSourceMetaData.getPort()), dataSourceMetaData.getCatalog(),
-                    String.valueOf(standardProperties.get("username")), String.valueOf(standardProperties.get("password")));
+            ExportedStorageNode exportedStorageNode = new ExportedStorageNode(dataSourceMetaData.getHostname(), String.valueOf(dataSourceMetaData.getPort()),
+                    String.valueOf(standardProperties.get("username")), String.valueOf(standardProperties.get("password")), dataSourceMetaData.getCatalog());
             storageNodes.put(databaseInstanceIp, exportedStorageNode);
         });
         return Collections.singletonMap(database.getName(), storageNodes.values());
