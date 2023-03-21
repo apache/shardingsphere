@@ -46,11 +46,6 @@ public class JdbcProjectApplication {
         return new DataSourceTransactionManager(dataSource);
     }
     
-    /**
-     * Main.
-     *
-     * @param args startup arguments
-     */
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {
         SpringApplication.run(JdbcProjectApplication.class, args);
