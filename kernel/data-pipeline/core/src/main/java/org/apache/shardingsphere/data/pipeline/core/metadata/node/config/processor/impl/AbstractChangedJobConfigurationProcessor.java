@@ -77,8 +77,9 @@ public abstract class AbstractChangedJobConfigurationProcessor implements Change
     
     protected void executeJob(final JobConfiguration jobConfig) {
         AbstractPipelineJob job = buildPipelineJob();
-        PipelineJobCenter.addJob(jobConfig.getJobName(), job);
-        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(job.getJobId())), job, jobConfig);
+        String jobId = jobConfig.getJobName();
+        PipelineJobCenter.addJob(jobId, job);
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfig);
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }

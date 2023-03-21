@@ -70,7 +70,7 @@ public final class JobConfigurationBuilder {
         result.setTargetTableSchemaMap(targetTableSchemaMap);
         result.setTablesFirstDataNodes("t_order:ds_0.t_order");
         result.setJobShardingDataNodes(Collections.singletonList("t_order:ds_0.t_order"));
-        result.setJobId(generateJobId(result));
+        result.setJobId(generateMigrationJobId(result));
         Map<String, YamlPipelineDataSourceConfiguration> sources = new LinkedHashMap<>();
         sources.put("ds_0", createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
         result.setSources(sources);
@@ -80,7 +80,7 @@ public final class JobConfigurationBuilder {
         return result;
     }
     
-    private static String generateJobId(final YamlMigrationJobConfiguration yamlJobConfig) {
+    private static String generateMigrationJobId(final YamlMigrationJobConfiguration yamlJobConfig) {
         PipelineContextKey contextKey = PipelineContextKey.build(InstanceType.PROXY, RandomStringUtils.randomAlphabetic(32));
         MigrationJobId migrationJobId = new MigrationJobId(yamlJobConfig.getJobShardingDataNodes(), contextKey);
         return new MigrationJobAPI().marshalJobId(migrationJobId);

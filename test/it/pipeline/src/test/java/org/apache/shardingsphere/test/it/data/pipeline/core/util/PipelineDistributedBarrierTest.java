@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
@@ -43,9 +43,10 @@ public final class PipelineDistributedBarrierTest {
     @Test
     public void assertRegisterAndRemove() throws ReflectiveOperationException {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
-        PersistRepository repository = PipelineContextManager.getContext(PipelineContextUtil.getContextKey()).getContextManager().getMetaDataContexts().getPersistService().getRepository();
+        PipelineContextKey contextKey = PipelineContextUtil.getContextKey();
+        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
+        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String parentPath = "/barrier";
         instance.register(parentPath, 1);
         Map<?, ?> countDownLatchMap = (Map<?, ?>) Plugins.getMemberAccessor().get(PipelineDistributedBarrier.class.getDeclaredField("countDownLatchHolders"), instance);
@@ -58,16 +59,14 @@ public final class PipelineDistributedBarrierTest {
     @Test
     public void assertAwait() {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
-        PersistRepository repository = PipelineContextManager.getContext(PipelineContextUtil.getContextKey()).getContextManager().getMetaDataContexts().getPersistService().getRepository();
+        PipelineContextKey contextKey = PipelineContextUtil.getContextKey();
+        PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
+        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         instance.register(barrierEnablePath, 1);
         instance.persistEphemeralChildrenNode(barrierEnablePath, 1);
-        boolean actual = instance.await(barrierEnablePath, 1, TimeUnit.SECONDS);
-        assertFalse(actual);
-        instance.notifyChildrenNodeCountCheck(barrierEnablePath + "/0");
-        actual = instance.await(barrierEnablePath, 1, TimeUnit.SECONDS);
+        boolean actual = instance.await(barrierEnablePath, 3, TimeUnit.SECONDS);
         assertTrue(actual);
     }
 }

@@ -97,7 +97,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
      * @return job id
      */
     public String createJobAndStart(final CreateConsistencyCheckJobParameter param) {
-        String parentJobId = param.getJobId();
+        String parentJobId = param.getParentJobId();
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(parentJobId));
         Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
         if (latestCheckJobId.isPresent()) {
@@ -124,16 +124,16 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
     /**
      * Get latest data consistency check result.
      *
-     * @param jobId job id
+     * @param parentJobId parent job id
      * @return latest data consistency check result
      */
-    public Map<String, DataConsistencyCheckResult> getLatestDataConsistencyCheckResult(final String jobId) {
-        GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId));
-        Optional<String> latestCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(jobId);
+    public Map<String, DataConsistencyCheckResult> getLatestDataConsistencyCheckResult(final String parentJobId) {
+        GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(parentJobId));
+        Optional<String> latestCheckJobId = governanceRepositoryAPI.getLatestCheckJobId(parentJobId);
         if (!latestCheckJobId.isPresent()) {
             return Collections.emptyMap();
         }
-        return governanceRepositoryAPI.getCheckJobResult(jobId, latestCheckJobId.get());
+        return governanceRepositoryAPI.getCheckJobResult(parentJobId, latestCheckJobId.get());
     }
     
     @Override
