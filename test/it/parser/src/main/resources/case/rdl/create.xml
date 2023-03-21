@@ -346,16 +346,18 @@
     
     <create-readwrite-splitting-rule sql-case-id="create-dynamic-readwrite-splitting-rule">
         <rule name="ms_group_1" auto-aware-resource="group_0">
-            <load-balancer algorithm-name="random">
-                <property key="read_weight" value="2:1" />
+            <load-balancer algorithm-name="WEIGHT">
+                <property key="test_read_ds_1" value="5" />
+                <property key="test_read_ds_2" value="5" />
             </load-balancer>
         </rule>
     </create-readwrite-splitting-rule>
     
     <create-readwrite-splitting-rule sql-case-id="create-dynamic-readwrite-splitting-rule-if-not-exists" if-not-exists="true">
         <rule name="ms_group_1" auto-aware-resource="group_0">
-            <load-balancer algorithm-name="random">
-                <property key="read_weight" value="2:1" />
+            <load-balancer algorithm-name="WEIGHT">
+                <property key="test_read_ds_1" value="5" />
+                <property key="test_read_ds_2" value="5" />
             </load-balancer>
         </rule>
     </create-readwrite-splitting-rule>
