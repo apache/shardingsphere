@@ -75,14 +75,15 @@ public abstract class BaseDQLE2EIT {
     }
     
     private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException, IOException, JAXBException {
-        if (!FILLED_SUITES.contains(testParam.getKey())) {
+        String cacheKey = testParam.getKey() + "-" + System.identityHashCode(containerComposer.getContainerComposer().getActualDataSourceMap());
+        if (!FILLED_SUITES.contains(cacheKey)) {
             synchronized (FILLED_SUITES) {
-                if (!FILLED_SUITES.contains(testParam.getKey())) {
+                if (!FILLED_SUITES.contains(cacheKey)) {
                     new DataSetEnvironmentManager(
                             new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getContainerComposer().getActualDataSourceMap()).fillData();
                     new DataSetEnvironmentManager(
                             new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.EXPECTED), containerComposer.getContainerComposer().getExpectedDataSourceMap()).fillData();
-                    FILLED_SUITES.add(testParam.getKey());
+                    FILLED_SUITES.add(cacheKey);
                 }
             }
         }
