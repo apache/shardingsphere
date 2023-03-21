@@ -32,8 +32,4 @@ public abstract class AbstractRestController {
     protected <T> HttpResult<T> success(final T data) {
         return new HttpResult<T>().toBuilder().code(ResultCode.SUCCESS.getCode()).message(ResultCode.SUCCESS.getMessage()).data(data).build();
     }
-    
-    protected HttpResult<String> failed(final String message) {
-        return new HttpResult<String>().toBuilder().code(ResultCode.FAIL.getCode()).message(message).build();
-    }
 }
