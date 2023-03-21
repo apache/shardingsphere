@@ -18,51 +18,86 @@
 package org.apache.shardingsphere.test.e2e.engine.rdl;
 
 import com.google.common.base.Splitter;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
+import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
+import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public abstract class BaseRDLE2EIT {
+@ExtendWith(E2EITExtension.class)
+public final class RDLE2EIT {
     
-    /**
-     * Init.
-     *
-     * @param containerComposer container composer
-     * @throws SQLException SQL exception
-     */
-    public final void init(final SingleE2EITContainerComposer containerComposer) throws SQLException {
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
+        // TODO make sure RDL test case can not be null
+        if (null == testParam.getTestCaseContext()) {
+            return;
+        }
+        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+            init(containerComposer);
+            assertExecute(testParam, containerComposer);
+            tearDown(containerComposer);
+        }
+    }
+    
+    private void assertExecute(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException {
+        assertNotNull(testParam.getAssertion().getAssertionSQL(), "Assertion SQL is required");
+        try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                executeSQLCase(containerComposer, statement);
+                waitCompleted();
+                assertResultSet(containerComposer, statement);
+            }
+        }
+    }
+    
+    private void executeSQLCase(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException, ParseException {
+        statement.execute(containerComposer.getSQL());
+    }
+    
+    private void init(final SingleE2EITContainerComposer containerComposer) throws SQLException {
         try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
             executeInitSQLs(containerComposer, connection);
         }
     }
     
-    /**
-     * Tear down.
-     *
-     * @param containerComposer container composer
-     * @throws SQLException SQL exception
-     */
-    public final void tearDown(final SingleE2EITContainerComposer containerComposer) throws SQLException {
+    private void tearDown(final SingleE2EITContainerComposer containerComposer) throws SQLException {
         if (null != containerComposer.getAssertion().getDestroySQL()) {
             try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
                 executeDestroySQLs(containerComposer, connection);
             }
         }
-        sleep();
+        waitCompleted();
     }
     
     private void executeInitSQLs(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException {
@@ -72,7 +107,7 @@ public abstract class BaseRDLE2EIT {
         for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
-                sleep();
+                waitCompleted();
             }
         }
     }
@@ -84,19 +119,18 @@ public abstract class BaseRDLE2EIT {
         for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
-                sleep();
+                waitCompleted();
             }
         }
     }
     
-    protected void sleep() {
-        try {
-            Thread.sleep(2000L);
-        } catch (final InterruptedException ignored) {
+    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(containerComposer.getAssertion().getAssertionSQL().getSql())) {
+            assertResultSet(containerComposer, resultSet);
         }
     }
     
-    protected final void assertResultSet(final SingleE2EITContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
+    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns(containerComposer));
         assertRows(resultSet, containerComposer.getDataSet().getRows());
     }
@@ -140,5 +174,24 @@ public abstract class BaseRDLE2EIT {
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
         assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         assertThat(String.valueOf(actual.getObject(columnLabel)), is(expected));
+    }
+    
+    @SneakyThrows(InterruptedException.class)
+    private void waitCompleted() {
+        Thread.sleep(2000L);
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestParameterFactory.containsTestParameter() && !E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RDL).isEmpty();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RDL);
+            // TODO make sure RDL test case can not be null
+            return result.isEmpty() ? Stream.of(Arguments.of(new AssertionTestParameter(null, null, null, null, null, null, null))) : result.stream().map(Arguments::of);
+        }
     }
 }

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.e2e.engine.dcl;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
@@ -42,7 +44,7 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 @ExtendWith(E2EITExtension.class)
-public final class GeneralDCLE2EIT extends BaseDCLE2EIT {
+public final class DCLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -52,8 +54,10 @@ public final class GeneralDCLE2EIT extends BaseDCLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
-            init(testParam, containerComposer);
+        try (
+                SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam);
+                AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getContainerComposer().getActualDataSourceMap(), testParam.getDatabaseType())) {
             assertExecuteUpdate(containerComposer);
         }
     }
@@ -81,8 +85,10 @@ public final class GeneralDCLE2EIT extends BaseDCLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
-            init(testParam, containerComposer);
+        try (
+                SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam);
+                AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getContainerComposer().getActualDataSourceMap(), testParam.getDatabaseType())) {
             assertExecute(containerComposer);
         }
     }

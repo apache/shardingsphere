@@ -21,38 +21,119 @@ import com.google.common.base.Splitter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
+import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
+import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public abstract class BaseDDLE2EIT {
+@ExtendWith(E2EITExtension.class)
+public final class DDLE2EIT {
     
-    /**
-     * Init.
-     * 
-     * @param containerComposer container composer
-     * @throws SQLException SQL exception
-     */
-    public final void init(final SingleE2EITContainerComposer containerComposer) throws SQLException {
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException {
+        // TODO make sure DDL test case can not be null
+        if (null == testParam.getTestCaseContext()) {
+            return;
+        }
+        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+            init(containerComposer);
+            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+                if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
+                    executeUpdateForStatement(containerComposer, connection);
+                } else {
+                    executeUpdateForPreparedStatement(containerComposer, connection);
+                }
+                assertTableMetaData(testParam, containerComposer);
+            }
+            tearDown(containerComposer);
+        }
+    }
+    
+    private void executeUpdateForStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+        try (Statement statement = connection.createStatement()) {
+            assertFalse(statement.executeUpdate(containerComposer.getSQL()) > 0, "Not a DDL statement.");
+        }
+        waitCompleted();
+    }
+    
+    private void executeUpdateForPreparedStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
+            assertFalse(preparedStatement.executeUpdate() > 0, "Not a DDL statement.");
+        }
+        waitCompleted();
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertExecute(final AssertionTestParameter testParam) throws Exception {
+        // TODO make sure DDL test case can not be null
+        if (null == testParam.getTestCaseContext()) {
+            return;
+        }
+        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+            init(containerComposer);
+            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+                if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
+                    executeForStatement(containerComposer, connection);
+                } else {
+                    executeForPreparedStatement(containerComposer, connection);
+                }
+                assertTableMetaData(testParam, containerComposer);
+            }
+            tearDown(containerComposer);
+        }
+    }
+    
+    private void executeForStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+        try (Statement statement = connection.createStatement()) {
+            assertFalse(statement.execute(containerComposer.getSQL()), "Not a DDL statement.");
+        }
+        waitCompleted();
+    }
+    
+    private void executeForPreparedStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
+            assertFalse(preparedStatement.execute(), "Not a DDL statement.");
+        }
+        waitCompleted();
+    }
+    
+    private void init(final SingleE2EITContainerComposer containerComposer) throws SQLException {
         assertNotNull(containerComposer.getAssertion().getInitialSQL(), "Init SQL is required");
         assertNotNull(containerComposer.getAssertion().getInitialSQL().getAffectedTable(), "Expected affected table is required");
         try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
@@ -60,7 +141,7 @@ public abstract class BaseDDLE2EIT {
         }
     }
     
-    private synchronized void executeInitSQLs(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException {
+    private void executeInitSQLs(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException {
         if (null == containerComposer.getAssertion().getInitialSQL().getSql()) {
             return;
         }
@@ -72,13 +153,7 @@ public abstract class BaseDDLE2EIT {
         }
     }
     
-    /**
-     * Tear down.
-     * 
-     * @param containerComposer container composer
-     * @throws SQLException SQL exception
-     */
-    public final void tearDown(final SingleE2EITContainerComposer containerComposer) throws SQLException {
+    private void tearDown(final SingleE2EITContainerComposer containerComposer) throws SQLException {
         if (null != containerComposer.getAssertion().getDestroySQL()) {
             try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
                 executeDestroySQLs(containerComposer, connection);
@@ -98,7 +173,7 @@ public abstract class BaseDDLE2EIT {
         }
     }
     
-    protected final void assertTableMetaData(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException {
+    private void assertTableMetaData(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException {
         String tableName = containerComposer.getAssertion().getInitialSQL().getAffectedTable();
         DataSetMetaData expected = containerComposer.getDataSet().findMetaData(tableName);
         Collection<DataNode> dataNodes = new InlineExpressionParser(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
@@ -211,7 +286,21 @@ public abstract class BaseDDLE2EIT {
     }
     
     @SneakyThrows(InterruptedException.class)
-    protected void waitCompleted() {
+    private void waitCompleted() {
         Thread.sleep(1500L);
+    }
+    
+    private static boolean isEnabled() {
+        return E2ETestParameterFactory.containsTestParameter();
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DDL);
+            // TODO make sure DDL test case can not be null
+            return result.isEmpty() ? Stream.of(Arguments.of(new AssertionTestParameter(null, null, null, null, null, null, null))) : result.stream().map(Arguments::of);
+        }
     }
 }
