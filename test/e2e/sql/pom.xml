@@ -24,7 +24,7 @@
         <artifactId>shardingsphere-test-e2e</artifactId>
         <version>5.3.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-e2e-suite</artifactId>
+    <artifactId>shardingsphere-test-e2e-sql</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
