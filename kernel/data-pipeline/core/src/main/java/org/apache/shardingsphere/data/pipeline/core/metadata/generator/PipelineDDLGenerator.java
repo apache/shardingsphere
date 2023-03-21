@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -72,7 +72,7 @@ public final class PipelineDDLGenerator {
      * @throws SQLException SQL exception 
      */
     public String generateLogicDDL(final DatabaseType databaseType, final DataSource sourceDataSource,
-                                   final String schemaName, final String sourceTableName, final String targetTableName, final ShardingSphereSQLParserEngine parserEngine) throws SQLException {
+                                   final String schemaName, final String sourceTableName, final String targetTableName, final SQLParserEngine parserEngine) throws SQLException {
         long startTimeMillis = System.currentTimeMillis();
         StringBuilder result = new StringBuilder();
         for (String each : PipelineTypedSPILoader.getDatabaseTypedService(CreateTableSQLGenerator.class, databaseType.getType()).generate(sourceDataSource, schemaName, sourceTableName)) {
@@ -85,7 +85,7 @@ public final class PipelineDDLGenerator {
     }
     
     private Optional<String> decorate(final DatabaseType databaseType, final DataSource dataSource, final String schemaName, final String targetTableName,
-                                      final ShardingSphereSQLParserEngine parserEngine, final String sql) throws SQLException {
+                                      final SQLParserEngine parserEngine, final String sql) throws SQLException {
         if (sql.trim().isEmpty()) {
             return Optional.empty();
         }
@@ -101,7 +101,7 @@ public final class PipelineDDLGenerator {
         return Optional.of(result);
     }
     
-    private String decorateActualSQL(final String databaseName, final String targetTableName, final ShardingSphereSQLParserEngine parserEngine, final String sql) {
+    private String decorateActualSQL(final String databaseName, final String targetTableName, final SQLParserEngine parserEngine, final String sql) {
         QueryContext queryContext = getQueryContext(databaseName, parserEngine, sql);
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
@@ -123,7 +123,7 @@ public final class PipelineDDLGenerator {
         return doDecorateActualTable(replaceMap, sql);
     }
     
-    private QueryContext getQueryContext(final String databaseName, final ShardingSphereSQLParserEngine parserEngine, final String sql) {
+    private QueryContext getQueryContext(final String databaseName, final SQLParserEngine parserEngine, final String sql) {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, parserEngine.parse(sql, false), databaseName);
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList());
     }
@@ -173,14 +173,14 @@ public final class PipelineDDLGenerator {
     
     // TODO remove it after set search_path is supported.
     private Optional<String> decorateOpenGauss(final String databaseName, final String schemaName, final String queryContext,
-                                               final ShardingSphereSQLParserEngine parserEngine) {
+                                               final SQLParserEngine parserEngine) {
         if (queryContext.toLowerCase().startsWith(SET_SEARCH_PATH_PREFIX)) {
             return Optional.empty();
         }
         return Optional.of(replaceTableNameWithPrefix(queryContext, schemaName + ".", databaseName, parserEngine));
     }
     
-    private String replaceTableNameWithPrefix(final String sql, final String prefix, final String databaseName, final ShardingSphereSQLParserEngine parserEngine) {
+    private String replaceTableNameWithPrefix(final String sql, final String prefix, final String databaseName, final SQLParserEngine parserEngine) {
         QueryContext queryContext = getQueryContext(databaseName, parserEngine, sql);
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         if (sqlStatementContext instanceof CreateTableStatementContext || sqlStatementContext instanceof CommentStatementContext

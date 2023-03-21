@@ -15,24 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.infra.parser.SQLParserEngine;
+package org.apache.shardingsphere.sql.parser.sql.common.statement;
 
 /**
- * Prepare target tables parameter.
+ * Simple SQL statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PrepareTargetTablesParameter {
+public final class SimpleSQLStatement implements SQLStatement {
     
-    private final CreateTableConfiguration createTableConfig;
-    
-    private final PipelineDataSourceManager dataSourceManager;
-    
-    private final SQLParserEngine sqlParserEngine;
+    @Override
+    public int getParameterCount() {
+        return 0;
+    }
 }
