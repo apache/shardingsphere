@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine;
+package org.apache.shardingsphere.test.e2e.engine.composer;
 
-import lombok.Getter;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
@@ -54,26 +54,23 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Batch E2E IT container composer.
+ * Batch E2E container composer.
  */
-public final class BatchE2EITContainerComposer implements AutoCloseable {
+public final class BatchE2EContainerComposer extends E2EContainerComposer {
     
-    private final CaseTestParameter testParam;
-    
-    @Getter
-    private final E2EContainerComposer containerComposer;
+    private final DatabaseType databaseType;
     
     private final Collection<DataSet> dataSets = new LinkedList<>();
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BatchE2EITContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException, SQLException, ParseException {
-        this.testParam = testParam;
-        containerComposer = new E2EContainerComposer(testParam);
+    public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException, SQLException, ParseException {
+        super(testParam);
+        databaseType = testParam.getDatabaseType();
         for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(testParam.getTestCaseContext().getParentPath(), testParam.getScenario(), testParam.getDatabaseType(), testParam.getMode(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getActualDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
     }
     
@@ -89,7 +86,7 @@ public final class BatchE2EITContainerComposer implements AutoCloseable {
         DataSetMetaData expectedDataSetMetaData = expected.getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());
+            DataSource dataSource = getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
@@ -164,7 +161,7 @@ public final class BatchE2EITContainerComposer implements AutoCloseable {
                         assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actual.getDate(columnIndex)), is(expected));
                     }
                 } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
-                        && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType()))) {
+                        && ("PostgreSQL".equals(databaseType.getType()) || "openGauss".equals(databaseType.getType()))) {
                     assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
                 } else if (isPostgreSQLOrOpenGaussMoney(actual.getMetaData().getColumnTypeName(columnIndex))) {
                     assertThat(actual.getString(columnIndex), is(expected));
@@ -181,12 +178,12 @@ public final class BatchE2EITContainerComposer implements AutoCloseable {
     }
     
     private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName) {
-        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType()));
+        return "money".equalsIgnoreCase(columnTypeName) && ("PostgreSQL".equals(databaseType.getType()) || "openGauss".equals(databaseType.getType()));
     }
     
     @Override
     public void close() {
         dataSetEnvironmentManager.cleanData();
-        E2EContainerComposer.closeContainers();
+        super.close();
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.engine.type.dml;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
-import org.apache.shardingsphere.test.e2e.engine.BatchE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.BatchE2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
@@ -50,9 +50,9 @@ public final class BatchDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (BatchE2EITContainerComposer containerComposer = new BatchE2EITContainerComposer(testParam)) {
+        try (BatchE2EContainerComposer containerComposer = new BatchE2EContainerComposer(testParam)) {
             int[] actualUpdateCounts;
-            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+            try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
                 actualUpdateCounts = executeBatchForPreparedStatement(testParam, connection);
             }
             containerComposer.assertDataSets(actualUpdateCounts);
@@ -83,9 +83,9 @@ public final class BatchDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (BatchE2EITContainerComposer containerComposer = new BatchE2EITContainerComposer(testParam)) {
+        try (BatchE2EContainerComposer containerComposer = new BatchE2EContainerComposer(testParam)) {
             try (
-                    Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection();
+                    Connection connection = containerComposer.getTargetDataSource().getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(testParam.getTestCaseContext().getTestCase().getSql())) {
                 for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
                     addBatch(preparedStatement, each);

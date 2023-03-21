@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
@@ -52,7 +52,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
             if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
@@ -74,7 +74,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
             if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
@@ -96,7 +96,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
             if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
@@ -118,7 +118,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
             if (isPostgreSQLOrOpenGauss(testParam.getDatabaseType().getType())) {
@@ -137,13 +137,13 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     }
     
     private void assertExecuteQueryWithXMLExpected(final AssertionTestParameter testParam,
-                                                   final SingleE2EITContainerComposer containerComposer, final int... resultSetTypes) throws SQLException, ParseException {
+                                                   final SingleE2EContainerComposer containerComposer, final int... resultSetTypes) throws SQLException, ParseException {
         // TODO Fix jdbc adapter
         if ("jdbc".equals(testParam.getAdapter())) {
             return;
         }
         try (
-                Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection();
+                Connection connection = containerComposer.getTargetDataSource().getConnection();
                 Statement statement = 2 == resultSetTypes.length ? connection.createStatement(resultSetTypes[0], resultSetTypes[1])
                         : connection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2]);
                 ResultSet resultSet = statement.executeQuery(containerComposer.getSQL())) {
@@ -151,9 +151,9 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteQueryWithExpectedDataSource(final SingleE2EITContainerComposer containerComposer, final int... resultSetTypes) throws SQLException, ParseException {
+    private void assertExecuteQueryWithExpectedDataSource(final SingleE2EContainerComposer containerComposer, final int... resultSetTypes) throws SQLException, ParseException {
         try (
-                Connection actualConnection = containerComposer.getContainerComposer().getTargetDataSource().getConnection();
+                Connection actualConnection = containerComposer.getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
                 assertExecuteQueryForStatementWithResultSetTypes(containerComposer, actualConnection, expectedConnection, resultSetTypes);
@@ -163,7 +163,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteQueryForStatementWithResultSetTypes(final SingleE2EITContainerComposer containerComposer,
+    private void assertExecuteQueryForStatementWithResultSetTypes(final SingleE2EContainerComposer containerComposer,
                                                                   final Connection actualConnection, final Connection expectedConnection,
                                                                   final int... resultSetTypes) throws SQLException, ParseException {
         try (
@@ -177,7 +177,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteQueryForPreparedStatementWithResultSetTypes(final SingleE2EITContainerComposer containerComposer, final Connection actualConnection, final Connection expectedConnection,
+    private void assertExecuteQueryForPreparedStatementWithResultSetTypes(final SingleE2EContainerComposer containerComposer, final Connection actualConnection, final Connection expectedConnection,
                                                                           final int... resultSetTypes) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = 2 == resultSetTypes.length ? actualConnection.prepareStatement(containerComposer.getSQL(), resultSetTypes[0], resultSetTypes[1])
@@ -197,13 +197,13 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     }
     
     private void assertExecuteWithXMLExpected(final AssertionTestParameter testParam,
-                                              final SingleE2EITContainerComposer containerComposer, final int... resultSetTypes) throws SQLException, ParseException {
+                                              final SingleE2EContainerComposer containerComposer, final int... resultSetTypes) throws SQLException, ParseException {
         // TODO Fix jdbc adapter
         if ("jdbc".equals(testParam.getAdapter())) {
             return;
         }
         try (
-                Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection();
+                Connection connection = containerComposer.getTargetDataSource().getConnection();
                 Statement statement = 2 == resultSetTypes.length ? connection.createStatement(resultSetTypes[0], resultSetTypes[1])
                         : connection.createStatement(resultSetTypes[0], resultSetTypes[1], resultSetTypes[2])) {
             assertTrue(statement.execute(containerComposer.getSQL()), "Not a query statement.");
@@ -212,9 +212,9 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteWithExpectedDataSource(final SingleE2EITContainerComposer containerComposer, final int... resultSetTypes) throws SQLException, ParseException {
+    private void assertExecuteWithExpectedDataSource(final SingleE2EContainerComposer containerComposer, final int... resultSetTypes) throws SQLException, ParseException {
         try (
-                Connection actualConnection = containerComposer.getContainerComposer().getTargetDataSource().getConnection();
+                Connection actualConnection = containerComposer.getTargetDataSource().getConnection();
                 Connection expectedConnection = getExpectedDataSource().getConnection()) {
             if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
                 assertExecuteForStatementWithResultSetTypes(containerComposer, actualConnection, expectedConnection, resultSetTypes);
@@ -224,7 +224,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteForStatementWithResultSetTypes(final SingleE2EITContainerComposer containerComposer,
+    private void assertExecuteForStatementWithResultSetTypes(final SingleE2EContainerComposer containerComposer,
                                                              final Connection actualConnection, final Connection expectedConnection, final int... resultSetTypes) throws SQLException, ParseException {
         try (
                 Statement actualStatement = 2 == resultSetTypes.length ? actualConnection.createStatement(resultSetTypes[0], resultSetTypes[1])
@@ -240,7 +240,7 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
         }
     }
     
-    private void assertExecuteForPreparedStatementWithResultSetTypes(final SingleE2EITContainerComposer containerComposer, final Connection actualConnection, final Connection expectedConnection,
+    private void assertExecuteForPreparedStatementWithResultSetTypes(final SingleE2EContainerComposer containerComposer, final Connection actualConnection, final Connection expectedConnection,
                                                                      final int... resultSetTypes) throws SQLException, ParseException {
         try (
                 PreparedStatement actualPreparedStatement = 2 == resultSetTypes.length ? actualConnection.prepareStatement(containerComposer.getSQL(), resultSetTypes[0], resultSetTypes[1])

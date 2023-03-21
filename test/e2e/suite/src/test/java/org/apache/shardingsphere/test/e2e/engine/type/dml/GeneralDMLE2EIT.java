@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -50,10 +50,10 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
             init(testParam, containerComposer);
             int actualUpdateCount;
-            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+            try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
                 actualUpdateCount = SQLExecuteType.Literal == containerComposer.getSqlExecuteType()
                         ? executeUpdateForStatement(containerComposer, connection)
                         : executeUpdateForPreparedStatement(containerComposer, connection);
@@ -62,13 +62,13 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    private int executeUpdateForStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private int executeUpdateForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
             return statement.executeUpdate(containerComposer.getSQL());
         }
     }
     
-    private int executeUpdateForPreparedStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private int executeUpdateForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
             for (SQLValue each : containerComposer.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -85,10 +85,10 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
             init(testParam, containerComposer);
             int actualUpdateCount;
-            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+            try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
                 actualUpdateCount = SQLExecuteType.Literal == containerComposer.getSqlExecuteType()
                         ? executeForStatement(containerComposer, connection)
                         : executeForPreparedStatement(containerComposer, connection);
@@ -97,14 +97,14 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    private int executeForStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private int executeForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
             assertFalse(statement.execute(containerComposer.getSQL()), "Not a DML statement.");
             return statement.getUpdateCount();
         }
     }
     
-    private int executeForPreparedStatement(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private int executeForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
             for (SQLValue each : containerComposer.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());

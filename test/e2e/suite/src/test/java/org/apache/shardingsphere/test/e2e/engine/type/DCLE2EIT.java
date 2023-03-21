@@ -21,7 +21,7 @@ import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
@@ -50,16 +50,16 @@ public final class DCLE2EIT {
             return;
         }
         try (
-                SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam);
+                SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
-                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getContainerComposer().getActualDataSourceMap(), testParam.getDatabaseType())) {
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getActualDataSourceMap(), testParam.getDatabaseType())) {
             assertExecuteUpdate(containerComposer);
         }
     }
     
-    private void assertExecuteUpdate(final SingleE2EITContainerComposer containerComposer) throws ParseException, SQLException {
+    private void assertExecuteUpdate(final SingleE2EContainerComposer containerComposer) throws ParseException, SQLException {
         String sql = containerComposer.getSQL();
-        try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.executeUpdate(sql);
@@ -81,16 +81,16 @@ public final class DCLE2EIT {
             return;
         }
         try (
-                SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam);
+                SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam);
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
-                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getContainerComposer().getActualDataSourceMap(), testParam.getDatabaseType())) {
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getActualDataSourceMap(), testParam.getDatabaseType())) {
             assertExecute(containerComposer);
         }
     }
     
-    private void assertExecute(final SingleE2EITContainerComposer containerComposer) throws ParseException, SQLException {
+    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws ParseException, SQLException {
         String sql = containerComposer.getSQL();
-        try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == containerComposer.getSqlExecuteType()) {
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(sql);

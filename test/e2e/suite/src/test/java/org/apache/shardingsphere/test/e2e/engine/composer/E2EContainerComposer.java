@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine;
+package org.apache.shardingsphere.test.e2e.engine.composer;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposerRegistry;
+import org.apache.shardingsphere.test.e2e.engine.TotalSuitesCountCalculator;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.h2.tools.RunScript;
@@ -38,8 +39,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * E2E container composer.
+ */
 @Getter
-public final class E2EContainerComposer {
+public abstract class E2EContainerComposer implements AutoCloseable {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
@@ -94,10 +98,8 @@ public final class E2EContainerComposer {
         }
     }
     
-    /**
-     * Close containers.
-     */
-    public static void closeContainers() {
+    @Override
+    public void close() {
         if (COMPLETED_SUITES_COUNT.incrementAndGet() == TOTAL_SUITES_COUNT) {
             CONTAINER_COMPOSER_REGISTRY.close();
         }

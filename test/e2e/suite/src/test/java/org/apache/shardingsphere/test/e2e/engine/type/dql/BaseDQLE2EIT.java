@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
@@ -66,23 +66,23 @@ public abstract class BaseDQLE2EIT {
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public final void init(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException, IOException, JAXBException {
+    public final void init(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, ParseException, IOException, JAXBException {
         fillDataOnlyOnce(testParam, containerComposer);
-        expectedDataSource = null == containerComposer.getAssertion().getExpectedDataSourceName() || 1 == containerComposer.getContainerComposer().getExpectedDataSourceMap().size()
-                ? containerComposer.getContainerComposer().getExpectedDataSourceMap().values().iterator().next()
-                : containerComposer.getContainerComposer().getExpectedDataSourceMap().get(containerComposer.getAssertion().getExpectedDataSourceName());
+        expectedDataSource = null == containerComposer.getAssertion().getExpectedDataSourceName() || 1 == containerComposer.getExpectedDataSourceMap().size()
+                ? containerComposer.getExpectedDataSourceMap().values().iterator().next()
+                : containerComposer.getExpectedDataSourceMap().get(containerComposer.getAssertion().getExpectedDataSourceName());
         useXMLAsExpectedDataset = null != containerComposer.getAssertion().getExpectedDataFile();
     }
     
-    private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException, IOException, JAXBException {
-        String cacheKey = testParam.getKey() + "-" + System.identityHashCode(containerComposer.getContainerComposer().getActualDataSourceMap());
+    private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, ParseException, IOException, JAXBException {
+        String cacheKey = testParam.getKey() + "-" + System.identityHashCode(containerComposer.getActualDataSourceMap());
         if (!FILLED_SUITES.contains(cacheKey)) {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(cacheKey)) {
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getContainerComposer().getActualDataSourceMap()).fillData();
+                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getActualDataSourceMap()).fillData();
                     new DataSetEnvironmentManager(
-                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.EXPECTED), containerComposer.getContainerComposer().getExpectedDataSourceMap()).fillData();
+                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.EXPECTED), containerComposer.getExpectedDataSourceMap()).fillData();
                     FILLED_SUITES.add(cacheKey);
                 }
             }
@@ -94,12 +94,12 @@ public abstract class BaseDQLE2EIT {
         assertRows(actualResultSet, expectedResultSet);
     }
     
-    protected final void assertResultSet(final SingleE2EITContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
+    protected final void assertResultSet(final SingleE2EContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns(containerComposer));
         assertRows(resultSet, getNotAssertionColumns(containerComposer), containerComposer.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EITContainerComposer containerComposer) {
+    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EContainerComposer containerComposer) {
         Collection<DataSetColumn> result = new LinkedList<>();
         for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
@@ -107,7 +107,7 @@ public abstract class BaseDQLE2EIT {
         return result;
     }
     
-    private Collection<String> getNotAssertionColumns(final SingleE2EITContainerComposer containerComposer) {
+    private Collection<String> getNotAssertionColumns(final SingleE2EContainerComposer containerComposer) {
         Collection<String> result = new LinkedList<>();
         for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns().stream().filter(column -> "false".equals(column.getAssertion())).map(DataSetColumn::getName).collect(Collectors.toList()));

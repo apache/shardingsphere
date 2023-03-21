@@ -21,10 +21,10 @@ import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.E2EContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -58,13 +58,13 @@ public final class DALE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
             assertExecute(containerComposer);
         }
     }
     
-    private void assertExecute(final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException {
-        try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException, ParseException {
+        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(containerComposer.getSQL());
                 assertExecuteResult(containerComposer, statement);
@@ -72,7 +72,7 @@ public final class DALE2EIT {
         }
     }
     
-    private void assertExecuteResult(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException {
+    private void assertExecuteResult(final SingleE2EContainerComposer containerComposer, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.getResultSet()) {
             if (null == containerComposer.getAssertion().getAssertionSQL()) {
                 assertResultSet(containerComposer, resultSet);
@@ -85,12 +85,12 @@ public final class DALE2EIT {
         }
     }
     
-    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
+    private void assertResultSet(final SingleE2EContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns(containerComposer));
         assertRows(resultSet, containerComposer.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EITContainerComposer containerComposer) {
+    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EContainerComposer containerComposer) {
         Collection<DataSetColumn> result = new LinkedList<>();
         for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());

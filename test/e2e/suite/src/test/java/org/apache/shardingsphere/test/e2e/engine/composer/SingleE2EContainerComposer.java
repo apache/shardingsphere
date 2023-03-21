@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine;
+package org.apache.shardingsphere.test.e2e.engine.composer;
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
@@ -31,14 +31,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Single E2E IT container composer.
+ * Single E2E container composer.
  */
 @Getter
-public final class SingleE2EITContainerComposer implements AutoCloseable {
+public final class SingleE2EContainerComposer extends E2EContainerComposer {
     
     private final String sql;
-    
-    private final E2EContainerComposer containerComposer;
     
     private final SQLExecuteType sqlExecuteType;
     
@@ -48,9 +46,9 @@ public final class SingleE2EITContainerComposer implements AutoCloseable {
     
     private final DataSet generatedKeyDataSet;
     
-    public SingleE2EITContainerComposer(final AssertionTestParameter testParam) {
+    public SingleE2EContainerComposer(final AssertionTestParameter testParam) {
+        super(testParam);
         sql = testParam.getTestCaseContext().getTestCase().getSql();
-        containerComposer = new E2EContainerComposer(testParam);
         sqlExecuteType = testParam.getSqlExecuteType();
         assertion = testParam.getAssertion();
         dataSet = null == assertion || null == assertion.getExpectedDataFile()
@@ -64,6 +62,7 @@ public final class SingleE2EITContainerComposer implements AutoCloseable {
     
     /**
      * Get SQL.
+     * 
      * @return SQL
      * @throws ParseException parse exception
      */
@@ -74,10 +73,5 @@ public final class SingleE2EITContainerComposer implements AutoCloseable {
     private String getLiteralSQL(final String sql) throws ParseException {
         List<Object> params = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
         return params.isEmpty() ? sql : String.format(sql.replace("%", "ÿ").replace("?", "%s"), params.toArray()).replace("ÿ", "%").replace("%%", "%").replace("'%'", "'%%'");
-    }
-    
-    @Override
-    public void close() {
-        E2EContainerComposer.closeContainers();
     }
 }

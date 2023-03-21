@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -59,16 +59,16 @@ public final class RDLE2EIT {
         if (null == testParam.getTestCaseContext()) {
             return;
         }
-        try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
+        try (SingleE2EContainerComposer containerComposer = new SingleE2EContainerComposer(testParam)) {
             init(containerComposer);
             assertExecute(testParam, containerComposer);
             tearDown(containerComposer);
         }
     }
     
-    private void assertExecute(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException {
+    private void assertExecute(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, ParseException {
         assertNotNull(testParam.getAssertion().getAssertionSQL(), "Assertion SQL is required");
-        try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(containerComposer, statement);
                 waitCompleted();
@@ -77,26 +77,26 @@ public final class RDLE2EIT {
         }
     }
     
-    private void executeSQLCase(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException, ParseException {
+    private void executeSQLCase(final SingleE2EContainerComposer containerComposer, final Statement statement) throws SQLException, ParseException {
         statement.execute(containerComposer.getSQL());
     }
     
-    private void init(final SingleE2EITContainerComposer containerComposer) throws SQLException {
-        try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+    private void init(final SingleE2EContainerComposer containerComposer) throws SQLException {
+        try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             executeInitSQLs(containerComposer, connection);
         }
     }
     
-    private void tearDown(final SingleE2EITContainerComposer containerComposer) throws SQLException {
+    private void tearDown(final SingleE2EContainerComposer containerComposer) throws SQLException {
         if (null != containerComposer.getAssertion().getDestroySQL()) {
-            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+            try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
                 executeDestroySQLs(containerComposer, connection);
             }
         }
         waitCompleted();
     }
     
-    private void executeInitSQLs(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException {
+    private void executeInitSQLs(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         if (null == containerComposer.getAssertion().getInitialSQL() || null == containerComposer.getAssertion().getInitialSQL().getSql()) {
             return;
         }
@@ -108,7 +108,7 @@ public final class RDLE2EIT {
         }
     }
     
-    private void executeDestroySQLs(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException {
+    private void executeDestroySQLs(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         if (null == containerComposer.getAssertion().getDestroySQL().getSql()) {
             return;
         }
@@ -120,18 +120,18 @@ public final class RDLE2EIT {
         }
     }
     
-    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException {
+    private void assertResultSet(final SingleE2EContainerComposer containerComposer, final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(containerComposer.getAssertion().getAssertionSQL().getSql())) {
             assertResultSet(containerComposer, resultSet);
         }
     }
     
-    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
+    private void assertResultSet(final SingleE2EContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns(containerComposer));
         assertRows(resultSet, containerComposer.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EITContainerComposer containerComposer) {
+    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EContainerComposer containerComposer) {
         Collection<DataSetColumn> result = new LinkedList<>();
         for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
