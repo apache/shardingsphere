@@ -78,34 +78,10 @@ public final class RALE2EIT {
         }
     }
     
-    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException, ParseException {
-        if (null == containerComposer.getAssertion().getAssertionSQL()) {
-            assertResultSet(containerComposer, statement, containerComposer.getSQL());
-        } else {
-            statement.execute(containerComposer.getSQL());
-            sleep(2000L);
-            assertResultSet(containerComposer, statement, containerComposer.getAssertion().getAssertionSQL().getSql());
-        }
-    }
-    
-    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final Statement statement, final String sql) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(sql)) {
-            assertResultSet(containerComposer, resultSet);
-        }
-    }
-    
     private void init(final SingleE2EITContainerComposer containerComposer) throws SQLException {
         if (null != containerComposer.getAssertion().getInitialSQL()) {
             try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
                 executeInitSQLs(containerComposer, connection);
-            }
-        }
-    }
-    
-    private void tearDown(final SingleE2EITContainerComposer containerComposer) throws SQLException {
-        if (null != containerComposer.getAssertion().getDestroySQL()) {
-            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
-                executeDestroySQLs(containerComposer, connection);
             }
         }
     }
@@ -119,7 +95,15 @@ public final class RALE2EIT {
                 preparedStatement.executeUpdate();
             }
         }
-        sleep(1000L);
+        waitCompleted(1000L);
+    }
+    
+    private void tearDown(final SingleE2EITContainerComposer containerComposer) throws SQLException {
+        if (null != containerComposer.getAssertion().getDestroySQL()) {
+            try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
+                executeDestroySQLs(containerComposer, connection);
+            }
+        }
     }
     
     private void executeDestroySQLs(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException {
@@ -131,12 +115,23 @@ public final class RALE2EIT {
                 preparedStatement.executeUpdate();
             }
         }
-        sleep(1000L);
+        waitCompleted(1000L);
     }
     
-    @SneakyThrows(InterruptedException.class)
-    private void sleep(final long timeoutMillis) {
-        Thread.sleep(timeoutMillis);
+    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException, ParseException {
+        if (null == containerComposer.getAssertion().getAssertionSQL()) {
+            assertResultSet(containerComposer, statement, containerComposer.getSQL());
+        } else {
+            statement.execute(containerComposer.getSQL());
+            waitCompleted(2000L);
+            assertResultSet(containerComposer, statement, containerComposer.getAssertion().getAssertionSQL().getSql());
+        }
+    }
+    
+    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final Statement statement, final String sql) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(sql)) {
+            assertResultSet(containerComposer, resultSet);
+        }
     }
     
     private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
@@ -194,6 +189,12 @@ public final class RALE2EIT {
         assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
         assertThat(String.valueOf(actual.getObject(columnLabel)).trim(), is(expected));
     }
+    
+    @SneakyThrows(InterruptedException.class)
+    private void waitCompleted(final long timeoutMillis) {
+        Thread.sleep(timeoutMillis);
+    }
+    
     private static boolean isEnabled() {
         return E2ETestParameterFactory.containsTestParameter() && !E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RAL).isEmpty();
     }

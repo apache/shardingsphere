@@ -75,7 +75,7 @@ public final class RDLE2EIT {
         try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(containerComposer, statement);
-                sleep();
+                waitCompleted();
                 assertResultSet(containerComposer, statement);
             }
         }
@@ -83,12 +83,6 @@ public final class RDLE2EIT {
     
     private void executeSQLCase(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException, ParseException {
         statement.execute(containerComposer.getSQL());
-    }
-    
-    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(containerComposer.getAssertion().getAssertionSQL().getSql())) {
-            assertResultSet(containerComposer, resultSet);
-        }
     }
     
     private void init(final SingleE2EITContainerComposer containerComposer) throws SQLException {
@@ -103,7 +97,7 @@ public final class RDLE2EIT {
                 executeDestroySQLs(containerComposer, connection);
             }
         }
-        sleep();
+        waitCompleted();
     }
     
     private void executeInitSQLs(final SingleE2EITContainerComposer containerComposer, final Connection connection) throws SQLException {
@@ -113,7 +107,7 @@ public final class RDLE2EIT {
         for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getInitialSQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
-                sleep();
+                waitCompleted();
             }
         }
     }
@@ -125,14 +119,15 @@ public final class RDLE2EIT {
         for (String each : Splitter.on(";").trimResults().splitToList(containerComposer.getAssertion().getDestroySQL().getSql())) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
-                sleep();
+                waitCompleted();
             }
         }
     }
     
-    @SneakyThrows(InterruptedException.class)
-    private void sleep() {
-        Thread.sleep(2000L);
+    private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(containerComposer.getAssertion().getAssertionSQL().getSql())) {
+            assertResultSet(containerComposer, resultSet);
+        }
     }
     
     private void assertResultSet(final SingleE2EITContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
@@ -179,6 +174,11 @@ public final class RDLE2EIT {
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
         assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         assertThat(String.valueOf(actual.getObject(columnLabel)), is(expected));
+    }
+    
+    @SneakyThrows(InterruptedException.class)
+    private void waitCompleted() {
+        Thread.sleep(2000L);
     }
     
     private static boolean isEnabled() {

@@ -57,7 +57,7 @@ public final class DCLE2EIT {
         try (
                 SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam);
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
-                     new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getContainerComposer().getActualDataSourceMap(), testParam.getDatabaseType())) {
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getContainerComposer().getActualDataSourceMap(), testParam.getDatabaseType())) {
             assertExecuteUpdate(containerComposer);
         }
     }
@@ -88,7 +88,7 @@ public final class DCLE2EIT {
         try (
                 SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam);
                 AuthorityEnvironmentManager ignored = new AuthorityEnvironmentManager(
-                     new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getContainerComposer().getActualDataSourceMap(), testParam.getDatabaseType())) {
+                        new ScenarioCommonPath(testParam.getScenario()).getAuthorityFile(), containerComposer.getContainerComposer().getActualDataSourceMap(), testParam.getDatabaseType())) {
             assertExecute(containerComposer);
         }
     }
