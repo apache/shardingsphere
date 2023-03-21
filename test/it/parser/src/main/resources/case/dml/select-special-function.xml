@@ -115,23 +115,15 @@
             </expression-projection>
         </projections>
     </select>
-    <!-- TODO FIXME -->
-<!--    <select sql-case-id="select_extract">-->
-<!--        <projections start-index="7" stop-index="37">-->
-<!--            <expression-projection text="EXTRACT(YEAR FROM '2019-07-02')" start-index="7" stop-index="37">-->
-<!--                <expr>-->
-<!--                    <function function-name="EXTRACT" start-index="7" stop-index="37" text="EXTRACT(YEAR FROM '2019-07-02')" >-->
-<!--                        <parameter>-->
-<!--                            <literal-expression value="YEAR" start-index="15" stop-index="18" />-->
-<!--                        </parameter>-->
-<!--                        <parameter>-->
-<!--                            <literal-expression value="2019-07-02" start-index="23" stop-index="32" />-->
-<!--                        </parameter>-->
-<!--                    </function>-->
-<!--                </expr>-->
-<!--            </expression-projection>-->
-<!--        </projections>-->
-<!--    </select>-->
+    <select sql-case-id="select_extract">
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="EXTRACT(YEAR FROM '2019-07-02')" start-index="7" stop-index="37">
+                <expr>
+                    <function function-name="EXTRACT" start-index="7" stop-index="37" text="EXTRACT(YEAR FROM '2019-07-02')" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     <select sql-case-id="select_char">
         <projections start-index="7" stop-index="29">
             <expression-projection text="CHAR(77,121,83,81,'76')" start-index="7" stop-index="29">

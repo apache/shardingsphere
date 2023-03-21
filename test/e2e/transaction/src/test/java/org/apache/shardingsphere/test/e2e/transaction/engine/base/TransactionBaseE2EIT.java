@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -63,7 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -224,15 +222,16 @@ public abstract class TransactionBaseE2EIT {
                 && Objects.equals(transactionRuleMap.get(TransactionTestConstants.PROVIDER_TYPE), expectedProviderType);
     }
     
+    @SneakyThrows(InterruptedException.class)
     private boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType, final TransactionContainerComposer containerComposer) throws SQLException {
-        ThreadUtil.sleep(5, TimeUnit.SECONDS);
+        Thread.sleep(5000L);
         try (Connection connection = containerComposer.getDataSource().getConnection()) {
             int waitTimes = 0;
             do {
                 if (isExpectedTransactionRule(connection, expectedTransType, expectedProviderType)) {
                     return true;
                 }
-                ThreadUtil.sleep(2, TimeUnit.SECONDS);
+                Thread.sleep(2000L);
                 waitTimes++;
             } while (waitTimes <= 3);
             return false;
@@ -295,12 +294,14 @@ public abstract class TransactionBaseE2EIT {
         assertThat(countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;", containerComposer), is(3));
     }
     
+    @SneakyThrows(InterruptedException.class)
     private void executeWithLog(final Connection connection, final String sql) throws SQLException {
         log.info("Connection execute:{}.", sql);
         connection.createStatement().execute(sql);
-        ThreadUtil.sleep(1, TimeUnit.SECONDS);
+        Thread.sleep(1000L);
     }
     
+    @SneakyThrows(InterruptedException.class)
     private int countWithLog(final String sql, final TransactionContainerComposer containerComposer) throws SQLException {
         try (Connection connection = containerComposer.getDataSource().getConnection()) {
             int retryNumber = 0;
@@ -316,7 +317,7 @@ public abstract class TransactionBaseE2EIT {
                 } catch (final SQLException ex) {
                     log.error("Data access error.", ex);
                 }
-                ThreadUtil.sleep(2, TimeUnit.SECONDS);
+                Thread.sleep(2000L);
                 retryNumber++;
             }
         }

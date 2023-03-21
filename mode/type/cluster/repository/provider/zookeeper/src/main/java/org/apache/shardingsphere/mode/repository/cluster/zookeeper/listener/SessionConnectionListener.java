@@ -32,7 +32,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.ZookeeperExceptionHandler;
 
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Session connection state listener.
@@ -89,6 +88,6 @@ public final class SessionConnectionListener implements ConnectionStateListener 
     
     @SneakyThrows(InterruptedException.class)
     private void sleepInterval() {
-        TimeUnit.SECONDS.sleep(RECONNECT_INTERVAL_SECONDS);
+        Thread.sleep(RECONNECT_INTERVAL_SECONDS * 1000L);
     }
 }

@@ -37,7 +37,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -213,6 +212,6 @@ public abstract class BaseDDLE2EIT {
     
     @SneakyThrows(InterruptedException.class)
     protected void waitCompleted() {
-        TimeUnit.MILLISECONDS.sleep(1500);
+        Thread.sleep(1500L);
     }
 }
