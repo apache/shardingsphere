@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRe
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.StorageUnitInUsedException;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -40,6 +41,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -105,11 +107,8 @@ public final class UnregisterStorageUnitBackendHandler extends StorageUnitDefini
     }
     
     private Collection<String> getInUsedResourceNames(final DataSourceContainedRule rule) {
-        Collection<String> result = new HashSet<>();
-        for (Collection<String> each : rule.getDataSourceMapper().values()) {
-            result.addAll(each);
-        }
-        return result;
+        return rule.getDataSourceMapper().values().stream().flatMap(Collection::stream)
+                .map(DataSourceRoleInfo::getName).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
     private Collection<String> getInUsedResourceNames(final DataNodeContainedRule rule) {

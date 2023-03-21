@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.readwritesplitting.strategy.type;
 
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
@@ -30,7 +32,8 @@ public final class DynamicReadwriteSplittingStrategyTest {
     
     @Test
     public void assertGetDataSourceMapper() {
-        DynamicReadwriteSplittingStrategy dynamicReadwriteSplittingStrategy = new DynamicReadwriteSplittingStrategy("database_discovery_ds", true, mock(DynamicDataSourceContainedRule.class));
-        assertThat(dynamicReadwriteSplittingStrategy.getAllDataSources(), is(Collections.singletonList("database_discovery_ds")));
+        DynamicReadwriteSplittingStrategy dynamicReadwriteSplittingStrategy = new DynamicReadwriteSplittingStrategy("database_discovery_ds",
+                mock(DynamicDataSourceContainedRule.class));
+        assertThat(dynamicReadwriteSplittingStrategy.getAllDataSources(), is(Collections.singletonList(new DataSourceRoleInfo("database_discovery_ds", DataSourceRole.PRIMARY))));
     }
 }

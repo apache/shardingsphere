@@ -27,10 +27,11 @@ import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAudi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -50,14 +51,14 @@ public final class ShardingRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings("unchecked")
-    @Test(expected = MissingRequiredShardingConfigurationException.class)
+    @Test
     public void assertCheckTableConfigurationFailed() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
         ruleConfig.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null, null)));
         RuleConfigurationChecker<ShardingRuleConfiguration> checker = OrderedSPILoader.getServicesByClass(
                 RuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
-        checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
+        assertThrows(MissingRequiredShardingConfigurationException.class, () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {

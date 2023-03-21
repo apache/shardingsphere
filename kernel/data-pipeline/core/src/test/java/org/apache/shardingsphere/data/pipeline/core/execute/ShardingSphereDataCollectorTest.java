@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -39,7 +39,6 @@ import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,18 +53,18 @@ public final class ShardingSphereDataCollectorTest {
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         new ShardingSphereDataCollectorRunnable(contextManager).run();
-        verify(contextManager, times(1)).getInstanceContext();
+        verify(contextManager).getInstanceContext();
     }
     
     private ShardingSphereData mockShardingSphereData() {
-        ShardingSphereData shardingSphereData = new ShardingSphereData();
+        ShardingSphereData result = new ShardingSphereData();
         ShardingSphereDatabaseData shardingSphereDatabaseData = new ShardingSphereDatabaseData();
-        shardingSphereData.getDatabaseData().put("logic_db", shardingSphereDatabaseData);
+        result.getDatabaseData().put("logic_db", shardingSphereDatabaseData);
         ShardingSphereSchemaData shardingSphereSchemaData = new ShardingSphereSchemaData();
         shardingSphereDatabaseData.getSchemaData().put("logic_schema", shardingSphereSchemaData);
         ShardingSphereTableData shardingSphereTableData = new ShardingSphereTableData("test_table");
         shardingSphereSchemaData.getTableData().put("test_table", shardingSphereTableData);
-        return shardingSphereData;
+        return result;
     }
     
     private ShardingSphereMetaData mockMetaData() {

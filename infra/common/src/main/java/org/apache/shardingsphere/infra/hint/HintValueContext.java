@@ -43,7 +43,7 @@ public final class HintValueContext {
     
     private boolean useTraffic;
     
-    private boolean skipEncryptRewrite;
+    private boolean skipSQLRewrite;
     
     private String disableAuditNames = "";
     

@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,8 +32,9 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class TelephoneRandomReplaceAlgorithmTest {
     
@@ -42,7 +43,7 @@ public final class TelephoneRandomReplaceAlgorithmTest {
     
     private TelephoneRandomReplaceAlgorithm maskAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         maskAlgorithm = new TelephoneRandomReplaceAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("network-numbers", "130, 130, 155,1702")));
@@ -67,8 +68,8 @@ public final class TelephoneRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask("13012345678"), not("13012345678"));
     }
     
-    @Test(expected = MaskAlgorithmInitializationException.class)
+    @Test
     public void assertInitWhenConfigNotNumberProps() {
-        maskAlgorithm.init(PropertiesBuilder.build(new Property("network-numbers", "130, x130, 155,1702")));
+        assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build(new Property("network-numbers", "130, x130, 155,1702"))));
     }
 }

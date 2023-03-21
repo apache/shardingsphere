@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.prepare;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
@@ -53,7 +52,7 @@ public final class CDCJobPreparer {
      *
      * @param jobItemContext job item context
      */
-    public void prepare(final CDCJobItemContext jobItemContext) {
+    public void initTasks(final CDCJobItemContext jobItemContext) {
         Optional<InventoryIncrementalJobItemProgress> jobItemProgress = jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         if (!jobItemProgress.isPresent()) {
             jobAPI.persistJobItemProgress(jobItemContext);
@@ -62,24 +61,11 @@ public final class CDCJobPreparer {
             PipelineJobCenter.stop(jobItemContext.getJobId());
             return;
         }
-        boolean needUpdateJobStatus = !jobItemProgress.isPresent() || JobStatus.PREPARING.equals(jobItemContext.getStatus()) || JobStatus.RUNNING.equals(jobItemContext.getStatus())
-                || JobStatus.PREPARING_FAILURE.equals(jobItemContext.getStatus());
-        if (needUpdateJobStatus) {
-            updateJobItemStatus(JobStatus.PREPARING, jobItemContext);
-        }
         initIncrementalTasks(jobItemContext);
         CDCJobConfiguration jobConfig = jobItemContext.getJobConfig();
         if (jobConfig.isFull()) {
             initInventoryTasks(jobItemContext);
         }
-        if (needUpdateJobStatus) {
-            updateJobItemStatus(JobStatus.PREPARE_SUCCESS, jobItemContext);
-        }
-    }
-    
-    private void updateJobItemStatus(final JobStatus jobStatus, final CDCJobItemContext jobItemContext) {
-        jobItemContext.setStatus(jobStatus);
-        jobAPI.persistJobItemProgress(jobItemContext);
     }
     
     private void initInventoryTasks(final CDCJobItemContext jobItemContext) {

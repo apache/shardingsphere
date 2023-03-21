@@ -33,15 +33,11 @@
         t_text TEXT NULL,
         t_date date NULL,
         t_time TIME NULL,
-        t_timestmap timestamp NULL,
+        t_timestamp timestamp NULL,
         t_timestamptz timestamptz NULL,
         PRIMARY KEY ( order_id )
         )
     </create-table-order>
-    
-    <create-table-index>
-        CREATE INDEX "idx_user_id" ON test.t_order ( user_id );
-    </create-table-index>
     
     <create-table-order-item>
         CREATE TABLE test.t_order_item (
@@ -71,7 +67,7 @@
         t_text,
         t_date,
         t_time,
-        t_timestmap,
+        t_timestamp,
         t_timestamptz)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     </full-insert-order>

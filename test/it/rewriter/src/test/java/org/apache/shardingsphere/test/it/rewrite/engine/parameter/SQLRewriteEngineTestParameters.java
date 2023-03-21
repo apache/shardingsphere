@@ -61,4 +61,9 @@ public final class SQLRewriteEngineTestParameters {
         result[4] = this;
         return result;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("{%s}: {%s} ({%s}) -> {%s}", type, name, databaseType, fileName);
+    }
 }

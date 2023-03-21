@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +50,7 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
         }
     }
     
+    @SneakyThrows(InterruptedException.class)
     // TODO thread-safe?
     @Override
     public List<Record> fetchRecords(final int batchSize, final int timeoutSeconds) {
@@ -59,7 +60,7 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
             if (timeoutSeconds * 1000L <= System.currentTimeMillis() - start) {
                 break;
             }
-            ThreadUtil.sleep(100L);
+            Thread.sleep(100L);
         }
         queue.drainTo(result, batchSize);
         return result;

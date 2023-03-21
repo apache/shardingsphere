@@ -21,17 +21,19 @@ import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalTime;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLTime2BinlogProtocolValueTest {
     
     @Mock
@@ -42,7 +44,7 @@ public final class MySQLTime2BinlogProtocolValueTest {
     
     private MySQLBinlogColumnDef columnDef;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_TIME2);
         columnDef.setColumnMeta(0);
@@ -52,7 +54,7 @@ public final class MySQLTime2BinlogProtocolValueTest {
     public void assertRead() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (0x10 << 12) | (0x08 << 6) | 0x04);
-        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("16:08:04"));
+        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is(LocalTime.of(16, 8, 4)));
     }
     
     @Test
@@ -61,24 +63,24 @@ public final class MySQLTime2BinlogProtocolValueTest {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(payload.readInt1()).thenReturn(90);
         when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (0x10 << 12) | (0x08 << 6) | 0x04);
-        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("16:08:04.9"));
+        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is(LocalTime.of(16, 8, 4).withNano(900000000)));
     }
     
     @Test
     public void assertReadWithFraction3() {
         columnDef.setColumnMeta(3);
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedShort()).thenReturn(90);
+        when(byteBuf.readUnsignedShort()).thenReturn(9000);
         when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (0x10 << 12) | (0x08 << 6) | 0x04);
-        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("16:08:04.900"));
+        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is(LocalTime.of(16, 8, 4).withNano(900000000)));
     }
     
     @Test
     public void assertReadWithFraction6() {
         columnDef.setColumnMeta(6);
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (0x10 << 12) | (0x08 << 6) | 0x04, 90);
-        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is("16:08:04.900000"));
+        when(byteBuf.readUnsignedMedium()).thenReturn(0x800000 | (0x10 << 12) | (0x08 << 6) | 0x04, 10123);
+        assertThat(new MySQLTime2BinlogProtocolValue().read(columnDef, payload), is(LocalTime.of(16, 8, 4).withNano(10123000)));
     }
     
     @Test

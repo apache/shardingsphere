@@ -20,21 +20,21 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
-import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class PipelineDistributedBarrierTest {
     
-    @BeforeClass
+    @BeforeAll
     public static void setUp() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }

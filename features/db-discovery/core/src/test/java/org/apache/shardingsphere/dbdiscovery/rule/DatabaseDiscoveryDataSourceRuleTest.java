@@ -20,15 +20,18 @@ package org.apache.shardingsphere.dbdiscovery.rule;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredDataSourceNamesConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProvider;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class DatabaseDiscoveryDataSourceRuleTest {
     
@@ -36,22 +39,25 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
             new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"), new Properties(),
             new MGRMySQLDatabaseDiscoveryProvider());
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertNewHADataSourceRuleWithoutName() {
-        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"),
-                new Properties(), new MGRMySQLDatabaseDiscoveryProvider());
+        assertThrows(IllegalArgumentException.class,
+                () -> new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"),
+                        new Properties(), new MGRMySQLDatabaseDiscoveryProvider()));
     }
     
-    @Test(expected = MissingRequiredDataSourceNamesConfigurationException.class)
+    @Test
     public void assertNewHADataSourceRuleWithNullDataSourceName() {
-        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", null, "ha_heartbeat", "discoveryTypeName"),
-                new Properties(), new MGRMySQLDatabaseDiscoveryProvider());
+        assertThrows(MissingRequiredDataSourceNamesConfigurationException.class,
+                () -> new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration(
+                        "ds", null, "ha_heartbeat", "discoveryTypeName"), new Properties(), new MGRMySQLDatabaseDiscoveryProvider()));
     }
     
-    @Test(expected = MissingRequiredDataSourceNamesConfigurationException.class)
+    @Test
     public void assertNewHADataSourceRuleWithEmptyDataSourceName() {
-        new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.emptyList(), "ha_heartbeat", "discoveryTypeName"),
-                new Properties(), new MGRMySQLDatabaseDiscoveryProvider());
+        assertThrows(MissingRequiredDataSourceNamesConfigurationException.class,
+                () -> new DatabaseDiscoveryDataSourceRule(new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.emptyList(), "ha_heartbeat", "discoveryTypeName"),
+                        new Properties(), new MGRMySQLDatabaseDiscoveryProvider()));
     }
     
     @Test
@@ -62,6 +68,8 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
     @Test
     public void assertGetDataSourceMapper() {
         databaseDiscoveryDataSourceRule.changePrimaryDataSourceName("ds_1");
-        assertThat(databaseDiscoveryDataSourceRule.getDataSourceMapper(), is(Collections.singletonMap("test_pr", new HashSet<>(Arrays.asList("ds_1", "ds_0")))));
+        assertThat(databaseDiscoveryDataSourceRule.getDataSourceMapper(),
+                is(Collections.singletonMap("test_pr",
+                        new LinkedHashSet<>(Arrays.asList(new DataSourceRoleInfo("ds_1", DataSourceRole.PRIMARY), new DataSourceRoleInfo("ds_0", DataSourceRole.MEMBER))))));
     }
 }

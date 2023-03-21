@@ -18,24 +18,12 @@
 package org.apache.shardingsphere.test.it.sql.parser.it.postgresql.external;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserTestParameter;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.ExternalSQLParserTestParameterLoader;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.impl.GitHubTestParameterLoadStrategy;
-import org.junit.runners.Parameterized.Parameters;
+import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserITSettings;
 
-import java.net.URI;
-import java.util.Collection;
-
+@ExternalSQLParserITSettings(value = "PostgreSQL", caseURL = ExternalPostgreSQLParserIT.CASE_URL, resultURL = ExternalPostgreSQLParserIT.RESULT_URL)
 public final class ExternalPostgreSQLParserIT extends ExternalSQLParserIT {
     
-    public ExternalPostgreSQLParserIT(final ExternalSQLParserTestParameter testParam) {
-        super(testParam);
-    }
+    static final String CASE_URL = "https://github.com/postgres/postgres/tree/master/src/test/regress/sql";
     
-    @Parameters(name = "{0} (PostgreSQL) -> {1}")
-    public static Collection<ExternalSQLParserTestParameter> getTestParameters() {
-        String caseURL = "https://github.com/postgres/postgres/tree/master/src/test/regress/sql";
-        String resultURL = "https://github.com/postgres/postgres/tree/master/src/test/regress/expected";
-        return new ExternalSQLParserTestParameterLoader(new GitHubTestParameterLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), "PostgreSQL", "CSV");
-    }
+    static final String RESULT_URL = "https://github.com/postgres/postgres/tree/master/src/test/regress/expected";
 }

@@ -19,25 +19,24 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.manager.cluster.process.subscriber.ProcessRegistrySubscriber;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class ProcessRegistrySubscriberTest {
     
     @Mock
@@ -47,7 +46,7 @@ public final class ProcessRegistrySubscriberTest {
     
     private ProcessRegistrySubscriber processRegistrySubscriber;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         processRegistrySubscriber = new ProcessRegistrySubscriber(repository, eventBusContext);
     }
@@ -59,6 +58,6 @@ public final class ProcessRegistrySubscriberTest {
         when(repository.getDirectly(any())).thenReturn(null);
         ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
         processRegistrySubscriber.loadShowProcessListData(showProcessListRequestEvent);
-        verify(repository, times(1)).persist(any(), any());
+        verify(repository).persist(any(), any());
     }
 }

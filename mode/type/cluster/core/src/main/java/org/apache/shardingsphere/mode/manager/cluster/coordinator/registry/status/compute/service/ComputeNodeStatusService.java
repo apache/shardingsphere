@@ -25,10 +25,10 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataFactory;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.instance.ComputeNodeData;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public final class ComputeNodeStatusService {
      * @param instanceId instance id
      * @param state state context
      */
-    public void persistInstanceState(final String instanceId, final StateContext state) {
+    public void persistInstanceState(final String instanceId, final InstanceStateContext state) {
         repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), state.getCurrentState().name());
     }
     

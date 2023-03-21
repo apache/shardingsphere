@@ -29,8 +29,10 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -41,6 +43,8 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgressSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobOffsetInfo;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobOffsetInfoSwapper;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
@@ -75,6 +79,8 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Getter(AccessLevel.PROTECTED)
     private final YamlInventoryIncrementalJobItemProgressSwapper jobItemProgressSwapper = new YamlInventoryIncrementalJobItemProgressSwapper();
     
+    private final YamlJobOffsetInfoSwapper jobOffsetInfoSwapper = new YamlJobOffsetInfoSwapper();
+    
     protected abstract String getTargetDatabaseType(PipelineJobConfiguration pipelineJobConfig);
     
     @Override
@@ -92,6 +98,8 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         result = PipelineProcessConfigurationUtil.convertWithDefaultValue(result);
         return result;
     }
+    
+    protected abstract TableBasedPipelineJobInfo getJobInfo(String jobId);
     
     @Override
     public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final PipelineJobConfiguration jobConfig) {
@@ -113,9 +121,10 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         List<InventoryIncrementalJobItemInfo> result = new LinkedList<>();
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : jobProgress.entrySet()) {
             int shardingItem = entry.getKey();
+            TableBasedPipelineJobInfo jobInfo = getJobInfo(jobId);
             InventoryIncrementalJobItemProgress jobItemProgress = entry.getValue();
             if (null == jobItemProgress) {
-                result.add(new InventoryIncrementalJobItemInfo(shardingItem, null, startTimeMillis, 0, ""));
+                result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTable(), null, startTimeMillis, 0, ""));
                 continue;
             }
             int inventoryFinishedPercentage = 0;
@@ -125,7 +134,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
                 inventoryFinishedPercentage = (int) Math.min(100, jobItemProgress.getProcessedRecordsCount() * 100 / jobItemProgress.getInventoryRecordsCount());
             }
             String errorMessage = getJobItemErrorMessage(jobId, shardingItem);
-            result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobItemProgress, startTimeMillis, inventoryFinishedPercentage, errorMessage));
+            result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTable(), jobItemProgress, startTimeMillis, inventoryFinishedPercentage, errorMessage));
         }
         return result;
     }
@@ -156,6 +165,22 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
             inventoryTaskProgressMap.put(each.getTaskId(), each.getTaskProgress());
         }
         return new JobItemInventoryTasksProgress(inventoryTaskProgressMap);
+    }
+    
+    @Override
+    public void persistJobOffsetInfo(final String jobId, final JobOffsetInfo jobOffsetInfo) {
+        String value = YamlEngine.marshal(jobOffsetInfoSwapper.swapToYamlConfiguration(jobOffsetInfo));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobOffsetInfo(jobId, value);
+    }
+    
+    @Override
+    public JobOffsetInfo getJobOffsetInfo(final String jobId) {
+        Optional<String> offsetInfo = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobOffsetInfo(jobId);
+        if (offsetInfo.isPresent()) {
+            YamlJobOffsetInfo info = YamlEngine.unmarshal(offsetInfo.get(), YamlJobOffsetInfo.class);
+            return jobOffsetInfoSwapper.swapToObject(info);
+        }
+        return jobOffsetInfoSwapper.swapToObject(new YamlJobOffsetInfo());
     }
     
     @Override

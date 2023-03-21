@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.fixture.CoreStandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +43,7 @@ public final class StandardShardingStrategyTest {
     
     private DataNodeInfo dataNodeSegment;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         standardShardingStrategy = new StandardShardingStrategy("column", new CoreStandardShardingAlgorithmFixture());
         dataNodeSegment = new DataNodeInfo("logicTable_", 1, '0');

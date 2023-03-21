@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.cursor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.base.BaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.command.CursorSQLCommand;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
@@ -34,8 +34,8 @@ import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * OpenGauss cursor transaction integration test.
@@ -52,25 +52,27 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     private CursorSQLCommand loadCursorSQLCommand() {
-        return JAXB.unmarshal(Objects.requireNonNull(BaseE2EIT.class.getClassLoader().getResource("env/common/cursor-command.xml")), CursorSQLCommand.class);
+        return JAXB.unmarshal(Objects.requireNonNull(TransactionBaseE2EIT.class.getClassLoader().getResource("env/common/cursor-command.xml")), CursorSQLCommand.class);
     }
     
     @Override
     protected void beforeTest() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        assertTableRowCount(connection, "t_order", 4);
+        try (Connection connection = getDataSource().getConnection()) {
+            assertTableRowCount(connection, "t_order", 4);
+        }
     }
     
     @Override
-    public void executeTest() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        singleTableCursorTest(connection);
-        singleTableCursorOrderByTest(connection);
-        broadcastTableCursorTest(connection);
-        broadcastTableCursorTest2(connection);
-        broadcastAndSingleTablesCursorTest(connection);
-        broadcastAndSingleTablesCursorTest2(connection);
-        viewCursorTest(connection);
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
+        try (Connection connection = getDataSource().getConnection()) {
+            singleTableCursorTest(connection);
+            singleTableCursorOrderByTest(connection);
+            broadcastTableCursorTest(connection);
+            broadcastTableCursorTest2(connection);
+            broadcastAndSingleTablesCursorTest(connection);
+            broadcastAndSingleTablesCursorTest2(connection);
+            viewCursorTest(connection);
+        }
     }
     
     private void singleTableCursorTest(final Connection connection) throws SQLException {

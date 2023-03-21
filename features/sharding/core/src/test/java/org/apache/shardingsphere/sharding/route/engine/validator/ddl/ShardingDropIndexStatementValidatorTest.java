@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
+import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.ShardingDropIndexStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -35,11 +35,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNa
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropIndexStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,10 +48,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class ShardingDropIndexStatementValidatorTest {
     
     @Mock
@@ -78,7 +79,7 @@ public final class ShardingDropIndexStatementValidatorTest {
         new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
     
-    @Test(expected = IndexNotExistedException.class)
+    @Test
     public void assertPreValidateDropIndexWhenIndexNotExistForPostgreSQL() {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
@@ -89,7 +90,9 @@ public final class ShardingDropIndexStatementValidatorTest {
         when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
-        new ShardingDropIndexStatementValidator().preValidate(shardingRule, new DropIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertThrows(IndexNotExistedException.class,
+                () -> new ShardingDropIndexStatementValidator().preValidate(
+                        shardingRule, new DropIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -113,7 +116,7 @@ public final class ShardingDropIndexStatementValidatorTest {
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingDDLRouteException.class)
+    @Test
     public void assertPostValidateDropIndexWithDifferentRouteResultShardingTableIndexForPostgreSQL() {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
@@ -129,8 +132,8 @@ public final class ShardingDropIndexStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingDropIndexStatementValidator().postValidate(shardingRule, new DropIndexStatementContext(sqlStatement), new HintValueContext(),
-                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
+        assertThrows(ShardingDDLRouteException.class, () -> new ShardingDropIndexStatementValidator().postValidate(shardingRule, new DropIndexStatementContext(sqlStatement), new HintValueContext(),
+                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
@@ -154,7 +157,7 @@ public final class ShardingDropIndexStatementValidatorTest {
                 Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
-    @Test(expected = ShardingDDLRouteException.class)
+    @Test
     public void assertPostValidateDropIndexWithDifferentRouteResultBroadcastTableIndexForPostgreSQL() {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_config_index"))));
@@ -170,7 +173,7 @@ public final class ShardingDropIndexStatementValidatorTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingDropIndexStatementValidator().postValidate(shardingRule,
-                new DropIndexStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
+        assertThrows(ShardingDDLRouteException.class, () -> new ShardingDropIndexStatementValidator().postValidate(shardingRule,
+                new DropIndexStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
 }

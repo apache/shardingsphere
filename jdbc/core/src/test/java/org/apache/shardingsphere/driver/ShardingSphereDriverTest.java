@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -30,13 +30,14 @@ import java.sql.Statement;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ShardingSphereDriverTest {
     
-    @Test(expected = SQLException.class)
-    public void assertConnectWithInvalidURL() throws SQLException {
-        DriverManager.getConnection("jdbc:invalid:xxx");
+    @Test
+    public void assertConnectWithInvalidURL() {
+        assertThrows(SQLException.class, () -> DriverManager.getConnection("jdbc:invalid:xxx"));
     }
     
     @Test

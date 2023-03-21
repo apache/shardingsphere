@@ -61,7 +61,7 @@ public final class SQLFederationDeciderEngine {
     public SQLFederationDeciderContext decide(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         SQLFederationDeciderContext result = new SQLFederationDeciderContext();
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
-        // TODO move this logic to SQLFederationDecider implement class when we remove sqlFederationEnabled
+        // TODO move this logic to SQLFederationDecider implement class when we remove sql federation type
         if (isSelectStatementContainsSystemSchema(sqlStatementContext, database)) {
             result.setUseSQLFederation(true);
             return result;

@@ -25,9 +25,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowIndexStatementTestCase;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Show index statement assert.
@@ -49,7 +49,7 @@ public final class ShowIndexStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         if (null == expected.getTable()) {
-            assertNull(assertContext.getText("Actual table segment should not exist."), actual.getTable());
+            assertNull(actual.getTable(), assertContext.getText("Actual table segment should not exist."));
         } else {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
@@ -57,9 +57,9 @@ public final class ShowIndexStatementAssert {
     
     private static void assertSchema(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
         if (null == expected.getSchema()) {
-            assertFalse(assertContext.getText("Actual database segment should not exist."), actual.getFromSchema().isPresent());
+            assertFalse(actual.getFromSchema().isPresent(), assertContext.getText("Actual database segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual database segment should exist."), actual.getFromSchema().isPresent());
+            assertTrue(actual.getFromSchema().isPresent(), assertContext.getText("Actual database segment should exist."));
             SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getSchema());
         }
     }

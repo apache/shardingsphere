@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -38,8 +38,8 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,11 +50,15 @@ public final class SingleTableDataNodeLoaderTest {
     
     private static final String VIEW_TYPE = "VIEW";
     
+    private static final String SYSTEM_TABLE_TYPE = "SYSTEM TABLE";
+    
+    private static final String SYSTEM_VIEW_TYPE = "SYSTEM VIEW";
+    
     private static final String TABLE_NAME = "TABLE_NAME";
     
     private Map<String, DataSource> dataSourceMap;
     
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException {
         dataSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceMap.put("ds0", mockDataSource("ds0", Arrays.asList("employee", "dept", "salary")));
@@ -65,7 +69,7 @@ public final class SingleTableDataNodeLoaderTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getCatalog()).thenReturn(dataSourceName);
         ResultSet resultSet = mockResultSet(tableNames);
-        when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
+        when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})).thenReturn(resultSet);
         return new MockedDataSource(connection);
     }
     

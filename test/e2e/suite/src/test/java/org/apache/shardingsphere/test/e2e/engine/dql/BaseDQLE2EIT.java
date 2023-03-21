@@ -22,12 +22,11 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.SingleE2EIT;
+import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.junit.Before;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -45,11 +44,11 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Getter(AccessLevel.PROTECTED)
-public abstract class BaseDQLE2EIT extends SingleE2EIT {
+public abstract class BaseDQLE2EIT {
     
     private static final Collection<String> FILLED_SUITES = new HashSet<>();
     
@@ -57,29 +56,34 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
     
     private boolean useXMLAsExpectedDataset;
     
-    private final String adapter;
-    
-    public BaseDQLE2EIT(final AssertionTestParameter testParam) {
-        super(testParam);
-        adapter = testParam.getAdapter();
+    /**
+     * Init.
+     * 
+     * @param testParam test parameter
+     * @param containerComposer container composer
+     * @throws SQLException SQL exception
+     * @throws ParseException parse exception
+     * @throws IOException IO exception
+     * @throws JAXBException JAXB exception
+     */
+    public final void init(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException, IOException, JAXBException {
+        fillDataOnlyOnce(testParam, containerComposer);
+        expectedDataSource = null == containerComposer.getAssertion().getExpectedDataSourceName() || 1 == containerComposer.getContainerComposer().getExpectedDataSourceMap().size()
+                ? containerComposer.getContainerComposer().getExpectedDataSourceMap().values().iterator().next()
+                : containerComposer.getContainerComposer().getExpectedDataSourceMap().get(containerComposer.getAssertion().getExpectedDataSourceName());
+        useXMLAsExpectedDataset = null != containerComposer.getAssertion().getExpectedDataFile();
     }
     
-    @Before
-    public final void init() throws Exception {
-        fillDataOnlyOnce();
-        expectedDataSource = null == getAssertion().getExpectedDataSourceName() || 1 == getExpectedDataSourceMap().size()
-                ? getExpectedDataSourceMap().values().iterator().next()
-                : getExpectedDataSourceMap().get(getAssertion().getExpectedDataSourceName());
-        useXMLAsExpectedDataset = null != getAssertion().getExpectedDataFile();
-    }
-    
-    private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
-        if (!FILLED_SUITES.contains(getItKey())) {
+    private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException, IOException, JAXBException {
+        String cacheKey = testParam.getKey() + "-" + System.identityHashCode(containerComposer.getContainerComposer().getActualDataSourceMap());
+        if (!FILLED_SUITES.contains(cacheKey)) {
             synchronized (FILLED_SUITES) {
-                if (!FILLED_SUITES.contains(getScenario())) {
-                    new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap()).fillData();
-                    new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.EXPECTED), getExpectedDataSourceMap()).fillData();
-                    FILLED_SUITES.add(getItKey());
+                if (!FILLED_SUITES.contains(cacheKey)) {
+                    new DataSetEnvironmentManager(
+                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getContainerComposer().getActualDataSourceMap()).fillData();
+                    new DataSetEnvironmentManager(
+                            new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.EXPECTED), containerComposer.getContainerComposer().getExpectedDataSourceMap()).fillData();
+                    FILLED_SUITES.add(cacheKey);
                 }
             }
         }
@@ -90,22 +94,22 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
         assertRows(actualResultSet, expectedResultSet);
     }
     
-    protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
-        assertMetaData(resultSet.getMetaData(), getExpectedColumns());
-        assertRows(resultSet, getNotAssertionColumns(), getDataSet().getRows());
+    protected final void assertResultSet(final SingleE2EITContainerComposer containerComposer, final ResultSet resultSet) throws SQLException {
+        assertMetaData(resultSet.getMetaData(), getExpectedColumns(containerComposer));
+        assertRows(resultSet, getNotAssertionColumns(containerComposer), containerComposer.getDataSet().getRows());
     }
     
-    private Collection<DataSetColumn> getExpectedColumns() {
+    private Collection<DataSetColumn> getExpectedColumns(final SingleE2EITContainerComposer containerComposer) {
         Collection<DataSetColumn> result = new LinkedList<>();
-        for (DataSetMetaData each : getDataSet().getMetaDataList()) {
+        for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns());
         }
         return result;
     }
     
-    private Collection<String> getNotAssertionColumns() {
+    private Collection<String> getNotAssertionColumns(final SingleE2EITContainerComposer containerComposer) {
         Collection<String> result = new LinkedList<>();
-        for (DataSetMetaData each : getDataSet().getMetaDataList()) {
+        for (DataSetMetaData each : containerComposer.getDataSet().getMetaDataList()) {
             result.addAll(each.getColumns().stream().filter(column -> "false".equals(column.getAssertion())).map(DataSetColumn::getName).collect(Collectors.toList()));
         }
         return result;
@@ -130,17 +134,17 @@ public abstract class BaseDQLE2EIT extends SingleE2EIT {
         ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
         ResultSetMetaData expectedMetaData = expectedResultSet.getMetaData();
         while (actualResultSet.next()) {
-            assertTrue("Size of actual result set is different with size of expected result set.", expectedResultSet.next());
+            assertTrue(expectedResultSet.next(), "Size of actual result set is different with size of expected result set.");
             assertRow(actualResultSet, actualMetaData, expectedResultSet, expectedMetaData);
         }
-        assertFalse("Size of actual result set is different with size of expected result set.", expectedResultSet.next());
+        assertFalse(expectedResultSet.next(), "Size of actual result set is different with size of expected result set.");
     }
     
     private void assertRows(final ResultSet actual, final Collection<String> notAssertionColumns, final List<DataSetRow> expected) throws SQLException {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
-            assertTrue("Size of actual result set is different with size of expected dat set rows.", rowCount < expected.size());
+            assertTrue(rowCount < expected.size(), "Size of actual result set is different with size of expected dat set rows.");
             DataSetRow expectedRow = getExpectedRowAndRemoveMayNotExistRow(actual, notAssertionColumns, actualMetaData, expected, rowCount);
             assertRow(actual, notAssertionColumns, actualMetaData, expectedRow);
             rowCount++;

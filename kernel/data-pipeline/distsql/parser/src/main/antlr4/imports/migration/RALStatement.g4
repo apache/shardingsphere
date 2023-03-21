@@ -72,7 +72,7 @@ showMigrationCheckAlgorithms
     ;
 
 jobId
-    : INT_ | STRING_
+    : INT_ | IDENTIFIER_ | STRING_
     ;
 
 sourceTableName

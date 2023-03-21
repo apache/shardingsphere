@@ -28,14 +28,15 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public final class SetDistVariableUpdatableRALBackendHandlerTest {
@@ -44,7 +45,7 @@ public final class SetDistVariableUpdatableRALBackendHandlerTest {
     
     private ConnectionSession connectionSession;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
     }
@@ -76,17 +77,17 @@ public final class SetDistVariableUpdatableRALBackendHandlerTest {
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
     
-    @Test(expected = UnsupportedVariableException.class)
-    public void assertSwitchTransactionTypeFailed() throws SQLException {
+    @Test
+    public void assertSwitchTransactionTypeFailed() {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("transaction_type", "XXX"), connectionSession);
-        handler.execute();
+        assertThrows(UnsupportedVariableException.class, handler::execute);
     }
     
-    @Test(expected = UnsupportedVariableException.class)
-    public void assertNotSupportedVariable() throws SQLException {
+    @Test
+    public void assertNotSupportedVariable() {
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("@@session", "XXX"), connectionSession);
-        handler.execute();
+        assertThrows(UnsupportedVariableException.class, handler::execute);
     }
     
     @Test

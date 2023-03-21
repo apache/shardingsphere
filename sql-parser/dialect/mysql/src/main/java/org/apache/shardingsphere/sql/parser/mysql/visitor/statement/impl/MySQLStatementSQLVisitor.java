@@ -129,6 +129,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableRe
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TemporalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TrimFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TypeDatetimePrecisionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValuesFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ViewNameContext;
@@ -447,6 +448,16 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
             return createCompareSegment(ctx);
+        }
+        if (null != ctx.MEMBER()) {
+            int startIndex = ctx.MEMBER().getSymbol().getStopIndex() + 5;
+            int endIndex = ctx.stop.getStopIndex() - 1;
+            String rightText = ctx.start.getInputStream().getText(new Interval(startIndex, endIndex));
+            ExpressionSegment right = new ExpressionProjectionSegment(startIndex, endIndex, rightText);
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
+            String operator = "MEMBER OF";
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }
         if (null != ctx.assignmentOperator()) {
             return createAssignmentSegment(ctx);
@@ -887,15 +898,29 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
+        calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
-        ASTNode exprSegment = visit(ctx.expr());
-        if (exprSegment instanceof ColumnSegment) {
-            result.getParameters().add((ColumnSegment) exprSegment);
-        } else if (exprSegment instanceof LiteralExpressionSegment) {
-            result.getParameters().add((LiteralExpressionSegment) exprSegment);
+        for (ExprContext each : ctx.expr()) {
+            ASTNode expr = visit(each);
+            if (expr instanceof ColumnSegment) {
+                result.getParameters().add((ColumnSegment) expr);
+            } else if (expr instanceof LiteralExpressionSegment) {
+                result.getParameters().add((LiteralExpressionSegment) expr);
+            }
         }
-        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        if (null != ctx.dataType()) {
+            result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        }
+        if (null != ctx.DATETIME()) {
+            DataTypeSegment dataType = new DataTypeSegment();
+            dataType.setDataTypeName(ctx.DATETIME().getText());
+            dataType.setStartIndex(ctx.DATETIME().getSymbol().getStartIndex());
+            dataType.setStopIndex(ctx.DATETIME().getSymbol().getStopIndex());
+            if (null != ctx.typeDatetimePrecision()) {
+                dataType.setDataLength((DataTypeLengthSegment) visit(ctx.typeDatetimePrecision()));
+            }
+            result.getParameters().add(dataType);
+        }
         return result;
     }
     
@@ -1066,6 +1091,15 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         List<TerminalNode> numbers = ctx.NUMBER_();
         result.setPrecision(Integer.parseInt(numbers.get(0).getText()));
         result.setScale(Integer.parseInt(numbers.get(1).getText()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitTypeDatetimePrecision(final TypeDatetimePrecisionContext ctx) {
+        DataTypeLengthSegment result = new DataTypeLengthSegment();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStartIndex());
+        result.setPrecision(Integer.parseInt(ctx.NUMBER_().getText()));
         return result;
     }
     

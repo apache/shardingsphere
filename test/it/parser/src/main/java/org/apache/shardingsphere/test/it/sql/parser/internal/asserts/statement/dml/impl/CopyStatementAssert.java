@@ -32,9 +32,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import java.util.Collection;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Copy statement assert.
@@ -57,7 +57,7 @@ public final class CopyStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
         if (null == expected.getTable()) {
-            assertNull(assertContext.getText("Actual table should not exist."), actual.getTableSegment());
+            assertNull(actual.getTableSegment(), assertContext.getText("Actual table should not exist."));
         } else {
             TableAssert.assertIs(assertContext, actual.getTableSegment(), expected.getTable());
         }
@@ -66,9 +66,9 @@ public final class CopyStatementAssert {
     private static void assertColumns(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
         Collection<ColumnSegment> columnSegments = CopyStatementHandler.getColumns(actual);
         if (expected.getColumns().isEmpty()) {
-            assertTrue(assertContext.getText("Actual column segments should not exist."), columnSegments.isEmpty());
+            assertTrue(columnSegments.isEmpty(), assertContext.getText("Actual column segments should not exist."));
         } else {
-            assertFalse(assertContext.getText("Actual column segments should exist."), columnSegments.isEmpty());
+            assertFalse(columnSegments.isEmpty(), assertContext.getText("Actual column segments should exist."));
             ColumnAssert.assertIs(assertContext, columnSegments, expected.getColumns());
         }
     }
@@ -76,9 +76,9 @@ public final class CopyStatementAssert {
     private static void assertPrepareStatementQuerySegment(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
         Optional<PrepareStatementQuerySegment> prepareStatementQuerySegment = CopyStatementHandler.getPrepareStatementQuerySegment(actual);
         if (null == expected.getQuery()) {
-            assertFalse(assertContext.getText("Actual prepare statement query segment should not exist."), prepareStatementQuerySegment.isPresent());
+            assertFalse(prepareStatementQuerySegment.isPresent(), assertContext.getText("Actual prepare statement query segment should not exist."));
         } else {
-            assertTrue(assertContext.getText("Actual prepare statement query segment should exist."), prepareStatementQuerySegment.isPresent());
+            assertTrue(prepareStatementQuerySegment.isPresent(), assertContext.getText("Actual prepare statement query segment should exist."));
             PrepareStatementQueryAssert.assertIs(assertContext, prepareStatementQuerySegment.get(), expected.getQuery());
         }
     }

@@ -32,12 +32,11 @@ public final class YamlDynamicReadwriteSplittingStrategyConfigurationSwapper
     public YamlDynamicReadwriteSplittingStrategyConfiguration swapToYamlConfiguration(final DynamicReadwriteSplittingStrategyConfiguration config) {
         YamlDynamicReadwriteSplittingStrategyConfiguration result = new YamlDynamicReadwriteSplittingStrategyConfiguration();
         result.setAutoAwareDataSourceName(config.getAutoAwareDataSourceName());
-        result.setWriteDataSourceQueryEnabled(config.getWriteDataSourceQueryEnabled());
         return result;
     }
     
     @Override
     public DynamicReadwriteSplittingStrategyConfiguration swapToObject(final YamlDynamicReadwriteSplittingStrategyConfiguration config) {
-        return null == config ? null : new DynamicReadwriteSplittingStrategyConfiguration(config.getAutoAwareDataSourceName(), config.getWriteDataSourceQueryEnabled());
+        return null == config ? null : new DynamicReadwriteSplittingStrategyConfiguration(config.getAutoAwareDataSourceName());
     }
 }

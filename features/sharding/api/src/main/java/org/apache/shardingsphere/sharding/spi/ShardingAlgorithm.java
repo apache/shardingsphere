@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.sharding.spi;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
 
 import java.util.Optional;
 
 /**
  * Sharding algorithm.
  */
-public interface ShardingAlgorithm extends TypedSPI {
+public interface ShardingAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Get algorithm structure.

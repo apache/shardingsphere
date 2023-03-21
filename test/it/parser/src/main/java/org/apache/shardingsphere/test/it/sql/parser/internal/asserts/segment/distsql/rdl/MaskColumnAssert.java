@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Mask column assert.
@@ -44,9 +44,9 @@ public final class MaskColumnAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MaskColumnSegment actual, final ExpectedMaskColumn expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual mask column should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual mask column should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual mask column should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual mask column should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             AlgorithmAssert.assertIs(assertContext, actual.getAlgorithm(), expected.getAlgorithm());
         }

@@ -34,6 +34,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfigurat
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSimplePipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 
@@ -56,7 +57,7 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     
     @Override
     protected void doPrepare(final PipelineJobItemContext jobItemContext) {
-        jobPreparer.prepare((CDCJobItemContext) jobItemContext);
+        jobPreparer.initTasks((CDCJobItemContext) jobItemContext);
     }
     
     @Override
@@ -77,5 +78,8 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     @Override
     protected void doClean() {
         dataSourceManager.close();
+        if (importerConnector instanceof AutoCloseable) {
+            CloseUtil.closeQuietly((AutoCloseable) importerConnector);
+        }
     }
 }

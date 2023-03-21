@@ -32,7 +32,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Lock clause assert.
@@ -53,11 +53,11 @@ public final class LockClauseAssert {
         List<ExpectedSimpleTable> expectedTables = expected.getTables();
         List<ExpectedColumn> expectedColumns = expected.getColumns();
         if (actualTables.isEmpty()) {
-            assertTrue(assertContext.getText("lock tables should not exist."), expectedTables.isEmpty());
+            assertTrue(expectedTables.isEmpty(), assertContext.getText("lock tables should not exist."));
         }
         TableAssert.assertIs(assertContext, actualTables, expectedTables);
         if (actualColumns.isEmpty()) {
-            assertTrue(assertContext.getText("lock columns should not exist."), expectedColumns.isEmpty());
+            assertTrue(expectedColumns.isEmpty(), assertContext.getText("lock columns should not exist."));
             return;
         }
         int count = 0;

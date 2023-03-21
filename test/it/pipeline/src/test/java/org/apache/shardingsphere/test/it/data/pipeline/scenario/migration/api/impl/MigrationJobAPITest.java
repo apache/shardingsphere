@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -33,10 +32,12 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobI
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
@@ -52,12 +53,12 @@ import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStateme
 import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -71,24 +72,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(PipelineDistributedBarrier.class)
 public final class MigrationJobAPITest {
     
     private static MigrationJobAPI jobAPI;
     
     private static DatabaseType databaseType;
     
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
         jobAPI = new MigrationJobAPI();
@@ -101,7 +106,7 @@ public final class MigrationJobAPITest {
         jobAPI.addMigrationSourceResources(Collections.singletonMap("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props)));
     }
     
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         jobAPI.dropMigrationSourceResources(Collections.singletonList("ds_0"));
     }
@@ -125,13 +130,11 @@ public final class MigrationJobAPITest {
         assertTrue(jobId.isPresent());
         assertFalse(getJobConfigurationPOJO(jobId.get()).isDisabled());
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
-        try (MockedStatic<PipelineDistributedBarrier> distributedBarrierMock = mockStatic(PipelineDistributedBarrier.class)) {
-            distributedBarrierMock.when(PipelineDistributedBarrier::getInstance).thenReturn(mockBarrier);
-            jobAPI.stop(jobId.get());
-            assertTrue(getJobConfigurationPOJO(jobId.get()).isDisabled());
-            jobAPI.startDisabledJob(jobId.get());
-            assertFalse(getJobConfigurationPOJO(jobId.get()).isDisabled());
-        }
+        when(PipelineDistributedBarrier.getInstance()).thenReturn(mockBarrier);
+        jobAPI.stop(jobId.get());
+        assertTrue(getJobConfigurationPOJO(jobId.get()).isDisabled());
+        jobAPI.startDisabledJob(jobId.get());
+        assertFalse(getJobConfigurationPOJO(jobId.get()).isDisabled());
     }
     
     @Test
@@ -141,10 +144,8 @@ public final class MigrationJobAPITest {
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
-        try (MockedStatic<PipelineDistributedBarrier> distributedBarrierMock = mockStatic(PipelineDistributedBarrier.class)) {
-            distributedBarrierMock.when(PipelineDistributedBarrier::getInstance).thenReturn(mockBarrier);
-            jobAPI.rollback(jobId.get());
-        }
+        when(PipelineDistributedBarrier.getInstance()).thenReturn(mockBarrier);
+        jobAPI.rollback(jobId.get());
         assertNull(getJobConfigurationPOJO(jobId.get()));
     }
     
@@ -155,10 +156,8 @@ public final class MigrationJobAPITest {
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
-        try (MockedStatic<PipelineDistributedBarrier> distributedBarrierMock = mockStatic(PipelineDistributedBarrier.class)) {
-            distributedBarrierMock.when(PipelineDistributedBarrier::getInstance).thenReturn(mockBarrier);
-            jobAPI.commit(jobId.get());
-        }
+        when(PipelineDistributedBarrier.getInstance()).thenReturn(mockBarrier);
+        jobAPI.commit(jobId.get());
         assertNull(getJobConfigurationPOJO(jobId.get()));
     }
     
@@ -274,6 +273,19 @@ public final class MigrationJobAPITest {
         PipelineDataSourcePersistService persistService = new PipelineDataSourcePersistService();
         Map<String, DataSourceProperties> actual = persistService.load(new MigrationJobType());
         assertTrue(actual.containsKey("ds_0"));
+    }
+    
+    @Test
+    public void assertCreateJobConfigFailedOnMoreThanOneSourceTable() {
+        List<SourceTargetEntry> sourceTargetEntries = Stream.of("t_order_0", "t_order_1")
+                .map(each -> new SourceTargetEntry("logic_db", new DataNode("ds_0", each), "t_order")).collect(Collectors.toList());
+        assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.createJobAndStart(new MigrateTableStatement(sourceTargetEntries, "logic_db")));
+    }
+    
+    @Test
+    public void assertCreateJobConfigFailedOnDataSourceNotExist() {
+        List<SourceTargetEntry> sourceTargetEntries = Collections.singletonList(new SourceTargetEntry("logic_db", new DataNode("ds_not_exists", "t_order"), "t_order"));
+        assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.createJobAndStart(new MigrateTableStatement(sourceTargetEntries, "logic_db")));
     }
     
     @Test

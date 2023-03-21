@@ -136,7 +136,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
                 ruleConfig.getBindingTableGroups(), broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 InvalidBindingTablesException::new);
         keyGenerators.values().stream().filter(each -> each instanceof InstanceContextAware).forEach(each -> ((InstanceContextAware) each).setInstanceContext(instanceContext));
-        if (defaultKeyGenerateAlgorithm instanceof InstanceContextAware) {
+        if (defaultKeyGenerateAlgorithm instanceof InstanceContextAware && -1 == instanceContext.getWorkerId()) {
             ((InstanceContextAware) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }
     }
@@ -653,16 +653,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
                                                                        final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
         return findBindingTableRule(logicTable).map(optional -> optional.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables))
                 .orElseGet(Collections::emptyMap);
-    }
-    
-    /**
-     * Get logic tables via actual table name.
-     *
-     * @param actualTable actual table name
-     * @return logic tables
-     */
-    public Collection<String> getLogicTablesByActualTable(final String actualTable) {
-        return tableRules.values().stream().filter(each -> each.isExisted(actualTable)).map(TableRule::getLogicTable).collect(Collectors.toSet());
     }
     
     @Override

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.nested;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -27,8 +28,8 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Nested transaction test case.
@@ -41,21 +42,23 @@ public class NestedTransactionTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    protected void executeTest() throws SQLException {
-        ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection();
-        assertFalse(connection.isHoldTransaction());
-        connection.setAutoCommit(false);
-        assertTrue(connection.isHoldTransaction());
-        requiresNewTransaction();
-        assertTrue(connection.isHoldTransaction());
-        connection.commit();
+    protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
+        try (ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection()) {
+            assertFalse(connection.isHoldTransaction());
+            connection.setAutoCommit(false);
+            assertTrue(connection.isHoldTransaction());
+            requiresNewTransaction();
+            assertTrue(connection.isHoldTransaction());
+            connection.commit();
+        }
     }
     
     private void requiresNewTransaction() throws SQLException {
-        ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection();
-        assertFalse(connection.isHoldTransaction());
-        connection.setAutoCommit(false);
-        assertTrue(connection.isHoldTransaction());
-        connection.commit();
+        try (ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection()) {
+            assertFalse(connection.isHoldTransaction());
+            connection.setAutoCommit(false);
+            assertTrue(connection.isHoldTransaction());
+            connection.commit();
+        }
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.api.datasource.config.ya
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;

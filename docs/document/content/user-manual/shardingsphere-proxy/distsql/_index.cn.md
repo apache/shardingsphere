@@ -71,7 +71,7 @@ DistSQL 只能用于 ShardingSphere-Proxy，ShardingSphere-JDBC 暂不提供。
 与标准 SQL 一样，DistSQL 由 ShardingSphere 的解析引擎进行识别，将输入语句转换为抽象语法树，进而生成各个语法对应的 `Statement`，最后由合适的 `Handler` 进行业务处理。
 整体流程如下图所示：
 
-![Overview](https://shardingsphere.apache.org/document/current/img/distsql/overview.png)
+![Overview](https://shardingsphere.apache.org/document/current/img/distsql/overview_v2.png)
 
 ## 相关参考
 

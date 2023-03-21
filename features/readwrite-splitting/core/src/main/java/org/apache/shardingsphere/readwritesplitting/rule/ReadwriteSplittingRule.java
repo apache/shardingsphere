@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
@@ -36,8 +37,8 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
-import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceDeletedEvent;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
@@ -145,7 +146,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     private ReadwriteSplittingDataSourceRuleConfiguration createDynamicDataSourceRuleConfiguration(final ReadwriteSplittingDataSourceRuleConfiguration config, final int index,
                                                                                                    final List<String> readwriteDataSourceNames, final List<String> autoAwareDataSourceNames) {
         return new ReadwriteSplittingDataSourceRuleConfiguration(readwriteDataSourceNames.get(index), null,
-                new DynamicReadwriteSplittingStrategyConfiguration(autoAwareDataSourceNames.get(index), config.getDynamicStrategy().getWriteDataSourceQueryEnabled()), config.getLoadBalancerName());
+                new DynamicReadwriteSplittingStrategyConfiguration(autoAwareDataSourceNames.get(index)), config.getLoadBalancerName());
     }
     
     /**
@@ -168,8 +169,8 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     }
     
     @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>();
+    public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
+        Map<String, Collection<DataSourceRoleInfo>> result = new LinkedHashMap<>();
         for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
             result.put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingStrategy().getAllDataSources());
         }

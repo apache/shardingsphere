@@ -19,9 +19,9 @@ Protocols for ShardingSphere-Proxy to parse and adapt for accessing databases.
 
 | *Configuration Type* | *Description*                          | *Fully-qualified class name* |
 | -------------------- | -------------------------------------- | ---------------------------- |
-| MySQL                | Protocol implementation for MySQL      | [`org.apache.shardingsphere.proxy.frontend.mysql.MySQLFrontendEngine`](https://github.com/apache/shardingsphere/blob/master/proxy/frontend/mysql/src/main/java/org/apache/shardingsphere/proxy/frontend/mysql/MySQLFrontendEngine.java) |
-| PostgreSQL           | Protocol implementation for PostgreSQL | [`org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLFrontendEngine`](https://github.com/apache/shardingsphere/blob/master/proxy/frontend/postgresql/src/main/java/org/apache/shardingsphere/proxy/frontend/postgresql/PostgreSQLFrontendEngine.java) |
-| openGauss            | Protocol implementation for openGauss  | [`org.apache.shardingsphere.proxy.frontend.opengauss.OpenGaussFrontendEngine`](https://github.com/apache/shardingsphere/blob/master/proxy/frontend/opengauss/src/main/java/org/apache/shardingsphere/proxy/frontend/opengauss/OpenGaussFrontendEngine.java) |
+| MySQL                | Protocol implementation for MySQL      | [`org.apache.shardingsphere.proxy.frontend.mysql.MySQLFrontendEngine`](https://github.com/apache/shardingsphere/blob/master/proxy/frontend/type/mysql/src/main/java/org/apache/shardingsphere/proxy/frontend/mysql/MySQLFrontendEngine.java) |
+| PostgreSQL           | Protocol implementation for PostgreSQL | [`org.apache.shardingsphere.proxy.frontend.postgresql.PostgreSQLFrontendEngine`](https://github.com/apache/shardingsphere/blob/master/proxy/frontend/type/postgresql/src/main/java/org/apache/shardingsphere/proxy/frontend/postgresql/PostgreSQLFrontendEngine.java) |
+| openGauss            | Protocol implementation for openGauss  | [`org.apache.shardingsphere.proxy.frontend.opengauss.OpenGaussFrontendEngine`](https://github.com/apache/shardingsphere/blob/master/proxy/frontend/type/opengauss/src/main/java/org/apache/shardingsphere/proxy/frontend/opengauss/OpenGaussFrontendEngine.java) |
 
 ## AuthorityProvide
 

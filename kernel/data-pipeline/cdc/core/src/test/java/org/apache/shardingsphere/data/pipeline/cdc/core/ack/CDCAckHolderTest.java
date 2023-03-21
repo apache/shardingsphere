@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosit
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class CDCAckHolderTest {
@@ -54,7 +54,7 @@ public final class CDCAckHolderTest {
         CDCAckHolder cdcAckHolder = CDCAckHolder.getInstance();
         final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
         SocketSinkImporter socketSinkImporter = mock(SocketSinkImporter.class);
-        importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(new FinishedRecord(new FinishedPosition()), 0, System.currentTimeMillis() - 60 * 1000 * 10));
+        importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(new FinishedRecord(new FinishedPosition()), System.currentTimeMillis() - 60 * 1000 * 10));
         cdcAckHolder.bindAckIdWithPosition(importerDataRecordMap);
         cdcAckHolder.cleanUp(socketSinkImporter);
         Optional<Map<String, Map<SocketSinkImporter, CDCAckPosition>>> ackIdPositionMap = ReflectionUtil.getFieldValue(cdcAckHolder, "ackIdPositionMap");

@@ -53,10 +53,10 @@ public final class SQLRewriteEngineTestParametersBuilder {
      * @param type type
      * @param path path
      * @param targetClass target class
-     * @return Test parameters list for SQL rewrite engine
+     * @return test parameters list for SQL rewrite engine
      */
-    public static Collection<Object[]> loadTestParameters(final String type, final String path, final Class<?> targetClass) {
-        Collection<Object[]> result = new LinkedList<>();
+    public static Collection<SQLRewriteEngineTestParameters> loadTestParameters(final String type, final String path, final Class<?> targetClass) {
+        Collection<SQLRewriteEngineTestParameters> result = new LinkedList<>();
         for (Entry<String, RewriteAssertionsRootEntity> entry : loadAllRewriteAssertionsRootEntities(type, path, targetClass).entrySet()) {
             result.addAll(createTestParameters(type, entry.getKey(), entry.getValue()));
         }
@@ -93,12 +93,12 @@ public final class SQLRewriteEngineTestParametersBuilder {
         }
     }
     
-    private static Collection<Object[]> createTestParameters(final String type, final String fileName, final RewriteAssertionsRootEntity rootAssertions) {
-        Collection<Object[]> result = new LinkedList<>();
+    private static Collection<SQLRewriteEngineTestParameters> createTestParameters(final String type, final String fileName, final RewriteAssertionsRootEntity rootAssertions) {
+        Collection<SQLRewriteEngineTestParameters> result = new LinkedList<>();
         for (RewriteAssertionEntity each : rootAssertions.getAssertions()) {
             for (String databaseType : getDatabaseTypes(each.getDatabaseTypes())) {
                 result.add(new SQLRewriteEngineTestParameters(type, each.getId(), fileName, rootAssertions.getYamlRule(), each.getInput().getSql(),
-                        createParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType).toArray());
+                        createParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType));
             }
         }
         return result;

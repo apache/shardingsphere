@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,7 +27,7 @@ public final class GeneratedKeyInsertColumnTokenTest {
     
     private GeneratedKeyInsertColumnToken generatedKeyInsertColumnToken;
     
-    @Before
+    @BeforeEach
     public void setup() {
         generatedKeyInsertColumnToken = new GeneratedKeyInsertColumnToken(0, "id");
     }

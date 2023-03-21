@@ -21,11 +21,11 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResultSwapper;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
-import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResultSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -53,6 +53,17 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     public boolean isExisted(final String key) {
         // TODO delegate to repository isExisted
         return null != repository.getDirectly(key);
+    }
+    
+    @Override
+    public void persistJobOffsetInfo(final String jobId, final String jobOffsetInfo) {
+        repository.persist(PipelineMetaDataNode.getJobOffsetPath(jobId), jobOffsetInfo);
+    }
+    
+    @Override
+    public Optional<String> getJobOffsetInfo(final String jobId) {
+        String text = repository.getDirectly(PipelineMetaDataNode.getJobOffsetPath(jobId));
+        return Strings.isNullOrEmpty(text) ? Optional.empty() : Optional.of(text);
     }
     
     @Override

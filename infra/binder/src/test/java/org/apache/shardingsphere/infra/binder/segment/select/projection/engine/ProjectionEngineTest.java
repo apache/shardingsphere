@@ -50,30 +50,30 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class ProjectionEngineTest {
     
     @Mock
@@ -202,14 +202,15 @@ public final class ProjectionEngineTest {
         assertThat(iterator.next(), is(new ColumnProjection("t_customer", "customer_id", null)));
     }
     
-    @Test(expected = SchemaNotFoundException.class)
+    @Test
     public void assertCreateProjectionWithNotExistedSchema() {
         SimpleTableSegment tableSegment = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
         OwnerSegment ownerSegment = mock(OwnerSegment.class, RETURNS_DEEP_STUBS);
         when(tableSegment.getOwner()).thenReturn(Optional.of(ownerSegment));
         when(ownerSegment.getIdentifier().getValue()).thenReturn("public");
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
-        new ProjectionEngine(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(tableSegment, shorthandProjectionSegment);
+        assertThrows(SchemaNotFoundException.class, () -> new ProjectionEngine(
+                DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(tableSegment, shorthandProjectionSegment));
     }
     
     @Test
@@ -234,10 +235,10 @@ public final class ProjectionEngineTest {
         Collection<ColumnProjection> columnProjections = new LinkedList<>();
         columnProjections.add(new ColumnProjection(null, "name", null));
         assertThat(((ShorthandProjection) actual.get()).getColumnProjections(), is(columnProjections));
-        Map<String, Projection> actualColumns = new LinkedHashMap<>();
-        actualColumns.put("name", new ColumnProjection(null, "name", null));
-        actualColumns.put("nvl(leave_date, '20991231')", new ExpressionProjection("nvl(leave_date, '20991231')", "leave_date"));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(actualColumns));
+        Collection<Projection> expectedColumnProjections = new LinkedHashSet<>();
+        expectedColumnProjections.add(new ColumnProjection(null, "name", null));
+        expectedColumnProjections.add(new ExpressionProjection("nvl(leave_date, '20991231')", "leave_date"));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(expectedColumnProjections));
     }
     
     @Test
@@ -306,42 +307,42 @@ public final class ProjectionEngineTest {
         return result;
     }
     
-    private Map<String, Projection> crateExpectedColumnsWithoutOwnerForPostgreSQL() {
-        Map<String, Projection> result = new LinkedHashMap<>();
-        result.put("o.user_id", new ColumnProjection("o", "user_id", null));
-        result.put("o.order_id", new ColumnProjection("o", "order_id", null));
-        result.put("o.creation_date", new ColumnProjection("o", "creation_date", null));
-        result.put("o.status", new ColumnProjection("o", "status", null));
-        result.put("o.merchant_id", new ColumnProjection("o", "merchant_id", null));
-        result.put("o.remark", new ColumnProjection("o", "remark", null));
-        result.put("i.item_id", new ColumnProjection("i", "item_id", null));
-        result.put("i.product_id", new ColumnProjection("i", "product_id", null));
-        result.put("i.quantity", new ColumnProjection("i", "quantity", null));
+    private Collection<Projection> crateExpectedColumnsWithoutOwnerForPostgreSQL() {
+        Collection<Projection> result = new LinkedHashSet<>();
+        result.add(new ColumnProjection("o", "user_id", null));
+        result.add(new ColumnProjection("o", "order_id", null));
+        result.add(new ColumnProjection("o", "creation_date", null));
+        result.add(new ColumnProjection("o", "status", null));
+        result.add(new ColumnProjection("o", "merchant_id", null));
+        result.add(new ColumnProjection("o", "remark", null));
+        result.add(new ColumnProjection("i", "item_id", null));
+        result.add(new ColumnProjection("i", "product_id", null));
+        result.add(new ColumnProjection("i", "quantity", null));
         return result;
     }
     
-    private Map<String, Projection> crateExpectedColumnsWithoutOwnerForMySQL() {
-        Map<String, Projection> result = new LinkedHashMap<>();
-        result.put("i.order_id", new ColumnProjection("i", "order_id", null));
-        result.put("i.user_id", new ColumnProjection("i", "user_id", null));
-        result.put("i.creation_date", new ColumnProjection("i", "creation_date", null));
-        result.put("i.item_id", new ColumnProjection("i", "item_id", null));
-        result.put("i.product_id", new ColumnProjection("i", "product_id", null));
-        result.put("i.quantity", new ColumnProjection("i", "quantity", null));
-        result.put("o.status", new ColumnProjection("o", "status", null));
-        result.put("o.merchant_id", new ColumnProjection("o", "merchant_id", null));
-        result.put("o.remark", new ColumnProjection("o", "remark", null));
+    private Collection<Projection> crateExpectedColumnsWithoutOwnerForMySQL() {
+        Collection<Projection> result = new LinkedHashSet<>();
+        result.add(new ColumnProjection("i", "order_id", null));
+        result.add(new ColumnProjection("i", "user_id", null));
+        result.add(new ColumnProjection("i", "creation_date", null));
+        result.add(new ColumnProjection("i", "item_id", null));
+        result.add(new ColumnProjection("i", "product_id", null));
+        result.add(new ColumnProjection("i", "quantity", null));
+        result.add(new ColumnProjection("o", "status", null));
+        result.add(new ColumnProjection("o", "merchant_id", null));
+        result.add(new ColumnProjection("o", "remark", null));
         return result;
     }
     
-    private Map<String, Projection> crateExpectedColumnsWithOwner() {
-        Map<String, Projection> result = new LinkedHashMap<>();
-        result.put("o.order_id", new ColumnProjection("o", "order_id", null));
-        result.put("o.user_id", new ColumnProjection("o", "user_id", null));
-        result.put("o.status", new ColumnProjection("o", "status", null));
-        result.put("o.merchant_id", new ColumnProjection("o", "merchant_id", null));
-        result.put("o.remark", new ColumnProjection("o", "remark", null));
-        result.put("o.creation_date", new ColumnProjection("o", "creation_date", null));
+    private Collection<Projection> crateExpectedColumnsWithOwner() {
+        Collection<Projection> result = new LinkedHashSet<>();
+        result.add(new ColumnProjection("o", "order_id", null));
+        result.add(new ColumnProjection("o", "user_id", null));
+        result.add(new ColumnProjection("o", "status", null));
+        result.add(new ColumnProjection("o", "merchant_id", null));
+        result.add(new ColumnProjection("o", "remark", null));
+        result.add(new ColumnProjection("o", "creation_date", null));
         return result;
     }
     

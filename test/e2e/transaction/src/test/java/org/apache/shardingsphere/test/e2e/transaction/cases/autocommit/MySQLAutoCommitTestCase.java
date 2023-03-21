@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.autocommit;
 
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -27,10 +28,9 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * MySQL auto commit transaction integration test.
@@ -43,24 +43,23 @@ public final class MySQLAutoCommitTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertAutoCommit();
     }
     
+    @SneakyThrows(InterruptedException.class)
     private void assertAutoCommit() throws SQLException {
         // TODO Currently XA transaction does not support two transactions in the same thread at the same time
-        Connection connection1 = getDataSource().getConnection();
-        Connection connection2 = getDataSource().getConnection();
-        executeWithLog(connection1, "set session transaction isolation level read committed;");
-        executeWithLog(connection2, "set session transaction isolation level read committed;");
-        connection1.setAutoCommit(false);
-        connection2.setAutoCommit(false);
-        executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(1, 100, 1);");
-        assertFalse(executeQueryWithLog(connection2, "select * from account;").next());
-        connection1.commit();
-        ThreadUtil.sleep(1, TimeUnit.SECONDS);
-        assertTrue(executeQueryWithLog(connection2, "select * from account;").next());
-        connection1.close();
-        connection2.close();
+        try (Connection connection1 = getDataSource().getConnection(); Connection connection2 = getDataSource().getConnection()) {
+            executeWithLog(connection1, "set session transaction isolation level read committed;");
+            executeWithLog(connection2, "set session transaction isolation level read committed;");
+            connection1.setAutoCommit(false);
+            connection2.setAutoCommit(false);
+            executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(1, 100, 1);");
+            assertFalse(executeQueryWithLog(connection2, "select * from account;").next());
+            connection1.commit();
+            Thread.sleep(1000L);
+            assertTrue(executeQueryWithLog(connection2, "select * from account;").next());
+        }
     }
 }

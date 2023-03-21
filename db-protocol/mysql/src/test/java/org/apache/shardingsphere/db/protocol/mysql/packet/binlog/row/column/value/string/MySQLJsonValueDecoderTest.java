@@ -20,10 +20,10 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.val
 import com.google.common.base.Strings;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLJsonValueDecoder.JsonValueTypes;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.junit.Test;
+import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLJsonValueDecoder.JsonValueTypes;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.LinkedList;

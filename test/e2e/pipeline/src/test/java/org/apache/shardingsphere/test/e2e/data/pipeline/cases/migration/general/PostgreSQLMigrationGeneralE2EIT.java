@@ -23,109 +23,98 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobTy
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.PipelineBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.AbstractMigrationE2EIT;
-import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.PostgreSQLIncrementTask;
-import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
+import org.apache.shardingsphere.test.e2e.data.pipeline.cases.task.E2EIncrementalTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ECondition;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(Parameterized.class)
+@PipelineE2ESettings(database = {
+        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/scenario/general/postgresql.xml"),
+        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/general/postgresql.xml")})
 @Slf4j
 public final class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
-    private final PipelineTestParameter testParam;
+    private static final String SOURCE_TABLE_NAME = "t_order_copy";
     
-    public PostgreSQLMigrationGeneralE2EIT(final PipelineTestParameter testParam) {
-        super(testParam);
-        this.testParam = testParam;
+    private static final String TARGET_TABLE_NAME = "t_order";
+    
+    @ParameterizedTest(name = "{0}")
+    @EnabledIf("isEnabled")
+    @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
+    public void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+            addMigrationProcessConfig(containerComposer);
+            createSourceSchema(containerComposer, PipelineContainerComposer.SCHEMA_NAME);
+            containerComposer.createSourceOrderTable(SOURCE_TABLE_NAME);
+            containerComposer.createSourceOrderItemTable();
+            containerComposer.createSourceTableIndexList(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
+            containerComposer.createSourceCommentOnList(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
+            addMigrationSourceResource(containerComposer);
+            addMigrationTargetResource(containerComposer);
+            createTargetOrderTableRule(containerComposer);
+            createTargetOrderItemTableRule(containerComposer);
+            Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
+            log.info("init data begin: {}", LocalDateTime.now());
+            DataSourceExecuteUtil.execute(containerComposer.getSourceDataSource(), containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
+            DataSourceExecuteUtil.execute(containerComposer.getSourceDataSource(), containerComposer.getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
+            log.info("init data end: {}", LocalDateTime.now());
+            startMigrationWithSchema(containerComposer, SOURCE_TABLE_NAME, "t_order");
+            Awaitility.await().atMost(10, TimeUnit.SECONDS).pollInterval(1, TimeUnit.SECONDS).until(() -> listJobId(containerComposer).size() > 0);
+            String jobId = getJobIdByTableName(containerComposer, "ds_0.test." + SOURCE_TABLE_NAME);
+            containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+            containerComposer.startIncrementTask(new E2EIncrementalTask(
+                    containerComposer.getSourceDataSource(), String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME),
+                    new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20));
+            checkOrderMigration(containerComposer, jobId);
+            checkOrderItemMigration(containerComposer);
+            for (String each : listJobId(containerComposer)) {
+                commitMigrationByJobId(containerComposer, each);
+            }
+            List<String> lastJobIds = listJobId(containerComposer);
+            assertTrue(lastJobIds.isEmpty());
+            containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
+            containerComposer.assertGreaterThanOrderTableInitRows(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1, PipelineContainerComposer.SCHEMA_NAME);
+        }
     }
     
-    @Override
-    protected String getSourceTableOrderName() {
-        return "t_order_copy";
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<PipelineTestParameter> getTestParameters() {
-        Collection<PipelineTestParameter> result = new LinkedList<>();
-        if (PipelineBaseE2EIT.ENV.getItEnvType() == PipelineEnvTypeEnum.NONE) {
-            return result;
-        }
-        for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(new PostgreSQLDatabaseType())) {
-            result.add(new PipelineTestParameter(new PostgreSQLDatabaseType(), each, "env/scenario/general/postgresql.xml"));
-        }
-        for (String each : PipelineBaseE2EIT.ENV.listStorageContainerImages(new OpenGaussDatabaseType())) {
-            result.add(new PipelineTestParameter(new OpenGaussDatabaseType(), each, "env/scenario/general/postgresql.xml"));
-        }
-        return result;
-    }
-    
-    @Test
-    public void assertMigrationSuccess() throws SQLException, InterruptedException {
-        log.info("assertMigrationSuccess testParam:{}", testParam);
-        initEnvironment(testParam.getDatabaseType(), new MigrationJobType());
-        addMigrationProcessConfig();
-        createSourceSchema(PipelineBaseE2EIT.SCHEMA_NAME);
-        createSourceOrderTable();
-        createSourceOrderItemTable();
-        createSourceTableIndexList(PipelineBaseE2EIT.SCHEMA_NAME);
-        createSourceCommentOnList(PipelineBaseE2EIT.SCHEMA_NAME);
-        addMigrationSourceResource();
-        addMigrationTargetResource();
-        createTargetOrderTableRule();
-        createTargetOrderItemTableRule();
-        Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(testParam.getDatabaseType(), PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT);
-        log.info("init data begin: {}", LocalDateTime.now());
-        DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
-        DataSourceExecuteUtil.execute(getSourceDataSource(), getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
-        log.info("init data end: {}", LocalDateTime.now());
-        checkOrderMigration();
-        checkOrderItemMigration();
-        for (String each : listJobId()) {
-            commitMigrationByJobId(each);
-        }
-        List<String> lastJobIds = listJobId();
-        assertThat(lastJobIds.size(), is(0));
-        proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
-        assertGreaterThanOrderTableInitRows(PipelineBaseE2EIT.TABLE_INIT_ROW_COUNT + 1, PipelineBaseE2EIT.SCHEMA_NAME);
-        log.info("{} E2E IT finished, database type={}, docker image={}", this.getClass().getName(), testParam.getDatabaseType(), testParam.getStorageContainerImage());
-    }
-    
-    private void checkOrderMigration() throws SQLException, InterruptedException {
-        startMigrationWithSchema(getSourceTableOrderName(), "t_order");
-        startIncrementTask(new PostgreSQLIncrementTask(getSourceDataSource(), PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName(), 20));
-        String jobId = getJobIdByTableName("ds_0.test." + getSourceTableOrderName());
-        waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        stopMigrationByJobId(jobId);
+    private void checkOrderMigration(final PipelineContainerComposer containerComposer, final String jobId) throws SQLException, InterruptedException {
+        containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        stopMigrationByJobId(containerComposer, jobId);
         long recordId = new SnowflakeKeyGenerateAlgorithm().generateKey();
-        sourceExecuteWithLog(
-                String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getSourceTableOrderName()), recordId, 1, "afterStop"));
-        startMigrationByJobId(jobId);
+        containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')",
+                String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME), recordId, 1, "afterStop"));
+        startMigrationByJobId(containerComposer, jobId);
         // must refresh firstly, otherwise proxy can't get schema and table info
-        proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
-        assertProxyOrderRecordExist(String.join(".", PipelineBaseE2EIT.SCHEMA_NAME, getTargetTableOrderName()), recordId);
-        assertCheckMigrationSuccess(jobId, "DATA_MATCH");
+        containerComposer.proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
+        containerComposer.assertProxyOrderRecordExist(String.join(".", PipelineContainerComposer.SCHEMA_NAME, TARGET_TABLE_NAME), recordId);
+        assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
     }
     
-    private void checkOrderItemMigration() throws SQLException, InterruptedException {
-        startMigrationWithSchema("t_order_item", "t_order_item");
-        String jobId = getJobIdByTableName("ds_0.test.t_order_item");
-        waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        assertCheckMigrationSuccess(jobId, "DATA_MATCH");
+    private void checkOrderItemMigration(final PipelineContainerComposer containerComposer) throws SQLException, InterruptedException {
+        startMigrationWithSchema(containerComposer, "t_order_item", "t_order_item");
+        String jobId = getJobIdByTableName(containerComposer, "ds_0.test.t_order_item");
+        containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
+    }
+    
+    private static boolean isEnabled() {
+        return PipelineE2ECondition.isEnabled(new PostgreSQLDatabaseType(), new OpenGaussDatabaseType());
     }
 }

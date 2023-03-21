@@ -21,13 +21,13 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class SystemSchemaBuilderTest {
     
@@ -36,7 +36,7 @@ public final class SystemSchemaBuilderTest {
         Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build("information_schema", new MySQLDatabaseType());
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("information_schema"));
-        assertThat(actual.get("information_schema").getTables().size(), is(7));
+        assertThat(actual.get("information_schema").getTables().size(), is(15));
     }
     
     @Test

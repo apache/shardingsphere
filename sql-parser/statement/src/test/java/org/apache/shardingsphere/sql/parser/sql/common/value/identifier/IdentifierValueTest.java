@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.value.identifier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

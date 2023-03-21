@@ -1697,6 +1697,28 @@
         </where>
     </select>
 
+    <select sql-case-id="select_where_with_simple_expr_with_json_member_of">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="56">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="56">
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="35"/>
+                    </left>
+                    <operator>MEMBER OF</operator>
+                    <right>
+                        <expression-projection text="&quot;[1,2,3]&quot;" start-index="47" stop-index="55" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_where_with_simple_expr_with_json_unquote_extract_sign">
         <from start-index="14" stop-index="20">
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -2061,6 +2083,52 @@
                 </expr>
             </expression-item>
         </order-by>
+    </select>
+    
+    <select sql-case-id="select_with_insert_function">
+        <from>
+            <simple-table name="t_order" start-index="50" stop-index="56" />
+        </from>
+        <projections start-index="7" stop-index="43">
+            <expression-projection text="INSERT(phone, 4, 3, '***')" alias="phone" start-index="7" stop-index="43">
+                <expr>
+                    <function function-name="INSERT" text="INSERT(phone, 4, 3, '***')" start-index="7" stop-index="32">
+                        <parameter>
+                            <column name="phone" start-index="14" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="4" start-index="21" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="3" start-index="24" stop-index="24" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="***" start-index="27" stop-index="31" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_repeat_function">
+        <from>
+            <simple-table name="t_order" start-index="31" stop-index="37" />
+        </from>
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="REPEAT('MySQL', 3)" start-index="7" stop-index="24">
+                <expr>
+                    <function function-name="REPEAT" text="REPEAT('MySQL', 3)" start-index="7" stop-index="24">
+                        <parameter>
+                            <literal-expression value="MySQL" start-index="14" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="3" start-index="23" stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 
     <select sql-case-id="select_with_regular_function">

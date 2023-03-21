@@ -21,58 +21,43 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRe
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.SetDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Collections;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class SetDefaultSingleTableStorageUnitUpdaterTest {
     
     private final SetDefaultSingleTableStorageUnitStatementUpdater updater = new SetDefaultSingleTableStorageUnitStatementUpdater();
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ShardingSphereDatabase database;
-    
-    @Mock
-    private SingleRuleConfiguration currentConfig;
-    
-    @Before
-    public void setUp() {
-        when(database.getName()).thenReturn("sharding_db");
-        when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
-    }
-    
-    @Test(expected = MissingRequiredStorageUnitsException.class)
+    @Test
     public void assertCheckWithInvalidResource() {
-        updater.checkSQLStatement(database, new SetDefaultSingleTableStorageUnitStatement("ds_1"), currentConfig);
+        assertThrows(MissingRequiredStorageUnitsException.class,
+                () -> updater.checkSQLStatement(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), new SetDefaultSingleTableStorageUnitStatement("bar_ds"), mock(SingleRuleConfiguration.class)));
     }
     
     @Test
     public void assertBuild() {
-        SingleRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, new SetDefaultSingleTableStorageUnitStatement("ds_0"));
+        SingleRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(mock(SingleRuleConfiguration.class), new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
         assertTrue(toBeCreatedRuleConfig.getDefaultDataSource().isPresent());
-        assertThat(toBeCreatedRuleConfig.getDefaultDataSource().get(), is("ds_0"));
+        assertThat(toBeCreatedRuleConfig.getDefaultDataSource().get(), is("foo_ds"));
     }
     
     @Test
     public void assertUpdate() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
-        SingleRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, new SetDefaultSingleTableStorageUnitStatement("ds_0"));
+        SingleRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertTrue(currentConfig.getDefaultDataSource().isPresent());
-        assertThat(currentConfig.getDefaultDataSource().get(), is("ds_0"));
+        assertThat(currentConfig.getDefaultDataSource().get(), is("foo_ds"));
     }
     
     @Test

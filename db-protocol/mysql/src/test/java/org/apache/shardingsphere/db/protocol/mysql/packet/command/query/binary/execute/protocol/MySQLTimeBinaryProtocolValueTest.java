@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.protocol;
 
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -31,12 +31,14 @@ import java.util.Calendar;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class MySQLTimeBinaryProtocolValueTest {
     
     @Mock
@@ -67,10 +69,10 @@ public final class MySQLTimeBinaryProtocolValueTest {
         assertThat(actual.get(Calendar.SECOND), is(0));
     }
     
-    @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertReadWithIllegalArgument() throws SQLException {
+    @Test
+    public void assertReadWithIllegalArgument() {
         when(payload.readInt1()).thenReturn(100);
-        new MySQLTimeBinaryProtocolValue().read(payload, false);
+        assertThrows(SQLFeatureNotSupportedException.class, () -> new MySQLTimeBinaryProtocolValue().read(payload, false));
     }
     
     @Test
@@ -98,7 +100,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
     public void assertWriteWithTwelveBytes() {
         MySQLTimeBinaryProtocolValue actual = new MySQLTimeBinaryProtocolValue();
         actual.write(payload, new Time(1L));
-        verify(payload).writeInt1(12);
+        verify(payload, atLeastOnce()).writeInt1(12);
         verify(payload, times(5)).writeInt1(anyInt());
         verify(payload).writeInt4(0);
         verify(payload).writeInt4(1000000);

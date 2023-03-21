@@ -21,12 +21,13 @@ import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class PostgreSQLInt4ArrayBinaryProtocolValueTest {
     
@@ -34,9 +35,9 @@ public final class PostgreSQLInt4ArrayBinaryProtocolValueTest {
         return new PostgreSQLInt4ArrayBinaryProtocolValue();
     }
     
-    @Test(expected = UnsupportedSQLOperationException.class)
+    @Test
     public void assertGetColumnLength() {
-        newInstance().getColumnLength("val");
+        assertThrows(UnsupportedSQLOperationException.class, () -> newInstance().getColumnLength("val"));
     }
     
     @Test
@@ -53,9 +54,8 @@ public final class PostgreSQLInt4ArrayBinaryProtocolValueTest {
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     
-    @Test(expected = UnsupportedSQLOperationException.class)
+    @Test
     public void assertWrite() {
-        newInstance().write(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), "val");
+        assertThrows(UnsupportedSQLOperationException.class, () -> newInstance().write(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), "val"));
     }
-    
 }

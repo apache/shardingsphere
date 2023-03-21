@@ -38,7 +38,6 @@ rules:
     <data_source_name> (+): # 读写分离逻辑数据源名称
        dynamic_strategy: # 读写分离类型
          auto_aware_data_source_name: # 数据库发现逻辑数据源名称
-         write_data_source_query_enabled: # 从库全部下线，主库是否承担读流量
        loadBalancerName: # 负载均衡算法名称
   
   # 负载均衡算法配置

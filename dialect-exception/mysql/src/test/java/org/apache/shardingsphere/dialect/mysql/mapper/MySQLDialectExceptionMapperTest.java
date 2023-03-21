@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dialect.mysql.mapper;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.dialect.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
@@ -32,48 +31,44 @@ import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationExcepti
 import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
 public final class MySQLDialectExceptionMapperTest {
     
-    private final Class<SQLDialectException> sqlDialectExceptionClazz;
-    
-    private final VendorError vendorError;
-    
-    @Parameters(name = "{1} -> {0}")
-    public static Collection<Object[]> getTestParameters() {
-        return Arrays.asList(new Object[][]{
-                {UnknownDatabaseException.class, MySQLVendorError.ER_NO_DB_ERROR},
-                {NoDatabaseSelectedException.class, MySQLVendorError.ER_NO_DB_ERROR},
-                {DatabaseCreateExistsException.class, MySQLVendorError.ER_DB_CREATE_EXISTS_ERROR},
-                {DatabaseDropNotExistsException.class, MySQLVendorError.ER_DB_DROP_NOT_EXISTS_ERROR},
-                {TableExistsException.class, MySQLVendorError.ER_TABLE_EXISTS_ERROR},
-                {NoSuchTableException.class, MySQLVendorError.ER_NO_SUCH_TABLE},
-                {InsertColumnsAndValuesMismatchedException.class, MySQLVendorError.ER_WRONG_VALUE_COUNT_ON_ROW},
-                {TableModifyInTransactionException.class, MySQLVendorError.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE},
-                {TooManyConnectionsException.class, MySQLVendorError.ER_CON_COUNT_ERROR},
-                {UnsupportedPreparedStatementException.class, MySQLVendorError.ER_UNSUPPORTED_PS},
-                {UnknownCollationException.class, MySQLVendorError.ER_UNKNOWN_COLLATION},
-        });
-    }
-    
-    @Test
-    public void assertConvert() {
+    @ParameterizedTest(name = "{1} -> {0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertConvert(final Class<SQLDialectException> sqlDialectExceptionClazz, final VendorError vendorError) {
         SQLException actual = new MySQLDialectExceptionMapper().convert(mock(sqlDialectExceptionClazz));
         assertThat(actual.getSQLState(), is(vendorError.getSqlState().getValue()));
         assertThat(actual.getErrorCode(), is(vendorError.getVendorCode()));
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(Arguments.of(UnknownDatabaseException.class, MySQLVendorError.ER_NO_DB_ERROR),
+                    Arguments.of(NoDatabaseSelectedException.class, MySQLVendorError.ER_NO_DB_ERROR),
+                    Arguments.of(DatabaseCreateExistsException.class, MySQLVendorError.ER_DB_CREATE_EXISTS_ERROR),
+                    Arguments.of(DatabaseDropNotExistsException.class, MySQLVendorError.ER_DB_DROP_NOT_EXISTS_ERROR),
+                    Arguments.of(TableExistsException.class, MySQLVendorError.ER_TABLE_EXISTS_ERROR),
+                    Arguments.of(NoSuchTableException.class, MySQLVendorError.ER_NO_SUCH_TABLE),
+                    Arguments.of(InsertColumnsAndValuesMismatchedException.class, MySQLVendorError.ER_WRONG_VALUE_COUNT_ON_ROW),
+                    Arguments.of(TableModifyInTransactionException.class, MySQLVendorError.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE),
+                    Arguments.of(TooManyConnectionsException.class, MySQLVendorError.ER_CON_COUNT_ERROR),
+                    Arguments.of(UnsupportedPreparedStatementException.class, MySQLVendorError.ER_UNSUPPORTED_PS),
+                    Arguments.of(UnknownCollationException.class, MySQLVendorError.ER_UNKNOWN_COLLATION));
+        }
     }
 }

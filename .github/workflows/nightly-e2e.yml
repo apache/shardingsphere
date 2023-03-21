@@ -102,7 +102,7 @@ jobs:
     name: single rule
     needs: it-empty-rule
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       max-parallel: 2
       fail-fast: false

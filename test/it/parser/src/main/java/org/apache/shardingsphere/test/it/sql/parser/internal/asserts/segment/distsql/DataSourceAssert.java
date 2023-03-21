@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedDataSource;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -45,9 +45,9 @@ public final class DataSourceAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DataSourceSegment actual, final ExpectedDataSource expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual dataSource should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual dataSource should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual dataSource should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual dataSource should exist."));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getUser(), is(expected.getUser()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getPassword(), is(expected.getPassword()));

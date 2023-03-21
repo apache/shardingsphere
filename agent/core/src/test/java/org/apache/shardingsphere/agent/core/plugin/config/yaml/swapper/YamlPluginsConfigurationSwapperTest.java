@@ -21,13 +21,12 @@ import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginCategoryConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginConfiguration;
-import org.junit.Test;
-import org.yaml.snakeyaml.Yaml;
+import org.apache.shardingsphere.agent.core.yaml.AgentYamlEngine;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collections;
@@ -36,8 +35,8 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class YamlPluginsConfigurationSwapperTest {
     
@@ -82,7 +81,7 @@ public final class YamlPluginsConfigurationSwapperTest {
     
     @Test
     public void assertSwapWithFile() throws IOException {
-        YamlAgentConfiguration yamlAgentConfig = new Yaml().loadAs(new InputStreamReader(new FileInputStream(new File(getResourceURL(), CONFIG_PATH))), YamlAgentConfiguration.class);
+        YamlAgentConfiguration yamlAgentConfig = AgentYamlEngine.unmarshalYamlAgentConfiguration(new FileInputStream(new File(getResourceURL(), CONFIG_PATH)));
         Map<String, PluginConfiguration> actual = YamlPluginsConfigurationSwapper.swap(yamlAgentConfig);
         assertThat(actual.size(), is(3));
         assertLogFixturePluginConfiguration(actual.get("log_fixture"));

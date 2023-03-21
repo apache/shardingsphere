@@ -24,18 +24,18 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class SQLMatchTrafficAlgorithmTest {
     
     private SQLMatchTrafficAlgorithm sqlMatchAlgorithm;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         sqlMatchAlgorithm = (SQLMatchTrafficAlgorithm) TypedSPILoader.getService(TrafficAlgorithm.class, "SQL_MATCH",
                 PropertiesBuilder.build(new Property("sql", "SELECT * FROM t_order; UPDATE t_order SET order_id = ? WHERE user_id = ?;")));

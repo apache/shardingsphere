@@ -24,12 +24,13 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -39,9 +40,10 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,12 +54,12 @@ public final class ProxyContextTest {
     
     private ContextManager currentContextManager;
     
-    @Before
+    @BeforeEach
     public void recordCurrentContextManager() {
         currentContextManager = ProxyContext.getInstance().getContextManager();
     }
     
-    @After
+    @AfterEach
     public void restorePreviousContextManager() {
         ProxyContext.init(currentContextManager);
     }
@@ -66,9 +68,11 @@ public final class ProxyContextTest {
     public void assertInit() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         ProxyContext.init(new ContextManager(metaDataContexts, mock(InstanceContext.class, RETURNS_DEEP_STUBS)));
+        assertThat(ProxyContext.getInstance().getContextManager().getClusterStateContext(), is(ProxyContext.getInstance().getContextManager().getClusterStateContext()));
+        assertThat(ProxyContext.getInstance().getContextManager().getClusterStateContext().getCurrentState(), is(ClusterState.OK));
         assertThat(ProxyContext.getInstance().getContextManager().getMetaDataContexts(), is(ProxyContext.getInstance().getContextManager().getMetaDataContexts()));
-        assertTrue(ProxyContext.getInstance().getStateContext().isPresent());
-        assertThat(ProxyContext.getInstance().getStateContext(), is(ProxyContext.getInstance().getStateContext()));
+        assertTrue(ProxyContext.getInstance().getInstanceStateContext().isPresent());
+        assertThat(ProxyContext.getInstance().getInstanceStateContext(), is(ProxyContext.getInstance().getInstanceStateContext()));
     }
     
     @Test
@@ -83,17 +87,17 @@ public final class ProxyContextTest {
         assertFalse(ProxyContext.getInstance().databaseExists("db_1"));
     }
     
-    @Test(expected = NoDatabaseSelectedException.class)
+    @Test
     public void assertGetDatabaseWithNull() {
-        assertNull(ProxyContext.getInstance().getDatabase(null));
+        assertThrows(NoDatabaseSelectedException.class, () -> assertNull(ProxyContext.getInstance().getDatabase(null)));
     }
     
-    @Test(expected = NoDatabaseSelectedException.class)
+    @Test
     public void assertGetDatabaseWithEmptyString() {
-        assertNull(ProxyContext.getInstance().getDatabase(""));
+        assertThrows(NoDatabaseSelectedException.class, () -> assertNull(ProxyContext.getInstance().getDatabase("")));
     }
     
-    @Test(expected = NoDatabaseSelectedException.class)
+    @Test
     public void assertGetDatabaseWhenNotExisted() {
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -101,7 +105,7 @@ public final class ProxyContextTest {
                 new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        ProxyContext.getInstance().getDatabase("db1");
+        assertThrows(NoDatabaseSelectedException.class, () -> ProxyContext.getInstance().getDatabase("db1"));
     }
     
     @Test

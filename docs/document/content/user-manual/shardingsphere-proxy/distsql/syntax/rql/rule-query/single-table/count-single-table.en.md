@@ -37,7 +37,7 @@ databaseName ::=
 
 ### Example
 
-- Query the number of single table rules for specified database.
+- Query the number of single rules for specified database.
 
 ```sql
 COUNT SINGLE TABLE

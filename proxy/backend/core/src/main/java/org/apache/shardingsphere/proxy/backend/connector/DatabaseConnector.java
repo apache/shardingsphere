@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
@@ -48,13 +49,16 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
+import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
@@ -68,11 +72,16 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -158,7 +167,6 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
      * @return backend response
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ResponseHeader execute() throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
@@ -169,8 +177,57 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
             ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
         }
+        Collection<ExecutionContext> executionContexts = generateExecutionContexts(metaDataContexts);
+        return isNeedImplicitCommitTransaction(executionContexts.iterator().next()) ? doExecuteWithImplicitCommitTransaction(executionContexts) : doExecute(executionContexts);
+    }
+    
+    private Collection<ExecutionContext> generateExecutionContexts(final MetaDataContexts metaDataContexts) {
+        Collection<ExecutionContext> result = new LinkedList<>();
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, database, metaDataContexts.getMetaData().getGlobalRuleMetaData(),
                 metaDataContexts.getMetaData().getProps(), backendConnection.getConnectionSession().getConnectionContext());
+        result.add(executionContext);
+        // TODO support logical SQL optimize to generate multiple logical SQL
+        return result;
+    }
+    
+    private boolean isNeedImplicitCommitTransaction(final ExecutionContext executionContext) {
+        TransactionStatus transactionStatus = backendConnection.getConnectionSession().getTransactionStatus();
+        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
+        return TransactionType.isDistributedTransaction(transactionStatus.getTransactionType()) && !transactionStatus.isInTransaction() && sqlStatement instanceof DMLStatement
+                && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1;
+    }
+    
+    private ResponseHeader doExecuteWithImplicitCommitTransaction(final Collection<ExecutionContext> executionContexts) throws SQLException {
+        ResponseHeader result;
+        BackendTransactionManager transactionManager = new BackendTransactionManager(backendConnection);
+        try {
+            transactionManager.begin();
+            result = doExecute(executionContexts);
+            transactionManager.commit();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            transactionManager.rollback();
+            String databaseName = backendConnection.getConnectionSession().getDatabaseName();
+            throw SQLExceptionTransformEngine.toSQLException(ex, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()
+                    .getDatabase(databaseName).getProtocolType().getType());
+        }
+        return result;
+    }
+    
+    private ResponseHeader doExecute(final Collection<ExecutionContext> executionContexts) throws SQLException {
+        ResponseHeader result = null;
+        for (ExecutionContext each : executionContexts) {
+            ResponseHeader responseHeader = doExecute(each);
+            if (null == result) {
+                result = responseHeader;
+            }
+        }
+        return result;
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private ResponseHeader doExecute(final ExecutionContext executionContext) throws SQLException {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
@@ -269,21 +326,41 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         return result;
     }
     
-    private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final ExecutionContext executionContext,
-                                          final QueryResult queryResultSample, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
-        return hasSelectExpandProjections(executionContext.getSqlStatementContext()) ? queryHeaderBuilderEngine.build(
-                ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), database, columnIndex)
-                : queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
-    }
-    
     private int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
+        if (isAllSingleTable(executionContext.getSqlStatementContext())) {
+            return queryResultSample.getMetaData().getColumnCount();
+        }
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())
                 ? ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext().getExpandProjections().size()
                 : queryResultSample.getMetaData().getColumnCount();
     }
     
+    private boolean isAllSingleTable(final SQLStatementContext<?> sqlStatementContext) {
+        return sqlStatementContext.getTablesContext().getTableNames().stream().allMatch(each -> !containsInImmutableDataNodeContainedRule(each)
+                && !containsInColumnContainedRule(each));
+    }
+    
+    private boolean containsInImmutableDataNodeContainedRule(final String tableName) {
+        return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
+                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
+    }
+    
+    private boolean containsInColumnContainedRule(final String tableName) {
+        return database.getRuleMetaData().findRules(ColumnContainedRule.class).stream().anyMatch(each -> each.getTables().contains(tableName));
+    }
+    
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
+    }
+    
+    private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final ExecutionContext executionContext,
+                                          final QueryResult queryResultSample, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
+        if (isAllSingleTable(executionContext.getSqlStatementContext())) {
+            return queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
+        }
+        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
+                ? queryHeaderBuilderEngine.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), database, columnIndex)
+                : queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
     }
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {

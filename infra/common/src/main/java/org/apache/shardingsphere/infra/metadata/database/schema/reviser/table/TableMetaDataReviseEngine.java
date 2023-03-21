@@ -19,11 +19,11 @@ package org.apache.shardingsphere.infra.metadata.database.schema.reviser.table;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviseEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
@@ -55,7 +55,7 @@ public final class TableMetaDataReviseEngine<T extends ShardingSphereRule> {
         Optional<? extends TableNameReviser<T>> tableNameReviser = reviseEntry.getTableNameReviser();
         String revisedTableName = tableNameReviser.map(optional -> optional.revise(originalMetaData.getName(), rule)).orElse(originalMetaData.getName());
         return new TableMetaData(revisedTableName, new ColumnReviseEngine<>(rule, databaseType, dataSource, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getColumns()),
-                new IndexReviseEngine<>(rule, reviseEntry).revise(revisedTableName, originalMetaData.getIndexes()),
-                new ConstraintReviseEngine<>(rule, reviseEntry).revise(revisedTableName, originalMetaData.getConstrains()));
+                new IndexReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getIndexes()),
+                new ConstraintReviseEngine<>(rule, reviseEntry).revise(originalMetaData.getName(), originalMetaData.getConstrains()));
     }
 }

@@ -18,8 +18,8 @@ chapter = true
 ### 已知实现
 
 | *配置标识*              | *详细说明*              | *全限定类名* |
-| ---------------------- | --------------------- | ---------- |
-| SingleTableRule        | 用于处理单表路由结果      | [`org.apache.shardingsphere.singletable.route.SingleTableSQLRouter`](https://github.com/apache/shardingsphere/blob/master/kernel/single-table/core/src/main/java/org/apache/shardingsphere/singletable/route/SingleTableSQLRouter.java) |
+|------------------------| --------------------- | ---------- |
+| SingleRule             | 用于处理单表路由结果      | [`org.apache.shardingsphere.singletable.route.SingleTableSQLRouter`](https://github.com/apache/shardingsphere/blob/master/kernel/single-table/core/src/main/java/org/apache/shardingsphere/singletable/route/SingleTableSQLRouter.java) |
 | ShardingRule           | 用于处理分片路由结果      | [`org.apache.shardingsphere.sharding.route.engine.ShardingSQLRouter`](https://github.com/apache/shardingsphere/blob/master/infra/route/src/main/java/org/apache/shardingsphere/infra/route/SQLRouter.java) |
 | ReadwriteSplittingRule | 用于处理读写分离路由结果   | [`org.apache.shardingsphere.readwritesplitting.route.ReadwriteSplittingSQLRouter`](https://github.com/apache/shardingsphere/blob/master/features/readwrite-splitting/core/src/main/java/org/apache/shardingsphere/readwritesplitting/route/ReadwriteSplittingSQLRouter.java) |
 | DatabaseDiscoveryRule  | 用于处理数据库发现路由结果 | [`org.apache.shardingsphere.dbdiscovery.route.DatabaseDiscoverySQLRouter`](https://github.com/apache/shardingsphere/blob/master/features/db-discovery/core/src/main/java/org/apache/shardingsphere/dbdiscovery/route/DatabaseDiscoverySQLRouter.java) |

@@ -21,9 +21,9 @@ import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFac
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.h2.tools.RunScript;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -50,7 +50,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     
     private static final String CONFIG_FILE_WITH_QUERY_WITH_CIPHER = "config/config-encrypt-query-with-cipher.yaml";
     
-    @BeforeClass
+    @BeforeAll
     public static void initEncryptDataSource() throws SQLException, IOException {
         if (null != queryWithPlainDataSource && null != queryWithCipherDataSource) {
             return;
@@ -69,7 +69,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
         return getActualDataSources().entrySet().stream().filter(entry -> ACTUAL_DATA_SOURCE_NAMES.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    @Before
+    @BeforeEach
     public void initTable() {
         try (Connection connection = queryWithPlainDataSource.getConnection()) {
             RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/encrypt_data.sql"))));
@@ -86,7 +86,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
         return (ShardingSphereConnection) queryWithCipherDataSource.getConnection();
     }
     
-    @AfterClass
+    @AfterAll
     public static void close() throws Exception {
         if (null == queryWithPlainDataSource) {
             return;

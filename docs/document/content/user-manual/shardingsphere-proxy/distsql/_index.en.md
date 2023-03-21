@@ -70,7 +70,7 @@ DistSQL can be used only with ShardingSphere-Proxy, not with ShardingSphere-JDBC
 
 Like standard SQL, DistSQL is recognized by the parsing engine of ShardingSphere. It converts the input statement into an abstract syntax tree and then generates the `Statement` corresponding to each grammar, which is processed by the appropriate `Handler`.
 
-![Overview](https://shardingsphere.apache.org/document/current/img/distsql/overview.png)
+![Overview](https://shardingsphere.apache.org/document/current/img/distsql/overview_v2.png)
 
 ## Related References
 

@@ -21,10 +21,10 @@ import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class ExpectedExceptionsTest {
     

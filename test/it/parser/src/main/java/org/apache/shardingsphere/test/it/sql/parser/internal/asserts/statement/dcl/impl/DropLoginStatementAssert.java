@@ -25,8 +25,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.DropLoginStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -44,9 +44,9 @@ public final class DropLoginStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerDropLoginStatement actual, final DropLoginStatementTestCase expected) {
         if (null == expected.getLogin()) {
-            assertNull(assertContext.getText("Actual login should not exist."), actual.getLoginSegment());
+            assertNull(actual.getLoginSegment(), assertContext.getText("Actual login should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual login should exist."), actual.getLoginSegment());
+            assertNotNull(actual.getLoginSegment(), assertContext.getText("Actual login should exist."));
             assertThat(assertContext.getText("Login name assertion error: "), actual.getLoginSegment().getLoginName().getValueWithQuoteCharacters(), is(expected.getLogin().getName()));
             SQLSegmentAssert.assertIs(assertContext, actual.getLoginSegment(), expected.getLogin());
         }

@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -97,7 +97,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
         this.connectionSession = connectionSession;
         this.sqlStatementSample = sqlStatementSample;
         Pattern pattern = sqlStatementSample instanceof UpdateStatement ? MULTI_UPDATE_STATEMENTS : MULTI_DELETE_STATEMENTS;
-        ShardingSphereSQLParserEngine sqlParserEngine = getSQLParserEngine();
+        SQLParserEngine sqlParserEngine = getSQLParserEngine();
         for (String each : extractMultiStatements(pattern, sql)) {
             SQLStatement eachSQLStatement = sqlParserEngine.parse(each, false);
             ExecutionContext executionContext = createExecutionContext(createQueryContext(each, eachSQLStatement));
@@ -110,7 +110,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
         }
     }
     
-    private ShardingSphereSQLParserEngine getSQLParserEngine() {
+    private SQLParserEngine getSQLParserEngine() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         return sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL").getType());

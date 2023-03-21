@@ -17,52 +17,34 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jaeger;
 
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
+import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.SpanAssert;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.IntegrationTestCasesLoader;
 import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.SpanTestCase;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Properties;
+import java.util.stream.Stream;
 
-@Slf4j
-@RunWith(Parameterized.class)
-public final class JaegerPluginE2EIT extends BasePluginE2EIT {
+@ExtendWith(AgentTestActionExtension.class)
+public final class JaegerPluginE2EIT {
     
-    private final SpanTestCase spanTestCase;
-    
-    private Properties props;
-    
-    private String url;
-    
-    public JaegerPluginE2EIT(final SpanTestCase spanTestCase) {
-        this.spanTestCase = spanTestCase;
+    @ParameterizedTest
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    public void assertProxyWithAgent(final SpanTestCase spanTestCase) {
+        SpanAssert.assertIs(E2ETestEnvironment.getInstance().getProps().getProperty("jaeger.url"), spanTestCase);
     }
     
-    @Parameters
-    public static Collection<SpanTestCase> getTestParameters() {
-        return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases();
-    }
-    
-    @Before
-    public void before() {
-        props = E2ETestEnvironment.getInstance().getProps();
-        url = props.getProperty("jaeger.url");
-    }
-    
-    @SneakyThrows(IOException.class)
-    @Test
-    public void assertProxyWithAgent() {
-        super.assertProxyWithAgent();
-        SpanAssert.assertIs(url, spanTestCase);
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases().stream().map(Arguments::of);
+        }
     }
 }

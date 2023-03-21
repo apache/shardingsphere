@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.traffic.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.ral.update.GlobalRuleRALUpdater;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -59,21 +58,12 @@ public final class AlterTrafficRuleStatementUpdater implements GlobalRuleRALUpda
     }
     
     private void checkAlgorithmNames(final AlterTrafficRuleStatement sqlStatement) {
-        Collection<String> invalidAlgorithmNames = getInvalidAlgorithmNames(sqlStatement);
-        ShardingSpherePreconditions.checkState(invalidAlgorithmNames.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Traffic", invalidAlgorithmNames));
-    }
-    
-    private Collection<String> getInvalidAlgorithmNames(final AlterTrafficRuleStatement sqlStatement) {
-        Collection<String> result = new LinkedList<>();
-        for (TrafficRuleSegment each : sqlStatement.getSegments()) {
-            if (!TypedSPILoader.contains(TrafficAlgorithm.class, each.getAlgorithm().getName())) {
-                result.add(each.getAlgorithm().getName());
+        sqlStatement.getSegments().forEach(each -> {
+            TypedSPILoader.checkService(TrafficAlgorithm.class, each.getAlgorithm().getName(), each.getAlgorithm().getProps());
+            if (null != each.getLoadBalancer()) {
+                TypedSPILoader.checkService(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName(), each.getLoadBalancer().getProps());
             }
-            if (null != each.getLoadBalancer() && !TypedSPILoader.contains(TrafficLoadBalanceAlgorithm.class, each.getLoadBalancer().getName())) {
-                result.add(each.getLoadBalancer().getName());
-            }
-        }
-        return result;
+        });
     }
     
     @Override

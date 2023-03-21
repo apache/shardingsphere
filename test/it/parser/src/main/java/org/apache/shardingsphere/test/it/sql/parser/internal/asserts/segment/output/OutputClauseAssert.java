@@ -29,8 +29,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.column.ExpectedColumnProjection;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Output clause assert.
@@ -46,7 +46,7 @@ public final class OutputClauseAssert {
      * @param expected expected output clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final OutputSegment actual, final ExpectedOutputClause expected) {
-        assertNotNull(assertContext.getText("Output clause should exist."), expected);
+        assertNotNull(expected, assertContext.getText("Output clause should exist."));
         if (!actual.getOutputColumns().isEmpty()) {
             assertOutputColumnsSegment(assertContext, actual, expected);
         }

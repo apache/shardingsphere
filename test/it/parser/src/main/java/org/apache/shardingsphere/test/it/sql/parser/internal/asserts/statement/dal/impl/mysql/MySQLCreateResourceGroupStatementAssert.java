@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CreateResourceGroupStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -41,7 +41,7 @@ public final class MySQLCreateResourceGroupStatementAssert {
      * @param expected expected create resource group statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCreateResourceGroupStatement actual, final CreateResourceGroupStatementTestCase expected) {
-        assertNotNull("expected create resource group should be not null", expected.getGroup());
+        assertNotNull(expected.getGroup(), "expected create resource group should be not null");
         assertThat(actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }

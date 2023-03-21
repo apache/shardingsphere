@@ -28,7 +28,7 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Metric query assert.
@@ -44,7 +44,7 @@ public final class MetricQueryAssert {
      */
     public static void assertIs(final MetricsQueryResult actual, final MetricQueryAssertion expected) {
         assertThat(String.format("The query `%s` is not success, error message is `%s`", expected.getQuery(), actual.getError()), actual.getStatus(), is("success"));
-        assertFalse(String.format("The query `%s` is empty.", expected.getQuery()), actual.getData().getResult().isEmpty());
+        assertFalse(actual.getData().getResult().isEmpty(), String.format("The query `%s` is empty.", expected.getQuery()));
         Collection<QueryDataResult> results = actual.getData().getResult();
         for (QueryDataResult each : results) {
             assertMetricName(each, expected);

@@ -29,9 +29,13 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.junit.Test;
-import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.ConstructionMockSettings;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 
@@ -39,10 +43,12 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
+@ConstructionMockSettings(DatabaseConnector.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class DatabaseBackendHandlerFactoryTest {
     
     @Test
@@ -67,15 +73,11 @@ public final class DatabaseBackendHandlerFactoryTest {
     public void assertNewInstanceReturnedSchemaAssignedDatabaseBackendHandler() {
         String sql = "SELECT 1 FROM user WHERE id = 1";
         SQLStatementContext<SQLStatement> sqlStatementContext = mockSQLStatementContext();
-        ContextManager contextManager = mockContextManager();
         ConnectionSession connectionSession = mockConnectionSession();
-        try (
-                MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS);
-                MockedConstruction<DatabaseConnector> ignored = mockConstruction(DatabaseConnector.class)) {
-            proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList()), connectionSession, false);
-            assertThat(actual, instanceOf(DatabaseConnector.class));
-        }
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new QueryContext(sqlStatementContext, sql, Collections.emptyList()), connectionSession, false);
+        assertThat(actual, instanceOf(DatabaseConnector.class));
     }
     
     private static SQLStatementContext<SQLStatement> mockSQLStatementContext() {
@@ -90,14 +92,14 @@ public final class DatabaseBackendHandlerFactoryTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.isComplete()).thenReturn(true);
         when(database.containsDataSource()).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         return result;
     }
     
     private static ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
-        when(result.getDatabaseName()).thenReturn("db");
+        when(result.getDatabaseName()).thenReturn("foo_db");
         when(result.getBackendConnection()).thenReturn(mock(BackendConnection.class));
         when(result.getBackendConnection().getConnectionSession()).thenReturn(result);
         return result;

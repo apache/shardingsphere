@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.savepoint;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.postgresql.jdbc.PSQLSavepoint;
@@ -29,8 +30,8 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * PostgreSQL savepoint transaction integration test.
@@ -43,7 +44,7 @@ public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
     }
     
     @Override
-    public void executeTest() throws SQLException {
+    public void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
         assertRollback2Savepoint();
         assertReleaseSavepoint();
         assertErrors();
@@ -51,26 +52,27 @@ public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
     
     @SneakyThrows(SQLException.class)
     private void assertErrors() {
-        Connection connection = getDataSource().getConnection();
-        try {
-            connection.setSavepoint("point");
-            fail("Expect exception, but no exception report.");
-        } catch (final SQLException ex) {
-            assertThat(ex.getMessage(), is("Savepoint can only be used in transaction blocks."));
-        }
-        try {
-            connection.rollback(new PSQLSavepoint("point1"));
-            fail("Expect exception, but no exception report.");
-        } catch (final SQLException ex) {
-            // TODO can not run to get the correct result in JDBC mode.
-            assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
-        }
-        try {
-            connection.releaseSavepoint(new PSQLSavepoint("point1"));
-            fail("Expect exception, but no exception report.");
-        } catch (final SQLException ex) {
-            // TODO can not run to get the correct result in JDBC mode.
-            assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
+        try (Connection connection = getDataSource().getConnection()) {
+            try {
+                connection.setSavepoint("point");
+                fail("Expect exception, but no exception report.");
+            } catch (final SQLException ex) {
+                assertThat(ex.getMessage(), is("Savepoint can only be used in transaction blocks."));
+            }
+            try {
+                connection.rollback(new PSQLSavepoint("point1"));
+                fail("Expect exception, but no exception report.");
+            } catch (final SQLException ex) {
+                // TODO can not run to get the correct result in JDBC mode.
+                assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
+            }
+            try {
+                connection.releaseSavepoint(new PSQLSavepoint("point1"));
+                fail("Expect exception, but no exception report.");
+            } catch (final SQLException ex) {
+                // TODO can not run to get the correct result in JDBC mode.
+                assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
+            }
         }
     }
 }

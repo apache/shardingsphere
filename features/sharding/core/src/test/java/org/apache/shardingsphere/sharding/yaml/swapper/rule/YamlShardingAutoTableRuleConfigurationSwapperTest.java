@@ -28,15 +28,16 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardin
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +45,7 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
     
     private YamlShardingAutoTableRuleConfigurationSwapper swapper;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         ShardingAutoTableAlgorithm shardingAlgorithm = mock(ShardingAutoTableAlgorithm.class);
         when(shardingAlgorithm.getAutoTablesAmount()).thenReturn(2);
@@ -74,9 +75,9 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
         assertNotNull(actual.getAuditStrategy());
     }
     
-    @Test(expected = MissingRequiredShardingConfigurationException.class)
+    @Test
     public void assertSwapToObjectWithoutLogicTable() {
-        new YamlShardingAutoTableRuleConfigurationSwapper().swapToObject(new YamlShardingAutoTableRuleConfiguration());
+        assertThrows(MissingRequiredShardingConfigurationException.class, () -> new YamlShardingAutoTableRuleConfigurationSwapper().swapToObject(new YamlShardingAutoTableRuleConfiguration()));
     }
     
     @Test

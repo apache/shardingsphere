@@ -19,9 +19,11 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -29,9 +31,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -111,6 +113,16 @@ public final class ResultSetAdapterTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("col");
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mock(MergedResult.class), mock(ShardingSphereStatement.class, RETURNS_DEEP_STUBS), mock(ExecutionContext.class));
+        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mock(MergedResult.class), mock(ShardingSphereStatement.class, RETURNS_DEEP_STUBS), createExecutionContext());
+    }
+    
+    private ExecutionContext createExecutionContext() {
+        ExecutionContext result = mock(ExecutionContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        TablesContext tablesContext = mock(TablesContext.class);
+        when(tablesContext.getTableNames()).thenReturn(Collections.emptyList());
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        return result;
     }
 }

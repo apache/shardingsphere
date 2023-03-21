@@ -121,7 +121,7 @@ public final class SQLStatementContextFactory {
     /**
      * Create SQL statement context.
      *
-     * @param metaData metaData
+     * @param metaData metadata
      * @param sqlStatement SQL statement
      * @param defaultDatabaseName default database name
      * @return SQL statement context
@@ -133,7 +133,7 @@ public final class SQLStatementContextFactory {
     /**
      * Create SQL statement context.
      *
-     * @param metaData metaData
+     * @param metaData metadata
      * @param params SQL parameters
      * @param sqlStatement SQL statement
      * @param defaultDatabaseName default database name

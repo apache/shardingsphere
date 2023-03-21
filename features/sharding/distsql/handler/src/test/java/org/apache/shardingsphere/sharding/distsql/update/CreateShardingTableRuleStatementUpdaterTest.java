@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -49,12 +50,12 @@ import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -69,10 +70,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class CreateShardingTableRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -82,7 +84,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     
     private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
     
-    @Before
+    @BeforeEach
     public void before() {
         when(database.getName()).thenReturn("schema");
         ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSource());
@@ -141,7 +143,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, distSQLStatement, null);
     }
     
-    @Test(expected = DistSQLException.class)
+    @Test
     public void assertCheckCreateShardingStatementThrows() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
                 + "STORAGE_UNITS(ds_0,ds_1),"
@@ -149,7 +151,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
                 + "TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        updater.checkSQLStatement(database, distSQLStatement, null);
+        assertThrows(DistSQLException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
     }
     
     @Test
@@ -257,8 +259,8 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         }
         
         @Override
-        public Map<String, Collection<String>> getDataSourceMapper() {
-            return Collections.singletonMap("logic_ds", null);
+        public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
+            return Collections.singletonMap("logic_ds", Collections.emptyList());
         }
         
         @Override

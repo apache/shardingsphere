@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
+import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
@@ -52,34 +53,37 @@ public final class BroadcastTableTransactionTestCase extends BaseTransactionTest
     
     @Override
     @SneakyThrows(SQLException.class)
-    protected void executeTest() {
+    protected void executeTest(final TransactionContainerComposer containerComposer) {
         rollback();
         commit();
     }
     
     private void init() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        executeWithLog(connection, "delete from t_address;");
-        assertTableRowCount(connection, T_ADDRESS, 0);
+        try (Connection connection = getDataSource().getConnection()) {
+            executeWithLog(connection, "delete from t_address;");
+            assertTableRowCount(connection, T_ADDRESS, 0);
+        }
     }
     
     private void commit() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        executeWithLog(connection, "delete from t_address;");
-        assertTableRowCount(connection, T_ADDRESS, 0);
-        executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
-        assertTableRowCount(connection, T_ADDRESS, 1);
-        connection.commit();
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            executeWithLog(connection, "delete from t_address;");
+            assertTableRowCount(connection, T_ADDRESS, 0);
+            executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
+            assertTableRowCount(connection, T_ADDRESS, 1);
+            connection.commit();
+        }
     }
     
     private void rollback() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        connection.setAutoCommit(false);
-        executeWithLog(connection, "delete from t_address;");
-        assertTableRowCount(connection, T_ADDRESS, 0);
-        executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
-        assertTableRowCount(connection, T_ADDRESS, 1);
-        connection.commit();
+        try (Connection connection = getDataSource().getConnection()) {
+            connection.setAutoCommit(false);
+            executeWithLog(connection, "delete from t_address;");
+            assertTableRowCount(connection, T_ADDRESS, 0);
+            executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
+            assertTableRowCount(connection, T_ADDRESS, 1);
+            connection.commit();
+        }
     }
 }

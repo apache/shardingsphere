@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.migration.distsql.parser.facade.MigrationDistSQLStatementParserFacade
+org.apache.shardingsphere.cdc.distsql.parser.facade.CDCDistSQLStatementParserFacade
