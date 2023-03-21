@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine;
+package org.apache.shardingsphere.test.e2e.engine.arg;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
@@ -28,13 +28,13 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
- * E2E test case arguments provider.
+ * E2E single test case arguments provider.
  */
-public final class E2ETestCaseArgumentsProvider implements ArgumentsProvider {
+public final class E2ESingleTestCaseArgumentsProvider implements ArgumentsProvider {
     
     @Override
     public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-        E2ETestCaseSettings settings = extensionContext.getRequiredTestClass().getAnnotation(E2ETestCaseSettings.class);
+        E2ESingleTestCaseSettings settings = extensionContext.getRequiredTestClass().getAnnotation(E2ESingleTestCaseSettings.class);
         Preconditions.checkNotNull(settings, "Annotation E2ETestCaseSettings is required.");
         Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(settings.value());
         // TODO make sure test case can not be null

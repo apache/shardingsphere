@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
-import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseArgumentsProvider;
-import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseSettings;
+import org.apache.shardingsphere.test.e2e.engine.arg.E2ESingleTestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.arg.E2ESingleTestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
@@ -54,12 +54,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@E2ETestCaseSettings(SQLCommandType.DDL)
+@E2ESingleTestCaseSettings(SQLCommandType.DDL)
 public final class DDLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ESingleTestCaseArgumentsProvider.class)
     public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
@@ -95,7 +95,7 @@ public final class DDLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ESingleTestCaseArgumentsProvider.class)
     public void assertExecute(final AssertionTestParameter testParam) throws Exception {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {

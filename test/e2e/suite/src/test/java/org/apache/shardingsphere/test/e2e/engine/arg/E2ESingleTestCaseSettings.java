@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine;
+package org.apache.shardingsphere.test.e2e.engine.arg;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.E2EExtension;
@@ -26,12 +26,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * E2E test case settings.
+ * E2E single test case settings.
  */
 @ExtendWith(E2EExtension.class)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-public @interface E2ETestCaseSettings {
+public @interface E2ESingleTestCaseSettings {
     
     /**
      * Get SQL command type.
