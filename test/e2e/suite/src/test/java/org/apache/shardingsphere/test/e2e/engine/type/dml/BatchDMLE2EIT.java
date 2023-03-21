@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.dml;
+package org.apache.shardingsphere.test.e2e.engine.type.dml;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
