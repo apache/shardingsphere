@@ -35,28 +35,24 @@ import java.util.Map;
  * Authority environment manager.
  */
 @Slf4j
-public final class AuthorityEnvironmentManager {
-    
-    private final AuthorityEnvironment authorityEnvironment;
+public final class AuthorityEnvironmentManager implements AutoCloseable {
     
     private final Map<String, DataSource> instanceDataSourceMap;
     
     private final DatabaseType databaseType;
     
-    public AuthorityEnvironmentManager(final String path, final Map<String, DataSource> instanceDataSourceMap, final DatabaseType databaseType) throws IOException, JAXBException {
+    private final AuthorityEnvironment authorityEnvironment;
+    
+    public AuthorityEnvironmentManager(final String path, final Map<String, DataSource> instanceDataSourceMap, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+        this.instanceDataSourceMap = instanceDataSourceMap;
+        this.databaseType = databaseType;
         try (FileReader reader = new FileReader(path)) {
             authorityEnvironment = (AuthorityEnvironment) JAXBContext.newInstance(AuthorityEnvironment.class).createUnmarshaller().unmarshal(reader);
         }
-        this.instanceDataSourceMap = instanceDataSourceMap;
-        this.databaseType = databaseType;
+        init();
     }
     
-    /**
-     * Initialize data.
-     * 
-     * @throws SQLException SQL exception
-     */
-    public void initialize() throws SQLException {
+    private void init() throws SQLException {
         Collection<String> initSQLs = authorityEnvironment.getInitSQLs(databaseType);
         if (initSQLs.isEmpty()) {
             return;
@@ -66,12 +62,8 @@ public final class AuthorityEnvironmentManager {
         }
     }
     
-    /**
-     * Clean data.
-     * 
-     * @throws SQLException SQL exception
-     */
-    public void clean() throws SQLException {
+    @Override
+    public void close() throws SQLException {
         Collection<String> cleanSQLs = authorityEnvironment.getCleanSQLs(databaseType);
         if (cleanSQLs.isEmpty()) {
             return;
