@@ -39,7 +39,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
-public final class E2EContainerComposer {
+public abstract class E2EContainerComposer implements AutoCloseable {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
@@ -94,10 +94,8 @@ public final class E2EContainerComposer {
         }
     }
     
-    /**
-     * Close containers.
-     */
-    public static void closeContainers() {
+    @Override
+    public void close() {
         if (COMPLETED_SUITES_COUNT.incrementAndGet() == TOTAL_SUITES_COUNT) {
             CONTAINER_COMPOSER_REGISTRY.close();
         }
