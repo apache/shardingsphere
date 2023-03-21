@@ -40,7 +40,7 @@ public final class InstanceTypeUtil {
             case JDBC:
                 return 'j';
             default:
-                throw new UnsupportedOperationException("Unknown instanceType=" + instanceType);
+                throw new UnsupportedOperationException("Unknown instance type: " + instanceType);
         }
     }
     
@@ -57,7 +57,7 @@ public final class InstanceTypeUtil {
             case 'j':
                 return InstanceType.JDBC;
             default:
-                throw new UnsupportedOperationException("Unknown instanceType=" + instanceType);
+                throw new UnsupportedOperationException("Unknown instance type: " + instanceType);
         }
     }
 }

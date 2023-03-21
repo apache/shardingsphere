@@ -67,8 +67,8 @@ public final class PipelineJobIdUtils {
     }
     
     private static void verifyJobId(final String jobId) {
-        Preconditions.checkArgument(jobId.length() > 10, "Invalid jobId length, jobId=%s", jobId);
-        Preconditions.checkArgument('j' == jobId.charAt(0), "Invalid jobId, first char=%s", jobId.charAt(0));
+        Preconditions.checkArgument(jobId.length() > 10, "Invalid job id length, job id: `%s`", jobId);
+        Preconditions.checkArgument('j' == jobId.charAt(0), "Invalid job id, first char: `%s`", jobId.charAt(0));
     }
     
     /**
@@ -81,7 +81,7 @@ public final class PipelineJobIdUtils {
     public static PipelineContextKey parseContextKey(final String jobId) {
         verifyJobId(jobId);
         String formatVersion = jobId.substring(3, 5);
-        Preconditions.checkArgument(BasePipelineJobId.CURRENT_VERSION.equals(formatVersion), "Format version doesn't match, formatVersion=" + formatVersion);
+        Preconditions.checkArgument(BasePipelineJobId.CURRENT_VERSION.equals(formatVersion), "Format version doesn't match, format version: " + formatVersion);
         char instanceType = jobId.charAt(5);
         short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
         String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);
