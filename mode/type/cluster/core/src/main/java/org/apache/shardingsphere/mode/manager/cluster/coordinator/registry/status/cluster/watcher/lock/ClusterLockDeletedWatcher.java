@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.watcher.lock;
 
+import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
@@ -36,7 +37,7 @@ public final class ClusterLockDeletedWatcher implements GovernanceWatcher<Govern
     
     @Override
     public Collection<String> getWatchingKeys(final String databaseName) {
-        return Collections.singleton(new GlobalLockDefinition("cluster_lock").getLockKey());
+        return Collections.singleton(new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName()).getLockKey());
     }
     
     @Override
