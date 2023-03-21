@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.jdbc.connection;
+package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Connection;
