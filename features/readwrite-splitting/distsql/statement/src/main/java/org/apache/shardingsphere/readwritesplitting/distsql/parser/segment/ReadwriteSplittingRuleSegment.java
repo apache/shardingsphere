@@ -21,10 +21,10 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
-import java.util.Properties;
 
 /**
  * Readwrite-splitting rule segment.
@@ -41,16 +41,14 @@ public final class ReadwriteSplittingRuleSegment implements ASTNode {
     
     private final Collection<String> readDataSources;
     
-    private final String loadBalancer;
+    private final AlgorithmSegment loadBalancer;
     
-    private final Properties props;
-    
-    public ReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties props) {
-        this(name, autoAwareResource, null, null, loadBalancer, props);
+    public ReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final AlgorithmSegment loadBalancer) {
+        this(name, autoAwareResource, null, null, loadBalancer);
     }
     
-    public ReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final Collection<String> readDataSources, final String loadBalancer, final Properties props) {
-        this(name, null, writeDataSource, readDataSources, loadBalancer, props);
+    public ReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final Collection<String> readDataSources, final AlgorithmSegment loadBalancer) {
+        this(name, null, writeDataSource, readDataSources, loadBalancer);
     }
     
     /**
