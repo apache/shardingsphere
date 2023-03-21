@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine;
+package org.apache.shardingsphere.test.e2e.engine.composer;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.container.compose.ContainerComposerRegistry;
+import org.apache.shardingsphere.test.e2e.engine.TotalSuitesCountCalculator;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.h2.tools.RunScript;
@@ -38,6 +39,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * E2E container composer.
+ */
 @Getter
 public abstract class E2EContainerComposer implements AutoCloseable {
     

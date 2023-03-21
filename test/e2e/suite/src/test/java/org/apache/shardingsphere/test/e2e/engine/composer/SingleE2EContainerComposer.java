@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine;
+package org.apache.shardingsphere.test.e2e.engine.composer;
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
