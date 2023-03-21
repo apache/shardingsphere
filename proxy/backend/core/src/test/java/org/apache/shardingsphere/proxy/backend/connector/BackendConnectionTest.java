@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.jdbc.connection;
+package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -35,11 +35,11 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -66,10 +66,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -89,18 +90,14 @@ public final class BackendConnectionTest {
     
     @BeforeEach
     public void setUp() throws ReflectiveOperationException {
-        setBackendDataSource();
+        when(ProxyContext.getInstance().getBackendDataSource()).thenReturn(backendDataSource);
         when(connectionSession.getDatabaseName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
-        backendConnection = spy(new BackendConnection(connectionSession));
+        backendConnection = new BackendConnection(connectionSession);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
         JDBCBackendStatement backendStatement = new JDBCBackendStatement();
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(new RequiredSessionVariableRecorder());
-    }
-    
-    private void setBackendDataSource() throws ReflectiveOperationException {
-        Plugins.getMemberAccessor().set(ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource"), ProxyContext.getInstance(), backendDataSource);
     }
     
     @AfterEach
@@ -110,8 +107,6 @@ public final class BackendConnectionTest {
         Plugins.getMemberAccessor().set(field, ProxyContext.getInstance(), datasource);
     }
     
-    // TODO weijie fix it
-    @Disabled
     @Test
     public void assertGetConnectionCacheIsEmpty() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
@@ -132,8 +127,6 @@ public final class BackendConnectionTest {
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
     }
     
-    // TODO weijie fix it
-    @Disabled
     @Test
     public void assertGetConnectionSizeGreaterThanCache() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
@@ -145,8 +138,6 @@ public final class BackendConnectionTest {
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
     }
     
-    // TODO weijie fix it
-    @Disabled
     @Test
     public void assertGetConnectionWithConnectionPostProcessors() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
@@ -177,6 +168,14 @@ public final class BackendConnectionTest {
         verify(connection).close();
         assertTrue(cachedConnections.isEmpty());
         verifyConnectionPostProcessorsEmpty();
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void verifyConnectionPostProcessorsEmpty() {
+        Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) Plugins.getMemberAccessor()
+                .get(BackendConnection.class.getDeclaredField("connectionPostProcessors"), backendConnection);
+        assertTrue(connectionPostProcessors.isEmpty());
     }
     
     @Test
@@ -243,8 +242,6 @@ public final class BackendConnectionTest {
         }
     }
     
-    // TODO weijie fix it
-    @Disabled
     @Test
     public void assertGetConnectionsWithoutTransactions() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(false);
@@ -265,29 +262,21 @@ public final class BackendConnectionTest {
         assertArrayEquals(cachedConnections.get(dataSourceName).toArray(), connections.toArray());
     }
     
-    @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Connection prepareCachedConnections() {
-        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) Plugins.getMemberAccessor()
-                .get(BackendConnection.class.getDeclaredField("cachedConnections"), backendConnection);
-        Connection connection = mock(Connection.class);
-        cachedConnections.put("ignoredDataSourceName", connection);
-        return connection;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void verifyConnectionPostProcessorsEmpty() {
-        Collection<ConnectionPostProcessor> connectionPostProcessors = (Collection<ConnectionPostProcessor>) Plugins.getMemberAccessor()
-                .get(BackendConnection.class.getDeclaredField("connectionPostProcessors"), backendConnection);
-        assertTrue(connectionPostProcessors.isEmpty());
+    @Test
+    public void assertHandleAutoCommit() {
+        when(connectionSession.isAutoCommit()).thenReturn(false);
+        connectionSession.getTransactionStatus().setInTransaction(false);
+        try (MockedConstruction<BackendTransactionManager> mockedConstruction = mockConstruction(BackendTransactionManager.class)) {
+            backendConnection.handleAutoCommit();
+            verify(mockedConstruction.constructed().get(0)).begin();
+        }
     }
     
     @Test
     public void assertAddDatabaseConnector() {
         ProxyBackendHandler expectedEngine = mock(DatabaseConnector.class);
         backendConnection.add(expectedEngine);
-        Collection<ProxyBackendHandler> actual = getDatabaseConnectors();
+        Collection<ProxyBackendHandler> actual = getBackendHandlers();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
@@ -297,7 +286,7 @@ public final class BackendConnectionTest {
         ProxyBackendHandler expectedEngine = mock(DatabaseConnector.class);
         backendConnection.add(expectedEngine);
         backendConnection.markResourceInUse(expectedEngine);
-        Collection<ProxyBackendHandler> actual = getInUseDatabaseConnectors();
+        Collection<ProxyBackendHandler> actual = getInUseBackendHandlers();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
@@ -305,7 +294,7 @@ public final class BackendConnectionTest {
     @Test
     public void assertUnmarkInUseDatabaseConnector() {
         ProxyBackendHandler engine = mock(DatabaseConnector.class);
-        Collection<ProxyBackendHandler> actual = getInUseDatabaseConnectors();
+        Collection<ProxyBackendHandler> actual = getInUseBackendHandlers();
         actual.add(engine);
         backendConnection.unmarkResourceInUse(engine);
         assertTrue(actual.isEmpty());
@@ -317,8 +306,8 @@ public final class BackendConnectionTest {
         ProxyBackendHandler inUseEngine = mock(DatabaseConnector.class);
         SQLException expectedException = mock(SQLException.class);
         doThrow(expectedException).when(engine).close();
-        Collection<ProxyBackendHandler> databaseConnectors = getDatabaseConnectors();
-        Collection<ProxyBackendHandler> inUseDatabaseConnectors = getInUseDatabaseConnectors();
+        Collection<ProxyBackendHandler> databaseConnectors = getBackendHandlers();
+        Collection<ProxyBackendHandler> inUseDatabaseConnectors = getInUseBackendHandlers();
         databaseConnectors.add(engine);
         databaseConnectors.add(inUseEngine);
         inUseDatabaseConnectors.add(inUseEngine);
@@ -334,31 +323,64 @@ public final class BackendConnectionTest {
         assertTrue(inUseDatabaseConnectors.isEmpty());
     }
     
+    @Test
+    public void assertCloseExecutionResourcesNotInTransaction() throws BackendConnectionException, SQLException {
+        ProxyBackendHandler notInUseHandler = mock(ProxyBackendHandler.class);
+        ProxyBackendHandler inUseHandler = mock(ProxyBackendHandler.class);
+        getBackendHandlers().addAll(Arrays.asList(notInUseHandler, inUseHandler));
+        getInUseBackendHandlers().add(inUseHandler);
+        Connection cachedConnection = prepareCachedConnections();
+        backendConnection.closeExecutionResources();
+        verify(cachedConnection).close();
+        assertTrue(getBackendHandlers().isEmpty());
+        assertTrue(getInUseBackendHandlers().isEmpty());
+        verify(notInUseHandler).close();
+        verify(inUseHandler).close();
+    }
+    
+    @Test
+    public void assertCloseExecutionResourcesInTransaction() throws BackendConnectionException {
+        connectionSession.getTransactionStatus().setInTransaction(true);
+        ProxyBackendHandler notInUseHandler = mock(ProxyBackendHandler.class);
+        ProxyBackendHandler inUseHandler = mock(ProxyBackendHandler.class);
+        getBackendHandlers().addAll(Arrays.asList(notInUseHandler, inUseHandler));
+        getInUseBackendHandlers().add(inUseHandler);
+        Connection cachedConnection = prepareCachedConnections();
+        backendConnection.closeExecutionResources();
+        verifyNoInteractions(inUseHandler, cachedConnection);
+        assertThat(getBackendHandlers(), is(Collections.singleton(inUseHandler)));
+        assertThat(getInUseBackendHandlers(), is(Collections.singleton(inUseHandler)));
+    }
+    
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Collection<ProxyBackendHandler> getDatabaseConnectors() {
+    private Collection<ProxyBackendHandler> getBackendHandlers() {
         return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(BackendConnection.class.getDeclaredField("backendHandlers"), backendConnection);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private Collection<ProxyBackendHandler> getInUseDatabaseConnectors() {
+    private Collection<ProxyBackendHandler> getInUseBackendHandlers() {
         return (Collection<ProxyBackendHandler>) Plugins.getMemberAccessor().get(BackendConnection.class.getDeclaredField("inUseBackendHandlers"), backendConnection);
     }
     
     @Test
-    public void assertCloseExecutionResources() throws BackendConnectionException {
-        backendConnection.closeExecutionResources();
-        verify(backendConnection).closeHandlers(false);
-        verify(backendConnection).closeHandlers(true);
-        verify(backendConnection).closeConnections(false);
+    public void assertCloseAllResourcesInTransaction() throws SQLException {
+        connectionSession.getTransactionStatus().setInTransaction(true);
+        Connection cachedConnection = prepareCachedConnections();
+        backendConnection.closeAllResources();
+        assertTrue(backendConnection.getClosed().get());
+        verify(cachedConnection).rollback();
     }
     
-    @Test
-    public void assertCloseAllResources() {
-        backendConnection.closeAllResources();
-        verify(backendConnection).closeHandlers(true);
-        verify(backendConnection).closeConnections(true);
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Connection prepareCachedConnections() {
+        Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) Plugins.getMemberAccessor()
+                .get(BackendConnection.class.getDeclaredField("cachedConnections"), backendConnection);
+        Connection connection = mock(Connection.class);
+        cachedConnections.put("ignoredDataSourceName", connection);
+        return connection;
     }
     
     @Test
