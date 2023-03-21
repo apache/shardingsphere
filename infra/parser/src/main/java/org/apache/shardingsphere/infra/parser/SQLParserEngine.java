@@ -31,5 +31,5 @@ public interface SQLParserEngine {
      * @param useCache whether use cache
      * @return SQL statement
      */
-    SQLStatement parse(final String sql, final boolean useCache);
+    SQLStatement parse(String sql, boolean useCache);
 }
