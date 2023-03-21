@@ -26,12 +26,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * E2E single test case settings.
+ * E2E test case settings.
  */
 @ExtendWith(E2EExtension.class)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-public @interface E2ESingleTestCaseSettings {
+public @interface E2ETestCaseSettings {
     
     /**
      * Get SQL command type.
@@ -39,4 +39,11 @@ public @interface E2ESingleTestCaseSettings {
      * @return SQL command type
      */
     SQLCommandType value();
+    
+    /**
+     * Is batch execute.
+     * 
+     * @return batch execute or not
+     */
+    boolean batch() default false;
 }

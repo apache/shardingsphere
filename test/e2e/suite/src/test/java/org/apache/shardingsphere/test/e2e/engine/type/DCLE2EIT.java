@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.engine.type;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.e2e.engine.arg.E2ESingleTestCaseArgumentsProvider;
-import org.apache.shardingsphere.test.e2e.engine.arg.E2ESingleTestCaseSettings;
+import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
@@ -38,12 +38,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 
-@E2ESingleTestCaseSettings(SQLCommandType.DCL)
+@E2ETestCaseSettings(SQLCommandType.DCL)
 public final class DCLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ESingleTestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
@@ -74,7 +74,7 @@ public final class DCLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ESingleTestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {

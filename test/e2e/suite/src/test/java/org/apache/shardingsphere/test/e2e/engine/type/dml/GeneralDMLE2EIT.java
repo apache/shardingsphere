@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.engine.type.dml;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
-import org.apache.shardingsphere.test.e2e.engine.arg.E2ESingleTestCaseArgumentsProvider;
-import org.apache.shardingsphere.test.e2e.engine.arg.E2ESingleTestCaseSettings;
+import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
@@ -39,12 +39,12 @@ import java.text.ParseException;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@E2ESingleTestCaseSettings(SQLCommandType.DML)
+@E2ETestCaseSettings(SQLCommandType.DML)
 public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ESingleTestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
@@ -79,7 +79,7 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(E2ESingleTestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {

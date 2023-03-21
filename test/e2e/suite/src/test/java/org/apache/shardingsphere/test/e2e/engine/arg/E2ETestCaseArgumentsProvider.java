@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.test.e2e.engine.arg;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
@@ -28,15 +30,25 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 /**
- * E2E single test case arguments provider.
+ * E2E test case arguments provider.
  */
-public final class E2ESingleTestCaseArgumentsProvider implements ArgumentsProvider {
+public final class E2ETestCaseArgumentsProvider implements ArgumentsProvider {
     
     @Override
     public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-        E2ESingleTestCaseSettings settings = extensionContext.getRequiredTestClass().getAnnotation(E2ESingleTestCaseSettings.class);
+        E2ETestCaseSettings settings = extensionContext.getRequiredTestClass().getAnnotation(E2ETestCaseSettings.class);
         Preconditions.checkNotNull(settings, "Annotation E2ETestCaseSettings is required.");
-        Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(settings.value());
+        return settings.batch() ? getBatchTestCaseArguments(settings.value()) : getSingleTestCaseArguments(settings.value());
+    }
+    
+    private Stream<Arguments> getBatchTestCaseArguments(final SQLCommandType type) {
+        Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(type);
+        // TODO make sure test case can not be null
+        return result.isEmpty() ? Stream.of(Arguments.of(new CaseTestParameter(null, null, null, null, null))) : result.stream().map(Arguments::of);
+    }
+    
+    private Stream<Arguments> getSingleTestCaseArguments(final SQLCommandType type) {
+        Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(type);
         // TODO make sure test case can not be null
         return result.isEmpty() ? Stream.of(Arguments.of(new AssertionTestParameter(null, null, null, null, null, null, null))) : result.stream().map(Arguments::of);
     }
