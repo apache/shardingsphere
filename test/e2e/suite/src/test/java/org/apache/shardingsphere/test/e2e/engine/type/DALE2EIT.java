@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.rql;
+package org.apache.shardingsphere.test.e2e.engine.type;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.e2e.engine.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
-import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -37,7 +36,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,9 +47,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(E2EITExtension.class)
-@E2ETestCaseSettings(SQLCommandType.RQL)
-public final class RQLE2EIT {
+@E2ETestCaseSettings(SQLCommandType.DAL)
+public final class DALE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
@@ -65,10 +65,22 @@ public final class RQLE2EIT {
     
     private void assertExecute(final SingleE2EITContainerComposer containerComposer) throws SQLException, ParseException {
         try (Connection connection = containerComposer.getContainerComposer().getTargetDataSource().getConnection()) {
-            try (
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(containerComposer.getSQL())) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(containerComposer.getSQL());
+                assertExecuteResult(containerComposer, statement);
+            }
+        }
+    }
+    
+    private void assertExecuteResult(final SingleE2EITContainerComposer containerComposer, final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.getResultSet()) {
+            if (null == containerComposer.getAssertion().getAssertionSQL()) {
                 assertResultSet(containerComposer, resultSet);
+            } else {
+                statement.execute(containerComposer.getAssertion().getAssertionSQL().getSql());
+                try (ResultSet assertionSQLResultSet = statement.getResultSet()) {
+                    assertResultSet(containerComposer, assertionSQLResultSet);
+                }
             }
         }
     }
@@ -98,20 +110,33 @@ public final class RQLE2EIT {
         int rowCount = 0;
         ResultSetMetaData actualMetaData = actual.getMetaData();
         while (actual.next()) {
-            assertTrue(rowCount < expected.size(), "Size of actual result set is different with size of expected data set rows.");
+            assertTrue(rowCount < expected.size(), "Size of actual result set is different with size of expected dat set rows.");
             assertRow(actual, actualMetaData, expected.get(rowCount));
             rowCount++;
         }
-        assertThat("Size of actual result set is different with size of expected data set rows.", rowCount, is(expected.size()));
+        assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
     }
     
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
-        for (String each : expected.splitValues("|")) {
+        for (String each : expected.splitValues(",")) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
-            assertObjectValue(actual, columnIndex, columnLabel, each);
+            if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
+                assertDateValue(actual, columnIndex, columnLabel, each);
+            } else {
+                assertObjectValue(actual, columnIndex, columnLabel, each);
+            }
             columnIndex++;
         }
+    }
+    
+    private void assertDateValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
+        if (E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
+            return;
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        assertThat(dateFormat.format(actual.getDate(columnIndex)), is(expected));
+        assertThat(dateFormat.format(actual.getDate(columnLabel)), is(expected));
     }
     
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
@@ -120,6 +145,6 @@ public final class RQLE2EIT {
     }
     
     private static boolean isEnabled() {
-        return E2ETestParameterFactory.containsTestParameter() && !E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.RQL).isEmpty();
+        return E2ETestParameterFactory.containsTestParameter();
     }
 }

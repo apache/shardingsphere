@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.ddl;
+package org.apache.shardingsphere.test.e2e.engine.type;
 
 import com.google.common.base.Splitter;
 import lombok.SneakyThrows;
@@ -29,11 +29,9 @@ import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData
 import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
-import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -56,7 +54,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@ExtendWith(E2EITExtension.class)
 @E2ETestCaseSettings(SQLCommandType.DDL)
 public final class DDLE2EIT {
     
