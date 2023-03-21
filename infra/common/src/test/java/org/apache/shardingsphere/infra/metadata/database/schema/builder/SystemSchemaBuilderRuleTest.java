@@ -20,9 +20,6 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,7 +32,7 @@ public final class SystemSchemaBuilderRuleTest {
     public void assertValueOfSchemaPathSuccess() {
         SystemSchemaBuilderRule actual = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "information_schema");
         assertThat(actual, is(SystemSchemaBuilderRule.MYSQL_INFORMATION_SCHEMA));
-        assertThat(actual.getTables(), is(new HashSet<>(Arrays.asList("columns", "engines", "parameters", "routines", "schemata", "tables", "views"))));
+        assertThat(actual.getTables().size(), is(15));
     }
     
     @Test

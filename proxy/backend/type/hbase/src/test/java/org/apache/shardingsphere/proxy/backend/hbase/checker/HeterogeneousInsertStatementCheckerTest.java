@@ -19,87 +19,72 @@ package org.apache.shardingsphere.proxy.backend.hbase.checker;
 
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class HeterogeneousInsertStatementCheckerTest {
-    
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
     
     @Test
     public void assertExecuteInsertStatement() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getInsertStatement());
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
     public void assertInsertWithoutRowKey() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("First column must be rowKey");
         String sql = "INSERT /*+ HBase */ INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("First column must be rowKey"));
     }
     
     @Test
     public void assertInsertWithoutColumns() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("The inserted column must be explicitly specified");
         String sql = "INSERT /*+ HBase */ INTO t_order VALUES (?, ?, ?)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("The inserted column must be explicitly specified"));
     }
     
     @Test
     public void assertInsertWithMultipleRowKey() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("Cannot contain multiple rowKey");
         String sql = "INSERT /*+ HBase */ INTO t_order (rowKey, id, status) VALUES (?, ?, ?)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("Cannot contain multiple rowKey"));
     }
     
     @Test
     public void assertInsertWithOnDuplicateKey() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("Do not supported ON DUPLICATE KEY UPDATE");
         String sql = "INSERT /*+ HBase */ INTO t_order (rowKey, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = ?";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("Do not supported ON DUPLICATE KEY UPDATE"));
     }
     
     @Test
     public void assertInsertWithFunction() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("Value must is literal or parameter marker");
         String sql = "INSERT /*+ HBase */ INTO t_order_item (rowKey, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("Value must is literal or parameter marker"));
     }
     
     @Test
     public void assertInsertWithLiteralAndParameterMarker() {
         String sql = "INSERT /*+ HBase */ INTO t_order_item(rowKey, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', '2017-08-08')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
     public void assertInsertWithSubQuery() {
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("Do not supported `insert into...select...`");
         String sql = "INSERT /*+ HBase */ INTO t_order_item(rowKey, order_id, user_id) select rowKey, order_id, user_id from t_order";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
-        actual.execute();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
+        assertThat(ex.getMessage(), is("Do not supported `insert into...select...`"));
     }
 }

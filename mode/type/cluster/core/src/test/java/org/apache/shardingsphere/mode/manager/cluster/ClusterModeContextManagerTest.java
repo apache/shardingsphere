@@ -37,7 +37,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture.Cluste
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture.RuleConfigurationFixture;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ProcessListClusterPersistRepositoryFixture;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.junit.jupiter.api.Test;
 

@@ -35,8 +35,8 @@ import java.util.Map;
 @Getter
 public enum SystemSchemaBuilderRule {
     
-    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", new HashSet<>(Arrays.asList("columns", "engines",
-            "parameters", "routines", "schemata", "tables", "views"))),
+    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", new HashSet<>(Arrays.asList("character_sets", "collation_character_set_applicability", "collations", "column_privileges", "columns",
+            "engines", "events", "files", "global_status", "global_variables", "parameters", "routines", "schemata", "tables", "views"))),
     
     MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Collections.singleton("db"))),
     
@@ -100,7 +100,7 @@ public enum SystemSchemaBuilderRule {
     
     /**
      * Value of builder rule.
-     * 
+     *
      * @param databaseType database type
      * @param schema schema
      * @return builder rule
@@ -114,7 +114,7 @@ public enum SystemSchemaBuilderRule {
     
     /**
      * Judge whether current table is system table or not.
-     * 
+     *
      * @param schema schema
      * @param tableName table name
      * @return whether current table is system table or not

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.util.retry;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -74,7 +73,7 @@ public final class RetryExecutor {
     
     @SneakyThrows(InterruptedException.class)
     private boolean isTimeout() {
-        TimeUnit.MILLISECONDS.sleep(intervalMillis);
+        Thread.sleep(intervalMillis);
         if (-1L == timeoutMillis) {
             return false;
         }

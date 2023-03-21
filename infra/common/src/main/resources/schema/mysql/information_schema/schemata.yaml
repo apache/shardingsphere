@@ -23,6 +23,7 @@ columns:
     generated: false
     name: CATALOG_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   schema_name:
     caseSensitive: false
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: SCHEMA_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   default_character_set_name:
     caseSensitive: false
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: DEFAULT_CHARACTER_SET_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   default_collation_name:
     caseSensitive: false
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: DEFAULT_COLLATION_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   sql_path:
     caseSensitive: false
@@ -51,4 +55,5 @@ columns:
     generated: false
     name: SQL_PATH
     primaryKey: false
+    unsigned: false
     visible: true

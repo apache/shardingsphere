@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
@@ -167,23 +166,25 @@ public final class PipelineContainerComposer implements AutoCloseable {
         }
     }
     
+    @SneakyThrows(InterruptedException.class)
     private void cleanUpProxyDatabase(final Connection connection) {
         if (PipelineEnvTypeEnum.NATIVE != PipelineE2EEnvironment.getInstance().getItEnvType()) {
             return;
         }
         try {
             connection.createStatement().execute(String.format("DROP DATABASE IF EXISTS %s", PROXY_DATABASE));
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
+            Thread.sleep(2000L);
         } catch (final SQLException ex) {
             log.warn("Drop proxy database failed, error={}", ex.getMessage());
         }
     }
     
+    @SneakyThrows(InterruptedException.class)
     private void createProxyDatabase(final Connection connection) throws SQLException {
         String sql = String.format("CREATE DATABASE %s", PROXY_DATABASE);
         log.info("Create proxy database {}", PROXY_DATABASE);
         connection.createStatement().execute(sql);
-        ThreadUtil.sleep(2, TimeUnit.SECONDS);
+        Thread.sleep(2000L);
     }
     
     private void cleanUpDataSource() {
@@ -272,13 +273,14 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @param sleepSeconds sleep seconds
      * @throws SQLException SQL exception
      */
+    @SneakyThrows(InterruptedException.class)
     public void createSchema(final Connection connection, final int sleepSeconds) throws SQLException {
         if (!getDatabaseType().isSchemaAvailable()) {
             return;
         }
         connection.createStatement().execute(String.format("CREATE SCHEMA %s", SCHEMA_NAME));
         if (sleepSeconds > 0) {
-            ThreadUtil.sleep(sleepSeconds, TimeUnit.SECONDS);
+            Thread.sleep(sleepSeconds * 1000L);
         }
     }
     
@@ -347,12 +349,13 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @param sleepSeconds sleep seconds
      * @throws SQLException SQL exception
      */
+    @SneakyThrows(InterruptedException.class)
     public void proxyExecuteWithLog(final String sql, final int sleepSeconds) throws SQLException {
         log.info("proxy execute :{}", sql);
         try (Connection connection = proxyDataSource.getConnection()) {
             connection.createStatement().execute(sql);
         }
-        ThreadUtil.sleep(Math.max(sleepSeconds, 0), TimeUnit.SECONDS);
+        Thread.sleep(Math.max(sleepSeconds * 1000L, 0L));
     }
     
     /**
@@ -360,12 +363,13 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * 
      * @param distSQL dist SQL
      */
+    @SneakyThrows(InterruptedException.class)
     public void waitJobPrepareSuccess(final String distSQL) {
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> jobStatus = queryForListWithLog(distSQL);
             Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
             if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
-                ThreadUtil.sleep(2, TimeUnit.SECONDS);
+                Thread.sleep(2000L);
             }
         }
     }
@@ -376,6 +380,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @param sql SQL
      * @return query result
      */
+    @SneakyThrows(InterruptedException.class)
     public List<Map<String, Object>> queryForListWithLog(final String sql) {
         int retryNumber = 0;
         while (retryNumber <= 3) {
@@ -385,7 +390,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             } catch (final SQLException ex) {
                 log.error("Data access error.", ex);
             }
-            ThreadUtil.sleep(3, TimeUnit.SECONDS);
+            Thread.sleep(3000L);
             retryNumber++;
         }
         throw new RuntimeException("Can not get result from proxy.");
@@ -449,7 +454,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             assertFalse(actualStatus.contains(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()), "status is JobStatus.EXECUTE_INVENTORY_TASK_FAILURE");
             assertFalse(actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()), "status is JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE");
             if (Collections.min(incrementalIdleSecondsList) <= 5) {
-                ThreadUtil.sleep(3, TimeUnit.SECONDS);
+                Thread.sleep(3000L);
                 continue;
             }
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
@@ -480,6 +485,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * 
      * @param sql SQL
      */
+    @SneakyThrows(InterruptedException.class)
     public void assertProxyOrderRecordExist(final String sql) {
         boolean recordExist = false;
         for (int i = 0; i < 5; i++) {
@@ -488,7 +494,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             if (recordExist) {
                 break;
             }
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
+            Thread.sleep(2000L);
         }
         assertTrue(recordExist, "The insert record must exist after the stop");
     }

@@ -75,11 +75,12 @@ public final class E2EContainerComposer {
         if (!logicDatabaseInitSQLFile.isPresent()) {
             return;
         }
-        if (!INITIALIZED_SUITES.contains(testParam.getKey())) {
+        String cacheKey = testParam.getKey() + "-" + System.identityHashCode(targetDataSource);
+        if (!INITIALIZED_SUITES.contains(cacheKey)) {
             synchronized (INITIALIZED_SUITES) {
-                if (!INITIALIZED_SUITES.contains(testParam.getKey())) {
+                if (!INITIALIZED_SUITES.contains(cacheKey)) {
                     executeInitSQL(targetDataSource, logicDatabaseInitSQLFile.get());
-                    INITIALIZED_SUITES.add(testParam.getKey());
+                    INITIALIZED_SUITES.add(cacheKey);
                 }
             }
         }

@@ -109,7 +109,7 @@ authority:
   privilege:
     type: DATABASE_PERMITTED
     props:
-      user-database-mappings: root@127.0.0.1=*, sharding=test_db, sharding=sharding_db
+      user-database-mappings: root@127.0.0.1=*, sharding@%=test_db, sharding@%=sharding_db
 ```
 
 Explanation:

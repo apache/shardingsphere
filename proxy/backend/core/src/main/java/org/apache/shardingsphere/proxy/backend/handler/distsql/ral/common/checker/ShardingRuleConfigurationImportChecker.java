@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -59,8 +58,8 @@ public final class ShardingRuleConfigurationImportChecker {
         String databaseName = database.getName();
         checkLogicTables(databaseName, currentRuleConfig);
         checkResources(databaseName, database, currentRuleConfig);
-        checkInvalidKeyGeneratorAlgorithms(currentRuleConfig.getKeyGenerators().values());
-        checkInvalidShardingAlgorithms(currentRuleConfig.getShardingAlgorithms().values());
+        checkShardingAlgorithms(currentRuleConfig.getShardingAlgorithms().values());
+        checkKeyGeneratorAlgorithms(currentRuleConfig.getKeyGenerators().values());
     }
     
     private void checkLogicTables(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {
@@ -74,16 +73,12 @@ public final class ShardingRuleConfigurationImportChecker {
         ShardingSpherePreconditions.checkState(duplicatedLogicTables.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedLogicTables));
     }
     
-    private void checkInvalidShardingAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
-        Collection<String> invalidAlgorithms = algorithmConfigs.stream()
-                .map(AlgorithmConfiguration::getType).filter(each -> !TypedSPILoader.contains(ShardingAlgorithm.class, each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", invalidAlgorithms));
-    }
-    
-    private void checkInvalidKeyGeneratorAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
-        Collection<String> invalidAlgorithms = algorithmConfigs.stream()
-                .map(AlgorithmConfiguration::getType).filter(each -> !TypedSPILoader.contains(KeyGenerateAlgorithm.class, each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("key generator", invalidAlgorithms));
+    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> requiredResource = getRequiredResources(currentRuleConfig);
+        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedDataSources(requiredResource);
+        Collection<String> logicResources = getLogicResources(database);
+        notExistedResources.removeIf(logicResources::contains);
+        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedResources));
     }
     
     private Collection<String> getRequiredResources(final ShardingRuleConfiguration currentRuleConfig) {
@@ -103,16 +98,16 @@ public final class ShardingRuleConfigurationImportChecker {
         return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     
-    private void checkResources(final String databaseName, final ShardingSphereDatabase database, final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> requiredResource = getRequiredResources(currentRuleConfig);
-        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedDataSources(requiredResource);
-        Collection<String> logicResources = getLogicResources(database);
-        notExistedResources.removeIf(logicResources::contains);
-        ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedResources));
-    }
-    
     private Collection<String> getLogicResources(final ShardingSphereDatabase database) {
         return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream()
                 .map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+    
+    private void checkShardingAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
+        algorithmConfigs.forEach(each -> TypedSPILoader.checkService(ShardingAlgorithm.class, each.getType(), each.getProps()));
+    }
+    
+    private void checkKeyGeneratorAlgorithms(final Collection<AlgorithmConfiguration> algorithmConfigs) {
+        algorithmConfigs.forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getType(), each.getProps()));
     }
 }

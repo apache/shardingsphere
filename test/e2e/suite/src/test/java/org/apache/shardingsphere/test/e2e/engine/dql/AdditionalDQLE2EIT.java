@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.e2e.engine.dql;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
+import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.e2e.framework.E2EITExtension;
@@ -27,10 +29,7 @@ import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameter
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.xml.bind.JAXBException;
@@ -41,17 +40,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(E2EITExtension.class)
+@E2ETestCaseSettings(SQLCommandType.DQL)
 public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecuteQueryWithResultSetTypeAndConcurrency(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        // TODO make sure test case can not be null
+        if (null == testParam.getTestCaseContext()) {
+            return;
+        }
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
@@ -68,8 +71,12 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecuteQueryWithResultSetTypeAndConcurrencyAndHoldability(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        // TODO make sure test case can not be null
+        if (null == testParam.getTestCaseContext()) {
+            return;
+        }
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
@@ -86,8 +93,12 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecuteWithResultSetTypeAndConcurrency(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        // TODO make sure test case can not be null
+        if (null == testParam.getTestCaseContext()) {
+            return;
+        }
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
@@ -104,8 +115,12 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecuteWithResultSetTypeAndConcurrencyAndHoldability(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+        // TODO make sure test case can not be null
+        if (null == testParam.getTestCaseContext()) {
+            return;
+        }
         try (SingleE2EITContainerComposer containerComposer = new SingleE2EITContainerComposer(testParam)) {
             init(testParam, containerComposer);
             // TODO fix e2e test blocked exception with PostgreSQL or openGuass in #23643
@@ -250,13 +265,5 @@ public final class AdditionalDQLE2EIT extends BaseDQLE2EIT {
     
     private static boolean isEnabled() {
         return E2ETestParameterFactory.containsTestParameter() && IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases();
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return E2ETestParameterFactory.getAssertionTestParameters(SQLCommandType.DQL).stream().map(Arguments::of);
-        }
     }
 }

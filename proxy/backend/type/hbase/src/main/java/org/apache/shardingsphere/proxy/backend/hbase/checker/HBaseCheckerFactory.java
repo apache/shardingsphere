@@ -32,22 +32,24 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 public final class HBaseCheckerFactory {
     
     /**
-     * Create new instance of heterogeneous database checker.
+     * Create new instance of HBase checker.
      *
-     * @param sqlStatement sql statement
-     * @return instance of database backend handler
+     * @param sqlStatement SQL statement
+     * @return created instance
      */
     public static HeterogeneousSQLStatementChecker<?> newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return new HeterogeneousSelectStatementChecker((SelectStatement) sqlStatement);
-        } else if (sqlStatement instanceof InsertStatement) {
-            return new HeterogeneousInsertStatementChecker((InsertStatement) sqlStatement);
-        } else if (sqlStatement instanceof DeleteStatement) {
-            return new HeterogeneousDeleteStatementChecker((DeleteStatement) sqlStatement);
-        } else if (sqlStatement instanceof UpdateStatement) {
-            return new HeterogeneousUpdateStatementChecker((UpdateStatement) sqlStatement);
-        } else {
-            return new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
         }
+        if (sqlStatement instanceof InsertStatement) {
+            return new HeterogeneousInsertStatementChecker((InsertStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return new HeterogeneousDeleteStatementChecker((DeleteStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof UpdateStatement) {
+            return new HeterogeneousUpdateStatementChecker((UpdateStatement) sqlStatement);
+        }
+        return new CommonHeterogeneousSQLStatementChecker<>(sqlStatement);
     }
 }
