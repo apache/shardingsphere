@@ -331,11 +331,11 @@ public final class BackendConnectionTest {
         getInUseBackendHandlers().add(inUseHandler);
         Connection cachedConnection = prepareCachedConnections();
         backendConnection.closeExecutionResources();
+        verify(cachedConnection).close();
         assertTrue(getBackendHandlers().isEmpty());
         assertTrue(getInUseBackendHandlers().isEmpty());
         verify(notInUseHandler).close();
         verify(inUseHandler).close();
-        verify(cachedConnection).close();
     }
     
     @Test
@@ -347,9 +347,9 @@ public final class BackendConnectionTest {
         getInUseBackendHandlers().add(inUseHandler);
         Connection cachedConnection = prepareCachedConnections();
         backendConnection.closeExecutionResources();
+        verifyNoInteractions(inUseHandler, cachedConnection);
         assertThat(getBackendHandlers(), is(Collections.singleton(inUseHandler)));
         assertThat(getInUseBackendHandlers(), is(Collections.singleton(inUseHandler)));
-        verifyNoInteractions(inUseHandler, cachedConnection);
     }
     
     @SuppressWarnings("unchecked")
