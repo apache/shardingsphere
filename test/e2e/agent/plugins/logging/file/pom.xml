@@ -150,7 +150,7 @@
                         <artifactId>docker-compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>agent-metrics-up</id>
+                                <id>agent-logging-up</id>
                                 <goals>
                                     <goal>up</goal>
                                 </goals>
@@ -161,7 +161,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>agent-metrics-down</id>
+                                <id>agent-logging-down</id>
                                 <goals>
                                     <goal>down</goal>
                                 </goals>

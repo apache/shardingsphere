@@ -123,6 +123,7 @@ jobs:
     name: Agent logging with MySQL
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 1
       matrix:
         adapter: [ proxy, jdbc ]
         plugin: [ file ]
