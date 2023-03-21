@@ -21,14 +21,12 @@ import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.engine.BatchE2EITContainerComposer;
+import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
-import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import javax.xml.bind.JAXBException;
@@ -37,17 +35,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@E2ETestCaseSettings(value = SQLCommandType.DML, batch = true)
 public final class BatchDMLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertExecuteBatch(final CaseTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
@@ -80,7 +77,7 @@ public final class BatchDMLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
     public void assertClearBatch(final CaseTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
@@ -101,15 +98,5 @@ public final class BatchDMLE2EIT {
     
     private static boolean isEnabled() {
         return E2ETestParameterFactory.containsTestParameter();
-    }
-    
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            Collection<E2ETestParameter> result = E2ETestParameterFactory.getCaseTestParameters(SQLCommandType.DML);
-            // TODO make sure test case can not be null
-            return result.isEmpty() ? Stream.of(Arguments.of(new CaseTestParameter(null, null, null, null, null))) : result.stream().map(Arguments::of);
-        }
     }
 }

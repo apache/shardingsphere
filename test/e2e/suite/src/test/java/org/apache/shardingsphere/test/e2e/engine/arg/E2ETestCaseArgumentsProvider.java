@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine;
+package org.apache.shardingsphere.test.e2e.engine.arg;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
@@ -36,7 +39,17 @@ public final class E2ETestCaseArgumentsProvider implements ArgumentsProvider {
     public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
         E2ETestCaseSettings settings = extensionContext.getRequiredTestClass().getAnnotation(E2ETestCaseSettings.class);
         Preconditions.checkNotNull(settings, "Annotation E2ETestCaseSettings is required.");
-        Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(settings.value());
+        return settings.batch() ? getBatchTestCaseArguments(settings.value()) : getSingleTestCaseArguments(settings.value());
+    }
+    
+    private Stream<Arguments> getBatchTestCaseArguments(final SQLCommandType type) {
+        Collection<E2ETestParameter> result = E2ETestParameterFactory.getCaseTestParameters(type);
+        // TODO make sure test case can not be null
+        return result.isEmpty() ? Stream.of(Arguments.of(new CaseTestParameter(null, null, null, null, null))) : result.stream().map(Arguments::of);
+    }
+    
+    private Stream<Arguments> getSingleTestCaseArguments(final SQLCommandType type) {
+        Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(type);
         // TODO make sure test case can not be null
         return result.isEmpty() ? Stream.of(Arguments.of(new AssertionTestParameter(null, null, null, null, null, null, null))) : result.stream().map(Arguments::of);
     }

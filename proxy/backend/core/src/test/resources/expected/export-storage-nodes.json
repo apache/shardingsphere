@@ -1,1 +1,1 @@
-{"storage_nodes":{"normal_db":[{"port":"0","password":"root","database":""}]}}
+{"storage_nodes":{"normal_db":[{"port":"0","username":"root","password":"test"}]}}
