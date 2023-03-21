@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project.enums;
 
+/**
+ * Statement type.
+ */
 public enum StatementType {
     STATEMENT, PREPARED
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.impl;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.enums.StatementType;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.mapper.OrderMapper;
@@ -27,7 +26,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.Collection;
 
-@Slf4j
+/**
+ * Order service impl.
+ */
 @Service
 public class OrderServiceImpl implements OrderService {
     
@@ -46,7 +47,6 @@ public class OrderServiceImpl implements OrderService {
     
     @Override
     public void insert(final OrderEntity order, final StatementType statementType) {
-        log.info("statementType:{} order:{}", statementType, order);
         switch (statementType) {
             case STATEMENT:
                 orderMapper.insertWithStatement(order);

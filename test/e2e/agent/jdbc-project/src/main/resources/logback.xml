@@ -17,23 +17,12 @@
   -->
 
 <configuration>
-    <property name="log.context.name" value="sharding-spring-boot-mybatis-example" />
-    <property name="log.charset" value="UTF-8" />
-    <property name="log.pattern" value="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n" />
-    <contextName>${log.context.name}</contextName>
     
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder charset="${log.charset}">
-            <pattern>${log.pattern}</pattern>
+        <encoder charset="UTF-8">
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    
-    <logger name="GENERAL-QUERY" level="info" additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
-    <logger name="SLOW-QUERY" level="info" additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
     
     <root>
         <level value="info" />

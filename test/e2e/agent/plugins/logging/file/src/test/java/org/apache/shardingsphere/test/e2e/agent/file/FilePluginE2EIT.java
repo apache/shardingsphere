@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.io.File;
 import java.util.Collection;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(AgentTestActionExtension.class)
@@ -37,6 +38,7 @@ public final class FilePluginE2EIT {
         assertTrue(new File(LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())).exists(),
                 String.format("The file `%s` does not exist", LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())));
         Collection<String> actualLogLines = LogLoader.getLogLines(E2ETestEnvironment.getInstance().isAdaptedProxy());
+        assertFalse(actualLogLines.isEmpty(), "Actual log is empty");
         if (E2ETestEnvironment.getInstance().isAdaptedProxy()) {
             assertProxyWithAgent(actualLogLines);
         } else {

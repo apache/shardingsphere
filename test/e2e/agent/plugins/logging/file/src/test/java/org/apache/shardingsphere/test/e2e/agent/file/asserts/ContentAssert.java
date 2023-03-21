@@ -36,7 +36,6 @@ public final class ContentAssert {
      * @param expectedLogRegex expected log regex
      */
     public static void assertIs(final Collection<String> actualLogLines, final String expectedLogRegex) {
-        assertThat("Actual log is empty", actualLogLines.size(), greaterThan(0));
         Pattern pattern = Pattern.compile(expectedLogRegex);
         Collection<String> expectedLogs = actualLogLines.stream().filter(each -> pattern.matcher(each).find()).collect(Collectors.toList());
         assertThat(String.format("The log for the specified regular `%s` does not exist", expectedLogRegex), expectedLogs.size(), greaterThan(0));

@@ -20,6 +20,9 @@ package org.apache.shardingsphere.test.e2e.agent.jdbc.project.vo;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Response vo.
+ */
 @Getter
 @Setter
 public class ResponseVo<T> {

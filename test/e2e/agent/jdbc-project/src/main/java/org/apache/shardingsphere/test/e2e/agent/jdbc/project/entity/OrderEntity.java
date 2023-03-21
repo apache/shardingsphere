@@ -23,7 +23,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Order.
+ * Order entity.
  */
 @AllArgsConstructor
 @Getter

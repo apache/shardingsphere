@@ -22,6 +22,9 @@ import org.apache.shardingsphere.test.e2e.agent.jdbc.project.enums.StatementType
 
 import java.util.Collection;
 
+/**
+ * Order service.
+ */
 public interface OrderService {
     
     /**

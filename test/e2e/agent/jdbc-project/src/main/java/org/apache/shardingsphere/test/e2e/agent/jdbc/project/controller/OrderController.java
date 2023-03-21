@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.enums.StatementType;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.OrderService;
@@ -29,7 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.Collection;
 
-@Slf4j
+/**
+ * Order controller.
+ */
 @RestController
 @RequestMapping("/order")
 public class OrderController extends AbstractRestController {
