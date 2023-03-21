@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine;
+package org.apache.shardingsphere.test.e2e.engine.arg;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.E2EExtension;
@@ -39,4 +39,11 @@ public @interface E2ETestCaseSettings {
      * @return SQL command type
      */
     SQLCommandType value();
+    
+    /**
+     * Is batch execute.
+     * 
+     * @return batch execute or not
+     */
+    boolean batch() default false;
 }

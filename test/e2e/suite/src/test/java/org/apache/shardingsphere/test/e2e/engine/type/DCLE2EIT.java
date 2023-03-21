@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.engine.type;
 
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
-import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseArgumentsProvider;
-import org.apache.shardingsphere.test.e2e.engine.E2ETestCaseSettings;
+import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
 import org.apache.shardingsphere.test.e2e.engine.SingleE2EITContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.authority.AuthorityEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
