@@ -22,6 +22,7 @@ import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerC
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.SQLWarning;
 
 /**
@@ -113,6 +114,19 @@ public final class CircuitBreakerStatement extends AbstractUnsupportedOperationS
     @Override
     public int getResultSetType() {
         return ResultSet.TYPE_FORWARD_ONLY;
+    }
+    
+    @Override
+    public void addBatch(final String sql) {
+    }
+    
+    @Override
+    public void clearBatch() {
+    }
+    
+    @Override
+    public int[] executeBatch() throws SQLException {
+        return new int[0];
     }
     
     @Override
