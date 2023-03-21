@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
+import org.apache.shardingsphere.driver.executor.batch.BatchStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.callback.impl.StatementExecuteQueryCallback;
@@ -126,6 +127,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Getter(AccessLevel.PROTECTED)
     private final StatementManager statementManager;
     
+    private final BatchStatementExecutor batchStatementExecutor;
+    
     private boolean returnGeneratedKeys;
     
     private ExecutionContext executionContext;
@@ -153,6 +156,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         kernelProcessor = new KernelProcessor();
         trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         statementManager = new StatementManager();
+        batchStatementExecutor = new BatchStatementExecutor(this);
     }
     
     @Override
@@ -505,6 +509,21 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             each.close();
         }
         statements.clear();
+    }
+    
+    @Override
+    public void addBatch(final String sql) throws SQLException {
+        batchStatementExecutor.addBatch(sql);
+    }
+    
+    @Override
+    public void clearBatch() {
+        batchStatementExecutor.clear();
+    }
+    
+    @Override
+    public int[] executeBatch() throws SQLException {
+        return batchStatementExecutor.executeBatch();
     }
     
     private QueryContext createQueryContext(final String originSQL) {
