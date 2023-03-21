@@ -24,7 +24,6 @@ import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,7 +38,7 @@ final class BatchStatementExecutorTest {
         executor.addBatch("UPDATE t SET col=1 WHERE id=1");
         executor.addBatch("UPDATE t SET col=10 WHERE id=2 OR id=3");
         int[] actual = executor.executeBatch();
-        assertArrayEquals(new int[]{1, 2}, actual);
+        assertThat(actual, is(new int[]{1, 2}));
         executor.clear();
         assertThat(executor.executeBatch(), is(new int[0]));
     }
