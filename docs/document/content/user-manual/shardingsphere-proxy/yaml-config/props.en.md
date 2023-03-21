@@ -31,7 +31,7 @@ Apache ShardingSphere provides a wealth of system configuration properties, whic
 | proxy-frontend-database-protocol-type (?)| String      | Proxy front-end protocol type, supports MySQL, PostgreSQL, openGauss                                                                                                                                                                                                                                         | \"\"        | False            |
 
 Properties can be modified online through [DistSQL#RAL](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/).
-Properties that support dynamic change can take effect immediately. The other ones that do not support dynamic change take effect after a restart.
+Properties that support dynamic change can take effect immediately. For the ones that do not support dynamic change, the effect will be implemented after a restart.
 
 ## Sample
 

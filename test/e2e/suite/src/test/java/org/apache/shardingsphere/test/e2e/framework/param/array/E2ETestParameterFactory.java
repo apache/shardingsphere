@@ -79,4 +79,14 @@ public final class E2ETestParameterFactory {
     private static boolean isDistSQLCommandType(final SQLCommandType sqlCommandType) {
         return SQLCommandType.RDL == sqlCommandType || SQLCommandType.RAL == sqlCommandType || SQLCommandType.RQL == sqlCommandType;
     }
+    
+    /**
+     * Judge whether contains test parameter.
+     * 
+     * @return contains or not
+     */
+    public static boolean containsTestParameter() {
+        return IntegrationTestEnvironment.getInstance().getRunModes().stream()
+                .anyMatch(each -> AdapterMode.STANDALONE.getValue().equalsIgnoreCase(each) || AdapterMode.CLUSTER.getValue().equalsIgnoreCase(each));
+    }
 }

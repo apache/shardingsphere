@@ -101,8 +101,8 @@ public final class SingleTableInventoryDataConsistencyChecker {
         String targetTableName = targetTable.getTableName().getOriginal();
         DataConsistencyCalculateParameter targetParam = buildParameter(targetDataSource, targetTable.getSchemaName().getOriginal(), targetTableName,
                 columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey, tableCheckPositions.get(targetTableName));
-        Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParam).iterator();
-        Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = calculateAlgorithm.calculate(targetParam).iterator();
+        Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(sourceParam))).iterator();
+        Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(targetParam))).iterator();
         try {
             return check0(sourceCalculatedResults, targetCalculatedResults, executor);
             // CHECKSTYLE:OFF
@@ -127,10 +127,8 @@ public final class SingleTableInventoryDataConsistencyChecker {
             if (null != readRateLimitAlgorithm) {
                 readRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
             }
-            Future<DataConsistencyCalculatedResult> sourceFuture = executor.submit(sourceCalculatedResults::next);
-            Future<DataConsistencyCalculatedResult> targetFuture = executor.submit(targetCalculatedResults::next);
-            DataConsistencyCalculatedResult sourceCalculatedResult = waitFuture(sourceFuture);
-            DataConsistencyCalculatedResult targetCalculatedResult = waitFuture(targetFuture);
+            DataConsistencyCalculatedResult sourceCalculatedResult = waitFuture(executor.submit(sourceCalculatedResults::next));
+            DataConsistencyCalculatedResult targetCalculatedResult = waitFuture(executor.submit(targetCalculatedResults::next));
             sourceRecordsCount += sourceCalculatedResult.getRecordsCount();
             targetRecordsCount += targetCalculatedResult.getRecordsCount();
             contentMatched = Objects.equals(sourceCalculatedResult, targetCalculatedResult);

@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.parser.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.parser.SimpleSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -37,11 +39,14 @@ public final class SQLParserRule implements GlobalRule {
     
     private final CacheOption parseTreeCache;
     
+    private final String engineType;
+    
     public SQLParserRule(final SQLParserRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         sqlCommentParseEnabled = ruleConfig.isSqlCommentParseEnabled();
         sqlStatementCache = ruleConfig.getSqlStatementCache();
         parseTreeCache = ruleConfig.getParseTreeCache();
+        engineType = "Standard";
     }
     
     /**
@@ -50,8 +55,10 @@ public final class SQLParserRule implements GlobalRule {
      * @param databaseType database type
      * @return SQL parser engine
      */
-    public ShardingSphereSQLParserEngine getSQLParserEngine(final String databaseType) {
-        return new ShardingSphereSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache, sqlCommentParseEnabled);
+    public SQLParserEngine getSQLParserEngine(final String databaseType) {
+        return "Standard".equals(engineType)
+                ? new ShardingSphereSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache, sqlCommentParseEnabled)
+                : new SimpleSQLParserEngine();
     }
     
     @Override

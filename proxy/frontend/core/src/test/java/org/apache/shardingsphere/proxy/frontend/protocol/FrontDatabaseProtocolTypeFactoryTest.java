@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -82,7 +82,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
         return Collections.singletonMap("foo_db", database);
     }
     
-    private static ContextManager mockContextManager(final Map<String, ShardingSphereDatabase> databases, final Properties props) {
+    private ContextManager mockContextManager(final Map<String, ShardingSphereDatabase> databases, final Properties props) {
         MetaDataContexts metaDataContexts = new MetaDataContexts(
                 mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(props)));
         return new ContextManager(metaDataContexts, mock(InstanceContext.class));

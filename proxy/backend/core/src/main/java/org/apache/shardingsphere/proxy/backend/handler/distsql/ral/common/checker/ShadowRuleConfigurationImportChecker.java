@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -88,8 +86,6 @@ public final class ShadowRuleConfigurationImportChecker {
     }
     
     private void checkShadowAlgorithms(final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> notExistedAlgorithms = currentRuleConfig.getShadowAlgorithms().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPILoader.contains(ShadowAlgorithm.class, each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Shadow algorithms", notExistedAlgorithms));
+        currentRuleConfig.getShadowAlgorithms().values().forEach(each -> TypedSPILoader.checkService(ShadowAlgorithm.class, each.getType(), each.getProps()));
     }
 }

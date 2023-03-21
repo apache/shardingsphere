@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node;
 
-import org.apache.shardingsphere.mode.process.node.ProcessNode;
+import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
