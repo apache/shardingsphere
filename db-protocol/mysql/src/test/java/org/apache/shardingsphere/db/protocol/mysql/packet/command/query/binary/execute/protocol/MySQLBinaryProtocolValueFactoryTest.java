@@ -25,7 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MySQLMySQLBinaryProtocolValueFactoryTest {
+public final class MySQLBinaryProtocolValueFactoryTest {
     
     @Test
     public void assertGetBinaryProtocolValueWithMySQLTypeString() {

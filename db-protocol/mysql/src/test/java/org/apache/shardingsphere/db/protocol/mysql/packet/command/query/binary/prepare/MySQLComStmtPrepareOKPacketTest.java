@@ -27,7 +27,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLComStmtPrepareMySQLOKPacketTest {
+public final class MySQLComStmtPrepareOKPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
