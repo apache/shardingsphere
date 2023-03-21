@@ -31,7 +31,7 @@ on:
       - 'test/pom.xml'
       - 'test/e2e/fixture/**'
       - 'test/e2e/env/**'
-      - 'test/e2e/discovery/**'
+      - 'test/e2e/operation/discovery/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -46,7 +46,7 @@ on:
       - 'test/pom.xml'
       - 'test/e2e/fixture/**'
       - 'test/e2e/env/**'
-      - 'test/e2e/discovery/**'
+      - 'test/e2e/operation/discovery/**'
       - '!*.md'
   workflow_dispatch:
 
@@ -84,11 +84,11 @@ jobs:
           distribution: 'temurin'
           java-version: 11
       - name: Build Discovery IT image
-        run: ./mvnw -B clean install -am -pl test/e2e/discovery -Pit.env.docker -DskipTests
+        run: ./mvnw -B clean install -am -pl test/e2e/operation/discovery -Pit.env.docker -DskipTests
       - name: Setup JDK 8 for Test
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
       - name: Run MySQL Discovery E2E Test
-        run: ./mvnw -nsu -B install -f test/e2e/discovery/pom.xml -Dit.env.type=docker -Dit.docker.mysql.version=mysql:5.7
+        run: ./mvnw -nsu -B install -f test/e2e/operation/discovery/pom.xml -Dit.env.type=docker -Dit.docker.mysql.version=mysql:5.7
