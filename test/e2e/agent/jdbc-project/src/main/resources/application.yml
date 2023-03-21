@@ -21,8 +21,6 @@ server:
 mybatis:
   mapper-locations: classpath*:META-INF/mappers/*Mapper.xml
   type-aliases-package: org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 logging:
   config: classpath:logback.xml

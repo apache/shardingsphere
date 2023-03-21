@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.agent.jdbc.project.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order;
+import org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity;
 
 import java.util.Collection;
 
@@ -44,54 +44,54 @@ public interface OrderMapper {
      *
      * @param order order
      */
-    void insertWithStatement(Order order);
+    void insertWithStatement(OrderEntity order);
     
     /**
      * Insert with prepared statement.
      *
      * @param order order
      */
-    void insertWithPreparedStatement(Order order);
+    void insertWithPreparedStatement(OrderEntity order);
     
     /**
      * Delete with statement.
      *
-     * @param id id
+     * @param orderId order id
      */
-    void deleteWithStatement(@Param("id") Long id);
+    void deleteWithStatement(@Param("orderId") Long orderId);
     
     /**
      * Delete with prepared statement.
      *
-     * @param id id
+     * @param orderId order id
      */
-    void deleteWithPreparedStatement(@Param("id") Long id);
+    void deleteWithPreparedStatement(@Param("orderId") Long orderId);
     
     /**
      * Select all with statement.
      *
      * @return orders
      */
-    Collection<Order> selectAllWithStatement();
+    Collection<OrderEntity> selectAllWithStatement();
     
     /**
      * Select all with prepared statement.
      *
      * @return orders
      */
-    Collection<Order> selectAllWithPreparedStatement();
+    Collection<OrderEntity> selectAllWithPreparedStatement();
     
     /**
      * Update with statement.
      *
      * @param order order
      */
-    void updateWithStatement(Order order);
+    void updateWithStatement(OrderEntity order);
     
     /**
      * Update with prepared statement.
      *
      * @param order order
      */
-    void updateWithPreparedStatement(Order order);
+    void updateWithPreparedStatement(OrderEntity order);
 }

@@ -17,26 +17,23 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
-
 /**
- * Base entity.
+ * Order.
  */
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class BaseEntity {
+public class OrderEntity {
     
-    private Boolean deleted;
+    private final Long orderId;
     
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
+    private Long userId;
     
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
+    private String status;
 }

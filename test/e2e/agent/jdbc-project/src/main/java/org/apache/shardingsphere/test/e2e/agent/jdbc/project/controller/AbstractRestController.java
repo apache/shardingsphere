@@ -25,32 +25,15 @@ import org.apache.shardingsphere.test.e2e.agent.jdbc.project.vo.response.ResultC
  */
 public abstract class AbstractRestController {
     
-    /**
-     * Success only.
-     *
-     * @return {@link HttpResult}
-     */
     protected HttpResult<Void> success() {
         return new HttpResult<Void>().toBuilder().code(ResultCode.SUCCESS.getCode()).message(ResultCode.SUCCESS.getMessage()).build();
     }
     
-    /**
-     * Success have result data.
-     *
-     * @param data result data
-     * @param <T> class type of result data
-     * @return {@link HttpResult}
-     */
     protected <T> HttpResult<T> success(final T data) {
         return new HttpResult<T>().toBuilder().code(ResultCode.SUCCESS.getCode()).message(ResultCode.SUCCESS.getMessage()).data(data).build();
     }
     
-    /**
-     * Failed only.
-     *
-     * @return {@link HttpResult}
-     */
-    protected HttpResult<Void> voidFailed() {
-        return new HttpResult<Void>().toBuilder().code(ResultCode.FAIL.getCode()).message(ResultCode.FAIL.getMessage()).build();
+    protected HttpResult<String> failed(final String message) {
+        return new HttpResult<String>().toBuilder().code(ResultCode.FAIL.getCode()).message(message).build();
     }
 }

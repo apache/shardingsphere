@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity;
+package org.apache.shardingsphere.test.e2e.agent.jdbc.project.controller;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.test.e2e.agent.jdbc.project.vo.response.HttpResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Order.
- */
-@Getter
-@Setter
-@ToString(callSuper = true)
-public class Order extends BaseEntity {
+@RestController
+public class HelloController extends AbstractRestController {
     
-    private Long id;
-    
-    private Long userId;
-    
-    private String uuid;
-    
-    private String status;
+    /**
+     * Hello.
+     *
+     * @return http result
+     */
+    @GetMapping("/hello")
+    public HttpResult<String> hello() {
+        return success("hello");
+    }
 }

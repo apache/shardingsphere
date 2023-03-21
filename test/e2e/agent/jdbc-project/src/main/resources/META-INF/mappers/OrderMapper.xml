@@ -19,26 +19,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.apache.shardingsphere.test.e2e.agent.jdbc.project.mapper.OrderMapper">
     
-    <resultMap id="BaseResultMap" type="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order">
-        <id column="id" jdbcType="BIGINT" property="id" />
-        <result column="user_id" property="userId" />
-        <result column="uuid" property="uuid" />
+    <resultMap id="BaseResultMap" type="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity">
+        <id column="order_id" jdbcType="BIGINT" property="orderId" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
         <result column="status" property="status" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="is_deleted" property="deleted" />
     </resultMap>
     
     <update id="createTable">
         CREATE TABLE IF NOT EXISTS t_order (
-                id BIGINT NOT NULL,
+                order_id BIGINT NOT NULL,
                 user_id BIGINT DEFAULT NULL,
-                uuid VARCHAR(36) DEFAULT NULL,
                 status VARCHAR(32) DEFAULT NULL,
-                create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
-                update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
-                is_deleted TINYINT(1) NOT NULL DEFAULT 0,
-                PRIMARY KEY (id)
+                PRIMARY KEY (order_id)
             );
     </update>
     
@@ -46,20 +38,20 @@
         DROP TABLE IF EXISTS t_order;
     </update>
     
-    <insert id="insertWithStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order" useGeneratedKeys="true" keyProperty="id" statementType="STATEMENT">
-        insert into t_order(user_id, uuid, status, create_time) value (${userId}, '${uuid}', '${status}', '${createTime}')
+    <insert id="insertWithStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity" statementType="STATEMENT">
+        insert into t_order(order_id, user_id, status) value (${orderId}, ${userId}, '${status}')
     </insert>
     
-    <insert id="insertWithPreparedStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order" useGeneratedKeys="true" keyProperty="id" statementType="PREPARED">
-        insert into t_order(user_id, uuid, status, create_time) value (#{userId}, #{uuid}, #{status}, #{createTime})
+    <insert id="insertWithPreparedStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity" statementType="PREPARED">
+        insert into t_order(order_id, user_id, status) value (#{orderId}, #{userId}, #{status})
     </insert>
     
     <delete id="deleteWithStatement" parameterType="java.lang.Long" statementType="STATEMENT">
-        delete from t_order where id=${id}
+        delete from t_order where order_id=${orderId}
     </delete>
     
     <delete id="deleteWithPreparedStatement" parameterType="java.lang.Long" statementType="PREPARED">
-        delete from t_order where id=#{id}
+        delete from t_order where order_id=#{orderId}
     </delete>
     
     <select id="selectAllWithStatement" resultMap="BaseResultMap" statementType="STATEMENT">
@@ -70,12 +62,12 @@
         select * from t_order
     </select>
     
-    <update id="updateWithStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order" statementType="STATEMENT">
-        update t_order set uuid='${uuid}', status='${status}', is_deleted=${deleted} where id=${id}
+    <update id="updateWithStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity" statementType="STATEMENT">
+        update t_order set status='${status}' where order_id=${orderId}
     </update>
     
-    <update id="updateWithPreparedStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order" statementType="PREPARED">
-        update t_order set uuid=#{uuid}, status=#{status}, is_deleted=#{deleted} where id=#{id}
+    <update id="updateWithPreparedStatement" parameterType="org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity" statementType="PREPARED">
+        update t_order set status=#{status} where order_id=#{orderId}
     </update>
     
 </mapper>

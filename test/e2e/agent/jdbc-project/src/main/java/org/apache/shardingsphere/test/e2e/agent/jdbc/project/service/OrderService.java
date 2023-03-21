@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project.service;
 
-import org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order;
+import org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.enums.StatementType;
 
 import java.util.Collection;
@@ -40,15 +40,15 @@ public interface OrderService {
      * @param order order
      * @param statementType statement type
      */
-    void insert(Order order, StatementType statementType);
+    void insert(OrderEntity order, StatementType statementType);
     
     /**
      * Delete.
      *
-     * @param id id
+     * @param orderId order id
      * @param statementType statement type
      */
-    void delete(Long id, StatementType statementType);
+    void delete(Long orderId, StatementType statementType);
     
     /**
      * Update.
@@ -56,7 +56,7 @@ public interface OrderService {
      * @param order order
      * @param statementType statement type
      */
-    void update(Order order, StatementType statementType);
+    void update(OrderEntity order, StatementType statementType);
     
     /**
      * Select all.
@@ -64,5 +64,5 @@ public interface OrderService {
      * @param statementType statement type
      * @return orders
      */
-    Collection<Order> selectAll(StatementType statementType);
+    Collection<OrderEntity> selectAll(StatementType statementType);
 }

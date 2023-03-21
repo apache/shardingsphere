@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.Order;
+import org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.enums.StatementType;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.OrderService;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.vo.response.HttpResult;
@@ -27,9 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -68,9 +66,10 @@ public class OrderController extends AbstractRestController {
      */
     @GetMapping("/insert")
     public HttpResult<Void> insert() {
-        long index = 1;
-        while (index <= 100) {
-            orderService.insert(createOrder(index++), 0 == (index & 1) ? StatementType.STATEMENT : StatementType.PREPARED);
+        long index = 0;
+        while (index++ < 100) {
+            OrderEntity order = new OrderEntity(index, index, "OK");
+            orderService.insert(order, 0 == (index & 1) ? StatementType.STATEMENT : StatementType.PREPARED);
         }
         return success();
     }
@@ -82,10 +81,10 @@ public class OrderController extends AbstractRestController {
      */
     @GetMapping("/update")
     public HttpResult<Void> update() {
-        Collection<Order> orders = orderService.selectAll(StatementType.STATEMENT);
+        Collection<OrderEntity> orders = orderService.selectAll(StatementType.STATEMENT);
         int index = 0;
-        for (Order each : orders) {
-            each.setStatus("OK");
+        for (OrderEntity each : orders) {
+            each.setStatus("Fail");
             orderService.update(each, 0 == (index++ & 1) ? StatementType.STATEMENT : StatementType.PREPARED);
         }
         return success();
@@ -98,10 +97,10 @@ public class OrderController extends AbstractRestController {
      */
     @GetMapping("/delete")
     public HttpResult<Void> delete() {
-        Collection<Order> orders = orderService.selectAll(StatementType.STATEMENT);
+        Collection<OrderEntity> orders = orderService.selectAll(StatementType.STATEMENT);
         int index = 0;
-        for (Order each : orders) {
-            orderService.delete(each.getId(), 0 == (index++ & 1) ? StatementType.STATEMENT : StatementType.PREPARED);
+        for (OrderEntity each : orders) {
+            orderService.delete(each.getOrderId(), 0 == (index++ & 1) ? StatementType.STATEMENT : StatementType.PREPARED);
         }
         return success();
     }
@@ -112,16 +111,7 @@ public class OrderController extends AbstractRestController {
      * @return http result
      */
     @GetMapping("selectAll")
-    public HttpResult<Collection<Order>> selectAll() {
+    public HttpResult<Collection<OrderEntity>> selectAll() {
         return success(orderService.selectAll(StatementType.PREPARED));
-    }
-    
-    private Order createOrder(final Long userId) {
-        Order order = new Order();
-        order.setUserId(userId);
-        order.setUuid(UUID.randomUUID().toString());
-        order.setStatus("OK");
-        order.setCreateTime(LocalDateTime.now());
-        return order;
     }
 }

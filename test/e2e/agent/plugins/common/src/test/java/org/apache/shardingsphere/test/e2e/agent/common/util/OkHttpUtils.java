@@ -81,4 +81,16 @@ public final class OkHttpUtils {
         assertNotNull(response.body());
         return response.body().string();
     }
+    
+    /**
+     * Get response.
+     *
+     * @param url url
+     * @return response
+     * @throws IOException
+     */
+    public Response getResponse(final String url) throws IOException {
+        Request request = new Request.Builder().url(url).build();
+        return client.newCall(request).execute();
+    }
 }

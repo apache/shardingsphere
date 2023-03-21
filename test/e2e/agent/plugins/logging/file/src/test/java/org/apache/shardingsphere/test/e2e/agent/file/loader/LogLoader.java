@@ -36,12 +36,13 @@ public final class LogLoader {
     /**
      * Get log lines.
      *
+     * @param isAdaptedProxy is adapted proxy
      * @return log lines
      */
     @SneakyThrows(IOException.class)
-    public static Collection<String> getLogLines() {
+    public static Collection<String> getLogLines(final boolean isAdaptedProxy) {
         Collection<String> result = new LinkedList<>();
-        Collection<String> lines = Files.readAllLines(Paths.get(getLogFilePath()));
+        Collection<String> lines = Files.readAllLines(Paths.get(getLogFilePath(isAdaptedProxy)));
         Pattern pattern = Pattern.compile("^\\[");
         StringBuilder builder = new StringBuilder();
         boolean hasFind = false;
@@ -69,18 +70,11 @@ public final class LogLoader {
     /**
      * Get log file path.
      *
+     * @param isAdaptedProxy is adapted proxy
      * @return log file path
      */
-    public static String getLogFilePath() {
-        return String.join(File.separator, Paths.get("").toAbsolutePath().toString(), "target", "logs", "stdout.log");
-    }
-    
-    /**
-     * Get log file.
-     *
-     * @return log file
-     */
-    public static File getLogFile() {
-        return new File(getLogFilePath());
+    public static String getLogFilePath(final boolean isAdaptedProxy) {
+        String path = isAdaptedProxy ? String.join(File.separator, "target", "logs", "stdout.log") : String.join(File.separator, "target", "jdbc-project", "logs", "stdout.log");
+        return String.join(File.separator, path);
     }
 }

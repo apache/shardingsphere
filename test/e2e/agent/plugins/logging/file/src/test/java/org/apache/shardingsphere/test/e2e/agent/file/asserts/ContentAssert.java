@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file.asserts;
 
-import org.apache.shardingsphere.test.e2e.agent.file.loader.LogLoader;
-
 import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -34,10 +32,10 @@ public final class ContentAssert {
     /**
      * Assertion specifies regular log content.
      *
+     * @param actualLogLines actual logs
      * @param expectedLogRegex expected log regex
      */
-    public static void assertIs(final String expectedLogRegex) {
-        Collection<String> actualLogLines = LogLoader.getLogLines();
+    public static void assertIs(final Collection<String> actualLogLines, final String expectedLogRegex) {
         assertThat("Actual log is empty", actualLogLines.size(), greaterThan(0));
         Pattern pattern = Pattern.compile(expectedLogRegex);
         Collection<String> expectedLogs = actualLogLines.stream().filter(each -> pattern.matcher(each).find()).collect(Collectors.toList());
