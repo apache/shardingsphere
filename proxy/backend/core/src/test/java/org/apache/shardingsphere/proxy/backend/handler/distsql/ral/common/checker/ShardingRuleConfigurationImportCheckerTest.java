@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -86,13 +87,13 @@ public final class ShardingRuleConfigurationImportCheckerTest {
     
     private ShardingRuleConfiguration createInvalidKeyGeneratorRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getKeyGenerators().put("Invalid_key_generator", mock(AlgorithmConfiguration.class));
+        result.getKeyGenerators().put("Invalid_key_generator", new AlgorithmConfiguration("Invalid_type", new Properties()));
         return result;
     }
     
     private ShardingRuleConfiguration createInvalidShardingAlgorithmRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getShardingAlgorithms().put("Invalid_algorithm", mock(AlgorithmConfiguration.class));
+        result.getKeyGenerators().put("Invalid_algorithm", new AlgorithmConfiguration("Invalid_type", new Properties()));
         return result;
     }
 }
