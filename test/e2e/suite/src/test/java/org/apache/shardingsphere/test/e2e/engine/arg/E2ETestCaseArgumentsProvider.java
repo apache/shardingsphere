@@ -22,6 +22,7 @@ import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
+import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
@@ -42,7 +43,7 @@ public final class E2ETestCaseArgumentsProvider implements ArgumentsProvider {
     }
     
     private Stream<Arguments> getBatchTestCaseArguments(final SQLCommandType type) {
-        Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(type);
+        Collection<E2ETestParameter> result = E2ETestParameterFactory.getCaseTestParameters(type);
         // TODO make sure test case can not be null
         return result.isEmpty() ? Stream.of(Arguments.of(new CaseTestParameter(null, null, null, null, null))) : result.stream().map(Arguments::of);
     }
