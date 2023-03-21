@@ -25,10 +25,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 /**
- * E2E IT extension.
+ * E2E extension.
  */
 @Slf4j
-public final class E2EITExtension implements TestWatcher {
+public final class E2EExtension implements TestWatcher {
     
     @Override
     public void testFailed(final ExtensionContext context, final Throwable cause) {

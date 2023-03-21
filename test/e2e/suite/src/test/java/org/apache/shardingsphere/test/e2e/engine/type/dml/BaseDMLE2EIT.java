@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.engine.dml;
+package org.apache.shardingsphere.test.e2e.engine.type.dml;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
@@ -75,7 +75,7 @@ public abstract class BaseDMLE2EIT {
     
     @AfterEach
     public final void tearDown() {
-        // TODO make sure DML test case can not be null
+        // TODO make sure test case can not be null
         if (null != dataSetEnvironmentManager) {
             dataSetEnvironmentManager.cleanData();
         }
