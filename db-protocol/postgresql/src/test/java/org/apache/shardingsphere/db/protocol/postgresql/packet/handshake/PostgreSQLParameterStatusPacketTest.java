@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 
@@ -29,20 +29,20 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLPasswordMessagePacketTest {
+public final class PostgreSQLParameterStatusPacketTest {
     
     @Test
     public void assertReadWrite() {
-        String md5Digest = "ce98bac7fc97f20584ea9536e744dabb";
-        int expectedLength = 4 + md5Digest.length() + 1;
+        String key = "key1";
+        String value = "value1";
+        int expectedLength = key.length() + 1 + value.length() + 1;
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        payload.writeInt4(expectedLength);
-        payload.writeStringNul(md5Digest);
-        PostgreSQLPasswordMessagePacket packet = new PostgreSQLPasswordMessagePacket(payload);
-        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.PASSWORD_MESSAGE));
-        assertThat(packet.getDigest(), is(md5Digest));
+        PostgreSQLParameterStatusPacket packet = new PostgreSQLParameterStatusPacket(key, value);
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.PARAMETER_STATUS));
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(expectedLength));
+        assertThat(payload.readStringNul(), is(key));
+        assertThat(payload.readStringNul(), is(value));
     }
 }
