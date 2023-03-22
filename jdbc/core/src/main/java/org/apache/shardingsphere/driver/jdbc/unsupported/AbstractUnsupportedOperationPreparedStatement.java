@@ -35,6 +35,11 @@ import java.sql.SQLFeatureNotSupportedException;
 public abstract class AbstractUnsupportedOperationPreparedStatement extends AbstractStatementAdapter implements PreparedStatement {
     
     @Override
+    public final void addBatch(final String sql) throws SQLException {
+        throw new SQLFeatureNotSupportedException("addBatch sql in PreparedStatement");
+    }
+    
+    @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
         throw new SQLFeatureNotSupportedException("getMetaData");
     }
