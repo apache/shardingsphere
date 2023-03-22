@@ -71,7 +71,7 @@
     
     <profiles>
         <profile>
-            <id>it.env.zipkin</id>
+            <id>it.env.proxy.zipkin</id>
             <properties>
                 <it.env>zipkin</it.env>
             </properties>

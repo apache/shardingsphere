@@ -71,7 +71,7 @@
     
     <profiles>
         <profile>
-            <id>it.env.jaeger</id>
+            <id>it.env.proxy.jaeger</id>
             <properties>
                 <it.env>jaeger</it.env>
             </properties>
