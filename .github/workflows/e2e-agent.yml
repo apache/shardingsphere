@@ -24,10 +24,11 @@ on:
       - '.github/workflows/e2e-agent.yml'
       - '**/pom.xml'
       - '**/src/main/**'
-      - 'distribution/proxy/**'
       - 'test/pom.xml'
       - 'test/e2e/agent/**'
       - '!test/**'
+      - 'distribution/proxy/**'
+      - 'distribution/jdbc/**'
       - '!distribution/**'
       - '!examples/**'
       - '!*.md'
@@ -37,10 +38,11 @@ on:
       - '.github/workflows/e2e-agent.yml'
       - '**/pom.xml'
       - '**/src/main/**'
-      - 'distribution/proxy/**'
       - 'test/pom.xml'
       - 'test/e2e/agent/**'
       - '!test/**'
+      - 'distribution/proxy/**'
+      - 'distribution/jdbc/**'
       - '!distribution/**'
       - '!examples/**'
       - '!*.md'
@@ -55,8 +57,8 @@ env:
   REPOSITORY_NAME: shardingsphere
 
 jobs:
-  mysql-proxy:
-    name: E2E - Agent with MySQL Proxy
+  mysql:
+    name: E2E - Agent with MySQL
     runs-on: ubuntu-latest
     strategy:
       matrix:
