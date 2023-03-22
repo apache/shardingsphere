@@ -72,7 +72,7 @@
     
     <profiles>
         <profile>
-            <id>it.env.prometheus</id>
+            <id>it.env.proxy.prometheus</id>
             <properties>
                 <it.env>prometheus</it.env>
             </properties>
