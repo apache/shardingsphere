@@ -38,9 +38,9 @@ public final class JobIdAssert {
      */
     public static void assertJobId(final SQLCaseAssertContext assertContext, final String actual, final String expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual job ID should not exist."), actual);
+            assertNull(actual, assertContext.getText("Actual job ID should not exist."));
         } else {
-            assertNotNull(assertContext.getText("Actual job ID should exist."), actual);
+            assertNotNull(actual, assertContext.getText("Actual job ID should exist."));
             assertThat(assertContext.getText("Job ID assertion error."), actual, is(expected));
         }
     }

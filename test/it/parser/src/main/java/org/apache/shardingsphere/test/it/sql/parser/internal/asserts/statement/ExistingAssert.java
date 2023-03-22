@@ -15,32 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.query;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement;
 
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowMigrationListStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
- * Show migration list statement assert.
+ * Existing assert.
  */
-public final class ShowMigrationListStatementAssert {
+public final class ExistingAssert {
     
     /**
-     * Assert show migration list statement is correct with expected parser result.
+     * Assert actual SQL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show migration list statement
-     * @param expected expected show migration list statement test case
+     * @param actual actual SQL statement
+     * @param expected expected parser result
+     * @return existed or not
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowMigrationListStatement actual, final ShowMigrationListStatementTestCase expected) {
+    public static boolean assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
         if (null == expected) {
             assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+            return false;
         }
+        assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        return true;
     }
 }
