@@ -65,7 +65,9 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     private int getShardingCount(final Properties props) {
         ShardingSpherePreconditions.checkState(props.containsKey(SHARDING_COUNT_KEY), () -> new ShardingAlgorithmInitializationException(getType(), "Sharding count can not be null."));
-        return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
+        int result = Integer.parseInt(String.valueOf(props.getProperty(SHARDING_COUNT_KEY)));
+        ShardingSpherePreconditions.checkState(result > 0, () -> new ShardingAlgorithmInitializationException(getType(), "Sharding count must be a positive integer."));
+        return result;
     }
     
     private int getStartOffset(final Properties props) {

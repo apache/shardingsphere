@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -31,9 +32,11 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class HashModShardingAlgorithmTest {
     
@@ -57,5 +60,11 @@ public final class HashModShardingAlgorithmTest {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Collection<String> actual = shardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("a", "f")));
         assertThat(actual.size(), is(4));
+    }
+    
+    @Test
+    public void assertRangeDoShardingWithWrongArgumentForShardingCount() {
+        Properties props = PropertiesBuilder.build(new Property("sharding-count", "0"));
+        assertThrows(ShardingAlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "HASH_MOD", props));
     }
 }
