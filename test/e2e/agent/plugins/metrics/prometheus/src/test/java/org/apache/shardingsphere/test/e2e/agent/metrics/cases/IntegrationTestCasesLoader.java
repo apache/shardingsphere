@@ -34,7 +34,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -71,12 +70,8 @@ public final class IntegrationTestCasesLoader {
         if (null != integrationTestCases) {
             return integrationTestCases;
         }
-        if (!Arrays.asList("proxy", "jdbc").contains(adapter)) {
-            throw new UnsupportedOperationException(String.format("Unknown adapter `%s`", adapter));
-        }
-        String resourceName = "proxy".equalsIgnoreCase(adapter) ? "cases/proxy/" : "cases/jdbc/";
         integrationTestCases = new LinkedList<>();
-        URL url = Objects.requireNonNull(IntegrationTestCasesLoader.class.getClassLoader().getResource(resourceName));
+        URL url = Objects.requireNonNull(IntegrationTestCasesLoader.class.getClassLoader().getResource(String.format("cases/%s", adapter)));
         Collection<File> files = getFiles(url);
         for (File each : files) {
             integrationTestCases.addAll(unmarshal(each.getPath()).getTestCases());

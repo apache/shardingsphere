@@ -20,7 +20,7 @@ version: "2.1"
 services:
   mysql:
     image: "mysql/mysql-server:5.7"
-    container_name: agent-metrics-mysql
+    container_name: agent-proxy-metrics-mysql
     command: ['--sql_mode=', '--default-authentication-plugin=mysql_native_password']
     volumes:
       - ../../env/mysql:/docker-entrypoint-initdb.d/
@@ -51,7 +51,7 @@ services:
       - "43080:3308"
       - "19099:19099"
     links:
-      - "mysql:mysql.agent.metrics.host"
+      - "mysql:mysql.agent.proxy.metrics.host"
     volumes:
       - ./conf:/opt/shardingsphere-proxy/conf
       - ../agent/conf:/opt/shardingsphere-proxy/agent/conf
