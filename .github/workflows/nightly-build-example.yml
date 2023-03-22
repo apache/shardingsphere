@@ -104,7 +104,7 @@ jobs:
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Prepare environments
-        run: sh .github/workflows/resources/sql/nightly-generator-init.sh
+        run: sh .github/workflows/resources/scripts/nightly-build-example/init-mysql-container.sh
       - name: Build with Maven
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
       - name: Generate examples
