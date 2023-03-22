@@ -134,7 +134,7 @@
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE CONCAT('%','abc','%')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
-        <assertion expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE CONCAT('%', ?, '%')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
+        <assertion parameters="abc:String" expected-data-source-name="read_dataset" />
     </test-case>
 </integration-test-cases>
