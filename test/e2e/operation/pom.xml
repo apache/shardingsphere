@@ -21,40 +21,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-test</artifactId>
+        <artifactId>shardingsphere-test-e2e</artifactId>
         <version>5.3.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-e2e</artifactId>
+    <artifactId>shardingsphere-test-e2e-operation</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>fixture</module>
-        <module>env</module>
-        <module>sql</module>
-        <module>driver</module>
-        <module>agent</module>
-        <module>operation</module>
+        <module>pipeline</module>
+        <module>transaction</module>
+        <module>discovery</module>
+        <module>showprocesslist</module>
     </modules>
-    
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-    </properties>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>integration-tests</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

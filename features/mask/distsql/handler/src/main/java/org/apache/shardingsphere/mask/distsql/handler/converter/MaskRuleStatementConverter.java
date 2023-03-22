@@ -72,6 +72,6 @@ public final class MaskRuleStatementConverter {
     }
     
     private static String getAlgorithmName(final String tableName, final MaskColumnSegment columnSegment) {
-        return String.format("%s_%s_%s", tableName, columnSegment.getName(), columnSegment.getAlgorithm().getName().toLowerCase());
+        return String.format("%s_%s_%s", tableName, columnSegment.getName(), columnSegment.getAlgorithm().getName()).toLowerCase();
     }
 }
