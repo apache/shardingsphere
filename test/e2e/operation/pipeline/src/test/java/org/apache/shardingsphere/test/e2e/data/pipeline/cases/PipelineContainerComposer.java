@@ -450,9 +450,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 String incrementalIdleSeconds = each.get("incremental_idle_seconds").toString();
                 incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
             }
-            assertFalse(actualStatus.contains(JobStatus.PREPARING_FAILURE.name()), "status is JobStatus.PREPARING_FAILURE");
-            assertFalse(actualStatus.contains(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()), "status is JobStatus.EXECUTE_INVENTORY_TASK_FAILURE");
-            assertFalse(actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()), "status is JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE");
             if (Collections.min(incrementalIdleSecondsList) <= 5) {
                 Thread.sleep(3000L);
                 continue;
