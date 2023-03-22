@@ -177,12 +177,13 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
             ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
         }
-        Collection<ExecutionContext> executionContexts = generateExecutionContexts(metaDataContexts);
-        return isNeedImplicitCommitTransaction(executionContexts.iterator().next()) ? doExecuteWithImplicitCommitTransaction(executionContexts) : doExecute(executionContexts);
+        Collection<ExecutionContext> executionContexts = generateExecutionContexts();
+        return isNeedImplicitCommitTransaction(executionContexts) ? doExecuteWithImplicitCommitTransaction(executionContexts) : doExecute(executionContexts);
     }
     
-    private Collection<ExecutionContext> generateExecutionContexts(final MetaDataContexts metaDataContexts) {
+    private Collection<ExecutionContext> generateExecutionContexts() {
         Collection<ExecutionContext> result = new LinkedList<>();
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, database, metaDataContexts.getMetaData().getGlobalRuleMetaData(),
                 metaDataContexts.getMetaData().getProps(), backendConnection.getConnectionSession().getConnectionContext());
         result.add(executionContext);
@@ -190,11 +191,20 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         return result;
     }
     
-    private boolean isNeedImplicitCommitTransaction(final ExecutionContext executionContext) {
+    private boolean isNeedImplicitCommitTransaction(final Collection<ExecutionContext> executionContexts) {
         TransactionStatus transactionStatus = backendConnection.getConnectionSession().getTransactionStatus();
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        return TransactionType.isDistributedTransaction(transactionStatus.getTransactionType()) && !transactionStatus.isInTransaction() && sqlStatement instanceof DMLStatement
-                && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1;
+        if (!TransactionType.isDistributedTransaction(transactionStatus.getTransactionType()) || transactionStatus.isInTransaction()) {
+            return false;
+        }
+        if (1 == executionContexts.size()) {
+            SQLStatement sqlStatement = executionContexts.iterator().next().getSqlStatementContext().getSqlStatement();
+            return isWriteDMLStatement(sqlStatement) && executionContexts.iterator().next().getExecutionUnits().size() > 1;
+        }
+        return executionContexts.stream().anyMatch(each -> isWriteDMLStatement(each.getSqlStatementContext().getSqlStatement()));
+    }
+    
+    private static boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
     }
     
     private ResponseHeader doExecuteWithImplicitCommitTransaction(final Collection<ExecutionContext> executionContexts) throws SQLException {
