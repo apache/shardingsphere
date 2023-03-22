@@ -779,4 +779,14 @@ public final class ShardingRuleTest {
         assertFalse(createMaximumShardingRule().isSupportAutoIncrement("logic_table"));
         assertTrue(createMaximumShardingRule().isSupportAutoIncrement("sub_logic_table"));
     }
+    
+    @Test
+    public void assertGetDataNodesByTableNameForBroadcastTable() {
+        ShardingRule actual = createMaximumShardingRule();
+        Collection<DataNode> actualDataNodes = actual.getDataNodesByTableName("broadcast_table");
+        assertThat(actualDataNodes.size(), is(2));
+        Iterator<DataNode> actualDataNode = actualDataNodes.iterator();
+        assertThat(actualDataNode.next().getDataSourceName(), is("ds_0"));
+        assertThat(actualDataNode.next().getDataSourceName(), is("ds_1"));
+    }
 }
