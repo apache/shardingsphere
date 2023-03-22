@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: E2E - Discovery
+name: E2E - Database Discovery
 
 on:
   push:
@@ -51,7 +51,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: it-discovery-${{ github.workflow }}-${{ github.ref }}
+  group: e2e-db-discovery-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -59,8 +59,8 @@ env:
   REPOSITORY_NAME: shardingsphere
 
 jobs:
-  discovery-it-test:
-    name: discovery-it-test
+  db-discovery:
+    name: E2E - Database Discovery
     runs-on: ubuntu-latest
     env:
       mysql_version: 5.7
@@ -74,21 +74,21 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache${{ github.sha }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache${{ github.sha }}
           restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 11
-      - name: Build Discovery IT image
+      - name: Build Database Discovery E2E image
         run: ./mvnw -B clean install -am -pl test/e2e/operation/discovery -Pit.env.docker -DskipTests
       - name: Setup JDK 8 for Test
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Run MySQL Discovery E2E Test
+      - name: Run MySQL Database Discovery E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/operation/discovery/pom.xml -Dit.env.type=docker -Dit.docker.mysql.version=mysql:5.7
