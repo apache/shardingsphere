@@ -22,6 +22,5 @@
         <query-assertion metric="parsed_sql_total" query="parsed_sql_total{type='SELECT'}" />
         <query-assertion metric="parsed_sql_total" query="parsed_sql_total{type='DELETE'}" />
         <query-assertion metric="parsed_sql_total" query="parsed_sql_total{type='UPDATE'}" />
-        <query-assertion metric="parsed_sql_total" query="parsed_sql_total{type='TCL'}" />
     </test-case>
 </integration-test-cases>

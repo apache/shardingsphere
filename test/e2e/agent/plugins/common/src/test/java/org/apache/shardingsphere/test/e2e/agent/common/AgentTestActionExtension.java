@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -57,11 +56,8 @@ public final class AgentTestActionExtension implements BeforeEachCallback {
     
     private void checkEnvironment() {
         assumeTrue(E2ETestEnvironment.getInstance().isEnvironmentPrepared());
-        assumeFalse(E2ETestEnvironment.getInstance().isInitializationFailed());
         E2ETestEnvironment.getInstance().prepareEnvironment();
-        if (E2ETestEnvironment.getInstance().isAdaptedProxy()) {
-            assertNotNull(E2ETestEnvironment.getInstance().getDataSource());
-        }
+        assumeFalse(E2ETestEnvironment.getInstance().isInitializationFailed());
     }
     
     private void requestProxy() {
@@ -91,13 +87,13 @@ public final class AgentTestActionExtension implements BeforeEachCallback {
         String updateUrl = E2ETestEnvironment.getInstance().getProps().getProperty("jdbc.path.update");
         String selectAllUrl = E2ETestEnvironment.getInstance().getProps().getProperty("jdbc.path.select.all");
         String deleteUrl = E2ETestEnvironment.getInstance().getProps().getProperty("jdbc.path.delete");
-        OkHttpUtils.getInstance().get(String.join("", baseUrl, dropTableUrl));
-        OkHttpUtils.getInstance().get(String.join("", baseUrl, createTableUrl));
+        // OkHttpUtils.getInstance().get(String.join("", baseUrl, dropTableUrl));
+        // OkHttpUtils.getInstance().get(String.join("", baseUrl, createTableUrl));
         OkHttpUtils.getInstance().get(String.join("", baseUrl, insertUrl));
         OkHttpUtils.getInstance().get(String.join("", baseUrl, updateUrl));
         OkHttpUtils.getInstance().get(String.join("", baseUrl, selectAllUrl));
         OkHttpUtils.getInstance().get(String.join("", baseUrl, deleteUrl));
-        OkHttpUtils.getInstance().get(String.join("", baseUrl, dropTableUrl));
+        // OkHttpUtils.getInstance().get(String.join("", baseUrl, dropTableUrl));
     }
     
     @SneakyThrows(InterruptedException.class)

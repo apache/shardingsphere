@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
 @Slf4j
@@ -50,6 +51,8 @@ public final class E2ETestEnvironment {
     private boolean initializationFailed;
     
     private boolean isAdaptedProxy;
+    
+    private AtomicBoolean prepareFlag = new AtomicBoolean();
     
     private E2ETestEnvironment() {
         props = EnvironmentProperties.loadProperties("env/engine-env.properties");
@@ -70,11 +73,12 @@ public final class E2ETestEnvironment {
      * Prepare environment.
      */
     public void prepareEnvironment() {
-        if (isAdaptedProxy()) {
-            createDataSource();
+        if (!prepareFlag.compareAndSet(false, true)) {
             return;
         }
-        if (isEnvironmentPrepared && !initializationFailed) {
+        if (isAdaptedProxy()) {
+            createDataSource();
+        } else {
             initializationFailed = !waitForJdbcEnvironmentReady();
         }
     }

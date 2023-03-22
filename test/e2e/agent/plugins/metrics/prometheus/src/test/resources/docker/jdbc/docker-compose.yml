@@ -20,7 +20,7 @@ version: "2.1"
 services:
   mysql:
     image: "mysql/mysql-server:5.7"
-    container_name: agent-proxy-metrics-mysql
+    container_name: agent-jdbc-metrics-mysql
     command: ['--sql_mode=', '--default-authentication-plugin=mysql_native_password']
     volumes:
       - ../../env/mysql:/docker-entrypoint-initdb.d/
@@ -38,23 +38,22 @@ services:
     ports:
       - '19090:9090'
     links:
-      - "shardingsphere-proxy-agent-metrics:agent.host"
+      - "shardingsphere-jdbc-agent-metrics:agent.host"
     command: ['--config.file=/config/prometheus.yml']
     depends_on:
-      - shardingsphere-proxy-agent-metrics
+      - shardingsphere-jdbc-agent-metrics
 
-  shardingsphere-proxy-agent-metrics:
-    image: apache/shardingsphere-proxy-agent-metrics-test
-    container_name: shardingsphere-proxy-agent-metrics
+  shardingsphere-jdbc-agent-metrics:
+    image: apache/shardingsphere-jdbc-agent-metrics-test
+    container_name: shardingsphere-jdbc-agent-metrics
     ports:
-      - "43070:3307"
-      - "43080:3308"
+      - "18080:80"
       - "19099:19099"
     links:
-      - "mysql:mysql.agent.proxy.metrics.host"
+      - "mysql:mysql.agent.jdbc.metrics.host"
     volumes:
-      - ./conf:/opt/shardingsphere-proxy/conf
-      - ../agent/conf:/opt/shardingsphere-proxy/agent/conf
+      - ../agent/conf:/opt/shardingsphere-jdbc-app/agent/conf
+      - ../../../../../target/jdbc/logs:/opt/shardingsphere-jdbc-app/logs
     depends_on:
       - mysql
     environment:

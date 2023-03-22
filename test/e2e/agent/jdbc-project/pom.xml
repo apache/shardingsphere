@@ -29,7 +29,6 @@
     
     <properties>
         <spring-boot.version>2.7.9</spring-boot.version>
-        <mybatis-spring-boot-starter.version>2.3.0</mybatis-spring-boot-starter.version>
     </properties>
     
     <dependencyManagement>
@@ -71,11 +70,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>${mybatis-spring-boot-starter.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
