@@ -20,12 +20,11 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTrafficRulesStatementTestCase;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.queryable.ShowTrafficRulesStatement;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -42,10 +41,7 @@ public final class ShowTrafficRulesStatementAssert {
      * @param expected expected show traffic rules statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTrafficRulesStatement actual, final ShowTrafficRulesStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(assertContext.getText("Rule name id assertion error"), actual.getRuleName(), is(expected.getRuleName()));
         }
     }

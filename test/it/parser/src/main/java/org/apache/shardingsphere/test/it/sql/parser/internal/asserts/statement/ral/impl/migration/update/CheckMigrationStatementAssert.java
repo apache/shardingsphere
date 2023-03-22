@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.JobIdAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.CheckMigrationStatementTestCase;
@@ -44,10 +45,7 @@ public final class CheckMigrationStatementAssert {
      * @param expected expected check migration statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CheckMigrationStatement actual, final CheckMigrationStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             JobIdAssert.assertJobId(assertContext, actual.getJobId(), expected.getJobId());
             assertTypeStrategy(assertContext, actual.getTypeStrategy(), expected.getTableStrategies());
         }

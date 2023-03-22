@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.distsql.AlgorithmAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ral.ExpectedTrafficRule;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
@@ -30,8 +31,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -47,22 +46,19 @@ public final class AlterTrafficRuleStatementAssert {
      * @param expected expected alter traffic rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterTrafficRuleStatement actual, final AlterTrafficRuleStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertTrafficRuleSegments(assertContext, actual.getSegments(), expected.getRules());
         }
     }
     
     private static void assertTrafficRuleSegments(final SQLCaseAssertContext assertContext, final Collection<TrafficRuleSegment> actual, final List<ExpectedTrafficRule> expected) {
         Map<String, TrafficRuleSegment> actualMap = actual.stream().collect(Collectors.toMap(TrafficRuleSegment::getName, each -> each));
-        expected.forEach(each -> {
+        for (ExpectedTrafficRule each : expected) {
             TrafficRuleSegment actualRule = actualMap.get(each.getName());
             assertThat(actualRule.getName(), is(each.getName()));
             assertThat(actualRule.getLabels(), is(each.getLabels()));
             AlgorithmAssert.assertIs(assertContext, actualRule.getAlgorithm(), each.getTrafficAlgorithm());
             AlgorithmAssert.assertIs(assertContext, actualRule.getLoadBalancer(), each.getLoadBalancer());
-        });
+        }
     }
 }

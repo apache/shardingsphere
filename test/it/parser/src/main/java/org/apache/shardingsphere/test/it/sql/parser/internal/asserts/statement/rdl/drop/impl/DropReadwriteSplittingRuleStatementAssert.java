@@ -21,11 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.readwritesplitting.DropReadwriteSplittingRuleStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -42,10 +41,7 @@ public final class DropReadwriteSplittingRuleStatementAssert {
      * @param expected expected drop readwrite-splitting rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropReadwriteSplittingRuleStatement actual, final DropReadwriteSplittingRuleStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(assertContext.getText("readwrite splitting assertion error: "), actual.getNames(), is(expected.getNames()));
             assertThat(assertContext.getText("readwrite splitting assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }

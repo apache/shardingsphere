@@ -35,39 +35,16 @@ import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowS
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.sqltranslator.distsql.parser.statement.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ConvertYamlConfigurationStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ExportDatabaseConfigurationStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ExportMetaDataStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ExportStorageNodesStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowAuthorityRuleStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowComputeNodeInfoStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowComputeNodeModeStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowComputeNodesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowDistVariableStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowDistVariablesStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowSQLParserRuleStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowSQLTranslatorRuleStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowStatusFromReadwriteSplittingRulesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowTableMetaDataStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowTrafficRulesStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable.ShowTransactionRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ConvertYamlConfigurationStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ExportDatabaseConfigurationStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ExportMetaDataStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ExportStorageNodesStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowAuthorityRuleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowComputeNodeInfoStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowComputeNodeModeStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowComputeNodesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowDistVariableStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowDistVariablesStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowSQLParserRuleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowSQLTranslatorRuleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowStatusFromReadwriteSplittingRulesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTableMetaDataStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTrafficRulesStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTransactionRuleStatementTestCase;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.ShowTransactionRuleStatement;
 
@@ -88,34 +65,33 @@ public final class QueryableRALStatementAssert {
         if (actual instanceof ShowDistVariableStatement) {
             ShowDistVariableStatementAssert.assertIs(assertContext, (ShowDistVariableStatement) actual, (ShowDistVariableStatementTestCase) expected);
         } else if (actual instanceof ShowDistVariablesStatement) {
-            ShowDistVariablesStatementAssert.assertIs(assertContext, (ShowDistVariablesStatement) actual, (ShowDistVariablesStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowComputeNodesStatement) {
-            ShowComputeNodesStatementAssert.assertIs(assertContext, (ShowComputeNodesStatement) actual, (ShowComputeNodesStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowStatusFromReadwriteSplittingRulesStatement) {
-            ShowStatusFromReadwriteSplittingRulesStatementAssert.assertIs(assertContext, (ShowStatusFromReadwriteSplittingRulesStatement) actual,
-                    (ShowStatusFromReadwriteSplittingRulesStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowTableMetaDataStatement) {
             ShowTableMetaDataStatementAssert.assertIs(assertContext, (ShowTableMetaDataStatement) actual, (ShowTableMetaDataStatementTestCase) expected);
         } else if (actual instanceof ShowAuthorityRuleStatement) {
-            ShowAuthorityRuleStatementAssert.assertIs(assertContext, (ShowAuthorityRuleStatement) actual, (ShowAuthorityRuleStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowTransactionRuleStatement) {
-            ShowTransactionRuleStatementAssert.assertIs(assertContext, (ShowTransactionRuleStatement) actual, (ShowTransactionRuleStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowTrafficRulesStatement) {
             ShowTrafficRulesStatementAssert.assertIs(assertContext, (ShowTrafficRulesStatement) actual, (ShowTrafficRulesStatementTestCase) expected);
         } else if (actual instanceof ShowSQLParserRuleStatement) {
-            ShowSQLParserRuleStatementAssert.assertIs(assertContext, (ShowSQLParserRuleStatement) actual, (ShowSQLParserRuleStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ExportDatabaseConfigurationStatement) {
-            ExportDatabaseConfigurationStatementAssert.assertIs(assertContext, (ExportDatabaseConfigurationStatement) actual, (ExportDatabaseConfigurationStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ExportMetaDataStatement) {
-            ExportMetaDataStatementAssert.assertIs(assertContext, (ExportMetaDataStatement) actual, (ExportMetaDataStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ExportStorageNodesStatement) {
-            ExportStorageNodesStatementAssert.assertIs(assertContext, (ExportStorageNodesStatement) actual, (ExportStorageNodesStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowSQLTranslatorRuleStatement) {
-            ShowSQLTranslatorRuleStatementAssert.assertIs(assertContext, (ShowSQLTranslatorRuleStatement) actual, (ShowSQLTranslatorRuleStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowComputeNodeInfoStatement) {
-            ShowComputeNodeInfoStatementAssert.assertIs(assertContext, (ShowComputeNodeInfoStatement) actual, (ShowComputeNodeInfoStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowComputeNodeModeStatement) {
-            ShowComputeNodeModeStatementAssert.assertIs(assertContext, (ShowComputeNodeModeStatement) actual, (ShowComputeNodeModeStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ConvertYamlConfigurationStatement) {
             ConvertYamlConfigurationStatementAssert.assertIs(assertContext, (ConvertYamlConfigurationStatement) actual, (ConvertYamlConfigurationStatementTestCase) expected);
         }

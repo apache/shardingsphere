@@ -21,11 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.DropEncryptRuleStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -42,10 +41,7 @@ public final class DropEncryptRuleStatementAssert {
      * @param expected expected drop encrypt rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropEncryptRuleStatement actual, final DropEncryptRuleStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(assertContext.getText("encrypt rule assertion error: "), actual.getTables(), is(expected.getRuleNames()));
         }
     }
