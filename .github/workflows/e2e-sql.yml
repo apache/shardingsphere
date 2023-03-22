@@ -15,13 +15,13 @@
 # limitations under the License.
 #
 
-name: E2E
+name: E2E - SQL
 
 on:
   push:
     branches: [ master, dev ]
     paths:
-      - '.github/workflows/e2e.yml'
+      - '.github/workflows/e2e-sql.yml'
       - '**/pom.xml'
       - '**/src/main/**'
       - '!examples/**'
@@ -38,7 +38,7 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-      - '.github/workflows/e2e.yml'
+      - '.github/workflows/e2e-sql.yml'
       - '**/pom.xml'
       - '**/src/main/**'
       - '!examples/**'
@@ -55,7 +55,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: it-${{ github.workflow }}-${{ github.ref }}
+  group: e2e-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -63,8 +63,8 @@ env:
   REPOSITORY_NAME: shardingsphere
 
 jobs:
-  build-it-image:
-    name: Build IT image
+  build-e2e-image:
+    name: Build E2E image
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -76,27 +76,27 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-${{ github.sha }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
           restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Build IT image
+      - name: Build E2E image
         run: ./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
-      - name: Verify SQL CI Run
+      - name: Verify CI
         run: ./mvnw -B install -pl test/e2e/sql -Dspotless.apply.skip=true
-      - name: Save IT image
+      - name: Save E2E image
         run: docker save -o /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - uses: actions/upload-artifact@v3
         with:
-          name: it-image
+          name: e2e-image
           path: /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
           retention-days: 1
 
-  it-empty-rule:
+  e2e-empty-rule:
     name: empty rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: build-it-image
+    needs: build-e2e-image
     strategy:
       matrix:
         adapter: [ proxy, jdbc ]
@@ -116,26 +116,26 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-${{ github.sha }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Download IT image
+      - name: Download E2E image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
-          name: it-image
+          name: e2e-image
           path: /tmp/
-      - name: Load IT image
+      - name: Load E2E image
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.run.additional.cases=true -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER ${{ matrix.additional-options }}
 
-  it-single-rule:
+  e2e-single-rule:
     name: single rule
-    needs: it-empty-rule
+    needs: e2e-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -152,26 +152,26 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-${{ github.sha }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Download IT image
+      - name: Download E2E image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
-          name: it-image
+          name: e2e-image
           path: /tmp/
-      - name: Load IT image
+      - name: Load E2E image
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.run.additional.cases=true -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
-  it-mixture-rule:
+  e2e-mixture-rule:
     name: mixture rule
-    needs: it-single-rule
+    needs: e2e-single-rule
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -188,18 +188,18 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache-${{ github.sha }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Download IT image
+      - name: Download E2E image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
         with:
-          name: it-image
+          name: e2e-image
           path: /tmp/
-      - name: Load IT image
+      - name: Load E2E image
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/${{ env.REPOSITORY_NAME }}-proxy-test.tar
       - name: Run E2E Test
