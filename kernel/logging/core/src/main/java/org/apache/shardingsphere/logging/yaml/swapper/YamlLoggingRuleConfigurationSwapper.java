@@ -43,9 +43,13 @@ public final class YamlLoggingRuleConfigurationSwapper implements YamlRuleConfig
         LoggingRuleConfiguration result = new LoggingRuleConfiguration(YamlLoggersConfigurationConverter.convertShardingSphereLogger(yamlConfig.getLoggers()),
                 YamlAppendersConfigurationConverter.convertShardingSphereAppender(yamlConfig.getAppenders()));
         if (null == result.getLoggers()) {
-            result = new DefaultLoggingRuleConfigurationBuilder().build();
+            result = getDefaultLoggingRuleConfiguration();
         }
         return result;
+    }
+    
+    private LoggingRuleConfiguration getDefaultLoggingRuleConfiguration() {
+        return new DefaultLoggingRuleConfigurationBuilder().build();
     }
     
     @Override
