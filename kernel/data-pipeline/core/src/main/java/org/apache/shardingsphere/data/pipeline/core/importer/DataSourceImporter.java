@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.importer;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -134,6 +134,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         ShardingSpherePreconditions.checkState(!isRunning() || success, PipelineImporterJobWriteException::new);
     }
     
+    @SneakyThrows(InterruptedException.class)
     private boolean tryFlush(final DataSource dataSource, final List<DataRecord> buffer) {
         for (int i = 0; isRunning() && i <= importerConfig.getRetryTimes(); i++) {
             try {
@@ -141,7 +142,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
                 return true;
             } catch (final SQLException ex) {
                 log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
-                ThreadUtil.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
+                Thread.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
             }
         }
         return false;

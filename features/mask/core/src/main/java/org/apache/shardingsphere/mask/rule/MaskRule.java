@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mask.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -34,7 +35,7 @@ import java.util.Optional;
  * Mask rule.
  */
 @SuppressWarnings("rawtypes")
-public final class MaskRule implements DatabaseRule, TableContainedRule {
+public final class MaskRule implements DatabaseRule, TableContainedRule, ColumnContainedRule {
     
     @Getter
     private final RuleConfiguration configuration;

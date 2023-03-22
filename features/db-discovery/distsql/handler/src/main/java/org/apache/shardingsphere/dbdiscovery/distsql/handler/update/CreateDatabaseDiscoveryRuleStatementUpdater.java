@@ -23,7 +23,6 @@ import org.apache.shardingsphere.dbdiscovery.distsql.handler.converter.DatabaseD
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryRuleSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
@@ -106,10 +105,9 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     
     private void checkDiscoverTypeAndHeartbeat(final CreateDatabaseDiscoveryRuleStatement sqlStatement) {
         Map<String, List<DatabaseDiscoveryRuleSegment>> segmentMap = sqlStatement.getRules().stream().collect(Collectors.groupingBy(each -> each.getClass().getSimpleName()));
-        Collection<String> invalidInput = segmentMap.getOrDefault(DatabaseDiscoveryRuleSegment.class.getSimpleName(), Collections.emptyList()).stream()
-                .map(each -> each.getDiscoveryType().getName()).distinct()
-                .filter(each -> !TypedSPILoader.contains(DatabaseDiscoveryProvider.class, each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException("database discovery", invalidInput));
+        segmentMap.getOrDefault(DatabaseDiscoveryRuleSegment.class.getSimpleName(), Collections.emptyList()).stream()
+                .map(DatabaseDiscoveryRuleSegment::getDiscoveryType)
+                .forEach(each -> TypedSPILoader.checkService(DatabaseDiscoveryProvider.class, each.getName(), each.getProps()));
     }
     
     @Override

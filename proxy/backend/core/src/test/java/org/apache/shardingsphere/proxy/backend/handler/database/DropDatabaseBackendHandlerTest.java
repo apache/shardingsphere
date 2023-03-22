@@ -72,7 +72,7 @@ public final class DropDatabaseBackendHandlerTest {
         handler = new DropDatabaseBackendHandler(sqlStatement, connectionSession);
     }
     
-    private static ContextManager mockContextManager() {
+    private ContextManager mockContextManager() {
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());

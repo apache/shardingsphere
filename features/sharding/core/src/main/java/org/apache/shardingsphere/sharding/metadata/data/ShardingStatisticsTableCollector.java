@@ -151,23 +151,34 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
     }
     
     private void addForOpenGauss(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row) throws SQLException {
-        DataSource dataSource = dataSources.get(dataNode.getDataSourceName());
-        BigDecimal tableRows = BigDecimal.ZERO;
-        BigDecimal dataLength = BigDecimal.ZERO;
+        try (Connection connection = dataSources.get(dataNode.getDataSourceName()).getConnection()) {
+            if (isTableExist(connection, dataNode.getTableName())) {
+                doAddForOpenGauss(dataNode, row, connection);
+            } else {
+                row.add(BigDecimal.ZERO);
+                row.add(BigDecimal.ZERO);
+            }
+        }
+    }
+    
+    private boolean isTableExist(final Connection connection, final String tableNamePattern) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), tableNamePattern, null)) {
+            return resultSet.next();
+        }
+    }
+    
+    private void doAddForOpenGauss(final DataNode dataNode, final List<Object> row, final Connection connection) throws SQLException {
         try (
-                Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             try (
                     ResultSet resultSet = statement
                             .executeQuery(String.format(OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH, dataNode.getTableName(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
-                    tableRows = resultSet.getBigDecimal("TABLE_ROWS");
-                    dataLength = resultSet.getBigDecimal("DATA_LENGTH");
+                    row.add(resultSet.getBigDecimal("TABLE_ROWS"));
+                    row.add(resultSet.getBigDecimal("DATA_LENGTH"));
                 }
             }
         }
-        row.add(tableRows);
-        row.add(dataLength);
     }
     
     @Override

@@ -46,7 +46,7 @@ public final class OpenGaussStatementMemoryStrictlyFetchSizeSetterTest {
         verify(statement).setFetchSize(1);
     }
     
-    private static ContextManager mockContextManager() {
+    private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(-1);
         return result;

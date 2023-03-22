@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<integration-test-cases>
+    <test-case sql="SELECT count(0) as orders_count FROM t_order o WHERE o.status LIKE CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT count(0) as orders_count FROM t_order o WHERE o.status ~~ CONCAT('%%', ?, '%%') AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" db-types="PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="init:String, 10:int, 11:int, 1000:int, 2901:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT SUM(user_id) AS user_id_sum FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(*) AS orders_count FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(*) AS orders_count FROM t_order WHERE order_id > 1-1" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(*) AS orders_count FROM t_order WHERE order_id > 1 - 1" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT MAX(user_id) AS max_user_id FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT MIN(user_id) AS min_user_id FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <!-- FIXME #15593 Expected: is "19", but: was "19.5000" in db scenario -->
+    <test-case sql="SELECT AVG(user_id) AS user_id_avg FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="10:int, 11:int, 1000:int, 1909:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="10:int, 11:int, 1000:int, 1909:int"  expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(`order_id`) AS orders_count FROM t_order" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY user_id ORDER BY user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT MAX(order_id) AS max_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT MIN(order_id) AS min_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT AVG(order_id) AS orders_avg, user_id FROM t_order GROUP BY user_id ORDER BY user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY orders_sum DESC" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT count(*) as items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? GROUP BY o.user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="10:int, 11:int, 1000:int, 1109:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT sum(if(status=0, 1, 0)) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="12:int, 1000:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT (SELECT MAX(user_id) FROM t_order_federate_sharding) max_user_id, order_id_sharding, status FROM t_order_federate_sharding WHERE order_id_sharding > ?" db-types="MySQL,PostgreSQL" scenario-types="tbl">
+        <assertion parameters="1100:int" />
+    </test-case>
+    
+    <test-case sql="SELECT user_id, SUM(order_id_sharding) FROM t_order_federate_sharding GROUP BY user_id HAVING SUM(order_id_sharding) > ? ORDER BY user_id" db-types="MySQL,PostgreSQL" scenario-types="tbl">
+        <assertion parameters="1000:int" />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(1) FROM t_order WHERE order_id &lt; ?" db-types="PostgreSQL" scenario-types="db,tbl">
+        <assertion parameters="2000:int" />
+    </test-case>
+    
+    <test-case sql="SELECT SUM(CRC32(`order_id`)) FROM t_order WHERE order_id = ?" db-types="MySQL" scenario-types="db,tbl">
+        <assertion parameters="1000:int" />
+    </test-case>
+    
+    <test-case sql="SELECT AVG(order_id_sharding) AS order_id_sharding_avg FROM (SELECT order_id_sharding, user_id FROM t_order_federate_sharding WHERE order_id_sharding = 1010) AS TEMP" scenario-types="db,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting" db-types="MySQL">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? GROUP BY i.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), MIN(m.merchant_name) FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? GROUP BY m.merchant_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT MIN(d.detail_id), MIN(p.category_id), p.product_id FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id = ? GROUP BY p.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT MAX(p.price) AS max_price, MIN(p.price) AS min_price, SUM(p.price) AS sum_price, AVG(p.price) AS avg_price, COUNT(1) AS count FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id INNER JOIN t_product p ON i.product_id = p.product_id GROUP BY o.order_id HAVING SUM(p.price) > ? ORDER BY max_price" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE CONCAT('%', ?, '%')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
+        <assertion parameters="abc:String" expected-data-source-name="read_dataset" />
+    </test-case>
+</integration-test-cases>

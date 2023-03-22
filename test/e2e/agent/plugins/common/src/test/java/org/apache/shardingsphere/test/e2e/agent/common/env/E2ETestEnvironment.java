@@ -21,10 +21,13 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Response;
+import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -46,9 +49,12 @@ public final class E2ETestEnvironment {
     
     private boolean initializationFailed;
     
+    private boolean isAdaptedProxy;
+    
     private E2ETestEnvironment() {
         props = EnvironmentProperties.loadProperties("env/engine-env.properties");
         isEnvironmentPrepared = props.getProperty("it.env.value").equals(props.getProperty("it.env.type"));
+        isAdaptedProxy = "proxy".equalsIgnoreCase(props.getProperty("it.env.adapter", "proxy"));
     }
     
     /**
@@ -61,11 +67,21 @@ public final class E2ETestEnvironment {
     }
     
     /**
-     * Create data source.
+     * Prepare environment.
      */
-    public void createDataSource() {
+    public void prepareEnvironment() {
+        if (isAdaptedProxy()) {
+            createDataSource();
+            return;
+        }
+        if (isEnvironmentPrepared && !initializationFailed) {
+            initializationFailed = !waitForJdbcEnvironmentReady();
+        }
+    }
+    
+    private void createDataSource() {
         if (isEnvironmentPrepared && null == dataSource) {
-            if (waitForEnvironmentReady(props)) {
+            if (waitForProxyEnvironmentReady(props)) {
                 dataSource = createHikariCP(props);
             } else {
                 initializationFailed = true;
@@ -73,7 +89,7 @@ public final class E2ETestEnvironment {
         }
     }
     
-    private boolean waitForEnvironmentReady(final Properties props) {
+    private boolean waitForProxyEnvironmentReady(final Properties props) {
         log.info("Proxy with agent environment initializing ...");
         try {
             Awaitility.await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> isProxyReady(props));
@@ -81,6 +97,7 @@ public final class E2ETestEnvironment {
             log.info("Proxy with agent environment initialization failed ...");
             return false;
         }
+        log.info("Proxy with agent environment initialized successfully ...");
         return true;
     }
     
@@ -93,10 +110,9 @@ public final class E2ETestEnvironment {
                 Connection connection = DriverManager.getConnection(url, username, password);
                 Statement statement = connection.createStatement()) {
             statement.execute("SELECT 1");
-        } catch (final SQLException ignore) {
+        } catch (final SQLException ignored) {
             return false;
         }
-        log.info("Proxy with agent environment initialized successfully ...");
         return true;
     }
     
@@ -109,5 +125,29 @@ public final class E2ETestEnvironment {
         result.setMaximumPoolSize(5);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return new HikariDataSource(result);
+    }
+    
+    private boolean waitForJdbcEnvironmentReady() {
+        log.info("Jdbc project with agent environment initializing ...");
+        try {
+            Awaitility.await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> isJdbcReady(props));
+        } catch (final ConditionTimeoutException ignored) {
+            log.info("Jdbc project with agent environment initialization failed ...");
+            return false;
+        }
+        log.info("Jdbc project with agent environment initialized successfully ...");
+        return true;
+    }
+    
+    private boolean isJdbcReady(final Properties props) {
+        log.info("Try to connect jdbc project ...");
+        String baseUrl = props.getProperty("jdbc.base.url");
+        String selectAllUrl = props.getProperty("jdbc.path.select.all");
+        try {
+            Response response = OkHttpUtils.getInstance().getResponse(String.join("", baseUrl, selectAllUrl));
+            return response.isSuccessful();
+        } catch (final IOException ignored) {
+        }
+        return false;
     }
 }

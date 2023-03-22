@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 /**
  * ShardingSphere SQL parser engine.
  */
-public final class ShardingSphereSQLParserEngine {
+public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
     
     private final SQLStatementParserEngine sqlStatementParserEngine;
     
@@ -46,13 +46,7 @@ public final class ShardingSphereSQLParserEngine {
      *
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      */
-    /**
-     * Parse to SQL statement.
-     *
-     * @param sql SQL to be parsed
-     * @param useCache whether use cache
-     * @return SQL statement
-     */
+    @Override
     public SQLStatement parse(final String sql, final boolean useCache) {
         try {
             return sqlStatementParserEngine.parse(sql, useCache);

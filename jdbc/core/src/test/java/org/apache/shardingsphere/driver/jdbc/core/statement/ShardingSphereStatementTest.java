@@ -27,9 +27,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -124,6 +124,18 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
             ResultSet resultSet = statement.executeQuery(sql);
             assertTrue(resultSet.next());
             assertThat(resultSet.getString(1), is(DefaultDatabase.LOGIC_NAME));
+        }
+    }
+    
+    @Test
+    public void assertExecuteBatch() throws SQLException {
+        try (Connection connection = getShardingSphereDataSource().getConnection(); Statement statement = connection.createStatement()) {
+            statement.addBatch("UPDATE t_order SET status = 'closed' WHERE order_id = 1001");
+            statement.addBatch("UPDATE t_order SET status = 'closed' WHERE order_id = 1100 OR order_id = 1101");
+            statement.addBatch("DELETE FROM t_order WHERE order_id = 1000");
+            assertThat(statement.executeBatch(), is(new int[]{1, 2, 1}));
+            statement.clearBatch();
+            assertThat(statement.executeBatch(), is(new int[0]));
         }
     }
 }

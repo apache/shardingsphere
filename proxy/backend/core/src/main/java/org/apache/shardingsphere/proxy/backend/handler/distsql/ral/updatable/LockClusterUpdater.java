@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LockClusterStatement;
@@ -57,8 +56,7 @@ public final class LockClusterUpdater implements RALUpdater<LockClusterStatement
     
     private void checkAlgorithm(final LockClusterStatement sqlStatement) {
         ShardingSpherePreconditions.checkState(isStrategyDefinitionExists(sqlStatement), MissingRequiredAlgorithmException::new);
-        ShardingSpherePreconditions.checkState(TypedSPILoader.contains(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()),
-                () -> new InvalidAlgorithmConfigurationException("cluster lock"));
+        TypedSPILoader.checkService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName(), sqlStatement.getLockStrategy().getProps());
     }
     
     private boolean isStrategyDefinitionExists(final LockClusterStatement sqlStatement) {

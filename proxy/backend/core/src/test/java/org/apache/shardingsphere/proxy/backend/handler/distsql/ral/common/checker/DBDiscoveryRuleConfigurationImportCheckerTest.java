@@ -20,11 +20,11 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.check
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -55,7 +55,7 @@ public final class DBDiscoveryRuleConfigurationImportCheckerTest {
     public void assertCheckDiscoveryTypes() {
         ShardingSphereDatabase database = mockDatabase();
         DatabaseDiscoveryRuleConfiguration currentRuleConfig = createRuleConfigWithInvalidDiscoveryType();
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> importChecker.check(database, currentRuleConfig));
+        assertThrows(ServiceProviderNotFoundServerException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
     @Test

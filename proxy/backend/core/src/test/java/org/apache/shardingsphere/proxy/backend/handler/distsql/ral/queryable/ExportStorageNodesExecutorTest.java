@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -157,7 +157,7 @@ public final class ExportStorageNodesExecutorTest {
         MockedDataSource result = new MockedDataSource();
         result.setUrl(String.format("jdbc:mock://127.0.0.1/%s", name));
         result.setUsername("root");
-        result.setPassword("");
+        result.setPassword("test");
         result.setMaxPoolSize(50);
         result.setMinPoolSize(1);
         return result;

@@ -25,9 +25,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.dis
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Readwrite splitting rule assert.
@@ -55,9 +55,14 @@ public final class ReadwriteSplittingRuleAssert {
                     actual.getClass().getSimpleName())), actual.getWriteDataSource(), is(expected.getWriteDataSource()));
             assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getReadDataSources(), is(expected.getReadDataSources()));
-            assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getLoadBalancer(), is(expected.getLoadBalancer()));
-            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProperties());
+            if (null == actual.getLoadBalancer()) {
+                assertNull(expected.getLoadBalancer(), String.format("`%s`'s readwrite splitting rule segment assertion error: ",
+                        actual.getClass().getSimpleName()));
+            } else {
+                assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
+                        actual.getClass().getSimpleName())), actual.getLoadBalancer().getName(), is(expected.getLoadBalancer().getName()));
+                PropertiesAssert.assertIs(assertContext, actual.getLoadBalancer().getProps(), expected.getLoadBalancer().getProperties());
+            }
         }
     }
 }
