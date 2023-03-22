@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.NoUniqueKeyPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.StringPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.UnsupportedKeyPosition;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
@@ -144,9 +143,12 @@ public final class InventoryTaskSplitter {
     private Collection<IngestPosition<?>> getInventoryPositions(final InventoryIncrementalJobItemContext jobItemContext, final InventoryDumperConfiguration dumperConfig,
                                                                 final DataSource dataSource) {
         InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();
-        if (null != initProgress && initProgress.getStatus() != JobStatus.PREPARING_FAILURE) {
+        if (null != initProgress) {
             // Do NOT filter FinishedPosition here, since whole inventory tasks are required in job progress when persisting to register center.
-            return initProgress.getInventory().getInventoryPosition(dumperConfig.getActualTableName()).values();
+            Collection<IngestPosition<?>> result = initProgress.getInventory().getInventoryPosition(dumperConfig.getActualTableName()).values();
+            if (!result.isEmpty()) {
+                return result;
+            }
         }
         if (!dumperConfig.hasUniqueKey()) {
             return getPositionWithoutUniqueKey(jobItemContext, dataSource, dumperConfig);
