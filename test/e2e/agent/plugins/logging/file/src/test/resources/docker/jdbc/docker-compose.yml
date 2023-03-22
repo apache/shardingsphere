@@ -20,27 +20,25 @@ version: "2.1"
 services:
   mysql:
     image: "mysql/mysql-server:5.7"
-    container_name: agent-logging-mysql
+    container_name: agent-jdbc-logging-mysql
     command: ['--sql_mode=', '--default-authentication-plugin=mysql_native_password']
     volumes:
-      - ../env/mysql:/docker-entrypoint-initdb.d/
+      - ../../env/mysql:/docker-entrypoint-initdb.d/
     ports:
-      - "43060:3306"
+      - "43061:3306"
     environment:
       - LANG=C.UTF-8
 
-  shardingsphere-proxy-agent-logging:
-    image: apache/shardingsphere-proxy-agent-logging-file-test
-    container_name: shardingsphere-proxy-agent-logging-file
+  shardingsphere-jdbc-agent-logging:
+    image: apache/shardingsphere-jdbc-agent-logging-file-test
+    container_name: shardingsphere-jdbc-agent-logging-file
     ports:
-      - "43072:3307"
-      - "43080:3308"
+      - "18080:80"
     links:
-      - "mysql:mysql.agent.logging.host"
+      - "mysql:mysql.agent.jdbc.logging.host"
     volumes:
-      - ./proxy/conf:/opt/shardingsphere-proxy/conf
-      - ./agent/conf:/opt/shardingsphere-proxy/agent/conf
-      - ../../../../target/logs:/opt/shardingsphere-proxy/logs
+      - ../agent/conf:/opt/shardingsphere-jdbc-app/agent/conf
+      - ../../../../../target/jdbc/logs:/opt/shardingsphere-jdbc-app/logs
     depends_on:
       - mysql
     environment:

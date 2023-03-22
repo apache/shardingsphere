@@ -15,19 +15,13 @@
 # limitations under the License.
 #
 
-it.env.type=${it.env}
-it.env.value=file
+FROM eclipse-temurin:11-jdk
 
-proxy.url=jdbc:mysql://127.0.0.1:43072/agent-file-db?serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8
-proxy.username=root
-proxy.password=root
+ARG APP_NAME
+ENV WAIT_VERSION=2.7.2 JAR_FILE_NAME=${APP_NAME}.jar
 
-jdbc.base.url=http://127.0.0.1:18080
-jdbc.path.create.table=/order/createTable
-jdbc.path.drop.table=/order/dropTable
-jdbc.path.insert=/order/insert
-jdbc.path.update=/order/update
-jdbc.path.select.all=/order/selectAll
-jdbc.path.delete=/order/delete
-
-collect.data.wait.milliseconds=2000
+COPY shardingsphere-jdbc-app /opt/shardingsphere-jdbc-app
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
+RUN chmod +x /wait && chmod +x /opt/shardingsphere-jdbc-app/start.sh
+WORKDIR /opt/shardingsphere-jdbc-app
+ENTRYPOINT ./start.sh $JAR_FILE_NAME --agent && tail -f ./logs/stdout.log

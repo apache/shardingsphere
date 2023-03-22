@@ -15,19 +15,10 @@
 # limitations under the License.
 #
 
-it.env.type=${it.env}
-it.env.value=file
+server:
+  port: 80
 
-proxy.url=jdbc:mysql://127.0.0.1:43072/agent-file-db?serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8
-proxy.username=root
-proxy.password=root
-
-jdbc.base.url=http://127.0.0.1:18080
-jdbc.path.create.table=/order/createTable
-jdbc.path.drop.table=/order/dropTable
-jdbc.path.insert=/order/insert
-jdbc.path.update=/order/update
-jdbc.path.select.all=/order/selectAll
-jdbc.path.delete=/order/delete
-
-collect.data.wait.milliseconds=2000
+spring:
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:absolutepath:/opt/shardingsphere-jdbc-app/config.yaml

@@ -106,7 +106,7 @@
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
                             <buildArgs>
-                                <APP_NAME>${docker.distribution.name}</APP_NAME>
+                                <APP_NAME>${docker.proxy.distribution.name}</APP_NAME>
                             </buildArgs>
                         </configuration>
                         <executions>
