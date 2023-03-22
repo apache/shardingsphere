@@ -662,6 +662,9 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     @Override
     public Collection<DataNode> getDataNodesByTableName(final String tableName) {
+        if (isBroadcastTable(tableName)) {
+            return new TableRule(dataSourceNames, tableName).getActualDataNodes();
+        }
         return shardingTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
     }
     
