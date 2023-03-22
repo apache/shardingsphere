@@ -81,7 +81,8 @@ public final class MetricsPluginE2EIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases().stream().map(Arguments::of);
+            String adapter = E2ETestEnvironment.getInstance().getProps().getProperty("it.env.adapter", "proxy");
+            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases(adapter).stream().map(Arguments::of);
         }
     }
 }
