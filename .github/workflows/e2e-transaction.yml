@@ -53,7 +53,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: it-transaction-${{ github.workflow }}-${{ github.ref }}
+  group: e2e-transaction-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -61,8 +61,8 @@ env:
   REPOSITORY_NAME: shardingsphere
 
 jobs:
-  transaction-it-test:
-    name: transaction-it-test
+  transaction:
+    name: E2E - Transaction
     runs-on: ubuntu-latest
     env:
       postgresql_version: postgres:12-alpine
@@ -75,16 +75,16 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache${{ github.sha }}
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache${{ github.sha }}
           restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-it-cache
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-e2e-cache
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 11
-      - name: Build Transaction IT image
+      - name: Build Transaction E2Egany image
         run: ./mvnw -B clean install -am -pl test/e2e/operation/transaction -Pit.env.docker -DskipTests
       - name: Setup JDK 8 for Test
         uses: actions/setup-java@v3
