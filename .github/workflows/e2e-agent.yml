@@ -78,6 +78,9 @@ jobs:
           - adapter: jdbc
             feature: logging
             plugin: file
+          - adapter: jdbc
+            feature: metrics
+            plugin: prometheus
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
