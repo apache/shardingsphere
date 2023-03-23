@@ -47,11 +47,11 @@ public final class TransactionReadQueryStrategyUtil {
         switch (readQueryStrategy) {
             case FIXED_REPLICA:
                 if (null == context.getReadWriteSplitReplicaRoute()) {
-                    context.setReadWriteSplitReplicaRoute(readQueryStrategyAware.getDataSourceName(name, readDataSourceNames));
+                    context.setReadWriteSplitReplicaRoute(readQueryStrategyAware.getReadDataSource(name, readDataSourceNames));
                 }
                 return context.getReadWriteSplitReplicaRoute();
             case DYNAMIC_REPLICA:
-                return readQueryStrategyAware.getDataSourceName(name, readDataSourceNames);
+                return readQueryStrategyAware.getReadDataSource(name, readDataSourceNames);
             case FIXED_PRIMARY:
             default:
                 return writeDataSourceName;

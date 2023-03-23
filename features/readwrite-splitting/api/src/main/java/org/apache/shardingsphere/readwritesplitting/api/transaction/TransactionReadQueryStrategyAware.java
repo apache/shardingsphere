@@ -27,11 +27,11 @@ public interface TransactionReadQueryStrategyAware {
     String TRANSACTION_READ_QUERY_STRATEGY = "transaction-read-query-strategy";
     
     /**
-     * Get data source name.
+     * Get read data source.
      * 
      * @param name name
      * @param readDataSourceNames names of read data sources
-     * @return name of selected data source
+     * @return name of selected read data source
      */
-    String getDataSourceName(String name, List<String> readDataSourceNames);
+    String getReadDataSource(String name, List<String> readDataSourceNames);
 }

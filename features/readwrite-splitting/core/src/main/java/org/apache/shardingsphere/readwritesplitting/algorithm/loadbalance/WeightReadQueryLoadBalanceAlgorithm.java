@@ -67,17 +67,17 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
         if (context.isInTransaction()) {
             return TransactionReadQueryStrategyUtil.routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionReadQueryStrategy, this);
         }
-        return getDataSourceName(name, readDataSourceNames);
+        return getReadDataSource(name, readDataSourceNames);
     }
     
     @Override
-    public String getDataSourceName(final String name, final List<String> readDataSourceNames) {
+    public String getReadDataSource(final String name, final List<String> readDataSourceNames) {
         double[] weight = weightMap.containsKey(name) && weightMap.get(name).length == readDataSourceNames.size() ? weightMap.get(name) : initWeight(readDataSourceNames);
         weightMap.put(name, weight);
-        return getDataSourceName(readDataSourceNames, weight);
+        return getReadDataSource(readDataSourceNames, weight);
     }
     
-    private String getDataSourceName(final List<String> readDataSourceNames, final double[] weight) {
+    private String getReadDataSource(final List<String> readDataSourceNames, final double[] weight) {
         double randomWeight = ThreadLocalRandom.current().nextDouble(0, 1);
         int index = Arrays.binarySearch(weight, randomWeight);
         if (index < 0) {

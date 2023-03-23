@@ -44,11 +44,11 @@ public final class RandomReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
         if (context.isInTransaction()) {
             return TransactionReadQueryStrategyUtil.routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionReadQueryStrategy, this);
         }
-        return getDataSourceName(name, readDataSourceNames);
+        return getReadDataSource(name, readDataSourceNames);
     }
     
     @Override
-    public String getDataSourceName(final String name, final List<String> readDataSourceNames) {
+    public String getReadDataSource(final String name, final List<String> readDataSourceNames) {
         return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
     }
     
