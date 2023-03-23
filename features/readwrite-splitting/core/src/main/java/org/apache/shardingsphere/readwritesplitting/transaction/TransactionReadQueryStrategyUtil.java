@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.readwritesplitting.transaction;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategyAware;
@@ -26,7 +28,8 @@ import java.util.List;
 /**
  * Transaction read query strategy util.
  */
-public class TransactionReadQueryStrategyUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TransactionReadQueryStrategyUtil {
     
     /**
      * Get data source name in transaction.

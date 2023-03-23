@@ -36,9 +36,7 @@ public final class RandomReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     @Override
     public void init(final Properties props) {
-        transactionReadQueryStrategy = props.containsKey(TRANSACTION_READ_QUERY_STRATEGY)
-                ? TransactionReadQueryStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY))
-                : TransactionReadQueryStrategy.FIXED_PRIMARY;
+        transactionReadQueryStrategy = TransactionReadQueryStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_PRIMARY.name()));
     }
     
     @Override
@@ -50,12 +48,12 @@ public final class RandomReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     }
     
     @Override
-    public String getType() {
-        return "RANDOM";
+    public String getDataSourceName(final String name, final List<String> readDataSourceNames) {
+        return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
     }
     
     @Override
-    public String getDataSourceName(final String name, final List<String> readDataSourceNames) {
-        return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
+    public String getType() {
+        return "RANDOM";
     }
 }

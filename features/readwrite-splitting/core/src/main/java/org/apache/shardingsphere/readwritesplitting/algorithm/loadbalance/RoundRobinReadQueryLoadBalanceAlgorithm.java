@@ -38,9 +38,7 @@ public final class RoundRobinReadQueryLoadBalanceAlgorithm implements ReadQueryL
     
     @Override
     public void init(final Properties props) {
-        transactionReadQueryStrategy = props.containsKey(TRANSACTION_READ_QUERY_STRATEGY)
-                ? TransactionReadQueryStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY))
-                : TransactionReadQueryStrategy.FIXED_PRIMARY;
+        transactionReadQueryStrategy = TransactionReadQueryStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_PRIMARY.name()));
     }
     
     @Override
@@ -52,6 +50,11 @@ public final class RoundRobinReadQueryLoadBalanceAlgorithm implements ReadQueryL
     }
     
     @Override
+    public String getDataSourceName(final String name, final List<String> readDataSourceNames) {
+        return readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
+    }
+    
+    @Override
     public String getType() {
         return "ROUND_ROBIN";
     }
@@ -59,10 +62,5 @@ public final class RoundRobinReadQueryLoadBalanceAlgorithm implements ReadQueryL
     @Override
     public boolean isDefault() {
         return true;
-    }
-    
-    @Override
-    public String getDataSourceName(final String name, final List<String> readDataSourceNames) {
-        return readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
     }
 }
