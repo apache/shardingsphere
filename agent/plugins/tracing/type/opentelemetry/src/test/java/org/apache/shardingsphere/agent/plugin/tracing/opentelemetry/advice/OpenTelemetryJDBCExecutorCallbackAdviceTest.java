@@ -75,9 +75,9 @@ public final class OpenTelemetryJDBCExecutorCallbackAdviceTest extends AbstractJ
         assertThat(spanData.getName(), is("/ShardingSphere/executeSQL/"));
         Attributes attributes = spanData.getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(getDatabaseType(getDataSourceName())));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_INSTANCE)), is(getDataSourceName()));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(getSql()));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(getDatabaseType(DATA_SOURCE_NAME)));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_INSTANCE)), is(DATA_SOURCE_NAME));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL));
     }
     
     @Test
@@ -92,8 +92,8 @@ public final class OpenTelemetryJDBCExecutorCallbackAdviceTest extends AbstractJ
         assertThat(spanData.getStatus().getStatusCode(), is(StatusCode.ERROR));
         Attributes attributes = spanData.getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(getDatabaseType(getDataSourceName())));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_INSTANCE)), is(getDataSourceName()));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(getSql()));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(getDatabaseType(DATA_SOURCE_NAME)));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_INSTANCE)), is(DATA_SOURCE_NAME));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL));
     }
 }
