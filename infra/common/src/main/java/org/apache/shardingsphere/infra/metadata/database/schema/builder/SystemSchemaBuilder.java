@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
@@ -39,7 +38,6 @@ import java.util.Map;
 /**
  * System schema builder.
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SystemSchemaBuilder {
     
@@ -68,7 +66,6 @@ public final class SystemSchemaBuilder {
         SystemSchemaBuilderRule builderRule = SystemSchemaBuilderRule.valueOf(databaseType.getType(), schemaName);
         Collection<InputStream> result = new LinkedList<>();
         for (String each : builderRule.getTables()) {
-            log.info("[加载资源路径]schema/" + databaseType.getType().toLowerCase() + "/" + schemaName + "/" + each + ".yaml");
             result.add(SystemSchemaBuilder.class.getClassLoader().getResourceAsStream("schema/" + databaseType.getType().toLowerCase() + "/" + schemaName + "/" + each + ".yaml"));
         }
         return result;
@@ -77,10 +74,8 @@ public final class SystemSchemaBuilder {
     private static ShardingSphereSchema createSchema(final Collection<InputStream> schemaStreams, final YamlTableSwapper swapper) {
         Map<String, ShardingSphereTable> tables = new LinkedHashMap<>(schemaStreams.size(), 1);
         for (InputStream each : schemaStreams) {
-            log.info("[加载资源begin]");
             YamlShardingSphereTable metaData = new Yaml().loadAs(each, YamlShardingSphereTable.class);
             tables.put(metaData.getName(), swapper.swapToObject(metaData));
-            log.info("[加载资源end]");
         }
         return new ShardingSphereSchema(tables, Collections.emptyMap());
     }
