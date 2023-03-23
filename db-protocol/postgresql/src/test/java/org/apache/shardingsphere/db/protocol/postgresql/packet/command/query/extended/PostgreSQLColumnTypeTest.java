@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.constant;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended;
 
 import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;

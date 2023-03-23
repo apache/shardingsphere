@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 
@@ -29,20 +27,15 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLParameterStatusPacketTest {
+public final class PostgreSQLSSLNegativePacketTest {
     
     @Test
     public void assertReadWrite() {
-        String key = "key1";
-        String value = "value1";
-        int expectedLength = key.length() + 1 + value.length() + 1;
-        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
+        ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(1);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        PostgreSQLParameterStatusPacket packet = new PostgreSQLParameterStatusPacket(key, value);
-        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.PARAMETER_STATUS));
+        PostgreSQLSSLNegativePacket packet = new PostgreSQLSSLNegativePacket();
         packet.write(payload);
-        assertThat(byteBuf.writerIndex(), is(expectedLength));
-        assertThat(payload.readStringNul(), is(key));
-        assertThat(payload.readStringNul(), is(value));
+        assertThat(byteBuf.writerIndex(), is(1));
+        assertThat(payload.readInt1(), is((int) 'N'));
     }
 }
