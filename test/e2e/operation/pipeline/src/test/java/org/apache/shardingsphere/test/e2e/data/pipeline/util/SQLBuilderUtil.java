@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 /**
  * SQL builder util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLBuilderUtil {
     
     /**
