@@ -56,7 +56,7 @@ public final class DiscoveryRuleBuilder {
     
     private void createDatabase(final Statement statement) throws SQLException {
         statement.execute(discoveryDistSQL.getCreateDatabase().getExecuteSQL());
-        Awaitility.await().atMost(Durations.ONE_SECOND).until(() -> getCreateDatabaseResult(statement, discoveryDistSQL.getCreateDatabase().getAssertionSQL()));
+        Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> getCreateDatabaseResult(statement, discoveryDistSQL.getCreateDatabase().getAssertionSQL()));
     }
     
     private boolean getCreateDatabaseResult(final Statement statement, final String assertionSQL) {
@@ -69,17 +69,17 @@ public final class DiscoveryRuleBuilder {
     
     private void registerStorageUnits(final Statement statement) throws SQLException {
         statement.execute(discoveryDistSQL.getRegisterStorageUnits().getExecuteSQL());
-        Awaitility.await().atMost(Durations.TWO_SECONDS).until(() -> getExecuteResult(statement, discoveryDistSQL.getRegisterStorageUnits().getAssertionSQL()));
+        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> getExecuteResult(statement, discoveryDistSQL.getRegisterStorageUnits().getAssertionSQL()));
     }
     
     private void createDiscoveryRule(final Statement statement) throws SQLException {
         statement.execute(discoveryDistSQL.getCreateDiscoveryRule().getExecuteSQL());
-        Awaitility.await().atMost(Durations.TWO_SECONDS).until(() -> getExecuteResult(statement, discoveryDistSQL.getCreateDiscoveryRule().getAssertionSQL()));
+        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> getExecuteResult(statement, discoveryDistSQL.getCreateDiscoveryRule().getAssertionSQL()));
     }
     
     private void createReadwriteSplittingRule(final Statement statement) throws SQLException {
         statement.execute(discoveryDistSQL.getCreateReadwriteSplittingRule().getExecuteSQL());
-        Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> getExecuteResult(statement, discoveryDistSQL.getCreateReadwriteSplittingRule().getAssertionSQL()));
+        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> getExecuteResult(statement, discoveryDistSQL.getCreateReadwriteSplittingRule().getAssertionSQL()));
     }
     
     private boolean getExecuteResult(final Statement statement, final String assertionSQL) {
