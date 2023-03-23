@@ -33,10 +33,10 @@ import java.util.List;
 public final class DataSourceExecuteUtil {
     
     /**
-     * Execute sql.
+     * Execute SQL.
      *
      * @param dataSource data source
-     * @param sql sql
+     * @param sql SQL
      */
     public static void execute(final DataSource dataSource, final String sql) {
         try (Connection connection = dataSource.getConnection()) {
@@ -47,10 +47,10 @@ public final class DataSourceExecuteUtil {
     }
     
     /**
-     * Execute sql.
+     * Execute SQL.
      *
      * @param dataSource data source
-     * @param sql sql
+     * @param sql SQL
      * @param parameters parameters
      */
     public static void execute(final DataSource dataSource, final String sql, final Object[] parameters) {
@@ -66,10 +66,10 @@ public final class DataSourceExecuteUtil {
     }
     
     /**
-     * Execute sql, batch mode.
+     * Execute SQL with batch mode.
      *
      * @param dataSource data source
-     * @param sql sql
+     * @param sql SQL
      * @param parameters parameters
      */
     public static void execute(final DataSource dataSource, final String sql, final List<Object[]> parameters) {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.util;
 
 /**
- * Docker image version util.
+ * Docker image version.
  */
 public final class DockerImageVersion {
     
@@ -27,12 +27,7 @@ public final class DockerImageVersion {
     private final String version;
     
     public DockerImageVersion(final String dockerImageName) {
-        if (dockerImageName.contains(SEPARATOR)) {
-            String[] split = dockerImageName.split(SEPARATOR);
-            version = split[1];
-        } else {
-            version = dockerImageName;
-        }
+        version = dockerImageName.contains(SEPARATOR) ? dockerImageName.split(SEPARATOR)[1] : dockerImageName;
     }
     
     /**
