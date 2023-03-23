@@ -100,7 +100,7 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
     private void executeTransactionHooksAfterCreateConnections(final List<Connection> result) throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
             for (TransactionHook each : transactionHooks) {
-                each.afterCreateConnections(result, connectionSession.getConnectionContext().getTransactionConnectionContext());
+                each.afterCreateConnections(result, connectionSession.getConnectionContext().getTransactionContext());
             }
         }
     }

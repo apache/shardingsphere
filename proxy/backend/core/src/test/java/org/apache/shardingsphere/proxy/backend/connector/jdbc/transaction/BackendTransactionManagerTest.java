@@ -78,7 +78,7 @@ public final class BackendTransactionManagerTest {
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         TransactionConnectionContext context = new TransactionConnectionContext();
-        when(connectionContext.getTransactionConnectionContext()).thenReturn(context);
+        when(connectionContext.getTransactionContext()).thenReturn(context);
     }
     
     @Test

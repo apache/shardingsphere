@@ -484,7 +484,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private void checkSameDatabaseNameInTransaction(final SQLStatementContext<?> sqlStatementContext, final String connectionDatabaseName) {
-        if (!connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction()) {
+        if (!connection.getConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
             return;
         }
         if (sqlStatementContext instanceof TableAvailable) {
@@ -558,7 +558,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private boolean isNeedImplicitCommitTransaction(final ExecutionContext executionContext) {
         ConnectionTransaction connectionTransaction = connection.getConnectionManager().getConnectionTransaction();
-        boolean isInTransaction = connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction();
+        boolean isInTransaction = connection.getConnectionManager().getConnectionContext().getTransactionContext().isInTransaction();
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
         return TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !isInTransaction && sqlStatement instanceof DMLStatement
                 && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1;
