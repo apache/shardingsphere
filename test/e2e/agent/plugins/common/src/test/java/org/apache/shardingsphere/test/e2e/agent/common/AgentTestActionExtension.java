@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
@@ -57,11 +55,8 @@ public final class AgentTestActionExtension implements BeforeEachCallback {
     
     private void checkEnvironment() {
         assumeTrue(E2ETestEnvironment.getInstance().isEnvironmentPrepared());
-        assumeFalse(E2ETestEnvironment.getInstance().isInitializationFailed());
         E2ETestEnvironment.getInstance().prepareEnvironment();
-        if (E2ETestEnvironment.getInstance().isAdaptedProxy()) {
-            assertNotNull(E2ETestEnvironment.getInstance().getDataSource());
-        }
+        assumeTrue(E2ETestEnvironment.getInstance().isInitialized());
     }
     
     private void requestProxy() {

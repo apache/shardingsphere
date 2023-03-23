@@ -17,34 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import javax.sql.DataSource;
 
 /**
  * Jdbc project application.
  */
 @SpringBootApplication
-@MapperScan("org.apache.shardingsphere.test.e2e.agent.jdbc.project.mapper")
-@EnableTransactionManagement
 public class JdbcProjectApplication {
-    
-    /**
-     * Create platform transaction manager bean.
-     *
-     * @param dataSource data source
-     * @return platform transaction manager
-     */
-    @Bean
-    public PlatformTransactionManager txManager(final DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
     
     // CHECKSTYLE:OFF
     public static void main(final String[] args) {

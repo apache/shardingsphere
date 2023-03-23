@@ -15,21 +15,14 @@
 # limitations under the License.
 #
 
-it.env.type=${it.env}
-it.env.value=prometheus
+FROM eclipse-temurin:11-jdk
 
-proxy.url=jdbc:mysql://127.0.0.1:43070/agent-metrics-db?serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8
-proxy.username=root
-proxy.password=root
+ARG APP_NAME
+ENV WAIT_VERSION 2.7.2
 
-jdbc.base.url=http://127.0.0.1:18080
-jdbc.path.create.table=/order/createTable
-jdbc.path.drop.table=/order/dropTable
-jdbc.path.insert=/order/insert
-jdbc.path.update=/order/update
-jdbc.path.select.all=/order/selectAll
-jdbc.path.delete=/order/delete
-
-prometheus.metadata.url=http://127.0.0.1:19090/api/v1/metadata
-prometheus.query.url=http://127.0.0.1:19090/api/v1/query
-collect.data.wait.milliseconds=35000
+ADD ${APP_NAME}.tar.gz /opt
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
+RUN chmod +x /wait
+RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy
+RUN wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar -P /opt/shardingsphere-proxy/lib
+ENTRYPOINT /wait && /opt/shardingsphere-proxy/bin/start.sh -g && tail -f /opt/shardingsphere-proxy/logs/stdout.log

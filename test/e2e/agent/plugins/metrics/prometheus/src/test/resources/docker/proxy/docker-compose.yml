@@ -20,10 +20,10 @@ version: "2.1"
 services:
   mysql:
     image: "mysql/mysql-server:5.7"
-    container_name: agent-metrics-mysql
+    container_name: agent-proxy-metrics-mysql
     command: ['--sql_mode=', '--default-authentication-plugin=mysql_native_password']
     volumes:
-      - ../env/mysql:/docker-entrypoint-initdb.d/
+      - ../../env/mysql:/docker-entrypoint-initdb.d/
     ports:
       - "43060:3306"
     environment:
@@ -31,14 +31,14 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.41.0
-    container_name: agent-prometheus
+    container_name: agent-proxy-prometheus
     restart: always
     volumes:
-      - ./prometheus/conf:/config
+      - ../prometheus/conf:/config
     ports:
       - '19090:9090'
     links:
-      - "shardingsphere-proxy-agent-metrics:shardingsphere.proxy.host"
+      - "shardingsphere-proxy-agent-metrics:agent.host"
     command: ['--config.file=/config/prometheus.yml']
     depends_on:
       - shardingsphere-proxy-agent-metrics
@@ -51,10 +51,10 @@ services:
       - "43080:3308"
       - "19099:19099"
     links:
-      - "mysql:mysql.agent.metrics.host"
+      - "mysql:mysql.agent.proxy.metrics.host"
     volumes:
-      - ./proxy/conf:/opt/shardingsphere-proxy/conf
-      - ./agent/conf:/opt/shardingsphere-proxy/agent/conf
+      - ./conf:/opt/shardingsphere-proxy/conf
+      - ../agent/conf:/opt/shardingsphere-proxy/agent/conf
     depends_on:
       - mysql
     environment:

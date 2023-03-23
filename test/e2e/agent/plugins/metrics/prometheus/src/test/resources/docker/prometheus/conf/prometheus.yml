@@ -32,4 +32,4 @@ scrape_configs:
 
   - job_name: 'shardingsphere-agent'
     static_configs:
-    - targets: ['shardingsphere.proxy.host:19099']
+    - targets: ['agent.host:19099']

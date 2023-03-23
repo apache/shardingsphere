@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.agent.jdbc.project.vo;
+package org.apache.shardingsphere.test.e2e.agent.jdbc.project.vo.response;
 
 import lombok.Getter;
 import lombok.Setter;

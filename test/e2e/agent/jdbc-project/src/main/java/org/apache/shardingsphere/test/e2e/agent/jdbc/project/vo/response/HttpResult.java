@@ -42,5 +42,4 @@ public class HttpResult<T> implements Serializable {
         this.message = message;
         this.data = data;
     }
-    
 }

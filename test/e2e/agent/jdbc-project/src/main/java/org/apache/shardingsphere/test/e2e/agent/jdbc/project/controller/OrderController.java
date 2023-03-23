@@ -70,7 +70,12 @@ public class OrderController extends AbstractRestController {
         long index = 0;
         while (index++ < 100) {
             OrderEntity order = new OrderEntity(index, index, "OK");
-            orderService.insert(order, 0 == (index & 1) ? StatementType.STATEMENT : StatementType.PREPARED);
+            orderService.insert(order, 0 == (index & 1) ? StatementType.STATEMENT : StatementType.PREPARED, 0 == index % 5);
+        }
+        index = 0;
+        while (index++ < 10) {
+            OrderEntity order = new OrderEntity(index, index, "Fail");
+            orderService.insert(order, 0 == (index & 1) ? StatementType.STATEMENT : StatementType.PREPARED, false);
         }
         return success();
     }

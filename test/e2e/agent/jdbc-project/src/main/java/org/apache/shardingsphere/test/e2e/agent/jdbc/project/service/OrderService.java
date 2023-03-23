@@ -42,8 +42,9 @@ public interface OrderService {
      *
      * @param order order
      * @param statementType statement type
+     * @param isRollback is rollback
      */
-    void insert(OrderEntity order, StatementType statementType);
+    void insert(OrderEntity order, StatementType statementType, boolean isRollback);
     
     /**
      * Delete.
