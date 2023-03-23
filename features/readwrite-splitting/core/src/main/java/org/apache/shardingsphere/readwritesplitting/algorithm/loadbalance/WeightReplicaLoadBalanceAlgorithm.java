@@ -21,11 +21,11 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategyAware;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalLoadBalanceStrategyAware;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalLoadBalanceStrategy;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.InvalidReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingRequiredReadDatabaseWeightException;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.transaction.TransactionReadQueryStrategyUtil;
 
 import java.util.Arrays;
@@ -38,9 +38,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
- * Weight read query load-balance algorithm.
+ * Weight replica load balance algorithm.
  */
-public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, TransactionReadQueryStrategyAware {
+public final class WeightReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm, TransactionalLoadBalanceStrategyAware {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
@@ -48,7 +48,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     private Properties props;
     
-    private TransactionReadQueryStrategy transactionReadQueryStrategy;
+    private TransactionalLoadBalanceStrategy transactionalLoadBalanceStrategy;
     
     @Getter
     private Collection<String> dataSourceNames;
@@ -56,7 +56,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     @Override
     public void init(final Properties props) {
         this.props = props;
-        transactionReadQueryStrategy = TransactionReadQueryStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_PRIMARY.name()));
+        transactionalLoadBalanceStrategy = TransactionalLoadBalanceStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY, TransactionalLoadBalanceStrategy.FIXED_PRIMARY.name()));
         dataSourceNames = props.containsKey(TRANSACTION_READ_QUERY_STRATEGY)
                 ? props.stringPropertyNames().stream().filter(each -> !each.equals(TRANSACTION_READ_QUERY_STRATEGY)).collect(Collectors.toList())
                 : props.stringPropertyNames();
@@ -65,7 +65,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
         if (context.isInTransaction()) {
-            return TransactionReadQueryStrategyUtil.routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionReadQueryStrategy, this);
+            return TransactionReadQueryStrategyUtil.routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionalLoadBalanceStrategy, this);
         }
         return getDataSourceName(name, readDataSourceNames);
     }

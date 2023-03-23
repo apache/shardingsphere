@@ -17,21 +17,10 @@
 
 package org.apache.shardingsphere.readwritesplitting.api.transaction;
 
-import java.util.List;
-
 /**
- * Transaction read query strategy aware.
+ * Transactional load balance strategy.
  */
-public interface TransactionReadQueryStrategyAware {
+public enum TransactionalLoadBalanceStrategy {
     
-    String TRANSACTION_READ_QUERY_STRATEGY = "transaction-read-query-strategy";
-    
-    /**
-     * Get data source name.
-     * 
-     * @param name name
-     * @param readDataSourceNames names of read data sources
-     * @return name of selected data source
-     */
-    String getDataSourceName(String name, List<String> readDataSourceNames);
+    FIXED_PRIMARY, FIXED_REPLICA, DYNAMIC_REPLICA
 }

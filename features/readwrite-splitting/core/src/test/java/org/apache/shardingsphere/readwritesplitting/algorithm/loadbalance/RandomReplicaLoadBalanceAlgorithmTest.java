@@ -19,9 +19,9 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategyAware;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalLoadBalanceStrategyAware;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalLoadBalanceStrategy;
+import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -34,52 +34,55 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class RoundRobinReadQueryLoadBalanceAlgorithmTest {
+public final class RandomReplicaLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetDataSourceWithDefaultStrategy() {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "ROUND_ROBIN", new Properties());
+        ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReplicaLoadBalanceAlgorithm.class, "RANDOM", new Properties());
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionConnectionContext context = new TransactionConnectionContext();
-        assertRoundRobinReadQueryLoadBalance(writeDataSourceName, readDataSourceName1, readDataSourceName2, loadBalanceAlgorithm, readDataSourceNames, context);
-    }
-    
-    private void assertRoundRobinReadQueryLoadBalance(final String writeDataSourceName, final String readDataSourceName1, final String readDataSourceName2,
-                                                      final ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(readDataSourceName1));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(readDataSourceName2));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(readDataSourceName1));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(readDataSourceName2));
-    }
-    
-    @Test
-    public void assertGetDataSourceWithFixedPrimaryStrategy() {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "ROUND_ROBIN",
-                PropertiesBuilder.build(new Property(TransactionReadQueryStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_PRIMARY.name())));
-        String writeDataSourceName = "test_write_ds";
-        String readDataSourceName1 = "test_read_ds_1";
-        String readDataSourceName2 = "test_read_ds_2";
-        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        TransactionConnectionContext context = new TransactionConnectionContext();
-        assertRoundRobinReadQueryLoadBalance(writeDataSourceName, readDataSourceName1, readDataSourceName2, loadBalanceAlgorithm, readDataSourceNames, context);
+        assertRandomReadQueryLoadBalance(readDataSourceNames, loadBalanceAlgorithm, writeDataSourceName, context);
         context.setInTransaction(true);
         assertTrue(writeDataSourceName.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
         assertTrue(writeDataSourceName.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
     }
     
+    private void assertRandomReadQueryLoadBalance(final List<String> readDataSourceNames, final ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm, final String writeDataSourceName,
+                                                  final TransactionConnectionContext context) {
+        assertTrue(readDataSourceNames.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
+        assertTrue(readDataSourceNames.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
+        assertTrue(readDataSourceNames.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
+    }
+    
     @Test
-    public void assertGetDataSourceWithFixedReplicaStrategy() {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "ROUND_ROBIN",
-                PropertiesBuilder.build(new Property(TransactionReadQueryStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_REPLICA.name())));
+    public void assertGetDataSourceWithFixedPrimaryStrategy() {
+        ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReplicaLoadBalanceAlgorithm.class, "RANDOM",
+                PropertiesBuilder.build(new Property(TransactionalLoadBalanceStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionalLoadBalanceStrategy.FIXED_PRIMARY.name())));
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionConnectionContext context = new TransactionConnectionContext();
-        assertRoundRobinReadQueryLoadBalance(writeDataSourceName, readDataSourceName1, readDataSourceName2, loadBalanceAlgorithm, readDataSourceNames, context);
+        assertRandomReadQueryLoadBalance(readDataSourceNames, loadBalanceAlgorithm, writeDataSourceName, context);
+        context.setInTransaction(true);
+        assertTrue(writeDataSourceName.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
+        assertTrue(writeDataSourceName.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
+        
+    }
+    
+    @Test
+    public void assertGetDataSourceWithFixedReplicaStrategy() {
+        ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReplicaLoadBalanceAlgorithm.class, "RANDOM",
+                PropertiesBuilder.build(new Property(TransactionalLoadBalanceStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionalLoadBalanceStrategy.FIXED_REPLICA.name())));
+        String writeDataSourceName = "test_write_ds";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
+        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
+        TransactionConnectionContext context = new TransactionConnectionContext();
+        assertRandomReadQueryLoadBalance(readDataSourceNames, loadBalanceAlgorithm, writeDataSourceName, context);
         context.setInTransaction(true);
         String routeDataSource = loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context);
         assertTrue(readDataSourceNames.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context)));
@@ -89,15 +92,15 @@ public final class RoundRobinReadQueryLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetDataSourceWithDynamicReplicaStrategy() {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "ROUND_ROBIN",
-                PropertiesBuilder.build(new Property(TransactionReadQueryStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.DYNAMIC_REPLICA.name())));
+        ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReplicaLoadBalanceAlgorithm.class, "RANDOM",
+                PropertiesBuilder.build(new Property(TransactionalLoadBalanceStrategyAware.TRANSACTION_READ_QUERY_STRATEGY, TransactionalLoadBalanceStrategy.DYNAMIC_REPLICA.name())));
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionConnectionContext context = new TransactionConnectionContext();
-        assertRoundRobinReadQueryLoadBalance(writeDataSourceName, readDataSourceName1, readDataSourceName2, loadBalanceAlgorithm, readDataSourceNames, context);
+        assertRandomReadQueryLoadBalance(readDataSourceNames, loadBalanceAlgorithm, writeDataSourceName, context);
         context.setInTransaction(true);
-        assertRoundRobinReadQueryLoadBalance(writeDataSourceName, readDataSourceName1, readDataSourceName2, loadBalanceAlgorithm, readDataSourceNames, context);
+        assertRandomReadQueryLoadBalance(readDataSourceNames, loadBalanceAlgorithm, writeDataSourceName, context);
     }
 }
