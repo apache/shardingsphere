@@ -45,22 +45,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void createTable() {
         String sql = "CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT NOT NULL, user_id BIGINT DEFAULT NULL, status VARCHAR(32) DEFAULT NULL, PRIMARY KEY (order_id))";
-        execute(sql);
+        execute(sql, true, false);
     }
     
     @Override
     public void dropTable() {
         String sql = "DROP TABLE IF EXISTS t_order";
-        execute(sql);
-    }
-    
-    private void execute(final String sql) {
-        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
-            connection.setAutoCommit(false);
-            statement.execute(sql);
-            connection.commit();
-        } catch (final SQLException ignored) {
-        }
+        execute(sql, true, false);
     }
     
     @Override
@@ -82,16 +73,7 @@ public class OrderServiceImpl implements OrderService {
             }
         } else if (StatementType.PREPARED == statementType) {
             String sql = String.format("INSERT INTO t_order (order_id, user_id, status) VALUES (%d, %d, '%s')", order.getOrderId(), order.getUserId(), order.getStatus());
-            try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
-                connection.setAutoCommit(false);
-                statement.execute(sql);
-                if (isRollback) {
-                    connection.rollback();
-                } else {
-                    connection.commit();
-                }
-            } catch (final SQLException ignored) {
-            }
+            execute(sql, false, isRollback);
         }
     }
     
@@ -106,10 +88,7 @@ public class OrderServiceImpl implements OrderService {
             }
         } else if (StatementType.PREPARED == statementType) {
             String sql = String.format("DELETE FROM t_order WHERE order_id=%d", orderId);
-            try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
-                statement.execute(sql);
-            } catch (final SQLException ignored) {
-            }
+            execute(sql, true, false);
         }
     }
     
@@ -127,10 +106,7 @@ public class OrderServiceImpl implements OrderService {
             }
         } else if (StatementType.PREPARED == statementType) {
             String sql = String.format("UPDATE t_order SET status = '%s' WHERE order_id=%d", order.getStatus(), order.getOrderId());
-            try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
-                statement.execute(sql);
-            } catch (final SQLException ignored) {
-            }
+            execute(sql, false, false);
         }
     }
     
@@ -158,5 +134,22 @@ public class OrderServiceImpl implements OrderService {
             result.add(orderEntity);
         }
         return result;
+    }
+    
+    private void execute(final String sql, final boolean autoCommit, final boolean isRollback) {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            if (autoCommit) {
+                statement.execute(sql);
+            } else {
+                connection.setAutoCommit(false);
+                statement.execute(sql);
+                if (isRollback) {
+                    connection.rollback();
+                } else {
+                    connection.commit();
+                }
+            }
+        } catch (final SQLException ignored) {
+        }
     }
 }

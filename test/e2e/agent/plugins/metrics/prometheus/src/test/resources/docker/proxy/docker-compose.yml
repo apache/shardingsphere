@@ -31,7 +31,7 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.41.0
-    container_name: agent-prometheus
+    container_name: agent-proxy-prometheus
     restart: always
     volumes:
       - ../prometheus/conf:/config

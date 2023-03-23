@@ -48,11 +48,11 @@ public final class E2ETestEnvironment {
     
     private DataSource dataSource;
     
-    private boolean initializationFailed;
+    private boolean isInitialized;
     
     private boolean isAdaptedProxy;
     
-    private AtomicBoolean prepareFlag = new AtomicBoolean();
+    private final AtomicBoolean prepareFlag = new AtomicBoolean();
     
     private E2ETestEnvironment() {
         props = EnvironmentProperties.loadProperties("env/engine-env.properties");
@@ -78,8 +78,9 @@ public final class E2ETestEnvironment {
         }
         if (isAdaptedProxy()) {
             createDataSource();
+            isInitialized = null != dataSource;
         } else {
-            initializationFailed = !waitForJdbcEnvironmentReady();
+            isInitialized = waitForJdbcEnvironmentReady();
         }
     }
     
@@ -87,8 +88,6 @@ public final class E2ETestEnvironment {
         if (isEnvironmentPrepared && null == dataSource) {
             if (waitForProxyEnvironmentReady(props)) {
                 dataSource = createHikariCP(props);
-            } else {
-                initializationFailed = true;
             }
         }
     }

@@ -24,4 +24,4 @@ COPY shardingsphere-jdbc-app /opt/shardingsphere-jdbc-app
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
 RUN chmod +x /wait && chmod +x /opt/shardingsphere-jdbc-app/start.sh
 WORKDIR /opt/shardingsphere-jdbc-app
-ENTRYPOINT ./start.sh $JAR_FILE_NAME --agent && tail -f ./logs/stdout.log
+ENTRYPOINT /wait && ./start.sh $JAR_FILE_NAME --agent && tail -f ./logs/stdout.log

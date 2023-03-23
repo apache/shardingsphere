@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -25,7 +24,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Jdbc project application.
  */
 @SpringBootApplication
-@MapperScan("org.apache.shardingsphere.test.e2e.agent.jdbc.project.mapper")
 public class JdbcProjectApplication {
     
     // CHECKSTYLE:OFF
