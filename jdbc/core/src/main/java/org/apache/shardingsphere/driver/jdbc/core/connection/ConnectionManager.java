@@ -331,15 +331,15 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     private List<Connection> createConnections(final String dataSourceName, final DataSource dataSource, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         if (1 == connectionSize) {
-            Connection connection = createConnection(dataSourceName, dataSource, connectionContext.getTransactionConnectionContext());
+            Connection connection = createConnection(dataSourceName, dataSource, connectionContext.getTransactionContext());
             methodInvocationRecorder.replay(connection);
             return Collections.singletonList(connection);
         }
         if (ConnectionMode.CONNECTION_STRICTLY == connectionMode) {
-            return createConnections(dataSourceName, dataSource, connectionSize, connectionContext.getTransactionConnectionContext());
+            return createConnections(dataSourceName, dataSource, connectionSize, connectionContext.getTransactionContext());
         }
         synchronized (dataSource) {
-            return createConnections(dataSourceName, dataSource, connectionSize, connectionContext.getTransactionConnectionContext());
+            return createConnections(dataSourceName, dataSource, connectionSize, connectionContext.getTransactionContext());
         }
     }
     

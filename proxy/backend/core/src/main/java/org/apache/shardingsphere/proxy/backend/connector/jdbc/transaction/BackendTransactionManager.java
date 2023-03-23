@@ -130,7 +130,7 @@ public final class BackendTransactionManager implements TransactionManager {
     }
     
     private TransactionConnectionContext getTransactionContext() {
-        return connection.getConnectionSession().getConnectionContext().getTransactionConnectionContext();
+        return connection.getConnectionSession().getConnectionContext().getTransactionContext();
     }
     
     @Override

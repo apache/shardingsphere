@@ -205,7 +205,7 @@ public final class ProxySQLExecutor {
     }
     
     private TransactionConnectionContext getTransactionContext(final ConnectionSession connectionSession) {
-        return connectionSession.getBackendConnection().getConnectionSession().getConnectionContext().getTransactionConnectionContext();
+        return connectionSession.getBackendConnection().getConnectionSession().getConnectionContext().getTransactionContext();
     }
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {

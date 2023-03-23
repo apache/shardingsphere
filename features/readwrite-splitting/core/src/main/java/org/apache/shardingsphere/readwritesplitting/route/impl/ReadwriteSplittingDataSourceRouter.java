@@ -49,7 +49,7 @@ public final class ReadwriteSplittingDataSourceRouter {
             return rule.getWriteDataSource();
         }
         return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getEnabledReplicaDataSources(),
-                connectionContext.getTransactionConnectionContext());
+                connectionContext.getTransactionContext());
     }
     
     private boolean isPrimaryRoute(final SQLStatementContext<?> sqlStatementContext) {
