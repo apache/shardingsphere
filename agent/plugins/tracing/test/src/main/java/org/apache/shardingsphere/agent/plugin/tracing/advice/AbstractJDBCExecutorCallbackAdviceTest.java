@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.MockDataSourceMetaData;
 import org.apache.shardingsphere.agent.plugin.tracing.TracingAgentExtension;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -88,7 +87,7 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         });
         Map<String, DataSourceMetaData> cachedDatasourceMetaData = (Map<String, DataSourceMetaData>) Plugins.getMemberAccessor()
                 .get(JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA"), mockedJDBCExecutorCallback);
-        cachedDatasourceMetaData.put("mock_url", new MockDataSourceMetaData());
+        cachedDatasourceMetaData.put("mock_url", mock(DataSourceMetaData.class));
         storageTypes = Collections.singletonMap(DATA_SOURCE_NAME, new MySQLDatabaseType());
         Plugins.getMemberAccessor().set(JDBCExecutorCallback.class.getDeclaredField("storageTypes"), mockedJDBCExecutorCallback, storageTypes);
         targetObject = (TargetAdviceObject) mockedJDBCExecutorCallback;
