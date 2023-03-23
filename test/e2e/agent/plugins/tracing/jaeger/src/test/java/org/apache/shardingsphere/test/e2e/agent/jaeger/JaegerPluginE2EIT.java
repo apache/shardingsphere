@@ -44,7 +44,7 @@ public final class JaegerPluginE2EIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases().stream().map(Arguments::of);
+            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }
