@@ -15,12 +15,12 @@
 # limitations under the License.
 #
 
-FROM eclipse-temurin:8-jdk
+FROM eclipse-temurin:11-jdk
 
 ARG APP_NAME
 ENV WAIT_VERSION 2.7.2
 
-ADD target/${APP_NAME}.tar.gz /opt
+ADD ${APP_NAME}.tar.gz /opt
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
 RUN chmod +x /wait
 RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy
