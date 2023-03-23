@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.enums.StatementType;
 import org.apache.shardingsphere.test.e2e.agent.jdbc.project.service.OrderService;
@@ -36,6 +37,7 @@ import java.util.LinkedList;
 /**
  * Order service impl.
  */
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
     
@@ -87,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
             } catch (final SQLException ignored) {
             }
         } else if (StatementType.PREPARED == statementType) {
-            String sql = String.format("DELETE FROM t_order WHERE order_id=%d", orderId);
+            String sql = String.format("DELETE FROM t_order WHERE order_id = %d", orderId);
             execute(sql, true, false);
         }
     }
@@ -95,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void update(final OrderEntity order, final StatementType statementType) {
         if (StatementType.STATEMENT == statementType) {
-            String sql = "UPDATE t_order SET status = ? WHERE order_id =?";
+            String sql = "UPDATE t_order SET status = ? WHERE order_id = ?";
             try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 connection.setAutoCommit(false);
                 preparedStatement.setString(1, order.getStatus());
@@ -105,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
             } catch (final SQLException ignored) {
             }
         } else if (StatementType.PREPARED == statementType) {
-            String sql = String.format("UPDATE t_order SET status = '%s' WHERE order_id=%d", order.getStatus(), order.getOrderId());
+            String sql = String.format("UPDATE t_order SET status = '%s' WHERE order_id = %d", order.getStatus(), order.getOrderId());
             execute(sql, false, false);
         }
     }
@@ -137,6 +139,7 @@ public class OrderServiceImpl implements OrderService {
     }
     
     private void execute(final String sql, final boolean autoCommit, final boolean isRollback) {
+        log.info("execute sql:{}", sql);
         try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
             if (autoCommit) {
                 statement.execute(sql);
