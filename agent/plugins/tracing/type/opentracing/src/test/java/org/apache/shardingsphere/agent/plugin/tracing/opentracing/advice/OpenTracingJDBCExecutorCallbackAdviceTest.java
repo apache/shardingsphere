@@ -72,9 +72,9 @@ public final class OpenTracingJDBCExecutorCallbackAdviceTest extends AbstractJDB
         assertTrue(spans.get(0).logEntries().isEmpty());
         assertThat(span.operationName(), is("/ShardingSphere/executeSQL/"));
         assertThat(tags.get(AttributeConstants.COMPONENT), is(AttributeConstants.COMPONENT_NAME));
-        assertThat(tags.get(AttributeConstants.DB_INSTANCE), is(getDataSourceName()));
-        assertThat(tags.get(AttributeConstants.DB_TYPE), is(getDatabaseType(getDataSourceName())));
-        assertThat(tags.get(AttributeConstants.DB_STATEMENT), is(getSql()));
+        assertThat(tags.get(AttributeConstants.DB_INSTANCE), is(DATA_SOURCE_NAME));
+        assertThat(tags.get(AttributeConstants.DB_TYPE), is(getDatabaseType(DATA_SOURCE_NAME)));
+        assertThat(tags.get(AttributeConstants.DB_STATEMENT), is(SQL));
         assertThat(tags.get(AttributeConstants.SPAN_KIND), is(AttributeConstants.SPAN_KIND_CLIENT));
     }
     
@@ -94,9 +94,9 @@ public final class OpenTracingJDBCExecutorCallbackAdviceTest extends AbstractJDB
         Map<String, Object> tags = span.tags();
         assertThat(span.operationName(), is("/ShardingSphere/executeSQL/"));
         assertThat(tags.get(AttributeConstants.COMPONENT), is(AttributeConstants.COMPONENT_NAME));
-        assertThat(tags.get(AttributeConstants.DB_INSTANCE), is(getDataSourceName()));
-        assertThat(tags.get(AttributeConstants.DB_TYPE), is(getDatabaseType(getDataSourceName())));
-        assertThat(tags.get(AttributeConstants.DB_STATEMENT), is(getSql()));
+        assertThat(tags.get(AttributeConstants.DB_INSTANCE), is(DATA_SOURCE_NAME));
+        assertThat(tags.get(AttributeConstants.DB_TYPE), is(getDatabaseType(DATA_SOURCE_NAME)));
+        assertThat(tags.get(AttributeConstants.DB_STATEMENT), is(SQL));
         assertThat(tags.get(AttributeConstants.SPAN_KIND), is(AttributeConstants.SPAN_KIND_CLIENT));
     }
 }

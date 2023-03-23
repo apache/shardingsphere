@@ -56,21 +56,6 @@ public final class UnsupportedOperationStatementTest {
     }
     
     @Test
-    public void assertAddBatch() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.addBatch(""));
-    }
-    
-    @Test
-    public void assertClearBatch() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.clearBatch());
-    }
-    
-    @Test
-    public void assertExecuteBatch() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.executeBatch());
-    }
-    
-    @Test
     public void assertCloseOnCompletion() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.closeOnCompletion());
     }

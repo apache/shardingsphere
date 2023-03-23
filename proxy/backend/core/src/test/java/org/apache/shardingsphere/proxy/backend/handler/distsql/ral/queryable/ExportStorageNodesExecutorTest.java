@@ -157,7 +157,7 @@ public final class ExportStorageNodesExecutorTest {
         MockedDataSource result = new MockedDataSource();
         result.setUrl(String.format("jdbc:mock://127.0.0.1/%s", name));
         result.setUsername("root");
-        result.setPassword("");
+        result.setPassword("test");
         result.setMaxPoolSize(50);
         result.setMinPoolSize(1);
         return result;

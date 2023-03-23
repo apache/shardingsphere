@@ -30,12 +30,12 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyLevelType;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 
 import java.util.Collection;
@@ -192,14 +192,14 @@ public final class ShardingTableRuleStatementConverter {
     }
     
     private static String getAutoTableShardingAlgorithmName(final String tableName, final String algorithmType) {
-        return String.format("%s_%s", tableName.toLowerCase(), algorithmType.toLowerCase());
+        return String.format("%s_%s", tableName, algorithmType).toLowerCase();
     }
     
     private static String getTableShardingAlgorithmName(final String tableName, final ShardingStrategyLevelType strategyLevel, final String algorithmType) {
-        return String.format("%s_%s_%s", tableName.toLowerCase(), strategyLevel.name().toLowerCase(), algorithmType.toLowerCase());
+        return String.format("%s_%s_%s", tableName, strategyLevel.name(), algorithmType).toLowerCase();
     }
     
     private static String getKeyGeneratorName(final String tableName, final String algorithmType) {
-        return String.format("%s_%s", tableName.toLowerCase(), algorithmType.toLowerCase());
+        return String.format("%s_%s", tableName, algorithmType).toLowerCase();
     }
 }

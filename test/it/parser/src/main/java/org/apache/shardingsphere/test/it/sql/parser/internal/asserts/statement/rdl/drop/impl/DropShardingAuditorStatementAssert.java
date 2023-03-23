@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAuditorStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.DropShardingAuditorStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -41,9 +41,7 @@ public final class DropShardingAuditorStatementAssert {
      * @param expected expected drop sharding auditor statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingAuditorStatement actual, final DropShardingAuditorStatementTestCase expected) {
-        if (null == expected.getNames()) {
-            assertNull(actual, assertContext.getText("Actual auditor name should not exist."));
-        } else {
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(assertContext.getText("Auditor names assertion error: "), actual.getNames(), is(expected.getNames()));
             assertThat(assertContext.getText("Contains exist clause assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }

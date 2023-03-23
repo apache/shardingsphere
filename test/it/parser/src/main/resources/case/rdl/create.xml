@@ -321,35 +321,44 @@
     </create-broadcast-table-rule>
     
     <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule">
-        <rule name="ms_group_0" write-data-source="primary_ds" load-balancer="random">
+        <rule name="ms_group_0" write-data-source="primary_ds">
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
+            <load-balancer algorithm-name="random" />
         </rule>
     </create-readwrite-splitting-rule>
     
     <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule-if-not-exists" if-not-exists="true">
-        <rule name="ms_group_0" write-data-source="primary_ds" load-balancer="random">
+        <rule name="ms_group_0" write-data-source="primary_ds">
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
+            <load-balancer algorithm-name="random" />
         </rule>
     </create-readwrite-splitting-rule>
 
     <create-readwrite-splitting-rule sql-case-id="create-readwrite-splitting-rule-with-quota">
-        <rule name="ms_group_0" write-data-source="primary_ds" load-balancer="random">
+        <rule name="ms_group_0" write-data-source="primary_ds">
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
+            <load-balancer algorithm-name="random" />
         </rule>
     </create-readwrite-splitting-rule>
     
     <create-readwrite-splitting-rule sql-case-id="create-dynamic-readwrite-splitting-rule">
-        <rule name="ms_group_1" auto-aware-resource="group_0" load-balancer="random">
-            <property key="read_weight" value="2:1" />
+        <rule name="ms_group_1" auto-aware-resource="group_0">
+            <load-balancer algorithm-name="WEIGHT">
+                <property key="test_read_ds_1" value="5" />
+                <property key="test_read_ds_2" value="5" />
+            </load-balancer>
         </rule>
     </create-readwrite-splitting-rule>
     
     <create-readwrite-splitting-rule sql-case-id="create-dynamic-readwrite-splitting-rule-if-not-exists" if-not-exists="true">
-        <rule name="ms_group_1" auto-aware-resource="group_0" load-balancer="random">
-            <property key="read_weight" value="2:1" />
+        <rule name="ms_group_1" auto-aware-resource="group_0">
+            <load-balancer algorithm-name="WEIGHT">
+                <property key="test_read_ds_1" value="5" />
+                <property key="test_read_ds_2" value="5" />
+            </load-balancer>
         </rule>
     </create-readwrite-splitting-rule>
     

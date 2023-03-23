@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRefe
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableReferenceRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.distsql.rdl.ShardingTableReferenceRuleAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedShardingTableReferenceRule;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.CreateShardingTableReferenceRuleStatementTestCase;
 
@@ -48,10 +49,7 @@ public final class CreateShardingTableReferenceRuleStatementAssert {
      * @param expected expected create sharding table reference rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateShardingTableReferenceRuleStatement actual, final CreateShardingTableReferenceRuleStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(expected.isIfNotExists()));
             assertShardingBindingTableRules(assertContext, actual.getRules(), expected.getRules());
         }

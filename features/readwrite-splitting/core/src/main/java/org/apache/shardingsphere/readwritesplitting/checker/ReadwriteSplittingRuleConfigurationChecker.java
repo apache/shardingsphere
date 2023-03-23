@@ -83,7 +83,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(strategyConfig.getWriteDataSourceName()), () -> new MissingRequiredWriteDataSourceNameException(databaseName));
         ShardingSpherePreconditions.checkState(!strategyConfig.getReadDataSourceNames().isEmpty(), () -> new MissingRequiredReadDataSourceNamesException(databaseName));
         checkWriteDataSourceNames(databaseName, dataSourceMap, addedWriteDataSourceNames, strategyConfig, rules);
-        for (String each : readDataSourceNames) {
+        for (String each : strategyConfig.getReadDataSourceNames()) {
             checkReadeDataSourceNames(databaseName, dataSourceMap, readDataSourceNames, each);
         }
     }

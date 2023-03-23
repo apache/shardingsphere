@@ -21,5 +21,4 @@ org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watch
 org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher.PropertiesChangedWatcher
 org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher.ComputeNodeStateChangedWatcher
 org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.watcher.ClusterStateChangedWatcher
-org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.watcher.lock.ClusterLockDeletedWatcher
 org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.ShardingSphereDataChangedWatcher

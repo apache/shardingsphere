@@ -56,13 +56,10 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     @Override
     public void init(final Properties props) {
         this.props = props;
-        if (props.containsKey(TRANSACTION_READ_QUERY_STRATEGY)) {
-            transactionReadQueryStrategy = TransactionReadQueryStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY));
-            dataSourceNames = props.stringPropertyNames().stream().filter(each -> !each.equals(TRANSACTION_READ_QUERY_STRATEGY)).collect(Collectors.toList());
-        } else {
-            transactionReadQueryStrategy = TransactionReadQueryStrategy.FIXED_PRIMARY;
-            dataSourceNames = props.stringPropertyNames();
-        }
+        transactionReadQueryStrategy = TransactionReadQueryStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_PRIMARY.name()));
+        dataSourceNames = props.containsKey(TRANSACTION_READ_QUERY_STRATEGY)
+                ? props.stringPropertyNames().stream().filter(each -> !each.equals(TRANSACTION_READ_QUERY_STRATEGY)).collect(Collectors.toList())
+                : props.stringPropertyNames();
     }
     
     @Override

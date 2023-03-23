@@ -30,6 +30,11 @@
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
         <mysql-connector-java.version>8.0.31</mysql-connector-java.version>
+        
+        <docker.proxy.context.directory>target/proxy</docker.proxy.context.directory>
+        <docker.proxy.compose.file>${project.basedir}/src/test/resources/docker/proxy/docker-compose.yml</docker.proxy.compose.file>
+        <docker.jdbc.context.directory>target/jdbc</docker.jdbc.context.directory>
+        <docker.jdbc.compose.file>${project.basedir}/src/test/resources/docker/jdbc/docker-compose.yml</docker.jdbc.compose.file>
     </properties>
     
     <dependencies>
@@ -72,7 +77,7 @@
     
     <profiles>
         <profile>
-            <id>it.env.prometheus</id>
+            <id>it.env.proxy.prometheus</id>
             <properties>
                 <it.env>prometheus</it.env>
             </properties>
@@ -88,10 +93,19 @@
                                 </goals>
                                 <phase>validate</phase>
                                 <configuration>
-                                    <outputDirectory>target/</outputDirectory>
+                                    <outputDirectory>${docker.proxy.context.directory}</outputDirectory>
                                     <resources>
                                         <resource>
+                                            <directory>${project.basedir}/src/test/resources/docker/proxy/</directory>
+                                            <includes>
+                                                <include>Dockerfile</include>
+                                            </includes>
+                                        </resource>
+                                        <resource>
                                             <directory>${project.basedir}/../../../../../../distribution/proxy/target/</directory>
+                                            <includes>
+                                                <include>${docker.proxy.distribution.name}.tar.gz</include>
+                                            </includes>
                                         </resource>
                                     </resources>
                                 </configuration>
@@ -106,8 +120,10 @@
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
                             <buildArgs>
-                                <APP_NAME>${docker.distribution.name}</APP_NAME>
+                                <APP_NAME>${docker.proxy.distribution.name}</APP_NAME>
                             </buildArgs>
+                            <contextDirectory>${docker.proxy.context.directory}</contextDirectory>
+                            <dockerfile>${docker.proxy.context.directory}/Dockerfile</dockerfile>
                         </configuration>
                         <executions>
                             <execution>
@@ -129,7 +145,7 @@
                                 </goals>
                                 <phase>pre-integration-test</phase>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
+                                    <composeFile>${docker.proxy.compose.file}</composeFile>
                                     <detachedMode>true</detachedMode>
                                 </configuration>
                             </execution>
@@ -140,7 +156,115 @@
                                 </goals>
                                 <phase>post-integration-test</phase>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
+                                    <composeFile>${docker.proxy.compose.file}</composeFile>
+                                    <removeVolumes>true</removeVolumes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
+        <profile>
+            <id>it.env.jdbc.prometheus</id>
+            <properties>
+                <it.env>prometheus</it.env>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-dockerfile</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <outputDirectory>${docker.jdbc.context.directory}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/test/resources/docker/jdbc</directory>
+                                            <includes>
+                                                <include>Dockerfile</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-resources</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>validate</phase>
+                                <configuration>
+                                    <outputDirectory>${docker.jdbc.context.directory}/shardingsphere-jdbc-app</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/../../../jdbc-project/target/</directory>
+                                            <includes>
+                                                <include>${docker.jdbc.distribution.name}.jar</include>
+                                            </includes>
+                                        </resource>
+                                        <resource>
+                                            <directory>${project.basedir}/src/test/resources/docker/jdbc/conf</directory>
+                                        </resource>
+                                        <resource>
+                                            <directory>${project.basedir}/../../../../../../distribution/agent/target/apache-shardingsphere-${project.version}-shardingsphere-agent-bin/</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>dockerfile-maven-plugin</artifactId>
+                        <configuration>
+                            <repository>apache/shardingsphere-jdbc-agent-metrics-test</repository>
+                            <tag>${project.version}</tag>
+                            <tag>latest</tag>
+                            <buildArgs>
+                                <APP_NAME>${docker.jdbc.distribution.name}</APP_NAME>
+                            </buildArgs>
+                            <contextDirectory>${docker.jdbc.context.directory}</contextDirectory>
+                            <dockerfile>${docker.jdbc.context.directory}/Dockerfile</dockerfile>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>shardingsphere-jdbc-bin</id>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.dkanejs.maven.plugins</groupId>
+                        <artifactId>docker-compose-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>agent-metrics-up</id>
+                                <goals>
+                                    <goal>up</goal>
+                                </goals>
+                                <phase>pre-integration-test</phase>
+                                <configuration>
+                                    <composeFile>${docker.jdbc.compose.file}</composeFile>
+                                    <detachedMode>true</detachedMode>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>agent-metrics-down</id>
+                                <goals>
+                                    <goal>down</goal>
+                                </goals>
+                                <phase>post-integration-test</phase>
+                                <configuration>
+                                    <composeFile>${docker.jdbc.compose.file}</composeFile>
                                     <removeVolumes>true</removeVolumes>
                                 </configuration>
                             </execution>

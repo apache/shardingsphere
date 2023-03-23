@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.sharding.distsql.fixture.sharding;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtil;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 
 import java.math.BigInteger;
 import java.util.Collection;
@@ -60,15 +62,21 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
     
     private int getShardingCount(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count can not be null.");
-        return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
+        int result = Integer.parseInt(String.valueOf(props.getProperty(SHARDING_COUNT_KEY)));
+        ShardingSpherePreconditions.checkState(result > 0, () -> new ShardingAlgorithmInitializationException(getType(), "Sharding count must be a positive integer."));
+        return result;
     }
     
     private int getStartOffset(final Properties props) {
-        return Integer.parseInt(String.valueOf(props.getProperty(START_OFFSET_INDEX_KEY, "0")));
+        int result = Integer.parseInt(String.valueOf(props.getProperty(START_OFFSET_INDEX_KEY, "0")));
+        ShardingSpherePreconditions.checkState(result >= 0, () -> new ShardingAlgorithmInitializationException(getType(), "Start offset can not be less than 0."));
+        return result;
     }
     
     private int getStopOffset(final Properties props) {
-        return Integer.parseInt(String.valueOf(props.getProperty(STOP_OFFSET_INDEX_KEY, "0")));
+        int result = Integer.parseInt(String.valueOf(props.getProperty(STOP_OFFSET_INDEX_KEY, "0")));
+        ShardingSpherePreconditions.checkState(result >= 0, () -> new ShardingAlgorithmInitializationException(getType(), "Stop offset can not be less than 0."));
+        return result;
     }
     
     private boolean isZeroPadding(final Properties props) {

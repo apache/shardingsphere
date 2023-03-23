@@ -21,11 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.LockClusterStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Lock cluster statement assert.
@@ -40,11 +40,8 @@ public final class LockClusterStatementAssert {
      * @param actual actual lock cluster statement
      * @param expected expected lock cluster statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final LockClusterStatement actual,
-                                final LockClusterStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final LockClusterStatement actual, final LockClusterStatementTestCase expected) {
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(actual.getLockStrategy(), is(expected.getLockStrategy()));
         }
     }

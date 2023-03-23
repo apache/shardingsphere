@@ -110,7 +110,7 @@ public final class CreateDefaultShardingStrategyStatementUpdater implements Rule
     }
     
     private String getDefaultShardingAlgorithmName(final String defaultType, final String algorithmType) {
-        return String.format("default_%s_%s", defaultType.toLowerCase(), algorithmType);
+        return String.format("default_%s_%s", defaultType, algorithmType).toLowerCase();
     }
     
     private void setStrategyConfiguration(final ShardingRuleConfiguration ruleConfig, final String type, final ShardingStrategyConfiguration shardingStrategyConfig) {

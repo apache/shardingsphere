@@ -73,5 +73,6 @@ public enum JobStatus {
      */
     EXECUTE_INCREMENTAL_TASK_FAILURE(false);
     
+    // TODO Remove unused field; Remove unused enum
     private final boolean running;
 }

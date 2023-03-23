@@ -36,7 +36,7 @@ public final class JaegerPluginE2EIT {
     
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertProxyWithAgent(final SpanTestCase spanTestCase) {
+    public void assertWithAgent(final SpanTestCase spanTestCase) {
         SpanAssert.assertIs(E2ETestEnvironment.getInstance().getProps().getProperty("jaeger.url"), spanTestCase);
     }
     
@@ -44,7 +44,7 @@ public final class JaegerPluginE2EIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases().stream().map(Arguments::of);
+            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
         }
     }
 }

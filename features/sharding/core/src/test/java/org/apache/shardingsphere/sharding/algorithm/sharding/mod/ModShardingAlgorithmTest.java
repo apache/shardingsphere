@@ -90,6 +90,11 @@ public final class ModShardingAlgorithmTest {
     }
     
     @Test
+    public void assertRangeDoShardingWithWrongArgumentForShardingCount() {
+        assertThrows(ShardingAlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "0"))));
+    }
+    
+    @Test
     public void assertRangeDoShardingWithWrongArgumentForStartOffset() {
         Properties props = createZeroPaddingProperties();
         props.setProperty("start-offset", "-1");

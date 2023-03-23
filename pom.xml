@@ -69,7 +69,7 @@
         <snakeyaml.version>1.33</snakeyaml.version>
         <gson.version>2.9.1</gson.version>
         <jackson.version>2.13.4</jackson.version>
-        <groovy.version>4.0.6</groovy.version>
+        <groovy.version>4.0.10</groovy.version>
         <freemarker.version>2.3.31</freemarker.version>
         <caffeine.version>2.9.3</caffeine.version>
         
@@ -130,6 +130,7 @@
         <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
+        <jandex-maven-plugin.version>3.0.5</jandex-maven-plugin.version>
         
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
@@ -1133,6 +1134,19 @@
                             <goal>report</goal>
                         </goals>
                         <phase>test</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+                <version>${jandex-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>make-index</id>
+                        <goals>
+                            <goal>jandex</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

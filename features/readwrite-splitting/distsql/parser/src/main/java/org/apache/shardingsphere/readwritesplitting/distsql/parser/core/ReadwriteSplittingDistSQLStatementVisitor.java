@@ -88,21 +88,14 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitReadwriteSplittingRuleDefinition(final ReadwriteSplittingRuleDefinitionContext ctx) {
-        Properties props = new Properties();
-        String algorithmTypeName = null;
-        if (null != ctx.algorithmDefinition()) {
-            algorithmTypeName = getIdentifierValue(ctx.algorithmDefinition().algorithmTypeName());
-            props = getProperties(ctx.algorithmDefinition().propertiesDefinition());
-        }
         if (null == ctx.staticReadwriteSplittingRuleDefinition()) {
             return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()), getIdentifierValue(ctx.dynamicReadwriteSplittingRuleDefinition().resourceName()),
-                    algorithmTypeName, props);
+                    null == ctx.algorithmDefinition() ? null : (AlgorithmSegment) visitAlgorithmDefinition(ctx.algorithmDefinition()));
         }
         StaticReadwriteSplittingRuleDefinitionContext staticRuleDefinitionCtx = ctx.staticReadwriteSplittingRuleDefinition();
-        return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()),
-                getIdentifierValue(staticRuleDefinitionCtx.writeStorageUnitName()),
+        return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()), getIdentifierValue(staticRuleDefinitionCtx.writeStorageUnitName()),
                 staticRuleDefinitionCtx.readStorageUnitsNames().storageUnitName().stream().map(this::getIdentifierValue).collect(Collectors.toList()),
-                algorithmTypeName, props);
+                null == ctx.algorithmDefinition() ? null : (AlgorithmSegment) visitAlgorithmDefinition(ctx.algorithmDefinition()));
     }
     
     @Override

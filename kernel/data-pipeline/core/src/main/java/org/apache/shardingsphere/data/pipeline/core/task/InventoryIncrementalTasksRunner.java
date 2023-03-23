@@ -141,7 +141,6 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         @Override
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, inventory task execute failed.", throwable);
-            updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
             String jobId = jobItemContext.getJobId();
             jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
             jobAPI.stop(jobId);
@@ -158,7 +157,6 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         @Override
         public void onFailure(final Throwable throwable) {
             log.error("onFailure, incremental task execute failed.", throwable);
-            updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
             String jobId = jobItemContext.getJobId();
             jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
             jobAPI.stop(jobId);

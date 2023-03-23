@@ -20,11 +20,10 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperty;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -43,9 +42,6 @@ public final class ExceptedReadwriteSplittingRule extends AbstractExpectedIdenti
     @XmlElement(name = "read-data-source")
     private List<String> readDataSources;
     
-    @XmlAttribute(name = "load-balancer")
-    private String loadBalancer;
-    
-    @XmlElement(name = "property")
-    private final List<ExpectedProperty> properties = new LinkedList<>();
+    @XmlElement(name = "load-balancer")
+    private ExpectedAlgorithm loadBalancer;
 }

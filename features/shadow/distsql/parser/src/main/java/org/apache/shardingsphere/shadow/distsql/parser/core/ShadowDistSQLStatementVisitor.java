@@ -175,9 +175,9 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     }
     
     private static Collection<ShadowRuleSegment> autoCreateAlgorithmName(final Collection<ShadowRuleSegment> shadowRuleSegments) {
-        Collection<ShadowRuleSegment> newShadowRuleSegments = new LinkedList<>();
-        shadowRuleSegments.forEach(each -> buildShadowRuleSegment(newShadowRuleSegments, each));
-        return newShadowRuleSegments;
+        Collection<ShadowRuleSegment> result = new LinkedList<>();
+        shadowRuleSegments.forEach(each -> buildShadowRuleSegment(result, each));
+        return result;
     }
     
     private static void buildShadowRuleSegment(final Collection<ShadowRuleSegment> collection, final ShadowRuleSegment shadowRuleSegment) {
@@ -193,13 +193,13 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
         collection.add(new ShadowRuleSegment(shadowRuleSegment.getRuleName(), shadowRuleSegment.getSource(), shadowRuleSegment.getShadow(), shadowTableRules));
     }
     
-    private static ShadowAlgorithmSegment buildShadowAlgorithmSegment(final String ruleName, final String tableName, final Integer index, final ShadowAlgorithmSegment shadowAlgorithmSegment) {
+    private static ShadowAlgorithmSegment buildShadowAlgorithmSegment(final String ruleName, final String tableName, final int index, final ShadowAlgorithmSegment shadowAlgorithmSegment) {
         String algorithmName = buildAlgorithmName(ruleName, tableName, shadowAlgorithmSegment.getAlgorithmSegment().getName(), index);
         AlgorithmSegment algorithmSegment = new AlgorithmSegment(shadowAlgorithmSegment.getAlgorithmSegment().getName(), shadowAlgorithmSegment.getAlgorithmSegment().getProps());
         return new ShadowAlgorithmSegment(algorithmName, algorithmSegment);
     }
     
-    private static String buildAlgorithmName(final String ruleName, final String tableName, final String algorithmType, final Integer index) {
+    private static String buildAlgorithmName(final String ruleName, final String tableName, final String algorithmType, final int index) {
         return String.format("%s_%s_%s_%d", ruleName, tableName, algorithmType, index).toLowerCase();
     }
 }

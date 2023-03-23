@@ -185,12 +185,16 @@
     </alter-sharding-table-reference-rule>
     
     <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
-        <rule name="ms_group_0" auto-aware-resource="group_0" load-balancer="random">
-            <property key="read_weight" value="2:1" />
+        <rule name="ms_group_0" auto-aware-resource="group_0">
+            <load-balancer algorithm-name="WEIGHT">
+                <property key="test_read_ds_1" value="5" />
+                <property key="test_read_ds_2" value="5" />
+            </load-balancer>
         </rule>
-        <rule name="ms_group_1" write-data-source="primary_ds" load-balancer="random">
+        <rule name="ms_group_1" write-data-source="primary_ds">
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
+            <load-balancer algorithm-name="random" />
         </rule>
     </alter-readwrite-splitting-rule>
 

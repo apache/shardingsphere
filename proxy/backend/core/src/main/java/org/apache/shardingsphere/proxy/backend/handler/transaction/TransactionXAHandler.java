@@ -76,7 +76,7 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
                  */
                 ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), XATransactionNestedBeginException::new);
                 ResponseHeader header = backendHandler.execute();
-                connectionSession.getConnectionContext().getTransactionConnectionContext().setInTransaction(true);
+                connectionSession.getConnectionContext().getTransactionContext().setInTransaction(true);
                 return header;
             case "END":
             case "PREPARE":
