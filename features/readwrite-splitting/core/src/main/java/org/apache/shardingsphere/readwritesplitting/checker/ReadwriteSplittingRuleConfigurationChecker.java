@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceCon
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
@@ -41,7 +41,7 @@ import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingReq
 import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredDataSourceNameException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredReadDataSourceNamesException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredWriteDataSourceNameException;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -124,18 +124,18 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
     }
     
     private void checkLoadBalancerDataSourceName(final String databaseName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs,
-                                                 final Map<String, ReadQueryLoadBalanceAlgorithm> loadBalancers, final Collection<ShardingSphereRule> rules) {
+                                                 final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers, final Collection<ShardingSphereRule> rules) {
         for (ReadwriteSplittingDataSourceRuleConfiguration each : configs) {
             if (Strings.isNullOrEmpty(each.getLoadBalancerName())) {
                 continue;
             }
-            ReadQueryLoadBalanceAlgorithm loadBalancer = loadBalancers.get(each.getLoadBalancerName());
+            ReplicaLoadBalanceAlgorithm loadBalancer = loadBalancers.get(each.getLoadBalancerName());
             ShardingSpherePreconditions.checkNotNull(loadBalancer, () -> new LoadBalancerAlgorithmNotFoundException(databaseName));
-            if (loadBalancer instanceof WeightReadQueryLoadBalanceAlgorithm) {
-                ShardingSpherePreconditions.checkState(!((WeightReadQueryLoadBalanceAlgorithm) loadBalancer).getDataSourceNames().isEmpty(),
+            if (loadBalancer instanceof WeightReplicaLoadBalanceAlgorithm) {
+                ShardingSpherePreconditions.checkState(!((WeightReplicaLoadBalanceAlgorithm) loadBalancer).getDataSourceNames().isEmpty(),
                         () -> new MissingRequiredReadDatabaseWeightException(loadBalancer.getType(), String.format("Read data source weight config are required in database `%s`", databaseName)));
                 Collection<String> dataSourceNames = getDataSourceNames(each, rules);
-                ((WeightReadQueryLoadBalanceAlgorithm) loadBalancer).getDataSourceNames().forEach(dataSourceName -> ShardingSpherePreconditions.checkState(dataSourceNames.contains(dataSourceName),
+                ((WeightReplicaLoadBalanceAlgorithm) loadBalancer).getDataSourceNames().forEach(dataSourceName -> ShardingSpherePreconditions.checkState(dataSourceNames.contains(dataSourceName),
                         () -> new InvalidWeightLoadBalancerConfigurationException(databaseName)));
             }
         }
@@ -155,9 +155,9 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements RuleCon
         return result;
     }
     
-    private Map<String, ReadQueryLoadBalanceAlgorithm> getLoadBalancer(final ReadwriteSplittingRuleConfiguration config) {
-        Map<String, ReadQueryLoadBalanceAlgorithm> result = new LinkedHashMap<>(config.getLoadBalancers().size(), 1);
-        config.getLoadBalancers().forEach((key, value) -> result.put(key, TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, value.getType(), value.getProps())));
+    private Map<String, ReplicaLoadBalanceAlgorithm> getLoadBalancer(final ReadwriteSplittingRuleConfiguration config) {
+        Map<String, ReplicaLoadBalanceAlgorithm> result = new LinkedHashMap<>(config.getLoadBalancers().size(), 1);
+        config.getLoadBalancers().forEach((key, value) -> result.put(key, TypedSPILoader.getService(ReplicaLoadBalanceAlgorithm.class, value.getType(), value.getProps())));
         return result;
     }
     

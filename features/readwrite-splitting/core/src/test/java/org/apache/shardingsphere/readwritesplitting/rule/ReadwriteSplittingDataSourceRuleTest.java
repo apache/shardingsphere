@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +38,7 @@ public final class ReadwriteSplittingDataSourceRuleTest {
         readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_pr",
                         new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, null),
-                new RandomReadQueryLoadBalanceAlgorithm(), Collections.emptyList());
+                new RandomReplicaLoadBalanceAlgorithm(), Collections.emptyList());
     }
     
     @Test

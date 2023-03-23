@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSph
 import java.util.List;
 
 /**
- * Read query load-balance algorithm.
+ * Replica load balance algorithm.
  */
-public interface ReadQueryLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
+public interface ReplicaLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Get data source.
