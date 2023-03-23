@@ -52,12 +52,15 @@ public final class E2ETestEnvironment {
     
     private boolean isAdaptedProxy;
     
+    private String adapter;
+    
     private final AtomicBoolean prepareFlag = new AtomicBoolean();
     
     private E2ETestEnvironment() {
         props = EnvironmentProperties.loadProperties("env/engine-env.properties");
         isEnvironmentPrepared = props.getProperty("it.env.value").equals(props.getProperty("it.env.type"));
-        isAdaptedProxy = "proxy".equalsIgnoreCase(props.getProperty("it.env.adapter", "proxy"));
+        adapter = props.getProperty("it.env.adapter", "proxy");
+        isAdaptedProxy = "proxy".equalsIgnoreCase(adapter);
     }
     
     /**
@@ -148,6 +151,7 @@ public final class E2ETestEnvironment {
         String selectAllUrl = props.getProperty("jdbc.path.select.all");
         try {
             Response response = OkHttpUtils.getInstance().getResponse(String.join("", baseUrl, selectAllUrl));
+            response.close();
             return response.isSuccessful();
         } catch (final IOException ignored) {
         }

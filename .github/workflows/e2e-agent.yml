@@ -81,6 +81,12 @@ jobs:
           - adapter: jdbc
             feature: metrics
             plugin: prometheus
+          - adapter: jdbc
+            feature: tracing
+            plugin: jaeger
+          - adapter: jdbc
+            feature: tracing
+            plugin: zipkin
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3

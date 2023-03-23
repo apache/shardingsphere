@@ -20,10 +20,10 @@ version: "2.1"
 services:
   mysql:
     image: "mysql/mysql-server:5.7"
-    container_name: agent-tracing-jaeger-mysql
+    container_name: agent-proxy-jaeger-mysql
     command: ['--sql_mode=', '--default-authentication-plugin=mysql_native_password']
     volumes:
-      - ../env/mysql:/docker-entrypoint-initdb.d/
+      - ../../env/mysql:/docker-entrypoint-initdb.d/
     ports:
       - "43061:3306"
     environment:
@@ -31,7 +31,7 @@ services:
 
   jaeger:
     image: "jaegertracing/all-in-one:1.41"
-    container_name: agent-tracing-jaeger
+    container_name: agent-proxy-jaeger
     ports:
       - "14317:4317"
       - "26686:16686"
@@ -45,11 +45,11 @@ services:
       - "43071:3307"
       - "43081:3308"
     links:
-      - "mysql:mysql.agent.tracing.jaeger.host"
-      - "jaeger:jaeger.agent.tracing.jaeger.host"
+      - "mysql:mysql.agent.proxy.jaeger.host"
+      - "jaeger:jaeger.agent.host"
     volumes:
-      - ./proxy/conf:/opt/shardingsphere-proxy/conf
-      - ./agent/conf:/opt/shardingsphere-proxy/agent/conf
+      - ./conf:/opt/shardingsphere-proxy/conf
+      - ../agent/conf:/opt/shardingsphere-proxy/agent/conf
     depends_on:
       - mysql
       - jaeger

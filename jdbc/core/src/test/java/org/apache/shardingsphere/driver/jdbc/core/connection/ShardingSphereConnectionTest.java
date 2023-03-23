@@ -117,10 +117,10 @@ public final class ShardingSphereConnectionTest {
         connection.getConnectionManager().getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
-        assertTrue(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertTrue(connection.getConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
         verify(physicalConnection).setAutoCommit(false);
         connection.commit();
-        assertFalse(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertFalse(connection.getConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
         verify(physicalConnection).commit();
     }
     
@@ -130,12 +130,12 @@ public final class ShardingSphereConnectionTest {
         when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(DistributedTransactionOperationType.BEGIN);
         ConnectionManager connectionManager = mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(false);
-        assertTrue(connectionManager.getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertTrue(connectionManager.getConnectionContext().getTransactionContext().isInTransaction());
         assertFalse(connection.getAutoCommit());
-        assertTrue(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertTrue(connection.getConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
         verify(connectionTransaction).begin();
         connection.commit();
-        assertFalse(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertFalse(connection.getConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
         verify(connectionManager).commit();
     }
     
@@ -157,10 +157,10 @@ public final class ShardingSphereConnectionTest {
         final ConnectionManager connectionManager = mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
-        assertTrue(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertTrue(connection.getConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
         verify(connectionTransaction).begin();
         connection.rollback();
-        assertFalse(connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction());
+        assertFalse(connection.getConnectionManager().getConnectionContext().getTransactionContext().isInTransaction());
         verify(connectionManager).rollback();
     }
     

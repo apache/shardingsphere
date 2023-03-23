@@ -68,7 +68,7 @@ public final class ShardingDDLResultMergerTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         ConnectionContext connectionContext = mock(ConnectionContext.class);
-        when(connectionContext.getCursorConnectionContext()).thenReturn(new CursorConnectionContext());
+        when(connectionContext.getCursorContext()).thenReturn(new CursorConnectionContext());
         assertThat(merger.merge(createMultiQueryResults(), createFetchStatementContext(database), mock(ShardingSphereDatabase.class), connectionContext),
                 instanceOf(FetchStreamMergedResult.class));
     }
