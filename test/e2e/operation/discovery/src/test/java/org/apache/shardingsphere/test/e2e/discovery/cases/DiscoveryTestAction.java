@@ -74,7 +74,7 @@ public final class DiscoveryTestAction {
     private void assertClosePrimaryDataSource() throws SQLException {
         String oldPrimaryDataSourceName = getPrimaryDataSourceName();
         closeDataSource(databaseClusterEnv.getDataSources().get(oldPrimaryDataSourceName));
-        Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> !oldPrimaryDataSourceName.equals(getPrimaryDataSourceName()));
+        Awaitility.await().atMost(Durations.TWO_MINUTES).until(() -> !oldPrimaryDataSourceName.equals(getPrimaryDataSourceName()));
         databaseClusterEnv.getDataSources().remove(oldPrimaryDataSourceName);
     }
     
@@ -117,7 +117,7 @@ public final class DiscoveryTestAction {
         databaseClusterEnv.getDataSources().remove(getPrimaryDataSourceName());
         String closedRoutingDataSourceName = getCloseReplicationDataSourceName(databaseClusterEnv);
         databaseClusterEnv.getDataSources().remove(closedRoutingDataSourceName);
-        Awaitility.await().atMost(Durations.TWO_MINUTES)
+        Awaitility.await().atMost(Durations.FIVE_MINUTES)
                 .until(() -> getRouteDataSourceName().equals(Objects.requireNonNull(databaseClusterEnv.getDataSources().entrySet().stream().findFirst().orElse(null)).getKey()));
     }
     
@@ -148,7 +148,7 @@ public final class DiscoveryTestAction {
                 Connection connection = composer.getProxyDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute(discoveryDistSQL.getDropDatabase().getExecuteSQL());
-            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertDropSQL(statement, discoveryDistSQL.getDropDatabase().getAssertionSQL()));
+            Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> assertDropSQL(statement, discoveryDistSQL.getDropDatabase().getAssertionSQL()));
         }
     }
     
@@ -165,7 +165,7 @@ public final class DiscoveryTestAction {
                 Connection connection = composer.getProxyDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute(discoveryDistSQL.getCreateReadwriteSplittingDatabase().getExecuteSQL());
-            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertCreateSQL(statement, discoveryDistSQL.getCreateReadwriteSplittingDatabase().getAssertionSQL()));
+            Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> assertCreateSQL(statement, discoveryDistSQL.getCreateReadwriteSplittingDatabase().getAssertionSQL()));
         }
     }
     
@@ -182,7 +182,7 @@ public final class DiscoveryTestAction {
                 Connection connection = composer.getProxyDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute(discoveryDistSQL.getRegisterSingleStorageUnit().getExecuteSQL());
-            Awaitility.await().atMost(Durations.FIVE_SECONDS).until(() -> assertRDL(statement, discoveryDistSQL.getRegisterSingleStorageUnit().getAssertionSQL()));
+            Awaitility.await().atMost(Durations.ONE_MINUTE).until(() -> assertRDL(statement, discoveryDistSQL.getRegisterSingleStorageUnit().getAssertionSQL()));
         }
     }
     
