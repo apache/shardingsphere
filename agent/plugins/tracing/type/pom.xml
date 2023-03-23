@@ -29,7 +29,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>opentracing</module>
         <module>opentelemetry</module>
     </modules>
     
