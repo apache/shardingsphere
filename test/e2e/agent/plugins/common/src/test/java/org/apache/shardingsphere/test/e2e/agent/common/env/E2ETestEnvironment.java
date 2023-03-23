@@ -151,6 +151,7 @@ public final class E2ETestEnvironment {
         String selectAllUrl = props.getProperty("jdbc.path.select.all");
         try {
             Response response = OkHttpUtils.getInstance().getResponse(String.join("", baseUrl, selectAllUrl));
+            response.close();
             return response.isSuccessful();
         } catch (final IOException ignored) {
         }
