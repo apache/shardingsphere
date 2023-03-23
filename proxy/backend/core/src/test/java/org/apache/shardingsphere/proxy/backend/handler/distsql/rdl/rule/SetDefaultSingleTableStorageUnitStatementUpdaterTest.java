@@ -34,7 +34,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public final class SetDefaultSingleTableStorageUnitUpdaterTest {
+public final class SetDefaultSingleTableStorageUnitStatementUpdaterTest {
     
     private final SetDefaultSingleTableStorageUnitStatementUpdater updater = new SetDefaultSingleTableStorageUnitStatementUpdater();
     
