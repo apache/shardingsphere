@@ -4,8 +4,8 @@ weight = 2
 +++
 
 ## 描述
-
-`CREATE READWRITE_SPLITTING RULE` 语法用于创建读写分离规则
+。
+`CREATE READWRITE_SPLITTING RULE` 语法用于创建读写分离规则。
 
 ### 语法定义
 

@@ -5,7 +5,7 @@ weight = 2
 
 ## 描述
 
-`CREATE SHARDING TABLE RULE` 语法用于为当前所选逻辑库添加分片规则
+`CREATE SHARDING TABLE RULE` 语法用于为当前所选逻辑库添加分片规则。
 
 ### 语法定义
 

@@ -6,7 +6,7 @@ weight = 2
 
 ### 描述
 
-`SHOW MIGRATION RULE` 语法用于查询数据迁移规则
+`SHOW MIGRATION RULE` 语法用于查询数据迁移规则。
 ### 语法
 
 {{< tabs >}}

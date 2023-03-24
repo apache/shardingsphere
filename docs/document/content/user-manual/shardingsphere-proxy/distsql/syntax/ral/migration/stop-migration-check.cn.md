@@ -5,7 +5,7 @@ weight = 13
 
 ### 描述
 
-`STOP MIGRATION CHECK` 语法用于停止指定数据迁移作业的数据校验
+`STOP MIGRATION CHECK` 语法用于停止指定数据迁移作业的数据校验。
 
 ### 语法
 

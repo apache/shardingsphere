@@ -5,7 +5,7 @@ weight = 10
 
 ### 描述
 
-`SHOW MIGRATION CHECK ALGORITHM` 语法用于查询数据迁移一致性校验算法
+`SHOW MIGRATION CHECK ALGORITHM` 语法用于查询数据迁移一致性校验算法。
 ### 语法
 
 {{< tabs >}}

@@ -5,7 +5,7 @@ weight = 3
 
 ### 描述
 
-`SHOW TRANSACTION RULE` 语法用于查询事务规则配置
+`SHOW TRANSACTION RULE` 语法用于查询事务规则配置。
 ### 语法
 
 {{< tabs >}}

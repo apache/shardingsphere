@@ -5,7 +5,7 @@ weight = 9
 
 ### 描述
 
-`SHOW TRAFFIC RULE` 语法用于查询指定的双路由规则
+`SHOW TRAFFIC RULE` 语法用于查询指定的双路由规则。
 ### 语法
 
 {{< tabs >}}

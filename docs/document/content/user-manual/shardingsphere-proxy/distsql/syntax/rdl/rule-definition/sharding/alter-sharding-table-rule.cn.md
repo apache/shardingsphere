@@ -5,7 +5,7 @@ weight = 3
 
 ## 描述
 
-`ALTER SHARDING TABLE RULE` 语法用于修改当前所选逻辑库的分片规则
+`ALTER SHARDING TABLE RULE` 语法用于修改当前所选逻辑库的分片规则。
 
 ### 语法定义
 

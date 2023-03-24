@@ -5,7 +5,7 @@ weight = 9
 
 ### 描述
 
-`SHOW MIGRATION STATUS` 语法用于查询指定数据迁移作业的详细情况
+`SHOW MIGRATION STATUS` 语法用于查询指定数据迁移作业的详细情况。
 
 ### 语法
 
