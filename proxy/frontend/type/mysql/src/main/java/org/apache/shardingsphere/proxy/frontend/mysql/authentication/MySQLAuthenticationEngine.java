@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import com.google.common.base.Strings;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.epoll.EpollDomainSocketChannel;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
@@ -57,6 +59,7 @@ import java.util.Optional;
 /**
  * Authentication engine for MySQL.
  */
+@Slf4j
 public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     
     private final MySQLAuthenticationPluginData authPluginData = new MySQLAuthenticationPluginData();
@@ -103,7 +106,16 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     }
     
     private AuthenticationResult authenticatePhaseFastPath(final ChannelHandlerContext context, final PacketPayload payload, final AuthorityRule rule) {
-        MySQLHandshakeResponse41Packet handshakeResponsePacket = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
+        MySQLHandshakeResponse41Packet handshakeResponsePacket;
+        try {
+            handshakeResponsePacket = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
+        } catch (IndexOutOfBoundsException ex) {
+            writeErrorPacket(context, new MySQLErrPacket(MySQLVendorError.ER_HANDSHAKE_ERROR));
+            if (log.isWarnEnabled()) {
+                log.warn("Received bad handshake from client {}: \n{}", context.channel(), ByteBufUtil.prettyHexDump(payload.getByteBuf().resetReaderIndex()));
+            }
+            return AuthenticationResultBuilder.continued();
+        }
         String database = handshakeResponsePacket.getDatabase();
         authResponse = handshakeResponsePacket.getAuthResponse();
         setCharacterSet(context, handshakeResponsePacket);
