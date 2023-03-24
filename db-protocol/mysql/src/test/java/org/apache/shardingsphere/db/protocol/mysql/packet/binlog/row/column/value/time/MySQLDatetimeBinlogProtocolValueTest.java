@@ -50,6 +50,6 @@ public final class MySQLDatetimeBinlogProtocolValueTest {
     @Test
     public void assertReadNullTime() {
         when(payload.readInt8()).thenReturn(0L);
-        assertThat(new MySQLDatetimeBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.DATETIME_OF_ZERO));
+        assertThat(new MySQLDatetimeBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
     }
 }

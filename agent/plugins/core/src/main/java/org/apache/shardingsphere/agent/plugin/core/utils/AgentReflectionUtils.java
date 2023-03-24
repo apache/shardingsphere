@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.util;
+package org.apache.shardingsphere.agent.plugin.core.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,10 +26,10 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 /**
- * Agent reflection utility.
+ * Agent reflection utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AgentReflectionUtil {
+public final class AgentReflectionUtils {
     
     /**
      * Get field value.

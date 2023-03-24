@@ -15,35 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.time;
+package org.apache.shardingsphere.proxy.backend.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.text.SimpleDateFormat;
-
 /**
- * Time value utility of MySQL.
+ * System property utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLTimeValueUtil {
-    
-    public static final String ZERO_OF_TIME = "00:00:00";
-    
-    public static final String ZERO_OF_DATE = "0000-00-00";
-    
-    public static final String YEAR_OF_ZERO = "0000";
-    
-    public static final String DATETIME_OF_ZERO = "0000-00-00 00:00:00";
-    
-    private static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+public final class SystemPropertyUtils {
     
     /**
-     * Get simple date format for current thread.
+     * Set system property.
      *
-     * @return simple date format
+     * @param key property key
+     * @param value property value
      */
-    public static SimpleDateFormat getSimpleDateFormat() {
-        return TIMESTAMP_FORMAT.get();
+    public static void setSystemProperty(final String key, final String value) {
+        System.setProperty(key, value);
+    }
+    
+    /**
+     * Get system property.
+     *
+     * @param key property key
+     * @param defaultValue a default value
+     * @return property value
+     */
+    public static String getSystemProperty(final String key, final String defaultValue) {
+        return System.getProperty(key, defaultValue);
     }
 }

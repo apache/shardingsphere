@@ -46,6 +46,6 @@ public final class MySQLYearBinlogProtocolValueTest {
     @Test
     public void assertReadNullYear() {
         when(payload.readInt1()).thenReturn(0);
-        assertThat(new MySQLYearBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.YEAR_OF_ZERO));
+        assertThat(new MySQLYearBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.YEAR_OF_ZERO));
     }
 }

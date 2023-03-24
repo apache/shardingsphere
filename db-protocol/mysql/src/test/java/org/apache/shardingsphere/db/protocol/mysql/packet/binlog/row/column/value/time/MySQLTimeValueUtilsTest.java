@@ -24,11 +24,11 @@ import java.text.SimpleDateFormat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLTimeValueUtilTest {
+public final class MySQLTimeValueUtilsTest {
     
     @Test
     public void assertGetSimpleDateFormat() {
         Timestamp expected = new Timestamp(1584599445000L);
-        assertThat(MySQLTimeValueUtil.getSimpleDateFormat().format(expected), is(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(expected)));
+        assertThat(MySQLTimeValueUtils.getSimpleDateFormat().format(expected), is(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(expected)));
     }
 }

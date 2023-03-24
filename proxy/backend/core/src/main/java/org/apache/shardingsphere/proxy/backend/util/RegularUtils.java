@@ -17,21 +17,28 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import org.junit.jupiter.api.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public final class SystemPropertyUtilTest {
+/**
+ * Regular utility class.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RegularUtils {
     
-    @Test
-    public void assertGetDefaultValue() {
-        assertThat(SystemPropertyUtil.getSystemProperty("key0", "value0"), is("value0"));
-    }
-    
-    @Test
-    public void assertGetSystemPropertyAfterSet() {
-        SystemPropertyUtil.setSystemProperty("key1", "value1");
-        assertThat(SystemPropertyUtil.getSystemProperty("key1", "value0"), is("value1"));
+    /**
+     * Tells whether or not this input string matches the given regular expression.
+     * 
+     * @param regex the regular expression to which the input string is to be matched
+     * @param toBeMatched the string to be matched
+     * @return whether or not the regular expression matches on the input
+     */
+    public static boolean matchesCaseInsensitive(final String regex, final String toBeMatched) {
+        Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(toBeMatched);
+        return m.matches();
     }
 }

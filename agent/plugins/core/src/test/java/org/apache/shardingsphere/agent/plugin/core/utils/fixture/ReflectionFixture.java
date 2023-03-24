@@ -15,26 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.util;
+package org.apache.shardingsphere.agent.plugin.core.utils.fixture;
 
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public final class RegularUtilTest {
+@RequiredArgsConstructor
+@Getter
+public final class ReflectionFixture {
     
-    @Test
-    public void assertMatchesWithUpperCaseRegex() {
-        assertTrue(RegularUtil.matchesCaseInsensitive("T.ORDER", "t_order"));
-    }
+    private final String value;
     
-    @Test
-    public void assertMatchesWithLowerCaseRegex() {
-        assertTrue(RegularUtil.matchesCaseInsensitive("t.order", "t_order"));
-    }
-    
-    @Test
-    public void assertMatchesWithUpperCaseInput() {
-        assertTrue(RegularUtil.matchesCaseInsensitive("t.order", "T_ORDER"));
+    @SuppressWarnings("unused")
+    private String call() {
+        return value;
     }
 }

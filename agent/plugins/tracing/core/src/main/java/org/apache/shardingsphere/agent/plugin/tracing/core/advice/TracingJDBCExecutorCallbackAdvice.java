@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.api.advice.type.InstanceMethodAdvice;
-import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
+import org.apache.shardingsphere.agent.plugin.core.utils.AgentReflectionUtils;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -45,9 +45,9 @@ public abstract class TracingJDBCExecutorCallbackAdvice<T> implements InstanceMe
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     public final void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
         JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-        Map<String, DatabaseType> storageTypes = AgentReflectionUtil.getFieldValue(target, "storageTypes");
+        Map<String, DatabaseType> storageTypes = AgentReflectionUtils.getFieldValue(target, "storageTypes");
         DatabaseType storageType = storageTypes.get(executionUnit.getExecutionUnit().getDataSourceName());
-        DataSourceMetaData metaData = AgentReflectionUtil.invokeMethod(
+        DataSourceMetaData metaData = AgentReflectionUtils.invokeMethod(
                 JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class, DatabaseType.class),
                 target, executionUnit.getStorageResource().getConnection().getMetaData(), storageType);
         recordExecuteInfo(RootSpanContext.get(), target, executionUnit, (boolean) args[1], metaData, storageType.getType());

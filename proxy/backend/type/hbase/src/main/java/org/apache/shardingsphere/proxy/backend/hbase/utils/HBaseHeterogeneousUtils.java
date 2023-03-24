@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.util;
+package org.apache.shardingsphere.proxy.backend.hbase.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -27,10 +27,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * HBase heterogeneous util.
+ * HBase heterogeneous utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class HBaseHeterogeneousUtil {
+public final class HBaseHeterogeneousUtils {
     
     /**
      * Whether crc projection segment.

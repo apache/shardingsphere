@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc;
 
-import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
+import org.apache.shardingsphere.agent.plugin.core.utils.AgentReflectionUtils;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -51,11 +51,11 @@ public final class JDBCStateExporter implements MetricsExporter {
         }
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
-        DriverDataSourceCache dataSourceCache = AgentReflectionUtil.getFieldValue(shardingSphereDriverOptional.get(), "dataSourceCache");
-        Map<String, DataSource> dataSourceMap = AgentReflectionUtil.getFieldValue(dataSourceCache, "dataSourceMap");
+        DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(shardingSphereDriverOptional.get(), "dataSourceCache");
+        Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) entry.getValue();
-            ContextManager contextManager = AgentReflectionUtil.getFieldValue(shardingSphereDataSource, "contextManager");
+            ContextManager contextManager = AgentReflectionUtils.getFieldValue(shardingSphereDataSource, "contextManager");
             result.addMetric(Collections.emptyList(), contextManager.getInstanceContext().getInstance().getState().getCurrentState().ordinal());
         }
         return Optional.of(result);

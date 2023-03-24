@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowLogicalTa
 import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.proxy.backend.util.RegularUtil;
+import org.apache.shardingsphere.proxy.backend.util.RegularUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Collection;
@@ -47,7 +47,7 @@ public final class ShowLogicalTableExecutor implements RQLExecutor<ShowLogicalTa
         Collection<String> tables = database.getSchema(schemaName).getAllTableNames();
         if (sqlStatement.getLikePattern().isPresent()) {
             String pattern = SQLUtil.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
-            tables = tables.stream().filter(each -> RegularUtil.matchesCaseInsensitive(pattern, each)).collect(Collectors.toList());
+            tables = tables.stream().filter(each -> RegularUtils.matchesCaseInsensitive(pattern, each)).collect(Collectors.toList());
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         tables.forEach(each -> result.add(new LocalDataQueryResultRow(each)));

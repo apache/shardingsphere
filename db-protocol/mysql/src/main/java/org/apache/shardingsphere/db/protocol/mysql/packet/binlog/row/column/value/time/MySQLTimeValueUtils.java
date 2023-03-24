@@ -15,30 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.util;
+package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.time;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.text.SimpleDateFormat;
 
 /**
- * Regular utility class.
+ * Time value utility class of MySQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegularUtil {
+public final class MySQLTimeValueUtils {
+    
+    public static final String ZERO_OF_TIME = "00:00:00";
+    
+    public static final String ZERO_OF_DATE = "0000-00-00";
+    
+    public static final String YEAR_OF_ZERO = "0000";
+    
+    public static final String DATETIME_OF_ZERO = "0000-00-00 00:00:00";
+    
+    private static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     
     /**
-     * Tells whether or not this input string matches the given regular expression.
-     * 
-     * @param regex the regular expression to which the input string is to be matched
-     * @param toBeMatched the string to be matched
-     * @return whether or not the regular expression matches on the input
+     * Get simple date format for current thread.
+     *
+     * @return simple date format
      */
-    public static boolean matchesCaseInsensitive(final String regex, final String toBeMatched) {
-        Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(toBeMatched);
-        return m.matches();
+    public static SimpleDateFormat getSimpleDateFormat() {
+        return TIMESTAMP_FORMAT.get();
     }
 }
