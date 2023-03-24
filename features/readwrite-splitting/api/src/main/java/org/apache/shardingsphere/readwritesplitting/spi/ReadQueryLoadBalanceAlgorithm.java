@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.spi;
 
-import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
 
 import java.util.List;
@@ -33,8 +32,7 @@ public interface ReadQueryLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
      * @param name read query logic data source name
      * @param writeDataSourceName name of write data source
      * @param readDataSourceNames names of read data sources
-     * @param context context
      * @return name of selected data source
      */
-    String getDataSource(String name, String writeDataSourceName, List<String> readDataSourceNames, TransactionConnectionContext context);
+    String getDataSource(String name, String writeDataSourceName, List<String> readDataSourceNames);
 }

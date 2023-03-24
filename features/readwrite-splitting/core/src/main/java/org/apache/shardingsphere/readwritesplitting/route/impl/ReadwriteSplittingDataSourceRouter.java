@@ -91,6 +91,6 @@ public final class ReadwriteSplittingDataSourceRouter {
     }
     
     private String routeWithLoadBalancer() {
-        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getEnabledReplicaDataSources(), connectionContext.getTransactionContext());
+        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getEnabledReplicaDataSources());
     }
 }

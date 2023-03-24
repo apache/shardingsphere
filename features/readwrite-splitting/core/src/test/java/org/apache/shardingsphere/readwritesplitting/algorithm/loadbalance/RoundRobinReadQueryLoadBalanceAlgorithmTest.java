@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
-import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.junit.jupiter.api.Test;
@@ -38,15 +37,14 @@ public final class RoundRobinReadQueryLoadBalanceAlgorithmTest {
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        TransactionConnectionContext context = new TransactionConnectionContext();
-        assertRoundRobinReadQueryLoadBalance(writeDataSourceName, readDataSourceName1, readDataSourceName2, loadBalanceAlgorithm, readDataSourceNames, context);
+        assertRoundRobinReadQueryLoadBalance(writeDataSourceName, readDataSourceName1, readDataSourceName2, loadBalanceAlgorithm, readDataSourceNames);
     }
     
     private void assertRoundRobinReadQueryLoadBalance(final String writeDataSourceName, final String readDataSourceName1, final String readDataSourceName2,
-                                                      final ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(readDataSourceName1));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(readDataSourceName2));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(readDataSourceName1));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(readDataSourceName2));
+                                                      final ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm, final List<String> readDataSourceNames) {
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName2));
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName1));
+        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(readDataSourceName2));
     }
 }
