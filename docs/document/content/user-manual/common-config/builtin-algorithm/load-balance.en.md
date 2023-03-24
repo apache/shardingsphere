@@ -45,12 +45,11 @@ rules:
         readDataSourceNames:
           - read_ds_0
           - read_ds_1
+      transactionalReadQueryStrategy: PRIMARY
       loadBalancerName: random
   loadBalancers:
     random:
       type: RANDOM
-      props:
-        transaction-read-query-strategy: PRIMARY
 ```
 
 ## Related References
