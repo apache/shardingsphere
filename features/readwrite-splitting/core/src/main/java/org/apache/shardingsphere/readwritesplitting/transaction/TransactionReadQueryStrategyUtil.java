@@ -20,8 +20,8 @@ package org.apache.shardingsphere.readwritesplitting.transaction;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalLoadBalanceStrategy;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalLoadBalanceStrategyAware;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategyAware;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public final class TransactionReadQueryStrategyUtil {
      * @return name of selected data source
      */
     public static String routeInTransaction(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context,
-                                            final TransactionalLoadBalanceStrategy readQueryStrategy, final TransactionalLoadBalanceStrategyAware readQueryStrategyAware) {
+                                            final TransactionReadQueryStrategy readQueryStrategy, final TransactionReadQueryStrategyAware readQueryStrategyAware) {
         switch (readQueryStrategy) {
             case FIXED_REPLICA:
                 if (null == context.getReadWriteSplitReplicaRoute()) {
