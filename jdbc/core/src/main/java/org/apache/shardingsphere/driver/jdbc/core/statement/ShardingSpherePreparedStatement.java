@@ -212,7 +212,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         kernelProcessor = new KernelProcessor();
         statementsCacheable = isStatementsCacheable(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData());
         trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
-        transparentStatement = isAllSingleTable(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData());
+        transparentStatement = isTransparentStatement(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData());
         statementManager = new StatementManager();
     }
     
@@ -220,7 +220,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return databaseRuleMetaData.findRules(StorageConnectorReusableRule.class).size() == databaseRuleMetaData.getRules().size() && !HintManager.isInstantiated();
     }
     
-    private boolean isAllSingleTable(final ShardingSphereRuleMetaData ruleMetaData) {
+    private boolean isTransparentStatement(final ShardingSphereRuleMetaData ruleMetaData) {
         Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(ruleMetaData.findRules(DataNodeContainedRule.class));
         Collection<ColumnContainedRule> columnContainedRules = ruleMetaData.findRules(ColumnContainedRule.class);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
