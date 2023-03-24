@@ -41,12 +41,23 @@ public final class ExpressionExtractUtil {
     
     /**
      * Get and predicate collection.
-     * 
+     *
      * @param expression expression segment
      * @return and predicate collection
      */
     public static Collection<AndPredicate> getAndPredicates(final ExpressionSegment expression) {
         Collection<AndPredicate> result = new LinkedList<>();
+        extractAndPredicates(result, expression);
+        return result;
+    }
+    
+    /**
+     * Get and predicate collection.
+     * @param result result list
+     * @param expression expression segment
+     * @return and predicate collection
+     */
+    public static Collection<AndPredicate> getAndPredicates(final Collection<AndPredicate> result, final ExpressionSegment expression) {
         extractAndPredicates(result, expression);
         return result;
     }
@@ -64,6 +75,9 @@ public final class ExpressionExtractUtil {
         } else if (logicalOperator.isPresent() && LogicalOperator.AND == logicalOperator.get()) {
             Collection<AndPredicate> predicates = getAndPredicates(binaryExpression.getRight());
             for (AndPredicate each : getAndPredicates(binaryExpression.getLeft())) {
+                if (result.contains(each)) {
+                    continue;
+                }
                 extractCombinedAndPredicates(result, each, predicates);
             }
         } else {
@@ -88,7 +102,7 @@ public final class ExpressionExtractUtil {
     
     /**
      * Get parameter marker expression collection.
-     * 
+     *
      * @param expressions expression collection
      * @return parameter marker expression collection
      */
