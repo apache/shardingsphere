@@ -138,7 +138,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     
     private void processLogin(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
         if (!request.hasLoginRequestBody() || !request.getLoginRequestBody().hasBasicBody()) {
-            throw CDCExceptionWrapper.wrapper(request.getRequestId(), new PipelineInvalidParameterException("login request body is empty"));
+            throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Login request body is empty"));
         }
         BasicBody body = request.getLoginRequestBody().getBasicBody();
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
@@ -148,17 +148,17 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             connectionContext.setCurrentUser(user.get());
             ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
         } else {
-            throw CDCExceptionWrapper.wrapper(request.getRequestId(), new CDCLoginException("Illegal username or password"));
+            throw new CDCExceptionWrapper(request.getRequestId(), new CDCLoginException("Illegal username or password"));
         }
     }
     
     private void checkPrivileges(final String requestId, final Grantee grantee, final String currentDatabase) {
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)
-                .orElseThrow(() -> CDCExceptionWrapper.wrapper(requestId, new MissingRequiredRuleException("authority")));
+                .orElseThrow(() -> new CDCExceptionWrapper(requestId, new MissingRequiredRuleException("authority")));
         ShardingSpherePrivileges privileges = authorityRule.findPrivileges(grantee)
-                .orElseThrow(() -> CDCExceptionWrapper.wrapper(requestId, new SQLAuditException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname()))));
+                .orElseThrow(() -> new CDCExceptionWrapper(requestId, new SQLAuditException(String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname()))));
         ShardingSpherePreconditions.checkState(privileges.hasPrivileges(currentDatabase),
-                () -> CDCExceptionWrapper.wrapper(requestId, new SQLAuditException(String.format("Unknown database '%s'", currentDatabase))));
+                () -> new CDCExceptionWrapper(requestId, new SQLAuditException(String.format("Unknown database '%s'", currentDatabase))));
     }
     
     private String getHostAddress(final ChannelHandlerContext context) {
@@ -168,14 +168,14 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     
     private void processStreamDataRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
         if (!request.hasStreamDataRequestBody()) {
-            throw CDCExceptionWrapper.wrapper(request.getRequestId(), new PipelineInvalidParameterException("stream data request body is empty"));
+            throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Stream data request body is empty"));
         }
         StreamDataRequestBody requestBody = request.getStreamDataRequestBody();
         if (requestBody.getDatabase().isEmpty()) {
-            throw CDCExceptionWrapper.wrapper(request.getRequestId(), new PipelineInvalidParameterException("database is empty"));
+            throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Database is empty"));
         }
         if (requestBody.getSourceSchemaTableList().isEmpty()) {
-            throw CDCExceptionWrapper.wrapper(request.getRequestId(), new PipelineInvalidParameterException("stream data request is empty"));
+            throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Source schema table is empty"));
         }
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), requestBody.getDatabase());
         CDCResponse response = backendHandler.streamData(request.getRequestId(), requestBody, connectionContext, ctx.channel());
@@ -184,22 +184,22 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     
     private void processAckStreamingRequest(final CDCRequest request) {
         if (!request.hasAckStreamingRequestBody()) {
-            throw CDCExceptionWrapper.wrapper(request.getRequestId(), new PipelineInvalidParameterException("ack request body is empty"));
+            throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Ack request body is empty"));
         }
         AckStreamingRequestBody requestBody = request.getAckStreamingRequestBody();
         if (requestBody.getAckId().isEmpty()) {
-            throw CDCExceptionWrapper.wrapper(request.getRequestId(), new PipelineInvalidParameterException("ack request is empty"));
+            throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Ack request is empty"));
         }
         backendHandler.processAck(requestBody);
     }
     
     private void processStartStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
         if (!request.hasStartStreamingRequestBody()) {
-            throw CDCExceptionWrapper.wrapper(request.getRequestId(), new PipelineInvalidParameterException("start streaming request body is empty"));
+            throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Start streaming request body is empty"));
         }
         StartStreamingRequestBody requestBody = request.getStartStreamingRequestBody();
         if (requestBody.getStreamingId().isEmpty()) {
-            throw CDCExceptionWrapper.wrapper(request.getRequestId(), new PipelineInvalidParameterException("streaming id is empty"));
+            throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Streaming id is empty"));
         }
         String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), database);
@@ -227,7 +227,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             connectionContext.setJobId(null);
             ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
         } catch (final SQLException ex) {
-            throw CDCExceptionWrapper.wrapper(request.getRequestId(), new CDCServerException(ex.getMessage()));
+            throw new CDCExceptionWrapper(request.getRequestId(), new CDCServerException(ex.getMessage()));
         }
     }
 }

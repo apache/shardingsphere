@@ -31,15 +31,4 @@ public final class CDCExceptionWrapper extends RuntimeException {
     private final String requestId;
     
     private final ShardingSphereSQLException exception;
-    
-    /**
-     * Wrapper the exception.
-     *
-     * @param requestId request id
-     * @param exception ShardingSphereCDCException
-     * @return Wrapped ShardingSphereCDCException
-     */
-    public static CDCExceptionWrapper wrapper(final String requestId, final ShardingSphereSQLException exception) {
-        return new CDCExceptionWrapper(requestId, exception);
-    }
 }

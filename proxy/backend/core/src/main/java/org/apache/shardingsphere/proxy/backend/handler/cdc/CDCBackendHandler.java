@@ -85,7 +85,7 @@ public final class CDCBackendHandler {
     public CDCResponse streamData(final String requestId, final StreamDataRequestBody requestBody, final CDCConnectionContext connectionContext, final Channel channel) {
         ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(requestBody.getDatabase());
         if (null == database) {
-            throw CDCExceptionWrapper.wrapper(requestId, new CDCServerException(String.format("%s database is not exists", requestBody.getDatabase())));
+            throw new CDCExceptionWrapper(requestId, new CDCServerException(String.format("%s database is not exists", requestBody.getDatabase())));
         }
         Map<String, Set<String>> schemaTableNameMap;
         Collection<String> tableNames;
@@ -101,7 +101,7 @@ public final class CDCBackendHandler {
             tableNames = schemaTableNames;
         }
         if (tableNames.isEmpty()) {
-            throw CDCExceptionWrapper.wrapper(requestId, new NotFindStreamDataSourceTableException());
+            throw new CDCExceptionWrapper(requestId, new NotFindStreamDataSourceTableException());
         }
         ShardingRule shardingRule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
         Map<String, List<DataNode>> actualDataNodesMap = new HashMap<>();
