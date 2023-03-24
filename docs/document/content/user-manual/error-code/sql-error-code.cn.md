@@ -134,6 +134,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 18095       | Can not find consistency check job of \`%s\`. |
 | HY000     | 18096       | Uncompleted consistency check job \`%s\` exists. |
 | HY000     | 18200       | Not find stream data source table. |
+| HY000     | 18201       | CDC server exception, reason is: %s. |
+| HY000     | 18202       | CDC login failed, reason is: %s |
 
 ### DistSQL
 

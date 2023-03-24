@@ -89,11 +89,11 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
     
     private void sendStreamDataEvent(final ChannelHandlerContext ctx, final CDCResponse response, final ClientConnectionContext connectionContext) {
         if (response.getStatus() == Status.SUCCEED) {
-            log.info("login success, username {}", username);
+            log.info("Login success, username {}", username);
             connectionContext.setStatus(ClientConnectionStatus.LOGGING_IN);
             ctx.fireUserEventTriggered(new StreamDataEvent());
         } else {
-            log.error("login failed, username {}", username);
+            log.error("Login failed, username: {}, error message: {}", username, response.getErrorMessage());
         }
     }
     

@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.common;
+package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * CDC response error code.
+ * CDC server exception.
  */
-@RequiredArgsConstructor
-public enum CDCResponseErrorCode {
+public final class CDCServerException extends PipelineSQLException {
     
-    SERVER_ERROR("1"),
-    
-    ILLEGAL_REQUEST_ERROR("2"),
-    
-    ILLEGAL_USERNAME_OR_PASSWORD("3");
-    
-    @Getter
-    private final String code;
+    public CDCServerException(final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 201, String.format("CDC server exception, reason is: %s.", reason));
+    }
 }
