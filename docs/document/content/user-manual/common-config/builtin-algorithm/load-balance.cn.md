@@ -48,7 +48,7 @@ rules:
     random:
       type: RANDOM
       props:
-        transaction-read-query-strategy: FIXED_PRIMARY
+        transaction-read-query-strategy: PRIMARY
 ```
 
 ## 相关参考
