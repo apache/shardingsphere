@@ -5,7 +5,7 @@ weight = 2
 
 ### 描述
 
-`SHOW COMPUTE NODE INFO` 语法用于查询当前 proxy 实例信息
+`SHOW COMPUTE NODE INFO` 语法用于查询当前 proxy 实例信息。
 
 ### 语法
 

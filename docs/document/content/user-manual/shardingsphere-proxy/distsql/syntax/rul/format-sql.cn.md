@@ -5,7 +5,7 @@ weight = 2
 
 ### 描述
 
-`FORMAT SQL` 语法用于解析并输出格式化后的 `SQL` 语句  
+`FORMAT SQL` 语法用于解析并输出格式化后的 `SQL` 语句。
 
 ### 语法
 

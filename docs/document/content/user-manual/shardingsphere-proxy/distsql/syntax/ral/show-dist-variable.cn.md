@@ -5,7 +5,7 @@ weight = 5
 
 ### 描述
 
-`SHOW DIST VARIABLE` 语法用于查询 `PROXY` 系统变量配置
+`SHOW DIST VARIABLE` 语法用于查询 `PROXY` 系统变量配置。
 
 ### 语法
 
