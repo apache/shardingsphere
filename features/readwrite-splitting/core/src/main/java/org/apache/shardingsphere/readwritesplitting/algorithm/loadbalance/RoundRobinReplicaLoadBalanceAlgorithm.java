@@ -18,42 +18,49 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategyAware;
-import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalLoadBalanceStrategyAware;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalLoadBalanceStrategy;
+import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.transaction.TransactionReadQueryStrategyUtil;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Random read query load-balance algorithm.
+ * Round-robin replica load balance algorithm.
  */
-public final class RandomReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, TransactionReadQueryStrategyAware {
+public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm, TransactionalLoadBalanceStrategyAware {
     
-    private TransactionReadQueryStrategy transactionReadQueryStrategy;
+    private final AtomicInteger count = new AtomicInteger(0);
+    
+    private TransactionalLoadBalanceStrategy transactionalLoadBalanceStrategy;
     
     @Override
     public void init(final Properties props) {
-        transactionReadQueryStrategy = TransactionReadQueryStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_PRIMARY.name()));
+        transactionalLoadBalanceStrategy = TransactionalLoadBalanceStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY, TransactionalLoadBalanceStrategy.FIXED_PRIMARY.name()));
     }
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
         if (context.isInTransaction()) {
-            return TransactionReadQueryStrategyUtil.routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionReadQueryStrategy, this);
+            return TransactionReadQueryStrategyUtil.routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionalLoadBalanceStrategy, this);
         }
         return getReadDataSource(name, readDataSourceNames);
     }
     
     @Override
     public String getReadDataSource(final String name, final List<String> readDataSourceNames) {
-        return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
+        return readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
     }
     
     @Override
     public String getType() {
-        return "RANDOM";
+        return "ROUND_ROBIN";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

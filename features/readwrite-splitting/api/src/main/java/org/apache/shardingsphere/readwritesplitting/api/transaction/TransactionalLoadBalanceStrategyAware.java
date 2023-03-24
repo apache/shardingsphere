@@ -20,9 +20,9 @@ package org.apache.shardingsphere.readwritesplitting.api.transaction;
 import java.util.List;
 
 /**
- * Transaction read query strategy aware.
+ * Transactional load balance strategy aware.
  */
-public interface TransactionReadQueryStrategyAware {
+public interface TransactionalLoadBalanceStrategyAware {
     
     String TRANSACTION_READ_QUERY_STRATEGY = "transaction-read-query-strategy";
     
