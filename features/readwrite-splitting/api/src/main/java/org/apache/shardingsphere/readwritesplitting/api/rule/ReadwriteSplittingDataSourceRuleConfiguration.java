@@ -42,6 +42,6 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     
     public ReadwriteSplittingDataSourceRuleConfiguration(final String name, final StaticReadwriteSplittingStrategyConfiguration staticStrategy,
                                                          final DynamicReadwriteSplittingStrategyConfiguration dynamicStrategy, final String loadBalancerName) {
-        this(name, staticStrategy, dynamicStrategy, TransactionalReadQueryStrategy.DYNAMIC_REPLICA, loadBalancerName);
+        this(name, staticStrategy, dynamicStrategy, TransactionalReadQueryStrategy.DYNAMIC, loadBalancerName);
     }
 }
