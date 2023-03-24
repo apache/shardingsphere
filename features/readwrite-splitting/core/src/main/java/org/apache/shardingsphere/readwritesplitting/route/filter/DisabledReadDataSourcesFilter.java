@@ -24,9 +24,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Enabled read data sources filter.
+ * Disabled read data sources filter.
  */
-public final class EnabledReadDataSourcesFilter implements ReadDataSourcesFilter {
+public final class DisabledReadDataSourcesFilter implements ReadDataSourcesFilter {
     
     @Override
     public List<String> filter(final ReadwriteSplittingDataSourceRule rule, final List<String> toBeFilteredReadDataSources) {
