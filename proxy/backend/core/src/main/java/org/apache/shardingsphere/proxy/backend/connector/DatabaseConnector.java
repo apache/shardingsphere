@@ -49,6 +49,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -346,17 +347,24 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private boolean isAllSingleTable(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext.getTablesContext().getTableNames().stream().allMatch(each -> !containsInImmutableDataNodeContainedRule(each)
-                && !containsInColumnContainedRule(each));
+        DataNodeContainedRule dataNodeContainedRule = database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
+                .filter(each -> !(each instanceof MutableDataNodeRule)).findFirst().orElse(null);
+        Collection<ColumnContainedRule> columnContainedRules = database.getRuleMetaData().findRules(ColumnContainedRule.class);
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+            return !containsInImmutableDataNodeContainedRule(each, dataNodeContainedRule) && !containsInColumnContainedRule(each, columnContainedRules);
+        }
+        return true;
     }
     
-    private boolean containsInImmutableDataNodeContainedRule(final String tableName) {
-        return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
+    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final DataNodeContainedRule dataNodeContainedRule) {
+        return null != dataNodeContainedRule && dataNodeContainedRule.getAllTables().contains(tableName);
     }
     
-    private boolean containsInColumnContainedRule(final String tableName) {
-        return database.getRuleMetaData().findRules(ColumnContainedRule.class).stream().anyMatch(each -> each.getTables().contains(tableName));
+    private boolean containsInColumnContainedRule(final String tableName, final Collection<ColumnContainedRule> columnContainedRules) {
+        for (ColumnContainedRule each : columnContainedRules) {
+            return each.getTables().contains(tableName);
+        }
+        return false;
     }
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {

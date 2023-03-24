@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -136,17 +137,24 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     }
     
     private boolean isAllSingleTable() {
-        return sqlStatementContext.getTablesContext().getTableNames().stream().allMatch(each -> !containsInImmutableDataNodeContainedRule(each)
-                && !containsInColumnContainedRule(each));
+        DataNodeContainedRule dataNodeContainedRule = database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
+                .filter(each -> !(each instanceof MutableDataNodeRule)).findFirst().orElse(null);
+        Collection<ColumnContainedRule> columnContainedRules = database.getRuleMetaData().findRules(ColumnContainedRule.class);
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+            return !containsInImmutableDataNodeContainedRule(each, dataNodeContainedRule) && !containsInColumnContainedRule(each, columnContainedRules);
+        }
+        return true;
     }
     
-    private boolean containsInImmutableDataNodeContainedRule(final String tableName) {
-        return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
+    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final DataNodeContainedRule dataNodeContainedRule) {
+        return null != dataNodeContainedRule && dataNodeContainedRule.getAllTables().contains(tableName);
     }
     
-    private boolean containsInColumnContainedRule(final String tableName) {
-        return database.getRuleMetaData().findRules(ColumnContainedRule.class).stream().anyMatch(each -> each.getTables().contains(tableName));
+    private boolean containsInColumnContainedRule(final String tableName, final Collection<ColumnContainedRule> columnContainedRules) {
+        for (ColumnContainedRule each : columnContainedRules) {
+            return each.getTables().contains(tableName);
+        }
+        return false;
     }
     
     private void checkColumnIndex(final int column) throws SQLException {
