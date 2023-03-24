@@ -33,6 +33,3 @@ plugins:
 #        otel.traces.exporter: "jaeger"
 #        otel.exporter.otlp.traces.endpoint: "http://localhost:14250"
 #        otel.traces.sampler: "always_on"
-#    OpenTracing:
-#      props:
-#        opentracing-tracer-class-name: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
