@@ -32,6 +32,8 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.Vendor
 @Getter
 public enum MySQLVendorError implements VendorError {
     
+    ER_HANDSHAKE_ERROR(XOpenSQLState.COMMUNICATION_LINK_FAILURE, 1043, "Bad handshake"),
+    
     ER_DBACCESS_DENIED_ERROR(XOpenSQLState.SYNTAX_ERROR, 1044, "Access denied for user '%s'@'%s' to database '%s'"),
     
     ER_ACCESS_DENIED_ERROR(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, 1045, "Access denied for user '%s'@'%s' (using password: %s)"),

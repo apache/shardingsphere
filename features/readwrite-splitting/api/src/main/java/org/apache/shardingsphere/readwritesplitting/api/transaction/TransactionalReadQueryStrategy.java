@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.common;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.readwritesplitting.api.transaction;
 
 /**
- * CDC response error code.
+ * Transactional read query strategy.
  */
-@RequiredArgsConstructor
-public enum CDCResponseErrorCode {
+public enum TransactionalReadQueryStrategy {
     
-    SERVER_ERROR("1"),
-    
-    ILLEGAL_REQUEST_ERROR("2"),
-    
-    ILLEGAL_USERNAME_OR_PASSWORD("3");
-    
-    @Getter
-    private final String code;
+    PRIMARY, FIXED, DYNAMIC
 }

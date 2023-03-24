@@ -57,7 +57,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Socket sink importer connector.
  */
 @Slf4j
-public final class SocketSinkImporterConnector implements ImporterConnector {
+public final class SocketSinkImporterConnector implements ImporterConnector, AutoCloseable {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
     
@@ -203,6 +203,11 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
     @Override
     public String getType() {
         return CDCSinkType.SOCKET.name();
+    }
+    
+    @Override
+    public void close() throws Exception {
+        channel.close();
     }
     
     @RequiredArgsConstructor

@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.api.transaction;
+package org.apache.shardingsphere.data.pipeline.cdc.exception;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 
 /**
- * Transactional load balance strategy.
+ * CDC exception wrapper.
  */
-public enum TransactionalLoadBalanceStrategy {
+@RequiredArgsConstructor
+@Getter
+public final class CDCExceptionWrapper extends RuntimeException {
     
-    FIXED_PRIMARY, FIXED_REPLICA, DYNAMIC_REPLICA
+    private final String requestId;
+    
+    private final ShardingSphereSQLException exception;
 }

@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-lexer grammar Symbol;
+package org.apache.shardingsphere.readwritesplitting.spi;
 
-EQ_:                 '=';
-NEQ_:                '<>' | '!=' | '^=';
-GT_:                 '>';
-GTE_:                '>=';
-LT_:                 '<';
-LTE_:                '<=';
-LP_:                 '(';
-RP_:                 ')';
-LBE_:                '{';
-RBE_:                '}';
-LBT_:                '[';
-RBT_:                ']';
-COMMA_:              ',';
-DQ_:                 '"';
-SQ_ :                '\'';
-DOLLAR_:             '$';
-COLON_:              ':';
-RANGE_:              '..';
-NEGETIVE_INFINITY_:  '-∞';
-POSITIVE_INFINITY_:  '+∞';
-QUESTION_:           '?';
-MINUS_:              '-';
-DOT_:              '.';
+import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
+
+import java.util.List;
+
+/**
+ * Read query load-balance algorithm.
+ */
+public interface ReadQueryLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
+    
+    /**
+     * Get data source.
+     * 
+     * @param name read query logic data source name
+     * @param writeDataSourceName name of write data source
+     * @param readDataSourceNames names of read data sources
+     * @return name of selected data source
+     */
+    String getDataSource(String name, String writeDataSourceName, List<String> readDataSourceNames);
+}

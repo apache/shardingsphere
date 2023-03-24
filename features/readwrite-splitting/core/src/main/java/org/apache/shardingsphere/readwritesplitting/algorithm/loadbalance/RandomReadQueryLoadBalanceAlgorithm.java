@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.api.transaction;
+package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
+
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Transactional load balance strategy aware.
+ * Random read query load-balance algorithm.
  */
-public interface TransactionalLoadBalanceStrategyAware {
+public final class RandomReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
-    String TRANSACTION_READ_QUERY_STRATEGY = "transaction-read-query-strategy";
+    @Override
+    public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
+        return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
+    }
     
-    /**
-     * Get data source name.
-     * 
-     * @param name name
-     * @param readDataSourceNames names of read data sources
-     * @return name of selected data source
-     */
-    String getDataSourceName(String name, List<String> readDataSourceNames);
+    @Override
+    public String getType() {
+        return "RANDOM";
+    }
 }

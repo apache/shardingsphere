@@ -337,7 +337,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
-        if (isAllSingleTable(executionContext.getSqlStatementContext())) {
+        if (isTransparentStatement(executionContext.getSqlStatementContext())) {
             return queryResultSample.getMetaData().getColumnCount();
         }
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())
@@ -345,18 +345,29 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
                 : queryResultSample.getMetaData().getColumnCount();
     }
     
-    private boolean isAllSingleTable(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext.getTablesContext().getTableNames().stream().allMatch(each -> !containsInImmutableDataNodeContainedRule(each)
-                && !containsInColumnContainedRule(each));
+    private boolean isTransparentStatement(final SQLStatementContext<?> sqlStatementContext) {
+        Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(database.getRuleMetaData().findRules(DataNodeContainedRule.class));
+        Collection<ColumnContainedRule> columnContainedRules = database.getRuleMetaData().findRules(ColumnContainedRule.class);
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+            return (!dataNodeContainedRule.isPresent() || !dataNodeContainedRule.get().getAllTables().contains(each)) && !containsInColumnContainedRule(each, columnContainedRules);
+        }
+        return true;
     }
     
-    private boolean containsInImmutableDataNodeContainedRule(final String tableName) {
-        return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
+    private Optional<DataNodeContainedRule> getDataNodeContainedRuleForShardingRule(final Collection<DataNodeContainedRule> dataNodeContainedRules) {
+        for (DataNodeContainedRule each : dataNodeContainedRules) {
+            if (!(each instanceof MutableDataNodeRule)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
-    private boolean containsInColumnContainedRule(final String tableName) {
-        return database.getRuleMetaData().findRules(ColumnContainedRule.class).stream().anyMatch(each -> each.getTables().contains(tableName));
+    private boolean containsInColumnContainedRule(final String tableName, final Collection<ColumnContainedRule> columnContainedRules) {
+        for (ColumnContainedRule each : columnContainedRules) {
+            return each.getTables().contains(tableName);
+        }
+        return false;
     }
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
@@ -365,7 +376,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final ExecutionContext executionContext,
                                           final QueryResult queryResultSample, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
-        if (isAllSingleTable(executionContext.getSqlStatementContext())) {
+        if (isTransparentStatement(executionContext.getSqlStatementContext())) {
             return queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
         }
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())

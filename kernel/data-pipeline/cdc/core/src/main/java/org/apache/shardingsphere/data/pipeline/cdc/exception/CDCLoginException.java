@@ -15,28 +15,17 @@
  * limitations under the License.
  */
 
-lexer grammar Symbol;
+package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
-EQ_:                 '=';
-NEQ_:                '<>' | '!=' | '^=';
-GT_:                 '>';
-GTE_:                '>=';
-LT_:                 '<';
-LTE_:                '<=';
-LP_:                 '(';
-RP_:                 ')';
-LBE_:                '{';
-RBE_:                '}';
-LBT_:                '[';
-RBT_:                ']';
-COMMA_:              ',';
-DQ_:                 '"';
-SQ_ :                '\'';
-DOLLAR_:             '$';
-COLON_:              ':';
-RANGE_:              '..';
-NEGETIVE_INFINITY_:  '-∞';
-POSITIVE_INFINITY_:  '+∞';
-QUESTION_:           '?';
-MINUS_:              '-';
-DOT_:              '.';
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
+/**
+ * CDC login exception.
+ */
+public final class CDCLoginException extends PipelineSQLException {
+    
+    public CDCLoginException(final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 202, String.format("CDC login failed, reason is: %s", reason));
+    }
+}

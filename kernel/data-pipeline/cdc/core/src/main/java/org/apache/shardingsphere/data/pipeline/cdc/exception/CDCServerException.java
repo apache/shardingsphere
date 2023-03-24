@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.spi;
+package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
-import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
-
-import java.util.List;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Replica load balance algorithm.
+ * CDC server exception.
  */
-public interface ReplicaLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
+public final class CDCServerException extends PipelineSQLException {
     
-    /**
-     * Get data source.
-     * 
-     * @param name read query logic data source name
-     * @param writeDataSourceName name of write data source
-     * @param readDataSourceNames names of read data sources
-     * @param context context
-     * @return name of selected data source
-     */
-    String getDataSource(String name, String writeDataSourceName, List<String> readDataSourceNames, TransactionConnectionContext context);
+    public CDCServerException(final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 201, String.format("CDC server exception, reason is: %s.", reason));
+    }
 }

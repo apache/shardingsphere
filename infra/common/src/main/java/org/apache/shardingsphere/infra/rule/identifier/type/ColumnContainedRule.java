@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 
+//TODO Consider introducing transparent table and enhance table.
 /**
  * ShardingSphere rule which contains column.
  */

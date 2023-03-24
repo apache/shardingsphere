@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -78,6 +78,6 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     }
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getLoadBalancers().values().forEach(each -> TypedSPILoader.checkService(ReplicaLoadBalanceAlgorithm.class, each.getType(), each.getProps()));
+        currentRuleConfig.getLoadBalancers().values().forEach(each -> TypedSPILoader.checkService(ReadQueryLoadBalanceAlgorithm.class, each.getType(), each.getProps()));
     }
 }
