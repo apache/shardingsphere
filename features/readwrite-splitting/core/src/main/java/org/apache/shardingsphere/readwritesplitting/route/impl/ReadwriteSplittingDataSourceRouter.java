@@ -48,8 +48,10 @@ public final class ReadwriteSplittingDataSourceRouter {
         if (isPrimaryRoute(sqlStatementContext)) {
             return rule.getWriteDataSource();
         }
-        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getEnabledReplicaDataSources(),
-                connectionContext.getTransactionContext());
+        if (connectionContext.getTransactionContext().isInTransaction()) {
+            return routeInTransaction();
+        }
+        return routeWithLoadBalancer();
     }
     
     private boolean isPrimaryRoute(final SQLStatementContext<?> sqlStatementContext) {
@@ -71,5 +73,24 @@ public final class ReadwriteSplittingDataSourceRouter {
     
     private boolean isHintWriteRouteOnly(final SQLStatementContext<?> sqlStatementContext) {
         return HintManager.isWriteRouteOnly() || (sqlStatementContext instanceof CommonSQLStatementContext && ((CommonSQLStatementContext<?>) sqlStatementContext).isHintWriteRouteOnly());
+    }
+    
+    private String routeInTransaction() {
+        switch (rule.getTransactionReadQueryStrategy()) {
+            case FIXED_REPLICA:
+                if (null == connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute()) {
+                    connectionContext.getTransactionContext().setReadWriteSplitReplicaRoute(routeWithLoadBalancer());
+                }
+                return connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute();
+            case DYNAMIC_REPLICA:
+                return routeWithLoadBalancer();
+            case FIXED_PRIMARY:
+            default:
+                return rule.getWriteDataSource();
+        }
+    }
+    
+    private String routeWithLoadBalancer() {
+        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getEnabledReplicaDataSources(), connectionContext.getTransactionContext());
     }
 }

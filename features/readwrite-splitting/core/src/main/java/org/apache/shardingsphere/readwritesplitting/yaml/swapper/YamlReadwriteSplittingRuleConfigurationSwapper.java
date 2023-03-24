@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.readwritesplitting.yaml.swapper;
 
-import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
-import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.strategy.YamlDynamicReadwriteSplittingStrategyConfigurationSwapper;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.strategy.YamlStaticReadwriteSplittingStrategyConfigurationSwapper;
@@ -67,6 +69,7 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapper
         if (null != dataSourceRuleConfig.getDynamicStrategy()) {
             result.setDynamicStrategy(dynamicConfigSwapper.swapToYamlConfiguration(dataSourceRuleConfig.getDynamicStrategy()));
         }
+        result.setTransactionReadQueryStrategy(dataSourceRuleConfig.getTransactionReadQueryStrategy().name());
         result.setLoadBalancerName(dataSourceRuleConfig.getLoadBalancerName());
         return result;
     }
@@ -86,7 +89,14 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapper
     
     private ReadwriteSplittingDataSourceRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
         return new ReadwriteSplittingDataSourceRuleConfiguration(name, staticConfigSwapper.swapToObject(yamlDataSourceRuleConfig.getStaticStrategy()),
-                dynamicConfigSwapper.swapToObject(yamlDataSourceRuleConfig.getDynamicStrategy()), yamlDataSourceRuleConfig.getLoadBalancerName());
+                dynamicConfigSwapper.swapToObject(yamlDataSourceRuleConfig.getDynamicStrategy()),
+                getTransactionReadQueryStrategy(yamlDataSourceRuleConfig), yamlDataSourceRuleConfig.getLoadBalancerName());
+    }
+    
+    private TransactionReadQueryStrategy getTransactionReadQueryStrategy(final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
+        return Strings.isNullOrEmpty(yamlDataSourceRuleConfig.getTransactionReadQueryStrategy())
+                ? TransactionReadQueryStrategy.DYNAMIC_REPLICA
+                : TransactionReadQueryStrategy.valueOf(yamlDataSourceRuleConfig.getTransactionReadQueryStrategy());
     }
     
     @Override

@@ -18,39 +18,20 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategyAware;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.transaction.TransactionReadQueryStrategyUtil;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Round-robin read query load-balance algorithm.
  */
-public final class RoundRobinReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, TransactionReadQueryStrategyAware {
+public final class RoundRobinReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private final AtomicInteger count = new AtomicInteger(0);
     
-    private TransactionReadQueryStrategy transactionReadQueryStrategy;
-    
-    @Override
-    public void init(final Properties props) {
-        transactionReadQueryStrategy = TransactionReadQueryStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_PRIMARY.name()));
-    }
-    
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
-        if (context.isInTransaction()) {
-            return TransactionReadQueryStrategyUtil.routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionReadQueryStrategy, this);
-        }
-        return getDataSourceName(name, readDataSourceNames);
-    }
-    
-    @Override
-    public String getDataSourceName(final String name, final List<String> readDataSourceNames) {
         return readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
     }
     
