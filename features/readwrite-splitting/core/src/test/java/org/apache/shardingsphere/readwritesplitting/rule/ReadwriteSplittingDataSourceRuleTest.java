@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.rule;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +39,7 @@ public final class ReadwriteSplittingDataSourceRuleTest {
         readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_pr",
                         new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, null),
-                TransactionReadQueryStrategy.DYNAMIC_REPLICA, new RandomReadQueryLoadBalanceAlgorithm(), Collections.emptyList());
+                TransactionalReadQueryStrategy.DYNAMIC_REPLICA, new RandomReadQueryLoadBalanceAlgorithm(), Collections.emptyList());
     }
     
     @Test

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.readwritesplitting.api.transaction;
 
 /**
- * Transaction read query strategy.
+ * Transactional read query strategy.
  */
-public enum TransactionReadQueryStrategy {
+public enum TransactionalReadQueryStrategy {
     
     FIXED_PRIMARY, FIXED_REPLICA, DYNAMIC_REPLICA
 }

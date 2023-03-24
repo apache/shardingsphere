@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 
 /**
  * Readwrite-splitting data source rule configuration.
@@ -36,12 +36,12 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     
     private final DynamicReadwriteSplittingStrategyConfiguration dynamicStrategy;
     
-    private final TransactionReadQueryStrategy transactionReadQueryStrategy;
+    private final TransactionalReadQueryStrategy transactionalReadQueryStrategy;
     
     private final String loadBalancerName;
     
     public ReadwriteSplittingDataSourceRuleConfiguration(final String name, final StaticReadwriteSplittingStrategyConfiguration staticStrategy,
                                                          final DynamicReadwriteSplittingStrategyConfiguration dynamicStrategy, final String loadBalancerName) {
-        this(name, staticStrategy, dynamicStrategy, TransactionReadQueryStrategy.DYNAMIC_REPLICA, loadBalancerName);
+        this(name, staticStrategy, dynamicStrategy, TransactionalReadQueryStrategy.DYNAMIC_REPLICA, loadBalancerName);
     }
 }

@@ -76,7 +76,7 @@ public final class ReadwriteSplittingDataSourceRouter {
     }
     
     private String routeInTransaction() {
-        switch (rule.getTransactionReadQueryStrategy()) {
+        switch (rule.getTransactionalReadQueryStrategy()) {
             case FIXED_REPLICA:
                 if (null == connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute()) {
                     connectionContext.getTransactionContext().setReadWriteSplitReplicaRoute(routeWithLoadBalancer());
