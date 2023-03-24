@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalLoadBalanceStrategy;
-import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalLoadBalanceStrategyAware;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategy;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionReadQueryStrategyAware;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.transaction.TransactionReadQueryStrategyUtil;
 
 import java.util.List;
@@ -28,21 +28,21 @@ import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Random replica load balance algorithm.
+ * Random read query load-balance algorithm.
  */
-public final class RandomReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm, TransactionalLoadBalanceStrategyAware {
+public final class RandomReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm, TransactionReadQueryStrategyAware {
     
-    private TransactionalLoadBalanceStrategy transactionalLoadBalanceStrategy;
+    private TransactionReadQueryStrategy transactionReadQueryStrategy;
     
     @Override
     public void init(final Properties props) {
-        transactionalLoadBalanceStrategy = TransactionalLoadBalanceStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY, TransactionalLoadBalanceStrategy.FIXED_PRIMARY.name()));
+        transactionReadQueryStrategy = TransactionReadQueryStrategy.valueOf(props.getProperty(TRANSACTION_READ_QUERY_STRATEGY, TransactionReadQueryStrategy.FIXED_PRIMARY.name()));
     }
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
         if (context.isInTransaction()) {
-            return TransactionReadQueryStrategyUtil.routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionalLoadBalanceStrategy, this);
+            return TransactionReadQueryStrategyUtil.routeInTransaction(name, writeDataSourceName, readDataSourceNames, context, transactionReadQueryStrategy, this);
         }
         return getDataSourceName(name, readDataSourceNames);
     }
