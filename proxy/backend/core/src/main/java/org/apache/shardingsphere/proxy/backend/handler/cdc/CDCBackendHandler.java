@@ -43,7 +43,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtil;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCTableRuleUtil;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyStartedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -140,7 +139,7 @@ public final class CDCBackendHandler {
             throw new PipelineJobNotFoundException(jobId);
         }
         if (PipelineJobCenter.isJobExisting(jobId)) {
-            throw new PipelineJobHasAlreadyStartedException(jobId);
+            PipelineJobCenter.stop(jobId);
         }
         JobConfigurationPOJO jobConfigPOJO = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
         // TODO, ensure that there is only one consumer at a time, job config disable may not be updated when the program is forced to close
