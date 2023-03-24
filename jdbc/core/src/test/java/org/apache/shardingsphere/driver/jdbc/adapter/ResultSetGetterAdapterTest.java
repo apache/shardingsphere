@@ -439,6 +439,6 @@ public final class ResultSetGetterAdapterTest {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mergedResult, mock(Statement.class), mock(ExecutionContext.class));
+        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mergedResult, mock(Statement.class), true, mock(ExecutionContext.class));
     }
 }

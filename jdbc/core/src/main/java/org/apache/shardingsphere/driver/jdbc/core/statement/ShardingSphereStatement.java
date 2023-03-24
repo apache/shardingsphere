@@ -76,7 +76,9 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -181,7 +183,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             executionContext = createExecutionContext(queryContext);
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, executionContext);
+            result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, isTransparentStatement(queryContext.getSqlStatementContext(),
+                    metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData()), executionContext);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -244,6 +247,31 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connection.getConnectionManager(), statementManager, statementOption,
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules(),
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes());
+    }
+    
+    private boolean isTransparentStatement(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereRuleMetaData ruleMetaData) {
+        Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(ruleMetaData.findRules(DataNodeContainedRule.class));
+        Collection<ColumnContainedRule> columnContainedRules = ruleMetaData.findRules(ColumnContainedRule.class);
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+            return (!dataNodeContainedRule.isPresent() || !dataNodeContainedRule.get().getAllTables().contains(each)) && !containsInColumnContainedRule(each, columnContainedRules);
+        }
+        return true;
+    }
+    
+    private Optional<DataNodeContainedRule> getDataNodeContainedRuleForShardingRule(final Collection<DataNodeContainedRule> dataNodeContainedRules) {
+        for (DataNodeContainedRule each : dataNodeContainedRules) {
+            if (!(each instanceof MutableDataNodeRule)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private boolean containsInColumnContainedRule(final String tableName, final Collection<ColumnContainedRule> columnContainedRules) {
+        for (ColumnContainedRule each : columnContainedRules) {
+            return each.getTables().contains(tableName);
+        }
+        return false;
     }
     
     @Override
@@ -634,7 +662,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return currentResultSet;
             }
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
-            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, executionContext);
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, isTransparentStatement(executionContext.getSqlStatementContext(),
+                    metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData()), executionContext);
         }
         return currentResultSet;
     }
