@@ -76,7 +76,7 @@ public final class ReadwriteSplittingRuleTest {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.updateStatus(new StorageNodeDataSourceChangedEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds"),
                 new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED)));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds")));
     }
     
     @Test
@@ -84,7 +84,7 @@ public final class ReadwriteSplittingRuleTest {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.updateStatus(new StorageNodeDataSourceChangedEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds_0"),
                 new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED)));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds_0")));
     }
     
     @Test
@@ -92,10 +92,10 @@ public final class ReadwriteSplittingRuleTest {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.updateStatus(new StorageNodeDataSourceChangedEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds_0"),
                 new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED)));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds_0")));
         readwriteSplittingRule.updateStatus(new StorageNodeDataSourceChangedEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds_0"),
                 new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.ENABLED)));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.emptySet()));
     }
     
     @Test

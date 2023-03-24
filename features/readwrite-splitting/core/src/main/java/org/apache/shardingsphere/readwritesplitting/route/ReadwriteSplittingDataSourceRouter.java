@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.route.impl;
+package org.apache.shardingsphere.readwritesplitting.route;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
@@ -23,10 +23,14 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.readwritesplitting.route.filter.ReadDataSourcesFilter;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+
+import java.util.List;
 
 /**
  * Data source router for readwrite-splitting.
@@ -91,6 +95,14 @@ public final class ReadwriteSplittingDataSourceRouter {
     }
     
     private String routeWithLoadBalancer() {
-        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), rule.getEnabledReplicaDataSources());
+        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), getFilteredReadDataSources());
+    }
+    
+    private List<String> getFilteredReadDataSources() {
+        List<String> result = rule.getReadwriteSplittingStrategy().getReadDataSources();
+        for (ReadDataSourcesFilter each : ShardingSphereServiceLoader.getServiceInstances(ReadDataSourcesFilter.class)) {
+            result = each.filter(rule, result);
+        }
+        return result;
     }
 }
