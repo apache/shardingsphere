@@ -106,7 +106,7 @@ public final class MySQLAuthenticationEngineTest {
         }
     }
     
-    private void assertBadHandshakeError(MySQLErrPacket mock, Context mockContext) {
+    private void assertBadHandshakeError(final MySQLErrPacket mock, final Context mockContext) {
         List<?> arguments = mockContext.arguments();
         assertThat(arguments.get(0), is(MySQLVendorError.ER_HANDSHAKE_ERROR));
         assertThat(arguments.get(1), is(new Object[0]));
