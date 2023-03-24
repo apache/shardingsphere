@@ -32,6 +32,7 @@ import org.apache.calcite.rex.RexUnknownAs;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.util.DateString;
 import org.apache.calcite.util.Sarg;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.exception.OptimizationSQLRexNodeException;
 import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeBaseVisitor;
@@ -145,18 +146,28 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     @Override
     public RexNode visitInputRef(final InputRefContext ctx) {
         Integer index = Integer.valueOf(ctx.INTEGER_().getText());
-        if ((ctx.getParent() instanceof CastContext) && "VARCHAR".equals(ctx.getParent().getStop().getText())) {
-            return rexBuilder.makeInputRef(typeFactory.createJavaType(String.class), index);
-        } else if ((ctx.getParent() instanceof CastContext) && "INTEGER".equals(ctx.getParent().getStop().getText())) {
-            return rexBuilder.makeInputRef(typeFactory.createJavaType(Integer.class), index);
-        } else if ((ctx.getParent() instanceof CastContext) && "BIGINT".equals(ctx.getParent().getStop().getText())) {
-            return rexBuilder.makeInputRef(typeFactory.createJavaType(Long.class), index);
-        }
+        String sign = ctx.getParent().getStop().getText();
         if (null != columnMap.get(index)) {
             Class dataType = getClass(columnMap.get(index));
             return rexBuilder.makeInputRef(typeFactory.createJavaType(dataType), index);
         }
+        if (ctx.getParent() instanceof CastContext) {
+            return makeCastInputRef(sign, index);
+        }
         return rexBuilder.makeInputRef(typeFactory.createJavaType(Integer.class), index);
+    }
+    
+    private RexNode makeCastInputRef(final String sign, final Integer index) {
+        if (sign.contains("VARCHAR")) {
+            return rexBuilder.makeInputRef(typeFactory.createJavaType(String.class), index);
+        } else if ("INTEGER".equals(sign)) {
+            return rexBuilder.makeInputRef(typeFactory.createJavaType(Integer.class), index);
+        } else if ("BIGINT".equals(sign)) {
+            return rexBuilder.makeInputRef(typeFactory.createJavaType(Long.class), index);
+        } else if ("DATE".equals(sign)) {
+            return rexBuilder.makeInputRef(typeFactory.createJavaType(Date.class), index);
+        }
+        throw new OptimizationSQLRexNodeException(sign);
     }
     
     /**
@@ -169,14 +180,16 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
         switch (dataType) {
             case -5:
                 return Long.class;
+            case 1:
+                return String.class;
             case 4:
                 return Integer.class;
+            case 5:
+                return Short.class;
             case 6:
                 return Float.class;
             case 8:
                 return Double.class;
-            case 1:
-                return String.class;
             case 12:
                 return String.class;
             case 91:
@@ -209,21 +222,41 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
             RelDataType nonNullableInt = typeFactory.createSqlType(SqlTypeName.INTEGER);
             return rexBuilder.makeLiteral(number, nonNullableInt, false);
         }
-        if (null != ctx.PLACEHOLDER_()) {
-            if (parameters.get(ctx.PLACEHOLDER_().getText()).getClass().equals(Integer.class)) {
-                return rexBuilder.makeLiteral(parameters.get(ctx.PLACEHOLDER_().getText()), typeFactory.createSqlType(SqlTypeName.INTEGER), false);
-            } else if (parameters.get(ctx.PLACEHOLDER_().getText()).getClass().equals(Long.class)) {
-                return rexBuilder.makeLiteral(parameters.get(ctx.PLACEHOLDER_().getText()), typeFactory.createSqlType(SqlTypeName.BIGINT), false);
-            } else if (parameters.get(ctx.PLACEHOLDER_().getText()).getClass().equals(Float.class)) {
-                return rexBuilder.makeLiteral(parameters.get(ctx.PLACEHOLDER_().getText()), typeFactory.createSqlType(SqlTypeName.FLOAT), false);
-            }
-        }
         if (null != ctx.STRING_()) {
             String literalValue = ctx.STRING_().getText().replace("\"", "").replace("'", "");
             return rexBuilder.makeLiteral(literalValue, typeFactory.createSqlType(SqlTypeName.VARCHAR), false);
         }
-        
+        if (null != ctx.DATE_()) {
+            String data = ctx.DATE_().getText();
+            DateString value = new DateString(data);
+            return rexBuilder.makeLiteral(value, typeFactory.createSqlType(SqlTypeName.DATE), false);
+        }
+        if (null != ctx.PLACEHOLDER_()) {
+            return makeLiteral(ctx.PLACEHOLDER_().getText());
+        }
+        if (null != ctx.string_zh().STRING_()) {
+            String literalValue = ctx.string_zh().STRING_().getText().replace("\"", "").replace("'", "");
+            return rexBuilder.makeLiteral(literalValue, typeFactory.createSqlType(SqlTypeName.VARCHAR), false);
+        }
         throw new OptimizationSQLRexNodeException(ctx.getText());
+    }
+    
+    private RexNode makeLiteral(final String text) {
+        Class parameterType = parameters.get(text).getClass();
+        Object parameter = parameters.get(text);
+        if (parameterType.equals(Integer.class)) {
+            return rexBuilder.makeLiteral(parameter, typeFactory.createSqlType(SqlTypeName.INTEGER), false);
+        } else if (parameterType.equals(Long.class)) {
+            return rexBuilder.makeLiteral(parameter, typeFactory.createSqlType(SqlTypeName.BIGINT), false);
+        } else if (parameterType.equals(String.class)) {
+            return rexBuilder.makeLiteral(parameter, typeFactory.createSqlType(SqlTypeName.VARCHAR), false);
+        } else if (parameterType.equals(Date.class)) {
+            Date data = (Date) parameter;
+            DateString value = new DateString(data.toString());
+            return rexBuilder.makeLiteral(value, typeFactory.createSqlType(SqlTypeName.DATE), true);
+        } else {
+            return rexBuilder.makeLiteral(parameter.toString(), typeFactory.createSqlType(SqlTypeName.VARCHAR), false);
+        }
     }
     
     @Override
@@ -288,6 +321,18 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     }
     
     private RelDataType getType(final TypeContext ctx) {
-        return null == ctx.INTEGER() ? typeFactory.createSqlType(SqlTypeName.VARCHAR) : typeFactory.createSqlType(SqlTypeName.INTEGER);
+        if (null != ctx.INTEGER()) {
+            return typeFactory.createSqlType(SqlTypeName.INTEGER);
+        }
+        if (null != ctx.DATE()) {
+            return typeFactory.createSqlType(SqlTypeName.DATE);
+        }
+        if (null != ctx.BIGINT()) {
+            return typeFactory.createSqlType(SqlTypeName.BIGINT);
+        }
+        if (null != ctx.VARCHAR()) {
+            return typeFactory.createSqlType(SqlTypeName.VARCHAR);
+        }
+        return typeFactory.createSqlType(SqlTypeName.VARCHAR);
     }
 }

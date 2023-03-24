@@ -131,18 +131,18 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         String databaseName = executorContext.getDatabaseName().toLowerCase();
         String schemaName = executorContext.getSchemaName().toLowerCase();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
+        if (databaseType.getSystemSchemas().contains(schemaName)) {
+            return executeByScalarShardingSphereData(databaseName, schemaName, table);
+        }
         SqlString sqlString = createSQLString(table, (TranslatableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
         // TODO replace sql parse with sql convert
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
         QueryContext queryContext = createQueryContext(federationContext.getMetaData(), sqlString, databaseType);
         ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, executorContext.getProps(), new ConnectionContext());
-        if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
+        if (federationContext.isPreview()) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyScalarEnumerable();
-        }
-        if (databaseType.getSystemSchemas().contains(schemaName)) {
-            return executeByScalarShardingSphereData(databaseName, schemaName, table);
         }
         return executeScalarEnumerable(databaseType, queryContext, database, context);
     }
@@ -219,18 +219,18 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         String databaseName = executorContext.getDatabaseName().toLowerCase();
         String schemaName = executorContext.getSchemaName().toLowerCase();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
+        if (databaseType.getSystemSchemas().contains(schemaName)) {
+            return executeByShardingSphereData(databaseName, schemaName, table);
+        }
         SqlString sqlString = createSQLString(table, (TranslatableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
         // TODO replace sql parse with sql convert
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
         QueryContext queryContext = createQueryContext(federationContext.getMetaData(), sqlString, databaseType);
         ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
         ExecutionContext context = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, executorContext.getProps(), new ConnectionContext());
-        if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
+        if (federationContext.isPreview()) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();
-        }
-        if (databaseType.getSystemSchemas().contains(schemaName)) {
-            return executeByShardingSphereData(databaseName, schemaName, table);
         }
         return execute(databaseType, queryContext, database, context);
     }
@@ -293,7 +293,9 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     }
     
     private SqlString createSQLString(final ShardingSphereTable table, final TranslatableScanNodeExecutorContext scanContext, final SqlDialect sqlDialect) {
-        return new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(table, scanContext)).asStatement().toSqlString(sqlDialect);
+        String conditionSql = new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(table, scanContext))
+                .asStatement().toSqlString(sqlDialect).getSql().replace("u&'\\", "'\\u");
+        return new SqlString(sqlDialect, conditionSql);
     }
     
     private void setParameters(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {

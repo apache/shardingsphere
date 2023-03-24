@@ -128,9 +128,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
                                                      final ShardingSphereSchema schema,
                                                      final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
-        // TODO replace FilterableTableScanExecutor with TranslatableTableScanExecutor
         TableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, data);
-        // TODO replace FilterableSchema with TranslatableSchema
         return new FilterableSchema(schemaName, schema, protocolType, JAVA_TYPE_FACTORY, executor);
     }
     
