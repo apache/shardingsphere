@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRex
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.sql.Types;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +149,7 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
         Integer index = Integer.valueOf(ctx.INTEGER_().getText());
         String sign = ctx.getParent().getStop().getText();
         if (null != columnMap.get(index)) {
-            Class dataType = getClass(columnMap.get(index));
+            Class<?> dataType = getClass(columnMap.get(index));
             return rexBuilder.makeInputRef(typeFactory.createJavaType(dataType), index);
         }
         if (ctx.getParent() instanceof CastContext) {
@@ -176,23 +177,23 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
      * @param dataType sql type
      * @return java type
      */
-    private Class getClass(final int dataType) {
+    private Class<?> getClass(final int dataType) {
         switch (dataType) {
-            case -5:
+            case Types.BIGINT:
                 return Long.class;
-            case 1:
+            case Types.CHAR:
                 return String.class;
-            case 4:
+            case Types.INTEGER:
                 return Integer.class;
-            case 5:
+            case Types.SMALLINT:
                 return Short.class;
-            case 6:
+            case Types.FLOAT:
                 return Float.class;
-            case 8:
+            case Types.DOUBLE:
                 return Double.class;
-            case 12:
+            case Types.VARCHAR:
                 return String.class;
-            case 91:
+            case Types.DATE:
                 return Date.class;
             default:
                 return String.class;
@@ -242,7 +243,7 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     }
     
     private RexNode makeLiteral(final String text) {
-        Class parameterType = parameters.get(text).getClass();
+        Class<?> parameterType = parameters.get(text).getClass();
         Object parameter = parameters.get(text);
         if (parameterType.equals(Integer.class)) {
             return rexBuilder.makeLiteral(parameter, typeFactory.createSqlType(SqlTypeName.INTEGER), false);
