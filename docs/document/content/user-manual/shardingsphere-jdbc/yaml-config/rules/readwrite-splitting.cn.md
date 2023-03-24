@@ -19,6 +19,7 @@ rules:
        static_strategy: # 读写分离类型
          write_data_source_name: # 写库数据源名称
          read_data_source_names: # 读库数据源名称，多个从数据源用逗号分隔
+       transactionalReadQueryStrategy (?): # 事务内读请求的路由策略，可选值：FIXED_PRIMARY（路由至主库）、FIXED_REPLICA（同一事务内路由至固定数据源）、DYNAMIC_REPLICA（同一事务内路由至非固定数据源）。默认值：DYNAMIC_REPLICA
        loadBalancerName: # 负载均衡算法名称
   
   # 负载均衡算法配置
@@ -38,6 +39,7 @@ rules:
     <data_source_name> (+): # 读写分离逻辑数据源名称
        dynamic_strategy: # 读写分离类型
          auto_aware_data_source_name: # 数据库发现逻辑数据源名称
+       transactionalReadQueryStrategy (?): # 事务内读请求的路由策略，可选值：FIXED_PRIMARY（路由至主库）、FIXED_REPLICA（同一事务内路由至固定数据源）、DYNAMIC_REPLICA（同一事务内路由至非固定数据源）。默认值：DYNAMIC_REPLICA
        loadBalancerName: # 负载均衡算法名称
   
   # 负载均衡算法配置
@@ -66,6 +68,7 @@ rules:
         readDataSourceNames:
           - read_ds_0
           - read_ds_1
+      transactionalReadQueryStrategy: FIXED_PRIMARY
       loadBalancerName: random
   loadBalancers:
     random:
