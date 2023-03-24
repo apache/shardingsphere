@@ -73,7 +73,7 @@ strategyType ::=
 - 当使用标准分片时：
     - `DATANODES` 只能使用已经添加到当前逻辑库的资源，且只能使用 INLINE 表达式指定需要的资源；
     - `DATABASE_STRATEGY`、`TABLE_STRATEGY` 表示分库和分表策略，均为可选项，未配置时使用默认策略；
-    - `strategyDefinition` 中属性 `TYPE` 用于指定[分片算法](/cn/features/sharding/concept/sharding/#自定义分片算法)的类型，目前仅支持 `STANDARD`
+    - `strategyDefinition` 中属性 `TYPE` 用于指定[分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/#自定义类分片算法)的类型，目前仅支持 `STANDARD`
       、`COMPLEX`。使用 `COMPLEX` 时需要用 `SHARDING_COLUMNS` 指定多个分片键。
 - 当使用自动分片时：
     - `STORAGE_UNITS` 只能使用已经添加到当前逻辑库的资源，可通过枚举或 INLINE 表达式指定需要的资源；

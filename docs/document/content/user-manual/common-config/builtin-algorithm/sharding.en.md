@@ -164,7 +164,7 @@ Attributes:
 
 #### Complex Inline Sharding Algorithm
 
-Please refer to [Inline Expression](/en/dev-manual/sharding/#implementation-classes) for more details.
+Please refer to [Inline Expression](/en/features/sharding/concept/#row-value-expressions) for more details.
 
 Type: COMPLEX_INLINE
 
@@ -178,7 +178,7 @@ Type: COMPLEX_INLINE
 
 #### Hint Inline Sharding Algorithm
 
-Please refer to [Inline Expression](/en/dev-manual/sharding/#implementation-classes) for more details.
+Please refer to [Inline Expression](/en/features/sharding/concept/#row-value-expressions) for more details.
 
 Type: COMPLEX_INLINE
 

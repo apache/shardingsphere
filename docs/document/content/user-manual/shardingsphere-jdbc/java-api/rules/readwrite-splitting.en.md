@@ -16,7 +16,7 @@ Class name: org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingR
 Configurable Properties:
 
 | *Name*            | *DataType*                                                  | *Description*                                                          |
-| ----------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------- |
+|-------------------|-------------------------------------------------------------|------------------------------------------------------------------------|
 | dataSources (+)   | Collection\<ReadwriteSplittingDataSourceRuleConfiguration\> | Data sources of write and reads                                        |
 | loadBalancers (*) | Map\<String, AlgorithmConfiguration\>                       | Load balance algorithm name and configurations of replica data sources |
 
@@ -26,19 +26,20 @@ Class name: org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplit
 
 Configurable Properties:
 
-| *Name*               | *DataType* | *Description*                                  | *Default Value*                    |
-| -------------------- | ---------- | ---------------------------------------------- | ---------------------------------- |
-| name                 | String     | Readwrite-splitting data source name           | -                                  |
-| staticStrategy       | String     | Static Readwrite-splitting configuration       | -                                  |
-| dynamicStrategy      | Properties | Dynamic Readwrite-splitting configuration      | -                                  |
-| loadBalancerName (?) | String     | Load balance algorithm name of replica sources | Round robin load balance algorithm |
+| *Name*                             | *DataType*                     | *Description*                                                                                                                                                                                                 | *Default Value*                    |
+|------------------------------------|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------|
+| name                               | String                         | Readwrite-splitting data source name                                                                                                                                                                          | -                                  |
+| staticStrategy                     | String                         | Static Readwrite-splitting configuration                                                                                                                                                                      | -                                  |
+| dynamicStrategy                    | Properties                     | Dynamic Readwrite-splitting configuration                                                                                                                                                                     | -                                  |
+| transactionalReadQueryStrategy (?) | TransactionalReadQueryStrategy | Routing strategy for read query within a transaction, values include: FIXED_PRIMARY (to primary), FIXED_REPLICA (to fixed data source), DYNAMIC_REPLICA (to any data source), default value: DYNAMIC_REPLICA. |
+| loadBalancerName (?)               | String                         | Load balance algorithm name of replica sources                                                                                                                                                                | Round robin load balance algorithm |
 
 Class name：org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration
 
 Configurable Properties:
 
 | *Name*              | *DataType*     | *Description*          |
-| ------------------- | -------------- | ---------------------- |
+|---------------------|----------------|------------------------|
 | writeDataSourceName | String         | Write data source name |
 | readDataSourceNames | List\<String\> | Read data sources list |
 
@@ -46,10 +47,10 @@ Class name：org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicRe
 
 Configurable Properties:
 
-| *Name*                          | *DataType* | *Description*                                                                                               | *Default Value*    |
-| ------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------| -------------------|
-| autoAwareDataSourceName         | String     | Database discovery logic data source name                                                                   | -                  |
-| writeDataSourceQueryEnabled (?) | String     | All read data source are offline, write data source whether the data source is responsible for read traffic | true               |
+| *Name*                          | *DataType* | *Description*                                                                                               | *Default Value* |
+|---------------------------------|------------|-------------------------------------------------------------------------------------------------------------|-----------------|
+| autoAwareDataSourceName         | String     | Database discovery logic data source name                                                                   | -               |
+| writeDataSourceQueryEnabled (?) | String     | All read data source are offline, write data source whether the data source is responsible for read traffic | true            |
 
 Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/common-config/builtin-algorithm/load-balance) for details on algorithm types.
 Please refer to [Read-write splitting-Core features](/en/features/readwrite-splitting/) for more details about query consistent routing.
