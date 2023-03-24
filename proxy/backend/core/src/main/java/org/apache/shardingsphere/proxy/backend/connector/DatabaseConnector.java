@@ -109,9 +109,9 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final String driverType;
     
-    private final boolean transparentStatement;
-    
     private final ShardingSphereDatabase database;
+    
+    private final boolean transparentStatement;
     
     private final QueryContext queryContext;
     
@@ -127,8 +127,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         failedIfBackendNotReady(backendConnection.getConnectionSession(), sqlStatementContext);
         this.driverType = driverType;
-        this.transparentStatement = isTransparentStatement(sqlStatementContext);
         this.database = database;
+        this.transparentStatement = isTransparentStatement(sqlStatementContext);
         this.queryContext = queryContext;
         this.backendConnection = backendConnection;
         if (sqlStatementContext instanceof CursorAvailable) {
