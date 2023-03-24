@@ -183,7 +183,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             executionContext = createExecutionContext(queryContext);
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, isAllSingleTable(queryContext.getSqlStatementContext(),
+            result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, isTransparentStatement(queryContext.getSqlStatementContext(),
                     metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData()), executionContext);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -249,7 +249,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes());
     }
     
-    private boolean isAllSingleTable(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereRuleMetaData ruleMetaData) {
+    private boolean isTransparentStatement(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereRuleMetaData ruleMetaData) {
         Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(ruleMetaData.findRules(DataNodeContainedRule.class));
         Collection<ColumnContainedRule> columnContainedRules = ruleMetaData.findRules(ColumnContainedRule.class);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
@@ -662,7 +662,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return currentResultSet;
             }
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
-            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, isAllSingleTable(executionContext.getSqlStatementContext(),
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, isTransparentStatement(executionContext.getSqlStatementContext(),
                     metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData()), executionContext);
         }
         return currentResultSet;

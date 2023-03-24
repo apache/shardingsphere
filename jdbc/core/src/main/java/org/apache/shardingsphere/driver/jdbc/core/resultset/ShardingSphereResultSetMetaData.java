@@ -45,14 +45,14 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private final ShardingSphereDatabase database;
     
-    private final boolean sqlStatementTableIsSingleTable;
+    private final boolean transparentStatement;
     
     private final SQLStatementContext<?> sqlStatementContext;
     
     @Override
     public int getColumnCount() throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            if (sqlStatementTableIsSingleTable) {
+            if (transparentStatement) {
                 return resultSetMetaData.getColumnCount();
             }
             if (hasSelectExpandProjections()) {
@@ -100,7 +100,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
-        if (sqlStatementTableIsSingleTable) {
+        if (transparentStatement) {
             return resultSetMetaData.getColumnLabel(column);
         }
         if (hasSelectExpandProjections()) {
@@ -115,7 +115,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        if (sqlStatementTableIsSingleTable) {
+        if (transparentStatement) {
             return resultSetMetaData.getColumnName(column);
         }
         if (hasSelectExpandProjections()) {

@@ -337,7 +337,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
-        if (isAllSingleTable(executionContext.getSqlStatementContext())) {
+        if (isTransparentStatement(executionContext.getSqlStatementContext())) {
             return queryResultSample.getMetaData().getColumnCount();
         }
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())
@@ -345,7 +345,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
                 : queryResultSample.getMetaData().getColumnCount();
     }
     
-    private boolean isAllSingleTable(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isTransparentStatement(final SQLStatementContext<?> sqlStatementContext) {
         Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(database.getRuleMetaData().findRules(DataNodeContainedRule.class));
         Collection<ColumnContainedRule> columnContainedRules = database.getRuleMetaData().findRules(ColumnContainedRule.class);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
@@ -376,7 +376,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private QueryHeader createQueryHeader(final QueryHeaderBuilderEngine queryHeaderBuilderEngine, final ExecutionContext executionContext,
                                           final QueryResult queryResultSample, final ShardingSphereDatabase database, final int columnIndex) throws SQLException {
-        if (isAllSingleTable(executionContext.getSqlStatementContext())) {
+        if (isTransparentStatement(executionContext.getSqlStatementContext())) {
             return queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
         }
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())

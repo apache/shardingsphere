@@ -155,7 +155,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private final StatementManager statementManager;
     
     @Getter
-    private final boolean singleTable;
+    private final boolean transparentStatement;
     
     private ExecutionContext executionContext;
     
@@ -212,7 +212,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         kernelProcessor = new KernelProcessor();
         statementsCacheable = isStatementsCacheable(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData());
         trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
-        singleTable = isAllSingleTable(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData());
+        transparentStatement = isAllSingleTable(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData());
         statementManager = new StatementManager();
     }
     
@@ -271,7 +271,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             List<ResultSet> resultSets = getResultSets();
             Map<String, Integer> columnLabelAndIndexMap = null != this.columnLabelAndIndexMap ? this.columnLabelAndIndexMap
                     : (this.columnLabelAndIndexMap = ShardingSphereResultSetUtil.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData()));
-            result = new ShardingSphereResultSet(resultSets, mergedResult, this, singleTable, executionContext, columnLabelAndIndexMap);
+            result = new ShardingSphereResultSet(resultSets, mergedResult, this, transparentStatement, executionContext, columnLabelAndIndexMap);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -552,7 +552,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
             Map<String, Integer> columnLabelAndIndexMap = null != this.columnLabelAndIndexMap ? this.columnLabelAndIndexMap
                     : (this.columnLabelAndIndexMap = ShardingSphereResultSetUtil.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData()));
-            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, singleTable, executionContext, columnLabelAndIndexMap);
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, transparentStatement, executionContext, columnLabelAndIndexMap);
         }
         return currentResultSet;
     }
