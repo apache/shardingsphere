@@ -77,7 +77,7 @@ strategyType ::=
     - `DATABASE_STRATEGY`, `TABLE_STRATEGY` are the database sharding strategy and the table sharding strategy, which
       are optional, and the default strategy is used when not configured;
     - The attribute `TYPE` in `strategyDefinition` is used to specify the type
-      of [Sharding Algorithm](/en/features/sharding/concept/sharding/#user-defined-sharding-algorithm), currently only
+      of [Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/#class-based-sharding-algorithm), currently only
       supports `STANDARD`, `COMPLEX`. Using `COMPLEX` requires specifying multiple sharding columns
       with `SHARDING_COLUMNS`.
 - use auto sharding table rule:
