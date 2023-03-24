@@ -24,7 +24,7 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.NacosMetaDataUtil;
+import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.NacosMetaDataUtils;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -50,19 +50,19 @@ public final class NamingEventListener implements EventListener {
             return;
         }
         NamingEvent namingEvent = (NamingEvent) event;
-        List<Instance> instances = namingEvent.getInstances().stream().sorted(Comparator.comparing(NacosMetaDataUtil::getKey)).collect(Collectors.toList());
+        List<Instance> instances = namingEvent.getInstances().stream().sorted(Comparator.comparing(NacosMetaDataUtils::getKey)).collect(Collectors.toList());
         List<WatchData> watchDataList = new LinkedList<>();
         synchronized (this) {
             instances.forEach(instance -> prefixListenerMap.forEach((prefixPath, listener) -> {
-                String key = NacosMetaDataUtil.getKey(instance);
+                String key = NacosMetaDataUtils.getKey(instance);
                 if (key.startsWith(prefixPath)) {
                     Instance preInstance = preInstances.remove(key);
                     WatchData watchData = new WatchData(key, preInstance, instance, listener);
                     watchDataList.add(watchData);
                 }
             }));
-            preInstances.values().stream().sorted(Comparator.comparing(NacosMetaDataUtil::getKey).reversed()).forEach(instance -> prefixListenerMap.forEach((prefixPath, listener) -> {
-                String key = NacosMetaDataUtil.getKey(instance);
+            preInstances.values().stream().sorted(Comparator.comparing(NacosMetaDataUtils::getKey).reversed()).forEach(instance -> prefixListenerMap.forEach((prefixPath, listener) -> {
+                String key = NacosMetaDataUtils.getKey(instance);
                 if (key.startsWith(prefixPath)) {
                     WatchData watchData = new WatchData(key, instance, null, listener);
                     watchDataList.add(watchData);
@@ -77,10 +77,10 @@ public final class NamingEventListener implements EventListener {
                 switch (changedType) {
                     case ADDED:
                     case UPDATED:
-                        listener.onChange(new DataChangedEvent(key, NacosMetaDataUtil.getValue(instance), changedType));
+                        listener.onChange(new DataChangedEvent(key, NacosMetaDataUtils.getValue(instance), changedType));
                         break;
                     case DELETED:
-                        listener.onChange(new DataChangedEvent(key, NacosMetaDataUtil.getValue(preInstance), changedType));
+                        listener.onChange(new DataChangedEvent(key, NacosMetaDataUtils.getValue(preInstance), changedType));
                         break;
                     default:
                 }
@@ -93,7 +93,7 @@ public final class NamingEventListener implements EventListener {
         if (Objects.isNull(preInstance) && Objects.nonNull(instance)) {
             return DataChangedEvent.Type.ADDED;
         }
-        if (Objects.nonNull(preInstance) && Objects.nonNull(instance) && NacosMetaDataUtil.getTimestamp(preInstance) != NacosMetaDataUtil.getTimestamp(instance)) {
+        if (Objects.nonNull(preInstance) && Objects.nonNull(instance) && NacosMetaDataUtils.getTimestamp(preInstance) != NacosMetaDataUtils.getTimestamp(instance)) {
             return DataChangedEvent.Type.UPDATED;
         }
         if (Objects.nonNull(preInstance) && Objects.isNull(instance)) {
@@ -110,12 +110,12 @@ public final class NamingEventListener implements EventListener {
     public void setPreInstances(final List<Instance> instances) {
         preInstances = instances.stream().filter(instance -> {
             for (String each : prefixListenerMap.keySet()) {
-                if (NacosMetaDataUtil.getKey(instance).startsWith(each)) {
+                if (NacosMetaDataUtils.getKey(instance).startsWith(each)) {
                     return true;
                 }
             }
             return false;
-        }).collect(Collectors.toMap(NacosMetaDataUtil::getKey, Function.identity(), (a, b) -> NacosMetaDataUtil.getTimestamp(a) > NacosMetaDataUtil.getTimestamp(b) ? a : b));
+        }).collect(Collectors.toMap(NacosMetaDataUtils::getKey, Function.identity(), (a, b) -> NacosMetaDataUtils.getTimestamp(a) > NacosMetaDataUtils.getTimestamp(b) ? a : b));
     }
     
     /**

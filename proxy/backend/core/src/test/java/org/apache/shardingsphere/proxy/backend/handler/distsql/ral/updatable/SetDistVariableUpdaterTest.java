@@ -38,7 +38,7 @@ import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -73,7 +73,7 @@ public final class SetDistVariableUpdaterTest {
         SetDistVariableStatement statement = new SetDistVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         updater.executeUpdate(connectionSession, statement);
-        String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
+        String actualValue = SystemPropertyUtils.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
         assertThat(actualValue, is(Boolean.FALSE.toString()));
     }
     

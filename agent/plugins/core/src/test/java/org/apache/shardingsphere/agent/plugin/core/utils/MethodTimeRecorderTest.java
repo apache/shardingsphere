@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.util;
+package org.apache.shardingsphere.agent.plugin.core.utils;
 
-import org.apache.shardingsphere.agent.plugin.core.util.fixture.ReflectionFixture;
+import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
+import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
-public final class AgentReflectionUtilTest {
+public final class MethodTimeRecorderTest {
     
     @Test
-    public void assertGetFieldValue() {
-        ReflectionFixture reflectionFixture = new ReflectionFixture("foo");
-        assertThat(AgentReflectionUtil.getFieldValue(reflectionFixture, "value"), is(reflectionFixture.getValue()));
+    public void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException, NoSuchMethodException {
+        MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(AgentAdvice.class);
+        methodTimeRecorder.record(Object.class.getDeclaredMethod("toString"));
+        Thread.sleep(5L);
+        assertThat(methodTimeRecorder.getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), greaterThanOrEqualTo(5L));
     }
     
     @Test
-    public void assertInvokeMethod() throws NoSuchMethodException {
-        assertThat(AgentReflectionUtil.invokeMethod(ReflectionFixture.class.getDeclaredMethod("call"), new ReflectionFixture("foo")), is("foo"));
+    public void assertGetElapsedTimeAndCleanWithoutRecorded() throws NoSuchMethodException {
+        assertThat(new MethodTimeRecorder(AgentAdvice.class).getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), is(0L));
     }
 }

@@ -56,6 +56,6 @@ public final class MySQLDateBinlogProtocolValueTest {
     public void assertReadNullDate() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedMediumLE()).thenReturn(0);
-        assertThat(new MySQLDateBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.ZERO_OF_DATE));
+        assertThat(new MySQLDateBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.ZERO_OF_DATE));
     }
 }

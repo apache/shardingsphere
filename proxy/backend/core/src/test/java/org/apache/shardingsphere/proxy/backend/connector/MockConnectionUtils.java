@@ -31,10 +31,10 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 
 /**
- * Mock JDBC connection session utility.
+ * Mock JDBC connection session utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class MockConnectionUtil {
+final class MockConnectionUtils {
     
     /**
      * Mock set cached connections.

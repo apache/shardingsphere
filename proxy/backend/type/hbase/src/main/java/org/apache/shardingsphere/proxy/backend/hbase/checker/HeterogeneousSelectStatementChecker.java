@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.checker;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBasePropertyKey;
-import org.apache.shardingsphere.proxy.backend.hbase.util.HBaseHeterogeneousUtil;
+import org.apache.shardingsphere.proxy.backend.hbase.utils.HBaseHeterogeneousUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -76,7 +76,7 @@ public class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLS
     
     private void checkProjectionsIsExpected() {
         for (ProjectionSegment projectionSegment : getSqlStatement().getProjections().getProjections()) {
-            if (!(projectionSegment instanceof ShorthandProjectionSegment || projectionSegment instanceof ColumnProjectionSegment || HBaseHeterogeneousUtil.isCrcProjectionSegment(
+            if (!(projectionSegment instanceof ShorthandProjectionSegment || projectionSegment instanceof ColumnProjectionSegment || HBaseHeterogeneousUtils.isCrcProjectionSegment(
                     projectionSegment))) {
                 throw new IllegalArgumentException("Only supported ShorthandProjection and ColumnProjection and crc32ExpressionProjection");
             }

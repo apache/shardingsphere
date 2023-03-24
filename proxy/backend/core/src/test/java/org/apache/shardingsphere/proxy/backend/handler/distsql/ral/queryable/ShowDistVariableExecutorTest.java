@@ -28,7 +28,7 @@ import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigur
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -85,7 +85,7 @@ public final class ShowDistVariableExecutorTest {
     
     @Test
     public void assertShowAgentPluginsEnabled() {
-        SystemPropertyUtil.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString());
+        SystemPropertyUtils.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString());
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("AGENT_PLUGINS_ENABLED"));
         assertThat(actual.size(), is(1));

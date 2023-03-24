@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc;
 
-import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtil;
+import org.apache.shardingsphere.agent.plugin.core.utils.AgentReflectionUtils;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
@@ -54,12 +54,12 @@ public final class JDBCMetaDataInfoExporter implements MetricsExporter {
         }
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
-        DriverDataSourceCache dataSourceCache = AgentReflectionUtil.getFieldValue(shardingSphereDriverOptional.get(), "dataSourceCache");
-        Map<String, DataSource> dataSourceMap = AgentReflectionUtil.getFieldValue(dataSourceCache, "dataSourceMap");
+        DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(shardingSphereDriverOptional.get(), "dataSourceCache");
+        Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
         for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) entry.getValue();
-            String databaseName = AgentReflectionUtil.getFieldValue(shardingSphereDataSource, "databaseName");
-            ContextManager contextManager = AgentReflectionUtil.getFieldValue(shardingSphereDataSource, "contextManager");
+            String databaseName = AgentReflectionUtils.getFieldValue(shardingSphereDataSource, "databaseName");
+            ContextManager contextManager = AgentReflectionUtils.getFieldValue(shardingSphereDataSource, "contextManager");
             result.addMetric(Arrays.asList(databaseName, "storage_unit_count"), contextManager.getDataSourceMap(databaseName).size());
         }
         return Optional.of(result);

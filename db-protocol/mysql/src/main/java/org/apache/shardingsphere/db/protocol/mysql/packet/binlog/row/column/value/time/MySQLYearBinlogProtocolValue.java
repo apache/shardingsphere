@@ -33,6 +33,6 @@ public final class MySQLYearBinlogProtocolValue implements MySQLBinlogProtocolVa
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int result = payload.readInt1();
-        return 0 == result ? MySQLTimeValueUtil.YEAR_OF_ZERO : Integer.toString(result + 1900);
+        return 0 == result ? MySQLTimeValueUtils.YEAR_OF_ZERO : Integer.toString(result + 1900);
     }
 }

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableExce
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.util.Arrays;
@@ -102,7 +102,7 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
         VariableEnum variable = VariableEnum.getValueOf(variableName);
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
-                return SystemPropertyUtil.getSystemProperty(variable.name(), Boolean.TRUE.toString());
+                return SystemPropertyUtils.getSystemProperty(variable.name(), Boolean.TRUE.toString());
             case CACHED_CONNECTIONS:
                 int connectionSize = connectionSession.getBackendConnection().getConnectionSize();
                 return String.valueOf(connectionSize);

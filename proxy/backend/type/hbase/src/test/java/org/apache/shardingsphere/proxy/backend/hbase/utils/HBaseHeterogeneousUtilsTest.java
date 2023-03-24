@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.util;
+package org.apache.shardingsphere.proxy.backend.hbase.utils;
 
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseSupportedSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -27,13 +27,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class HBaseHeterogeneousUtilTest {
+public final class HBaseHeterogeneousUtilsTest {
     
     @Test
     public void assertCrc32ProjectionSegment() {
         String sql = "SELECT /*+ HBase */ rowKey, crc32(concat_ws('#',rowKey)) from t_order where rowKey in (1, 2, 3)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         List<ProjectionSegment> projectionSegments = new ArrayList<>(((SelectStatement) sqlStatement).getProjections().getProjections());
-        assertTrue(HBaseHeterogeneousUtil.isCrcProjectionSegment(projectionSegments.get(1)));
+        assertTrue(HBaseHeterogeneousUtils.isCrcProjectionSegment(projectionSegments.get(1)));
     }
 }

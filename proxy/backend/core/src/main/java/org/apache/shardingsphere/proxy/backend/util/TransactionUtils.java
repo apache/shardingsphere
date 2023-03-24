@@ -24,10 +24,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolatio
 import java.sql.Connection;
 
 /**
- * Transaction util class.
+ * Transaction utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TransactionUtil {
+public final class TransactionUtils {
     
     /**
      * Get the value of type int according to TransactionIsolationLevel.

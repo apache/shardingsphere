@@ -87,6 +87,6 @@ public final class MySQLDatetime2BinlogProtocolValueTest {
     
     @Test
     public void assertReadNullTime() {
-        assertThat(new MySQLDatetime2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.DATETIME_OF_ZERO));
+        assertThat(new MySQLDatetime2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
     }
 }

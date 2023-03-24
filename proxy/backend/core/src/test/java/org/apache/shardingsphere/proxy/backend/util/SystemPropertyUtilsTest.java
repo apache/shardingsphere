@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.util;
+package org.apache.shardingsphere.proxy.backend.util;
 
-import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
-import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
-public final class MethodTimeRecorderTest {
+public final class SystemPropertyUtilsTest {
     
     @Test
-    public void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException, NoSuchMethodException {
-        MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(AgentAdvice.class);
-        methodTimeRecorder.record(Object.class.getDeclaredMethod("toString"));
-        Thread.sleep(5L);
-        assertThat(methodTimeRecorder.getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), greaterThanOrEqualTo(5L));
+    public void assertGetDefaultValue() {
+        assertThat(SystemPropertyUtils.getSystemProperty("key0", "value0"), is("value0"));
     }
     
     @Test
-    public void assertGetElapsedTimeAndCleanWithoutRecorded() throws NoSuchMethodException {
-        assertThat(new MethodTimeRecorder(AgentAdvice.class).getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), is(0L));
+    public void assertGetSystemPropertyAfterSet() {
+        SystemPropertyUtils.setSystemProperty("key1", "value1");
+        assertThat(SystemPropertyUtils.getSystemProperty("key1", "value0"), is("value1"));
     }
 }

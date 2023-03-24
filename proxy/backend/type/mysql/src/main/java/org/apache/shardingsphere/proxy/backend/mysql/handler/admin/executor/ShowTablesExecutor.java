@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.proxy.backend.util.RegularUtil;
+import org.apache.shardingsphere.proxy.backend.util.RegularUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
@@ -95,7 +95,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
                 .getDatabase(databaseName).getSchema(databaseName).getTables().values().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
         if (showTablesStatement.getFilter().isPresent()) {
             Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(optional -> SQLUtil.convertLikePatternToRegex(optional.getPattern()));
-            return pattern.isPresent() ? result.stream().filter(each -> RegularUtil.matchesCaseInsensitive(pattern.get(), each)).collect(Collectors.toList()) : result;
+            return pattern.isPresent() ? result.stream().filter(each -> RegularUtils.matchesCaseInsensitive(pattern.get(), each)).collect(Collectors.toList()) : result;
         }
         return result;
     }

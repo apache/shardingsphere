@@ -17,33 +17,24 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-/**
- * System property utility class.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SystemPropertyUtil {
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public final class RegularUtilsTest {
     
-    /**
-     * Set system property.
-     *
-     * @param key property key
-     * @param value property value
-     */
-    public static void setSystemProperty(final String key, final String value) {
-        System.setProperty(key, value);
+    @Test
+    public void assertMatchesWithUpperCaseRegex() {
+        assertTrue(RegularUtils.matchesCaseInsensitive("T.ORDER", "t_order"));
     }
     
-    /**
-     * Get system property.
-     *
-     * @param key property key
-     * @param defaultValue a default value
-     * @return property value
-     */
-    public static String getSystemProperty(final String key, final String defaultValue) {
-        return System.getProperty(key, defaultValue);
+    @Test
+    public void assertMatchesWithLowerCaseRegex() {
+        assertTrue(RegularUtils.matchesCaseInsensitive("t.order", "t_order"));
+    }
+    
+    @Test
+    public void assertMatchesWithUpperCaseInput() {
+        assertTrue(RegularUtils.matchesCaseInsensitive("t.order", "T_ORDER"));
     }
 }

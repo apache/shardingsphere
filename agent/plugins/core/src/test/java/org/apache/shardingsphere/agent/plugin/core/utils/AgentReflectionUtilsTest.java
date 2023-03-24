@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.core.util.fixture;
+package org.apache.shardingsphere.agent.plugin.core.utils;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.plugin.core.utils.fixture.ReflectionFixture;
+import org.junit.jupiter.api.Test;
 
-@RequiredArgsConstructor
-@Getter
-public final class ReflectionFixture {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class AgentReflectionUtilsTest {
     
-    private final String value;
+    @Test
+    public void assertGetFieldValue() {
+        ReflectionFixture reflectionFixture = new ReflectionFixture("foo");
+        assertThat(AgentReflectionUtils.getFieldValue(reflectionFixture, "value"), is(reflectionFixture.getValue()));
+    }
     
-    @SuppressWarnings("unused")
-    private String call() {
-        return value;
+    @Test
+    public void assertInvokeMethod() throws NoSuchMethodException {
+        assertThat(AgentReflectionUtils.invokeMethod(ReflectionFixture.class.getDeclaredMethod("call"), new ReflectionFixture("foo")), is("foo"));
     }
 }

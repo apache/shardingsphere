@@ -43,12 +43,12 @@ public final class MySQLTimestampBinlogProtocolValueTest {
     public void assertRead() {
         int currentSeconds = Long.valueOf(System.currentTimeMillis() / 1000).intValue();
         when(payload.readInt4()).thenReturn(currentSeconds);
-        assertThat(new MySQLTimestampBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.getSimpleDateFormat().format(new Timestamp(currentSeconds * 1000L))));
+        assertThat(new MySQLTimestampBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.getSimpleDateFormat().format(new Timestamp(currentSeconds * 1000L))));
     }
     
     @Test
     public void assertReadNullTime() {
         when(payload.readInt4()).thenReturn(0);
-        assertThat(new MySQLTimestampBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtil.DATETIME_OF_ZERO));
+        assertThat(new MySQLTimestampBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
     }
 }

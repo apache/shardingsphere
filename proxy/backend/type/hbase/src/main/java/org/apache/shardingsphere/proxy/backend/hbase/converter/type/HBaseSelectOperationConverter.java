@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseRowKeyExtractor;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseSelectOperation;
-import org.apache.shardingsphere.proxy.backend.hbase.util.HBaseHeterogeneousUtil;
+import org.apache.shardingsphere.proxy.backend.hbase.utils.HBaseHeterogeneousUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -68,7 +68,7 @@ public final class HBaseSelectOperationConverter implements HBaseOperationConver
     private HBaseOperation createGetOperation(final SelectStatementContext selectStatementContext, final WhereSegment whereSegment) {
         ExpressionSegment expr = whereSegment.getExpr();
         List<Get> gets = getRowKeys(expr).stream().map(each -> new Get(Bytes.toBytes(each))).collect(Collectors.toList());
-        if (!HBaseHeterogeneousUtil.isUseShorthandProjection(selectStatementContext)) {
+        if (!HBaseHeterogeneousUtils.isUseShorthandProjection(selectStatementContext)) {
             for (Get each : gets) {
                 appendColumns(each, selectStatementContext);
             }
@@ -86,7 +86,7 @@ public final class HBaseSelectOperationConverter implements HBaseOperationConver
         if (whereSegment.getExpr() instanceof BetweenExpression) {
             appendBetween(scan, whereSegment.getExpr(), false);
         }
-        if (!HBaseHeterogeneousUtil.isUseShorthandProjection(selectStatementContext)) {
+        if (!HBaseHeterogeneousUtils.isUseShorthandProjection(selectStatementContext)) {
             appendColumns(scan, selectStatementContext);
         }
         appendLimit(scan, selectStatementContext);
