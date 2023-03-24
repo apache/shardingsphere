@@ -28,13 +28,10 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,12 +45,14 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private final ShardingSphereDatabase database;
     
+    private final boolean sqlStatementTableIsSingleTable;
+    
     private final SQLStatementContext<?> sqlStatementContext;
     
     @Override
     public int getColumnCount() throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            if (isAllSingleTable()) {
+            if (sqlStatementTableIsSingleTable) {
                 return resultSetMetaData.getColumnCount();
             }
             if (hasSelectExpandProjections()) {
@@ -101,7 +100,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
-        if (isAllSingleTable()) {
+        if (sqlStatementTableIsSingleTable) {
             return resultSetMetaData.getColumnLabel(column);
         }
         if (hasSelectExpandProjections()) {
@@ -116,7 +115,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        if (isAllSingleTable()) {
+        if (sqlStatementTableIsSingleTable) {
             return resultSetMetaData.getColumnName(column);
         }
         if (hasSelectExpandProjections()) {
@@ -134,27 +133,6 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private boolean hasSelectExpandProjections() {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
-    }
-    
-    private boolean isAllSingleTable() {
-        DataNodeContainedRule dataNodeContainedRule = database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .filter(each -> !(each instanceof MutableDataNodeRule)).findFirst().orElse(null);
-        Collection<ColumnContainedRule> columnContainedRules = database.getRuleMetaData().findRules(ColumnContainedRule.class);
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            return !containsInImmutableDataNodeContainedRule(each, dataNodeContainedRule) && !containsInColumnContainedRule(each, columnContainedRules);
-        }
-        return true;
-    }
-    
-    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final DataNodeContainedRule dataNodeContainedRule) {
-        return null != dataNodeContainedRule && dataNodeContainedRule.getAllTables().contains(tableName);
-    }
-    
-    private boolean containsInColumnContainedRule(final String tableName, final Collection<ColumnContainedRule> columnContainedRules) {
-        for (ColumnContainedRule each : columnContainedRules) {
-            return each.getTables().contains(tableName);
-        }
-        return false;
     }
     
     private void checkColumnIndex(final int column) throws SQLException {

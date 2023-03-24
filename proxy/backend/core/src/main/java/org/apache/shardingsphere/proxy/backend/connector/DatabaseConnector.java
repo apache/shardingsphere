@@ -346,17 +346,21 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     }
     
     private boolean isAllSingleTable(final SQLStatementContext<?> sqlStatementContext) {
-        DataNodeContainedRule dataNodeContainedRule = database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .filter(each -> !(each instanceof MutableDataNodeRule)).findFirst().orElse(null);
+        Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(database.getRuleMetaData().findRules(DataNodeContainedRule.class));
         Collection<ColumnContainedRule> columnContainedRules = database.getRuleMetaData().findRules(ColumnContainedRule.class);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            return !containsInImmutableDataNodeContainedRule(each, dataNodeContainedRule) && !containsInColumnContainedRule(each, columnContainedRules);
+            return (!dataNodeContainedRule.isPresent() || !dataNodeContainedRule.get().getAllTables().contains(each)) && !containsInColumnContainedRule(each, columnContainedRules);
         }
         return true;
     }
     
-    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final DataNodeContainedRule dataNodeContainedRule) {
-        return null != dataNodeContainedRule && dataNodeContainedRule.getAllTables().contains(tableName);
+    private Optional<DataNodeContainedRule> getDataNodeContainedRuleForShardingRule(final Collection<DataNodeContainedRule> dataNodeContainedRules) {
+        for (DataNodeContainedRule each : dataNodeContainedRules) {
+            if (!(each instanceof MutableDataNodeRule)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     private boolean containsInColumnContainedRule(final String tableName, final Collection<ColumnContainedRule> columnContainedRules) {

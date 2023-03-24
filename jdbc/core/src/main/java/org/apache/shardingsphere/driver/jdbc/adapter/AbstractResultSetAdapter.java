@@ -46,6 +46,8 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Getter
     private final Statement statement;
     
+    private final boolean singleTable;
+    
     private boolean closed;
     
     private final ForceExecuteTemplate<ResultSet> forceExecuteTemplate = new ForceExecuteTemplate<>();
@@ -53,16 +55,17 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Getter
     private final ExecutionContext executionContext;
     
-    protected AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final ExecutionContext executionContext) {
+    protected AbstractResultSetAdapter(final List<ResultSet> resultSets, final Statement statement, final boolean singleTable, final ExecutionContext executionContext) {
         Preconditions.checkArgument(!resultSets.isEmpty());
         this.resultSets = resultSets;
         this.statement = statement;
+        this.singleTable = singleTable;
         this.executionContext = executionContext;
     }
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabase(), executionContext.getSqlStatementContext());
+        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabase(), singleTable, executionContext.getSqlStatementContext());
     }
     
     private ShardingSphereDatabase getDatabase() {
