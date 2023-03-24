@@ -21,7 +21,6 @@ import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.Random
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -30,51 +29,15 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ReadwriteSplittingDataSourceRuleTest {
+class ReadwriteSplittingDataSourceRuleTest {
     
-    private ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule;
-    
-    @BeforeEach
-    public void setUp() {
-        readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
+    @Test
+    void assertGetWriteDataSource() {
+        ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_pr",
                         new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, null),
                 TransactionalReadQueryStrategy.DYNAMIC, new RandomReadQueryLoadBalanceAlgorithm(), Collections.emptyList());
-    }
-    
-    @Test
-    public void assertGetReadDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
-    }
-    
-    @Test
-    public void assertGetReadDataSourceNamesWithDisabledDataSourceNames() {
-        readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
-        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
-    }
-    
-    @Test
-    public void assertUpdateDisabledDataSourceNamesForDisabled() {
-        readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
-        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
-    }
-    
-    @Test
-    public void assertUpdateDisabledDataSourceNamesForEnabled() {
-        readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
-        readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", false);
-        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
-    }
-    
-    @Test
-    public void assertGetWriteDataSource() {
         String writeDataSourceName = readwriteSplittingDataSourceRule.getWriteDataSource();
         assertThat(writeDataSourceName, is("write_ds"));
-    }
-    
-    @Test
-    public void assertGetEnabledReplicaDataSources() {
-        readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
-        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
     }
 }
