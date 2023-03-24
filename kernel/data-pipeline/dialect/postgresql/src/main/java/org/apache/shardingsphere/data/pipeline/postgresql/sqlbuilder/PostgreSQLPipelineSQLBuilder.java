@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
 import java.util.Arrays;
@@ -76,7 +76,7 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     // Refer to https://www.postgresql.org/docs/current/sql-insert.html
     private String buildConflictSQL(final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder(" ON CONFLICT (");
-        for (Column each : RecordUtil.extractPrimaryColumns(dataRecord)) {
+        for (Column each : RecordUtils.extractPrimaryColumns(dataRecord)) {
             result.append(each.getName()).append(",");
         }
         result.setLength(result.length() - 1);

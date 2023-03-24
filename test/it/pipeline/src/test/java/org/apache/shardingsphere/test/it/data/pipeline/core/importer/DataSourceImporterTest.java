@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.importer.DataSourceImporter;
 import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -153,7 +153,7 @@ public final class DataSourceImporterTest {
     }
     
     private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
-        return RecordUtil.extractConditionColumns(dataRecord, Collections.singleton("user"));
+        return RecordUtils.extractConditionColumns(dataRecord, Collections.singleton("user"));
     }
     
     private List<Record> mockRecords(final DataRecord dataRecord) {

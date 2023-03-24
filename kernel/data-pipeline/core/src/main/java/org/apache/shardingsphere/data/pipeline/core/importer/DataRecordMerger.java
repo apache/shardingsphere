@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineUnexpectedDataRecordOrderException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
@@ -138,7 +138,7 @@ public final class DataRecordMerger {
     }
     
     private boolean checkUpdatedPrimaryKey(final DataRecord dataRecord) {
-        return RecordUtil.extractPrimaryColumns(dataRecord).stream().anyMatch(Column::isUpdated);
+        return RecordUtils.extractPrimaryColumns(dataRecord).stream().anyMatch(Column::isUpdated);
     }
     
     private DataRecord mergeColumn(final DataRecord preDataRecord, final DataRecord curDataRecord) {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -155,7 +155,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
     public List<Column> extractUpdatedColumns(final DataRecord record) {
-        return new ArrayList<>(RecordUtil.extractUpdatedColumns(record));
+        return new ArrayList<>(RecordUtils.extractUpdatedColumns(record));
     }
     
     @Override

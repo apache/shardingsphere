@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datanode.DataNodeUtil;
+import org.apache.shardingsphere.data.pipeline.api.datanode.DataNodeUtils;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -57,9 +57,9 @@ import org.apache.shardingsphere.data.pipeline.core.exception.connection.Registe
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.UnregisterMigrationSourceStorageUnitException;
 import org.apache.shardingsphere.data.pipeline.core.exception.metadata.NoAnyRuleExistsException;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtil;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtils;
 import org.apache.shardingsphere.data.pipeline.core.sharding.ShardingColumnsExtractor;
-import org.apache.shardingsphere.data.pipeline.core.util.JobDataNodeLineConvertUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.JobDataNodeLineConvertUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
@@ -143,7 +143,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         Map<String, List<DataNode>> sourceDataNodes = new LinkedHashMap<>();
         Map<String, YamlPipelineDataSourceConfiguration> configSources = new LinkedHashMap<>();
         List<SourceTargetEntry> sourceTargetEntries = new ArrayList<>(new HashSet<>(param.getSourceTargetEntries())).stream().sorted(Comparator.comparing(SourceTargetEntry::getTargetTableName)
-                .thenComparing(each -> DataNodeUtil.formatWithSchema(each.getSource()))).collect(Collectors.toList());
+                .thenComparing(each -> DataNodeUtils.formatWithSchema(each.getSource()))).collect(Collectors.toList());
         for (SourceTargetEntry each : sourceTargetEntries) {
             sourceDataNodes.computeIfAbsent(each.getTargetTableName(), key -> new LinkedList<>()).add(each.getSource());
             ShardingSpherePreconditions.checkState(1 == sourceDataNodes.get(each.getTargetTableName()).size(),
@@ -158,7 +158,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
             configSources.put(dataSourceName, buildYamlPipelineDataSourceConfiguration(sourceDataSourceConfig.getType(), sourceDataSourceConfig.getParameter()));
             if (null == each.getSource().getSchemaName() && sourceDataSourceConfig.getDatabaseType().isSchemaAvailable()) {
-                each.getSource().setSchemaName(PipelineSchemaUtil.getDefaultSchema(sourceDataSourceConfig));
+                each.getSource().setSchemaName(PipelineSchemaUtils.getDefaultSchema(sourceDataSourceConfig));
             }
             DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
             if (null == result.getSourceDatabaseType()) {
@@ -176,7 +176,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         result.setTargetTableNames(new ArrayList<>(sourceDataNodes.keySet()).stream().sorted().collect(Collectors.toList()));
         result.setTargetTableSchemaMap(buildTargetTableSchemaMap(sourceDataNodes));
         result.setTablesFirstDataNodes(new JobDataNodeLine(tablesFirstDataNodes).marshal());
-        result.setJobShardingDataNodes(JobDataNodeLineConvertUtil.convertDataNodesToLines(sourceDataNodes).stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
+        result.setJobShardingDataNodes(JobDataNodeLineConvertUtils.convertDataNodesToLines(sourceDataNodes).stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
         extendYamlJobConfiguration(result);
         return result;
     }
@@ -229,7 +229,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         PipelineJobMetaData jobMetaData = buildPipelineJobMetaData(jobConfigPOJO);
         List<String> sourceTables = new LinkedList<>();
         getJobConfiguration(jobConfigPOJO).getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes()
-                .forEach(dataNode -> sourceTables.add(DataNodeUtil.formatWithSchema(dataNode)))));
+                .forEach(dataNode -> sourceTables.add(DataNodeUtils.formatWithSchema(dataNode)))));
         return new TableBasedPipelineJobInfo(jobMetaData, String.join(",", sourceTables));
     }
     

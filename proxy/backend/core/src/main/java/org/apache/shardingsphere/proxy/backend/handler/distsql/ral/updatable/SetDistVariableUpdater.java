@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
-import org.apache.shardingsphere.logging.utils.LoggingUtils;
+import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;

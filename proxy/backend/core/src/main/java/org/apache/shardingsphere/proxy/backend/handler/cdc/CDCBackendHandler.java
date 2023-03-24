@@ -39,8 +39,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRe
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
-import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtil;
-import org.apache.shardingsphere.data.pipeline.cdc.util.CDCTableRuleUtil;
+import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtils;
+import org.apache.shardingsphere.data.pipeline.cdc.util.CDCTableRuleUtils;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
@@ -90,12 +90,12 @@ public final class CDCBackendHandler {
         Collection<String> tableNames;
         Set<String> schemaTableNames = new HashSet<>();
         if (database.getProtocolType().isSchemaAvailable()) {
-            schemaTableNameMap = CDCSchemaTableUtil.parseTableExpressionWithSchema(database, requestBody.getSourceSchemaTableList());
+            schemaTableNameMap = CDCSchemaTableUtils.parseTableExpressionWithSchema(database, requestBody.getSourceSchemaTableList());
             // TODO if different schema have same table names, table name may be overwritten, because the table name at sharding rule not contain schema.
             tableNames = schemaTableNameMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
             schemaTableNameMap.forEach((k, v) -> v.forEach(tableName -> schemaTableNames.add(k.isEmpty() ? tableName : String.join(".", k, tableName))));
         } else {
-            schemaTableNames.addAll(CDCSchemaTableUtil.parseTableExpressionWithoutSchema(database, requestBody.getSourceSchemaTableList().stream().map(SchemaTable::getTable)
+            schemaTableNames.addAll(CDCSchemaTableUtils.parseTableExpressionWithoutSchema(database, requestBody.getSourceSchemaTableList().stream().map(SchemaTable::getTable)
                     .collect(Collectors.toList())));
             tableNames = schemaTableNames;
         }
@@ -106,7 +106,7 @@ public final class CDCBackendHandler {
         Map<String, List<DataNode>> actualDataNodesMap = new HashMap<>();
         // TODO need support case-insensitive later
         for (String each : tableNames) {
-            actualDataNodesMap.put(each, CDCTableRuleUtil.getActualDataNodes(shardingRule, each));
+            actualDataNodesMap.put(each, CDCTableRuleUtils.getActualDataNodes(shardingRule, each));
         }
         boolean decodeWithTx = database.getProtocolType() instanceof OpenGaussDatabaseType;
         StreamDataParameter parameter = new StreamDataParameter(requestBody.getDatabase(), new LinkedList<>(schemaTableNames), requestBody.getFull(), actualDataNodesMap, decodeWithTx);

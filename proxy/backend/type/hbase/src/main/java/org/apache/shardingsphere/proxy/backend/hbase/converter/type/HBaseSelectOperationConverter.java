@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseRowKeyExtractor;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseSelectOperation;
-import org.apache.shardingsphere.proxy.backend.hbase.utils.HBaseHeterogeneousUtils;
+import org.apache.shardingsphere.proxy.backend.hbase.util.HBaseHeterogeneousUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
