@@ -115,7 +115,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         for (int i = 0; i < inlineReadwriteDataSourceNames.size(); i++) {
             ReadwriteSplittingDataSourceRuleConfiguration staticConfig = createStaticDataSourceRuleConfiguration(
                     config, i, inlineReadwriteDataSourceNames, inlineWriteDatasourceNames, inlineReadDatasourceNames);
-            result.put(inlineReadwriteDataSourceNames.get(i), new ReadwriteSplittingDataSourceRule(staticConfig, loadBalanceAlgorithm, builtRules));
+            result.put(inlineReadwriteDataSourceNames.get(i), new ReadwriteSplittingDataSourceRule(staticConfig, config.getTransactionReadQueryStrategy(), loadBalanceAlgorithm, builtRules));
         }
         return result;
     }
@@ -138,7 +138,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
                 () -> new InvalidInlineExpressionDataSourceNameException("Inline expression auto aware data source names size error."));
         for (int i = 0; i < inlineReadwriteDataSourceNames.size(); i++) {
             ReadwriteSplittingDataSourceRuleConfiguration dynamicConfig = createDynamicDataSourceRuleConfiguration(config, i, inlineReadwriteDataSourceNames, inlineAutoAwareDataSourceNames);
-            result.put(inlineReadwriteDataSourceNames.get(i), new ReadwriteSplittingDataSourceRule(dynamicConfig, loadBalanceAlgorithm, builtRules));
+            result.put(inlineReadwriteDataSourceNames.get(i), new ReadwriteSplittingDataSourceRule(dynamicConfig, config.getTransactionReadQueryStrategy(), loadBalanceAlgorithm, builtRules));
         }
         return result;
     }
