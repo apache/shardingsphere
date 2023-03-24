@@ -127,7 +127,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         failedIfBackendNotReady(backendConnection.getConnectionSession(), sqlStatementContext);
         this.driverType = driverType;
-        this.transparentStatement = isTransparentStatement(sqlStatementContext)
+        this.transparentStatement = isTransparentStatement(sqlStatementContext);
         this.database = database;
         this.queryContext = queryContext;
         this.backendConnection = backendConnection;
