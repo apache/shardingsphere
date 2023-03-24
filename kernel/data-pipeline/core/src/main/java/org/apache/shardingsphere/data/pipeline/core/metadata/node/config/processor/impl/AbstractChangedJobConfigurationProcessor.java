@@ -38,9 +38,6 @@ public abstract class AbstractChangedJobConfigurationProcessor implements Change
     @Override
     public void process(final Type eventType, final JobConfiguration jobConfig) {
         boolean disabled = jobConfig.isDisabled();
-        if (disabled) {
-            onDisabled(jobConfig);
-        }
         boolean deleted = Type.DELETED == eventType;
         if (deleted) {
             onDeleted(jobConfig);
@@ -48,6 +45,9 @@ public abstract class AbstractChangedJobConfigurationProcessor implements Change
         String jobId = jobConfig.getJobName();
         if (disabled || deleted) {
             PipelineJobCenter.stop(jobId);
+            if (disabled) {
+                onDisabled(jobConfig);
+            }
             return;
         }
         switch (eventType) {

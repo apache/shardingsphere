@@ -126,12 +126,12 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         }
         jobBootstrap.shutdown();
         Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineJobListener.class.getName());
-        pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(5)));
+        pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(2)));
     }
     
     private void awaitJobStopped(final PipelineJobListener jobListener, final String jobId, final long timeoutMillis) {
         int time = 0;
-        int sleepTime = 1000;
+        int sleepTime = 50;
         while (time < timeoutMillis) {
             if (!jobListener.isJobRunning(jobId)) {
                 break;
