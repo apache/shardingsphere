@@ -81,7 +81,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/general/mysql.xml"),
         @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/general/postgresql.xml")})
 @Slf4j
-public final class CDCE2EIT {
+class CDCE2EIT {
     
     private static final String CREATE_SHARDING_RULE_SQL = String.format("CREATE SHARDING TABLE RULE t_order("
             + "STORAGE_UNITS(%s,%s),"
@@ -97,7 +97,7 @@ public final class CDCE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    public void assertCDCDataImportSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
+    void assertCDCDataImportSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
         if (TimeZone.getDefault() != TimeZone.getTimeZone("UTC") && PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
             // make sure the time zone of locally running program same with the database server at CI.
             TimeZone.setDefault(TimeZone.getTimeZone("UTC"));

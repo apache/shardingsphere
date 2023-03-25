@@ -92,7 +92,7 @@ public abstract class TransactionBaseE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertTransaction(final TransactionTestParameter testParam) throws SQLException {
+    void assertTransaction(final TransactionTestParameter testParam) throws SQLException {
         if (null == testParam) {
             return;
         }
