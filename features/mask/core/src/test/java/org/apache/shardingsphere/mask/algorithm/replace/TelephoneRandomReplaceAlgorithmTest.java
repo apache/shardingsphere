@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.algorithm.replace;
 
-import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -52,7 +52,7 @@ class TelephoneRandomReplaceAlgorithmTest {
     @Test
     void assertInitWithEmptyProps() {
         maskAlgorithm.init(new Properties());
-        Optional<Object> actual = ReflectionUtil.getFieldValue(maskAlgorithm, "networkNumbers");
+        Optional<Object> actual = ReflectionUtils.getFieldValue(maskAlgorithm, "networkNumbers");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(DEFAULT_NETWORK_NUMBERS));
     }

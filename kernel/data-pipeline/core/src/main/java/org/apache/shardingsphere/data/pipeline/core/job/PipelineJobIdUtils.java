@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobTypeFactory;
 
 /**
- * Pipeline job id utils.
+ * Pipeline job id utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineJobIdUtils {

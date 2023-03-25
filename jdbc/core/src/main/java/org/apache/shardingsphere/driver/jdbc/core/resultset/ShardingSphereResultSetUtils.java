@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Util for {@link ShardingSphereResultSet}.
+ * Utility class for {@link ShardingSphereResultSet}.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereResultSetUtil {
+public final class ShardingSphereResultSetUtils {
     
     /**
      * Create column label and index map.

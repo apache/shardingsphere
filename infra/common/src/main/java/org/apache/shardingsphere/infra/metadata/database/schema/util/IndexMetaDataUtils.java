@@ -36,7 +36,7 @@ import java.util.Optional;
  * Index meta data utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class IndexMetaDataUtil {
+public final class IndexMetaDataUtils {
     
     private static final String UNDERLINE = "_";
     

@@ -41,10 +41,10 @@ import java.time.ZoneId;
 import java.util.Date;
 
 /**
- * ResultSet utility.
+ * Result set utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResultSetUtil {
+public final class ResultSetUtils {
     
     /**
      * Convert value via expected class type.
@@ -267,5 +267,4 @@ public final class ResultSetUtil {
     private static Boolean longToBoolean(final long longVal) {
         return -1 == longVal || longVal > 0;
     }
-    
 }

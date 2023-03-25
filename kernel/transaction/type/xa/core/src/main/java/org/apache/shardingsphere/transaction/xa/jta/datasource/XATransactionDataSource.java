@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
@@ -116,7 +116,7 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private void close(final DataSource dataSource) {
         try {
-            ReflectionUtil.invokeMethod(dataSource.getClass().getDeclaredMethod("close"), dataSource);
+            ReflectionUtils.invokeMethod(dataSource.getClass().getDeclaredMethod("close"), dataSource);
         } catch (final ReflectiveOperationException ignored) {
         }
     }

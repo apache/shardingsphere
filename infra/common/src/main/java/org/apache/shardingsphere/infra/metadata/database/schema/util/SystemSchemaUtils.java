@@ -30,7 +30,7 @@ import java.util.Collection;
  * System schema utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SystemSchemaUtil {
+public final class SystemSchemaUtils {
     
     /**
      * Judge whether SQL statement contains system schema or not.

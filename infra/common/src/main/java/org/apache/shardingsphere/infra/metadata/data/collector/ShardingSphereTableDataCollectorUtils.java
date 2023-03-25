@@ -34,9 +34,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Table data collector util.
+ * Table data collector utility class.
  */
-public final class ShardingSphereTableDataCollectorUtil {
+public final class ShardingSphereTableDataCollectorUtils {
     
     /**
      * Collect row data.

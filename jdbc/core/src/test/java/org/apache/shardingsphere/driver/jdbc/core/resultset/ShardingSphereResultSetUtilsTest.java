@@ -36,7 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShardingSphereResultSetUtilTest {
+class ShardingSphereResultSetUtilsTest {
     
     @Test
     void assertCreateColumnLabelAndIndexMapWithSelectWithoutExpandProjections() throws SQLException {
@@ -45,7 +45,7 @@ class ShardingSphereResultSetUtilTest {
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("label");
-        Map<String, Integer> actual = ShardingSphereResultSetUtil.createColumnLabelAndIndexMap(selectStatementContext, resultSetMetaData);
+        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, resultSetMetaData);
         assertThat(actual, is(Collections.singletonMap("label", 1)));
     }
     
@@ -59,7 +59,7 @@ class ShardingSphereResultSetUtilTest {
         Map<String, Integer> expected = new HashMap<>(2, 1);
         expected.put("col1", 1);
         expected.put("col2", 2);
-        Map<String, Integer> actual = ShardingSphereResultSetUtil.createColumnLabelAndIndexMap(selectStatementContext, null);
+        Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, null);
         assertThat(actual, is(expected));
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 
 import javax.sql.DataSource;
 import java.util.Optional;
@@ -40,7 +40,7 @@ public final class DataSourcePoolMetaDataReflection {
      * @return JDBC URL
      */
     public Optional<String> getJdbcUrl() {
-        return ReflectionUtil.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
+        return ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlFieldName());
     }
     
     /**
@@ -49,6 +49,6 @@ public final class DataSourcePoolMetaDataReflection {
      * @return JDBC connection properties
      */
     public Optional<Properties> getJdbcConnectionProperties() {
-        return ReflectionUtil.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
+        return ReflectionUtils.getFieldValue(targetDataSource, dataSourcePoolFieldMetaData.getJdbcUrlPropertiesFieldName());
     }
 }

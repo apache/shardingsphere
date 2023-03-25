@@ -30,10 +30,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Data node utility.
+ * Data node utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataNodeUtil {
+public final class DataNodeUtils {
     
     /**
      * Get data node groups.

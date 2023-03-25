@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * Schema meta data utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SchemaMetaDataUtil {
+public final class SchemaMetaDataUtils {
     
     /**
      * Get schema meta data loader materials.
