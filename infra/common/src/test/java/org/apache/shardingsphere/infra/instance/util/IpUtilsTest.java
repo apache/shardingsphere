@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.instance.util;
 
-import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

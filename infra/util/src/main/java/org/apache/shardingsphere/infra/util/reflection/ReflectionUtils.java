@@ -26,10 +26,10 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 /**
- * Reflection utility.
+ * Reflection utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReflectionUtil {
+public final class ReflectionUtils {
     
     /**
      * Get field value.

@@ -26,7 +26,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
- * PostgreSQL sequence.
+ * Timestamp utility class of PostgreSQL.
  */
 @AllArgsConstructor
 public final class PostgreSQLTimestampUtils implements BaseTimestampUtils {

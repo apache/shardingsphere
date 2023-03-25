@@ -33,7 +33,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class DataNodeUtilTest {
+class DataNodeUtilsTest {
     
     @Test
     void assertGetDataNodeGroups() {
@@ -42,7 +42,7 @@ class DataNodeUtilTest {
         expected.put("ds_1", Arrays.asList(new DataNode("ds_1.tbl_0"), new DataNode("ds_1.tbl_1")));
         List<DataNode> dataNodes = new LinkedList<>();
         expected.values().forEach(dataNodes::addAll);
-        Map<String, List<DataNode>> actual = DataNodeUtil.getDataNodeGroups(dataNodes);
+        Map<String, List<DataNode>> actual = DataNodeUtils.getDataNodeGroups(dataNodes);
         assertThat(actual, is(expected));
     }
     
@@ -51,7 +51,7 @@ class DataNodeUtilTest {
         DataNode dataNode = new DataNode("readwrite_ds.t_order");
         Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = Collections.singletonMap("readwrite_ds",
                 Arrays.asList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY), new DataSourceRoleInfo("shadow_ds_0", DataSourceRole.MEMBER)));
-        Collection<DataNode> dataNodes = DataNodeUtil.buildDataNode(dataNode, dataSourceMapper);
+        Collection<DataNode> dataNodes = DataNodeUtils.buildDataNode(dataNode, dataSourceMapper);
         assertThat(dataNodes.size(), is(2));
         Iterator<DataNode> iterator = dataNodes.iterator();
         assertThat(iterator.next().getDataSourceName(), is("ds_0"));
@@ -63,7 +63,7 @@ class DataNodeUtilTest {
         DataNode dataNode = new DataNode("read_ds.t_order");
         Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = Collections.singletonMap("readwrite_ds",
                 Arrays.asList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY), new DataSourceRoleInfo("shadow_ds_0", DataSourceRole.MEMBER)));
-        Collection<DataNode> dataNodes = DataNodeUtil.buildDataNode(dataNode, dataSourceMapper);
+        Collection<DataNode> dataNodes = DataNodeUtils.buildDataNode(dataNode, dataSourceMapper);
         assertThat(dataNodes.size(), is(1));
         assertThat(dataNodes.iterator().next().getDataSourceName(), is("read_ds"));
     }

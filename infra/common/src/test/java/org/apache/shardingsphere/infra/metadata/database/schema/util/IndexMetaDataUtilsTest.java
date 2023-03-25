@@ -42,7 +42,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-class IndexMetaDataUtilTest {
+class IndexMetaDataUtilsTest {
     
     private static final String TABLE_NAME = "t_order";
     
@@ -50,40 +50,40 @@ class IndexMetaDataUtilTest {
     
     @Test
     void assertGetLogicIndexNameWithIndexNameSuffix() {
-        assertThat(IndexMetaDataUtil.getLogicIndexName("order_index_t_order", "t_order"), is("order_index"));
+        assertThat(IndexMetaDataUtils.getLogicIndexName("order_index_t_order", "t_order"), is("order_index"));
     }
     
     @Test
     void assertGetLogicIndexNameWithMultiIndexNameSuffix() {
-        assertThat(IndexMetaDataUtil.getLogicIndexName("order_t_order_index_t_order", "t_order"), is("order_t_order_index"));
+        assertThat(IndexMetaDataUtils.getLogicIndexName("order_t_order_index_t_order", "t_order"), is("order_t_order_index"));
     }
     
     @Test
     void assertGetLogicIndexNameWithoutIndexNameSuffix() {
-        assertThat(IndexMetaDataUtil.getLogicIndexName("order_index", "t_order"), is("order_index"));
+        assertThat(IndexMetaDataUtils.getLogicIndexName("order_index", "t_order"), is("order_index"));
     }
     
     @Test
     void assertGetActualIndexNameWithActualTableName() {
-        assertThat(IndexMetaDataUtil.getActualIndexName("order_index", "t_order"), is("order_index_t_order"));
+        assertThat(IndexMetaDataUtils.getActualIndexName("order_index", "t_order"), is("order_index_t_order"));
     }
     
     @Test
     void assertGetActualIndexNameWithoutActualTableName() {
-        assertThat(IndexMetaDataUtil.getActualIndexName("order_index", null), is("order_index"));
+        assertThat(IndexMetaDataUtils.getActualIndexName("order_index", null), is("order_index"));
     }
     
     @Test
     void assertGetGeneratedLogicIndexName() {
         ColumnSegment userIdColumnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
         ColumnSegment userNameColumnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_name"));
-        assertThat(IndexMetaDataUtil.getGeneratedLogicIndexName(Arrays.asList(userIdColumnSegment, userNameColumnSegment)), is("user_id_user_name_idx"));
+        assertThat(IndexMetaDataUtils.getGeneratedLogicIndexName(Arrays.asList(userIdColumnSegment, userNameColumnSegment)), is("user_id_user_name_idx"));
     }
     
     @Test
     void assertGetTableNames() {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue(INDEX_NAME)));
-        Collection<QualifiedTable> actual = IndexMetaDataUtil.getTableNames(buildDatabase(), new MySQLDatabaseType(), Collections.singleton(indexSegment));
+        Collection<QualifiedTable> actual = IndexMetaDataUtils.getTableNames(buildDatabase(), new MySQLDatabaseType(), Collections.singleton(indexSegment));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getSchemaName(), is(DefaultDatabase.LOGIC_NAME));
         assertThat(actual.iterator().next().getTableName(), is(TABLE_NAME));

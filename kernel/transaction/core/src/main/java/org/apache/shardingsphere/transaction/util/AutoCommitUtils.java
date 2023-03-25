@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
- * Auto commit utils.
+ * Auto commit utility class.
  */
 public final class AutoCommitUtils {
     

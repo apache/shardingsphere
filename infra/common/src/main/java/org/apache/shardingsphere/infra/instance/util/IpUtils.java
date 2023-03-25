@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.utils;
+package org.apache.shardingsphere.infra.instance.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 
 /**
- * IP utilities.
+ * IP utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class IpUtils {

@@ -41,7 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class SchemaMetaDataUtilTest {
+class SchemaMetaDataUtilsTest {
     
     @Test
     void assertGetSchemaMetaDataLoaderMaterialsWhenConfigCheckMetaDataEnable() {
@@ -49,7 +49,7 @@ class SchemaMetaDataUtilTest {
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
-        Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
+        Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
         assertThat(actual.size(), is(2));
         Iterator<SchemaMetaDataLoaderMaterial> iterator = actual.iterator();
         SchemaMetaDataLoaderMaterial firstMaterial = iterator.next();
@@ -66,7 +66,7 @@ class SchemaMetaDataUtilTest {
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
-        Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
+        Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<SchemaMetaDataLoaderMaterial> iterator = actual.iterator();
         SchemaMetaDataLoaderMaterial firstMaterial = iterator.next();
@@ -80,7 +80,7 @@ class SchemaMetaDataUtilTest {
         when(dataNodeContainedRule.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "public");
-        Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);
+        Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);
         assertThat(actual.size(), is(1));
         Iterator<SchemaMetaDataLoaderMaterial> iterator = actual.iterator();
         SchemaMetaDataLoaderMaterial firstMaterial = iterator.next();
