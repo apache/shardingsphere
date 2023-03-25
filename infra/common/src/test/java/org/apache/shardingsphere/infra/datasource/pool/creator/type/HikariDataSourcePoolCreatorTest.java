@@ -31,10 +31,10 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class HikariDataSourcePoolCreatorTest {
+class HikariDataSourcePoolCreatorTest {
     
     @Test
-    public void assertCreateDataSource() {
+    void assertCreateDataSource() {
         HikariDataSource actual = (HikariDataSource) DataSourcePoolCreator.create(new DataSourceProperties(HikariDataSource.class.getName(), createDataSourceProperties()));
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));

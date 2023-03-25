@@ -33,10 +33,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowCreateTableStatementContextTest {
+class ShowCreateTableStatementContextTest {
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         MySQLShowCreateTableStatement mySQLShowCreateTableStatement = mock(MySQLShowCreateTableStatement.class);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         when(mySQLShowCreateTableStatement.getTable()).thenReturn(table);

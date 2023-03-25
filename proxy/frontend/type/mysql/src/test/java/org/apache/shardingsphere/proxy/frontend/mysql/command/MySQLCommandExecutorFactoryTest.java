@@ -63,7 +63,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLCommandExecutorFactoryTest {
+class MySQLCommandExecutorFactoryTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -72,82 +72,82 @@ public final class MySQLCommandExecutorFactoryTest {
     private BackendConnection backendConnection;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
     }
     
     @Test
-    public void assertNewInstanceWithComQuit() throws SQLException {
+    void assertNewInstanceWithComQuit() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_QUIT, mock(CommandPacket.class), connectionSession), instanceOf(MySQLComQuitExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComInitDb() throws SQLException {
+    void assertNewInstanceWithComInitDb() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_INIT_DB, mock(MySQLComInitDbPacket.class), connectionSession), instanceOf(MySQLComInitDbExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComFieldList() throws SQLException {
+    void assertNewInstanceWithComFieldList() throws SQLException {
         MySQLComFieldListPacket packet = mock(MySQLComFieldListPacket.class);
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_FIELD_LIST, packet, connectionSession), instanceOf(MySQLComFieldListPacketExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComQuery() throws SQLException {
+    void assertNewInstanceWithComQuery() throws SQLException {
         MySQLComQueryPacket packet = mock(MySQLComQueryPacket.class);
         when(packet.getSql()).thenReturn("");
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_QUERY, packet, connectionSession), instanceOf(MySQLComQueryPacketExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComPing() throws SQLException {
+    void assertNewInstanceWithComPing() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_PING, mock(CommandPacket.class), connectionSession), instanceOf(MySQLComPingExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtPrepare() throws SQLException {
+    void assertNewInstanceWithComStmtPrepare() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(
                 MySQLCommandPacketType.COM_STMT_PREPARE, mock(MySQLComStmtPreparePacket.class), connectionSession), instanceOf(MySQLComStmtPrepareExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtExecute() throws SQLException {
+    void assertNewInstanceWithComStmtExecute() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, mock(MySQLComStmtExecutePacket.class), connectionSession),
                 instanceOf(MySQLComStmtExecuteExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtSendLongData() throws SQLException {
+    void assertNewInstanceWithComStmtSendLongData() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_SEND_LONG_DATA, mock(MySQLComStmtSendLongDataPacket.class), connectionSession),
                 instanceOf(MySQLComStmtSendLongDataExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtReset() throws SQLException {
+    void assertNewInstanceWithComStmtReset() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_RESET,
                 mock(MySQLComStmtResetPacket.class), connectionSession), instanceOf(MySQLComStmtResetExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtClose() throws SQLException {
+    void assertNewInstanceWithComStmtClose() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_CLOSE,
                 mock(MySQLComStmtClosePacket.class), connectionSession), instanceOf(MySQLComStmtCloseExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComSetOption() throws SQLException {
+    void assertNewInstanceWithComSetOption() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_SET_OPTION, mock(MySQLComSetOptionPacket.class), connectionSession), instanceOf(MySQLComSetOptionExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithComResetConnection() throws SQLException {
+    void assertNewInstanceWithComResetConnection() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_RESET_CONNECTION, mock(MySQLComSetOptionPacket.class), connectionSession),
                 instanceOf(MySQLComResetConnectionExecutor.class));
     }
     
     @Test
-    public void assertNewInstanceWithUnsupportedCommand() throws SQLException {
+    void assertNewInstanceWithUnsupportedCommand() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_REFRESH, mock(CommandPacket.class), connectionSession), instanceOf(MySQLUnsupportedCommandExecutor.class));
     }
 }

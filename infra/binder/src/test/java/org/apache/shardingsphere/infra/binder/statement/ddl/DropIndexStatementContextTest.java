@@ -40,25 +40,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DropIndexStatementContextTest {
+class DropIndexStatementContextTest {
     
     @Test
-    public void assertMySQLNewInstance() {
+    void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLDropIndexStatement.class));
     }
     
     @Test
-    public void assertPostgreSQLNewInstance() {
+    void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLDropIndexStatement.class));
     }
     
     @Test
-    public void assertOracleNewInstance() {
+    void assertOracleNewInstance() {
         assertNewInstance(mock(OracleDropIndexStatement.class));
     }
     
     @Test
-    public void assertSQLServerNewInstance() {
+    void assertSQLServerNewInstance() {
         assertNewInstance(mock(SQLServerDropIndexStatement.class));
     }
     

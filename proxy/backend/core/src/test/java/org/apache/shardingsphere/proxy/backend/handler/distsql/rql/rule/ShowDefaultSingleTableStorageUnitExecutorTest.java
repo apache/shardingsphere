@@ -35,10 +35,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowDefaultSingleTableStorageUnitExecutorTest {
+class ShowDefaultSingleTableStorageUnitExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<ShowDefaultSingleTableStorageUnitStatement> executor = new ShowDefaultSingleTableStorageUnitExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowDefaultSingleTableStorageUnitStatement.class));
         assertThat(actual.size(), is(1));
@@ -48,7 +48,7 @@ public final class ShowDefaultSingleTableStorageUnitExecutorTest {
     }
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         RQLExecutor<ShowDefaultSingleTableStorageUnitStatement> executor = new ShowDefaultSingleTableStorageUnitExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(1));

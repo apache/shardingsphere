@@ -32,17 +32,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class ExecuteErrorsCountAdviceTest {
+class ExecuteErrorsCountAdviceTest {
     
     private final MetricConfiguration config = new MetricConfiguration("proxy_execute_errors_total", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertCountExecuteErrors() {
+    void assertCountExecuteErrors() {
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         new ExecuteErrorsCountAdvice().afterMethod(targetObject, mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("1"));

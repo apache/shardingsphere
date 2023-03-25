@@ -25,10 +25,10 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class AllPermittedPrivilegesProviderTest {
+class AllPermittedPrivilegesProviderTest {
     
     @Test
-    public void assertFindPrivileges() {
+    void assertFindPrivileges() {
         ShardingSpherePrivileges actual = new AllPrivilegesPermittedShardingSpherePrivileges();
         assertTrue(actual.hasPrivileges("testSchema"));
         assertTrue(actual.hasPrivileges(Collections.emptyList()));

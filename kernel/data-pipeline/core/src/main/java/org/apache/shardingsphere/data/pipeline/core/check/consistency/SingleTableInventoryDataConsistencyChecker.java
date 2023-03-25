@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.Pipelin
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.data.pipeline.core.util.CloseUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
@@ -109,10 +109,10 @@ public final class SingleTableInventoryDataConsistencyChecker {
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             if (null != sourceParam.getCalculationContext()) {
-                CloseUtil.closeQuietly(sourceParam.getCalculationContext());
+                CloseUtils.closeQuietly(sourceParam.getCalculationContext());
             }
             if (null != targetParam.getCalculationContext()) {
-                CloseUtil.closeQuietly(targetParam.getCalculationContext());
+                CloseUtils.closeQuietly(targetParam.getCalculationContext());
             }
             throw ex;
         }

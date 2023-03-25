@@ -27,10 +27,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlShadowTableConfigurationSwapperTest {
+class YamlShadowTableConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlShadowTableConfiguration actual = new YamlShadowTableConfigurationSwapper().swapToYamlConfiguration(
                 new ShadowTableConfiguration(Collections.singleton("shadow-data-source"), Arrays.asList("user-id-match-algorithm", "note-algorithm")));
         assertThat(actual.getDataSourceNames(), is(Collections.singleton("shadow-data-source")));
@@ -38,7 +38,7 @@ public final class YamlShadowTableConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlShadowTableConfiguration yamlConfig = new YamlShadowTableConfiguration();
         yamlConfig.setDataSourceNames(Collections.singleton("shadow-data-source"));
         yamlConfig.setShadowAlgorithmNames(Arrays.asList("user-id-match-algorithm", "note-algorithm"));

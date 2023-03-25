@@ -40,12 +40,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @E2ETestCaseSettings(value = SQLCommandType.DML, batch = true)
-public final class BatchDMLE2EIT {
+class BatchDMLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    public void assertExecuteBatch(final CaseTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+    void assertExecuteBatch(final CaseTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -78,7 +78,7 @@ public final class BatchDMLE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    public void assertClearBatch(final CaseTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+    void assertClearBatch(final CaseTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;

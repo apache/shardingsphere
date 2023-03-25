@@ -46,7 +46,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     private static final String CONFIG_FILE = "config/config-sharding.yaml";
     
     @BeforeAll
-    public static void initShardingSphereDataSource() throws SQLException, IOException {
+    static void initShardingSphereDataSource() throws SQLException, IOException {
         if (null == dataSource) {
             dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
             System.out.println(dataSource);
@@ -63,7 +63,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     }
     
     @BeforeEach
-    public void initTable() {
+    void initTable() {
         try {
             Connection connection = dataSource.getConnection();
             RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_data.sql"))));
@@ -78,7 +78,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     }
     
     @AfterAll
-    public static void clear() throws Exception {
+    static void clear() throws Exception {
         if (null == dataSource) {
             return;
         }

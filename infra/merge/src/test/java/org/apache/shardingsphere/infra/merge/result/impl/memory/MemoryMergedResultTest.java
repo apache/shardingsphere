@@ -38,68 +38,68 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-public final class MemoryMergedResultTest {
+class MemoryMergedResultTest {
     
     private TestMemoryMergedResult memoryMergedResult;
     
     private MemoryQueryResultRow memoryResultSetRow;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         memoryMergedResult = new TestMemoryMergedResult();
         memoryResultSetRow = memoryMergedResult.getMemoryQueryResultRow();
     }
     
     @Test
-    public void assertNext() {
+    void assertNext() {
         assertTrue(memoryMergedResult.next());
         assertFalse(memoryMergedResult.next());
     }
     
     @Test
-    public void assertGetValue() throws SQLException {
+    void assertGetValue() throws SQLException {
         when(memoryResultSetRow.getCell(1)).thenReturn("1");
         assertThat(memoryMergedResult.getValue(1, Object.class).toString(), is("1"));
     }
     
     @Test
-    public void assertGetValueForBlob() {
+    void assertGetValueForBlob() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> memoryMergedResult.getValue(1, Blob.class));
     }
     
     @Test
-    public void assertGetValueForClob() {
+    void assertGetValueForClob() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> memoryMergedResult.getValue(1, Clob.class));
     }
     
     @Test
-    public void assertGetValueForReader() {
+    void assertGetValueForReader() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> memoryMergedResult.getValue(1, Reader.class));
     }
     
     @Test
-    public void assertGetValueForInputStream() {
+    void assertGetValueForInputStream() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> memoryMergedResult.getValue(1, InputStream.class));
     }
     
     @Test
-    public void assertGetValueForSQLXML() {
+    void assertGetValueForSQLXML() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> memoryMergedResult.getValue(1, SQLXML.class));
     }
     
     @Test
-    public void assertGetCalendarValue() {
+    void assertGetCalendarValue() {
         when(memoryResultSetRow.getCell(1)).thenReturn(new Date(0L));
         assertThat(memoryMergedResult.getCalendarValue(1, Object.class, Calendar.getInstance()), is(new Date(0L)));
     }
     
     @Test
-    public void assertGetInputStream() {
+    void assertGetInputStream() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> memoryMergedResult.getInputStream(1, "ascii"));
     }
     
     @Test
-    public void assertWasNull() {
+    void assertWasNull() {
         assertFalse(memoryMergedResult.wasNull());
     }
 }

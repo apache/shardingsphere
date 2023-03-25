@@ -28,52 +28,52 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DropTableStatementHandlerTest {
+class DropTableStatementHandlerTest {
     
     @Test
-    public void assertIfExistsForMySQL() {
+    void assertIfExistsForMySQL() {
         assertTrue(DropTableStatementHandler.ifExists(new MySQLDropTableStatement(true)));
         assertFalse(DropTableStatementHandler.ifExists(new MySQLDropTableStatement(false)));
     }
     
     @Test
-    public void assertIfExistsForPostgreSQL() {
+    void assertIfExistsForPostgreSQL() {
         assertTrue(DropTableStatementHandler.ifExists(new PostgreSQLDropTableStatement(true, false)));
         assertFalse(DropTableStatementHandler.ifExists(new PostgreSQLDropTableStatement(false, false)));
     }
     
     @Test
-    public void assertIfExistsForSQLServer() {
+    void assertIfExistsForSQLServer() {
         assertTrue(DropTableStatementHandler.ifExists(new SQLServerDropTableStatement(true)));
         assertFalse(DropTableStatementHandler.ifExists(new SQLServerDropTableStatement(false)));
     }
     
     @Test
-    public void assertIfExistsForGauss() {
+    void assertIfExistsForGauss() {
         assertFalse(DropTableStatementHandler.ifExists(new OpenGaussDropTableStatement(false, true)));
         assertTrue(DropTableStatementHandler.ifExists(new OpenGaussDropTableStatement(true, true)));
     }
     
     @Test
-    public void assertNotExistsForOtherDatabases() {
+    void assertNotExistsForOtherDatabases() {
         assertFalse(DropTableStatementHandler.ifExists(new OracleDropTableStatement()));
         assertFalse(DropTableStatementHandler.ifExists(new SQL92DropTableStatement()));
     }
     
     @Test
-    public void assertContainsCascadeForPostgreSQL() {
+    void assertContainsCascadeForPostgreSQL() {
         assertFalse(DropTableStatementHandler.containsCascade(new PostgreSQLDropTableStatement(false, false)));
         assertTrue(DropTableStatementHandler.containsCascade(new PostgreSQLDropTableStatement(true, true)));
     }
     
     @Test
-    public void assertContainsCascadeForGauss() {
+    void assertContainsCascadeForGauss() {
         assertFalse(DropTableStatementHandler.containsCascade(new OpenGaussDropTableStatement(false, false)));
         assertTrue(DropTableStatementHandler.containsCascade(new OpenGaussDropTableStatement(true, true)));
     }
     
     @Test
-    public void assertNotContainsCascadeForOtherDatabases() {
+    void assertNotContainsCascadeForOtherDatabases() {
         assertFalse(DropTableStatementHandler.containsCascade(new MySQLDropTableStatement(false)));
         assertFalse(DropTableStatementHandler.containsCascade(new OracleDropTableStatement()));
         assertFalse(DropTableStatementHandler.containsCascade(new SQL92DropTableStatement()));

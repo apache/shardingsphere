@@ -22,27 +22,27 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PluginContextTest {
+class PluginContextTest {
     
     @Test
-    public void assertNotPluginEnabledKey() {
+    void assertNotPluginEnabledKey() {
         assertFalse(PluginContext.isPluginEnabled());
     }
     
     @Test
-    public void assertPluginEnabledKeyIsFalse() {
+    void assertPluginEnabledKeyIsFalse() {
         System.setProperty("AGENT_PLUGINS_ENABLED", "false");
         assertFalse(PluginContext.isPluginEnabled());
     }
     
     @Test
-    public void assertPluginEnabledKeyIsZero() {
+    void assertPluginEnabledKeyIsZero() {
         System.setProperty("AGENT_PLUGINS_ENABLED", "0");
         assertFalse(PluginContext.isPluginEnabled());
     }
     
     @Test
-    public void assertPluginEnabled() {
+    void assertPluginEnabled() {
         System.setProperty("AGENT_PLUGINS_ENABLED", "1");
         assertTrue(PluginContext.isPluginEnabled());
         System.setProperty("AGENT_PLUGINS_ENABLED", "true");

@@ -44,15 +44,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MigrationDataConsistencyCheckerTest {
+class MigrationDataConsistencyCheckerTest {
     
     @BeforeAll
-    public static void beforeClass() {
+    static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
     @Test
-    public void assertCountAndDataCheck() throws SQLException {
+    void assertCountAndDataCheck() throws SQLException {
         MigrationJobConfiguration jobConfig = createJobConfiguration();
         JobConfigurationPOJO jobConfigurationPOJO = new JobConfigurationPOJO();
         jobConfigurationPOJO.setJobParameter(YamlEngine.marshal(new YamlMigrationJobConfigurationSwapper().swapToYamlConfiguration(jobConfig)));

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc;
 
-import org.apache.shardingsphere.agent.plugin.core.utils.AgentReflectionUtils;
+import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;

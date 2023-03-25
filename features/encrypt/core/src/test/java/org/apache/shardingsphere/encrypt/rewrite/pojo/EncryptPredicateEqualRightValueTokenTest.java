@@ -27,10 +27,10 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EncryptPredicateEqualRightValueTokenTest {
+class EncryptPredicateEqualRightValueTokenTest {
     
     @Test
-    public void assertToStringWithoutPlaceholderWithoutTableOwnerWithEqual() {
+    void assertToStringWithoutPlaceholderWithoutTableOwnerWithEqual() {
         Map<Integer, Object> indexValues = new LinkedHashMap<>();
         indexValues.put(0, "a");
         EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, indexValues, Collections.emptyList());
@@ -38,7 +38,7 @@ public final class EncryptPredicateEqualRightValueTokenTest {
     }
     
     @Test
-    public void assertToStringWithPlaceholderWithoutTableOwnerWithEqual() {
+    void assertToStringWithPlaceholderWithoutTableOwnerWithEqual() {
         EncryptPredicateEqualRightValueToken actual = new EncryptPredicateEqualRightValueToken(0, 0, Collections.emptyMap(), Collections.singletonList(0));
         assertThat(actual.toString(), is("?"));
     }

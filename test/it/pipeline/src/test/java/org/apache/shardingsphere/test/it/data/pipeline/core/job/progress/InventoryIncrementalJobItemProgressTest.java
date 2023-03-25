@@ -37,12 +37,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class InventoryIncrementalJobItemProgressTest {
+class InventoryIncrementalJobItemProgressTest {
     
     private static final YamlInventoryIncrementalJobItemProgressSwapper SWAPPER = new YamlInventoryIncrementalJobItemProgressSwapper();
     
     @Test
-    public void assertInit() {
+    void assertInit() {
         InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
         assertThat(actual.getStatus(), is(JobStatus.RUNNING));
         assertThat(actual.getSourceDatabaseType(), is("H2"));
@@ -51,7 +51,7 @@ public final class InventoryIncrementalJobItemProgressTest {
     }
     
     @Test
-    public void assertGetIncrementalPosition() {
+    void assertGetIncrementalPosition() {
         InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
         Optional<IngestPosition<?>> position = actual.getIncremental().getIncrementalPosition();
         assertTrue(position.isPresent());
@@ -59,7 +59,7 @@ public final class InventoryIncrementalJobItemProgressTest {
     }
     
     @Test
-    public void assertGetInventoryPosition() {
+    void assertGetInventoryPosition() {
         InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
         assertThat(actual.getInventory().getInventoryPosition("ds0").size(), is(2));
         assertThat(actual.getInventory().getInventoryPosition("ds0").get("ds0.t_1"), instanceOf(FinishedPosition.class));
@@ -68,12 +68,12 @@ public final class InventoryIncrementalJobItemProgressTest {
     }
     
     @Test
-    public void assertGetIncrementalLatestActiveTimeMillis() {
+    void assertGetIncrementalLatestActiveTimeMillis() {
         assertThat(getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml")).getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
     }
     
     @Test
-    public void assertGetIncrementalDataLatestActiveTimeMillis() {
+    void assertGetIncrementalDataLatestActiveTimeMillis() {
         assertThat(getJobItemProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml")).getIncremental().getIncrementalLatestActiveTimeMillis(), is(50L));
     }
     

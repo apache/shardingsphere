@@ -30,20 +30,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLInt1BinaryProtocolValueTest {
+class MySQLInt1BinaryProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertRead() {
+    void assertRead() {
         when(payload.getByteBuf()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 1}));
         assertThat(new MySQLInt1BinaryProtocolValue().read(payload, false), is((byte) 1));
         assertThat(new MySQLInt1BinaryProtocolValue().read(payload, true), is((short) 1));
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         new MySQLInt1BinaryProtocolValue().write(payload, 1);
         verify(payload).writeInt1(1);
     }

@@ -38,19 +38,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class GroupByValueTest {
+class GroupByValueTest {
     
     @Mock
     private QueryResult queryResult;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         when(queryResult.getValue(1, Object.class)).thenReturn("1");
         when(queryResult.getValue(3, Object.class)).thenReturn("3");
     }
     
     @Test
-    public void assertGetGroupByValues() throws SQLException {
+    void assertGetGroupByValues() throws SQLException {
         List<?> actual = new GroupByValue(queryResult, Arrays.asList(
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)),
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, NullsOrderType.FIRST)))).getGroupValues();
@@ -59,7 +59,7 @@ public final class GroupByValueTest {
     }
     
     @Test
-    public void assertGroupByValueEquals() throws SQLException {
+    void assertGroupByValueEquals() throws SQLException {
         GroupByValue groupByValue1 = new GroupByValue(queryResult, Arrays.asList(
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)),
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, NullsOrderType.FIRST))));
@@ -72,7 +72,7 @@ public final class GroupByValueTest {
     }
     
     @Test
-    public void assertGroupByValueNotEquals() throws SQLException {
+    void assertGroupByValueNotEquals() throws SQLException {
         GroupByValue groupByValue1 = new GroupByValue(queryResult, Arrays.asList(
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST)),
                 createOrderByItem(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.DESC, NullsOrderType.FIRST))));

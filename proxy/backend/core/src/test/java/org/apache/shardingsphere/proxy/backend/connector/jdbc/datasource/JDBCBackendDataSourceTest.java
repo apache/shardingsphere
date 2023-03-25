@@ -72,12 +72,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class JDBCBackendDataSourceTest {
+class JDBCBackendDataSourceTest {
     
     private static final String DATA_SOURCE_PATTERN = "ds_%s";
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
@@ -115,18 +115,18 @@ public final class JDBCBackendDataSourceTest {
     }
     
     @Test
-    public void assertGetConnectionsSucceed() throws SQLException {
+    void assertGetConnectionsSucceed() throws SQLException {
         List<Connection> actual = new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 5, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(5));
     }
     
     @Test
-    public void assertGetConnectionsFailed() {
+    void assertGetConnectionsFailed() {
         assertThrows(OverallConnectionNotEnoughException.class, () -> new JDBCBackendDataSource().getConnections("schema", String.format(DATA_SOURCE_PATTERN, 1), 6, ConnectionMode.MEMORY_STRICTLY));
     }
     
     @Test
-    public void assertGetConnectionsByMultiThreads() throws InterruptedException {
+    void assertGetConnectionsByMultiThreads() throws InterruptedException {
         JDBCBackendDataSource jdbcBackendDataSource = new JDBCBackendDataSource();
         ExecutorService executorService = Executors.newFixedThreadPool(20);
         Collection<Future<List<Connection>>> futures = new LinkedList<>();

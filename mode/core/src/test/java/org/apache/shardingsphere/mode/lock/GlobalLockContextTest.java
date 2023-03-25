@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class GlobalLockContextTest {
+class GlobalLockContextTest {
     
     private final GlobalLockDefinition lockDefinition = new GlobalLockDefinition("foo_lock");
     
@@ -38,18 +38,18 @@ public final class GlobalLockContextTest {
     private GlobalLockContext lockContext;
     
     @BeforeEach
-    public void init() {
+    void init() {
         lockContext = new GlobalLockContext(lockPersistService);
     }
     
     @Test
-    public void assertTryLock() {
+    void assertTryLock() {
         when(lockPersistService.tryLock(lockDefinition, 3000L)).thenReturn(true);
         assertTrue(lockContext.tryLock(lockDefinition, 3000L));
     }
     
     @Test
-    public void assertUnlock() {
+    void assertUnlock() {
         lockContext.unlock(lockDefinition);
         verify(lockPersistService).unlock(lockDefinition);
     }

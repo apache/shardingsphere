@@ -21,5 +21,5 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
 
 @InternalSQLParserITSettings("SQL92")
-public final class InternalSQL92ParserIT extends InternalSQLParserIT {
+class InternalSQL92ParserIT extends InternalSQLParserIT {
 }

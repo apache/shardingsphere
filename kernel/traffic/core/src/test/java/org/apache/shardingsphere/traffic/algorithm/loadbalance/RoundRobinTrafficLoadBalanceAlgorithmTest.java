@@ -27,10 +27,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class RoundRobinTrafficLoadBalanceAlgorithmTest {
+class RoundRobinTrafficLoadBalanceAlgorithmTest {
     
     @Test
-    public void assertGetInstanceId() {
+    void assertGetInstanceId() {
         InstanceMetaData instance1 = new ProxyInstanceMetaData("127.0.0.1@3307", "127.0.0.1@3307", "foo_version");
         InstanceMetaData instance2 = new ProxyInstanceMetaData("127.0.0.1@3308", "127.0.0.1@3308", "foo_version");
         List<InstanceMetaData> instances = Arrays.asList(instance1, instance2);

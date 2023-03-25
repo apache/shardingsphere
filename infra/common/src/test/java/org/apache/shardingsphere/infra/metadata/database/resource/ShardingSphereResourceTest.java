@@ -24,11 +24,11 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ShardingSphereResourceTest {
+class ShardingSphereResourceTest {
     
     @SuppressWarnings("BusyWait")
     @Test
-    public void assertClose() throws InterruptedException {
+    void assertClose() throws InterruptedException {
         MockedDataSource dataSource = new MockedDataSource();
         new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", dataSource)).close(dataSource);
         while (!dataSource.isClosed()) {

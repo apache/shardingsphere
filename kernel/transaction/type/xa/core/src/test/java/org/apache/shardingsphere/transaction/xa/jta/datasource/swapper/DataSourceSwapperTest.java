@@ -35,18 +35,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class DataSourceSwapperTest {
+class DataSourceSwapperTest {
     
     @Mock
     private XADataSourceDefinition xaDataSourceDefinition;
     
     @BeforeEach
-    public void before() {
+    void before() {
         when(xaDataSourceDefinition.getXADriverClassNames()).thenReturn(ImmutableList.of("org.h2.jdbcx.JdbcDataSource"));
     }
     
     @Test
-    public void assertSwap() {
+    void assertSwap() {
         DataSourceSwapper swapper = new DataSourceSwapper(xaDataSourceDefinition);
         assertResult(swapper.swap(new MockedDataSource()));
     }

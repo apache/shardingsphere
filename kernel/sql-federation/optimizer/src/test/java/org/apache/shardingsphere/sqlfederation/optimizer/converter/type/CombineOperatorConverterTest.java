@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class CombineOperatorConverterTest {
+class CombineOperatorConverterTest {
     
     @Test
-    public void assertConvertSuccess() {
+    void assertConvertSuccess() {
         assertThat(CombineOperatorConverter.convert(CombineType.UNION_ALL), is(SqlStdOperatorTable.UNION_ALL));
         assertThat(CombineOperatorConverter.convert(CombineType.UNION), is(SqlStdOperatorTable.UNION));
         assertThat(CombineOperatorConverter.convert(CombineType.INTERSECT_ALL), is(SqlStdOperatorTable.INTERSECT_ALL));

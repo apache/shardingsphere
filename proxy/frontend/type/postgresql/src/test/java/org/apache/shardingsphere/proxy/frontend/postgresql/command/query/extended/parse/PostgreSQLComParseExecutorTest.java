@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class PostgreSQLComParseExecutorTest {
+class PostgreSQLComParseExecutorTest {
     
     @Mock
     private PostgreSQLComParsePacket parsePacket;
@@ -70,13 +70,13 @@ public final class PostgreSQLComParseExecutorTest {
     private PostgreSQLComParseExecutor executor;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
     }
     
     @Test
-    public void assertExecuteWithEmptySQL() {
+    void assertExecuteWithEmptySQL() {
         final String expectedSQL = "";
         final String statementId = "S_1";
         when(parsePacket.getSql()).thenReturn(expectedSQL);
@@ -94,7 +94,7 @@ public final class PostgreSQLComParseExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithParameterizedSQL() throws ReflectiveOperationException {
+    void assertExecuteWithParameterizedSQL() throws ReflectiveOperationException {
         final String rawSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n($1, $2, 'apsbd$31a', '$99')/*$0*/ \n--$0";
         final String expectedSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n(?, ?, 'apsbd$31a', '$99')/*$0*/ \n--$0";
         final String statementId = "S_2";
@@ -116,7 +116,7 @@ public final class PostgreSQLComParseExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithDistSQL() {
+    void assertExecuteWithDistSQL() {
         String sql = "SHOW DIST VARIABLE WHERE NAME = sql_show";
         String statementId = "";
         when(parsePacket.getSql()).thenReturn(sql);

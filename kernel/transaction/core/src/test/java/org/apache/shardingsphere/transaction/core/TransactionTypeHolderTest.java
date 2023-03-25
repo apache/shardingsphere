@@ -25,38 +25,38 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class TransactionTypeHolderTest {
+class TransactionTypeHolderTest {
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         TransactionTypeHolder.clear();
     }
     
     @Test
-    public void assertGetWithoutSetValue() {
+    void assertGetWithoutSetValue() {
         assertNull(TransactionTypeHolder.get());
     }
     
     @Test
-    public void assertGetWithSetXaValue() {
+    void assertGetWithSetXaValue() {
         TransactionTypeHolder.set(TransactionType.XA);
         assertThat(TransactionTypeHolder.get(), is(TransactionType.XA));
     }
     
     @Test
-    public void assertGetWithSetLocalValue() {
+    void assertGetWithSetLocalValue() {
         TransactionTypeHolder.set(TransactionType.LOCAL);
         assertThat(TransactionTypeHolder.get(), is(TransactionType.LOCAL));
     }
     
     @Test
-    public void assertGetWithSetBaseValue() {
+    void assertGetWithSetBaseValue() {
         TransactionTypeHolder.set(TransactionType.BASE);
         assertThat(TransactionTypeHolder.get(), is(TransactionType.BASE));
     }
     
     @Test
-    public void assertClear() {
+    void assertClear() {
         TransactionTypeHolder.set(TransactionType.XA);
         TransactionTypeHolder.clear();
         assertNull(TransactionTypeHolder.get());

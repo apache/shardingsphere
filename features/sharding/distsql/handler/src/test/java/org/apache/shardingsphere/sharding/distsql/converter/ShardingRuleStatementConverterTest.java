@@ -43,10 +43,10 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShardingRuleStatementConverterTest {
+class ShardingRuleStatementConverterTest {
     
     @Test
-    public void assertConvert() {
+    void assertConvert() {
         ShardingRuleConfiguration config = ShardingTableRuleStatementConverter.convert(createTableRuleSegment1());
         assertThat(config.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = config.getTables().iterator().next();
@@ -76,7 +76,7 @@ public final class ShardingRuleStatementConverterTest {
     }
     
     @Test
-    public void assertConvertWithNoneStrategyType() {
+    void assertConvertWithNoneStrategyType() {
         ShardingRuleConfiguration config = ShardingTableRuleStatementConverter.convert(createNoneStrategyTypeTableRuleSegment());
         assertThat(config.getTables().size(), is(1));
         ShardingTableRuleConfiguration tableRule = config.getTables().iterator().next();

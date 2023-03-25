@@ -39,20 +39,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class TableMetaDataPersistServiceTest {
+class TableMetaDataPersistServiceTest {
     
     @Mock
     private PersistRepository repository;
     
     @Test
-    public void assertPersist() {
+    void assertPersist() {
         ShardingSphereTable table = new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         new TableMetaDataPersistService(repository).persist("foo_db", "foo_schema", Collections.singletonMap("foo_table", table));
         verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_table", "name: foo_table" + System.lineSeparator());
     }
     
     @Test
-    public void assertLoad() {
+    void assertLoad() {
         TableMetaDataPersistService tableMetaDataPersistService = new TableMetaDataPersistService(repository);
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("t_order"));
         when(repository.getDirectly("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());
@@ -64,7 +64,7 @@ public final class TableMetaDataPersistServiceTest {
     }
     
     @Test
-    public void assertDelete() {
+    void assertDelete() {
         new TableMetaDataPersistService(repository).delete("foo_db", "foo_schema", "foo_table");
         verify(repository).delete("/metadata/foo_db/schemas/foo_schema/tables/foo_table");
     }

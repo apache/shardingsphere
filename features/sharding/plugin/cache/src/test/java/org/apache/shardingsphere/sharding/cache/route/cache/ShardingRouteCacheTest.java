@@ -26,10 +26,10 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ShardingRouteCacheTest {
+class ShardingRouteCacheTest {
     
     @Test
-    public void assertPutAndGet() {
+    void assertPutAndGet() {
         ShardingRouteCache cache = new ShardingRouteCache(new ShardingCacheOptions(true, 1, 1));
         ShardingRouteCacheKey key = new ShardingRouteCacheKey("select name from t where id = ?", Collections.singletonList(1));
         assertFalse(cache.get(key).isPresent());

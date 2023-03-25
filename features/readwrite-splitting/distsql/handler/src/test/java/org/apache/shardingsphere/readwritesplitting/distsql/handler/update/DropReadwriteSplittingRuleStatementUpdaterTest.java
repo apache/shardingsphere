@@ -53,7 +53,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class DropReadwriteSplittingRuleStatementUpdaterTest {
+class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     private final DropReadwriteSplittingRuleStatementUpdater updater = new DropReadwriteSplittingRuleStatementUpdater();
     
@@ -61,25 +61,25 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    void assertCheckSQLStatementWithoutCurrentRule() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithoutToBeDroppedRule() throws RuleDefinitionViolationException {
         assertThrows(MissingRequiredRuleException.class,
                 () -> updater.checkSQLStatement(database, createSQLStatement(), new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
-    public void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
         updater.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
                 new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
         updater.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
     }
     
     @Test
-    public void assertCheckSQLStatementWithInUsed() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithInUsed() throws RuleDefinitionViolationException {
         DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class);
         Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = Collections.singletonMap("foo_ds", Collections.singleton(new DataSourceRoleInfo("readwrite_ds", DataSourceRole.PRIMARY)));
         when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(dataSourceMapper);
@@ -91,21 +91,21 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfiguration() {
+    void assertUpdateCurrentRuleConfiguration() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
         assertThat(ruleConfig.getLoadBalancers().size(), is(1));
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithInUsedLoadBalancer() {
+    void assertUpdateCurrentRuleConfigurationWithInUsedLoadBalancer() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createMultipleCurrentRuleConfigurations();
         assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
         assertThat(ruleConfig.getLoadBalancers().size(), is(1));
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithoutLoadBalancerName() {
+    void assertUpdateCurrentRuleConfigurationWithoutLoadBalancerName() {
         ReadwriteSplittingRuleConfiguration ruleConfig = createCurrentRuleConfigurationWithoutLoadBalancerName();
         assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig));
         assertThat(ruleConfig.getLoadBalancers().size(), is(1));

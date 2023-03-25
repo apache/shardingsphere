@@ -31,10 +31,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EncryptRuleStatementConverterTest {
+class EncryptRuleStatementConverterTest {
     
     @Test
-    public void assertCovert() {
+    void assertCovert() {
         EncryptRuleConfiguration actual = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", createColumns(), null)));
         assertThat(actual.getTables().iterator().next().getName(), is("t_encrypt"));
         assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));

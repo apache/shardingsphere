@@ -43,10 +43,10 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AdvancedSQLFederationExecutorTest {
+class AdvancedSQLFederationExecutorTest {
     
     @BeforeEach
-    public void init() {
+    void init() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
         tables.put("t_order_federate", createOrderTableMetaData());
         tables.put("t_user_info", createUserInfoTableMetaData());
@@ -87,7 +87,7 @@ public final class AdvancedSQLFederationExecutorTest {
     }
     
     @Test
-    public void assertSelectWhereSingleField() {
+    void assertSelectWhereSingleField() {
         // TODO add executor.executeQuery()
     }
 }

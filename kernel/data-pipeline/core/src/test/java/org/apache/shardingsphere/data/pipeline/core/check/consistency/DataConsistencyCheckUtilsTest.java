@@ -23,10 +23,10 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DataConsistencyCheckUtilsTest {
+class DataConsistencyCheckUtilsTest {
     
     @Test
-    public void assertIsBigDecimalEquals() {
+    void assertIsBigDecimalEquals() {
         BigDecimal one = BigDecimal.valueOf(3322, 1);
         BigDecimal another = BigDecimal.valueOf(33220, 2);
         assertTrue(DataConsistencyCheckUtils.isBigDecimalEquals(one, another));

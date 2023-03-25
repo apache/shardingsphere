@@ -39,42 +39,42 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SQLRouteCountAdviceTest {
+class SQLRouteCountAdviceTest {
     
     private final MetricConfiguration config = new MetricConfiguration("routed_sql_total", MetricCollectorType.COUNTER, null, Collections.singletonList("type"), Collections.emptyMap());
     
     private final SQLRouteCountAdvice advice = new SQLRouteCountAdvice();
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertInsertRoute() {
+    void assertInsertRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLInsertStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "INSERT=1");
     }
     
     @Test
-    public void assertUpdateRoute() {
+    void assertUpdateRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLUpdateStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "UPDATE=1");
     }
     
     @Test
-    public void assertDeleteRoute() {
+    void assertDeleteRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLDeleteStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "DELETE=1");
     }
     
     @Test
-    public void assertSelectRoute() {
+    void assertSelectRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLSelectStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "SELECT=1");
     }
     
-    public void assertRoute(final QueryContext queryContext, final String expected) {
+    void assertRoute(final QueryContext queryContext, final String expected) {
         advice.beforeMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{new ConnectionContext(), queryContext}, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(expected));
     }

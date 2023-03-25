@@ -30,11 +30,11 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class MaskRuleBuilderTest {
+class MaskRuleBuilderTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         MaskRuleConfiguration ruleConfig = mock(MaskRuleConfiguration.class);
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(MaskRule.class));

@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class BitronixXATransactionManagerProviderTest {
+class BitronixXATransactionManagerProviderTest {
     
     private final BitronixXATransactionManagerProvider transactionManagerProvider = new BitronixXATransactionManagerProvider();
     
@@ -52,12 +52,12 @@ public final class BitronixXATransactionManagerProviderTest {
     private XADataSource xaDataSource;
     
     @BeforeEach
-    public void setUp() throws ReflectiveOperationException {
+    void setUp() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(BitronixXATransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider, transactionManager);
     }
     
     @Test
-    public void assertRegisterRecoveryResourceThenRemove() {
+    void assertRegisterRecoveryResourceThenRemove() {
         transactionManagerProvider.registerRecoveryResource("ds1", xaDataSource);
         assertNotNull(ResourceRegistrar.get("ds1"));
         transactionManagerProvider.removeRecoveryResource("ds1", xaDataSource);
@@ -65,7 +65,7 @@ public final class BitronixXATransactionManagerProviderTest {
     }
     
     @Test
-    public void assertEnlistResource() throws SystemException, RollbackException {
+    void assertEnlistResource() throws SystemException, RollbackException {
         SingleXAResource singleXAResource = mock(SingleXAResource.class);
         Transaction transaction = mock(Transaction.class);
         when(transactionManager.getTransaction()).thenReturn(transaction);
@@ -74,12 +74,12 @@ public final class BitronixXATransactionManagerProviderTest {
     }
     
     @Test
-    public void assertGetTransactionManager() {
+    void assertGetTransactionManager() {
         assertThat(transactionManagerProvider.getTransactionManager(), is(transactionManager));
     }
     
     @Test
-    public void assertClose() {
+    void assertClose() {
         transactionManagerProvider.close();
         verify(transactionManager).shutdown();
     }

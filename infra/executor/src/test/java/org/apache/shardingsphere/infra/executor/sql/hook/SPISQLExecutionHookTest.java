@@ -25,30 +25,30 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SPISQLExecutionHookTest {
+class SPISQLExecutionHookTest {
     
     private SPISQLExecutionHook spiSQLExecutionHook;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         SQLExecutionHookFixture.clearActions();
         spiSQLExecutionHook = new SPISQLExecutionHook();
     }
     
     @Test
-    public void assertStart() {
+    void assertStart() {
         spiSQLExecutionHook.start("ds", "SELECT 1", Collections.emptyList(), null, true);
         assertTrue(SQLExecutionHookFixture.containsAction("start"));
     }
     
     @Test
-    public void assertFinishSuccess() {
+    void assertFinishSuccess() {
         spiSQLExecutionHook.finishSuccess();
         assertTrue(SQLExecutionHookFixture.containsAction("finishSuccess"));
     }
     
     @Test
-    public void assertFinishFailure() {
+    void assertFinishFailure() {
         spiSQLExecutionHook.finishFailure(null);
         assertTrue(SQLExecutionHookFixture.containsAction("finishFailure"));
     }

@@ -30,13 +30,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLComBinlogDumpCommandPacketTest {
+class MySQLComBinlogDumpCommandPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNew() {
+    void assertNew() {
         when(payload.readInt2()).thenReturn(0);
         when(payload.readStringEOF()).thenReturn("binlog-000001");
         when(payload.readInt4()).thenReturn(4, 123456);
@@ -48,7 +48,7 @@ public final class MySQLComBinlogDumpCommandPacketTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         new MySQLComBinlogDumpCommandPacket(4, 123456, "binlog-000001").write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_BINLOG_DUMP.getValue());
         verify(payload).writeInt4(4);

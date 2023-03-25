@@ -27,10 +27,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EncryptBinaryOperationConditionTest {
+class EncryptBinaryOperationConditionTest {
     
     @Test
-    public void assertGetConditionValues() {
+    void assertGetConditionValues() {
         List<Object> actual = new EncryptBinaryCondition("col", null, null,
                 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
         assertThat(actual.size(), is(1));

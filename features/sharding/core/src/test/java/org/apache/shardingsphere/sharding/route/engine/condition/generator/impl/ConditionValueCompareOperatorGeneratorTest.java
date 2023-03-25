@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ConditionValueCompareOperatorGeneratorTest {
+class ConditionValueCompareOperatorGeneratorTest {
     
     private final ConditionValueCompareOperatorGenerator generator = new ConditionValueCompareOperatorGenerator();
     
@@ -50,7 +50,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateConditionValue() {
+    void assertGenerateConditionValue() {
         int value = 1;
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, value), "=", null);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>(), mock(TimeServiceRule.class));
@@ -61,7 +61,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateConditionValueWithLessThanOperator() {
+    void assertGenerateConditionValueWithLessThanOperator() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, 1), "<", null);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>(), mock(TimeServiceRule.class));
         assertTrue(shardingConditionValue.isPresent());
@@ -71,7 +71,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateConditionValueWithGreaterThanOperator() {
+    void assertGenerateConditionValueWithGreaterThanOperator() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, 1), ">", null);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>(), mock(TimeServiceRule.class));
         assertTrue(shardingConditionValue.isPresent());
@@ -81,7 +81,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateConditionValueWithAtMostOperator() {
+    void assertGenerateConditionValueWithAtMostOperator() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, 1), "<=", null);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>(), mock(TimeServiceRule.class));
         assertTrue(shardingConditionValue.isPresent());
@@ -91,7 +91,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateConditionValueWithAtLeastOperator() {
+    void assertGenerateConditionValueWithAtLeastOperator() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, 1), ">=", null);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>(), mock(TimeServiceRule.class));
         assertTrue(shardingConditionValue.isPresent());
@@ -100,20 +100,20 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     }
     
     @Test
-    public void assertGenerateConditionValueWithErrorOperator() {
+    void assertGenerateConditionValueWithErrorOperator() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, 1), "!=", null);
         assertFalse(generator.generate(rightValue, column, new LinkedList<>(), mock(TimeServiceRule.class)).isPresent());
     }
     
     @Test
-    public void assertGenerateConditionValueWithoutNowExpression() {
+    void assertGenerateConditionValueWithoutNowExpression() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new CommonExpressionSegment(0, 0, "value"), "=", null);
         assertFalse(generator.generate(rightValue, column, new LinkedList<>(), mock(TimeServiceRule.class)).isPresent());
     }
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateConditionValueWithNowExpression() {
+    void assertGenerateConditionValueWithNowExpression() {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, "now()"), "=", null);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>(), mock(TimeServiceRule.class));
         assertTrue(shardingConditionValue.isPresent());
@@ -123,7 +123,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateConditionValueWithParameter() {
+    void assertGenerateConditionValueWithParameter() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
         ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(0, 0, 0);
         BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, right, "=", "id = ?");
@@ -138,7 +138,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
     }
     
     @Test
-    public void assertGenerateConditionValueWithoutParameter() {
+    void assertGenerateConditionValueWithoutParameter() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(0, 0, 0);
         BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, right, "=", "order_id = ?");

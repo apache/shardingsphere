@@ -32,10 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLShardingSphereDataBuilderTest {
+class PostgreSQLShardingSphereDataBuilderTest {
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShardingSphereData shardingSphereData = new PostgreSQLShardingSphereDataBuilder().build(metaData);
         assertTrue(shardingSphereData.getDatabaseData().containsKey("logic_db"));

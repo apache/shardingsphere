@@ -59,10 +59,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowRulesUsedStorageUnitExecutorTest {
+class ShowRulesUsedStorageUnitExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<ShowRulesUsedStorageUnitStatement> executor = new ShowRulesUsedStorageUnitExecutor();
         ShowRulesUsedStorageUnitStatement sqlStatement = mock(ShowRulesUsedStorageUnitStatement.class);
         when(sqlStatement.getStorageUnitName()).thenReturn(Optional.of("foo_ds"));
@@ -157,7 +157,7 @@ public final class ShowRulesUsedStorageUnitExecutorTest {
     }
     
     @Test
-    public void assertGetEmptyRowData() {
+    void assertGetEmptyRowData() {
         ShardingSphereDatabase database = mockEmptyDatabase();
         RQLExecutor<ShowRulesUsedStorageUnitStatement> executor = new ShowRulesUsedStorageUnitExecutor();
         ShowRulesUsedStorageUnitStatement sqlStatement = mock(ShowRulesUsedStorageUnitStatement.class);
@@ -175,7 +175,7 @@ public final class ShowRulesUsedStorageUnitExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowRulesUsedStorageUnitStatement> executor = new ShowRulesUsedStorageUnitExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(2));

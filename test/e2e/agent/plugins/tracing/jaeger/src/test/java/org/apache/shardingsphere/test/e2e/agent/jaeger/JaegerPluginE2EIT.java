@@ -32,11 +32,11 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.stream.Stream;
 
 @ExtendWith(AgentTestActionExtension.class)
-public final class JaegerPluginE2EIT {
+class JaegerPluginE2EIT {
     
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertWithAgent(final SpanTestCase spanTestCase) {
+    void assertWithAgent(final SpanTestCase spanTestCase) {
         SpanAssert.assertIs(E2ETestEnvironment.getInstance().getProps().getProperty("jaeger.url"), spanTestCase);
     }
     

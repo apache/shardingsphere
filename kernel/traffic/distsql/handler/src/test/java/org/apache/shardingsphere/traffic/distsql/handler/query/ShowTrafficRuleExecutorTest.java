@@ -42,10 +42,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowTrafficRuleExecutorTest {
+class ShowTrafficRuleExecutorTest {
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowTrafficRuleExecutor executor = new ShowTrafficRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowTrafficRulesStatement.class));
@@ -68,7 +68,7 @@ public final class ShowTrafficRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         ShowTrafficRuleExecutor executor = new ShowTrafficRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(6));

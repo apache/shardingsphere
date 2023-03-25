@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class AlterDefaultShadowAlgorithmStatementUpdaterTest {
+class AlterDefaultShadowAlgorithmStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -54,14 +54,14 @@ public final class AlterDefaultShadowAlgorithmStatementUpdaterTest {
     private final AlterDefaultShadowAlgorithmStatementUpdater updater = new AlterDefaultShadowAlgorithmStatementUpdater();
     
     @Test
-    public void assertExecuteAlgorithmWithoutConfiguration() {
+    void assertExecuteAlgorithmWithoutConfiguration() {
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
                 new ShadowAlgorithmSegment("sqlHintAlgorithm", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, sqlStatement, null));
     }
     
     @Test
-    public void assertExecuteAlgorithmNotInMetaData() {
+    void assertExecuteAlgorithmNotInMetaData() {
         Properties props = PropertiesBuilder.build(new Property("type", "value"));
         when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("sqlHintAlgorithm", new AlgorithmConfiguration("type", props)));
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
@@ -70,21 +70,21 @@ public final class AlterDefaultShadowAlgorithmStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteInvalidAlgorithmType() {
+    void assertExecuteInvalidAlgorithmType() {
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
                 new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("NOT_EXIST_SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
         assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentConfig));
     }
     
     @Test
-    public void assertExecuteIncompletenessAlgorithm() {
+    void assertExecuteIncompletenessAlgorithm() {
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
                 new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("", PropertiesBuilder.build(new Property("type", "value")))));
         assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentConfig));
     }
     
     @Test
-    public void assertExecuteSuccess() {
+    void assertExecuteSuccess() {
         Properties props = PropertiesBuilder.build(new Property("type", "value"));
         when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("default_shadow_algorithm", new AlgorithmConfiguration("type", props)));
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(

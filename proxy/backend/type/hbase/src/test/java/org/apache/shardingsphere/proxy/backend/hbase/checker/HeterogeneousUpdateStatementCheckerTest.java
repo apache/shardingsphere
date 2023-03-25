@@ -25,16 +25,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class HeterogeneousUpdateStatementCheckerTest {
+class HeterogeneousUpdateStatementCheckerTest {
     
     @Test
-    public void assertExecuteUpdateStatement() {
+    void assertExecuteUpdateStatement() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getUpdateStatement());
         HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
-    public void assertUpdateWithFunction() {
+    void assertUpdateWithFunction() {
         String sql = "update /*+ hbase */ t_test_order set age = 10, name = 'bob', time = now() where rowKey = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -42,7 +42,7 @@ public final class HeterogeneousUpdateStatementCheckerTest {
     }
     
     @Test
-    public void assertOperatorIsNotEqual() {
+    void assertOperatorIsNotEqual() {
         String sql = "update /*+ hbase */ t_test_order set age = 10 where rowKey > 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -50,7 +50,7 @@ public final class HeterogeneousUpdateStatementCheckerTest {
     }
     
     @Test
-    public void assertColumnIsNotRowKey() {
+    void assertColumnIsNotRowKey() {
         String sql = "update /*+ hbase */ t_test_order set age = 10 where age = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -58,7 +58,7 @@ public final class HeterogeneousUpdateStatementCheckerTest {
     }
     
     @Test
-    public void assertLeftIsNotColumn() {
+    void assertLeftIsNotColumn() {
         String sql = "update /*+ hbase */ t_test_order set age = 10 where 1 = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -66,7 +66,7 @@ public final class HeterogeneousUpdateStatementCheckerTest {
     }
     
     @Test
-    public void assertMultiExpression() {
+    void assertMultiExpression() {
         String sql = "update /*+ hbase */ t_test_order set age = 10 WHERE order_id = ? AND user_id = ? AND status=?";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -74,7 +74,7 @@ public final class HeterogeneousUpdateStatementCheckerTest {
     }
     
     @Test
-    public void assertNotWhereSegment() {
+    void assertNotWhereSegment() {
         String sql = "update /*+ hbase */ t_test_order set age = 10 ";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -82,7 +82,7 @@ public final class HeterogeneousUpdateStatementCheckerTest {
     }
     
     @Test
-    public void assertUpdateRowKey() {
+    void assertUpdateRowKey() {
         String sql = "update /*+ hbase */ t_test_order set rowKey = 10 where rowKey = 'kid'";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());

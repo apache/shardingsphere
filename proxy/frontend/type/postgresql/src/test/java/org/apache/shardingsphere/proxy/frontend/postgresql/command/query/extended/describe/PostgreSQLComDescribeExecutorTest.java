@@ -92,7 +92,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class PostgreSQLComDescribeExecutorTest {
+class PostgreSQLComDescribeExecutorTest {
     
     private static final String DATABASE_NAME = "postgres";
     
@@ -113,7 +113,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     private PostgreSQLComDescribeExecutor executor;
     
     @Test
-    public void assertDescribePortal() throws SQLException {
+    void assertDescribePortal() throws SQLException {
         when(packet.getType()).thenReturn('P');
         when(packet.getName()).thenReturn("P_1");
         Portal portal = mock(Portal.class);
@@ -127,7 +127,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertDescribePreparedStatementInsertWithoutColumns() throws SQLException {
+    void assertDescribePreparedStatementInsertWithoutColumns() throws SQLException {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_1";
         when(packet.getName()).thenReturn(statementId);
@@ -158,7 +158,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertDescribePreparedStatementInsertWithColumns() throws SQLException {
+    void assertDescribePreparedStatementInsertWithColumns() throws SQLException {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
@@ -189,7 +189,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertDescribePreparedStatementInsertWithCaseInsensitiveColumns() throws SQLException {
+    void assertDescribePreparedStatementInsertWithCaseInsensitiveColumns() throws SQLException {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
@@ -220,7 +220,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertDescribePreparedStatementInsertWithUndefinedColumns() {
+    void assertDescribePreparedStatementInsertWithUndefinedColumns() {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
@@ -242,7 +242,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertDescribePreparedStatementInsertWithReturningClause() throws SQLException {
+    void assertDescribePreparedStatementInsertWithReturningClause() throws SQLException {
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
@@ -326,7 +326,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertDescribeSelectPreparedStatement() throws SQLException {
+    void assertDescribeSelectPreparedStatement() throws SQLException {
         when(packet.getType()).thenReturn('S');
         String statementId = "S_3";
         when(packet.getName()).thenReturn(statementId);
@@ -418,7 +418,7 @@ public final class PostgreSQLComDescribeExecutorTest {
     }
     
     @Test
-    public void assertDescribeUnknownType() {
+    void assertDescribeUnknownType() {
         assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLComDescribeExecutor(portalContext, packet, connectionSession).execute());
     }
 }

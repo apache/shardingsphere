@@ -33,7 +33,7 @@ import java.util.Objects;
 public abstract class AbstractYamlDataSourceE2EIT {
     
     @BeforeAll
-    public static void createSchema() throws SQLException {
+    static void createSchema() throws SQLException {
         for (String each : getSchemaFiles()) {
             RunScript.execute(
                     createDataSource(getFileName(each)).getConnection(), new InputStreamReader(Objects.requireNonNull(AbstractYamlDataSourceE2EIT.class.getClassLoader().getResourceAsStream(each))));

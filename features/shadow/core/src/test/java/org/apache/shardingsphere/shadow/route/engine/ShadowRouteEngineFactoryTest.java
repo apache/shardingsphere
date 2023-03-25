@@ -41,10 +41,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShadowRouteEngineFactoryTest {
+class ShadowRouteEngineFactoryTest {
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         ShadowRouteEngine shadowInsertRouteEngine = ShadowRouteEngineFactory.newInstance(new QueryContext(createInsertSqlStatementContext(), "", Collections.emptyList()));
         assertThat(shadowInsertRouteEngine, instanceOf(ShadowInsertStatementRoutingEngine.class));
         ShadowRouteEngine shadowUpdateRouteEngine = ShadowRouteEngineFactory.newInstance(new QueryContext(createUpdateSqlStatementContext(), "", Collections.emptyList()));

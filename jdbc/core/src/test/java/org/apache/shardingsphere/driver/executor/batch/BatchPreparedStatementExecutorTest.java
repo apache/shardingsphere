@@ -76,7 +76,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class BatchPreparedStatementExecutorTest {
+class BatchPreparedStatementExecutorTest {
     
     private static final String SQL = "DELETE FROM table_x WHERE id=?";
     
@@ -88,7 +88,7 @@ public final class BatchPreparedStatementExecutorTest {
     private SQLStatementContext<?> sqlStatementContext;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
         TransactionTypeHolder.set(TransactionType.LOCAL);
         ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), mock(JDBCContext.class));
@@ -137,13 +137,13 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         executorEngine.close();
         TransactionTypeHolder.clear();
     }
     
     @Test
-    public void assertNoPreparedStatement() throws SQLException {
+    void assertNoPreparedStatement() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{0, 0});
         setExecutionGroups(Collections.singletonList(preparedStatement));
@@ -151,7 +151,7 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     @Test
-    public void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException {
+    void assertExecuteBatchForSinglePreparedStatementSuccess() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{10, 20});
         setExecutionGroups(Collections.singletonList(preparedStatement));
@@ -160,7 +160,7 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     @Test
-    public void assertExecuteBatchForMultiplePreparedStatementsSuccess() throws SQLException {
+    void assertExecuteBatchForMultiplePreparedStatementsSuccess() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         when(preparedStatement1.executeBatch()).thenReturn(new int[]{10, 20});
@@ -172,7 +172,7 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     @Test
-    public void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException {
+    void assertExecuteBatchForSinglePreparedStatementFailure() throws SQLException {
         PreparedStatement preparedStatement = getPreparedStatement();
         SQLException ex = new SQLException("");
         when(preparedStatement.executeBatch()).thenThrow(ex);
@@ -182,7 +182,7 @@ public final class BatchPreparedStatementExecutorTest {
     }
     
     @Test
-    public void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException {
+    void assertExecuteBatchForMultiplePreparedStatementsFailure() throws SQLException {
         PreparedStatement preparedStatement1 = getPreparedStatement();
         PreparedStatement preparedStatement2 = getPreparedStatement();
         SQLException ex = new SQLException("");

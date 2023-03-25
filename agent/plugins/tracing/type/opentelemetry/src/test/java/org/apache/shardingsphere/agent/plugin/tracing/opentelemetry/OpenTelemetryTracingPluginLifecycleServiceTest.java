@@ -26,18 +26,18 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public final class OpenTelemetryTracingPluginLifecycleServiceTest {
+class OpenTelemetryTracingPluginLifecycleServiceTest {
     
     private final OpenTelemetryTracingPluginLifecycleService pluginLifecycleService = new OpenTelemetryTracingPluginLifecycleService();
     
     @AfterEach
-    public void close() {
+    void close() {
         pluginLifecycleService.close();
         GlobalOpenTelemetry.resetForTest();
     }
     
     @Test
-    public void assertStart() {
+    void assertStart() {
         pluginLifecycleService.start(new PluginConfiguration(null, 0, null,
                 PropertiesBuilder.build(new Property("otel.resource.attributes", "service.name=shardingsphere-agent"), new Property("otel.traces.exporter", "zipkin"))), true);
         assertNotNull(GlobalOpenTelemetry.getTracerProvider());

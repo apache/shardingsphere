@@ -37,31 +37,31 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class ModShardingAlgorithmTest {
+class ModShardingAlgorithmTest {
     
     private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
     
     @Test
-    public void assertPreciseDoShardingWithIntShardingValue() {
+    void assertPreciseDoShardingWithIntShardingValue() {
         ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "16")));
         assertThat(algorithm.doSharding(createAvailableTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 17)), is("t_order_1"));
     }
     
     @Test
-    public void assertPreciseDoShardingWithBigIntegerShardingValue() {
+    void assertPreciseDoShardingWithBigIntegerShardingValue() {
         ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "16")));
         assertThat(algorithm.doSharding(createAvailableTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_12"));
     }
     
     @Test
-    public void assertRangeDoShardingWithAllTargets() {
+    void assertRangeDoShardingWithAllTargets() {
         ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "16")));
         Collection<String> actual = algorithm.doSharding(createAvailableTargetNames(), new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 16L)));
         assertThat(actual.size(), is(16));
     }
     
     @Test
-    public void assertRangeDoShardingWithPartTargets() {
+    void assertRangeDoShardingWithPartTargets() {
         ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "16")));
         Collection<String> actual = algorithm.doSharding(createAvailableTargetNames(),
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 2L)));
@@ -76,13 +76,13 @@ public final class ModShardingAlgorithmTest {
     }
     
     @Test
-    public void assertPreciseDoShardingWithValueIsBigIntegerAndZeroPadding() {
+    void assertPreciseDoShardingWithValueIsBigIntegerAndZeroPadding() {
         ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", createZeroPaddingProperties());
         assertThat(algorithm.doSharding(createAvailableIncludeZeroTargetNames(), new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, "12345678910111213141516")), is("t_order_07"));
     }
     
     @Test
-    public void assertRangeDoShardingWithAllTargetsZeroPadding() {
+    void assertRangeDoShardingWithAllTargetsZeroPadding() {
         ModShardingAlgorithm algorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", createZeroPaddingProperties());
         Collection<String> actual = algorithm.doSharding(createAvailableIncludeZeroTargetNames(),
                 new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Range.closed(1L, 16L)));
@@ -90,19 +90,19 @@ public final class ModShardingAlgorithmTest {
     }
     
     @Test
-    public void assertRangeDoShardingWithWrongArgumentForShardingCount() {
+    void assertRangeDoShardingWithWrongArgumentForShardingCount() {
         assertThrows(ShardingAlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "0"))));
     }
     
     @Test
-    public void assertRangeDoShardingWithWrongArgumentForStartOffset() {
+    void assertRangeDoShardingWithWrongArgumentForStartOffset() {
         Properties props = createZeroPaddingProperties();
         props.setProperty("start-offset", "-1");
         assertThrows(ShardingAlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", props));
     }
     
     @Test
-    public void assertRangeDoShardingWithWrongArgumentForStopOffset() {
+    void assertRangeDoShardingWithWrongArgumentForStopOffset() {
         Properties props = createZeroPaddingProperties();
         props.setProperty("stop-offset", "-1");
         assertThrows(ShardingAlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", props));

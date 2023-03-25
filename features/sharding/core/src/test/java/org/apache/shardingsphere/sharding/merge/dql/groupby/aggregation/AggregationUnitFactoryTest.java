@@ -23,42 +23,42 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class AggregationUnitFactoryTest {
+class AggregationUnitFactoryTest {
     
     @Test
-    public void assertCreateComparableAggregationUnit() {
+    void assertCreateComparableAggregationUnit() {
         assertThat(AggregationUnitFactory.create(AggregationType.MIN, false), instanceOf(ComparableAggregationUnit.class));
         assertThat(AggregationUnitFactory.create(AggregationType.MAX, false), instanceOf(ComparableAggregationUnit.class));
     }
     
     @Test
-    public void assertCreateAccumulationAggregationUnit() {
+    void assertCreateAccumulationAggregationUnit() {
         assertThat(AggregationUnitFactory.create(AggregationType.SUM, false), instanceOf(AccumulationAggregationUnit.class));
         assertThat(AggregationUnitFactory.create(AggregationType.COUNT, false), instanceOf(AccumulationAggregationUnit.class));
     }
     
     @Test
-    public void assertCreateAverageAggregationUnit() {
+    void assertCreateAverageAggregationUnit() {
         assertThat(AggregationUnitFactory.create(AggregationType.AVG, false), instanceOf(AverageAggregationUnit.class));
     }
     
     @Test
-    public void assertCreateDistinctSumAggregationUnit() {
+    void assertCreateDistinctSumAggregationUnit() {
         assertThat(AggregationUnitFactory.create(AggregationType.SUM, true), instanceOf(DistinctSumAggregationUnit.class));
     }
     
     @Test
-    public void assertCreateDistinctCountAggregationUnit() {
+    void assertCreateDistinctCountAggregationUnit() {
         assertThat(AggregationUnitFactory.create(AggregationType.COUNT, true), instanceOf(DistinctCountAggregationUnit.class));
     }
     
     @Test
-    public void assertCreateDistinctAverageAggregationUnit() {
+    void assertCreateDistinctAverageAggregationUnit() {
         assertThat(AggregationUnitFactory.create(AggregationType.AVG, true), instanceOf(DistinctAverageAggregationUnit.class));
     }
     
     @Test
-    public void assertCreateBitXorAggregationUnit() {
+    void assertCreateBitXorAggregationUnit() {
         assertThat(AggregationUnitFactory.create(AggregationType.BIT_XOR, false), instanceOf(BitXorAggregationUnit.class));
     }
 }

@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class BinlogContextTest {
+class BinlogContextTest {
     
     private static final String TEST_SCHEMA = "test_schema";
     
@@ -52,26 +52,26 @@ public final class BinlogContextTest {
     private BinlogContext binlogContext;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         binlogContext = new BinlogContext(4, new HashMap<>());
         when(tableMapEventPacket.getSchemaName()).thenReturn(TEST_SCHEMA);
         when(tableMapEventPacket.getTableName()).thenReturn(TEST_TABLE);
     }
     
     @Test
-    public void assertGetTableName() {
+    void assertGetTableName() {
         binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
         assertThat(binlogContext.getTableName(TEST_TABLE_ID), is(TEST_TABLE));
     }
     
     @Test
-    public void assertGetDatabaseName() {
+    void assertGetDatabaseName() {
         binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
         assertThat(binlogContext.getDatabaseName(TEST_TABLE_ID), is(TEST_SCHEMA));
     }
     
     @Test
-    public void assertGetColumnDefs() {
+    void assertGetColumnDefs() {
         binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
         List<MySQLBinlogColumnDef> columnDefs = new ArrayList<>(1);
         columnDefs.add(new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_LONG));
@@ -80,7 +80,7 @@ public final class BinlogContextTest {
     }
     
     @Test
-    public void assertGetTableMapEvent() {
+    void assertGetTableMapEvent() {
         binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
         assertThat(binlogContext.getTableMapEvent(TEST_TABLE_ID), is(tableMapEventPacket));
     }

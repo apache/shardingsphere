@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EncryptParameterAssignmentTokenTest {
+class EncryptParameterAssignmentTokenTest {
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         EncryptParameterAssignmentToken actual = new EncryptParameterAssignmentToken(0, 1);
         actual.addColumnName("c1");
         actual.addColumnName("c2");

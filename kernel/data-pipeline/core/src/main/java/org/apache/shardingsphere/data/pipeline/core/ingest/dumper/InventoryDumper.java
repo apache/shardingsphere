@@ -40,7 +40,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumn
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -115,7 +115,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     private void dump(final PipelineTableMetaData tableMetaData, final Connection connection) throws SQLException {
         int batchSize = dumperConfig.getBatchSize();
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
-        try (PreparedStatement preparedStatement = JDBCStreamQueryUtil.generateStreamQueryPreparedStatement(databaseType, connection, buildInventoryDumpSQL())) {
+        try (PreparedStatement preparedStatement = JDBCStreamQueryUtils.generateStreamQueryPreparedStatement(databaseType, connection, buildInventoryDumpSQL())) {
             dumpStatement = preparedStatement;
             if (!(databaseType instanceof MySQLDatabaseType)) {
                 preparedStatement.setFetchSize(batchSize);

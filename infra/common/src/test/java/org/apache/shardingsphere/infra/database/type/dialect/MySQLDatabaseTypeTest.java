@@ -29,25 +29,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MySQLDatabaseTypeTest {
+class MySQLDatabaseTypeTest {
     
     @Test
-    public void assertGetQuoteCharacter() {
+    void assertGetQuoteCharacter() {
         assertThat(new MySQLDatabaseType().getQuoteCharacter(), is(QuoteCharacter.BACK_QUOTE));
     }
     
     @Test
-    public void assertGetJdbcUrlPrefixes() {
+    void assertGetJdbcUrlPrefixes() {
         assertThat(new MySQLDatabaseType().getJdbcUrlPrefixes(), is(Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:")));
     }
     
     @Test
-    public void assertGetDataSourceMetaData() {
+    void assertGetDataSourceMetaData() {
         assertThat(new MySQLDatabaseType().getDataSourceMetaData("jdbc:mysql://127.0.0.1/foo_ds", "root"), instanceOf(MySQLDataSourceMetaData.class));
     }
     
     @Test
-    public void assertGetSystemDatabases() {
+    void assertGetSystemDatabases() {
         assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("information_schema"));
         assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("performance_schema"));
         assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("mysql"));
@@ -56,7 +56,7 @@ public final class MySQLDatabaseTypeTest {
     }
     
     @Test
-    public void assertGetSystemSchemas() {
+    void assertGetSystemSchemas() {
         assertThat(new MySQLDatabaseType().getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys", "shardingsphere"))));
     }
 }

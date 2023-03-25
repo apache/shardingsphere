@@ -24,70 +24,70 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class PostgreSQLBinaryProtocolValueFactoryTest {
+class PostgreSQLBinaryProtocolValueFactoryTest {
     
     @Test
-    public void assertGetStringBinaryProtocolValueByVarchar() {
+    void assertGetStringBinaryProtocolValueByVarchar() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLStringBinaryProtocolValue.class));
     }
     
     @Test
-    public void assertGetStringBinaryProtocolValueByChar() {
+    void assertGetStringBinaryProtocolValueByChar() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_CHAR);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLStringBinaryProtocolValue.class));
     }
     
     @Test
-    public void assertGetInt8BinaryProtocolValue() {
+    void assertGetInt8BinaryProtocolValue() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLInt8BinaryProtocolValue.class));
     }
     
     @Test
-    public void assertGetInt4BinaryProtocolValue() {
+    void assertGetInt4BinaryProtocolValue() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLInt4BinaryProtocolValue.class));
     }
     
     @Test
-    public void assertGetInt2BinaryProtocolValue() {
+    void assertGetInt2BinaryProtocolValue() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_INT2);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLInt2BinaryProtocolValue.class));
     }
     
     @Test
-    public void assertGetDoubleBinaryProtocolValue() {
+    void assertGetDoubleBinaryProtocolValue() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_FLOAT8);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLDoubleBinaryProtocolValue.class));
     }
     
     @Test
-    public void assertGetFloatBinaryProtocolValue() {
+    void assertGetFloatBinaryProtocolValue() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_FLOAT4);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLFloatBinaryProtocolValue.class));
     }
     
     @Test
-    public void assertGetNumericBinaryProtocolValue() {
+    void assertGetNumericBinaryProtocolValue() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_NUMERIC);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLNumericBinaryProtocolValue.class));
     }
     
     @Test
-    public void assertGetDateBinaryProtocolValue() {
+    void assertGetDateBinaryProtocolValue() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_DATE);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLDateBinaryProtocolValue.class));
     }
     
     @Test
-    public void assertGetTimeBinaryProtocolValue() {
+    void assertGetTimeBinaryProtocolValue() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_TIMESTAMP);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLTimeBinaryProtocolValue.class));
     }
     
     @Test
-    public void assertGetBinaryProtocolValueExThrown() {
+    void assertGetBinaryProtocolValueExThrown() {
         assertThrows(IllegalArgumentException.class, () -> PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.POSTGRESQL_TYPE_XML));
     }
 }

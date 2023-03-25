@@ -24,10 +24,10 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class TypedPropertiesExceptionTest {
+class TypedPropertiesExceptionTest {
     
     @Test
-    public void assertGetMessage() {
+    void assertGetMessage() {
         assertThat(new TypedPropertiesServerException(Arrays.asList("foo_msg", "bar_msg")).getMessage(), is("PROPS-00001: foo_msg" + System.lineSeparator() + "bar_msg"));
     }
 }

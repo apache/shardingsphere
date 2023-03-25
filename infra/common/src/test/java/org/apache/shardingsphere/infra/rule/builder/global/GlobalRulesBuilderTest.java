@@ -33,17 +33,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class GlobalRulesBuilderTest {
+class GlobalRulesBuilderTest {
     
     @Test
-    public void assertBuildRules() {
+    void assertBuildRules() {
         Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder
                 .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildDatabase()), mock(ConfigurationProperties.class));
         assertThat(shardingSphereRules.size(), is(1));
     }
     
     @Test
-    public void assertBuildRulesClassType() {
+    void assertBuildRulesClassType() {
         Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder
                 .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildDatabase()), mock(ConfigurationProperties.class));
         assertTrue(shardingSphereRules.toArray()[0] instanceof FixtureGlobalRule);

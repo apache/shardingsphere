@@ -54,13 +54,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ShowStorageUnitExecutorTest {
+class ShowStorageUnitExecutorTest {
     
     @Mock
     private ShardingSphereDatabase database;
     
     @BeforeEach
-    public void before() {
+    void before() {
         ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSources());
         ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.singleton(createShardingRule()));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -105,7 +105,7 @@ public final class ShowStorageUnitExecutorTest {
     }
     
     @Test
-    public void assertAllStorageUnit() {
+    void assertAllStorageUnit() {
         RQLExecutor<ShowStorageUnitsStatement> executor = new ShowStorageUnitExecutor();
         ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null);
         Map<Integer, String> nameMap = new HashMap<>(3, 1);
@@ -135,7 +135,7 @@ public final class ShowStorageUnitExecutorTest {
     }
     
     @Test
-    public void assertUnusedStorageUnit() {
+    void assertUnusedStorageUnit() {
         RQLExecutor<ShowStorageUnitsStatement> executor = new ShowStorageUnitExecutor();
         ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), 0);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, showStorageUnitsStatement);
@@ -157,7 +157,7 @@ public final class ShowStorageUnitExecutorTest {
     }
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         RQLExecutor<ShowStorageUnitsStatement> executor = new ShowStorageUnitExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(12));

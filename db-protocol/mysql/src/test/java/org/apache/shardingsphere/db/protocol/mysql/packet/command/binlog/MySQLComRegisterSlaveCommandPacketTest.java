@@ -31,13 +31,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLComRegisterSlaveCommandPacketTest {
+class MySQLComRegisterSlaveCommandPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNew() {
+    void assertNew() {
         when(payload.readInt4()).thenReturn(123456, 654321);
         when(payload.readInt1()).thenReturn(4, 4, 8);
         when(payload.readStringFix(4)).thenReturn("host", "user");
@@ -53,7 +53,7 @@ public final class MySQLComRegisterSlaveCommandPacketTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         new MySQLComRegisterSlaveCommandPacket(123456, "host", "user", "password", 3307).write(payload);
         verify(payload).writeInt1(MySQLCommandPacketType.COM_REGISTER_SLAVE.getValue());
         verify(payload).writeInt4(123456);

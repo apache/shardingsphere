@@ -36,10 +36,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OffsetTokenGeneratorTest {
+class OffsetTokenGeneratorTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         OffsetTokenGenerator offsetTokenGenerator = new OffsetTokenGenerator();
         assertFalse(offsetTokenGenerator.isGenerateSQLToken(insertStatementContext));
@@ -56,7 +56,7 @@ public final class OffsetTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLToken() {
+    void assertGenerateSQLToken() {
         PaginationValueSegment paginationValueSegment = mock(PaginationValueSegment.class);
         final int testStartIndex = 1;
         when(paginationValueSegment.getStartIndex()).thenReturn(testStartIndex);

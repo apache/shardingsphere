@@ -28,10 +28,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusSummaryWrapperTest {
+class PrometheusSummaryWrapperTest {
     
     @Test
-    public void assertCreate() throws ReflectiveOperationException {
+    void assertCreate() throws ReflectiveOperationException {
         PrometheusMetricsSummaryCollector collector = new PrometheusMetricsSummaryCollector(new MetricConfiguration("foo_summary",
                 MetricCollectorType.SUMMARY, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.observe(1);

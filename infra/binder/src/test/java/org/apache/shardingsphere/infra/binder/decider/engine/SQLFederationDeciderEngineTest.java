@@ -47,10 +47,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQLFederationDeciderEngineTest {
+class SQLFederationDeciderEngineTest {
     
     @Test
-    public void assertDecideWhenSelectStatementContainsSystemSchema() {
+    void assertDecideWhenSelectStatementContainsSystemSchema() {
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(Collections.emptyList(), new ConfigurationProperties(new Properties()));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
@@ -63,7 +63,7 @@ public final class SQLFederationDeciderEngineTest {
     }
     
     @Test
-    public void assertDecideWhenNotConfigSqlFederationEnabled() {
+    void assertDecideWhenNotConfigSqlFederationEnabled() {
         Collection<ShardingSphereRule> rules = Collections.singletonList(new SQLFederationDeciderRuleMatchFixture());
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules, new ConfigurationProperties(new Properties()));
         QueryContext queryContext = new QueryContext(mock(CommonSQLStatementContext.class), "", Collections.emptyList());
@@ -74,7 +74,7 @@ public final class SQLFederationDeciderEngineTest {
     }
     
     @Test
-    public void assertDecideWhenExecuteNotSelectStatement() {
+    void assertDecideWhenExecuteNotSelectStatement() {
         Collection<ShardingSphereRule> rules = Collections.singletonList(new SQLFederationDeciderRuleMatchFixture());
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules,
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL"))));
@@ -86,7 +86,7 @@ public final class SQLFederationDeciderEngineTest {
     }
     
     @Test
-    public void assertDecideWhenConfigSingleMatchedRule() {
+    void assertDecideWhenConfigSingleMatchedRule() {
         Collection<ShardingSphereRule> rules = Collections.singletonList(new SQLFederationDeciderRuleMatchFixture());
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules,
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL"))));
@@ -98,7 +98,7 @@ public final class SQLFederationDeciderEngineTest {
     }
     
     @Test
-    public void assertDecideWhenConfigSingleNotMatchedRule() {
+    void assertDecideWhenConfigSingleNotMatchedRule() {
         Collection<ShardingSphereRule> rules = Collections.singletonList(new SQLFederationDeciderRuleNotMatchFixture());
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules,
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL"))));
@@ -110,7 +110,7 @@ public final class SQLFederationDeciderEngineTest {
     }
     
     @Test
-    public void assertDecideWhenConfigMultiRule() {
+    void assertDecideWhenConfigMultiRule() {
         Collection<ShardingSphereRule> rules = Arrays.asList(new SQLFederationDeciderRuleNotMatchFixture(), new SQLFederationDeciderRuleMatchFixture());
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules,
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL"))));

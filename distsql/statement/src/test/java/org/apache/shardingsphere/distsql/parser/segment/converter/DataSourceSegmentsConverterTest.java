@@ -36,10 +36,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DataSourceSegmentsConverterTest {
+class DataSourceSegmentsConverterTest {
     
     @Test
-    public void assertConvert() {
+    void assertConvert() {
         Map<String, DataSourceProperties> actual = DataSourceSegmentsConverter.convert(new MySQLDatabaseType(), createDataSourceSegments());
         assertThat(actual.size(), is(2));
         assertTrue(actual.keySet().containsAll(Arrays.asList("ds0", "ds1")));

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.fixture.sharding;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtil;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtils;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -96,7 +96,7 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         String shardingResultSuffix = getShardingResultSuffix(cutShardingValue(shardingValue.getValue()).mod(new BigInteger(String.valueOf(shardingCount))).toString());
-        return ShardingAutoTableAlgorithmUtil.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).orElse(null);
+        return ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
@@ -116,7 +116,7 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
         BigInteger shardingCountBigInter = new BigInteger(String.valueOf(shardingCount));
         for (BigInteger i = lower; i.compareTo(upper) <= 0; i = i.add(new BigInteger("1"))) {
             String shardingResultSuffix = getShardingResultSuffix(String.valueOf(i.mod(shardingCountBigInter)));
-            ShardingAutoTableAlgorithmUtil.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
+            ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
         }
         return result;
     }

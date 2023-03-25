@@ -27,7 +27,7 @@ import com.alibaba.nacos.common.utils.StringUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.instance.utils.IpUtils;
+import org.apache.shardingsphere.infra.instance.util.IpUtils;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
@@ -39,7 +39,7 @@ import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceMet
 import org.apache.shardingsphere.mode.repository.cluster.nacos.listener.NamingEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProperties;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.NacosMetaDataUtils;
+import org.apache.shardingsphere.mode.repository.cluster.nacos.util.NacosMetaDataUtils;
 
 import java.util.Collection;
 import java.util.Comparator;

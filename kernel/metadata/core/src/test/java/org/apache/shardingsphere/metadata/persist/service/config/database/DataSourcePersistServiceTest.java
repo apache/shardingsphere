@@ -44,13 +44,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class DataSourcePersistServiceTest {
+class DataSourcePersistServiceTest {
     
     @Mock
     private PersistRepository repository;
     
     @Test
-    public void assertLoad() {
+    void assertLoad() {
         when(repository.getDirectly("/metadata/foo_db/active_version")).thenReturn("0");
         when(repository.getDirectly("/metadata/foo_db/versions/0/data_sources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
         Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
@@ -74,14 +74,14 @@ public final class DataSourcePersistServiceTest {
     }
     
     @Test
-    public void assertLoadWithoutPath() {
+    void assertLoadWithoutPath() {
         when(repository.getDirectly("/metadata/foo_db/active_version")).thenReturn("0");
         Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
         assertTrue(actual.isEmpty());
     }
     
     @Test
-    public void assertAppend() {
+    void assertAppend() {
         when(repository.getDirectly("/metadata/foo_db/active_version")).thenReturn("0");
         new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourcePropertiesCreator.create(createDataSource("foo_ds"))));
         String expected = readDataSourceYaml("yaml/persist/data-source-foo.yaml");

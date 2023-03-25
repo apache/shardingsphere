@@ -25,10 +25,10 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class UnknownSQLExceptionTest {
+class UnknownSQLExceptionTest {
     
     @Test
-    public void assertToSQLException() {
+    void assertToSQLException() {
         SQLException actual = new UnknownSQLException(new RuntimeException("foo_reason")).toSQLException();
         assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertThat(actual.getErrorCode(), is(30000));

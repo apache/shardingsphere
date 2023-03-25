@@ -34,48 +34,48 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class MetaDataVersionPersistServiceTest {
+class MetaDataVersionPersistServiceTest {
     
     private PersistRepository repository;
     
     private MetaDataVersionPersistService metaDataVersionPersistService;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         repository = mock(PersistRepository.class);
         when(repository.getDirectly(contains("foo_db"))).thenReturn("1");
         metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
     }
     
     @Test
-    public void assertGetActiveVersion() {
+    void assertGetActiveVersion() {
         Optional<String> actual = metaDataVersionPersistService.getActiveVersion("foo_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("1"));
     }
     
     @Test
-    public void assertIsActiveVersion() {
+    void assertIsActiveVersion() {
         assertTrue(metaDataVersionPersistService.isActiveVersion("foo_db", "1"));
     }
     
     @Test
-    public void assertIsNotActiveVersionWithNotExistedDatabase() {
+    void assertIsNotActiveVersionWithNotExistedDatabase() {
         assertFalse(metaDataVersionPersistService.isActiveVersion("bar_db", "1"));
     }
     
     @Test
-    public void assertIsNotActiveVersionWithNotExistedVersion() {
+    void assertIsNotActiveVersionWithNotExistedVersion() {
         assertFalse(metaDataVersionPersistService.isActiveVersion("foo_db", "2"));
     }
     
     @Test
-    public void assertCreateNewVersionWithoutExistedActiveVersion() {
+    void assertCreateNewVersionWithoutExistedActiveVersion() {
         assertFalse(metaDataVersionPersistService.createNewVersion("bar_db").isPresent());
     }
     
     @Test
-    public void assertCreateNewVersionWithExistedActiveVersion() {
+    void assertCreateNewVersionWithExistedActiveVersion() {
         Optional<String> actual = metaDataVersionPersistService.createNewVersion("foo_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("2"));
@@ -84,19 +84,19 @@ public final class MetaDataVersionPersistServiceTest {
     }
     
     @Test
-    public void assertPersistActiveVersionWhenExisted() {
+    void assertPersistActiveVersionWhenExisted() {
         metaDataVersionPersistService.persistActiveVersion("foo_db", "2");
         verify(repository).persist(DatabaseMetaDataNode.getActiveVersionPath("foo_db"), "2");
     }
     
     @Test
-    public void assertPersistActiveVersionWithNotExistedDatabase() {
+    void assertPersistActiveVersionWithNotExistedDatabase() {
         metaDataVersionPersistService.persistActiveVersion("bar_db", "2");
         verify(repository, times(0)).persist(DatabaseMetaDataNode.getActiveVersionPath("bar_db"), "2");
     }
     
     @Test
-    public void assertDeleteVersion() {
+    void assertDeleteVersion() {
         metaDataVersionPersistService.deleteVersion("foo_db", "1");
         verify(repository).delete(DatabaseMetaDataNode.getDatabaseVersionPath("foo_db", "1"));
     }

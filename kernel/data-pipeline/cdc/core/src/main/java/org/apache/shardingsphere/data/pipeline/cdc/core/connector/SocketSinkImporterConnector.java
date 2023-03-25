@@ -32,9 +32,9 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
-import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataRecordUtil;
-import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtil;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataRecordUtils;
+import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtils;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
@@ -120,7 +120,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
                 socketSinkImporter.ackWithLastDataRecord(new CDCAckPosition(lastRecord, 0));
                 return;
             }
-            importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(RecordUtil.getLastNormalRecord(recordList), dataRecordCount));
+            importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(RecordUtils.getLastNormalRecord(recordList), dataRecordCount));
             writeImmediately(recordList, importerDataRecordMap);
         } else if (ImporterType.INCREMENTAL == importerType) {
             writeIntoQueue(recordList, socketSinkImporter);
@@ -140,7 +140,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
                 continue;
             }
             DataRecord dataRecord = (DataRecord) each;
-            records.add(DataRecordResultConvertUtil.convertDataRecordToRecord(database.getName(), tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
+            records.add(DataRecordResultConvertUtils.convertDataRecordToRecord(database.getName(), tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
         }
         String ackId = CDCAckHolder.getInstance().bindAckIdWithPosition(importerDataRecordMap);
         DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecord(records).setAckId(ackId).build();
@@ -222,7 +222,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
                 Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
                 List<DataRecord> dataRecords = new LinkedList<>();
                 for (int i = 0; i < batchSize; i++) {
-                    DataRecord minimumDataRecord = CDCDataRecordUtil.findMinimumDataRecordAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
+                    DataRecord minimumDataRecord = CDCDataRecordUtils.findMinimumDataRecordAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
                     if (null == minimumDataRecord) {
                         break;
                     }

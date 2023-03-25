@@ -36,10 +36,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class AlterViewStatementHandlerTest {
+class AlterViewStatementHandlerTest {
     
     @Test
-    public void assertGetSelectStatementWithSelectStatementForMySQL() {
+    void assertGetSelectStatementWithSelectStatementForMySQL() {
         MySQLAlterViewStatement alterViewStatement = new MySQLAlterViewStatement();
         alterViewStatement.setSelect(new MySQLSelectStatement());
         Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
@@ -47,7 +47,7 @@ public final class AlterViewStatementHandlerTest {
     }
     
     @Test
-    public void assertGetRenameViewWithRenameViewSegmentForPostgreSQL() {
+    void assertGetRenameViewWithRenameViewSegmentForPostgreSQL() {
         PostgreSQLAlterViewStatement alterViewStatement = new PostgreSQLAlterViewStatement();
         IdentifierValue identifierValue = new IdentifierValue("t_order");
         TableNameSegment tableNameSegment = new TableNameSegment(0, 6, identifierValue);
@@ -57,14 +57,14 @@ public final class AlterViewStatementHandlerTest {
     }
     
     @Test
-    public void assertGetRenameViewWithoutRenameViewSegmentForPostgreSQL() {
+    void assertGetRenameViewWithoutRenameViewSegmentForPostgreSQL() {
         PostgreSQLAlterViewStatement alterViewStatement = new PostgreSQLAlterViewStatement();
         Optional<SimpleTableSegment> renameViewSegment = AlterViewStatementHandler.getRenameView(alterViewStatement);
         assertFalse(renameViewSegment.isPresent());
     }
     
     @Test
-    public void assertGetRenameViewWithRenameViewSegmentForOpenGauss() {
+    void assertGetRenameViewWithRenameViewSegmentForOpenGauss() {
         OpenGaussAlterViewStatement alterViewStatement = new OpenGaussAlterViewStatement();
         IdentifierValue identifierValue = new IdentifierValue("t_order");
         TableNameSegment tableNameSegment = new TableNameSegment(0, 6, identifierValue);
@@ -74,14 +74,14 @@ public final class AlterViewStatementHandlerTest {
     }
     
     @Test
-    public void assertGetRenameViewWithoutRenameViewSegmentForOpenGauss() {
+    void assertGetRenameViewWithoutRenameViewSegmentForOpenGauss() {
         OpenGaussAlterViewStatement alterViewStatement = new OpenGaussAlterViewStatement();
         Optional<SimpleTableSegment> renameViewSegment = AlterViewStatementHandler.getRenameView(alterViewStatement);
         assertFalse(renameViewSegment.isPresent());
     }
     
     @Test
-    public void assertGetSelectStatementForOtherDatabases() {
+    void assertGetSelectStatementForOtherDatabases() {
         assertFalse(AlterViewStatementHandler.getSelectStatement(new OpenGaussAlterViewStatement()).isPresent());
         assertFalse(AlterViewStatementHandler.getSelectStatement(new OracleAlterViewStatement()).isPresent());
         assertFalse(AlterViewStatementHandler.getSelectStatement(new PostgreSQLAlterViewStatement()).isPresent());
@@ -91,7 +91,7 @@ public final class AlterViewStatementHandlerTest {
     }
     
     @Test
-    public void assertGetRenameViewForOtherDatabases() {
+    void assertGetRenameViewForOtherDatabases() {
         assertFalse(AlterViewStatementHandler.getRenameView(new MySQLAlterViewStatement()).isPresent());
         assertFalse(AlterViewStatementHandler.getRenameView(new OracleAlterViewStatement()).isPresent());
         assertFalse(AlterViewStatementHandler.getRenameView(new SQLServerAlterViewStatement()).isPresent());

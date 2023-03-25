@@ -31,61 +31,61 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLPacketPayloadTest {
+class MySQLPacketPayloadTest {
     
     @Mock
     private ByteBuf byteBuf;
     
     @Test
-    public void assertReadInt1() {
+    void assertReadInt1() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 1);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readInt1(), is(1));
     }
     
     @Test
-    public void assertWriteInt1() {
+    void assertWriteInt1() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeInt1(1);
         verify(byteBuf).writeByte(1);
     }
     
     @Test
-    public void assertReadInt2() {
+    void assertReadInt2() {
         when(byteBuf.readUnsignedShortLE()).thenReturn(1);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readInt2(), is(1));
     }
     
     @Test
-    public void assertWriteInt2() {
+    void assertWriteInt2() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeInt2(1);
         verify(byteBuf).writeShortLE(1);
     }
     
     @Test
-    public void assertReadInt3() {
+    void assertReadInt3() {
         when(byteBuf.readUnsignedMediumLE()).thenReturn(1);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readInt3(), is(1));
     }
     
     @Test
-    public void assertWriteInt3() {
+    void assertWriteInt3() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeInt3(1);
         verify(byteBuf).writeMediumLE(1);
     }
     
     @Test
-    public void assertReadInt4() {
+    void assertReadInt4() {
         when(byteBuf.readIntLE()).thenReturn(1);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readInt4(), is(1));
     }
     
     @Test
-    public void assertWriteInt4() {
+    void assertWriteInt4() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeInt4(1);
         verify(byteBuf).writeIntLE(1);
     }
     
     @Test
-    public void assertReadInt6() {
+    void assertReadInt6() {
         when(byteBuf.readByte()).thenReturn((byte) 0x01, (byte) 0x00);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readInt6(), is(1L));
         when(byteBuf.readByte()).thenReturn((byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x80);
@@ -93,199 +93,199 @@ public final class MySQLPacketPayloadTest {
     }
     
     @Test
-    public void assertWriteInt6() {
+    void assertWriteInt6() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeInt6(1L);
     }
     
     @Test
-    public void assertReadInt8() {
+    void assertReadInt8() {
         when(byteBuf.readLongLE()).thenReturn(1L);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readInt8(), is(1L));
     }
     
     @Test
-    public void assertWriteInt8() {
+    void assertWriteInt8() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeInt8(1L);
         verify(byteBuf).writeLongLE(1L);
     }
     
     @Test
-    public void assertReadIntLenencWithOneByte() {
+    void assertReadIntLenencWithOneByte() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 1);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readIntLenenc(), is(1L));
     }
     
     @Test
-    public void assertReadIntLenencWithZero() {
+    void assertReadIntLenencWithZero() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0xfb);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readIntLenenc(), is(0L));
     }
     
     @Test
-    public void assertReadIntLenencWithTwoBytes() {
+    void assertReadIntLenencWithTwoBytes() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0xfc);
         when(byteBuf.readUnsignedShortLE()).thenReturn(100);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readIntLenenc(), is(100L));
     }
     
     @Test
-    public void assertReadIntLenencWithThreeBytes() {
+    void assertReadIntLenencWithThreeBytes() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0xfd);
         when(byteBuf.readUnsignedMediumLE()).thenReturn(99999);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readIntLenenc(), is(99999L));
     }
     
     @Test
-    public void assertReadIntLenencWithFourBytes() {
+    void assertReadIntLenencWithFourBytes() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0xff);
         when(byteBuf.readLongLE()).thenReturn(Long.MAX_VALUE);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readIntLenenc(), is(Long.MAX_VALUE));
     }
     
     @Test
-    public void assertWriteIntLenencWithOneByte() {
+    void assertWriteIntLenencWithOneByte() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(1L);
         verify(byteBuf).writeByte(1);
     }
     
     @Test
-    public void assertWriteIntLenencWithTwoBytes() {
+    void assertWriteIntLenencWithTwoBytes() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2, 16)).longValue() - 1);
         verify(byteBuf).writeByte(0xfc);
         verify(byteBuf).writeShortLE(Double.valueOf(Math.pow(2, 16)).intValue() - 1);
     }
     
     @Test
-    public void assertWriteIntLenencWithThreeBytes() {
+    void assertWriteIntLenencWithThreeBytes() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2, 24)).longValue() - 1);
         verify(byteBuf).writeByte(0xfd);
         verify(byteBuf).writeMediumLE(Double.valueOf(Math.pow(2, 24)).intValue() - 1);
     }
     
     @Test
-    public void assertWriteIntLenencWithFourBytes() {
+    void assertWriteIntLenencWithFourBytes() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeIntLenenc(Double.valueOf(Math.pow(2, 25)).longValue() - 1);
         verify(byteBuf).writeByte(0xfe);
         verify(byteBuf).writeLongLE(Double.valueOf(Math.pow(2, 25)).intValue() - 1);
     }
     
     @Test
-    public void assertReadStringLenenc() {
+    void assertReadStringLenenc() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringLenenc(), is(""));
     }
     
     @Test
-    public void assertReadStringLenencByBytes() {
+    void assertReadStringLenencByBytes() {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringLenencByBytes(), is(new byte[]{}));
     }
     
     @Test
-    public void assertWriteStringLenencWithEmpty() {
+    void assertWriteStringLenencWithEmpty() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeStringLenenc("");
         verify(byteBuf).writeByte(0);
     }
     
     @Test
-    public void assertWriteBytesLenenc() {
+    void assertWriteBytesLenenc() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeBytesLenenc("value".getBytes());
         verify(byteBuf).writeByte(5);
         verify(byteBuf).writeBytes("value".getBytes());
     }
     
     @Test
-    public void assertWriteBytesLenencWithEmpty() {
+    void assertWriteBytesLenencWithEmpty() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeBytesLenenc("".getBytes());
         verify(byteBuf).writeByte(0);
     }
     
     @Test
-    public void assertWriteStringLenenc() {
+    void assertWriteStringLenenc() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeStringLenenc("value");
         verify(byteBuf).writeByte(5);
         verify(byteBuf).writeBytes("value".getBytes());
     }
     
     @Test
-    public void assertReadStringFix() {
+    void assertReadStringFix() {
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringFix(0), is(""));
     }
     
     @Test
-    public void assertReadStringFixByBytes() {
+    void assertReadStringFixByBytes() {
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringFixByBytes(0), is(new byte[]{}));
     }
     
     @Test
-    public void assertWriteStringFix() {
+    void assertWriteStringFix() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeStringFix("value");
         verify(byteBuf).writeBytes("value".getBytes());
     }
     
     @Test
-    public void assertWriteBytes() {
+    void assertWriteBytes() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeBytes("value".getBytes());
         verify(byteBuf).writeBytes("value".getBytes());
     }
     
     @Test
-    public void assertReadStringVar() {
+    void assertReadStringVar() {
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringVar(), is(""));
     }
     
     @Test
-    public void assertWriteStringVar() {
+    void assertWriteStringVar() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeStringVar("");
     }
     
     @Test
-    public void assertReadStringNul() {
+    void assertReadStringNul() {
         when(byteBuf.bytesBefore((byte) 0)).thenReturn(0);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringNul(), is(""));
         verify(byteBuf).skipBytes(1);
     }
     
     @Test
-    public void assertReadStringNulByBytes() {
+    void assertReadStringNulByBytes() {
         when(byteBuf.bytesBefore((byte) 0)).thenReturn(0);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringNulByBytes(), is(new byte[]{}));
         verify(byteBuf).skipBytes(1);
     }
     
     @Test
-    public void assertWriteStringNul() {
+    void assertWriteStringNul() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeStringNul("value");
         verify(byteBuf).writeBytes("value".getBytes());
         verify(byteBuf).writeByte(0);
     }
     
     @Test
-    public void assertReadStringEOF() {
+    void assertReadStringEOF() {
         when(byteBuf.readableBytes()).thenReturn(0);
         assertThat(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).readStringEOF(), is(""));
     }
     
     @Test
-    public void assertWriteStringEOF() {
+    void assertWriteStringEOF() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeStringEOF("value");
         verify(byteBuf).writeBytes("value".getBytes());
     }
     
     @Test
-    public void assertSkipReserved() {
+    void assertSkipReserved() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).skipReserved(10);
         verify(byteBuf).skipBytes(10);
     }
     
     @Test
-    public void assertWriteReserved() {
+    void assertWriteReserved() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).writeReserved(10);
         verify(byteBuf).writeZero(10);
     }
     
     @Test
-    public void assertClose() {
+    void assertClose() {
         new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8).close();
         verify(byteBuf).release();
     }

@@ -27,7 +27,7 @@ import com.arjuna.common.internal.util.propertyservice.BeanPopulator;
 import com.arjuna.common.util.propertyservice.PropertiesFactory;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
@@ -92,25 +92,25 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     }
     
     private void cleanPropertiesFactory() {
-        ReflectionUtil.setStaticFieldValue(PropertiesFactory.class, "delegatePropertiesFactory", null);
+        ReflectionUtils.setStaticFieldValue(PropertiesFactory.class, "delegatePropertiesFactory", null);
     }
     
     private void cleanBeanInstances() {
-        ReflectionUtil.<ConcurrentMap<String, Object>>getStaticFieldValue(BeanPopulator.class, "beanInstances").clear();
+        ReflectionUtils.<ConcurrentMap<String, Object>>getStaticFieldValue(BeanPopulator.class, "beanInstances").clear();
     }
     
     private void cleanAtomicActionRecovery() {
-        ReflectionUtil.setStaticFieldValue(AtomicActionRecoveryModule.class, "_recoveryStore", null);
+        ReflectionUtils.setStaticFieldValue(AtomicActionRecoveryModule.class, "_recoveryStore", null);
     }
     
     private void cleanXARecoveryModule() {
-        ReflectionUtil.setStaticFieldValue(XARecoveryModule.class, "registeredXARecoveryModule", null);
+        ReflectionUtils.setStaticFieldValue(XARecoveryModule.class, "registeredXARecoveryModule", null);
     }
     
     private void cleanStoreManager() {
-        ReflectionUtil.setStaticFieldValue(StoreManager.class, "actionStore", null);
-        ReflectionUtil.setStaticFieldValue(StoreManager.class, "stateStore", null);
-        ReflectionUtil.setStaticFieldValue(StoreManager.class, "communicationStore", null);
+        ReflectionUtils.setStaticFieldValue(StoreManager.class, "actionStore", null);
+        ReflectionUtils.setStaticFieldValue(StoreManager.class, "stateStore", null);
+        ReflectionUtils.setStaticFieldValue(StoreManager.class, "communicationStore", null);
     }
     
     @Override

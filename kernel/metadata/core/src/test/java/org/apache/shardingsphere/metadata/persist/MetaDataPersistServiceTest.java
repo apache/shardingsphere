@@ -59,7 +59,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public final class MetaDataPersistServiceTest {
+class MetaDataPersistServiceTest {
     
     private static final String SCHEMA_RULE_YAML = "yaml/persist/data-database-rule.yaml";
     
@@ -78,7 +78,7 @@ public final class MetaDataPersistServiceTest {
     private MetaDataPersistService metaDataPersistService;
     
     @BeforeEach
-    public void setUp() throws ReflectiveOperationException {
+    void setUp() throws ReflectiveOperationException {
         metaDataPersistService = new MetaDataPersistService(mock(PersistRepository.class));
         setField("dataSourceService", dataSourceService);
         setField("databaseRulePersistService", databaseRulePersistService);
@@ -91,7 +91,7 @@ public final class MetaDataPersistServiceTest {
     }
     
     @Test
-    public void assertConditionalPersistConfigurations() {
+    void assertConditionalPersistConfigurations() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         Collection<RuleConfiguration> ruleConfigs = Collections.emptyList();
         Collection<RuleConfiguration> globalRuleConfigs = Collections.emptyList();
@@ -110,7 +110,7 @@ public final class MetaDataPersistServiceTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGetEffectiveDataSources() {
+    void assertGetEffectiveDataSources() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SCHEMA_RULE_YAML), Collection.class));
         Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs));

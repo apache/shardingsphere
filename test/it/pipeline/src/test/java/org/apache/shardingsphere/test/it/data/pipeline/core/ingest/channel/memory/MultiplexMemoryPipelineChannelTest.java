@@ -41,12 +41,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MultiplexMemoryPipelineChannelTest {
+class MultiplexMemoryPipelineChannelTest {
     
     private static final int CHANNEL_NUMBER = 2;
     
     @Test
-    public void assertAckCallbackResultSortable() {
+    void assertAckCallbackResultSortable() {
         Record[] records = mockRecords();
         execute(ackRecords -> {
             AtomicInteger lastId = new AtomicInteger();
@@ -59,7 +59,7 @@ public final class MultiplexMemoryPipelineChannelTest {
     }
     
     @Test
-    public void assertBroadcastFinishedRecord() {
+    void assertBroadcastFinishedRecord() {
         execute(records -> assertThat(records.size(), is(1)), 2, new FinishedRecord(new PlaceholderPosition()));
     }
     

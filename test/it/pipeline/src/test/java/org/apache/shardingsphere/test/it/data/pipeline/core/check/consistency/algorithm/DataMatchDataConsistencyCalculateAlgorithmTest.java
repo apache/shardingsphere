@@ -40,14 +40,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DataMatchDataConsistencyCalculateAlgorithmTest {
+class DataMatchDataConsistencyCalculateAlgorithmTest {
     
     private static PipelineDataSourceWrapper source;
     
     private static PipelineDataSourceWrapper target;
     
     @BeforeAll
-    public static void setUp() throws Exception {
+    static void setUp() throws Exception {
         source = new PipelineDataSourceWrapper(createHikariDataSource("source_ds"), new H2DatabaseType());
         createTableAndInitData(source, "t_order_copy");
         target = new PipelineDataSourceWrapper(createHikariDataSource("target_ds"), new H2DatabaseType());
@@ -55,7 +55,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     }
     
     @AfterAll
-    public static void tearDown() throws Exception {
+    static void tearDown() throws Exception {
         source.close();
         target.close();
     }
@@ -87,7 +87,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     }
     
     @Test
-    public void assertCalculateFromBegin() throws ReflectiveOperationException {
+    void assertCalculateFromBegin() throws ReflectiveOperationException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
         Plugins.getMemberAccessor().set(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm, 5);
         DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 0);
@@ -104,7 +104,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     }
     
     @Test
-    public void assertCalculateFromMiddle() throws ReflectiveOperationException {
+    void assertCalculateFromMiddle() throws ReflectiveOperationException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
         Plugins.getMemberAccessor().set(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm, 5);
         DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 5);

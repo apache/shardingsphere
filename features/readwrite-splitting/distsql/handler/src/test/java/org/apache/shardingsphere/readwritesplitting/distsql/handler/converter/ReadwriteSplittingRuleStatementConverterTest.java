@@ -38,10 +38,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ReadwriteSplittingRuleStatementConverterTest {
+class ReadwriteSplittingRuleStatementConverterTest {
     
     @Test
-    public void assertEmptyRuleSegmentConvertResult() {
+    void assertEmptyRuleSegmentConvertResult() {
         ReadwriteSplittingRuleConfiguration actualEmptyRuleSegmentConvertResult = ReadwriteSplittingRuleStatementConverter
                 .convert(Collections.emptyList());
         assertTrue(actualEmptyRuleSegmentConvertResult.getDataSources().isEmpty());
@@ -49,7 +49,7 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
     }
     
     @Test
-    public void assertSingleRuleSegmentConvertResult() {
+    void assertSingleRuleSegmentConvertResult() {
         ReadwriteSplittingRuleSegment expectedSingleReadwriteSplittingRuleSegment = createReadwriteSplittingRuleSegment("static", "write_ds",
                 Arrays.asList("read_ds_01", "read_ds_02"), "static_load_balancer_type", new Properties());
         ReadwriteSplittingRuleConfiguration actualSingleRuleSegmentConvertResult = ReadwriteSplittingRuleStatementConverter
@@ -73,7 +73,7 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
     }
     
     @Test
-    public void assertMultipleReadwriteSplittingRuleSegments() {
+    void assertMultipleReadwriteSplittingRuleSegments() {
         List<ReadwriteSplittingRuleSegment> expectedMultipleReadwriteSplittingRuleSegments = Arrays.asList(
                 createReadwriteSplittingRuleSegment("static", "write_ds", Arrays.asList("read_ds_01", "read_ds_02"), "static_load_balancer_type", new Properties()),
                 createReadwriteSplittingRuleSegment("dynamic", "autoAwareResource", "dynamic_load_balancer", new Properties()));

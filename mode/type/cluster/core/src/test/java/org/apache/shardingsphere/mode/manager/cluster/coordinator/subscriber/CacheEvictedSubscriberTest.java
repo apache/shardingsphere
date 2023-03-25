@@ -26,10 +26,10 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public final class CacheEvictedSubscriberTest {
+class CacheEvictedSubscriberTest {
     
     @Test
-    public void assertOnGovernanceEvent() {
+    void assertOnGovernanceEvent() {
         EventBusContext eventBusContext = new EventBusContext();
         new CacheEvictedSubscriber(eventBusContext);
         OrderedServicesCache.cacheServices(getClass(), Collections.emptyList(), Collections.emptyMap());

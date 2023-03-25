@@ -50,10 +50,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowReadwriteSplittingRuleExecutorTest {
+class ShowReadwriteSplittingRuleExecutorTest {
     
     @Test
-    public void assertGetEmptyRule() {
+    void assertGetEmptyRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
@@ -62,7 +62,7 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
@@ -82,7 +82,7 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    public void assertGetRowDataWithSpecifiedRuleName() {
+    void assertGetRowDataWithSpecifiedRuleName() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
@@ -117,7 +117,7 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    public void assertGetRowDataWithoutLoadBalancer() {
+    void assertGetRowDataWithoutLoadBalancer() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfigurationWithoutLoadBalancer());
@@ -144,7 +144,7 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    public void assertGetRowDataWithAutoAwareDataSource() {
+    void assertGetRowDataWithAutoAwareDataSource() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfigurationWithAutoAwareDataSource());
@@ -164,7 +164,7 @@ public final class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(6));

@@ -38,10 +38,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class AlterTrafficRuleStatementUpdaterTest {
+class AlterTrafficRuleStatementUpdaterTest {
     
     @Test
-    public void assertExecuteWithNotExistRuleName() {
+    void assertExecuteWithNotExistRuleName() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_3", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
@@ -50,7 +50,7 @@ public final class AlterTrafficRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithInvalidAlgorithmType() {
+    void assertExecuteWithInvalidAlgorithmType() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
@@ -59,7 +59,7 @@ public final class AlterTrafficRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithLoadBalancerCannotBeNull() {
+    void assertExecuteWithLoadBalancerCannotBeNull() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
         AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
@@ -70,7 +70,7 @@ public final class AlterTrafficRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         TrafficRuleSegment trafficRuleSegment1 = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment(

@@ -32,10 +32,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class GeneratedKeyForUseDefaultInsertColumnsTokenGeneratorTest {
+class GeneratedKeyForUseDefaultInsertColumnsTokenGeneratorTest {
     
     @Test
-    public void assertGenerateSQLToken() {
+    void assertGenerateSQLToken() {
         InsertColumnsSegment insertColumnsSegment = mock(InsertColumnsSegment.class);
         final int testStopIndex = 4;
         when(insertColumnsSegment.getStopIndex()).thenReturn(testStopIndex);

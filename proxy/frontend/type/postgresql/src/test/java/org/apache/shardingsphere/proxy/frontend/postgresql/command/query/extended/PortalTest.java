@@ -87,7 +87,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, ProxyBackendHandlerFactory.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class PortalTest {
+class PortalTest {
     
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
@@ -96,7 +96,7 @@ public final class PortalTest {
     private BackendConnection backendConnection;
     
     @BeforeEach
-    public void setup() throws SQLException {
+    void setup() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = mockDatabase();
@@ -123,14 +123,14 @@ public final class PortalTest {
     }
     
     @Test
-    public void assertGetName() throws SQLException {
+    void assertGetName() throws SQLException {
         Portal portal = new Portal("", new PostgreSQLServerPreparedStatement("",
                 new CommonSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList()), Collections.emptyList(), Collections.emptyList(), backendConnection);
         assertThat(portal.getName(), is(""));
     }
     
     @Test
-    public void assertExecuteSelectStatementAndReturnAllRows() throws SQLException {
+    void assertExecuteSelectStatementAndReturnAllRows() throws SQLException {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
         QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
         when(responseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
@@ -155,7 +155,7 @@ public final class PortalTest {
     }
     
     @Test
-    public void assertExecuteSelectStatementAndPortalSuspended() throws SQLException {
+    void assertExecuteSelectStatementAndPortalSuspended() throws SQLException {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
         QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
         when(responseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
@@ -180,7 +180,7 @@ public final class PortalTest {
     }
     
     @Test
-    public void assertExecuteUpdate() throws SQLException {
+    void assertExecuteUpdate() throws SQLException {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
@@ -194,7 +194,7 @@ public final class PortalTest {
     }
     
     @Test
-    public void assertExecuteEmptyStatement() throws SQLException {
+    void assertExecuteEmptyStatement() throws SQLException {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new CommonSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList());
@@ -206,7 +206,7 @@ public final class PortalTest {
     }
     
     @Test
-    public void assertExecuteSetStatement() throws SQLException {
+    void assertExecuteSetStatement() throws SQLException {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
         String sql = "set client_encoding = utf8";
@@ -225,14 +225,14 @@ public final class PortalTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertDescribeBeforeBind() {
+    void assertDescribeBeforeBind() {
         PostgreSQLServerPreparedStatement preparedStatement = mock(PostgreSQLServerPreparedStatement.class);
         when(preparedStatement.getSqlStatementContext()).thenReturn(mock(SQLStatementContext.class));
         assertThrows(IllegalStateException.class, () -> new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection).describe());
     }
     
     @Test
-    public void assertClose() throws SQLException {
+    void assertClose() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new CommonSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList());
         new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection).close();
         verify(backendConnection).unmarkResourceInUse(proxyBackendHandler);

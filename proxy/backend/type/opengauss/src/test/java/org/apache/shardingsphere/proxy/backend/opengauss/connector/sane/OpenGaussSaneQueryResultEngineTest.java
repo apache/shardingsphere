@@ -24,15 +24,15 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OpenGaussSaneQueryResultEngineTest {
+class OpenGaussSaneQueryResultEngineTest {
     
     @Test
-    public void assertGetSaneQueryResult() {
+    void assertGetSaneQueryResult() {
         assertThat(new OpenGaussSaneQueryResultEngine().getSaneQueryResult(null, null), is(Optional.empty()));
     }
     
     @Test
-    public void assertGetType() {
+    void assertGetType() {
         assertThat(new OpenGaussSaneQueryResultEngine().getType(), is("openGauss"));
     }
 }

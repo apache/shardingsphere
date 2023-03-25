@@ -29,19 +29,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class PostgreSQLFloat8ArrayBinaryProtocolValueTest {
+class PostgreSQLFloat8ArrayBinaryProtocolValueTest {
     
     private PostgreSQLBinaryProtocolValue newInstance() {
         return new PostgreSQLFloat8ArrayBinaryProtocolValue();
     }
     
     @Test
-    public void assertGetColumnLength() {
+    void assertGetColumnLength() {
         assertThrows(UnsupportedSQLOperationException.class, () -> newInstance().getColumnLength("val"));
     }
     
     @Test
-    public void assertRead() {
+    void assertRead() {
         String parameterValue = "{\"11.1\",\"12.1\"}";
         int expectedLength = 4 + parameterValue.length();
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
@@ -55,7 +55,7 @@ public final class PostgreSQLFloat8ArrayBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         assertThrows(UnsupportedSQLOperationException.class, () -> newInstance().write(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), "val"));
     }
 }

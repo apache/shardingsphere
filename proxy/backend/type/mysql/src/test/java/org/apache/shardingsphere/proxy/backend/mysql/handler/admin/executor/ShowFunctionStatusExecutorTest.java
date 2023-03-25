@@ -46,12 +46,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ShowFunctionStatusExecutorTest {
+class ShowFunctionStatusExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ShowFunctionStatusExecutor executor = new ShowFunctionStatusExecutor(new MySQLShowFunctionStatusStatement());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

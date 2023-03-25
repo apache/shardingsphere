@@ -51,7 +51,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     private static final String CONFIG_FILE_WITH_QUERY_WITH_CIPHER = "config/config-encrypt-query-with-cipher.yaml";
     
     @BeforeAll
-    public static void initEncryptDataSource() throws SQLException, IOException {
+    static void initEncryptDataSource() throws SQLException, IOException {
         if (null != queryWithPlainDataSource && null != queryWithCipherDataSource) {
             return;
         }
@@ -70,7 +70,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     }
     
     @BeforeEach
-    public void initTable() {
+    void initTable() {
         try (Connection connection = queryWithPlainDataSource.getConnection()) {
             RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/encrypt_data.sql"))));
         } catch (final SQLException ex) {
@@ -87,7 +87,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     }
     
     @AfterAll
-    public static void close() throws Exception {
+    static void close() throws Exception {
         if (null == queryWithPlainDataSource) {
             return;
         }

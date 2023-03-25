@@ -25,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SeataIDContextTest {
+class SeataIDContextTest {
     
     @Test
-    public void assertIsEmpty() {
+    void assertIsEmpty() {
         SeataXIDContext.remove();
         assertTrue(SeataXIDContext.isEmpty());
         SeataXIDContext.set("xid");
@@ -37,7 +37,7 @@ public final class SeataIDContextTest {
     }
     
     @Test
-    public void assertGet() {
+    void assertGet() {
         SeataXIDContext.remove();
         assertNull(SeataXIDContext.get());
         SeataXIDContext.set("xid");
@@ -46,7 +46,7 @@ public final class SeataIDContextTest {
     }
     
     @Test
-    public void assertSet() {
+    void assertSet() {
         SeataXIDContext.remove();
         assertNull(SeataXIDContext.get());
         SeataXIDContext.set("xid");
@@ -57,7 +57,7 @@ public final class SeataIDContextTest {
     }
     
     @Test
-    public void assertRemove() {
+    void assertRemove() {
         SeataXIDContext.remove();
         assertNull(SeataXIDContext.get());
         SeataXIDContext.set("xid");

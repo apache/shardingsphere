@@ -63,7 +63,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ExternalMetaDataFactory.class, GlobalRulesBuilder.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MetaDataContextsFactoryTest {
+class MetaDataContextsFactoryTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataPersistService metaDataPersistService;
@@ -72,7 +72,7 @@ public final class MetaDataContextsFactoryTest {
     private DatabaseMetaDataPersistService databaseMetaDataPersistService;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         when(metaDataPersistService.getEffectiveDataSources(eq("foo_db"), anyMap())).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         DatabaseRulePersistService databaseRulePersistService = mockDatabaseRulePersistService();
         when(metaDataPersistService.getDatabaseRulePersistService()).thenReturn(databaseRulePersistService);
@@ -99,7 +99,7 @@ public final class MetaDataContextsFactoryTest {
     }
     
     @Test
-    public void assertCreateWithJDBCInstanceMetaData() throws SQLException {
+    void assertCreateWithJDBCInstanceMetaData() throws SQLException {
         InstanceContext instanceContext = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(instanceContext.getInstance().getMetaData()).thenReturn(mock(JDBCInstanceMetaData.class));
         try (MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), instanceContext)) {
@@ -111,7 +111,7 @@ public final class MetaDataContextsFactoryTest {
     }
     
     @Test
-    public void assertCreateWithProxyInstanceMetaData() throws SQLException {
+    void assertCreateWithProxyInstanceMetaData() throws SQLException {
         when(databaseMetaDataPersistService.loadAllDatabaseNames()).thenReturn(Collections.singletonList("foo_db"));
         when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         try (MetaDataContexts actual = MetaDataContextsFactory.create(metaDataPersistService, createContextManagerBuilderParameter(), mock(InstanceContext.class, RETURNS_DEEP_STUBS))) {

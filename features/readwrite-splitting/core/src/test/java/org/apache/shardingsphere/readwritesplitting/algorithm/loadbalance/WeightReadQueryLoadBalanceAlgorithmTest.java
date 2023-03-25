@@ -31,16 +31,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class WeightReadQueryLoadBalanceAlgorithmTest {
+class WeightReadQueryLoadBalanceAlgorithmTest {
     
     @Test
-    public void assertGetSingleReadDataSource() {
+    void assertGetSingleReadDataSource() {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5")));
         assertThat(loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1")), is("test_read_ds_1"));
     }
     
     @Test
-    public void assertGetMultipleReadDataSources() {
+    void assertGetMultipleReadDataSources() {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class,
                 "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5")));
         String writeDataSourceName = "test_write_ds";
@@ -57,7 +57,7 @@ public final class WeightReadQueryLoadBalanceAlgorithmTest {
     }
     
     @Test
-    public void assertGetDataSourceWhenReadDataSourceChanged() {
+    void assertGetDataSourceWhenReadDataSourceChanged() {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class,
                 "WEIGHT", PropertiesBuilder.build(new Property("test_read_ds_1", "5"), new Property("test_read_ds_2", "5")));
         loadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Arrays.asList("test_read_ds_1", "test_read_ds_1"));

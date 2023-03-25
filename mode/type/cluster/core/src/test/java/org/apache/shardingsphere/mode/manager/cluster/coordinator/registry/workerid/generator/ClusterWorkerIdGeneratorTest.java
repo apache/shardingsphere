@@ -37,10 +37,10 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ClusterWorkerIdGeneratorTest {
+class ClusterWorkerIdGeneratorTest {
     
     @Test
-    public void assertGenerateWithExistedWorkerId() {
+    void assertGenerateWithExistedWorkerId() {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         when(instanceMetaData.getId()).thenReturn("foo_id");
         RegistryCenter registryCenter = mock(RegistryCenter.class, RETURNS_DEEP_STUBS);
@@ -49,7 +49,7 @@ public final class ClusterWorkerIdGeneratorTest {
     }
     
     @Test
-    public void assertGenerateWithoutExistedWorkerId() {
+    void assertGenerateWithoutExistedWorkerId() {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         when(instanceMetaData.getId()).thenReturn("foo_id");
         RegistryCenter registryCenter = mock(RegistryCenter.class, RETURNS_DEEP_STUBS);

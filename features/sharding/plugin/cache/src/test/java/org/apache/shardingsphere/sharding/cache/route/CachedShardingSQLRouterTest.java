@@ -55,13 +55,13 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class CachedShardingSQLRouterTest {
+class CachedShardingSQLRouterTest {
     
     @Mock
     private ShardingCacheRule shardingCacheRule;
     
     @Test
-    public void assertCreateRouteContextWithSQLExceedMaxAllowedLength() {
+    void assertCreateRouteContextWithSQLExceedMaxAllowedLength() {
         when(shardingCacheRule.getConfiguration()).thenReturn(new ShardingCacheRuleConfiguration(1, null));
         QueryContext queryContext = new QueryContext(null, "select 1", Collections.emptyList());
         RouteContext actual = new CachedShardingSQLRouter().createRouteContext(queryContext, mock(ShardingSphereRuleMetaData.class), null, shardingCacheRule, null, null);
@@ -69,7 +69,7 @@ public final class CachedShardingSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextWithNotCacheableQuery() {
+    void assertCreateRouteContextWithNotCacheableQuery() {
         QueryContext queryContext = new QueryContext(null, "insert into t values (?), (?)", Collections.emptyList());
         when(shardingCacheRule.getConfiguration()).thenReturn(new ShardingCacheRuleConfiguration(100, null));
         when(shardingCacheRule.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
@@ -79,7 +79,7 @@ public final class CachedShardingSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextWithUnmatchedActualParameterSize() {
+    void assertCreateRouteContextWithUnmatchedActualParameterSize() {
         QueryContext queryContext = new QueryContext(null, "insert into t values (?, ?)", Collections.singletonList(0));
         when(shardingCacheRule.getConfiguration()).thenReturn(new ShardingCacheRuleConfiguration(100, null));
         when(shardingCacheRule.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
@@ -95,7 +95,7 @@ public final class CachedShardingSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextWithCacheableQueryButCacheMissed() {
+    void assertCreateRouteContextWithCacheableQueryButCacheMissed() {
         QueryContext queryContext = new QueryContext(null, "insert into t values (?, ?)", Arrays.asList(0, 1));
         when(shardingCacheRule.getConfiguration()).thenReturn(new ShardingCacheRuleConfiguration(100, null));
         when(shardingCacheRule.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
@@ -118,7 +118,7 @@ public final class CachedShardingSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextWithCacheHit() {
+    void assertCreateRouteContextWithCacheHit() {
         QueryContext queryContext = new QueryContext(null, "insert into t values (?, ?)", Arrays.asList(0, 1));
         when(shardingCacheRule.getConfiguration()).thenReturn(new ShardingCacheRuleConfiguration(100, null));
         when(shardingCacheRule.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
@@ -135,7 +135,7 @@ public final class CachedShardingSQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextWithQueryRoutedToMultiDataNodes() {
+    void assertCreateRouteContextWithQueryRoutedToMultiDataNodes() {
         QueryContext queryContext = new QueryContext(null, "select * from t", Collections.emptyList());
         when(shardingCacheRule.getConfiguration()).thenReturn(new ShardingCacheRuleConfiguration(100, null));
         when(shardingCacheRule.getRouteCacheableChecker()).thenReturn(mock(ShardingRouteCacheableChecker.class));
@@ -156,19 +156,19 @@ public final class CachedShardingSQLRouterTest {
     }
     
     @Test
-    public void assertDecorateRouteContext() {
+    void assertDecorateRouteContext() {
         RouteContext routeContext = mock(RouteContext.class);
         new CachedShardingSQLRouter().decorateRouteContext(routeContext, null, null, null, null, null);
         verifyNoInteractions(routeContext);
     }
     
     @Test
-    public void assertGetOrder() {
+    void assertGetOrder() {
         assertThat(new CachedShardingSQLRouter().getOrder(), is(-11));
     }
     
     @Test
-    public void assertGetTypeClass() {
+    void assertGetTypeClass() {
         assertThat(new CachedShardingSQLRouter().getTypeClass(), CoreMatchers.<Class<ShardingCacheRule>>is(ShardingCacheRule.class));
     }
 }

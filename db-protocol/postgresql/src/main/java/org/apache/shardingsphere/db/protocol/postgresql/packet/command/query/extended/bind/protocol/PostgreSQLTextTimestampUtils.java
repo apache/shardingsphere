@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 /**
- * Utils for PostgreSQL timestamp.
+ * Text timestamp utility class of PostgreSQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLTextTimestampUtils {

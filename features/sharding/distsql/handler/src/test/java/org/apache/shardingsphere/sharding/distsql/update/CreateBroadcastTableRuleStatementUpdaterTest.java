@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateBroadcastTableRuleStatementUpdaterTest {
+class CreateBroadcastTableRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -46,7 +46,7 @@ public final class CreateBroadcastTableRuleStatementUpdaterTest {
     private final CreateBroadcastTableRuleStatementUpdater updater = new CreateBroadcastTableRuleStatementUpdater();
     
     @Test
-    public void assertCreateBroadcastRule() {
+    void assertCreateBroadcastRule() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Arrays.asList("t_1", "t_2"));
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
@@ -58,14 +58,14 @@ public final class CreateBroadcastTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckDuplicatedBroadcastTable() {
+    void assertCheckDuplicatedBroadcastTable() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Arrays.asList("t_order", "t_address"));
         assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentRuleConfig));
     }
     
     @Test
-    public void assertCreateBroadcastRuleWhenBroadcastRuleExistsInCurrentRuleConfig() {
+    void assertCreateBroadcastRuleWhenBroadcastRuleExistsInCurrentRuleConfig() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Arrays.asList("t_1", "t_2"));
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
@@ -79,7 +79,7 @@ public final class CreateBroadcastTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateBroadcastRuleWithIfNotExist() {
+    void assertCreateBroadcastRuleWithIfNotExist() {
         Collection<String> tables = new LinkedList<>();
         tables.add("t_1");
         tables.add("t_2");

@@ -34,25 +34,25 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public final class SetDefaultSingleTableStorageUnitStatementUpdaterTest {
+class SetDefaultSingleTableStorageUnitStatementUpdaterTest {
     
     private final SetDefaultSingleTableStorageUnitStatementUpdater updater = new SetDefaultSingleTableStorageUnitStatementUpdater();
     
     @Test
-    public void assertCheckWithInvalidResource() {
+    void assertCheckWithInvalidResource() {
         assertThrows(MissingRequiredStorageUnitsException.class,
                 () -> updater.checkSQLStatement(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), new SetDefaultSingleTableStorageUnitStatement("bar_ds"), mock(SingleRuleConfiguration.class)));
     }
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         SingleRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(mock(SingleRuleConfiguration.class), new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
         assertTrue(toBeCreatedRuleConfig.getDefaultDataSource().isPresent());
         assertThat(toBeCreatedRuleConfig.getDefaultDataSource().get(), is("foo_ds"));
     }
     
     @Test
-    public void assertUpdate() {
+    void assertUpdate() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
         SingleRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, new SetDefaultSingleTableStorageUnitStatement("foo_ds"));
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
@@ -61,7 +61,7 @@ public final class SetDefaultSingleTableStorageUnitStatementUpdaterTest {
     }
     
     @Test
-    public void assertRandom() {
+    void assertRandom() {
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration();
         SingleRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentConfig, new SetDefaultSingleTableStorageUnitStatement(null));
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);

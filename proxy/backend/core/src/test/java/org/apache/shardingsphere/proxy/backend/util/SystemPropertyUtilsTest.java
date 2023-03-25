@@ -22,15 +22,15 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class SystemPropertyUtilsTest {
+class SystemPropertyUtilsTest {
     
     @Test
-    public void assertGetDefaultValue() {
+    void assertGetDefaultValue() {
         assertThat(SystemPropertyUtils.getSystemProperty("key0", "value0"), is("value0"));
     }
     
     @Test
-    public void assertGetSystemPropertyAfterSet() {
+    void assertGetSystemPropertyAfterSet() {
         SystemPropertyUtils.setSystemProperty("key1", "value1");
         assertThat(SystemPropertyUtils.getSystemProperty("key1", "value0"), is("value1"));
     }

@@ -27,18 +27,18 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
+class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
     
     private MilitaryIdentityNumberRandomReplaceAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new MilitaryIdentityNumberRandomReplaceAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("type-codes", "军,人,士,文,职")));
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         assertThat(maskAlgorithm.mask("军字第1234567号"), not("军字第1234567号"));
         assertThat(maskAlgorithm.mask(""), is(""));
         assertNull(maskAlgorithm.mask(null));

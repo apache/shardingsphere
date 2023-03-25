@@ -40,12 +40,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptMetaDataReviseEngineTest {
+class EncryptMetaDataReviseEngineTest {
     
     private static final String TABLE_NAME = "t_encrypt";
     
     @Test
-    public void assertRevise() {
+    void assertRevise() {
         Map<String, SchemaMetaData> schemaMetaData = Collections.singletonMap(
                 DefaultDatabase.LOGIC_NAME, new SchemaMetaData(DefaultDatabase.LOGIC_NAME, Collections.singleton(createTableMetaData())));
         TableMetaData actual = new MetaDataReviseEngine(Collections.singleton(mockEncryptRule())).revise(

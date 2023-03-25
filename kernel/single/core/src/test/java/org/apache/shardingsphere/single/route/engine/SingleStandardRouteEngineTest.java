@@ -54,10 +54,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleStandardRouteEngineTest {
+class SingleStandardRouteEngineTest {
     
     @Test
-    public void assertRouteInSameDataSource() throws SQLException {
+    void assertRouteInSameDataSource() throws SQLException {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), null);
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         singleRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("t_order")));
@@ -88,7 +88,7 @@ public final class SingleStandardRouteEngineTest {
     }
     
     @Test
-    public void assertRouteWithoutSingleRule() throws SQLException {
+    void assertRouteWithoutSingleRule() throws SQLException {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false));
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
@@ -103,7 +103,7 @@ public final class SingleStandardRouteEngineTest {
     }
     
     @Test
-    public void assertRouteWithDefaultSingleRule() throws SQLException {
+    void assertRouteWithDefaultSingleRule() throws SQLException {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false));
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration("ds_0"), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
@@ -128,13 +128,13 @@ public final class SingleStandardRouteEngineTest {
     }
     
     @Test
-    public void assertRouteDuplicateSingleTable() {
+    void assertRouteDuplicateSingleTable() {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(Collections.singletonList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(false));
         assertThrows(TableExistsException.class, () -> engine.route(new RouteContext(), mockSingleRule()));
     }
     
     @Test
-    public void assertRouteIfNotExistsDuplicateSingleTable() {
+    void assertRouteIfNotExistsDuplicateSingleTable() {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(Collections.singletonList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(true));
         engine.route(new RouteContext(), mockSingleRule());
     }

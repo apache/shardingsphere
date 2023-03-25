@@ -45,10 +45,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RouteSQLRewriteEngineTest {
+class RouteSQLRewriteEngineTest {
     
     @Test
-    public void assertRewriteWithStandardParameterBuilder() {
+    void assertRewriteWithStandardParameterBuilder() {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(CommonSQLStatementContext.class), "SELECT ?", Collections.singletonList(1), mock(ConnectionContext.class));
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
@@ -63,7 +63,7 @@ public final class RouteSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteWithStandardParameterBuilderWhenNeedAggregateRewrite() {
+    void assertRewriteWithStandardParameterBuilderWhenNeedAggregateRewrite() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getOrderByContext().getItems()).thenReturn(Collections.emptyList());
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(false);
@@ -83,7 +83,7 @@ public final class RouteSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteWithGroupedParameterBuilderForBroadcast() {
+    void assertRewriteWithGroupedParameterBuilderForBroadcast() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
@@ -101,7 +101,7 @@ public final class RouteSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteWithGroupedParameterBuilderForRouteWithSameDataNode() {
+    void assertRewriteWithGroupedParameterBuilderForRouteWithSameDataNode() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
@@ -121,7 +121,7 @@ public final class RouteSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteWithGroupedParameterBuilderForRouteWithEmptyDataNode() {
+    void assertRewriteWithGroupedParameterBuilderForRouteWithEmptyDataNode() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
@@ -140,7 +140,7 @@ public final class RouteSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteWithGroupedParameterBuilderForRouteWithNotSameDataNode() {
+    void assertRewriteWithGroupedParameterBuilderForRouteWithNotSameDataNode() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getInsertSelectContext()).thenReturn(null);

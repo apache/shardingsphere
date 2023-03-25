@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.FilterableScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
-import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtil;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtils;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public final class FilterableTable extends AbstractTable implements ProjectableF
     
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return SQLFederationDataTypeUtil.createRelDataType(table, protocolType, typeFactory);
+        return SQLFederationDataTypeUtils.createRelDataType(table, protocolType, typeFactory);
     }
     
     @Override

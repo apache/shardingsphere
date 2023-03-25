@@ -25,10 +25,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class SQL92DataSourceMetaDataTest {
+class SQL92DataSourceMetaDataTest {
     
     @Test
-    public void assertNewConstructorSuccess() {
+    void assertNewConstructorSuccess() {
         SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData("jdbc:sql92_db:ds_0");
         assertThat(actual.getHostname(), is(""));
         assertThat(actual.getPort(), is(-1));
@@ -37,7 +37,7 @@ public final class SQL92DataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorFailure() {
+    void assertNewConstructorFailure() {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new SQL92DataSourceMetaData("xxx:xxxx:xxxxxxxx"));
     }
 }

@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class PostgreSQLPositionInitializerTest {
+class PostgreSQLPositionInitializerTest {
     
     private static final String POSTGRESQL_96_LSN = "0/14EFDB8";
     
@@ -60,7 +60,7 @@ public final class PostgreSQLPositionInitializerTest {
     private DatabaseMetaData databaseMetaData;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getCatalog()).thenReturn("sharding_db");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
@@ -73,7 +73,7 @@ public final class PostgreSQLPositionInitializerTest {
     }
     
     @Test
-    public void assertGetCurrentPositionOnPostgreSQL96() throws SQLException {
+    void assertGetCurrentPositionOnPostgreSQL96() throws SQLException {
         mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
@@ -82,7 +82,7 @@ public final class PostgreSQLPositionInitializerTest {
     }
     
     @Test
-    public void assertGetCurrentPositionOnPostgreSQL10() throws SQLException {
+    void assertGetCurrentPositionOnPostgreSQL10() throws SQLException {
         mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(10);
         WALPosition actual = new PostgreSQLPositionInitializer().init(dataSource, "");
@@ -90,7 +90,7 @@ public final class PostgreSQLPositionInitializerTest {
     }
     
     @Test
-    public void assertGetCurrentPositionThrowException() throws SQLException {
+    void assertGetCurrentPositionThrowException() throws SQLException {
         mockSlotExistsOrNot(false);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);
@@ -127,7 +127,7 @@ public final class PostgreSQLPositionInitializerTest {
     }
     
     @Test
-    public void assertDestroyWhenSlotExists() throws SQLException {
+    void assertDestroyWhenSlotExists() throws SQLException {
         mockSlotExistsOrNot(true);
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(connection.prepareStatement("SELECT pg_drop_replication_slot(?)")).thenReturn(preparedStatement);

@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ShardingSpherePreparedStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
+class ShardingSpherePreparedStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
     
     private static final String INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "INSERT INTO t_user (name) VALUES (?),(?),(?),(?)";
     
@@ -73,7 +73,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     private static final String UPDATE_WITH_ERROR_COLUMN = "UPDATE t_order SET error_column=?";
     
     @Test
-    public void assertExecuteBatchWithoutAddBatch() throws SQLException {
+    void assertExecuteBatchWithoutAddBatch() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL)) {
@@ -83,7 +83,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertAddBatch() throws SQLException {
+    void assertAddBatch() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL)) {
@@ -115,7 +115,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
+    void assertMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
@@ -157,7 +157,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertAddBatchMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
+    void assertAddBatchMultiValuesWithGenerateShardingKeyColumn() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
@@ -231,7 +231,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertAddBatchWithoutGenerateKeyColumn() throws SQLException {
+    void assertAddBatchWithoutGenerateKeyColumn() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITHOUT_GENERATE_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
@@ -286,7 +286,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertAddBatchWithGenerateKeyColumn() throws SQLException {
+    void assertAddBatchWithGenerateKeyColumn() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
@@ -345,7 +345,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertGeneratedKeysForBatchInsert() throws SQLException {
+    void assertGeneratedKeysForBatchInsert() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL_WITH_MULTI_VALUES, Statement.RETURN_GENERATED_KEYS)) {
@@ -366,7 +366,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
+    void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SINGLE_TABLE_SQL, Statement.RETURN_GENERATED_KEYS)) {
@@ -379,7 +379,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertAddOnDuplicateKey() throws SQLException {
+    void assertAddOnDuplicateKey() throws SQLException {
         int itemId = 1;
         int userId1 = 101;
         int userId2 = 102;
@@ -450,7 +450,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertUpdateBatch() throws SQLException {
+    void assertUpdateBatch() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_BATCH_SQL)) {
@@ -472,7 +472,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertExecuteGetResultSet() throws SQLException {
+    void assertExecuteGetResultSet() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(UPDATE_SQL)) {
             preparedStatement.setString(1, "OK");
             preparedStatement.setInt(2, 11);
@@ -483,7 +483,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertExecuteUpdateGetResultSet() throws SQLException {
+    void assertExecuteUpdateGetResultSet() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(UPDATE_SQL)) {
             preparedStatement.setString(1, "OK");
             preparedStatement.setInt(2, 11);
@@ -494,7 +494,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertExecuteUpdateAutoTableGetResultSet() throws SQLException {
+    void assertExecuteUpdateAutoTableGetResultSet() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(UPDATE_AUTO_SQL)) {
             preparedStatement.setString(1, "OK");
             preparedStatement.setInt(2, 10);
@@ -504,7 +504,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertExecuteSelectColumnGetResultSet() throws SQLException {
+    void assertExecuteSelectColumnGetResultSet() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SQL_COLUMN_WITH_PARAMETER_MARKER)) {
             preparedStatement.setString(1, "item_id");
             preparedStatement.executeQuery();
@@ -512,7 +512,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertExecuteSelectAutoTableGetResultSet() throws SQLException {
+    void assertExecuteSelectAutoTableGetResultSet() throws SQLException {
         Collection<Integer> result = Arrays.asList(1001, 1100, 1101);
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_AUTO_SQL)) {
             preparedStatement.setInt(1, 1001);
@@ -528,7 +528,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertExecuteSelectWithOrderByAndExecuteGetResultSet() throws SQLException {
+    void assertExecuteSelectWithOrderByAndExecuteGetResultSet() throws SQLException {
         Collection<Integer> result = Arrays.asList(1000, 1001, 1100, 1101);
         int count = 0;
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_WITH_ORDER_BY)) {
@@ -543,7 +543,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertClearBatch() throws SQLException {
+    void assertClearBatch() throws SQLException {
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL)) {
@@ -559,7 +559,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertExecuteBatchRepeatedly() throws SQLException {
+    void assertExecuteBatchRepeatedly() throws SQLException {
         try (Connection connection = getShardingSphereDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(INSERT_WITH_GENERATE_KEY_SQL)) {
             preparedStatement.setInt(1, 3101);
             preparedStatement.setInt(2, 11);
@@ -577,7 +577,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertInitPreparedStatementExecutorWithReplayMethod() throws SQLException {
+    void assertInitPreparedStatementExecutorWithReplayMethod() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER)) {
             preparedStatement.setQueryTimeout(1);
             preparedStatement.setInt(1, 11);
@@ -588,24 +588,24 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
     }
     
     @Test
-    public void assertQueryWithNull() {
+    void assertQueryWithNull() {
         assertThrows(SQLException.class, () -> getShardingSphereDataSource().getConnection().prepareStatement(null));
     }
     
     @Test
-    public void assertQueryWithEmptyString() {
+    void assertQueryWithEmptyString() {
         assertThrows(SQLException.class, () -> getShardingSphereDataSource().getConnection().prepareStatement(""));
     }
     
     @Test
-    public void assertGetParameterMetaData() throws SQLException {
+    void assertGetParameterMetaData() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SQL_WITH_PARAMETER_MARKER)) {
             assertThat(preparedStatement.getParameterMetaData().getParameterCount(), is(2));
         }
     }
     
     @Test
-    public void assertColumnNotFoundException() throws SQLException {
+    void assertColumnNotFoundException() throws SQLException {
         try (PreparedStatement preparedStatement = getShardingSphereDataSource().getConnection().prepareStatement(UPDATE_WITH_ERROR_COLUMN)) {
             preparedStatement.setString(1, "OK");
             assertThrows(SQLException.class, preparedStatement::executeUpdate);

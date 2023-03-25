@@ -38,40 +38,40 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class BindingTableRuleTest {
+class BindingTableRuleTest {
     
     @Test
-    public void assertHasLogicTable() {
+    void assertHasLogicTable() {
         assertTrue(createBindingTableRule().hasLogicTable("Logic_Table"));
     }
     
     @Test
-    public void assertNotHasLogicTable() {
+    void assertNotHasLogicTable() {
         assertFalse(createBindingTableRule().hasLogicTable("New_Table"));
     }
     
     @Test
-    public void assertGetBindingActualTablesSuccess() {
+    void assertGetBindingActualTablesSuccess() {
         assertThat(createBindingTableRule().getBindingActualTable("ds1", "Sub_Logic_Table", "LOGIC_TABLE", "table_1"), is("SUB_TABLE_1"));
     }
     
     @Test
-    public void assertGetBindingActualTablesFailureWhenNotFound() {
+    void assertGetBindingActualTablesFailureWhenNotFound() {
         assertThrows(ActualTableNotFoundException.class, () -> createBindingTableRule().getBindingActualTable("no_ds", "Sub_Logic_Table", "LOGIC_TABLE", "table_1"));
     }
     
     @Test
-    public void assertGetBindingActualTablesFailureWhenLogicTableNotFound() {
+    void assertGetBindingActualTablesFailureWhenLogicTableNotFound() {
         assertThrows(BindingTableNotFoundException.class, () -> createBindingTableRule().getBindingActualTable("ds0", "No_Logic_Table", "LOGIC_TABLE", "table_1"));
     }
     
     @Test
-    public void assertGetAllLogicTables() {
+    void assertGetAllLogicTables() {
         assertThat(createBindingTableRule().getAllLogicTables(), is(new LinkedHashSet<>(Arrays.asList("logic_table", "sub_logic_table"))));
     }
     
     @Test
-    public void assertGetTableRules() {
+    void assertGetTableRules() {
         List<TableRule> tableRules = new ArrayList<>(createBindingTableRule().getTableRules().values());
         assertThat(tableRules.size(), is(2));
         assertThat(tableRules.get(0).getLogicTable(), is(createTableRule().getLogicTable()));

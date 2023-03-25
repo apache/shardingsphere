@@ -32,12 +32,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class SQLParserExecutorTest {
+class SQLParserExecutorTest {
     
     private static final String SQL = "SELECT COUNT(*) FROM user";
     
     @Test
-    public void assertParse() throws ReflectiveOperationException {
+    void assertParse() throws ReflectiveOperationException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
         when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseASTNode.class));
         CacheOption cacheOption = new CacheOption(128, 1024L);

@@ -28,10 +28,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class EncryptPredicateColumnTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class EncryptPredicateColumnTokenGeneratorTest extends EncryptGeneratorBaseTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         EncryptPredicateColumnTokenGenerator tokenGenerator = new EncryptPredicateColumnTokenGenerator();
         tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         tokenGenerator.setEncryptRule(createEncryptRule());
@@ -40,7 +40,7 @@ public final class EncryptPredicateColumnTokenGeneratorTest extends EncryptGener
     }
     
     @Test
-    public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
+    void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         EncryptPredicateColumnTokenGenerator tokenGenerator = new EncryptPredicateColumnTokenGenerator();
         tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         tokenGenerator.setEncryptRule(createEncryptRule());

@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class AtomikosTransactionManagerProviderTest {
+class AtomikosTransactionManagerProviderTest {
     
     private final AtomikosTransactionManagerProvider transactionManagerProvider = new AtomikosTransactionManagerProvider();
     
@@ -57,25 +57,25 @@ public final class AtomikosTransactionManagerProviderTest {
     private XADataSource xaDataSource;
     
     @BeforeEach
-    public void setUp() throws ReflectiveOperationException {
+    void setUp() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(AtomikosTransactionManagerProvider.class.getDeclaredField("transactionManager"), transactionManagerProvider, userTransactionManager);
         Plugins.getMemberAccessor().set(AtomikosTransactionManagerProvider.class.getDeclaredField("userTransactionService"), transactionManagerProvider, userTransactionService);
     }
     
     @Test
-    public void assertRegisterRecoveryResource() {
+    void assertRegisterRecoveryResource() {
         transactionManagerProvider.registerRecoveryResource("ds1", xaDataSource);
         verify(userTransactionService).registerResource(any(AtomikosXARecoverableResource.class));
     }
     
     @Test
-    public void assertRemoveRecoveryResource() {
+    void assertRemoveRecoveryResource() {
         transactionManagerProvider.removeRecoveryResource("ds1", xaDataSource);
         verify(userTransactionService).removeResource(any(AtomikosXARecoverableResource.class));
     }
     
     @Test
-    public void assertEnListResource() throws SystemException, RollbackException {
+    void assertEnListResource() throws SystemException, RollbackException {
         SingleXAResource singleXAResource = mock(SingleXAResource.class);
         Transaction transaction = mock(Transaction.class);
         when(userTransactionManager.getTransaction()).thenReturn(transaction);
@@ -84,18 +84,18 @@ public final class AtomikosTransactionManagerProviderTest {
     }
     
     @Test
-    public void assertTransactionManager() {
+    void assertTransactionManager() {
         assertThat(transactionManagerProvider.getTransactionManager(), is(userTransactionManager));
     }
     
     @Test
-    public void assertClose() {
+    void assertClose() {
         transactionManagerProvider.close();
         verify(userTransactionService).shutdown(true);
     }
     
     @Test
-    public void assertInit() throws Exception {
+    void assertInit() throws Exception {
         transactionManagerProvider.init();
         assertNull(transactionManagerProvider.getTransactionManager().getTransaction());
         assertFalse(transactionManagerProvider.getTransactionManager().getForceShutdown());

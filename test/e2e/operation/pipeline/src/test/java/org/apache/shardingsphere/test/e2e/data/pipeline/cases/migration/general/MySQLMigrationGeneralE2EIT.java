@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @PipelineE2ESettings(database = @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/general/mysql.xml"))
 @Slf4j
-public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
+class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
     private static final String SOURCE_TABLE_NAME = "t_order_copy";
     
@@ -56,7 +56,7 @@ public final class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    public void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
+    void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             addMigrationProcessConfig(containerComposer);
             containerComposer.createSourceOrderTable(SOURCE_TABLE_NAME);
