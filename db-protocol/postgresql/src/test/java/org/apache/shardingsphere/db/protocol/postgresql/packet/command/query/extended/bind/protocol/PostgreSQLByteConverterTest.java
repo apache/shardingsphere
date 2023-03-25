@@ -33,7 +33,7 @@ class PostgreSQLByteConverterTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertNumeric(final BigDecimal input, final byte[] expected) {
+    void assertNumeric(final BigDecimal input, final byte[] expected) {
         assertThat(PostgreSQLByteConverter.numeric(input), is(expected));
     }
     

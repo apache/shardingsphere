@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 
 import java.sql.Types;
@@ -64,7 +64,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private boolean checkLikePattern(final String databaseName) {
         if (showDatabasesStatement.getFilter().isPresent()) {
-            Optional<String> pattern = showDatabasesStatement.getFilter().get().getLike().map(optional -> SQLUtil.convertLikePatternToRegex(optional.getPattern()));
+            Optional<String> pattern = showDatabasesStatement.getFilter().get().getLike().map(optional -> SQLUtils.convertLikePatternToRegex(optional.getPattern()));
             return !pattern.isPresent() || databaseName.matches(pattern.get());
         }
         return true;

@@ -74,7 +74,7 @@ class ShardingRouteCacheableCheckerTest {
     
     @ParameterizedTest(name = "probably cacheable: {2}, SQL: {0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertCheckCacheable(final String sql, final List<Object> parameters, final boolean expectedProbablyCacheable, final List<Integer> expectedShardingConditionParameterMarkerIndexes) {
+    void assertCheckCacheable(final String sql, final List<Object> parameters, final boolean expectedProbablyCacheable, final List<Integer> expectedShardingConditionParameterMarkerIndexes) {
         ShardingRule shardingRule = createShardingRule();
         ShardingCacheRule shardingCacheRule = createShardingCacheRule(shardingRule);
         TimeServiceRule timeServiceRule = createTimeServiceRule();

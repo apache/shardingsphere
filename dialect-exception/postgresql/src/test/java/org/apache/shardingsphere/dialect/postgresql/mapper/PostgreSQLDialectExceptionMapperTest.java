@@ -40,7 +40,7 @@ class PostgreSQLDialectExceptionMapperTest {
     
     @ParameterizedTest(name = "{1} -> {0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void convert(final Class<SQLDialectException> sqlDialectExceptionClazz, final String sqlState) {
+    void convert(final Class<SQLDialectException> sqlDialectExceptionClazz, final String sqlState) {
         assertThat(new PostgreSQLDialectExceptionMapper().convert(mock(sqlDialectExceptionClazz)).getSQLState(), is(sqlState));
     }
     

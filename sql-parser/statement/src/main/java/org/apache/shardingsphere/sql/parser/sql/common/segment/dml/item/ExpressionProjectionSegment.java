@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Optional;
 
@@ -47,14 +47,14 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     public ExpressionProjectionSegment(final int startIndex, final int stopIndex, final String text) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
-        this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
+        this.text = SQLUtils.getExpressionWithoutOutsideParentheses(text);
         this.expr = null;
     }
     
     public ExpressionProjectionSegment(final int startIndex, final int stopIndex, final String text, final ExpressionSegment expr) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
-        this.text = SQLUtil.getExpressionWithoutOutsideParentheses(text);
+        this.text = SQLUtils.getExpressionWithoutOutsideParentheses(text);
         this.expr = expr;
     }
     

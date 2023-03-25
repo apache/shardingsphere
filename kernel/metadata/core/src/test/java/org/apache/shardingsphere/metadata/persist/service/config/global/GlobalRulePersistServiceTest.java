@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class GlobalRulePersistServiceTest {
+class GlobalRulePersistServiceTest {
     
     @Mock
     private PersistRepository repository;

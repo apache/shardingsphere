@@ -41,7 +41,7 @@ class ColumnExtractorParameterizedTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertExtract(final ExpressionSegment expression) {
+    void assertExtract(final ExpressionSegment expression) {
         Collection<ColumnSegment> columnSegments = ColumnExtractor.extract(expression);
         assertThat(columnSegments.size(), is(1));
         assertThat(columnSegments.iterator().next(), is(COLUMN_SEGMENT));

@@ -153,7 +153,7 @@ class OrderByContextEngineTest {
         assertCreateOrderInDistinctByWithoutOrderBy(new SQLServerSelectStatement());
     }
     
-    public void assertCreateOrderInDistinctByWithoutOrderBy(final SelectStatement selectStatement) {
+    void assertCreateOrderInDistinctByWithoutOrderBy(final SelectStatement selectStatement) {
         ColumnProjectionSegment columnProjectionSegment1 = new ColumnProjectionSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")));
         ColumnProjectionSegment columnProjectionSegment2 = new ColumnProjectionSegment(new ColumnSegment(1, 2, new IdentifierValue("column2")));
         List<ProjectionSegment> list = Arrays.asList(columnProjectionSegment1, columnProjectionSegment2);

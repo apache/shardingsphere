@@ -40,7 +40,7 @@ class MySQLXAVisitorTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertXA(final String caseId, final String inputSQL, final String operation, final String xid) {
+    void assertXA(final String caseId, final String inputSQL, final String operation, final String xid) {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(inputSQL.toCharArray()));
         MySQLLexer lexer = new MySQLLexer(CodePointCharStream.fromBuffer(buffer));
         MySQLStatementParser parser = new MySQLStatementParser(new CommonTokenStream(lexer));

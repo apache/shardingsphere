@@ -33,7 +33,7 @@ class PostgreSQLTextTimestampUtilsTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertGetLocalDateTimeNoExceptionOccurs(final String input, final Timestamp expected) {
+    void assertGetLocalDateTimeNoExceptionOccurs(final String input, final Timestamp expected) {
         assertThat(PostgreSQLTextTimestampUtils.parse(input), is(expected));
     }
     

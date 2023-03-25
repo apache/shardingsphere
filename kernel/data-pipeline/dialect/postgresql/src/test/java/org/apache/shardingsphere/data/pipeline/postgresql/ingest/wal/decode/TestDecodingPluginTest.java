@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
@@ -100,8 +99,7 @@ class TestDecodingPluginTest {
     }
     
     @Test
-    @SneakyThrows(SQLException.class)
-    public void assertDecodeTime() {
+    void assertDecodeTime() throws SQLException {
         TimestampUtils timestampUtils = mock(TimestampUtils.class);
         when(timestampUtils.toTime(null, "1 2 3'")).thenThrow(new SQLException(""));
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[time without time zone]:'1 2 3'''".getBytes());

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -335,8 +334,7 @@ class IntervalShardingAlgorithmTest {
     }
     
     @Test
-    @SneakyThrows(ParseException.class)
-    public void assertTimestampInJDBCTypeWithZeroMillisecond() {
+    void assertTimestampInJDBCTypeWithZeroMillisecond() throws ParseException {
         Collection<String> actualAsLocalDateTime = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(LocalDateTime.of(2021, 6, 15, 2, 25, 27), LocalDateTime.of(2021, 7, 31, 2, 25, 27))));

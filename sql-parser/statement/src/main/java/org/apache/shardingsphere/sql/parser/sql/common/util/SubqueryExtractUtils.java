@@ -45,7 +45,7 @@ import java.util.List;
  * Subquery extract utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SubqueryExtractUtil {
+public final class SubqueryExtractUtils {
     
     /**
      * Get subquery segment from SelectStatement.

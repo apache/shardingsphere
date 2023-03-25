@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
@@ -44,37 +43,37 @@ class ConvertYamlConfigurationExecutorTest {
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     @Test
-    void assertExecuteWithSharding() throws SQLException {
+    void assertExecuteWithSharding() {
         assertExecute("/conf/convert/config-sharding.yaml", "/expected/convert-sharding.yaml");
     }
     
     @Test
-    void assertExecuteWithShardingAutoTables() throws SQLException {
+    void assertExecuteWithShardingAutoTables() {
         assertExecute("/conf/convert/config-sharding-auto-tables.yaml", "/expected/convert-sharding-auto-tables.yaml");
     }
     
     @Test
-    void assertExecuteWithReadWriteSplitting() throws SQLException {
+    void assertExecuteWithReadWriteSplitting() {
         assertExecute("/conf/convert/config-readwrite-splitting.yaml", "/expected/convert-readwrite-splitting.yaml");
     }
     
     @Test
-    void assertExecuteWithDatabaseDiscovery() throws SQLException {
+    void assertExecuteWithDatabaseDiscovery() {
         assertExecute("/conf/convert/config-database-discovery.yaml", "/expected/convert-database-discovery.yaml");
     }
     
     @Test
-    void assertExecuteWithEncrypt() throws SQLException {
+    void assertExecuteWithEncrypt() {
         assertExecute("/conf/convert/config-encrypt.yaml", "/expected/convert-encrypt.yaml");
     }
     
     @Test
-    void assertExecuteWithShadow() throws SQLException {
+    void assertExecuteWithShadow() {
         assertExecute("/conf/convert/config-shadow.yaml", "/expected/convert-shadow.yaml");
     }
     
     @Test
-    void assertExecuteWithMix() throws SQLException {
+    void assertExecuteWithMix() {
         assertExecute("/conf/convert/config-mix.yaml", "/expected/convert-mix.yaml");
     }
     
@@ -87,7 +86,7 @@ class ConvertYamlConfigurationExecutorTest {
         assertThat(iterator.next(), is("dist_sql"));
     }
     
-    public void assertExecute(final String configFilePath, final String expectedFilePath) throws SQLException {
+    private void assertExecute(final String configFilePath, final String expectedFilePath) {
         ConvertYamlConfigurationExecutor executor = new ConvertYamlConfigurationExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(
                 new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(configFilePath)).getPath()));

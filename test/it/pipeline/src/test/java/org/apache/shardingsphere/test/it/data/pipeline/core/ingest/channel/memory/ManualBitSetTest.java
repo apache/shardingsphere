@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.ingest.channel.memory;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.ManualBitSet;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -63,8 +62,7 @@ class ManualBitSetTest {
     
     @Test
     @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertClear() {
+    void assertClear() throws ReflectiveOperationException {
         ManualBitSet bitSet = new ManualBitSet();
         IntStream.range(0, 100).forEach(bitSet::set);
         List<BitSet> bitSets = (List<BitSet>) Plugins.getMemberAccessor().get(ManualBitSet.class.getDeclaredField("bitSets"), bitSet);

@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class MySQLJDBCRepositoryProviderTest {
+class MySQLJDBCRepositoryProviderTest {
     
     @Mock
     private Connection connection;

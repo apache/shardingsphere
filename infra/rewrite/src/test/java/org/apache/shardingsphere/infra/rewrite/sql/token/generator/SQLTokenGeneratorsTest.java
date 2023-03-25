@@ -68,7 +68,7 @@ class SQLTokenGeneratorsTest {
     
     @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void assertGenerateSQLTokensWithOptionalSQLTokenGenerator() {
+    void assertGenerateSQLTokensWithOptionalSQLTokenGenerator() {
         OptionalSQLTokenGenerator<SQLStatementContext> optionalSQLTokenGenerator = mock(OptionalSQLTokenGenerator.class);
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(Collections.singleton(optionalSQLTokenGenerator));
@@ -82,7 +82,7 @@ class SQLTokenGeneratorsTest {
     
     @Test
     @SuppressWarnings("unchecked")
-    public void assertGenerateSQLTokensWithCollectionSQLTokenGenerator() {
+    void assertGenerateSQLTokensWithCollectionSQLTokenGenerator() {
         CollectionSQLTokenGenerator<SQLStatementContext<?>> collectionSQLTokenGenerator = mock(CollectionSQLTokenGenerator.class);
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         sqlTokenGenerators.addAll(Collections.singleton(collectionSQLTokenGenerator));

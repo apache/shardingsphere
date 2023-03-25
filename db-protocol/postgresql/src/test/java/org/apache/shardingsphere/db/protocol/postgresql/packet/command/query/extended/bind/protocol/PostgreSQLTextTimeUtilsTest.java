@@ -33,7 +33,7 @@ class PostgreSQLTextTimeUtilsTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertParse(final String input, final LocalTime expected) {
+    void assertParse(final String input, final LocalTime expected) {
         assertThat(PostgreSQLTextTimeUtils.parse(input), is(expected));
     }
     

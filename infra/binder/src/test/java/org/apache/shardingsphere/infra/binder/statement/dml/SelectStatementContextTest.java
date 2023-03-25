@@ -104,7 +104,7 @@ class SelectStatementContextTest {
         assertSetIndexForItemsByIndexOrderBy(new SQLServerSelectStatement());
     }
     
-    public void assertSetIndexForItemsByIndexOrderBy(final SelectStatement selectStatement) {
+    private void assertSetIndexForItemsByIndexOrderBy(final SelectStatement selectStatement) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(INDEX_ORDER_BY))));
         selectStatement.setProjections(createProjectionsSegment());
@@ -385,7 +385,7 @@ class SelectStatementContextTest {
         assertSetWhere(new SQLServerSelectStatement());
     }
     
-    public void assertSetWhere(final SelectStatement selectStatement) {
+    private void assertSetWhere(final SelectStatement selectStatement) {
         WhereSegment whereSegment = mock(WhereSegment.class);
         selectStatement.setWhere(whereSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
