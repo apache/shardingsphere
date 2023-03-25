@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceCon
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProperties;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.NacosMetaDataUtils;
+import org.apache.shardingsphere.mode.repository.cluster.nacos.util.NacosMetaDataUtils;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

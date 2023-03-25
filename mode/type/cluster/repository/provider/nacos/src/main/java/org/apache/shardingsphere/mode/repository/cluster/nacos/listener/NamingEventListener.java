@@ -24,7 +24,7 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.NacosMetaDataUtils;
+import org.apache.shardingsphere.mode.repository.cluster.nacos.util.NacosMetaDataUtils;
 
 import java.util.Comparator;
 import java.util.HashMap;

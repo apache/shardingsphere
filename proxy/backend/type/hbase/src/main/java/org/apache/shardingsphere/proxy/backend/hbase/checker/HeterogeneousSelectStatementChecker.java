@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.checker;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBasePropertyKey;
-import org.apache.shardingsphere.proxy.backend.hbase.utils.HBaseHeterogeneousUtils;
+import org.apache.shardingsphere.proxy.backend.hbase.util.HBaseHeterogeneousUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;

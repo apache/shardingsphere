@@ -30,8 +30,8 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCheckUtils;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.data.pipeline.core.util.CloseUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
+import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
@@ -158,7 +158,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     private void fulfillCalculationContext(final CalculationContext calculationContext, final DataConsistencyCalculateParameter param) throws SQLException {
         String sql = getQuerySQL(param);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType());
-        PreparedStatement preparedStatement = setCurrentStatement(JDBCStreamQueryUtil.generateStreamQueryPreparedStatement(databaseType, calculationContext.getConnection(), sql));
+        PreparedStatement preparedStatement = setCurrentStatement(JDBCStreamQueryUtils.generateStreamQueryPreparedStatement(databaseType, calculationContext.getConnection(), sql));
         if (!(databaseType instanceof MySQLDatabaseType)) {
             preparedStatement.setFetchSize(chunkSize);
         }
@@ -204,9 +204,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         @Override
         public void close() {
-            CloseUtil.closeQuietly(resultSet);
-            CloseUtil.closeQuietly(preparedStatement);
-            CloseUtil.closeQuietly(connection);
+            CloseUtils.closeQuietly(resultSet);
+            CloseUtils.closeQuietly(preparedStatement);
+            CloseUtils.closeQuietly(connection);
         }
     }
     

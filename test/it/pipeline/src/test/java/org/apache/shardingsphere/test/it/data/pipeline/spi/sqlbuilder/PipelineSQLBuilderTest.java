@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixturePipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -84,7 +84,7 @@ public final class PipelineSQLBuilderTest {
     
     @Test
     public void assertBuildUpdateSQLWithPrimaryKey() {
-        String actual = pipelineSQLBuilder.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtil.extractPrimaryColumns(mockDataRecord("t2")));
+        String actual = pipelineSQLBuilder.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtils.extractPrimaryColumns(mockDataRecord("t2")));
         assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ?"));
     }
     
@@ -97,7 +97,7 @@ public final class PipelineSQLBuilderTest {
     
     @Test
     public void assertBuildDeleteSQLWithPrimaryKey() {
-        String actual = pipelineSQLBuilder.buildDeleteSQL(null, mockDataRecord("t3"), RecordUtil.extractPrimaryColumns(mockDataRecord("t3")));
+        String actual = pipelineSQLBuilder.buildDeleteSQL(null, mockDataRecord("t3"), RecordUtils.extractPrimaryColumns(mockDataRecord("t3")));
         assertThat(actual, is("DELETE FROM t3 WHERE id = ?"));
     }
     
@@ -109,7 +109,7 @@ public final class PipelineSQLBuilderTest {
     }
     
     private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
-        return RecordUtil.extractConditionColumns(dataRecord, Collections.singleton("sc"));
+        return RecordUtils.extractConditionColumns(dataRecord, Collections.singleton("sc"));
     }
     
     private DataRecord mockDataRecord(final String tableName) {
