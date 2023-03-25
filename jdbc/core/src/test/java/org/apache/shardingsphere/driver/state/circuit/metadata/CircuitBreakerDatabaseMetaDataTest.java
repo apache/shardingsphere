@@ -26,887 +26,887 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class CircuitBreakerDatabaseMetaDataTest {
+class CircuitBreakerDatabaseMetaDataTest {
     
     private final CircuitBreakerDatabaseMetaData metaData = new CircuitBreakerDatabaseMetaData();
     
     @Test
-    public void assertAllProceduresAreCallable() {
+    void assertAllProceduresAreCallable() {
         assertFalse(metaData.allProceduresAreCallable());
     }
     
     @Test
-    public void assertAllTablesAreSelectable() {
+    void assertAllTablesAreSelectable() {
         assertFalse(metaData.allTablesAreSelectable());
     }
     
     @Test
-    public void assertGetURL() {
+    void assertGetURL() {
         assertNull(metaData.getURL());
     }
     
     @Test
-    public void assertGetUserName() {
+    void assertGetUserName() {
         assertNull(metaData.getUserName());
     }
     
     @Test
-    public void assertIsReadOnly() {
+    void assertIsReadOnly() {
         assertFalse(metaData.isReadOnly());
     }
     
     @Test
-    public void assertNullsAreSortedHigh() {
+    void assertNullsAreSortedHigh() {
         assertFalse(metaData.isReadOnly());
     }
     
     @Test
-    public void assertNullsAreSortedLow() {
+    void assertNullsAreSortedLow() {
         assertFalse(metaData.nullsAreSortedLow());
     }
     
     @Test
-    public void assertNullsAreSortedAtStart() {
+    void assertNullsAreSortedAtStart() {
         assertFalse(metaData.nullsAreSortedAtStart());
     }
     
     @Test
-    public void assertNullsAreSortedAtEnd() {
+    void assertNullsAreSortedAtEnd() {
         assertFalse(metaData.nullsAreSortedAtEnd());
     }
     
     @Test
-    public void assertGetDatabaseProductName() {
+    void assertGetDatabaseProductName() {
         assertThat(metaData.getDatabaseProductName(), is("H2"));
     }
     
     @Test
-    public void assertGetDatabaseProductVersion() {
+    void assertGetDatabaseProductVersion() {
         assertNull(metaData.getDatabaseProductVersion());
     }
     
     @Test
-    public void assertGetDriverName() {
+    void assertGetDriverName() {
         assertNull(metaData.getDriverName());
     }
     
     @Test
-    public void assertGetDriverVersion() {
+    void assertGetDriverVersion() {
         assertNull(metaData.getDriverVersion());
     }
     
     @Test
-    public void assertGetDriverMajorVersion() {
+    void assertGetDriverMajorVersion() {
         assertThat(metaData.getDriverMajorVersion(), is(0));
     }
     
     @Test
-    public void assertGetDriverMinorVersion() {
+    void assertGetDriverMinorVersion() {
         assertThat(metaData.getDriverMinorVersion(), is(0));
     }
     
     @Test
-    public void assertUsesLocalFiles() {
+    void assertUsesLocalFiles() {
         assertFalse(metaData.usesLocalFiles());
     }
     
     @Test
-    public void assertUsesLocalFilePerTable() {
+    void assertUsesLocalFilePerTable() {
         assertFalse(metaData.usesLocalFilePerTable());
     }
     
     @Test
-    public void assertSupportsMixedCaseIdentifiers() {
+    void assertSupportsMixedCaseIdentifiers() {
         assertFalse(metaData.supportsMixedCaseIdentifiers());
     }
     
     @Test
-    public void assertStoresUpperCaseIdentifiers() {
+    void assertStoresUpperCaseIdentifiers() {
         assertFalse(metaData.storesUpperCaseIdentifiers());
     }
     
     @Test
-    public void assertStoresLowerCaseIdentifiers() {
+    void assertStoresLowerCaseIdentifiers() {
         assertFalse(metaData.storesUpperCaseIdentifiers());
     }
     
     @Test
-    public void assertStoresMixedCaseIdentifiers() {
+    void assertStoresMixedCaseIdentifiers() {
         assertFalse(metaData.storesMixedCaseIdentifiers());
     }
     
     @Test
-    public void assertSupportsMixedCaseQuotedIdentifiers() {
+    void assertSupportsMixedCaseQuotedIdentifiers() {
         assertFalse(metaData.supportsMixedCaseQuotedIdentifiers());
     }
     
     @Test
-    public void assertStoresUpperCaseQuotedIdentifiers() {
+    void assertStoresUpperCaseQuotedIdentifiers() {
         assertFalse(metaData.supportsMixedCaseQuotedIdentifiers());
     }
     
     @Test
-    public void assertStoresLowerCaseQuotedIdentifiers() {
+    void assertStoresLowerCaseQuotedIdentifiers() {
         assertFalse(metaData.storesLowerCaseIdentifiers());
     }
     
     @Test
-    public void assertStoresMixedCaseQuotedIdentifiers() {
+    void assertStoresMixedCaseQuotedIdentifiers() {
         assertFalse(metaData.storesMixedCaseQuotedIdentifiers());
     }
     
     @Test
-    public void assertGetIdentifierQuoteString() {
+    void assertGetIdentifierQuoteString() {
         assertNull(metaData.getIdentifierQuoteString());
     }
     
     @Test
-    public void assertGetSQLKeywords() {
+    void assertGetSQLKeywords() {
         assertNull(metaData.getSQLKeywords());
     }
     
     @Test
-    public void assertGetNumericFunctions() {
+    void assertGetNumericFunctions() {
         assertNull(metaData.getNumericFunctions());
     }
     
     @Test
-    public void assertGetStringFunctions() {
+    void assertGetStringFunctions() {
         assertNull(metaData.getStringFunctions());
     }
     
     @Test
-    public void assertGetSystemFunctions() {
+    void assertGetSystemFunctions() {
         assertNull(metaData.getSystemFunctions());
     }
     
     @Test
-    public void assertGetTimeDateFunctions() {
+    void assertGetTimeDateFunctions() {
         assertNull(metaData.getTimeDateFunctions());
     }
     
     @Test
-    public void assertGetSearchStringEscape() {
+    void assertGetSearchStringEscape() {
         assertNull(metaData.getSearchStringEscape());
     }
     
     @Test
-    public void assertGetExtraNameCharacters() {
+    void assertGetExtraNameCharacters() {
         assertNull(metaData.getExtraNameCharacters());
     }
     
     @Test
-    public void assertSupportsAlterTableWithAddColumn() {
+    void assertSupportsAlterTableWithAddColumn() {
         assertFalse(metaData.supportsAlterTableWithAddColumn());
     }
     
     @Test
-    public void assertSupportsAlterTableWithDropColumn() {
+    void assertSupportsAlterTableWithDropColumn() {
         assertFalse(metaData.supportsAlterTableWithDropColumn());
     }
     
     @Test
-    public void assertSupportsColumnAliasing() {
+    void assertSupportsColumnAliasing() {
         assertFalse(metaData.supportsColumnAliasing());
     }
     
     @Test
-    public void assertNullPlusNonNullIsNull() {
+    void assertNullPlusNonNullIsNull() {
         assertFalse(metaData.nullPlusNonNullIsNull());
     }
     
     @Test
-    public void assertSupportsConvert() {
+    void assertSupportsConvert() {
         assertFalse(metaData.supportsConvert());
     }
     
     @Test
-    public void assertSupportsConvertWithParameter() {
+    void assertSupportsConvertWithParameter() {
         assertFalse(metaData.supportsConvert(0, 0));
     }
     
     @Test
-    public void assertSupportsTableCorrelationNames() {
+    void assertSupportsTableCorrelationNames() {
         assertFalse(metaData.supportsTableCorrelationNames());
     }
     
     @Test
-    public void assertSupportsDifferentTableCorrelationNames() {
+    void assertSupportsDifferentTableCorrelationNames() {
         assertFalse(metaData.supportsDifferentTableCorrelationNames());
     }
     
     @Test
-    public void assertSupportsExpressionsInOrderBy() {
+    void assertSupportsExpressionsInOrderBy() {
         assertFalse(metaData.supportsExpressionsInOrderBy());
     }
     
     @Test
-    public void assertSupportsOrderByUnrelated() {
+    void assertSupportsOrderByUnrelated() {
         assertFalse(metaData.supportsOrderByUnrelated());
     }
     
     @Test
-    public void assertSupportsGroupBy() {
+    void assertSupportsGroupBy() {
         assertFalse(metaData.supportsGroupBy());
     }
     
     @Test
-    public void assertSupportsGroupByUnrelated() {
+    void assertSupportsGroupByUnrelated() {
         assertFalse(metaData.supportsGroupByUnrelated());
     }
     
     @Test
-    public void assertSupportsGroupByBeyondSelect() {
+    void assertSupportsGroupByBeyondSelect() {
         assertFalse(metaData.supportsGroupByBeyondSelect());
     }
     
     @Test
-    public void assertSupportsLikeEscapeClause() {
+    void assertSupportsLikeEscapeClause() {
         assertFalse(metaData.supportsLikeEscapeClause());
     }
     
     @Test
-    public void assertSupportsMultipleResultSets() {
+    void assertSupportsMultipleResultSets() {
         assertFalse(metaData.supportsMultipleResultSets());
     }
     
     @Test
-    public void assertSupportsMultipleTransactions() {
+    void assertSupportsMultipleTransactions() {
         assertFalse(metaData.supportsMultipleTransactions());
     }
     
     @Test
-    public void assertSupportsNonNullableColumns() {
+    void assertSupportsNonNullableColumns() {
         assertFalse(metaData.supportsNonNullableColumns());
     }
     
     @Test
-    public void assertSupportsMinimumSQLGrammar() {
+    void assertSupportsMinimumSQLGrammar() {
         assertFalse(metaData.supportsMinimumSQLGrammar());
     }
     
     @Test
-    public void assertSupportsCoreSQLGrammar() {
+    void assertSupportsCoreSQLGrammar() {
         assertFalse(metaData.supportsCoreSQLGrammar());
     }
     
     @Test
-    public void assertSupportsExtendedSQLGrammar() {
+    void assertSupportsExtendedSQLGrammar() {
         assertFalse(metaData.supportsExtendedSQLGrammar());
     }
     
     @Test
-    public void assertSupportsANSI92EntryLevelSQL() {
+    void assertSupportsANSI92EntryLevelSQL() {
         assertFalse(metaData.supportsANSI92EntryLevelSQL());
     }
     
     @Test
-    public void assertSupportsANSI92IntermediateSQL() {
+    void assertSupportsANSI92IntermediateSQL() {
         assertFalse(metaData.supportsANSI92IntermediateSQL());
     }
     
     @Test
-    public void assertSupportsANSI92FullSQL() {
+    void assertSupportsANSI92FullSQL() {
         assertFalse(metaData.supportsANSI92FullSQL());
     }
     
     @Test
-    public void assertSupportsIntegrityEnhancementFacility() {
+    void assertSupportsIntegrityEnhancementFacility() {
         assertFalse(metaData.supportsIntegrityEnhancementFacility());
     }
     
     @Test
-    public void assertSupportsOuterJoins() {
+    void assertSupportsOuterJoins() {
         assertFalse(metaData.supportsOuterJoins());
     }
     
     @Test
-    public void assertSupportsFullOuterJoins() {
+    void assertSupportsFullOuterJoins() {
         assertFalse(metaData.supportsFullOuterJoins());
     }
     
     @Test
-    public void assertSupportsLimitedOuterJoins() {
+    void assertSupportsLimitedOuterJoins() {
         assertFalse(metaData.supportsLimitedOuterJoins());
     }
     
     @Test
-    public void assertGetSchemaTerm() {
+    void assertGetSchemaTerm() {
         assertNull(metaData.getSchemaTerm());
     }
     
     @Test
-    public void assertGetProcedureTerm() {
+    void assertGetProcedureTerm() {
         assertNull(metaData.getProcedureTerm());
     }
     
     @Test
-    public void assertGetCatalogTerm() {
+    void assertGetCatalogTerm() {
         assertNull(metaData.getCatalogTerm());
     }
     
     @Test
-    public void assertIsCatalogAtStart() {
+    void assertIsCatalogAtStart() {
         assertFalse(metaData.isCatalogAtStart());
     }
     
     @Test
-    public void assertGetCatalogSeparator() {
+    void assertGetCatalogSeparator() {
         assertNull(metaData.getCatalogSeparator());
     }
     
     @Test
-    public void assertSupportsSchemasInDataManipulation() {
+    void assertSupportsSchemasInDataManipulation() {
         assertFalse(metaData.supportsSchemasInDataManipulation());
     }
     
     @Test
-    public void assertSupportsSchemasInProcedureCalls() {
+    void assertSupportsSchemasInProcedureCalls() {
         assertFalse(metaData.supportsSchemasInProcedureCalls());
     }
     
     @Test
-    public void assertSupportsSchemasInTableDefinitions() {
+    void assertSupportsSchemasInTableDefinitions() {
         assertFalse(metaData.supportsSchemasInTableDefinitions());
     }
     
     @Test
-    public void assertSupportsSchemasInIndexDefinitions() {
+    void assertSupportsSchemasInIndexDefinitions() {
         assertFalse(metaData.supportsSchemasInIndexDefinitions());
     }
     
     @Test
-    public void assertSupportsSchemasInPrivilegeDefinitions() {
+    void assertSupportsSchemasInPrivilegeDefinitions() {
         assertFalse(metaData.supportsSchemasInPrivilegeDefinitions());
     }
     
     @Test
-    public void assertSupportsCatalogsInDataManipulation() {
+    void assertSupportsCatalogsInDataManipulation() {
         assertFalse(metaData.supportsCatalogsInDataManipulation());
     }
     
     @Test
-    public void assertSupportsCatalogsInProcedureCalls() {
+    void assertSupportsCatalogsInProcedureCalls() {
         assertFalse(metaData.supportsCatalogsInProcedureCalls());
     }
     
     @Test
-    public void assertSupportsCatalogsInTableDefinitions() {
+    void assertSupportsCatalogsInTableDefinitions() {
         assertFalse(metaData.supportsCatalogsInTableDefinitions());
     }
     
     @Test
-    public void assertSupportsCatalogsInIndexDefinitions() {
+    void assertSupportsCatalogsInIndexDefinitions() {
         assertFalse(metaData.supportsCatalogsInIndexDefinitions());
     }
     
     @Test
-    public void assertSupportsCatalogsInPrivilegeDefinitions() {
+    void assertSupportsCatalogsInPrivilegeDefinitions() {
         assertFalse(metaData.supportsCatalogsInPrivilegeDefinitions());
     }
     
     @Test
-    public void assertSupportsPositionedDelete() {
+    void assertSupportsPositionedDelete() {
         assertFalse(metaData.supportsPositionedDelete());
     }
     
     @Test
-    public void assertSupportsPositionedUpdate() {
+    void assertSupportsPositionedUpdate() {
         assertFalse(metaData.supportsPositionedUpdate());
     }
     
     @Test
-    public void assertSupportsSelectForUpdate() {
+    void assertSupportsSelectForUpdate() {
         assertFalse(metaData.supportsSelectForUpdate());
     }
     
     @Test
-    public void assertSupportsStoredProcedures() {
+    void assertSupportsStoredProcedures() {
         assertFalse(metaData.supportsStoredProcedures());
     }
     
     @Test
-    public void assertSupportsSubqueriesInComparisons() {
+    void assertSupportsSubqueriesInComparisons() {
         assertFalse(metaData.supportsSubqueriesInComparisons());
     }
     
     @Test
-    public void assertSupportsSubqueriesInExists() {
+    void assertSupportsSubqueriesInExists() {
         assertFalse(metaData.supportsSubqueriesInExists());
     }
     
     @Test
-    public void assertSupportsSubqueriesInIns() {
+    void assertSupportsSubqueriesInIns() {
         assertFalse(metaData.supportsSubqueriesInIns());
     }
     
     @Test
-    public void assertSupportsSubqueriesInQuantifieds() {
+    void assertSupportsSubqueriesInQuantifieds() {
         assertFalse(metaData.supportsSubqueriesInQuantifieds());
     }
     
     @Test
-    public void assertSupportsCorrelatedSubqueries() {
+    void assertSupportsCorrelatedSubqueries() {
         assertFalse(metaData.supportsCorrelatedSubqueries());
     }
     
     @Test
-    public void assertSupportsUnion() {
+    void assertSupportsUnion() {
         assertFalse(metaData.supportsUnion());
     }
     
     @Test
-    public void assertSupportsUnionAll() {
+    void assertSupportsUnionAll() {
         assertFalse(metaData.supportsUnionAll());
     }
     
     @Test
-    public void assertSupportsOpenCursorsAcrossCommit() {
+    void assertSupportsOpenCursorsAcrossCommit() {
         assertFalse(metaData.supportsOpenCursorsAcrossCommit());
     }
     
     @Test
-    public void assertSupportsOpenCursorsAcrossRollback() {
+    void assertSupportsOpenCursorsAcrossRollback() {
         assertFalse(metaData.supportsOpenCursorsAcrossRollback());
     }
     
     @Test
-    public void assertSupportsOpenStatementsAcrossCommit() {
+    void assertSupportsOpenStatementsAcrossCommit() {
         assertFalse(metaData.supportsOpenStatementsAcrossCommit());
     }
     
     @Test
-    public void assertSupportsOpenStatementsAcrossRollback() {
+    void assertSupportsOpenStatementsAcrossRollback() {
         assertFalse(metaData.supportsOpenStatementsAcrossRollback());
     }
     
     @Test
-    public void assertGetMaxBinaryLiteralLength() {
+    void assertGetMaxBinaryLiteralLength() {
         assertThat(metaData.getMaxBinaryLiteralLength(), is(0));
     }
     
     @Test
-    public void assertGetMaxCharLiteralLength() {
+    void assertGetMaxCharLiteralLength() {
         assertThat(metaData.getMaxCharLiteralLength(), is(0));
     }
     
     @Test
-    public void assertGetMaxColumnNameLength() {
+    void assertGetMaxColumnNameLength() {
         assertThat(metaData.getMaxColumnNameLength(), is(0));
     }
     
     @Test
-    public void assertGetMaxColumnsInGroupBy() {
+    void assertGetMaxColumnsInGroupBy() {
         assertThat(metaData.getMaxColumnsInGroupBy(), is(0));
     }
     
     @Test
-    public void assertGetMaxColumnsInIndex() {
+    void assertGetMaxColumnsInIndex() {
         assertThat(metaData.getMaxColumnsInIndex(), is(0));
     }
     
     @Test
-    public void assertGetMaxColumnsInOrderBy() {
+    void assertGetMaxColumnsInOrderBy() {
         assertThat(metaData.getMaxColumnsInOrderBy(), is(0));
     }
     
     @Test
-    public void assertGetMaxColumnsInSelect() {
+    void assertGetMaxColumnsInSelect() {
         assertThat(metaData.getMaxColumnsInSelect(), is(0));
     }
     
     @Test
-    public void assertGetMaxColumnsInTable() {
+    void assertGetMaxColumnsInTable() {
         assertThat(metaData.getMaxColumnsInTable(), is(0));
     }
     
     @Test
-    public void assertGetMaxConnections() {
+    void assertGetMaxConnections() {
         assertThat(metaData.getMaxConnections(), is(0));
     }
     
     @Test
-    public void assertGetMaxCursorNameLength() {
+    void assertGetMaxCursorNameLength() {
         assertThat(metaData.getMaxCursorNameLength(), is(0));
     }
     
     @Test
-    public void assertGetMaxIndexLength() {
+    void assertGetMaxIndexLength() {
         assertThat(metaData.getMaxIndexLength(), is(0));
     }
     
     @Test
-    public void assertGetMaxSchemaNameLength() {
+    void assertGetMaxSchemaNameLength() {
         assertThat(metaData.getMaxSchemaNameLength(), is(0));
     }
     
     @Test
-    public void assertGetMaxProcedureNameLength() {
+    void assertGetMaxProcedureNameLength() {
         assertThat(metaData.getMaxProcedureNameLength(), is(0));
     }
     
     @Test
-    public void assertGetMaxCatalogNameLength() {
+    void assertGetMaxCatalogNameLength() {
         assertThat(metaData.getMaxCatalogNameLength(), is(0));
     }
     
     @Test
-    public void assertGetMaxRowSize() {
+    void assertGetMaxRowSize() {
         assertThat(metaData.getMaxRowSize(), is(0));
     }
     
     @Test
-    public void assertDoesMaxRowSizeIncludeBlobs() {
+    void assertDoesMaxRowSizeIncludeBlobs() {
         assertFalse(metaData.doesMaxRowSizeIncludeBlobs());
     }
     
     @Test
-    public void assertGetMaxStatementLength() {
+    void assertGetMaxStatementLength() {
         assertThat(metaData.getMaxStatementLength(), is(0));
     }
     
     @Test
-    public void assertGetMaxStatements() {
+    void assertGetMaxStatements() {
         assertThat(metaData.getMaxStatements(), is(0));
     }
     
     @Test
-    public void assertGetMaxTableNameLength() {
+    void assertGetMaxTableNameLength() {
         assertThat(metaData.getMaxTableNameLength(), is(0));
     }
     
     @Test
-    public void assertGetMaxTablesInSelect() {
+    void assertGetMaxTablesInSelect() {
         assertThat(metaData.getMaxTablesInSelect(), is(0));
     }
     
     @Test
-    public void assertGetMaxUserNameLength() {
+    void assertGetMaxUserNameLength() {
         assertThat(metaData.getMaxUserNameLength(), is(0));
     }
     
     @Test
-    public void assertGetDefaultTransactionIsolation() {
+    void assertGetDefaultTransactionIsolation() {
         assertThat(metaData.getDefaultTransactionIsolation(), is(0));
     }
     
     @Test
-    public void assertSupportsTransactions() {
+    void assertSupportsTransactions() {
         assertFalse(metaData.supportsTransactions());
     }
     
     @Test
-    public void assertSupportsTransactionIsolationLevel() {
+    void assertSupportsTransactionIsolationLevel() {
         assertFalse(metaData.supportsTransactionIsolationLevel(0));
     }
     
     @Test
-    public void assertSupportsDataDefinitionAndDataManipulationTransactions() {
+    void assertSupportsDataDefinitionAndDataManipulationTransactions() {
         assertFalse(metaData.supportsDataDefinitionAndDataManipulationTransactions());
     }
     
     @Test
-    public void assertSupportsDataManipulationTransactionsOnly() {
+    void assertSupportsDataManipulationTransactionsOnly() {
         assertFalse(metaData.supportsDataManipulationTransactionsOnly());
     }
     
     @Test
-    public void assertDataDefinitionCausesTransactionCommit() {
+    void assertDataDefinitionCausesTransactionCommit() {
         assertFalse(metaData.dataDefinitionCausesTransactionCommit());
     }
     
     @Test
-    public void assertDataDefinitionIgnoredInTransactions() {
+    void assertDataDefinitionIgnoredInTransactions() {
         assertFalse(metaData.dataDefinitionIgnoredInTransactions());
     }
     
     @Test
-    public void assertGetProcedures() {
+    void assertGetProcedures() {
         assertNull(metaData.getProcedures("", "", ""));
     }
     
     @Test
-    public void assertGetProcedureColumns() {
+    void assertGetProcedureColumns() {
         assertNull(metaData.getProcedureColumns("", "", "", ""));
     }
     
     @Test
-    public void assertGetTables() {
+    void assertGetTables() {
         assertNull(metaData.getTables("", "", "", null));
     }
     
     @Test
-    public void assertGetSchemas() {
+    void assertGetSchemas() {
         assertNull(metaData.getSchemas());
     }
     
     @Test
-    public void assertGetSchemasWithParameter() {
+    void assertGetSchemasWithParameter() {
         assertNull(metaData.getSchemas(null, null));
     }
     
     @Test
-    public void assertGetCatalogs() {
+    void assertGetCatalogs() {
         assertNull(metaData.getCatalogs());
     }
     
     @Test
-    public void assertGetTableTypes() {
+    void assertGetTableTypes() {
         assertNull(metaData.getTableTypes());
     }
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         assertNull(metaData.getColumns("", "", "", ""));
     }
     
     @Test
-    public void assertGetColumnPrivileges() {
+    void assertGetColumnPrivileges() {
         assertNull(metaData.getColumnPrivileges("", "", "", ""));
     }
     
     @Test
-    public void assertGetTablePrivileges() {
+    void assertGetTablePrivileges() {
         assertNull(metaData.getTablePrivileges("", "", ""));
     }
     
     @Test
-    public void assertGetBestRowIdentifier() {
+    void assertGetBestRowIdentifier() {
         assertNull(metaData.getBestRowIdentifier("", "", "", 0, false));
     }
     
     @Test
-    public void assertGetVersionColumns() {
+    void assertGetVersionColumns() {
         assertNull(metaData.getVersionColumns("", "", ""));
     }
     
     @Test
-    public void assertGetPrimaryKeys() {
+    void assertGetPrimaryKeys() {
         assertNull(metaData.getPrimaryKeys("", "", ""));
     }
     
     @Test
-    public void assertGetImportedKeys() {
+    void assertGetImportedKeys() {
         assertNull(metaData.getImportedKeys("", "", ""));
     }
     
     @Test
-    public void assertGetExportedKeys() {
+    void assertGetExportedKeys() {
         assertNull(metaData.getExportedKeys("", "", ""));
     }
     
     @Test
-    public void assertGetCrossReference() {
+    void assertGetCrossReference() {
         assertNull(metaData.getCrossReference("", "", "", "", "", ""));
     }
     
     @Test
-    public void assertGetTypeInfo() {
+    void assertGetTypeInfo() {
         assertNull(metaData.getTypeInfo());
     }
     
     @Test
-    public void assertGetIndexInfo() {
+    void assertGetIndexInfo() {
         assertNull(metaData.getIndexInfo("", "", "", false, false));
     }
     
     @Test
-    public void assertSupportsResultSetType() {
+    void assertSupportsResultSetType() {
         assertFalse(metaData.supportsResultSetType(0));
     }
     
     @Test
-    public void assertSupportsResultSetConcurrency() {
+    void assertSupportsResultSetConcurrency() {
         assertFalse(metaData.supportsResultSetConcurrency(0, 0));
     }
     
     @Test
-    public void assertOwnUpdatesAreVisible() {
+    void assertOwnUpdatesAreVisible() {
         assertFalse(metaData.ownUpdatesAreVisible(0));
     }
     
     @Test
-    public void assertOwnDeletesAreVisible() {
+    void assertOwnDeletesAreVisible() {
         assertFalse(metaData.ownDeletesAreVisible(0));
     }
     
     @Test
-    public void assertOwnInsertsAreVisible() {
+    void assertOwnInsertsAreVisible() {
         assertFalse(metaData.ownInsertsAreVisible(0));
     }
     
     @Test
-    public void assertOthersUpdatesAreVisible() {
+    void assertOthersUpdatesAreVisible() {
         assertFalse(metaData.othersUpdatesAreVisible(0));
     }
     
     @Test
-    public void assertOthersDeletesAreVisible() {
+    void assertOthersDeletesAreVisible() {
         assertFalse(metaData.othersDeletesAreVisible(0));
     }
     
     @Test
-    public void assertOthersInsertsAreVisible() {
+    void assertOthersInsertsAreVisible() {
         assertFalse(metaData.othersInsertsAreVisible(0));
     }
     
     @Test
-    public void assertUpdatesAreDetected() {
+    void assertUpdatesAreDetected() {
         assertFalse(metaData.updatesAreDetected(0));
     }
     
     @Test
-    public void assertDeletesAreDetected() {
+    void assertDeletesAreDetected() {
         assertFalse(metaData.deletesAreDetected(0));
     }
     
     @Test
-    public void assertInsertsAreDetected() {
+    void assertInsertsAreDetected() {
         assertFalse(metaData.insertsAreDetected(0));
     }
     
     @Test
-    public void assertSupportsBatchUpdates() {
+    void assertSupportsBatchUpdates() {
         assertFalse(metaData.insertsAreDetected(0));
     }
     
     @Test
-    public void assertGetUDTs() {
+    void assertGetUDTs() {
         assertNull(metaData.getUDTs("", "", "", null));
     }
     
     @Test
-    public void assertGetConnection() {
+    void assertGetConnection() {
         assertNull(metaData.getConnection());
     }
     
     @Test
-    public void assertSupportsSavepoints() {
+    void assertSupportsSavepoints() {
         assertFalse(metaData.supportsSavepoints());
     }
     
     @Test
-    public void assertSupportsNamedParameters() {
+    void assertSupportsNamedParameters() {
         assertFalse(metaData.supportsNamedParameters());
     }
     
     @Test
-    public void assertSupportsMultipleOpenResults() {
+    void assertSupportsMultipleOpenResults() {
         assertFalse(metaData.supportsMultipleOpenResults());
     }
     
     @Test
-    public void assertSupportsGetGeneratedKeys() {
+    void assertSupportsGetGeneratedKeys() {
         assertFalse(metaData.supportsGetGeneratedKeys());
     }
     
     @Test
-    public void assertGetSuperTypes() {
+    void assertGetSuperTypes() {
         assertNull(metaData.getSuperTypes("", "", ""));
     }
     
     @Test
-    public void assertGetSuperTables() {
+    void assertGetSuperTables() {
         assertNull(metaData.getSuperTables("", "", ""));
     }
     
     @Test
-    public void assertGetAttributes() {
+    void assertGetAttributes() {
         assertNull(metaData.getAttributes("", "", "", ""));
     }
     
     @Test
-    public void assertSupportsResultSetHoldability() {
+    void assertSupportsResultSetHoldability() {
         assertFalse(metaData.supportsResultSetHoldability(0));
     }
     
     @Test
-    public void assertGetResultSetHoldability() {
+    void assertGetResultSetHoldability() {
         assertThat(metaData.getResultSetHoldability(), is(0));
     }
     
     @Test
-    public void assertGetDatabaseMajorVersion() {
+    void assertGetDatabaseMajorVersion() {
         assertThat(metaData.getDatabaseMajorVersion(), is(0));
     }
     
     @Test
-    public void assertGetDatabaseMinorVersion() {
+    void assertGetDatabaseMinorVersion() {
         assertThat(metaData.getDatabaseMinorVersion(), is(0));
     }
     
     @Test
-    public void assertGetJDBCMajorVersion() {
+    void assertGetJDBCMajorVersion() {
         assertThat(metaData.getJDBCMajorVersion(), is(0));
     }
     
     @Test
-    public void assertGetJDBCMinorVersion() {
+    void assertGetJDBCMinorVersion() {
         assertThat(metaData.getJDBCMinorVersion(), is(0));
     }
     
     @Test
-    public void assertGetSQLStateType() {
+    void assertGetSQLStateType() {
         assertThat(metaData.getSQLStateType(), is(DatabaseMetaData.sqlStateSQL));
     }
     
     @Test
-    public void assertLocatorsUpdateCopy() {
+    void assertLocatorsUpdateCopy() {
         assertFalse(metaData.locatorsUpdateCopy());
     }
     
     @Test
-    public void assertSupportsStatementPooling() {
+    void assertSupportsStatementPooling() {
         assertFalse(metaData.supportsStatementPooling());
     }
     
     @Test
-    public void assertGetRowIdLifetime() {
+    void assertGetRowIdLifetime() {
         assertNull(metaData.getRowIdLifetime());
     }
     
     @Test
-    public void assertSupportsStoredFunctionsUsingCallSyntax() {
+    void assertSupportsStoredFunctionsUsingCallSyntax() {
         assertFalse(metaData.supportsStoredFunctionsUsingCallSyntax());
     }
     
     @Test
-    public void assertAutoCommitFailureClosesAllResultSets() {
+    void assertAutoCommitFailureClosesAllResultSets() {
         assertFalse(metaData.autoCommitFailureClosesAllResultSets());
     }
     
     @Test
-    public void assertGetClientInfoProperties() {
+    void assertGetClientInfoProperties() {
         assertNull(metaData.getClientInfoProperties());
     }
     
     @Test
-    public void assertGetFunctions() {
+    void assertGetFunctions() {
         assertNull(metaData.getFunctions("", "", ""));
     }
     
     @Test
-    public void assertGetFunctionColumns() {
+    void assertGetFunctionColumns() {
         assertNull(metaData.getFunctionColumns("", "", "", ""));
     }
     
     @Test
-    public void assertGetPseudoColumns() {
+    void assertGetPseudoColumns() {
         assertNull(metaData.getPseudoColumns("", "", "", ""));
     }
     
     @Test
-    public void assertGeneratedKeyAlwaysReturned() {
+    void assertGeneratedKeyAlwaysReturned() {
         assertFalse(metaData.generatedKeyAlwaysReturned());
     }
     
     @Test
-    public void assertUnwrap() {
+    void assertUnwrap() {
         assertNull(metaData.unwrap(null));
     }
     
     @Test
-    public void assertIsWrapperFor() {
+    void assertIsWrapperFor() {
         assertFalse(metaData.isWrapperFor(null));
     }
 }

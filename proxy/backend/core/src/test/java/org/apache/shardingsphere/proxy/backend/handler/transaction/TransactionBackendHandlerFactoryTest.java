@@ -56,11 +56,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, DatabaseConnectorFactory.class})
-public final class TransactionBackendHandlerFactoryTest {
+class TransactionBackendHandlerFactoryTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
+    void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfCommitStatement() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
@@ -77,7 +77,7 @@ public final class TransactionBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
+    void assertTransactionBackendHandlerReturnedWhenTCLStatementInstanceOfRollbackStatement() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, Answers.RETURNS_DEEP_STUBS);
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
@@ -101,7 +101,7 @@ public final class TransactionBackendHandlerFactoryTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
+    void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
         SQLStatementContext<TCLStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(TCLStatement.class));
         DatabaseConnectorFactory mockFactory = mock(DatabaseConnectorFactory.class);

@@ -41,10 +41,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleDatabaseBroadcastRouteEngineTest {
+class SingleDatabaseBroadcastRouteEngineTest {
     
     @Test
-    public void assertRoute() throws SQLException {
+    void assertRoute() throws SQLException {
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         SingleDatabaseBroadcastRouteEngine engine = new SingleDatabaseBroadcastRouteEngine();

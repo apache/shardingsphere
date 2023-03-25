@@ -41,20 +41,20 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingTokenGenerateBuilderTest {
+class ShardingTokenGenerateBuilderTest {
     
     private ShardingRule shardingRule;
     
     private RouteContext routeContext;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         shardingRule = mock(ShardingRule.class);
         routeContext = mock(RouteContext.class);
     }
     
     @Test
-    public void assertGetSQLTokenGenerators() throws Exception {
+    void assertGetSQLTokenGenerators() throws Exception {
         when(routeContext.containsTableSharding()).thenReturn(true);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getProjectionsContext().getAggregationProjections().isEmpty()).thenReturn(false);

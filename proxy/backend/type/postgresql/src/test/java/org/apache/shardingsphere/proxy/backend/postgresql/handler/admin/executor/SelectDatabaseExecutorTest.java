@@ -59,12 +59,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class SelectDatabaseExecutorTest {
+class SelectDatabaseExecutorTest {
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     @Test
-    public void assertSelectDatabaseExecute() throws SQLException {
+    void assertSelectDatabaseExecute() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner,"
                 + " d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname "
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
@@ -95,7 +95,7 @@ public final class SelectDatabaseExecutorTest {
     }
     
     @Test
-    public void assertSelectDatabaseWithoutDataSourceExecute() throws SQLException {
+    void assertSelectDatabaseWithoutDataSourceExecute() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner, "
                 + "d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname "
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
@@ -110,7 +110,7 @@ public final class SelectDatabaseExecutorTest {
     }
     
     @Test
-    public void assertSelectDatabaseWithoutDataSourceExecuteAndWithColumnProjectionSegment() throws SQLException {
+    void assertSelectDatabaseWithoutDataSourceExecuteAndWithColumnProjectionSegment() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         ContextManager contextManager = mockContextManager(createEmptyDatabase());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -126,7 +126,7 @@ public final class SelectDatabaseExecutorTest {
     }
     
     @Test
-    public void assertSelectDatabaseInNoSchemaExecute() throws SQLException {
+    void assertSelectDatabaseInNoSchemaExecute() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

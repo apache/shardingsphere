@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public final class IpUtilsTest {
+class IpUtilsTest {
     
     @Test
-    public void getIp() {
+    void getIp() {
         assertNotNull(IpUtils.getIp());
     }
 }

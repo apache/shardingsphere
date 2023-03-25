@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingAlterIndexStatementValidatorTest {
+class ShardingAlterIndexStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -54,7 +54,7 @@ public final class ShardingAlterIndexStatementValidatorTest {
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertPreValidateAlterIndexWhenIndexExistRenameIndexNotExistForPostgreSQL() {
+    void assertPreValidateAlterIndexWhenIndexExistRenameIndexNotExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
@@ -69,7 +69,7 @@ public final class ShardingAlterIndexStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateAlterIndexWhenIndexNotExistRenameIndexNotExistForPostgreSQL() {
+    void assertPreValidateAlterIndexWhenIndexNotExistRenameIndexNotExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
@@ -85,7 +85,7 @@ public final class ShardingAlterIndexStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
+    void assertPreValidateAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
         PostgreSQLAlterIndexStatement sqlStatement = new PostgreSQLAlterIndexStatement();
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));

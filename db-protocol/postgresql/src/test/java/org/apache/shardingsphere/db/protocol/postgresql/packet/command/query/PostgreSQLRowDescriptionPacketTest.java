@@ -33,13 +33,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLRowDescriptionPacketTest {
+class PostgreSQLRowDescriptionPacketTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("name", 1, Types.VARCHAR, 4, null);
         PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(Collections.singletonList(description));
         packet.write(payload);
@@ -54,7 +54,7 @@ public final class PostgreSQLRowDescriptionPacketTest {
     }
     
     @Test
-    public void getMessageType() {
+    void getMessageType() {
         PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(Collections.emptyList());
         assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.ROW_DESCRIPTION));
     }

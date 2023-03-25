@@ -35,15 +35,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class WhereExtractUtilsTest {
+class WhereExtractUtilsTest {
     
     @Test
-    public void assertGetJoinWhereSegmentsWithEmptySelectStatement() {
+    void assertGetJoinWhereSegmentsWithEmptySelectStatement() {
         assertTrue(WhereExtractUtils.getJoinWhereSegments(new MySQLSelectStatement()).isEmpty());
     }
     
     @Test
-    public void assertGetJoinWhereSegments() {
+    void assertGetJoinWhereSegments() {
         JoinTableSegment tableSegment = new JoinTableSegment();
         ColumnSegment left = new ColumnSegment(57, 67, new IdentifierValue("order_id"));
         ColumnSegment right = new ColumnSegment(71, 80, new IdentifierValue("order_id"));
@@ -57,7 +57,7 @@ public final class WhereExtractUtilsTest {
     }
     
     @Test
-    public void assertGetSubqueryWhereSegmentsFromSubqueryTableSegment() {
+    void assertGetSubqueryWhereSegmentsFromSubqueryTableSegment() {
         MySQLSelectStatement subQuerySelectStatement = new MySQLSelectStatement();
         ColumnSegment left = new ColumnSegment(41, 48, new IdentifierValue("order_id"));
         ColumnSegment right = new ColumnSegment(52, 62, new IdentifierValue("order_id"));

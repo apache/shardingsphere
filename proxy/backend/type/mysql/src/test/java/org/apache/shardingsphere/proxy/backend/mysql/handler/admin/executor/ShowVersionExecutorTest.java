@@ -36,23 +36,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowVersionExecutorTest {
+class ShowVersionExecutorTest {
     
     private String previousVersion;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         previousVersion = MySQLServerInfo.getServerVersion("foo_db");
         MySQLServerInfo.setServerVersion("foo_db", "8.0.26");
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         MySQLServerInfo.setServerVersion("foo_db", previousVersion);
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithoutAlias());
         ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
@@ -74,7 +74,7 @@ public final class ShowVersionExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithAlias() throws SQLException {
+    void assertExecuteWithAlias() throws SQLException {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithAlias());
         ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);

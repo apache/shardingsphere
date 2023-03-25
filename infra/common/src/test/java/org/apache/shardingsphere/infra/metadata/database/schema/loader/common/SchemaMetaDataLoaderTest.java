@@ -46,13 +46,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class SchemaMetaDataLoaderTest {
+class SchemaMetaDataLoaderTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         ResultSet tableResultSet = mockTableResultSet();
         when(dataSource.getConnection().getMetaData().getTables("catalog", "public", null, new String[]{"TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"})).thenReturn(tableResultSet);
         when(dataSource.getConnection().getCatalog()).thenReturn("catalog");
@@ -76,17 +76,17 @@ public final class SchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadSchemaTableNamesForPostgreSQL() throws SQLException {
+    void assertLoadSchemaTableNamesForPostgreSQL() throws SQLException {
         assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, new PostgreSQLDatabaseType(), dataSource), is(createSchemaTableNames()));
     }
     
     @Test
-    public void assertLoadSchemaTableNamesForOpenGauss() throws SQLException {
+    void assertLoadSchemaTableNamesForOpenGauss() throws SQLException {
         assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, new OpenGaussDatabaseType(), dataSource), is(createSchemaTableNames()));
     }
     
     @Test
-    public void assertLoadSchemaTableNamesForMySQL() throws SQLException {
+    void assertLoadSchemaTableNamesForMySQL() throws SQLException {
         Map<String, Collection<String>> schemaTableNames = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, Collections.singletonList("tbl"));
         assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), dataSource), is(schemaTableNames));
     }
@@ -100,17 +100,17 @@ public final class SchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadSchemaNamesForPostgreSQL() throws SQLException {
+    void assertLoadSchemaNamesForPostgreSQL() throws SQLException {
         assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), new PostgreSQLDatabaseType()), is(Arrays.asList("public", "schema_1", "schema_2")));
     }
     
     @Test
-    public void assertLoadSchemaNamesForOpenGauss() throws SQLException {
+    void assertLoadSchemaNamesForOpenGauss() throws SQLException {
         assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), new OpenGaussDatabaseType()), is(Arrays.asList("public", "schema_1", "schema_2")));
     }
     
     @Test
-    public void assertLoadSchemaNamesForMySQL() throws SQLException {
+    void assertLoadSchemaNamesForMySQL() throws SQLException {
         assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), new MySQLDatabaseType()), is(Collections.singletonList("public")));
     }
 }

@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class SQLStatementCacheBuilderTest {
+class SQLStatementCacheBuilderTest {
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         assertThat(SQLStatementCacheBuilder.build("MySQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false), isA(LoadingCache.class));
     }
 }

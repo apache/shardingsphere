@@ -25,15 +25,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class SQLVisitorRuleTest {
+class SQLVisitorRuleTest {
     
     @Test
-    public void assertValueOfParseTreeClassSuccess() {
+    void assertValueOfParseTreeClassSuccess() {
         assertThat(SQLVisitorRule.valueOf(SelectContext.class), is(SQLVisitorRule.SELECT));
     }
     
     @Test
-    public void assertValueOfParseTreeClassFailure() {
+    void assertValueOfParseTreeClassFailure() {
         assertThrows(SQLASTVisitorException.class, () -> SQLVisitorRule.valueOf(ParseTree.class));
     }
 }

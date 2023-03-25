@@ -24,10 +24,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ComparableAggregationUnitTest {
+class ComparableAggregationUnitTest {
     
     @Test
-    public void assertComparableAggregationForAsc() {
+    void assertComparableAggregationForAsc() {
         ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(true);
         comparableAggregation.merge(null);
         comparableAggregation.merge(Collections.singletonList(null));
@@ -38,7 +38,7 @@ public final class ComparableAggregationUnitTest {
     }
     
     @Test
-    public void assertComparableAggregationForDesc() {
+    void assertComparableAggregationForDesc() {
         ComparableAggregationUnit comparableAggregation = new ComparableAggregationUnit(false);
         comparableAggregation.merge(null);
         comparableAggregation.merge(Collections.singletonList(null));

@@ -59,14 +59,14 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQLFederationResultSetTest {
+class SQLFederationResultSetTest {
     
     private Enumerator<Object> enumerator;
     
     private SQLFederationResultSet federationResultSet;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         enumerator = createEnumerator();
         federationResultSet = new SQLFederationResultSet(enumerator, mock(ShardingSphereSchema.class), mock(FilterableSchema.class), createSelectStatementContext(), mock(RelDataType.class));
     }
@@ -91,401 +91,401 @@ public final class SQLFederationResultSetTest {
     }
     
     @AfterEach
-    public void clean() {
+    void clean() {
         enumerator.close();
         federationResultSet.close();
     }
     
     @Test
-    public void assertNext() {
+    void assertNext() {
         assertTrue(federationResultSet.next());
     }
     
     @Test
-    public void assertWasNull() {
+    void assertWasNull() {
         assertFalse(federationResultSet.wasNull());
     }
     
     @Test
-    public void assertGetBooleanWithColumnIndex() throws SQLException {
+    void assertGetBooleanWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1, 1, true, 1});
         federationResultSet.next();
         assertTrue(federationResultSet.getBoolean(3));
     }
     
     @Test
-    public void assertGetBooleanWithColumnLabel() throws SQLException {
+    void assertGetBooleanWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1, 1, true, 1});
         federationResultSet.next();
         assertTrue(federationResultSet.getBoolean("status"));
     }
     
     @Test
-    public void assertGetBooleanWithColumnLabelCaseInsensitive() throws SQLException {
+    void assertGetBooleanWithColumnLabelCaseInsensitive() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1, 1, true, 1});
         federationResultSet.next();
         assertTrue(federationResultSet.getBoolean("STATUS"));
     }
     
     @Test
-    public void assertGetByteWithColumnIndex() throws SQLException {
+    void assertGetByteWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{(byte) 1, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getByte(1), is((byte) 1));
     }
     
     @Test
-    public void assertGetByteWithColumnLabel() throws SQLException {
+    void assertGetByteWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{(byte) 1, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getByte("order_id"), is((byte) 1));
     }
     
     @Test
-    public void assertGetShortWithColumnIndex() throws SQLException {
+    void assertGetShortWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{(short) 1, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getShort(1), is((short) 1));
     }
     
     @Test
-    public void assertGetShortWithColumnLabel() throws SQLException {
+    void assertGetShortWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{(short) 1, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getShort("order_id"), is((short) 1));
     }
     
     @Test
-    public void assertGetIntWithColumnIndex() throws SQLException {
+    void assertGetIntWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getInt(1), is(1));
     }
     
     @Test
-    public void assertGetIntWithColumnLabel() throws SQLException {
+    void assertGetIntWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getInt("order_id"), is(1));
     }
     
     @Test
-    public void assertGetLongWithColumnIndex() throws SQLException {
+    void assertGetLongWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1L, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getLong(1), is(1L));
     }
     
     @Test
-    public void assertGetLongWithColumnLabel() throws SQLException {
+    void assertGetLongWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1L, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getLong("order_id"), is(1L));
     }
     
     @Test
-    public void assertGetFloatWithColumnIndex() throws SQLException {
+    void assertGetFloatWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1.0F, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getFloat(1), is(1.0F));
     }
     
     @Test
-    public void assertGetFloatWithColumnLabel() throws SQLException {
+    void assertGetFloatWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1.0F, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getFloat("order_id"), is(1.0F));
     }
     
     @Test
-    public void assertGetDoubleWithColumnIndex() throws SQLException {
+    void assertGetDoubleWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1.0D, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getDouble(1), is(1.0D));
     }
     
     @Test
-    public void assertGetDoubleWithColumnLabel() throws SQLException {
+    void assertGetDoubleWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1.0D, 1, true, 1});
         federationResultSet.next();
         assertThat(federationResultSet.getDouble("order_id"), is(1.0D));
     }
     
     @Test
-    public void assertGetStringWithColumnIndex() throws SQLException {
+    void assertGetStringWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1, 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getString(3), is("OK"));
     }
     
     @Test
-    public void assertGetStringWithColumnLabel() throws SQLException {
+    void assertGetStringWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1, 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getString("status"), is("OK"));
     }
     
     @Test
-    public void assertGetNStringWithColumnIndex() throws SQLException {
+    void assertGetNStringWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1, 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getNString(3), is("OK"));
     }
     
     @Test
-    public void assertGetNStringWithColumnLabel() throws SQLException {
+    void assertGetNStringWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{1, 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getNString("status"), is("OK"));
     }
     
     @Test
-    public void assertGetBigDecimalWithColumnIndex() throws SQLException {
+    void assertGetBigDecimalWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new BigDecimal("1"), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getBigDecimal(1), is(new BigDecimal("1")));
     }
     
     @Test
-    public void assertGetBigDecimalWithColumnLabel() throws SQLException {
+    void assertGetBigDecimalWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new BigDecimal("1"), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getBigDecimal("order_id"), is(new BigDecimal("1")));
     }
     
     @Test
-    public void assertGetBigDecimalAndScaleWithColumnIndex() throws SQLException {
+    void assertGetBigDecimalAndScaleWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new BigDecimal("1"), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getBigDecimal(1, 10), is(new BigDecimal("1")));
     }
     
     @Test
-    public void assertGetBigDecimalAndScaleWithColumnLabel() throws SQLException {
+    void assertGetBigDecimalAndScaleWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new BigDecimal("1"), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getBigDecimal("order_id", 10), is(new BigDecimal("1")));
     }
     
     @Test
-    public void assertGetBytesWithColumnIndex() throws SQLException {
+    void assertGetBytesWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new byte[]{(byte) 1}, 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getBytes(1), is(new byte[]{(byte) 1}));
     }
     
     @Test
-    public void assertGetBytesWithColumnLabel() throws SQLException {
+    void assertGetBytesWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new byte[]{(byte) 1}, 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getBytes("order_id"), is(new byte[]{(byte) 1}));
     }
     
     @Test
-    public void assertGetDateWithColumnIndex() throws SQLException {
+    void assertGetDateWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Date(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getDate(1), is(new Date(0L)));
     }
     
     @Test
-    public void assertGetDateWithColumnLabel() throws SQLException {
+    void assertGetDateWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Date(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getDate("order_id"), is(new Date(0L)));
     }
     
     @Test
-    public void assertGetDateAndCalendarWithColumnIndex() throws SQLException {
+    void assertGetDateAndCalendarWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Date(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getDate(1, Calendar.getInstance()), is(new Date(0L)));
     }
     
     @Test
-    public void assertGetDateAndCalendarWithColumnLabel() throws SQLException {
+    void assertGetDateAndCalendarWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Date(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getDate("order_id", Calendar.getInstance()), is(new Date(0L)));
     }
     
     @Test
-    public void assertGetTimeWithColumnIndex() throws SQLException {
+    void assertGetTimeWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Time(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getTime(1), is(new Time(0L)));
     }
     
     @Test
-    public void assertGetTimeWithColumnLabel() throws SQLException {
+    void assertGetTimeWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Time(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getTime("order_id"), is(new Time(0L)));
     }
     
     @Test
-    public void assertGetTimeAndCalendarWithColumnIndex() throws SQLException {
+    void assertGetTimeAndCalendarWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Time(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getTime(1, Calendar.getInstance()), is(new Time(0L)));
     }
     
     @Test
-    public void assertGetTimeAndCalendarWithColumnLabel() throws SQLException {
+    void assertGetTimeAndCalendarWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Time(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getTime("order_id", Calendar.getInstance()), is(new Time(0L)));
     }
     
     @Test
-    public void assertGetTimestampWithColumnIndex() throws SQLException {
+    void assertGetTimestampWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Timestamp(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getTimestamp(1), is(new Timestamp(0L)));
     }
     
     @Test
-    public void assertGetTimestampWithColumnLabel() throws SQLException {
+    void assertGetTimestampWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Timestamp(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getTimestamp("order_id"), is(new Timestamp(0L)));
     }
     
     @Test
-    public void assertGetTimestampAndCalendarWithColumnIndex() throws SQLException {
+    void assertGetTimestampAndCalendarWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Timestamp(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getTimestamp(1, Calendar.getInstance()), is(new Timestamp(0L)));
     }
     
     @Test
-    public void assertGetTimestampAndCalendarWithColumnLabel() throws SQLException {
+    void assertGetTimestampAndCalendarWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{new Timestamp(0L), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getTimestamp("order_id", Calendar.getInstance()), is(new Timestamp(0L)));
     }
     
     @Test
-    public void assertGetAsciiStreamWithColumnIndex() {
+    void assertGetAsciiStreamWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getAsciiStream(1));
     }
     
     @Test
-    public void assertGetAsciiStreamWithColumnLabel() {
+    void assertGetAsciiStreamWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getAsciiStream("order_id"));
     }
     
     @Test
-    public void assertGetUnicodeStreamWithColumnIndex() {
+    void assertGetUnicodeStreamWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getUnicodeStream(1));
     }
     
     @Test
-    public void assertGetUnicodeStreamWithColumnLabel() {
+    void assertGetUnicodeStreamWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getUnicodeStream("order_id"));
     }
     
     @Test
-    public void assertGetBinaryStreamWithColumnIndex() {
+    void assertGetBinaryStreamWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getBinaryStream(1));
     }
     
     @Test
-    public void assertGetBinaryStreamWithColumnLabel() {
+    void assertGetBinaryStreamWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(InputStream.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getBinaryStream("order_id"));
     }
     
     @Test
-    public void assertGetCharacterStreamWithColumnIndex() {
+    void assertGetCharacterStreamWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Reader.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getCharacterStream(1));
     }
     
     @Test
-    public void assertGetCharacterStreamWithColumnLabel() {
+    void assertGetCharacterStreamWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Reader.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getCharacterStream("order_id"));
     }
     
     @Test
-    public void assertGetBlobWithColumnIndex() {
+    void assertGetBlobWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Blob.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getBlob(1));
     }
     
     @Test
-    public void assertGetBlobWithColumnLabel() {
+    void assertGetBlobWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Blob.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getBlob("order_id"));
     }
     
     @Test
-    public void assertGetClobWithColumnIndex() {
+    void assertGetClobWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Clob.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getClob(1));
     }
     
     @Test
-    public void assertGetClobWithColumnLabel() {
+    void assertGetClobWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(Clob.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getClob("order_id"));
     }
     
     @Test
-    public void assertGetArrayWithColumnIndex() throws SQLException {
+    void assertGetArrayWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{mock(Array.class), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getArray(1), instanceOf(Array.class));
     }
     
     @Test
-    public void assertGetArrayWithColumnLabel() throws SQLException {
+    void assertGetArrayWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{mock(Array.class), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getArray("order_id"), instanceOf(Array.class));
     }
     
     @Test
-    public void assertGetURLWithColumnIndex() throws SQLException, MalformedURLException {
+    void assertGetURLWithColumnIndex() throws SQLException, MalformedURLException {
         when(enumerator.current()).thenReturn(new Object[]{new URL("http://xxx.xxx"), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getURL(1), is(new URL("http://xxx.xxx")));
     }
     
     @Test
-    public void assertGetURLWithColumnLabel() throws SQLException, MalformedURLException {
+    void assertGetURLWithColumnLabel() throws SQLException, MalformedURLException {
         when(enumerator.current()).thenReturn(new Object[]{new URL("http://xxx.xxx"), 1, "OK", 1});
         federationResultSet.next();
         assertThat(federationResultSet.getURL("order_id"), is(new URL("http://xxx.xxx")));
     }
     
     @Test
-    public void assertGetSQLXMLWithColumnIndex() {
+    void assertGetSQLXMLWithColumnIndex() {
         when(enumerator.current()).thenReturn(new Object[]{mock(SQLXML.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getSQLXML(1));
     }
     
     @Test
-    public void assertGetSQLXMLWithColumnLabel() {
+    void assertGetSQLXMLWithColumnLabel() {
         when(enumerator.current()).thenReturn(new Object[]{mock(SQLXML.class), 1, "OK", 1});
         federationResultSet.next();
         assertThrows(SQLFeatureNotSupportedException.class, () -> federationResultSet.getSQLXML("order_id"));

@@ -28,10 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnShadowAlgorithmTest {
+class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnShadowAlgorithmTest {
     
     @Test
-    public void assertIsShadow() {
+    void assertIsShadow() {
         ColumnValueMatchedShadowAlgorithm shadowAlgorithm = (ColumnValueMatchedShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class,
                 "VALUE_MATCH", PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("value", "1")));
         createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
@@ -39,7 +39,7 @@ public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnSha
     }
     
     @Test
-    public void assertExceptionCase() {
+    void assertExceptionCase() {
         ColumnValueMatchedShadowAlgorithm shadowAlgorithm = (ColumnValueMatchedShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class,
                 "VALUE_MATCH", PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("value", "1")));
         assertThrows(UnsupportedShadowColumnTypeException.class, () -> createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each))));

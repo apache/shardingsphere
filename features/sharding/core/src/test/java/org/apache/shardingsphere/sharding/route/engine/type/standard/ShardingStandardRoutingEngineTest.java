@@ -42,15 +42,15 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngineTest {
+class ShardingStandardRoutingEngineTest extends AbstractRoutingEngineTest {
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         HintManager.clear();
     }
     
     @Test
-    public void assertRouteByNonConditions() {
+    void assertRouteByNonConditions() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order",
                 new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class), new HintValueContext());
         RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
@@ -75,7 +75,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByShardingConditions() {
+    void assertRouteByShardingConditions() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"),
                 mock(SQLStatementContext.class), new HintValueContext());
         RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
@@ -88,14 +88,14 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByErrorShardingTableStrategy() {
+    void assertRouteByErrorShardingTableStrategy() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createErrorShardingConditions("t_order"),
                 mock(SQLStatementContext.class), new HintValueContext());
         assertThrows(ShardingRouteAlgorithmException.class, () -> standardRoutingEngine.route(createErrorShardingRule()));
     }
     
     @Test
-    public void assertRouteByHint() {
+    void assertRouteByHint() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_test"));
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_test",
@@ -113,7 +113,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByMixedWithHintDataSource() {
+    void assertRouteByMixedWithHintDataSource() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_ds_test"));
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test", createShardingConditions("t_hint_ds_test"),
@@ -130,7 +130,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByMixedWithHintDataSourceOnly() {
+    void assertRouteByMixedWithHintDataSourceOnly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_ds_test"));
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test",
@@ -151,7 +151,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByMixedWithHintTable() {
+    void assertRouteByMixedWithHintTable() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_table_test"));
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test", createShardingConditions("t_hint_table_test"),
@@ -168,7 +168,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByMixedWithHintTableOnly() {
+    void assertRouteByMixedWithHintTableOnly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_table_test"));
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test",
@@ -189,7 +189,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByIntervalTableShardingStrategyOnly() {
+    void assertRouteByIntervalTableShardingStrategyOnly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_interval_test"));
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_interval_test",

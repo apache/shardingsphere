@@ -24,10 +24,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class LogicalOperatorTest {
+class LogicalOperatorTest {
     
     @Test
-    public void assertValueFromAndText() {
+    void assertValueFromAndText() {
         assertTrue(LogicalOperator.valueFrom("AND").isPresent());
         assertThat(LogicalOperator.valueFrom("AND").get(), is(LogicalOperator.AND));
         assertTrue(LogicalOperator.valueFrom("and").isPresent());
@@ -35,13 +35,13 @@ public final class LogicalOperatorTest {
     }
     
     @Test
-    public void assertValueFromAndSymbol() {
+    void assertValueFromAndSymbol() {
         assertTrue(LogicalOperator.valueFrom("&&").isPresent());
         assertThat(LogicalOperator.valueFrom("&&").get(), is(LogicalOperator.AND));
     }
     
     @Test
-    public void assertValueFromOrText() {
+    void assertValueFromOrText() {
         assertTrue(LogicalOperator.valueFrom("OR").isPresent());
         assertThat(LogicalOperator.valueFrom("OR").get(), is(LogicalOperator.OR));
         assertTrue(LogicalOperator.valueFrom("or").isPresent());
@@ -49,13 +49,13 @@ public final class LogicalOperatorTest {
     }
     
     @Test
-    public void assertValueFromOrSymbol() {
+    void assertValueFromOrSymbol() {
         assertTrue(LogicalOperator.valueFrom("||").isPresent());
         assertThat(LogicalOperator.valueFrom("||").get(), is(LogicalOperator.OR));
     }
     
     @Test
-    public void assertValueFromInvalidValue() {
+    void assertValueFromInvalidValue() {
         assertFalse(LogicalOperator.valueFrom("XX").isPresent());
     }
 }

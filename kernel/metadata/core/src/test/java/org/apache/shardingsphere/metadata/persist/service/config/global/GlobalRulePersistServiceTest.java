@@ -38,20 +38,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class GlobalRulePersistServiceTest {
+class GlobalRulePersistServiceTest {
     
     @Mock
     private PersistRepository repository;
     
     @Test
-    public void assertLoad() {
+    void assertLoad() {
         when(repository.getDirectly("/rules")).thenReturn(readYAML());
         Collection<RuleConfiguration> actual = new GlobalRulePersistService(repository).load();
         assertThat(actual.size(), is(1));
     }
     
     @Test
-    public void assertLoadUsers() {
+    void assertLoadUsers() {
         when(repository.getDirectly("/rules")).thenReturn(readYAML());
         Collection<ShardingSphereUser> actual = new GlobalRulePersistService(repository).loadUsers();
         assertThat(actual.size(), is(2));

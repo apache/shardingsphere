@@ -26,38 +26,38 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class PostgreSQLColumnTypeTest {
+class PostgreSQLColumnTypeTest {
     
     @Test
-    public void assertValueOfJDBCType() {
+    void assertValueOfJDBCType() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BIGINT);
         assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8));
     }
     
     @Test
-    public void assertValueOfJDBCTypeForBooleanType() {
+    void assertValueOfJDBCTypeForBooleanType() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BOOLEAN);
         assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_BOOL));
     }
     
     @Test
-    public void assertValueOfJDBCTypeExThrown() {
+    void assertValueOfJDBCTypeExThrown() {
         assertThrows(IllegalArgumentException.class, () -> PostgreSQLColumnType.valueOfJDBCType(Types.REF_CURSOR));
     }
     
     @Test
-    public void assertValueOf() {
+    void assertValueOf() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOf(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8.getValue());
         assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8));
     }
     
     @Test
-    public void assertValueOfExThrown() {
+    void assertValueOfExThrown() {
         assertThrows(PostgreSQLProtocolException.class, () -> PostgreSQLColumnType.valueOf(9999));
     }
     
     @Test
-    public void assertGetValue() {
+    void assertGetValue() {
         assertThat(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8.getValue(), is(20));
     }
 }

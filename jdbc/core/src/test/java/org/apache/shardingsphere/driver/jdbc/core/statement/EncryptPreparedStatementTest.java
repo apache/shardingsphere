@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class EncryptPreparedStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
+class EncryptPreparedStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
     
     private static final String INSERT_SQL = "INSERT INTO t_query_encrypt(id, pwd) VALUES(?,?)";
     
@@ -55,12 +55,12 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     private static final String SELECT_SQL_FOR_CONTAINS_COLUMN = "SELECT * FROM t_encrypt_contains_column WHERE plain_pwd = ?";
     
     @Test
-    public void assertSQLShow() {
+    void assertSQLShow() {
         assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test
-    public void assertInsertWithExecute() throws SQLException {
+    void assertInsertWithExecute() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(INSERT_SQL)) {
             preparedStatement.setObject(1, 2);
             preparedStatement.setObject(2, 'b');
@@ -70,7 +70,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertInsertWithBatchExecute() throws SQLException {
+    void assertInsertWithBatchExecute() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(INSERT_SQL)) {
             preparedStatement.setObject(1, 3);
             preparedStatement.setObject(2, 'c');
@@ -84,7 +84,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
+    void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.execute();
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
@@ -96,7 +96,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertInsertWithBatchExecuteWithGeneratedKeys() throws SQLException {
+    void assertInsertWithBatchExecuteWithGeneratedKeys() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setObject(1, 'b');
             preparedStatement.addBatch();
@@ -108,7 +108,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertDeleteWithExecute() throws SQLException {
+    void assertDeleteWithExecute() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(DELETE_SQL)) {
             preparedStatement.setObject(1, 'a');
             preparedStatement.setObject(2, 1);
@@ -118,7 +118,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertUpdateWithExecuteUpdate() throws SQLException {
+    void assertUpdateWithExecuteUpdate() throws SQLException {
         int result;
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(UPDATE_SQL)) {
             preparedStatement.setObject(1, 'f');
@@ -130,7 +130,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertSelectWithExecuteQuery() throws SQLException {
+    void assertSelectWithExecuteQuery() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(SELECT_SQL)) {
             preparedStatement.setObject(1, 'a');
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -144,7 +144,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertSelectWithOr() throws SQLException {
+    void assertSelectWithOr() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(SELECT_SQL_OR)) {
             preparedStatement.setObject(1, "plainValue");
             preparedStatement.setObject(2, 1);
@@ -158,7 +158,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertSelectWithMetaData() throws SQLException {
+    void assertSelectWithMetaData() throws SQLException {
         try (PreparedStatement prepareStatement = getEncryptConnection().prepareStatement(SELECT_SQL)) {
             prepareStatement.setObject(1, 'a');
             ResultSetMetaData metaData = prepareStatement.executeQuery().getMetaData();
@@ -171,7 +171,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertSelectWithExecuteWithProperties() throws SQLException {
+    void assertSelectWithExecuteWithProperties() throws SQLException {
         try (
                 PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(
                         SELECT_ALL_SQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
@@ -201,17 +201,17 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertQueryWithNull() {
+    void assertQueryWithNull() {
         assertThrows(SQLException.class, () -> getEncryptConnection().prepareStatement(null));
     }
     
     @Test
-    public void assertQueryWithEmptyString() {
+    void assertQueryWithEmptyString() {
         assertThrows(SQLException.class, () -> getEncryptConnection().prepareStatement(""));
     }
     
     @Test
-    public void assertSelectWithInOperator() throws SQLException {
+    void assertSelectWithInOperator() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(SELECT_SQL_WITH_IN_OPERATOR)) {
             preparedStatement.setObject(1, 'a');
             ResultSetMetaData metaData = preparedStatement.executeQuery().getMetaData();
@@ -224,7 +224,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    public void assertSelectWithPlainColumnForContainsColumn() throws SQLException {
+    void assertSelectWithPlainColumnForContainsColumn() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnectionWithProps().prepareStatement(SELECT_SQL_FOR_CONTAINS_COLUMN)) {
             preparedStatement.setObject(1, "plainValue");
             ResultSetMetaData metaData = preparedStatement.executeQuery().getMetaData();

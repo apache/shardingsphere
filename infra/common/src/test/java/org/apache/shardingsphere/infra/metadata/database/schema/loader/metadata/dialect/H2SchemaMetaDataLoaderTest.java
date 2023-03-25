@@ -42,10 +42,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class H2SchemaMetaDataLoaderTest {
+class H2SchemaMetaDataLoaderTest {
     
     @Test
-    public void assertLoadWithoutTables() throws SQLException {
+    void assertLoadWithoutTables() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
@@ -69,7 +69,7 @@ public final class H2SchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithTables() throws SQLException {
+    void assertLoadWithTables() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(

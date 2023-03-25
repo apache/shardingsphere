@@ -33,10 +33,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class YamlTrafficRuleConfigurationSwapperTest {
+class YamlTrafficRuleConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlTrafficRuleConfiguration actual = new YamlTrafficRuleConfigurationSwapper().swapToYamlConfiguration(createTrafficRuleConfiguration());
         assertThat(actual.getTrafficStrategies().size(), is(1));
         assertTrue(actual.getTrafficStrategies().containsKey("group_by_traffic"));
@@ -67,7 +67,7 @@ public final class YamlTrafficRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         TrafficRuleConfiguration actual = new YamlTrafficRuleConfigurationSwapper().swapToObject(createYamlTrafficRuleConfiguration());
         assertThat(actual.getTrafficStrategies().size(), is(1));
         TrafficStrategyConfiguration strategyConfig = actual.getTrafficStrategies().iterator().next();

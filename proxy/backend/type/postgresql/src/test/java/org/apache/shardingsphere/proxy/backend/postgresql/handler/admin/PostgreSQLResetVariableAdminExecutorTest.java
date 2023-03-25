@@ -26,10 +26,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 
-public final class PostgreSQLResetVariableAdminExecutorTest {
+class PostgreSQLResetVariableAdminExecutorTest {
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement("key"));
         try (MockedStatic<TypedSPILoader> mockStatic = mockStatic(TypedSPILoader.class)) {
             PostgreSQLSessionVariableHandler mockHandler = mock(PostgreSQLSessionVariableHandler.class);

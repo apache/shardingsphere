@@ -31,15 +31,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class TokenUtilsTest {
+class TokenUtilsTest {
     
     @Test
-    public void assertGetLogicAndActualTablesFromRouteUnit() {
+    void assertGetLogicAndActualTablesFromRouteUnit() {
         assertThat(TokenUtils.getLogicAndActualTables(getRouteUnit(), mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class)).get("logic_order_table"), is("table_order_0"));
     }
     
     @Test
-    public void assertGetLogicAndActualTablesFromShardingRule() {
+    void assertGetLogicAndActualTablesFromShardingRule() {
         // TODO add more test case
     }
     

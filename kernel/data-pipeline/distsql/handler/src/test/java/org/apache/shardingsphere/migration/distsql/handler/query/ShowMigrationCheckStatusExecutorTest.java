@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.junit.jupiter.api.Test;
@@ -30,12 +29,12 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShowMigrationCheckStatusExecutorTest {
+class ShowMigrationCheckStatusExecutorTest {
     
     private final ShowMigrationCheckStatusExecutor executor = new ShowMigrationCheckStatusExecutor();
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(9));
         Iterator<String> iterator = columns.iterator();
@@ -51,9 +50,8 @@ public final class ShowMigrationCheckStatusExecutorTest {
     }
     
     @Test
-    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
-    public void assertConvert() {
+    void assertConvert() throws ReflectiveOperationException {
         ConsistencyCheckJobItemInfo jobItemInfo = new ConsistencyCheckJobItemInfo();
         jobItemInfo.setTableNames("t_order");
         jobItemInfo.setCheckSuccess(true);

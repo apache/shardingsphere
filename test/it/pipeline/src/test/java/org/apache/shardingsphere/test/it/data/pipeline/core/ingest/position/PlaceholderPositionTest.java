@@ -23,17 +23,17 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PlaceholderPositionTest {
+class PlaceholderPositionTest {
     
     @Test
-    public void assertCompareTo() {
+    void assertCompareTo() {
         PlaceholderPosition position1 = new PlaceholderPosition();
         PlaceholderPosition position2 = new PlaceholderPosition();
         assertThat(position1.compareTo(position2), is(1));
     }
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         assertThat(new PlaceholderPosition().toString(), is(""));
     }
 }

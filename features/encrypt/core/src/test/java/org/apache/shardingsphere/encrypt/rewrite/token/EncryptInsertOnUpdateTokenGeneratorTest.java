@@ -51,12 +51,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptInsertOnUpdateTokenGeneratorTest {
+class EncryptInsertOnUpdateTokenGeneratorTest {
     
     private EncryptInsertOnUpdateTokenGenerator generator;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         generator = new EncryptInsertOnUpdateTokenGenerator();
         generator.setEncryptRule(mockEncryptRule());
     }
@@ -71,17 +71,17 @@ public final class EncryptInsertOnUpdateTokenGeneratorTest {
     }
     
     @Test
-    public void assertIsNotGenerateSQLTokenWithNotInsertStatement() {
+    void assertIsNotGenerateSQLTokenWithNotInsertStatement() {
         assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class)));
     }
     
     @Test
-    public void assertIsNotGenerateSQLTokenWithoutOnDuplicateKeyColumns() {
+    void assertIsNotGenerateSQLTokenWithoutOnDuplicateKeyColumns() {
         assertFalse(generator.isGenerateSQLToken(mock(InsertStatementContext.class)));
     }
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         when(insertStatementContext.getSqlStatement()).thenReturn(mock(MySQLInsertStatement.class));
         when(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(
@@ -90,7 +90,7 @@ public final class EncryptInsertOnUpdateTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokens() {
+    void assertGenerateSQLTokens() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.of("db_test"));
         MySQLInsertStatement insertStatement = mock(MySQLInsertStatement.class, RETURNS_DEEP_STUBS);

@@ -32,11 +32,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class CircuitBreakProxyStateTest {
+class CircuitBreakProxyStateTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         DatabaseProtocolFrontendEngine engine = mock(DatabaseProtocolFrontendEngine.class, RETURNS_DEEP_STUBS);
         ConnectionSession connectionSession = mock(ConnectionSession.class);

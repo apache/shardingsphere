@@ -54,13 +54,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class SetDistVariableUpdaterTest {
+class SetDistVariableUpdaterTest {
     
     @Mock
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertExecuteWithTransactionType() {
+    void assertExecuteWithTransactionType() {
         SetDistVariableStatement statement = new SetDistVariableStatement("transaction_type", "local");
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
@@ -69,7 +69,7 @@ public final class SetDistVariableUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithAgent() {
+    void assertExecuteWithAgent() {
         SetDistVariableStatement statement = new SetDistVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         updater.executeUpdate(connectionSession, statement);
@@ -78,7 +78,7 @@ public final class SetDistVariableUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithConfigurationKey() {
+    void assertExecuteWithConfigurationKey() {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         ContextManager contextManager = mockContextManager();
@@ -90,7 +90,7 @@ public final class SetDistVariableUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithInternalConfigurationKey() {
+    void assertExecuteWithInternalConfigurationKey() {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         ContextManager contextManager = mockContextManager();
@@ -102,7 +102,7 @@ public final class SetDistVariableUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithSystemLogLevel() {
+    void assertExecuteWithSystemLogLevel() {
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debug");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         ContextManager contextManager = mockContextManager();
@@ -114,7 +114,7 @@ public final class SetDistVariableUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithWrongSystemLogLevel() {
+    void assertExecuteWithWrongSystemLogLevel() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");

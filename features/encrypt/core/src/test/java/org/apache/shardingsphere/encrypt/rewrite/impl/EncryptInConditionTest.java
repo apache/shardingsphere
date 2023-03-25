@@ -29,10 +29,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EncryptInConditionTest {
+class EncryptInConditionTest {
     
     @Test
-    public void assertGetConditionValues() {
+    void assertGetConditionValues() {
         List<ExpressionSegment> expressions = Arrays.asList(new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 2));
         List<Object> actual = new EncryptInCondition("col", null, 0, 0, expressions).getValues(Collections.emptyList());
         assertThat(actual.size(), is(2));

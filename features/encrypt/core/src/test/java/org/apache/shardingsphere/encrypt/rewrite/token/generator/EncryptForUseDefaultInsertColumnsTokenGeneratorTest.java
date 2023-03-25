@@ -25,17 +25,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends EncryptGeneratorBaseTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(createEncryptRule());
         assertFalse(tokenGenerator.isGenerateSQLToken(createInsertStatementContext(Collections.emptyList())));
     }
     
     @Test
-    public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
+    void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setPreviousSQLTokens(Collections.emptyList());
@@ -43,7 +43,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends E
     }
     
     @Test
-    public void assertGenerateSQLTokenFromPreviousSQLTokens() {
+    void assertGenerateSQLTokenFromPreviousSQLTokens() {
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setPreviousSQLTokens(getPreviousSQLTokens());

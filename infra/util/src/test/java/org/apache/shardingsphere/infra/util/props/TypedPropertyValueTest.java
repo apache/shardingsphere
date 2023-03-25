@@ -28,53 +28,53 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class TypedPropertyValueTest {
+class TypedPropertyValueTest {
     
     @Test
-    public void assertGetBooleanValue() throws TypedPropertyValueException {
+    void assertGetBooleanValue() throws TypedPropertyValueException {
         assertTrue((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_VALUE, Boolean.TRUE.toString()).getValue());
         assertTrue((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE, Boolean.TRUE.toString()).getValue());
     }
     
     @Test
-    public void assertGetInvalidBooleanValue() throws TypedPropertyValueException {
+    void assertGetInvalidBooleanValue() throws TypedPropertyValueException {
         assertFalse((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_VALUE, "test").getValue());
     }
     
     @Test
-    public void assertGetIntValue() throws TypedPropertyValueException {
+    void assertGetIntValue() throws TypedPropertyValueException {
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.INT_VALUE, "1000").getValue(), is(1000));
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.INT_OBJECT_VALUE, "1000").getValue(), is(1000));
     }
     
     @Test
-    public void assertGetInvalidIntValue() {
+    void assertGetInvalidIntValue() {
         assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(TypedPropertyKeyFixture.INT_VALUE, "test"));
     }
     
     @Test
-    public void assertGetLongValue() throws TypedPropertyValueException {
+    void assertGetLongValue() throws TypedPropertyValueException {
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.LONG_VALUE, "10000").getValue(), is(10000L));
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.LONG_OBJECT_VALUE, "10000").getValue(), is(10000L));
     }
     
     @Test
-    public void assertGetInvalidLongValue() {
+    void assertGetInvalidLongValue() {
         assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(TypedPropertyKeyFixture.LONG_VALUE, "test"));
     }
     
     @Test
-    public void assertGetStringValue() throws TypedPropertyValueException {
+    void assertGetStringValue() throws TypedPropertyValueException {
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.STRING_VALUE, "new_value").getValue(), is("new_value"));
     }
     
     @Test
-    public void assertGetEnumValue() throws TypedPropertyValueException {
+    void assertGetEnumValue() throws TypedPropertyValueException {
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.ENUM_VALUE, TypedPropertyEnumFixture.FOO.name()).getValue(), is(TypedPropertyEnumFixture.FOO));
     }
     
     @Test
-    public void assertGetInvalidEnumValue() {
+    void assertGetInvalidEnumValue() {
         assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(TypedPropertyKeyFixture.ENUM_VALUE, "BAR"));
     }
 }

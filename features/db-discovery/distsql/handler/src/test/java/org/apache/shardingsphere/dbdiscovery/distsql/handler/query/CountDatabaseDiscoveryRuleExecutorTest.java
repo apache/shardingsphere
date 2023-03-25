@@ -39,10 +39,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CountDatabaseDiscoveryRuleExecutorTest {
+class CountDatabaseDiscoveryRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<CountDatabaseDiscoveryRuleStatement> executor = new CountDatabaseDiscoveryRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountDatabaseDiscoveryRuleStatement.class));
         assertThat(actual.size(), is(1));
@@ -54,7 +54,7 @@ public final class CountDatabaseDiscoveryRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<CountDatabaseDiscoveryRuleStatement> executor = new CountDatabaseDiscoveryRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));

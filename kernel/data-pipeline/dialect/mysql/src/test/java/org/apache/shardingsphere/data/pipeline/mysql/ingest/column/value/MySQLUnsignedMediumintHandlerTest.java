@@ -25,12 +25,12 @@ import java.io.Serializable;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLUnsignedMediumintHandlerTest {
+class MySQLUnsignedMediumintHandlerTest {
     
     private final MySQLUnsignedMediumintHandler handler = new MySQLUnsignedMediumintHandler();
     
     @Test
-    public void assertHandle() {
+    void assertHandle() {
         Serializable actual = handler.handle(1);
         assertThat(actual, is(1));
         actual = handler.handle(-1);

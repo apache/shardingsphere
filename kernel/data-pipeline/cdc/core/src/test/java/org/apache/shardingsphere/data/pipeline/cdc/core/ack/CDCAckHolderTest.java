@@ -32,10 +32,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class CDCAckHolderTest {
+class CDCAckHolderTest {
     
     @Test
-    public void assertBindAckIdWithPositionAndAck() {
+    void assertBindAckIdWithPositionAndAck() {
         CDCAckHolder cdcAckHolder = CDCAckHolder.getInstance();
         final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
         SocketSinkImporter socketSinkImporter = mock(SocketSinkImporter.class);
@@ -50,7 +50,7 @@ public final class CDCAckHolderTest {
     }
     
     @Test
-    public void assertCleanUpTimeoutAckId() {
+    void assertCleanUpTimeoutAckId() {
         CDCAckHolder cdcAckHolder = CDCAckHolder.getInstance();
         final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
         SocketSinkImporter socketSinkImporter = mock(SocketSinkImporter.class);

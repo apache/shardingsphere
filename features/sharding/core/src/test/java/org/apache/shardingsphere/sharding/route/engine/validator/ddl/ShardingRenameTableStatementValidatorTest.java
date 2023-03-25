@@ -51,13 +51,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingRenameTableStatementValidatorTest {
+class ShardingRenameTableStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
     
     @Test
-    public void assertPreValidateShardingTable() {
+    void assertPreValidateShardingTable() {
         SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.tableRuleExists(argThat(tableNames -> tableNames.contains("t_order") || tableNames.contains("t_user_order")))).thenReturn(true);
@@ -66,7 +66,7 @@ public final class ShardingRenameTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateBroadcastTable() {
+    void assertPreValidateBroadcastTable() {
         SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isBroadcastTable(eq("t_order"))).thenReturn(true);
@@ -75,14 +75,14 @@ public final class ShardingRenameTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateNormalCase() {
+    void assertPreValidateNormalCase() {
         SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_not_sharding_table", "t_not_sharding_table_new");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         new ShardingRenameTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
     
     @Test
-    public void assertPostValidateDifferentRouteUnitsAndDataNodesSize() {
+    void assertPostValidateDifferentRouteUnitsAndDataNodesSize() {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(mock(RouteUnit.class));
         TableRule tableRule = mock(TableRule.class);
@@ -97,7 +97,7 @@ public final class ShardingRenameTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateNormalCase() {
+    void assertPostValidateNormalCase() {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnits().add(mock(RouteUnit.class));
         TableRule tableRule = mock(TableRule.class);

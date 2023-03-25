@@ -46,21 +46,21 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ConsistencyCheckJobAPITest {
+class ConsistencyCheckJobAPITest {
     
     private static ConsistencyCheckJobAPI checkJobAPI;
     
     private static MigrationJobAPI migrationJobAPI;
     
     @BeforeAll
-    public static void beforeClass() {
+    static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
         checkJobAPI = new ConsistencyCheckJobAPI();
         migrationJobAPI = new MigrationJobAPI();
     }
     
     @Test
-    public void assertCreateJobConfig() {
+    void assertCreateJobConfig() {
         String migrationJobId = "j0101test";
         String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(migrationJobId, null, null));
         ConsistencyCheckJobConfiguration jobConfig = checkJobAPI.getJobConfiguration(checkJobId);
@@ -73,7 +73,7 @@ public final class ConsistencyCheckJobAPITest {
     }
     
     @Test
-    public void assertGetLatestDataConsistencyCheckResult() {
+    void assertGetLatestDataConsistencyCheckResult() {
         Optional<String> jobId = migrationJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(jobId.get(), null, null));
@@ -87,7 +87,7 @@ public final class ConsistencyCheckJobAPITest {
     }
     
     @Test
-    public void assertDropByParentJobId() {
+    void assertDropByParentJobId() {
         String parentJobId = getParentJobId(JobConfigurationBuilder.createJobConfiguration());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         int expectedSequence = 1;

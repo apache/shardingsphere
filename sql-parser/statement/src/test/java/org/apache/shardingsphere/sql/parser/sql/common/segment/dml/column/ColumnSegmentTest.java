@@ -24,27 +24,27 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ColumnSegmentTest {
+class ColumnSegmentTest {
     
     @Test
-    public void assertGetQualifiedNameWithoutOwner() {
+    void assertGetQualifiedNameWithoutOwner() {
         assertThat(new ColumnSegment(0, 0, new IdentifierValue("col")).getQualifiedName(), is("col"));
     }
     
     @Test
-    public void assertGetQualifiedNameWithOwner() {
+    void assertGetQualifiedNameWithOwner() {
         ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("col"));
         actual.setOwner(new OwnerSegment(0, 0, new IdentifierValue("tbl")));
         assertThat(actual.getQualifiedName(), is("tbl.col"));
     }
     
     @Test
-    public void assertGetExpressionWithoutOwner() {
+    void assertGetExpressionWithoutOwner() {
         assertThat(new ColumnSegment(0, 0, new IdentifierValue("`col`")).getExpression(), is("col"));
     }
     
     @Test
-    public void assertGetExpressionWithOwner() {
+    void assertGetExpressionWithOwner() {
         ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("`col`"));
         actual.setOwner(new OwnerSegment(0, 0, new IdentifierValue("`tbl`")));
         assertThat(actual.getExpression(), is("tbl.col"));

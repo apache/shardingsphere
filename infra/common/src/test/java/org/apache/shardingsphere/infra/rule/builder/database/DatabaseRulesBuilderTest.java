@@ -32,10 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class DatabaseRulesBuilderTest {
+class DatabaseRulesBuilderTest {
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         Iterator<ShardingSphereRule> actual = DatabaseRulesBuilder.build(
                 "foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration())), mock(InstanceContext.class)).iterator();
         assertThat(actual.next(), instanceOf(FixtureDatabaseRule.class));

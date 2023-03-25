@@ -47,10 +47,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class TableTokenGeneratorTest {
+class TableTokenGeneratorTest {
     
     @Test
-    public void assertIsGenerateSQLTokenWhenConfigAllBindingTables() {
+    void assertIsGenerateSQLTokenWhenConfigAllBindingTables() {
         TableTokenGenerator generator = new TableTokenGenerator();
         ShardingRule shardingRule = mock(ShardingRule.class);
         Collection<String> logicTableNames = Arrays.asList("t_order", "t_order_item");
@@ -63,7 +63,7 @@ public final class TableTokenGeneratorTest {
     }
     
     @Test
-    public void assertIsGenerateSQLTokenWhenContainsTableSharding() {
+    void assertIsGenerateSQLTokenWhenContainsTableSharding() {
         TableTokenGenerator generator = new TableTokenGenerator();
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.containsTableSharding()).thenReturn(true);
@@ -74,7 +74,7 @@ public final class TableTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokenWhenSQLStatementIsTableAvailable() {
+    void assertGenerateSQLTokenWhenSQLStatementIsTableAvailable() {
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findTableRule(anyString())).thenReturn(Optional.of(mock(TableRule.class)));
         TableTokenGenerator generator = new TableTokenGenerator();
@@ -87,7 +87,7 @@ public final class TableTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokenWhenSQLStatementIsNotTableAvailable() {
+    void assertGenerateSQLTokenWhenSQLStatementIsNotTableAvailable() {
         TableTokenGenerator generator = new TableTokenGenerator();
         SQLStatementContext<CreateDatabaseStatement> sqlStatementContext = mock(CreateDatabaseStatementContext.class);
         assertThat(generator.generateSQLTokens(sqlStatementContext), is(Collections.emptyList()));

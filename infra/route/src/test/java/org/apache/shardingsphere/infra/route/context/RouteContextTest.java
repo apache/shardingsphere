@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class RouteContextTest {
+class RouteContextTest {
     
     private static final String DATASOURCE_NAME_0 = "ds0";
     
@@ -52,7 +52,7 @@ public final class RouteContextTest {
     private RouteContext notContainsTableShardingRouteContext;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         singleRouteContext = new RouteContext();
         multiRouteContext = new RouteContext();
         notContainsTableShardingRouteContext = new RouteContext();
@@ -70,13 +70,13 @@ public final class RouteContextTest {
     }
     
     @Test
-    public void assertIsSingleRouting() {
+    void assertIsSingleRouting() {
         assertTrue(singleRouteContext.isSingleRouting());
         assertFalse(multiRouteContext.isSingleRouting());
     }
     
     @Test
-    public void assertGetActualDataSourceNames() {
+    void assertGetActualDataSourceNames() {
         Collection<String> actual = singleRouteContext.getActualDataSourceNames();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(DATASOURCE_NAME_0));
@@ -88,14 +88,14 @@ public final class RouteContextTest {
     }
     
     @Test
-    public void assertGetActualTableNameGroups() {
+    void assertGetActualTableNameGroups() {
         List<Set<String>> actual = multiRouteContext.getActualTableNameGroups(DATASOURCE_NAME_1, new HashSet<>(Collections.singleton(LOGIC_TABLE)));
         assertThat(actual.size(), is(1));
         assertTrue(actual.get(0).contains(ACTUAL_TABLE));
     }
     
     @Test
-    public void assertGetDataSourceLogicTablesMap() {
+    void assertGetDataSourceLogicTablesMap() {
         List<String> dataSources = Arrays.asList(DATASOURCE_NAME_0, DATASOURCE_NAME_1);
         Map<String, Set<String>> actual = multiRouteContext.getDataSourceLogicTablesMap(dataSources);
         assertThat(actual.size(), is(2));
@@ -106,25 +106,25 @@ public final class RouteContextTest {
     }
     
     @Test
-    public void assertFindTableMapper() {
+    void assertFindTableMapper() {
         Optional<RouteMapper> actual = multiRouteContext.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE)));
     }
     
     @Test
-    public void assertTableMapperNotFound() {
+    void assertTableMapperNotFound() {
         assertFalse(singleRouteContext.findTableMapper(DATASOURCE_NAME_1, ACTUAL_TABLE).isPresent());
     }
     
     @Test
-    public void assertContainsTableShardingWhenContainsTableSharding() {
+    void assertContainsTableShardingWhenContainsTableSharding() {
         assertTrue(singleRouteContext.containsTableSharding());
         assertTrue(multiRouteContext.containsTableSharding());
     }
     
     @Test
-    public void assertContainsTableShardingWhenNotContainsTableSharding() {
+    void assertContainsTableShardingWhenNotContainsTableSharding() {
         assertFalse(notContainsTableShardingRouteContext.containsTableSharding());
     }
 }

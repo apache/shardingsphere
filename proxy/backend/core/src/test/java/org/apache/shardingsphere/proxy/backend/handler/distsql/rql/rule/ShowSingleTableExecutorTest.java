@@ -50,13 +50,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ShowSingleTableExecutorTest {
+class ShowSingleTableExecutorTest {
     
     @Mock
     private ShardingSphereDatabase database;
     
     @BeforeEach
-    public void before() {
+    void before() {
         Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
         singleTableDataNodeMap.put("t_order", Collections.singletonList(new DataNode("ds_1", "t_order")));
         singleTableDataNodeMap.put("t_order_item", Collections.singletonList(new DataNode("ds_2", "t_order_item")));
@@ -65,7 +65,7 @@ public final class ShowSingleTableExecutorTest {
     }
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowSingleTableStatement.class));
         assertThat(actual.size(), is(2));
@@ -79,7 +79,7 @@ public final class ShowSingleTableExecutorTest {
     }
     
     @Test
-    public void assertGetRowDataMultipleRules() {
+    void assertGetRowDataMultipleRules() {
         Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>();
         singleTableDataNodeMap.put("t_order_multiple", Collections.singletonList(new DataNode("ds_1_multiple", "t_order_multiple")));
         singleTableDataNodeMap.put("t_order_item_multiple", Collections.singletonList(new DataNode("ds_2_multiple", "t_order_item_multiple")));
@@ -103,7 +103,7 @@ public final class ShowSingleTableExecutorTest {
     }
     
     @Test
-    public void assertGetRowDataWithOtherRules() {
+    void assertGetRowDataWithOtherRules() {
         addShardingSphereRule(new ShadowRule(mock(ShadowRuleConfiguration.class)));
         RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowSingleTableStatement.class));
@@ -118,7 +118,7 @@ public final class ShowSingleTableExecutorTest {
     }
     
     @Test
-    public void assertGetSingleTableWithLikeLiteral() {
+    void assertGetSingleTableWithLikeLiteral() {
         RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
         ShowSingleTableStatement statement = new ShowSingleTableStatement(null, "%item", null);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, statement);
@@ -130,7 +130,7 @@ public final class ShowSingleTableExecutorTest {
     }
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         RQLExecutor<ShowSingleTableStatement> executor = new ShowSingleTableExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(2));

@@ -31,10 +31,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class IndexMetaDataLoaderTest {
+class IndexMetaDataLoaderTest {
     
     @Test
-    public void assertLoad() throws SQLException {
+    void assertLoad() throws SQLException {
         Collection<IndexMetaData> actual = IndexMetaDataLoader.load(mockConnection(), "tbl");
         assertThat(actual.size(), is(1));
         IndexMetaData indexMetaData = actual.iterator().next();

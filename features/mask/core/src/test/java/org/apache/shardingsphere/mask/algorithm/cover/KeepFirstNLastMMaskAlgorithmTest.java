@@ -27,40 +27,40 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class KeepFirstNLastMMaskAlgorithmTest {
+class KeepFirstNLastMMaskAlgorithmTest {
     
     private KeepFirstNLastMMaskAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", "5"), new Property("replace-char", "*")));
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         assertThat(maskAlgorithm.mask("abc123456"), is("ab**23456"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueLengthLessThenFirstNLastMSum() {
+    void assertMaskWhenPlainValueLengthLessThenFirstNLastMSum() {
         assertThat(maskAlgorithm.mask("abc"), is("abc"));
     }
     
     @Test
-    public void assertInitWhenFirstNIsEmpty() {
+    void assertInitWhenFirstNIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenLastMIsEmpty() {
+    void assertInitWhenLastMIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", ""), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenReplaceCharIsEmpty() {
+    void assertInitWhenReplaceCharIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", "5"), new Property("replace-char", ""))));
     }

@@ -32,10 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ClusterStatementHandlerTest {
+class ClusterStatementHandlerTest {
     
     @Test
-    public void assertGetSimpleTableSegmentWithTableSegment() {
+    void assertGetSimpleTableSegmentWithTableSegment() {
         PostgreSQLClusterStatement statement = new PostgreSQLClusterStatement();
         statement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> actual = ClusterStatementHandler.getSimpleTableSegment(statement);
@@ -43,14 +43,14 @@ public final class ClusterStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSimpleTableSegmentWithoutTableSegment() {
+    void assertGetSimpleTableSegmentWithoutTableSegment() {
         ClusterStatement statement = mock(ClusterStatement.class);
         Optional<SimpleTableSegment> actual = ClusterStatementHandler.getSimpleTableSegment(statement);
         assertFalse(actual.isPresent());
     }
     
     @Test
-    public void assertGetIndexSegmentWithIndexSegment() {
+    void assertGetIndexSegmentWithIndexSegment() {
         PostgreSQLClusterStatement statement = new PostgreSQLClusterStatement();
         statement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue(""))));
         Optional<IndexSegment> actual = ClusterStatementHandler.getIndexSegment(statement);
@@ -58,7 +58,7 @@ public final class ClusterStatementHandlerTest {
     }
     
     @Test
-    public void assertGetIndexSegmentWithoutIndexSegment() {
+    void assertGetIndexSegmentWithoutIndexSegment() {
         ClusterStatement statement = mock(ClusterStatement.class);
         Optional<IndexSegment> actual = ClusterStatementHandler.getIndexSegment(statement);
         assertFalse(actual.isPresent());

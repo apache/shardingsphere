@@ -57,7 +57,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ProjectionsTokenGeneratorTest {
+class ProjectionsTokenGeneratorTest {
     
     private static final String TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION = "TEST_AGGREGATION_DISTINCT_PROJECTION_DISTINCT_INNER_EXPRESSION";
     
@@ -77,7 +77,7 @@ public final class ProjectionsTokenGeneratorTest {
     private RouteUnit routeUnit;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         RouteMapper routeMapper = mock(RouteMapper.class);
         when(routeMapper.getLogicName()).thenReturn(TEST_LOGIC_TABLE_NAME);
         when(routeMapper.getActualName()).thenReturn("TEST_ACTUAL_TABLE_NAME");
@@ -85,17 +85,17 @@ public final class ProjectionsTokenGeneratorTest {
     }
     
     @Test
-    public void assertIsGenerateInsertToken() {
+    void assertIsGenerateInsertToken() {
         assertFalse(getProjectionsTokenGenerator().isGenerateSQLToken(mock(InsertStatementContext.class)));
     }
     
     @Test
-    public void assertIsNotGenerateSelectToken() {
+    void assertIsNotGenerateSelectToken() {
         assertFalse(getProjectionsTokenGenerator().isGenerateSQLToken(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
-    public void assertIsGenerateSelectToken() {
+    void assertIsGenerateSelectToken() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         AggregationProjection aggregationProjection = getAggregationProjection();
         when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singleton(aggregationProjection));
@@ -103,7 +103,7 @@ public final class ProjectionsTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLToken() {
+    void assertGenerateSQLToken() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         Collection<Projection> projections = Arrays.asList(getAggregationProjection(), getDerivedProjection(), getOtherDerivedProjection());
         when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(projections);

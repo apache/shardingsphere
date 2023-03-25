@@ -21,20 +21,20 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class RegularUtilsTest {
+class RegularUtilsTest {
     
     @Test
-    public void assertMatchesWithUpperCaseRegex() {
+    void assertMatchesWithUpperCaseRegex() {
         assertTrue(RegularUtils.matchesCaseInsensitive("T.ORDER", "t_order"));
     }
     
     @Test
-    public void assertMatchesWithLowerCaseRegex() {
+    void assertMatchesWithLowerCaseRegex() {
         assertTrue(RegularUtils.matchesCaseInsensitive("t.order", "t_order"));
     }
     
     @Test
-    public void assertMatchesWithUpperCaseInput() {
+    void assertMatchesWithUpperCaseInput() {
         assertTrue(RegularUtils.matchesCaseInsensitive("t.order", "T_ORDER"));
     }
 }

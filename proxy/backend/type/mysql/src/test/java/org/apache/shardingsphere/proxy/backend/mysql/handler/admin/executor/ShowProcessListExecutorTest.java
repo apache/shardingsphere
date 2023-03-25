@@ -41,10 +41,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ShowProcessListExecutorTest {
+class ShowProcessListExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException, ReflectiveOperationException {
+    void assertExecute() throws SQLException, ReflectiveOperationException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShowProcessListExecutor showProcessListExecutor = new ShowProcessListExecutor();

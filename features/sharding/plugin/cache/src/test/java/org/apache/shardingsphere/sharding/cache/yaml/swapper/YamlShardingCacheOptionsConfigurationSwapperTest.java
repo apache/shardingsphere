@@ -25,10 +25,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlShardingCacheOptionsConfigurationSwapperTest {
+class YamlShardingCacheOptionsConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlShardingCacheOptionsConfiguration actual = new YamlShardingCacheOptionsConfigurationSwapper().swapToYamlConfiguration(new ShardingCacheOptions(true, 128, 1024));
         assertTrue(actual.isSoftValues());
         assertThat(actual.getInitialCapacity(), is(128));
@@ -36,7 +36,7 @@ public final class YamlShardingCacheOptionsConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlShardingCacheOptionsConfiguration input = new YamlShardingCacheOptionsConfiguration();
         input.setSoftValues(true);
         input.setInitialCapacity(256);

@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class SQLRewriteContextTest {
+class SQLRewriteContextTest {
     
     @Mock
     private CommonSQLStatementContext<?> sqlStatementContext;
@@ -64,13 +64,13 @@ public final class SQLRewriteContextTest {
     
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(optionalSQLTokenGenerator.generateSQLToken(sqlStatementContext)).thenReturn(sqlToken);
         when(collectionSQLTokenGenerator.generateSQLTokens(sqlStatementContext)).thenReturn(Collections.singleton(sqlToken));
     }
     
     @Test
-    public void assertInsertStatementContext() {
+    void assertInsertStatementContext() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getInsertSelectContext()).thenReturn(null);
@@ -80,7 +80,7 @@ public final class SQLRewriteContextTest {
     }
     
     @Test
-    public void assertNotInsertStatementContext() {
+    void assertNotInsertStatementContext() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(((TableAvailable) statementContext).getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
@@ -89,7 +89,7 @@ public final class SQLRewriteContextTest {
     }
     
     @Test
-    public void assertGenerateOptionalSQLToken() {
+    void assertGenerateOptionalSQLToken() {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap("test", mock(ShardingSphereSchema.class)), sqlStatementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1), mock(ConnectionContext.class));
         sqlRewriteContext.addSQLTokenGenerators(Collections.singleton(optionalSQLTokenGenerator));
@@ -99,7 +99,7 @@ public final class SQLRewriteContextTest {
     }
     
     @Test
-    public void assertGenerateCollectionSQLToken() {
+    void assertGenerateCollectionSQLToken() {
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap("test", mock(ShardingSphereSchema.class)), sqlStatementContext, "INSERT INTO tbl VALUES (?)", Collections.singletonList(1), mock(ConnectionContext.class));
         sqlRewriteContext.addSQLTokenGenerators(Collections.singleton(collectionSQLTokenGenerator));

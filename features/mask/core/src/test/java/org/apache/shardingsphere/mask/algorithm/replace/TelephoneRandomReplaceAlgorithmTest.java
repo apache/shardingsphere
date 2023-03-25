@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class TelephoneRandomReplaceAlgorithmTest {
+class TelephoneRandomReplaceAlgorithmTest {
     
     private static final Collection<String> DEFAULT_NETWORK_NUMBERS = Arrays.asList("130", "131", "132", "133", "134", "135", "136", "137", "138", "139", "150", "151", "152", "153", "155", "156",
             "157", "158", "159", "166", "170", "176", "177", "178", "180", "181", "182", "183", "184", "185", "186", "187", "188", "189", "191", "198", "199");
@@ -44,13 +44,13 @@ public final class TelephoneRandomReplaceAlgorithmTest {
     private TelephoneRandomReplaceAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new TelephoneRandomReplaceAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("network-numbers", "130, 130, 155,1702")));
     }
     
     @Test
-    public void assertInitWithEmptyProps() {
+    void assertInitWithEmptyProps() {
         maskAlgorithm.init(new Properties());
         Optional<Object> actual = ReflectionUtil.getFieldValue(maskAlgorithm, "networkNumbers");
         assertTrue(actual.isPresent());
@@ -58,18 +58,18 @@ public final class TelephoneRandomReplaceAlgorithmTest {
     }
     
     @Test
-    public void assertMaskWithNullPlaintext() {
+    void assertMaskWithNullPlaintext() {
         assertNull(maskAlgorithm.mask(null));
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         assertThat(maskAlgorithm.mask(""), is(""));
         assertThat(maskAlgorithm.mask("13012345678"), not("13012345678"));
     }
     
     @Test
-    public void assertInitWhenConfigNotNumberProps() {
+    void assertInitWhenConfigNotNumberProps() {
         assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build(new Property("network-numbers", "130, x130, 155,1702"))));
     }
 }

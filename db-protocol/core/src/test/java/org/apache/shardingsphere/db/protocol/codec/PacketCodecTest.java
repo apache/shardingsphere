@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PacketCodecTest {
+class PacketCodecTest {
     
     @Mock
     private DatabasePacketCodecEngine databasePacketCodecEngine;
@@ -48,12 +48,12 @@ public final class PacketCodecTest {
     private PacketCodec packetCodec;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         packetCodec = new PacketCodec(databasePacketCodecEngine);
     }
     
     @Test
-    public void assertDecodeWithValidHeader() {
+    void assertDecodeWithValidHeader() {
         when(byteBuf.readableBytes()).thenReturn(1);
         when(databasePacketCodecEngine.isValidHeader(1)).thenReturn(true);
         packetCodec.decode(context, byteBuf, Collections.emptyList());
@@ -61,7 +61,7 @@ public final class PacketCodecTest {
     }
     
     @Test
-    public void assertDecodeWithInvalidHeader() {
+    void assertDecodeWithInvalidHeader() {
         when(byteBuf.readableBytes()).thenReturn(1);
         when(databasePacketCodecEngine.isValidHeader(1)).thenReturn(false);
         packetCodec.decode(context, byteBuf, Collections.emptyList());
@@ -70,7 +70,7 @@ public final class PacketCodecTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertEncode() {
+    void assertEncode() {
         DatabasePacket databasePacket = mock(DatabasePacket.class);
         packetCodec.encode(context, databasePacket, byteBuf);
         verify(databasePacketCodecEngine).encode(context, databasePacket, byteBuf);

@@ -23,16 +23,16 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class AgentReflectionUtilsTest {
+class AgentReflectionUtilsTest {
     
     @Test
-    public void assertGetFieldValue() {
+    void assertGetFieldValue() {
         ReflectionFixture reflectionFixture = new ReflectionFixture("foo");
         assertThat(AgentReflectionUtils.getFieldValue(reflectionFixture, "value"), is(reflectionFixture.getValue()));
     }
     
     @Test
-    public void assertInvokeMethod() throws NoSuchMethodException {
+    void assertInvokeMethod() throws NoSuchMethodException {
         assertThat(AgentReflectionUtils.invokeMethod(ReflectionFixture.class.getDeclaredMethod("call"), new ReflectionFixture("foo")), is("foo"));
     }
 }

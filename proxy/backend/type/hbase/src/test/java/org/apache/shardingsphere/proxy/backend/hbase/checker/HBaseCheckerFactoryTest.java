@@ -30,10 +30,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class HBaseCheckerFactoryTest {
+class HBaseCheckerFactoryTest {
     
     @Test
-    public void assertExecuteSelectStatement() {
+    void assertExecuteSelectStatement() {
         SQLStatement sqlStatement = mock(MySQLSelectStatement.class);
         HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
         assertThat(actual, instanceOf(HeterogeneousSelectStatementChecker.class));
@@ -41,7 +41,7 @@ public final class HBaseCheckerFactoryTest {
     }
     
     @Test
-    public void assertExecuteInsertStatement() {
+    void assertExecuteInsertStatement() {
         SQLStatement sqlStatement = mock(MySQLInsertStatement.class);
         HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
         assertThat(actual, instanceOf(HeterogeneousInsertStatementChecker.class));
@@ -49,7 +49,7 @@ public final class HBaseCheckerFactoryTest {
     }
     
     @Test
-    public void assertExecuteUpdateStatement() {
+    void assertExecuteUpdateStatement() {
         SQLStatement sqlStatement = mock(MySQLUpdateStatement.class);
         HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
         assertThat(actual, instanceOf(HeterogeneousUpdateStatementChecker.class));
@@ -57,7 +57,7 @@ public final class HBaseCheckerFactoryTest {
     }
     
     @Test
-    public void assertExecuteDeleteStatement() {
+    void assertExecuteDeleteStatement() {
         SQLStatement sqlStatement = mock(MySQLDeleteStatement.class);
         HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
         assertThat(actual, instanceOf(HeterogeneousDeleteStatementChecker.class));
@@ -65,7 +65,7 @@ public final class HBaseCheckerFactoryTest {
     }
     
     @Test
-    public void assertExecuteOtherStatement() {
+    void assertExecuteOtherStatement() {
         SQLStatement sqlStatement = mock(MySQLShowCreateTableStatement.class);
         HeterogeneousSQLStatementChecker<?> actual = HBaseCheckerFactory.newInstance(sqlStatement);
         assertThat(actual, instanceOf(CommonHeterogeneousSQLStatementChecker.class));

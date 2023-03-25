@@ -37,27 +37,27 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingRuleConfigurationImportCheckerTest {
+class ShardingRuleConfigurationImportCheckerTest {
     
     @Test
-    public void assertCheckLogicTables() {
+    void assertCheckLogicTables() {
         assertThrows(DuplicateRuleException.class, () -> new ShardingRuleConfigurationImportChecker().check(mock(ShardingSphereDatabase.class), createDuplicatedTablesRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckDataSources() {
+    void assertCheckDataSources() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..2}.t_order_${0..2}"));
         assertThrows(MissingRequiredStorageUnitsException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabaseWithDataSource(), currentRuleConfig));
     }
     
     @Test
-    public void assertCheckKeyGenerators() {
+    void assertCheckKeyGenerators() {
         assertThrows(ServiceProviderNotFoundServerException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidKeyGeneratorRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckShardingAlgorithms() {
+    void assertCheckShardingAlgorithms() {
         assertThrows(ServiceProviderNotFoundServerException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidShardingAlgorithmRuleConfiguration()));
     }
     

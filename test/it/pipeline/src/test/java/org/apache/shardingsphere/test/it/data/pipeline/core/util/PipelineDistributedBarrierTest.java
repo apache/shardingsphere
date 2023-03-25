@@ -32,15 +32,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PipelineDistributedBarrierTest {
+class PipelineDistributedBarrierTest {
     
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
     @Test
-    public void assertRegisterAndRemove() throws ReflectiveOperationException {
+    void assertRegisterAndRemove() throws ReflectiveOperationException {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
@@ -55,7 +55,7 @@ public final class PipelineDistributedBarrierTest {
     }
     
     @Test
-    public void assertAwait() {
+    void assertAwait() {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");

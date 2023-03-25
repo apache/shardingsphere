@@ -33,48 +33,48 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
-public final class SM3EncryptAlgorithmTest {
+class SM3EncryptAlgorithmTest {
     
     private StandardEncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "SM3", PropertiesBuilder.build(new Property("sm3-salt", "test1234")));
     }
     
     @Test
-    public void assertEncrypt() {
+    void assertEncrypt() {
         Object actual = encryptAlgorithm.encrypt("test1234", mock(EncryptContext.class));
         assertThat(actual, is("9587fe084ee4b53fe629c6ae5519ee4d55def8ed4badc8588d3be9b99bd84aba"));
     }
     
     @Test
-    public void assertEncryptWithoutSalt() {
+    void assertEncryptWithoutSalt() {
         encryptAlgorithm.init(new Properties());
         assertThat(encryptAlgorithm.encrypt("test1234", mock(EncryptContext.class)), is("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79"));
     }
     
     @Test
-    public void assertEncryptWithNullPlaintext() {
+    void assertEncryptWithNullPlaintext() {
         assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test
-    public void assertDecrypt() {
+    void assertDecrypt() {
         Object actual = encryptAlgorithm.decrypt("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79", mock(EncryptContext.class));
         assertThat(actual.toString(), is("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79"));
     }
     
     @Test
-    public void assertDecryptWithoutSalt() {
+    void assertDecryptWithoutSalt() {
         encryptAlgorithm.init(new Properties());
         Object actual = encryptAlgorithm.decrypt("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79", mock(EncryptContext.class));
         assertThat(actual.toString(), is("ab847c6f2f6a53be88808c5221bd6ee0762e1af1def82b21d2061599b6cf5c79"));
     }
     
     @Test
-    public void assertDecryptWithNullCiphertext() {
+    void assertDecryptWithNullCiphertext() {
         assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
 }

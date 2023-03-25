@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlEncryptColumnRuleConfigurationSwapperTest {
+class YamlEncryptColumnRuleConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlEncryptColumnRuleConfigurationSwapper swapper = new YamlEncryptColumnRuleConfigurationSwapper();
         EncryptColumnRuleConfiguration encryptColumnRuleConfig =
                 new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "encryptorName", true);
@@ -42,7 +42,7 @@ public final class YamlEncryptColumnRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlEncryptColumnRuleConfigurationSwapper swapper = new YamlEncryptColumnRuleConfigurationSwapper();
         YamlEncryptColumnRuleConfiguration yamlEncryptColumnRuleConfig = new YamlEncryptColumnRuleConfiguration();
         yamlEncryptColumnRuleConfig.setLogicColumn("logicColumn");

@@ -25,13 +25,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLUnsupportedCommandPacketTest {
+class MySQLUnsupportedCommandPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         MySQLUnsupportedCommandPacket actual = new MySQLUnsupportedCommandPacket(MySQLCommandPacketType.COM_DEBUG);
         actual.write(payload);
     }

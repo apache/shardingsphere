@@ -40,14 +40,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlSchemaSwapperTest {
+class YamlSchemaSwapperTest {
     
     private static final String YAML = "yaml/schema/schema.yaml";
     
     private static final String YAML_WITHOUT_TABLE = "yaml/schema/schema-without-table.yaml";
     
     @Test
-    public void assertSwapToYamlSchema() {
+    void assertSwapToYamlSchema() {
         ShardingSphereSchema schema = new YamlSchemaSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML), YamlShardingSphereSchema.class));
         YamlShardingSphereSchema yamlSchema = new YamlSchemaSwapper().swapToYamlConfiguration(schema);
         assertThat(yamlSchema.getTables().keySet(), is(Collections.singleton("t_order")));
@@ -77,7 +77,7 @@ public final class YamlSchemaSwapperTest {
     }
     
     @Test
-    public void assertSwapToShardingSphereSchema() {
+    void assertSwapToShardingSphereSchema() {
         YamlShardingSphereSchema yamlSchema = YamlEngine.unmarshal(readYAML(YAML), YamlShardingSphereSchema.class);
         ShardingSphereSchema actualSchema = new YamlSchemaSwapper().swapToObject(yamlSchema);
         assertThat(actualSchema.getAllTableNames(), is(Collections.singleton("t_order")));
@@ -96,13 +96,13 @@ public final class YamlSchemaSwapperTest {
     }
     
     @Test
-    public void assertSwapToYamlSchemaWithoutTable() {
+    void assertSwapToYamlSchemaWithoutTable() {
         ShardingSphereSchema schema = new YamlSchemaSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML_WITHOUT_TABLE), YamlShardingSphereSchema.class));
         assertTrue(new YamlSchemaSwapper().swapToYamlConfiguration(schema).getTables().isEmpty());
     }
     
     @Test
-    public void assertSwapToShardingSphereSchemaWithoutTable() {
+    void assertSwapToShardingSphereSchemaWithoutTable() {
         YamlShardingSphereSchema yamlSchema = YamlEngine.unmarshal(readYAML(YAML_WITHOUT_TABLE), YamlShardingSphereSchema.class);
         assertTrue(new YamlSchemaSwapper().swapToObject(yamlSchema).getAllTableNames().isEmpty());
     }

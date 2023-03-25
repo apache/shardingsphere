@@ -49,29 +49,29 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class InventoryTaskTest {
+class InventoryTaskTest {
     
     private static final PipelineDataSourceManager DATA_SOURCE_MANAGER = new DefaultPipelineDataSourceManager();
     
     private MigrationTaskConfiguration taskConfig;
     
     @BeforeAll
-    public static void beforeClass() {
+    static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
     @AfterAll
-    public static void afterClass() {
+    static void afterClass() {
         DATA_SOURCE_MANAGER.close();
     }
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         taskConfig = PipelineContextUtil.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
     }
     
     @Test
-    public void assertStartWithGetEstimatedRowsFailure() {
+    void assertStartWithGetEstimatedRowsFailure() {
         InventoryDumperConfiguration inventoryDumperConfig = createInventoryDumperConfiguration("t_non_exist", "t_non_exist");
         PipelineDataSourceWrapper dataSource = DATA_SOURCE_MANAGER.getDataSource(inventoryDumperConfig.getDataSourceConfig());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
@@ -84,7 +84,7 @@ public final class InventoryTaskTest {
     }
     
     @Test
-    public void assertGetProgress() throws SQLException, ExecutionException, InterruptedException, TimeoutException {
+    void assertGetProgress() throws SQLException, ExecutionException, InterruptedException, TimeoutException {
         initTableData(taskConfig.getDumperConfig());
         // TODO use t_order_0, and also others
         InventoryDumperConfiguration inventoryDumperConfig = createInventoryDumperConfiguration("t_order", "t_order");

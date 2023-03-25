@@ -48,33 +48,33 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingDeleteStatementValidatorTest {
+class ShardingDeleteStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
     
     @Test
-    public void assertPreValidateWhenDeleteMultiTablesForMySQL() {
+    void assertPreValidateWhenDeleteMultiTablesForMySQL() {
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> assertPreValidateWhenDeleteMultiTables(new MySQLDeleteStatement()));
     }
     
     @Test
-    public void assertPreValidateWhenDeleteMultiTablesForOracle() {
+    void assertPreValidateWhenDeleteMultiTablesForOracle() {
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> assertPreValidateWhenDeleteMultiTables(new OracleDeleteStatement()));
     }
     
     @Test
-    public void assertPreValidateWhenDeleteMultiTablesForPostgreSQL() {
+    void assertPreValidateWhenDeleteMultiTablesForPostgreSQL() {
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> assertPreValidateWhenDeleteMultiTables(new PostgreSQLDeleteStatement()));
     }
     
     @Test
-    public void assertPreValidateWhenDeleteMultiTablesForSQL92() {
+    void assertPreValidateWhenDeleteMultiTablesForSQL92() {
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> assertPreValidateWhenDeleteMultiTables(new SQL92DeleteStatement()));
     }
     
     @Test
-    public void assertPreValidateWhenDeleteMultiTablesForSQLServer() {
+    void assertPreValidateWhenDeleteMultiTablesForSQLServer() {
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> assertPreValidateWhenDeleteMultiTables(new SQLServerDeleteStatement()));
     }
     

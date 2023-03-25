@@ -25,15 +25,15 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-public final class UnavailableProxyStateTest {
+class UnavailableProxyStateTest {
     
     @Test
-    public void assertExecuteWithUnsupportedSQL() {
+    void assertExecuteWithUnsupportedSQL() {
         assertThrows(UnavailableException.class, () -> new UnavailableProxyState().check(mock(DMLStatement.class)));
     }
     
     @Test
-    public void executeWithSupportedSQL() {
+    void executeWithSupportedSQL() {
         new UnavailableProxyState().check(mock(ImportMetaDataStatement.class));
     }
 }

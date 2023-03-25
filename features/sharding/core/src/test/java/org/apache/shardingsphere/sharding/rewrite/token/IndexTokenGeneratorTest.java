@@ -42,10 +42,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class IndexTokenGeneratorTest {
+class IndexTokenGeneratorTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         CreateDatabaseStatementContext createDatabaseStatementContext = mock(CreateDatabaseStatementContext.class);
         IndexTokenGenerator generator = new IndexTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(createDatabaseStatementContext));
@@ -58,7 +58,7 @@ public final class IndexTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokens() {
+    void assertGenerateSQLTokens() {
         IndexSegment indexSegment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
         when(indexSegment.getStartIndex()).thenReturn(1);
         when(indexSegment.getStopIndex()).thenReturn(3);

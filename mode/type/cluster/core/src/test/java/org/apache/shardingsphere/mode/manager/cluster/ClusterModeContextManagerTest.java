@@ -51,10 +51,10 @@ import java.util.TreeMap;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
-public final class ClusterModeContextManagerTest {
+class ClusterModeContextManagerTest {
     
     @Test
-    public void assertCreateDatabase() {
+    void assertCreateDatabase() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -70,7 +70,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertDropDatabase() {
+    void assertDropDatabase() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -86,7 +86,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertCreateSchema() {
+    void assertCreateSchema() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -102,7 +102,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterSchema() {
+    void assertAlterSchema() {
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData();
         shardingSphereMetaData.addDatabase("Database Name", new H2DatabaseType());
         MetaDataContexts metaDataContexts = new MetaDataContexts(
@@ -122,7 +122,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertDropSchema() {
+    void assertDropSchema() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -138,7 +138,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertDropSchemaWithEmptyList() {
+    void assertDropSchemaWithEmptyList() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -156,7 +156,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertDropSchemaWithListContainingRootAndNonRoot() {
+    void assertDropSchemaWithListContainingRootAndNonRoot() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -175,7 +175,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterSchemaMetaData() {
+    void assertAlterSchemaMetaData() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -193,7 +193,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertRegisterStorageUnits() {
+    void assertRegisterStorageUnits() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -209,7 +209,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterStorageUnits() {
+    void assertAlterStorageUnits() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -225,7 +225,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterStorageUnitsWithProcessListClusterPerRepoFix() {
+    void assertAlterStorageUnitsWithProcessListClusterPerRepoFix() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
@@ -242,7 +242,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterStorageUnitsWithDataSourceProperties() {
+    void assertAlterStorageUnitsWithDataSourceProperties() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -260,7 +260,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterStorageUnitsInvalidName() {
+    void assertAlterStorageUnitsInvalidName() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -279,7 +279,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterStorageUnitsWithoutDataSourceProperties() {
+    void assertAlterStorageUnitsWithoutDataSourceProperties() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
@@ -299,7 +299,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterStorageUnitsWithEmptyDataSourcePropertiesMap() {
+    void assertAlterStorageUnitsWithEmptyDataSourcePropertiesMap() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
@@ -317,7 +317,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterStorageUnitsWithOneDataSourceProperties() {
+    void assertAlterStorageUnitsWithOneDataSourceProperties() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
@@ -336,7 +336,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertUnregisterStorageUnits() {
+    void assertUnregisterStorageUnits() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -352,7 +352,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertUnregisterStorageUnitsWithProcessListClusterPersistRepoFixture() {
+    void assertUnregisterStorageUnitsWithProcessListClusterPersistRepoFixture() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
@@ -369,7 +369,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertUnregisterStorageUnitsWithClusterPersistRepoFixture() {
+    void assertUnregisterStorageUnitsWithClusterPersistRepoFixture() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -385,7 +385,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterRuleConfiguration() {
+    void assertAlterRuleConfiguration() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -403,7 +403,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterRuleConfigurationMultiple() {
+    void assertAlterRuleConfigurationMultiple() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -422,7 +422,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterRuleConfigurationWithPersistService() {
+    void assertAlterRuleConfigurationWithPersistService() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(
                 new ProcessListClusterPersistRepositoryFixture());
@@ -441,7 +441,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterGlobalRuleConfigurationWithEmptyRuleConfigurations() {
+    void assertAlterGlobalRuleConfigurationWithEmptyRuleConfigurations() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -457,7 +457,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterGlobalRuleConfigurationWithSingleRuleConfigurations() {
+    void assertAlterGlobalRuleConfigurationWithSingleRuleConfigurations() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -475,7 +475,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterGlobalRuleConfigurationWithMultipleRuleConfigurations() {
+    void assertAlterGlobalRuleConfigurationWithMultipleRuleConfigurations() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -494,7 +494,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertAlterProperties() {
+    void assertAlterProperties() {
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
@@ -510,7 +510,7 @@ public final class ClusterModeContextManagerTest {
     }
     
     @Test
-    public void assertConstructor() {
+    void assertConstructor() {
         ClusterModeContextManager actualClusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
         MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());

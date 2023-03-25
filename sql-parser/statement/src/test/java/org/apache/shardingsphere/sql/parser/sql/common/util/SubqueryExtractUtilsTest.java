@@ -47,10 +47,10 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class SubqueryExtractUtilsTest {
+class SubqueryExtractUtilsTest {
     
     @Test
-    public void assertGetSubquerySegmentsInWhere() {
+    void assertGetSubquerySegmentsInWhere() {
         MySQLSelectStatement subquerySelectStatement = new MySQLSelectStatement();
         subquerySelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(73, 99, new IdentifierValue("t_order"))));
         subquerySelectStatement.setProjections(new ProjectionsSegment(59, 66));
@@ -73,7 +73,7 @@ public final class SubqueryExtractUtilsTest {
     }
     
     @Test
-    public void assertGetSubquerySegmentsInProjection() {
+    void assertGetSubquerySegmentsInProjection() {
         ColumnSegment left = new ColumnSegment(41, 48, new IdentifierValue("order_id"));
         ColumnSegment right = new ColumnSegment(52, 62, new IdentifierValue("order_id"));
         MySQLSelectStatement subquerySelectStatement = new MySQLSelectStatement();
@@ -89,7 +89,7 @@ public final class SubqueryExtractUtilsTest {
     }
     
     @Test
-    public void assertGetSubquerySegmentsInFrom1() {
+    void assertGetSubquerySegmentsInFrom1() {
         MySQLSelectStatement subquery = new MySQLSelectStatement();
         ColumnSegment left = new ColumnSegment(59, 66, new IdentifierValue("order_id"));
         LiteralExpressionSegment right = new LiteralExpressionSegment(70, 70, 1);
@@ -109,7 +109,7 @@ public final class SubqueryExtractUtilsTest {
     }
     
     @Test
-    public void assertGetSubquerySegmentsInFrom2() {
+    void assertGetSubquerySegmentsInFrom2() {
         MySQLSelectStatement subqueryLeftSelectStatement = new MySQLSelectStatement();
         subqueryLeftSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(65, 71, new IdentifierValue("t_order"))));
         ColumnSegment leftColumnSegment = new ColumnSegment(79, 84, new IdentifierValue("status"));
@@ -152,7 +152,7 @@ public final class SubqueryExtractUtilsTest {
     }
     
     @Test
-    public void assertGetSubquerySegmentsWithMultiNestedSubquery() {
+    void assertGetSubquerySegmentsWithMultiNestedSubquery() {
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SubqueryTableSegment(createSubquerySegmentForFrom()));
         Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
@@ -168,7 +168,7 @@ public final class SubqueryExtractUtilsTest {
     }
     
     @Test
-    public void assertGetSubquerySegmentsWithCombineSegment() {
+    void assertGetSubquerySegmentsWithCombineSegment() {
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setCombine(new CombineSegment(0, 0, new MySQLSelectStatement(), CombineType.UNION, createSelectStatementForCombineSegment()));
         Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);

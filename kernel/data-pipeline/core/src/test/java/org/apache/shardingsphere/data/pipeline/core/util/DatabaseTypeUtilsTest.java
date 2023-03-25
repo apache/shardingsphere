@@ -26,10 +26,10 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DatabaseTypeUtilsTest {
+class DatabaseTypeUtilsTest {
     
     @Test
-    public void assertGetBranchDatabaseTypes() {
+    void assertGetBranchDatabaseTypes() {
         Set<String> trunkDatabaseTypes = Collections.singleton(new MySQLDatabaseType().getType());
         Collection<String> actual = DatabaseTypeUtils.getTrunkAndBranchDatabaseTypes(trunkDatabaseTypes);
         assertTrue(actual.contains("MySQL"), "MySQL not present");

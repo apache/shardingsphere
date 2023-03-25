@@ -30,28 +30,28 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ShardingAutoTableAlgorithmUtilsTest {
+class ShardingAutoTableAlgorithmUtilsTest {
     
     private final Collection<String> availableTargetNames = new LinkedList<>();
     
     private final DataNodeInfo dataNodeInfo = new DataNodeInfo("t_order_", 2, '0');
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         availableTargetNames.add("t_order_00");
         availableTargetNames.add("t_order_01");
         availableTargetNames.add("t_order_02");
     }
     
     @Test
-    public void assertFindMatchedTargetNameWhenTableExist() {
+    void assertFindMatchedTargetNameWhenTableExist() {
         Optional<String> actual = ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, "2", dataNodeInfo);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("t_order_02"));
     }
     
     @Test
-    public void assertFindMatchedTargetNameWhenTableNotExist() {
+    void assertFindMatchedTargetNameWhenTableNotExist() {
         Optional<String> output = ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, "3", dataNodeInfo);
         assertFalse(output.isPresent());
     }

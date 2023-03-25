@@ -34,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLTimestamp2BinlogProtocolValueTest {
+class MySQLTimestamp2BinlogProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -45,20 +45,20 @@ public final class MySQLTimestamp2BinlogProtocolValueTest {
     private MySQLBinlogColumnDef columnDef;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_TIMESTAMP2);
         when(payload.getByteBuf()).thenReturn(byteBuf);
     }
     
     @Test
-    public void assertReadWithoutFraction() {
+    void assertReadWithoutFraction() {
         int currentSeconds = Long.valueOf(System.currentTimeMillis() / 1000).intValue();
         when(byteBuf.readInt()).thenReturn(currentSeconds);
         assertThat(new MySQLTimestamp2BinlogProtocolValue().read(columnDef, payload), is(new Timestamp(currentSeconds * 1000L)));
     }
     
     @Test
-    public void assertReadWithFraction() {
+    void assertReadWithFraction() {
         columnDef.setColumnMeta(1);
         long currentTimeMillis = 1678795614082L;
         int currentSeconds = Long.valueOf(currentTimeMillis / 1000).intValue();
@@ -69,7 +69,7 @@ public final class MySQLTimestamp2BinlogProtocolValueTest {
     }
     
     @Test
-    public void assertReadNullTime() {
+    void assertReadNullTime() {
         when(byteBuf.readInt()).thenReturn(0);
         assertThat(new MySQLTimestamp2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
     }

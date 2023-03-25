@@ -28,10 +28,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 
-public final class PostgreSQLSetVariableAdminExecutorTest {
+class PostgreSQLSetVariableAdminExecutorTest {
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
         VariableSegment variable = new VariableSegment();
         variable.setVariable("key");

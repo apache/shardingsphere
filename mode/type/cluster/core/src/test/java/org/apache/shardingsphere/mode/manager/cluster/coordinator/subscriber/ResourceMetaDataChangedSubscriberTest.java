@@ -69,7 +69,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ResourceMetaDataChangedSubscriberTest {
+class ResourceMetaDataChangedSubscriberTest {
     
     private ResourceMetaDataChangedSubscriber subscriber;
     
@@ -82,7 +82,7 @@ public final class ResourceMetaDataChangedSubscriberTest {
     private ShardingSphereDatabase database;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
@@ -109,7 +109,7 @@ public final class ResourceMetaDataChangedSubscriberTest {
     }
     
     @Test
-    public void assertRenewForDatabaseAdded() {
+    void assertRenewForDatabaseAdded() {
         when(persistService.getDataSourceService().load("db_added")).thenReturn(createDataSourcePropertiesMap());
         when(persistService.getDatabaseRulePersistService().load("db_added")).thenReturn(Collections.emptyList());
         subscriber.renew(new DatabaseAddedEvent("db_added"));
@@ -126,26 +126,26 @@ public final class ResourceMetaDataChangedSubscriberTest {
     }
     
     @Test
-    public void assertRenewForDatabaseDeleted() {
+    void assertRenewForDatabaseDeleted() {
         subscriber.renew(new DatabaseDeletedEvent("db"));
         assertNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"));
     }
     
     @Test
-    public void assertRenewForSchemaAdded() {
+    void assertRenewForSchemaAdded() {
         subscriber.renew(new SchemaAddedEvent("db", "foo_schema"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).putSchema(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
     }
     
     @Test
-    public void assertRenewForSchemaDeleted() {
+    void assertRenewForSchemaDeleted() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("foo_schema")).thenReturn(true);
         subscriber.renew(new SchemaDeletedEvent("db", "foo_schema"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).removeSchema("foo_schema");
     }
     
     @Test
-    public void assertRenewForTableMetaDataChangedChanged() {
+    void assertRenewForTableMetaDataChangedChanged() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("db")).thenReturn(true);
         ShardingSphereTable changedTableMetaData = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         TableMetaDataChangedEvent event = new TableMetaDataChangedEvent("db", "db", changedTableMetaData, null);
@@ -154,7 +154,7 @@ public final class ResourceMetaDataChangedSubscriberTest {
     }
     
     @Test
-    public void assertRenewForViewMetaDataChanged() {
+    void assertRenewForViewMetaDataChanged() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("db")).thenReturn(true);
         ShardingSphereView changedViewMetaData = new ShardingSphereView("t_order_view", "");
         ViewMetaDataChangedEvent event = new ViewMetaDataChangedEvent("db", "db", changedViewMetaData, null);

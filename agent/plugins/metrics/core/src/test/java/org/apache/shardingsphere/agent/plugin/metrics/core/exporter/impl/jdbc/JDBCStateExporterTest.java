@@ -34,16 +34,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class JDBCStateExporterTest {
+class JDBCStateExporterTest {
     
     @AfterEach
-    public void reset() {
+    void reset() {
         MetricConfiguration config = new MetricConfiguration("jdbc_state", MetricCollectorType.GAUGE_METRIC_FAMILY, "State of ShardingSphere-JDBC. 0 is OK; 1 is CIRCUIT BREAK; 2 is LOCK");
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertExport() throws SQLException {
+    void assertExport() throws SQLException {
         DriverManager.registerDriver(new ShardingSphereDriver());
         Optional<GaugeMetricFamilyMetricsCollector> collector = new JDBCStateExporter().export("FIXTURE");
         assertTrue(collector.isPresent());

@@ -28,10 +28,10 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class RoundRobinReadQueryLoadBalanceAlgorithmTest {
+class RoundRobinReadQueryLoadBalanceAlgorithmTest {
     
     @Test
-    public void assertGetDataSourceWithDefaultStrategy() {
+    void assertGetDataSourceWithDefaultStrategy() {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "ROUND_ROBIN", new Properties());
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";

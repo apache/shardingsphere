@@ -32,30 +32,30 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class CommonHeterogeneousSQLStatementCheckerTest {
+class CommonHeterogeneousSQLStatementCheckerTest {
     
     @Test
-    public void assertIsSinglePoint() {
+    void assertIsSinglePoint() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey = '1'");
         new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere());
     }
     
     @Test
-    public void assertIsSinglePointWithErrorKey() {
+    void assertIsSinglePointWithErrorKey() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where a = '1'");
         Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere()));
         assertThat(ex.getMessage(), is("a is not a allowed key"));
     }
     
     @Test
-    public void assertIsSinglePointWithErrorOperation() {
+    void assertIsSinglePointWithErrorOperation() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey between '1' and '2' ");
         Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere()));
         assertThat(ex.getMessage(), is("Only Support BinaryOperationExpression"));
     }
     
     @Test
-    public void assertInExpression() {
+    void assertInExpression() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey in ('1', '2') ");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());
@@ -63,7 +63,7 @@ public final class CommonHeterogeneousSQLStatementCheckerTest {
     }
     
     @Test
-    public void assertInExpressionWithNotIn() {
+    void assertInExpressionWithNotIn() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey not in ('1', '2') ");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());
@@ -72,7 +72,7 @@ public final class CommonHeterogeneousSQLStatementCheckerTest {
     }
     
     @Test
-    public void assertInExpressionWithErrorKey() {
+    void assertInExpressionWithErrorKey() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where a in ('1', '2') ");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());
@@ -81,7 +81,7 @@ public final class CommonHeterogeneousSQLStatementCheckerTest {
     }
     
     @Test
-    public void assertIsAllowExpressionSegment() {
+    void assertIsAllowExpressionSegment() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey BETWEEN 'v1' AND 'v2' ");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());
@@ -92,7 +92,7 @@ public final class CommonHeterogeneousSQLStatementCheckerTest {
     }
     
     @Test
-    public void assertIsAllowExpressionSegmentError() {
+    void assertIsAllowExpressionSegmentError() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey = '1'");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());

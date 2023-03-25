@@ -27,12 +27,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class ParseTreeCacheLoaderTest {
+class ParseTreeCacheLoaderTest {
     
     private static final String SQL = "select * from user where id=1";
     
     @Test
-    public void assertParseTreeCacheLoader() throws ReflectiveOperationException {
+    void assertParseTreeCacheLoader() throws ReflectiveOperationException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class, RETURNS_DEEP_STUBS);
         ParseTreeCacheLoader loader = new ParseTreeCacheLoader("MySQL");
         Plugins.getMemberAccessor().set(loader.getClass().getDeclaredField("sqlParserExecutor"), loader, sqlParserExecutor);

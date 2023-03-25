@@ -34,10 +34,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DistinctProjectionPrefixTokenGeneratorTest {
+class DistinctProjectionPrefixTokenGeneratorTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         DistinctProjectionPrefixTokenGenerator generator = new DistinctProjectionPrefixTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(mock(CreateDatabaseStatementContext.class)));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
@@ -49,7 +49,7 @@ public final class DistinctProjectionPrefixTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLToken() {
+    void assertGenerateSQLToken() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         final int testStartIndex = 1;
         when(selectStatementContext.getProjectionsContext().getStartIndex()).thenReturn(testStartIndex);

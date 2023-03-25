@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
+class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -48,14 +48,14 @@ public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     private final CreateDefaultShadowAlgorithmStatementUpdater updater = new CreateDefaultShadowAlgorithmStatementUpdater();
     
     @Test
-    public void assertExecuteWithInvalidAlgorithm() {
+    void assertExecuteWithInvalidAlgorithm() {
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
         when(statement.getShadowAlgorithmSegment()).thenReturn(new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", PropertiesBuilder.build(new Property("type", "value")))));
         assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, statement, currentConfig));
     }
     
     @Test
-    public void assertExecuteSuccess() {
+    void assertExecuteSuccess() {
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
         when(statement.getShadowAlgorithmSegment()).thenReturn(
                 new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
@@ -63,7 +63,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithIfNotExists() {
+    void assertExecuteWithIfNotExists() {
         ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value"))));
         CreateDefaultShadowAlgorithmStatement statement = new CreateDefaultShadowAlgorithmStatement(true, shadowAlgorithmSegment);
         updater.checkSQLStatement(database, statement, currentConfig);

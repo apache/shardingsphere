@@ -34,49 +34,49 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class GeneratedKeysResultSetTest {
+class GeneratedKeysResultSetTest {
     
     private final Statement statement = mock(Statement.class);
     
     private GeneratedKeysResultSet actualResultSet;
     
     @BeforeEach
-    public void init() {
+    void init() {
         actualResultSet = new GeneratedKeysResultSet("order_id", Arrays.<Comparable<?>>asList(1L, 2L).iterator(), statement);
     }
     
     @Test
-    public void assertNext() {
+    void assertNext() {
         assertTrue(actualResultSet.next());
         assertTrue(actualResultSet.next());
         assertFalse(actualResultSet.next());
     }
     
     @Test
-    public void assertNextForEmptyResultSet() {
+    void assertNextForEmptyResultSet() {
         GeneratedKeysResultSet actual = new GeneratedKeysResultSet();
         assertFalse(actual.next());
     }
     
     @Test
-    public void assertClose() {
+    void assertClose() {
         actualResultSet.close();
         assertTrue(actualResultSet.isClosed());
     }
     
     @Test
-    public void assertThrowExceptionWhenInvokeClosedResultSet() {
+    void assertThrowExceptionWhenInvokeClosedResultSet() {
         actualResultSet.close();
         assertThrows(IllegalStateException.class, () -> actualResultSet.getType());
     }
     
     @Test
-    public void assertWasNull() {
+    void assertWasNull() {
         assertFalse(actualResultSet.wasNull());
     }
     
     @Test
-    public void assertGetString() {
+    void assertGetString() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getString(1), is("1"));
         assertTrue(actualResultSet.next());
@@ -85,7 +85,7 @@ public final class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void assertGetNString() {
+    void assertGetNString() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getNString(1), is("1"));
         assertTrue(actualResultSet.next());
@@ -94,7 +94,7 @@ public final class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void assertGetByte() {
+    void assertGetByte() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getByte(1), is((byte) 1L));
         assertTrue(actualResultSet.next());
@@ -103,7 +103,7 @@ public final class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void assertGetShort() {
+    void assertGetShort() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getShort(1), is((short) 1L));
         assertTrue(actualResultSet.next());
@@ -112,7 +112,7 @@ public final class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void assertGetInt() {
+    void assertGetInt() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getInt(1), is(1));
         assertTrue(actualResultSet.next());
@@ -121,7 +121,7 @@ public final class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void assertGetLong() {
+    void assertGetLong() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getLong(1), is(1L));
         assertTrue(actualResultSet.next());
@@ -130,7 +130,7 @@ public final class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void assertGetFloat() {
+    void assertGetFloat() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getFloat(1), is(1.0F));
         assertTrue(actualResultSet.next());
@@ -139,7 +139,7 @@ public final class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void assertGetDouble() {
+    void assertGetDouble() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getDouble(1), is(1.0D));
         assertTrue(actualResultSet.next());
@@ -148,7 +148,7 @@ public final class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void assertGetBigDecimal() {
+    void assertGetBigDecimal() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getBigDecimal(1), is(new BigDecimal("1")));
         assertThat(actualResultSet.getBigDecimal(1, 2), is(new BigDecimal("1").setScale(BigDecimal.ROUND_CEILING, RoundingMode.HALF_UP)));
@@ -159,7 +159,7 @@ public final class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void assertGetBytes() {
+    void assertGetBytes() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getBytes(1), is("1".getBytes(StandardCharsets.UTF_8)));
         assertTrue(actualResultSet.next());
@@ -168,7 +168,7 @@ public final class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void assertGetObject() {
+    void assertGetObject() {
         assertTrue(actualResultSet.next());
         assertThat(actualResultSet.getObject(1), is(1L));
         assertTrue(actualResultSet.next());
@@ -177,22 +177,22 @@ public final class GeneratedKeysResultSetTest {
     }
     
     @Test
-    public void assertFindColumn() {
+    void assertFindColumn() {
         assertThat(actualResultSet.findColumn("any"), is(1));
     }
     
     @Test
-    public void assertGetType() {
+    void assertGetType() {
         assertThat(actualResultSet.getType(), is(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test
-    public void assertGetConcurrency() {
+    void assertGetConcurrency() {
         assertThat(actualResultSet.getConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
     }
     
     @Test
-    public void assertGetStatement() {
+    void assertGetStatement() {
         assertThat(actualResultSet.getStatement(), is(statement));
     }
 }

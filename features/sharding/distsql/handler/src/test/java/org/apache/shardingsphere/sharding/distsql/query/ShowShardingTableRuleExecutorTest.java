@@ -47,10 +47,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowShardingTableRuleExecutorTest {
+class ShowShardingTableRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<ShowShardingTableRulesStatement> executor = new ShowShardingTableRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShardingTableRulesStatement.class));
         assertThat(actual.size(), is(1));
@@ -75,7 +75,7 @@ public final class ShowShardingTableRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowShardingTableRulesStatement> executor = new ShowShardingTableRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(16));

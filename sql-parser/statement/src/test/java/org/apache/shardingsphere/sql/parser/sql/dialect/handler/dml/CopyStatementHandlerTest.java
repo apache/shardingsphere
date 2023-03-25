@@ -32,10 +32,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class CopyStatementHandlerTest {
+class CopyStatementHandlerTest {
     
     @Test
-    public void assertGetPrepareStatementQuerySegmentWithSegmentForPostgreSQL() {
+    void assertGetPrepareStatementQuerySegmentWithSegmentForPostgreSQL() {
         PostgreSQLCopyStatement postgreSQLCopyStatement = new PostgreSQLCopyStatement();
         postgreSQLCopyStatement.setPrepareStatementQuerySegment(new PrepareStatementQuerySegment(0, 2));
         Optional<PrepareStatementQuerySegment> actual = CopyStatementHandler.getPrepareStatementQuerySegment(postgreSQLCopyStatement);
@@ -44,14 +44,14 @@ public final class CopyStatementHandlerTest {
     }
     
     @Test
-    public void assertGetPrepareStatementQuerySegmentWithoutSegmentForPostgreSQL() {
+    void assertGetPrepareStatementQuerySegmentWithoutSegmentForPostgreSQL() {
         PostgreSQLCopyStatement postgreSQLCopyStatement = new PostgreSQLCopyStatement();
         Optional<PrepareStatementQuerySegment> actual = CopyStatementHandler.getPrepareStatementQuerySegment(postgreSQLCopyStatement);
         assertFalse(actual.isPresent());
     }
     
     @Test
-    public void assertGetColumnsWithSegmentForPostgreSQL() {
+    void assertGetColumnsWithSegmentForPostgreSQL() {
         PostgreSQLCopyStatement postgreSQLCopyStatement = new PostgreSQLCopyStatement();
         postgreSQLCopyStatement.getColumns().add(new ColumnSegment(0, 2, new IdentifierValue("identifier")));
         Collection<ColumnSegment> actual = CopyStatementHandler.getColumns(postgreSQLCopyStatement);
@@ -60,19 +60,19 @@ public final class CopyStatementHandlerTest {
     }
     
     @Test
-    public void assertGetColumnsWithoutSegmentForPostgreSQL() {
+    void assertGetColumnsWithoutSegmentForPostgreSQL() {
         PostgreSQLCopyStatement postgreSQLCopyStatement = new PostgreSQLCopyStatement();
         Collection<ColumnSegment> actual = CopyStatementHandler.getColumns(postgreSQLCopyStatement);
         assertTrue(actual.isEmpty());
     }
     
     @Test
-    public void assertGetPrepareStatementQuerySegmentForOpenGauss() {
+    void assertGetPrepareStatementQuerySegmentForOpenGauss() {
         assertFalse(CopyStatementHandler.getPrepareStatementQuerySegment(new OpenGaussCopyStatement()).isPresent());
     }
     
     @Test
-    public void assertGetColumnsForOpenGauss() {
+    void assertGetColumnsForOpenGauss() {
         assertTrue(CopyStatementHandler.getColumns(new OpenGaussCopyStatement()).isEmpty());
     }
 }

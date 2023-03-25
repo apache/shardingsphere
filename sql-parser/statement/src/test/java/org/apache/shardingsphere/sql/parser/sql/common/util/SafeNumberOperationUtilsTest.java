@@ -31,10 +31,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SafeNumberOperationUtilsTest {
+class SafeNumberOperationUtilsTest {
     
     @Test
-    public void assertSafeIntersectionForInteger() {
+    void assertSafeIntersectionForInteger() {
         Range<Comparable<?>> range = Range.closed(10, 2000);
         Range<Comparable<?>> connectedRange = Range.closed(1500, 4000);
         Range<Comparable<?>> newRange = SafeNumberOperationUtils.safeIntersection(range, connectedRange);
@@ -45,7 +45,7 @@ public final class SafeNumberOperationUtilsTest {
     }
     
     @Test
-    public void assertSafeIntersectionForLong() {
+    void assertSafeIntersectionForLong() {
         Range<Comparable<?>> range = Range.upTo(3147483647L, BoundType.OPEN);
         Range<Comparable<?>> connectedRange = Range.downTo(3, BoundType.OPEN);
         Range<Comparable<?>> newRange = SafeNumberOperationUtils.safeIntersection(range, connectedRange);
@@ -56,7 +56,7 @@ public final class SafeNumberOperationUtilsTest {
     }
     
     @Test
-    public void assertSafeIntersectionForBigInteger() {
+    void assertSafeIntersectionForBigInteger() {
         Range<Comparable<?>> range = Range.upTo(new BigInteger("131323233123211"), BoundType.CLOSED);
         Range<Comparable<?>> connectedRange = Range.downTo(35, BoundType.OPEN);
         Range<Comparable<?>> newRange = SafeNumberOperationUtils.safeIntersection(range, connectedRange);
@@ -67,7 +67,7 @@ public final class SafeNumberOperationUtilsTest {
     }
     
     @Test
-    public void assertSafeIntersectionForFloat() {
+    void assertSafeIntersectionForFloat() {
         Range<Comparable<?>> range = Range.closed(5.5F, 13.8F);
         Range<Comparable<?>> connectedRange = Range.closed(7.14F, 11.3F);
         Range<Comparable<?>> newRange = SafeNumberOperationUtils.safeIntersection(range, connectedRange);
@@ -78,7 +78,7 @@ public final class SafeNumberOperationUtilsTest {
     }
     
     @Test
-    public void assertSafeIntersectionForDouble() {
+    void assertSafeIntersectionForDouble() {
         Range<Comparable<?>> range = Range.closed(1242.114, 31474836.12);
         Range<Comparable<?>> connectedRange = Range.downTo(567.34F, BoundType.OPEN);
         Range<Comparable<?>> newRange = SafeNumberOperationUtils.safeIntersection(range, connectedRange);
@@ -89,7 +89,7 @@ public final class SafeNumberOperationUtilsTest {
     }
     
     @Test
-    public void assertSafeIntersectionForBigDecimal() {
+    void assertSafeIntersectionForBigDecimal() {
         Range<Comparable<?>> range = Range.upTo(new BigDecimal("2331.23211"), BoundType.CLOSED);
         Range<Comparable<?>> connectedRange = Range.open(135.13F, 45343.23F);
         Range<Comparable<?>> newRange = SafeNumberOperationUtils.safeIntersection(range, connectedRange);
@@ -100,152 +100,152 @@ public final class SafeNumberOperationUtilsTest {
     }
     
     @Test
-    public void assertSafeClosedForInteger() {
+    void assertSafeClosedForInteger() {
         Range<Comparable<?>> range = SafeNumberOperationUtils.safeClosed(12, 500);
         assertThat(range.lowerEndpoint(), is(12));
         assertThat(range.upperEndpoint(), is(500));
     }
     
     @Test
-    public void assertSafeClosedForLong() {
+    void assertSafeClosedForLong() {
         Range<Comparable<?>> range = SafeNumberOperationUtils.safeClosed(12, 5001L);
         assertThat(range.lowerEndpoint(), is(12L));
         assertThat(range.upperEndpoint(), is(5001L));
     }
     
     @Test
-    public void assertSafeClosedForBigInteger() {
+    void assertSafeClosedForBigInteger() {
         Range<Comparable<?>> range = SafeNumberOperationUtils.safeClosed(12L, new BigInteger("12344"));
         assertThat(range.lowerEndpoint(), is(new BigInteger("12")));
         assertThat(range.upperEndpoint(), is(new BigInteger("12344")));
     }
     
     @Test
-    public void assertSafeClosedForFloat() {
+    void assertSafeClosedForFloat() {
         Range<Comparable<?>> range = SafeNumberOperationUtils.safeClosed(4.5F, 11.13F);
         assertThat(range.lowerEndpoint(), is(4.5F));
         assertThat(range.upperEndpoint(), is(11.13F));
     }
     
     @Test
-    public void assertSafeClosedForDouble() {
+    void assertSafeClosedForDouble() {
         Range<Comparable<?>> range = SafeNumberOperationUtils.safeClosed(5.12F, 13.75);
         assertThat(range.lowerEndpoint(), is(5.12));
         assertThat(range.upperEndpoint(), is(13.75));
     }
     
     @Test
-    public void assertSafeClosedForBigDecimal() {
+    void assertSafeClosedForBigDecimal() {
         Range<Comparable<?>> range = SafeNumberOperationUtils.safeClosed(5.1F, new BigDecimal("17.666"));
         assertThat(range.lowerEndpoint(), is(new BigDecimal("5.1")));
         assertThat(range.upperEndpoint(), is(new BigDecimal("17.666")));
     }
     
     @Test
-    public void assertSafeContainsForInteger() {
+    void assertSafeContainsForInteger() {
         Range<Comparable<?>> range = Range.closed(12, 100);
         assertFalse(SafeNumberOperationUtils.safeContains(range, 500));
     }
     
     @Test
-    public void assertSafeContainsForLong() {
+    void assertSafeContainsForLong() {
         Range<Comparable<?>> range = Range.closed(12L, 1000L);
         assertTrue(SafeNumberOperationUtils.safeContains(range, 500));
     }
     
     @Test
-    public void assertSafeContainsForBigInteger() {
+    void assertSafeContainsForBigInteger() {
         Range<Comparable<?>> range = Range.closed(new BigInteger("123"), new BigInteger("1000"));
         assertTrue(SafeNumberOperationUtils.safeContains(range, 510));
     }
     
     @Test
-    public void assertSafeContainsForFloat() {
+    void assertSafeContainsForFloat() {
         Range<Comparable<?>> range = Range.closed(123.11F, 9999.123F);
         assertTrue(SafeNumberOperationUtils.safeContains(range, 510.12));
     }
     
     @Test
-    public void assertSafeContainsForDouble() {
+    void assertSafeContainsForDouble() {
         Range<Comparable<?>> range = Range.closed(11.11, 9999.99);
         assertTrue(SafeNumberOperationUtils.safeContains(range, new BigDecimal("510.12")));
     }
     
     @Test
-    public void assertSafeContainsForBigDecimal() {
+    void assertSafeContainsForBigDecimal() {
         Range<Comparable<?>> range = Range.closed(new BigDecimal("123.11"), new BigDecimal("9999.123"));
         assertTrue(SafeNumberOperationUtils.safeContains(range, 510.12));
     }
     
     @Test
-    public void assertSafeCollectionEqualsForInteger() {
+    void assertSafeCollectionEqualsForInteger() {
         List<Comparable<?>> sources = Arrays.asList(10, 12);
         List<Comparable<?>> targets = Arrays.asList(10, 12);
         assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sources, targets));
     }
     
     @Test
-    public void assertSafeCollectionEqualsForLong() {
+    void assertSafeCollectionEqualsForLong() {
         List<Comparable<?>> sources = Arrays.asList(10, 12);
         List<Comparable<?>> targets = Arrays.asList(10L, 12L);
         assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sources, targets));
     }
     
     @Test
-    public void assertSafeCollectionEqualsForBigInteger() {
+    void assertSafeCollectionEqualsForBigInteger() {
         List<Comparable<?>> sources = Arrays.asList(10, 12);
         List<Comparable<?>> targets = Arrays.asList(BigInteger.valueOf(10), BigInteger.valueOf(12L));
         assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sources, targets));
     }
     
     @Test
-    public void assertSafeCollectionEqualsForFloat() {
+    void assertSafeCollectionEqualsForFloat() {
         List<Comparable<?>> sources = Arrays.asList(10.01F, 12.01F);
         List<Comparable<?>> targets = Arrays.asList(10.01F, 12.01F);
         assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sources, targets));
     }
     
     @Test
-    public void assertSafeCollectionEqualsForDouble() {
+    void assertSafeCollectionEqualsForDouble() {
         List<Comparable<?>> sources = Arrays.asList(10.01, 12.01);
         List<Comparable<?>> targets = Arrays.asList(10.01F, 12.01);
         assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sources, targets));
     }
     
     @Test
-    public void assertSafeCollectionEqualsForBigDecimal() {
+    void assertSafeCollectionEqualsForBigDecimal() {
         List<Comparable<?>> sources = Arrays.asList(10.01, 12.01);
         List<Comparable<?>> targets = Arrays.asList(BigDecimal.valueOf(10.01), BigDecimal.valueOf(12.01));
         assertTrue(SafeNumberOperationUtils.safeCollectionEquals(sources, targets));
     }
     
     @Test
-    public void assertSafeRangeEqualsForInteger() {
+    void assertSafeRangeEqualsForInteger() {
         assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(1), Range.greaterThan(1L)));
     }
     
     @Test
-    public void assertSafeRangeEqualsForLong() {
+    void assertSafeRangeEqualsForLong() {
         assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(1L), Range.greaterThan(BigInteger.ONE)));
     }
     
     @Test
-    public void assertSafeRangeEqualsForBigInteger() {
+    void assertSafeRangeEqualsForBigInteger() {
         assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(BigInteger.ONE), Range.greaterThan(1)));
     }
     
     @Test
-    public void assertSafeRangeEqualsForFloat() {
+    void assertSafeRangeEqualsForFloat() {
         assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(1.1F), Range.greaterThan(1.1)));
     }
     
     @Test
-    public void assertSafeRangeEqualsForDouble() {
+    void assertSafeRangeEqualsForDouble() {
         assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(1.1), Range.greaterThan(BigDecimal.valueOf(1.1))));
     }
     
     @Test
-    public void assertSafeRangeEqualsForBigDecimal() {
+    void assertSafeRangeEqualsForBigDecimal() {
         assertTrue(SafeNumberOperationUtils.safeRangeEquals(Range.greaterThan(BigDecimal.valueOf(1.1)), Range.greaterThan(1.1F)));
     }
 }

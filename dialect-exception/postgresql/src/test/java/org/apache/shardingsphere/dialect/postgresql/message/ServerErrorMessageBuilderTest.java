@@ -24,10 +24,10 @@ import org.postgresql.util.ServerErrorMessage;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ServerErrorMessageBuilderTest {
+class ServerErrorMessageBuilderTest {
     
     @Test
-    public void assertToServerErrorMessage() {
+    void assertToServerErrorMessage() {
         ServerErrorMessage actual = ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PRIVILEGE_NOT_GRANTED, "foo_user", "foo_db");
         assertThat(actual.getSeverity(), is("FATAL"));
         assertThat(actual.getSQLState(), is(PostgreSQLVendorError.PRIVILEGE_NOT_GRANTED.getSqlState().getValue()));

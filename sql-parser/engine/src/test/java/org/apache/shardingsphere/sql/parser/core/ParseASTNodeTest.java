@@ -26,10 +26,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ParseASTNodeTest {
+class ParseASTNodeTest {
     
     @Test
-    public void assertGetRootNode() {
+    void assertGetRootNode() {
         ParseTree parseTree = mock(ParseTree.class);
         when(parseTree.getChild(0)).thenReturn(parseTree);
         assertThat(new ParseASTNode(parseTree, mock(CommonTokenStream.class)).getRootNode(), is(parseTree));

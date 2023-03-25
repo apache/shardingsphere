@@ -42,10 +42,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class CosIdKeyGenerateAlgorithmTest {
+class CosIdKeyGenerateAlgorithmTest {
     
     @Test
-    public void assertGenerateKey() {
+    void assertGenerateKey() {
         String idName = "test-cosid";
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.set(idName, defaultSegmentId);
@@ -55,7 +55,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertGenerateKeyWhenNotSetIdName() {
+    void assertGenerateKeyWhenNotSetIdName() {
         DefaultSegmentId defaultSegmentId = new DefaultSegmentId(new IdSegmentDistributor.Mock());
         DefaultIdGeneratorProvider.INSTANCE.setShare(defaultSegmentId);
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID");
@@ -64,13 +64,13 @@ public final class CosIdKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertGenerateKeyWhenIdProviderIsEmpty() {
+    void assertGenerateKeyWhenIdProviderIsEmpty() {
         DefaultIdGeneratorProvider.INSTANCE.clear();
         assertThrows(NotFoundIdGeneratorException.class, () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID").generateKey());
     }
     
     @Test
-    public void assertGenerateKeyAsString() {
+    void assertGenerateKeyAsString() {
         String idName = "test-cosid-as-string";
         String prefix = "test_";
         IdGenerator idGeneratorDecorator = new StringIdGeneratorDecorator(new MillisecondSnowflakeId(1, 0), new PrefixIdConverter(prefix, Radix62IdConverter.INSTANCE));

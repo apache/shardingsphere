@@ -69,7 +69,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class SelectInformationSchemataExecutorTest {
+class SelectInformationSchemataExecutorTest {
     
     private final Grantee grantee = new Grantee("root", "127.0.0.1");
     
@@ -81,13 +81,13 @@ public final class SelectInformationSchemataExecutorTest {
     private ConnectionSession connectionSession;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(connectionSession.getGrantee()).thenReturn(grantee);
         statement = (SelectStatement) new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).getSQLParserEngine("MySQL").parse(sql, false);
     }
     
     @Test
-    public void assertExecuteWithUnauthorizedDatabase() throws SQLException {
+    void assertExecuteWithUnauthorizedDatabase() throws SQLException {
         ContextManager contextManager = mockContextManager(createDatabase("no_auth_db"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("no_auth_db"));
@@ -98,7 +98,7 @@ public final class SelectInformationSchemataExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithAuthorizedDatabase() throws SQLException {
+    void assertExecuteWithAuthorizedDatabase() throws SQLException {
         Map<String, String> expectedResultSetMap = new HashMap<>(2, 1);
         expectedResultSetMap.put("SCHEMA_NAME", "foo_ds");
         expectedResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
@@ -117,7 +117,7 @@ public final class SelectInformationSchemataExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithAuthorizedDatabaseAndEmptyResource() throws SQLException {
+    void assertExecuteWithAuthorizedDatabaseAndEmptyResource() throws SQLException {
         ContextManager contextManager = mockContextManager(createDatabase("auth_db"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
@@ -131,7 +131,7 @@ public final class SelectInformationSchemataExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithoutDatabase() throws SQLException {
+    void assertExecuteWithoutDatabase() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.emptyList());

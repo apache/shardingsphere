@@ -32,11 +32,11 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ColumnShadowAlgorithmDeterminerTest {
+class ColumnShadowAlgorithmDeterminerTest {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
-    public void assertIsShadow() {
+    void assertIsShadow() {
         Properties props = PropertiesBuilder.build(new Property("column", "user_id"), new Property("operation", "insert"), new Property("regex", "[1]"));
         assertTrue(ColumnShadowAlgorithmDeterminer.isShadow(
                 (ColumnShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "REGEX_MATCH", props), createShadowDetermineCondition()));

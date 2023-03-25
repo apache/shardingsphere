@@ -38,10 +38,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ExpressionExtractUtilsTest {
+class ExpressionExtractUtilsTest {
     
     @Test
-    public void assertExtractAndPredicates() {
+    void assertExtractAndPredicates() {
         ColumnSegment left = new ColumnSegment(26, 33, new IdentifierValue("order_id"));
         ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(35, 35, 0);
         ExpressionSegment expressionSegment = new BinaryOperationExpression(26, 35, left, right, "=", "order_id=?");
@@ -51,7 +51,7 @@ public final class ExpressionExtractUtilsTest {
     }
     
     @Test
-    public void assertExtractAndPredicatesAndCondition() {
+    void assertExtractAndPredicatesAndCondition() {
         ColumnSegment columnSegment1 = new ColumnSegment(28, 35, new IdentifierValue("order_id"));
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment1 = new ParameterMarkerExpressionSegment(39, 39, 0);
         ExpressionSegment leftExpressionSegment = new BinaryOperationExpression(28, 39, columnSegment1, parameterMarkerExpressionSegment1, "=", "order_id=?");
@@ -69,7 +69,7 @@ public final class ExpressionExtractUtilsTest {
     }
     
     @Test
-    public void assertExtractAndPredicatesOrCondition() {
+    void assertExtractAndPredicatesOrCondition() {
         ColumnSegment columnSegment1 = new ColumnSegment(28, 33, new IdentifierValue("status"));
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment1 = new ParameterMarkerExpressionSegment(35, 35, 0);
         ExpressionSegment expressionSegment1 = new BinaryOperationExpression(28, 39, columnSegment1, parameterMarkerExpressionSegment1, "=", "status=?");
@@ -87,7 +87,7 @@ public final class ExpressionExtractUtilsTest {
     }
     
     @Test
-    public void assertExtractAndPredicatesOrAndCondition() {
+    void assertExtractAndPredicatesOrAndCondition() {
         ColumnSegment statusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
         ParameterMarkerExpressionSegment statusParameterExpression = new ParameterMarkerExpressionSegment(0, 0, 0);
         ExpressionSegment leftExpression = new BinaryOperationExpression(0, 0, statusColumn, statusParameterExpression, "=", "status=?");
@@ -107,7 +107,7 @@ public final class ExpressionExtractUtilsTest {
     }
     
     @Test
-    public void assertExtractGetParameterMarkerExpressions() {
+    void assertExtractGetParameterMarkerExpressions() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "IF", "IF(number + 1 <= ?, 1, -1)");
         BinaryOperationExpression param1 = new BinaryOperationExpression(0, 0,
                 new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("number")), new LiteralExpressionSegment(0, 0, 1), "+", "number + 1"),
@@ -122,7 +122,7 @@ public final class ExpressionExtractUtilsTest {
     }
     
     @Test
-    public void assertGetParameterMarkerExpressionsFromTypeCastExpression() {
+    void assertGetParameterMarkerExpressionsFromTypeCastExpression() {
         ParameterMarkerExpressionSegment expected = new ParameterMarkerExpressionSegment(0, 0, 1, ParameterMarkerType.DOLLAR);
         List<ExpressionSegment> input = Collections.singletonList(new TypeCastExpression(0, 0, "$2::varchar", expected, "varchar"));
         List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtils.getParameterMarkerExpressions(input);

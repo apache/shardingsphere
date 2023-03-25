@@ -54,29 +54,29 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
+class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @BeforeEach
-    public void init() {
+    void init() {
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    void assertCheckSQLStatementWithoutCurrentRule() {
         assertThrows(MissingRequiredRuleException.class, () -> new DropDatabaseDiscoveryRuleStatementUpdater().checkSQLStatement(database, createSQLStatement(), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeDroppedRules() {
+    void assertCheckSQLStatementWithoutToBeDroppedRules() {
         assertThrows(MissingRequiredRuleException.class, () -> new DropDatabaseDiscoveryRuleStatementUpdater().checkSQLStatement(
                 database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap())));
     }
     
     @Test
-    public void assertCheckSQLStatementWithRuleInUsed() {
+    void assertCheckSQLStatementWithRuleInUsed() {
         when(database.getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS));
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(getExportData());
@@ -109,7 +109,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfiguration() {
+    void assertUpdateCurrentRuleConfiguration() {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = createCurrentRuleConfiguration();
         assertTrue(new DropDatabaseDiscoveryRuleStatementUpdater().updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfig));
         assertTrue(databaseDiscoveryRuleConfig.getDataSources().isEmpty());
@@ -118,7 +118,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithIfExists() {
+    void assertUpdateCurrentRuleConfigurationWithIfExists() {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = createCurrentRuleConfiguration();
         DropDatabaseDiscoveryRuleStatement dropDatabaseDiscoveryRuleStatement = createSQLStatementWithIfExists();
         DropDatabaseDiscoveryRuleStatementUpdater updater = new DropDatabaseDiscoveryRuleStatementUpdater();
@@ -129,7 +129,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithInUsedDiscoveryType() {
+    void assertUpdateCurrentRuleConfigurationWithInUsedDiscoveryType() {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = createMultipleCurrentRuleConfigurations();
         assertFalse(new DropDatabaseDiscoveryRuleStatementUpdater().updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfig));
         assertThat(databaseDiscoveryRuleConfig.getDiscoveryTypes().size(), is(1));

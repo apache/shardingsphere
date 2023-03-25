@@ -32,81 +32,81 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class CircuitBreakerConnectionTest {
+class CircuitBreakerConnectionTest {
     
     private final CircuitBreakerConnection connection = new CircuitBreakerConnection();
     
     @Test
-    public void assertGetMetaData() {
+    void assertGetMetaData() {
         assertThat(connection.getMetaData(), instanceOf(CircuitBreakerDatabaseMetaData.class));
     }
     
     @Test
-    public void setReadOnly() {
+    void setReadOnly() {
         connection.setReadOnly(true);
         assertFalse(connection.isReadOnly());
     }
     
     @Test
-    public void assertIsReadOnly() {
+    void assertIsReadOnly() {
         assertFalse(connection.isReadOnly());
     }
     
     @Test
-    public void assertSetTransactionIsolation() {
+    void assertSetTransactionIsolation() {
         connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
         assertThat(connection.getTransactionIsolation(), is(Connection.TRANSACTION_NONE));
     }
     
     @Test
-    public void assertGetTransactionIsolation() {
+    void assertGetTransactionIsolation() {
         assertThat(connection.getTransactionIsolation(), is(Connection.TRANSACTION_NONE));
     }
     
     @Test
-    public void assertGetWarnings() {
+    void assertGetWarnings() {
         assertNull(connection.getWarnings());
     }
     
     @Test
-    public void assertClearWarnings() {
+    void assertClearWarnings() {
         connection.clearWarnings();
     }
     
     @Test
-    public void assertSetAutoCommit() {
+    void assertSetAutoCommit() {
         connection.setAutoCommit(true);
         assertFalse(connection.getAutoCommit());
     }
     
     @Test
-    public void assertGetAutoCommit() {
+    void assertGetAutoCommit() {
         assertFalse(connection.getAutoCommit());
     }
     
     @Test
-    public void assertCommit() {
+    void assertCommit() {
         connection.commit();
     }
     
     @Test
-    public void assertRollback() {
+    void assertRollback() {
         connection.rollback();
     }
     
     @Test
-    public void assertSetHoldability() {
+    void assertSetHoldability() {
         connection.setHoldability(-1);
         assertThat(connection.getHoldability(), is(0));
     }
     
     @Test
-    public void assertGetHoldability() {
+    void assertGetHoldability() {
         assertThat(connection.getHoldability(), is(0));
     }
     
     @Test
-    public void assertPrepareStatement() {
+    void assertPrepareStatement() {
         String sql = "SELECT 1";
         assertThat(connection.prepareStatement(sql), instanceOf(CircuitBreakerPreparedStatement.class));
         assertThat(connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY), instanceOf(CircuitBreakerPreparedStatement.class));
@@ -117,19 +117,19 @@ public final class CircuitBreakerConnectionTest {
     }
     
     @Test
-    public void assertCreateStatement() {
+    void assertCreateStatement() {
         assertThat(connection.createStatement(), instanceOf(CircuitBreakerStatement.class));
         assertThat(connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY), instanceOf(CircuitBreakerStatement.class));
         assertThat(connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT), instanceOf(CircuitBreakerStatement.class));
     }
     
     @Test
-    public void assertClose() {
+    void assertClose() {
         connection.close();
     }
     
     @Test
-    public void assertIsClosed() {
+    void assertIsClosed() {
         assertFalse(connection.isClosed());
     }
 }

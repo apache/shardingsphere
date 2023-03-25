@@ -63,7 +63,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class OpenGaussCommandExecutorFactoryTest {
+class OpenGaussCommandExecutorFactoryTest {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -72,14 +72,14 @@ public final class OpenGaussCommandExecutorFactoryTest {
     private PortalContext portalContext;
     
     @Test
-    public void assertNewOpenGaussBatchBindExecutor() throws SQLException {
+    void assertNewOpenGaussBatchBindExecutor() throws SQLException {
         OpenGaussComBatchBindPacket batchBindPacket = mock(OpenGaussComBatchBindPacket.class);
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, batchBindPacket, connectionSession, portalContext);
         assertThat(actual, instanceOf(OpenGaussComBatchBindExecutor.class));
     }
     
     @Test
-    public void assertNewPostgreSQLSimpleQueryExecutor() throws SQLException {
+    void assertNewPostgreSQLSimpleQueryExecutor() throws SQLException {
         PostgreSQLComQueryPacket queryPacket = mock(PostgreSQLComQueryPacket.class);
         when(queryPacket.getSql()).thenReturn("");
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.SIMPLE_QUERY, queryPacket, connectionSession, portalContext);
@@ -87,13 +87,13 @@ public final class OpenGaussCommandExecutorFactoryTest {
     }
     
     @Test
-    public void assertNewUnsupportedExecutor() throws SQLException {
+    void assertNewUnsupportedExecutor() throws SQLException {
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.FLUSH_COMMAND, null, connectionSession, portalContext);
         assertThat(actual, instanceOf(PostgreSQLUnsupportedCommandExecutor.class));
     }
     
     @Test
-    public void assertAggregatedPacketNotBatchedStatements() throws SQLException {
+    void assertAggregatedPacketNotBatchedStatements() throws SQLException {
         PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
         when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
         PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
@@ -119,7 +119,7 @@ public final class OpenGaussCommandExecutorFactoryTest {
     }
     
     @Test
-    public void assertAggregatedPacketIsBatchedStatements() throws SQLException {
+    void assertAggregatedPacketIsBatchedStatements() throws SQLException {
         PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
         when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
         PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);

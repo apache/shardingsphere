@@ -41,28 +41,28 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLNormalReplicationDatabaseDiscoveryProviderTest {
+class MySQLNormalReplicationDatabaseDiscoveryProviderTest {
     
     @Test
-    public void assertCheckEnvironmentNoPrimaryDataSource() {
+    void assertCheckEnvironmentNoPrimaryDataSource() {
         assertThrows(PrimaryDataSourceNotFoundException.class,
                 () -> new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Collections.singleton(mockDataSourceForReplicationInstances("ON"))));
     }
     
     @Test
-    public void assertCheckEnvironmentHasSinglePrimaryDataSource() throws SQLException {
+    void assertCheckEnvironmentHasSinglePrimaryDataSource() throws SQLException {
         new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Collections.singleton(mockDataSourceForReplicationInstances("OFF")));
     }
     
     @Test
-    public void assertCheckEnvironmentHasManyPrimaryDataSources() {
+    void assertCheckEnvironmentHasManyPrimaryDataSources() {
         assertThrows(DuplicatePrimaryDataSourceException.class,
                 () -> new MySQLNormalReplicationDatabaseDiscoveryProvider().checkEnvironment("foo_db", Arrays.asList(mockDataSourceForReplicationInstances("OFF"),
                         mockDataSourceForReplicationInstances("OFF"))));
     }
     
     @Test
-    public void assertIsPrimaryInstance() throws SQLException {
+    void assertIsPrimaryInstance() throws SQLException {
         assertTrue(new MySQLNormalReplicationDatabaseDiscoveryProvider().isPrimaryInstance(mockDataSourceForReplicationInstances("OFF")));
     }
     
@@ -82,7 +82,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderTest {
     }
     
     @Test
-    public void assertLoadReplicaStatus() throws SQLException {
+    void assertLoadReplicaStatus() throws SQLException {
         DatabaseDiscoveryProvider provider = new MySQLNormalReplicationDatabaseDiscoveryProvider();
         provider.init(PropertiesBuilder.build(new Property("delay-milliseconds-threshold", "15000")));
         DataSource dataSource = mockDataSourceForReplicaStatus();

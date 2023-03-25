@@ -33,10 +33,10 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class JobDataNodeLineConvertUtilsTest {
+class JobDataNodeLineConvertUtilsTest {
     
     @Test
-    public void assertConvertDataNodesToLines() {
+    void assertConvertDataNodesToLines() {
         Map<String, List<DataNode>> mockDataNodes = new LinkedHashMap<>();
         List<DataNode> dataNodes = Arrays.asList(new DataNode("ds_0", "t_order_0"), new DataNode("ds_0", "t_order_1"));
         List<DataNode> itemDataNodes = Collections.singletonList(new DataNode("ds_0", "t_order_item_0"));
@@ -52,7 +52,7 @@ public final class JobDataNodeLineConvertUtilsTest {
     }
     
     @Test
-    public void assertConvertDataNodesToLinesWithMultipleDataSource() {
+    void assertConvertDataNodesToLinesWithMultipleDataSource() {
         Map<String, List<DataNode>> mockDataNodes = new LinkedHashMap<>();
         List<DataNode> dataNodes = Arrays.asList(new DataNode("ds_0", "t_order_0"), new DataNode("ds_0", "t_order_2"), new DataNode("ds_1", "t_order_1"), new DataNode("ds_1", "t_order_3"));
         mockDataNodes.put("t_order", dataNodes);

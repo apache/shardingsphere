@@ -38,10 +38,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class CDCSchemaTableUtilsTest {
+class CDCSchemaTableUtilsTest {
     
     @Test
-    public void assertParseTableExpression() {
+    void assertParseTableExpression() {
         Map<String, ShardingSphereSchema> schemas = new HashMap<>();
         schemas.put("public", mockedPublicSchema());
         schemas.put("test", mockedTestSchema());
@@ -65,23 +65,22 @@ public final class CDCSchemaTableUtilsTest {
     }
     
     private ShardingSphereSchema mockedPublicSchema() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>();
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
         tables.put("t_order", mock(ShardingSphereTable.class));
         tables.put("t_order2", mock(ShardingSphereTable.class));
         return new ShardingSphereSchema(tables, Collections.emptyMap());
     }
     
     private ShardingSphereSchema mockedTestSchema() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>();
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
         tables.put("t_order_item", mock(ShardingSphereTable.class));
         tables.put("t_order_item2", mock(ShardingSphereTable.class));
         return new ShardingSphereSchema(tables, Collections.emptyMap());
     }
     
     @Test
-    public void assertParseTableExpressionWithoutSchema() {
-        Map<String, ShardingSphereSchema> schemas = new HashMap<>();
-        schemas.put("sharding_db", mockedPublicSchema());
+    void assertParseTableExpressionWithoutSchema() {
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("sharding_db", mockedPublicSchema());
         ShardingSphereDatabase database = new ShardingSphereDatabase("sharding_db", new MySQLDatabaseType(), null, null, schemas);
         List<String> schemaTables = Collections.singletonList("*");
         Collection<String> actualWildcardTable = CDCSchemaTableUtils.parseTableExpressionWithoutSchema(database, schemaTables);

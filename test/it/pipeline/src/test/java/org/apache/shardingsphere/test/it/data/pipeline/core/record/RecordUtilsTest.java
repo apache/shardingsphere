@@ -38,10 +38,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class RecordUtilsTest {
+class RecordUtilsTest {
     
     @Test
-    public void assertExtractPrimaryColumns() {
+    void assertExtractPrimaryColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
         Collection<Column> actual = RecordUtils.extractPrimaryColumns(dataRecord);
         assertThat(actual.size(), is(2));
@@ -49,7 +49,7 @@ public final class RecordUtilsTest {
     }
     
     @Test
-    public void assertExtractConditionalColumns() {
+    void assertExtractConditionalColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
         Collection<Column> actual = RecordUtils.extractConditionColumns(dataRecord, Collections.singleton("c1"));
         assertThat(actual.size(), is(3));
@@ -57,7 +57,7 @@ public final class RecordUtilsTest {
     }
     
     @Test
-    public void assertExtractUpdatedColumns() {
+    void assertExtractUpdatedColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
         Collection<Column> actual = RecordUtils.extractUpdatedColumns(dataRecord);
         assertThat(actual.size(), is(3));
@@ -76,7 +76,7 @@ public final class RecordUtilsTest {
     }
     
     @Test
-    public void assertGetLastNormalRecord() {
+    void assertGetLastNormalRecord() {
         List<Record> actual = Arrays.asList(new DataRecord(new IntegerPrimaryKeyPosition(0, 1), 0), new PlaceholderRecord(new PlaceholderPosition()));
         Record expected = RecordUtils.getLastNormalRecord(actual);
         assertThat(expected, instanceOf(DataRecord.class));

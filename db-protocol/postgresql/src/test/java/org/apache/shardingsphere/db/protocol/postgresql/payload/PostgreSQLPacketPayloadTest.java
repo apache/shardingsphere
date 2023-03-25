@@ -26,10 +26,10 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class PostgreSQLPacketPayloadTest {
+class PostgreSQLPacketPayloadTest {
     
     @Test
-    public void assertReadWrite() {
+    void assertReadWrite() {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(16, 128);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         byte expectedInt1 = (byte) 'i';

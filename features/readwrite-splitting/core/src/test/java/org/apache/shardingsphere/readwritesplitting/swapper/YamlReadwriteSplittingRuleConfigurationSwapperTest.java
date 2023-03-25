@@ -39,10 +39,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlReadwriteSplittingRuleConfigurationSwapperTest {
+class YamlReadwriteSplittingRuleConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlWithLoadBalanceAlgorithm() {
+    void assertSwapToYamlWithLoadBalanceAlgorithm() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig =
                 new ReadwriteSplittingDataSourceRuleConfiguration("ds",
                         new StaticReadwriteSplittingStrategyConfiguration("write", Collections.singletonList("read")), null, "roundRobin");
@@ -55,7 +55,7 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
+    void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds",
                 new StaticReadwriteSplittingStrategyConfiguration("write", Collections.singletonList("read")), null, null);
         YamlReadwriteSplittingRuleConfiguration actual = getYamlReadwriteSplittingRuleConfigurationSwapper().swapToYamlConfiguration(
@@ -67,7 +67,7 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithLoadBalanceAlgorithmType() {
+    void assertSwapToObjectWithLoadBalanceAlgorithmType() {
         YamlReadwriteSplittingRuleConfiguration yamlConfig = createYamlReadwriteSplittingRuleConfiguration();
         yamlConfig.getDataSources().get("read_query_ds").setLoadBalancerName("RANDOM");
         ReadwriteSplittingRuleConfiguration actual = getYamlReadwriteSplittingRuleConfigurationSwapper().swapToObject(yamlConfig);
@@ -76,7 +76,7 @@ public final class YamlReadwriteSplittingRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithoutLoadBalanceAlgorithm() {
+    void assertSwapToObjectWithoutLoadBalanceAlgorithm() {
         YamlReadwriteSplittingRuleConfiguration yamlConfig = createYamlReadwriteSplittingRuleConfiguration();
         ReadwriteSplittingRuleConfiguration actual = getYamlReadwriteSplittingRuleConfigurationSwapper().swapToObject(yamlConfig);
         assertReadwriteSplittingRuleConfiguration(actual);

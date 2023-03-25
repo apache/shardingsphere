@@ -27,13 +27,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLComStmtPrepareOKPacketTest {
+class MySQLComStmtPrepareOKPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         MySQLComStmtPrepareOKPacket actual = new MySQLComStmtPrepareOKPacket(1, 0, 1, 0);
         actual.write(payload);
         verify(payload).writeInt1(0x00);

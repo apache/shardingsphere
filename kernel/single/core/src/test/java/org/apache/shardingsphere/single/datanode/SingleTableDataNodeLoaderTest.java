@@ -44,7 +44,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleTableDataNodeLoaderTest {
+class SingleTableDataNodeLoaderTest {
     
     private static final String TABLE_TYPE = "TABLE";
     
@@ -59,7 +59,7 @@ public final class SingleTableDataNodeLoaderTest {
     private Map<String, DataSource> dataSourceMap;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         dataSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceMap.put("ds0", mockDataSource("ds0", Arrays.asList("employee", "dept", "salary")));
         dataSourceMap.put("ds1", mockDataSource("ds1", Arrays.asList("student", "teacher", "class", "salary")));
@@ -85,7 +85,7 @@ public final class SingleTableDataNodeLoaderTest {
     }
     
     @Test
-    public void assertLoad() {
+    void assertLoad() {
         Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, excludedTables);
         assertFalse(actual.containsKey("employee"));
@@ -100,7 +100,7 @@ public final class SingleTableDataNodeLoaderTest {
     }
     
     @Test
-    public void assertLoadWithConflictTables() {
+    void assertLoadWithConflictTables() {
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, Collections.emptyList());
         assertTrue(actual.containsKey("employee"));
         assertTrue(actual.containsKey("salary"));

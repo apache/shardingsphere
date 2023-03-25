@@ -35,17 +35,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-public final class DefaultMySQLSessionVariableHandlerTest {
+class DefaultMySQLSessionVariableHandlerTest {
     
     @Test
-    public void assertHandleDiscard() {
+    void assertHandleDiscard() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         TypedSPILoader.getService(MySQLSessionVariableHandler.class, null).handle(connectionSession, "", "");
         verifyNoInteractions(connectionSession);
     }
     
     @Test
-    public void assertHandleRecord() {
+    void assertHandleRecord() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(mock(RequiredSessionVariableRecorder.class));
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {

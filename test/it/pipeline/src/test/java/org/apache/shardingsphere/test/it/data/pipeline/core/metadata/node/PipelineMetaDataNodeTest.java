@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PipelineMetaDataNodeTest {
+class PipelineMetaDataNodeTest {
     
     private final String migrationMetaDataRootPath = "/pipeline/migration/metadata";
     
@@ -38,68 +38,68 @@ public final class PipelineMetaDataNodeTest {
     private final String jobCheckRootPath = jobRootPath + "/check";
     
     @Test
-    public void assertGetMetaDataDataSourcesPath() {
+    void assertGetMetaDataDataSourcesPath() {
         MatcherAssert.assertThat(PipelineMetaDataNode.getMetaDataDataSourcesPath(new MigrationJobType()), is(migrationMetaDataRootPath + "/data_sources"));
     }
     
     @Test
-    public void assertGetMetaDataProcessConfigPath() {
+    void assertGetMetaDataProcessConfigPath() {
         assertThat(PipelineMetaDataNode.getMetaDataProcessConfigPath(new MigrationJobType()), is(migrationMetaDataRootPath + "/process_config"));
     }
     
     @Test
-    public void assertGetElasticJobNamespace() {
+    void assertGetElasticJobNamespace() {
         assertThat(PipelineMetaDataNode.getElasticJobNamespace(), is(jobsPath));
     }
     
     @Test
-    public void assertGetJobRootPath() {
+    void assertGetJobRootPath() {
         assertThat(PipelineMetaDataNode.getJobRootPath(jobId), is(jobRootPath));
     }
     
     @Test
-    public void assertGetJobOffsetPath() {
+    void assertGetJobOffsetPath() {
         assertThat(PipelineMetaDataNode.getJobOffsetPath(jobId), is(jobRootPath + "/offset"));
     }
     
     @Test
-    public void assertGetJobOffsetItemPath() {
+    void assertGetJobOffsetItemPath() {
         assertThat(PipelineMetaDataNode.getJobOffsetItemPath(jobId, 0), is(jobRootPath + "/offset/0"));
     }
     
     @Test
-    public void assertGetJobConfigPath() {
+    void assertGetJobConfigPath() {
         assertThat(PipelineMetaDataNode.getJobConfigPath(jobId), is(jobRootPath + "/config"));
     }
     
     @Test
-    public void assertGetLatestCheckJobIdPath() {
+    void assertGetLatestCheckJobIdPath() {
         assertThat(PipelineMetaDataNode.getLatestCheckJobIdPath(jobId), is(jobCheckRootPath + "/latest_job_id"));
     }
     
     @Test
-    public void assertGetCheckJobResultPath() {
+    void assertGetCheckJobResultPath() {
         assertThat(PipelineMetaDataNode.getCheckJobResultPath(jobId, "j02fx123"), is(jobCheckRootPath + "/job_ids/j02fx123"));
     }
     
     @Test
-    public void assertGetCheckJobIdsPath() {
+    void assertGetCheckJobIdsPath() {
         assertThat(PipelineMetaDataNode.getCheckJobIdsRootPath(jobId), is(jobCheckRootPath + "/job_ids"));
     }
     
     @Test
-    public void assertGetCheckJobIdPath() {
+    void assertGetCheckJobIdPath() {
         String checkJobId = "j0201001";
         assertThat(PipelineMetaDataNode.getCheckJobIdPath(jobId, checkJobId), is(jobCheckRootPath + "/job_ids/" + checkJobId));
     }
     
     @Test
-    public void assertGetJobBarrierEnablePath() {
+    void assertGetJobBarrierEnablePath() {
         assertThat(PipelineMetaDataNode.getJobBarrierEnablePath(jobId), is(jobRootPath + "/barrier/enable"));
     }
     
     @Test
-    public void assertGetJobBarrierDisablePath() {
+    void assertGetJobBarrierDisablePath() {
         assertThat(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), is(jobRootPath + "/barrier/disable"));
     }
 }

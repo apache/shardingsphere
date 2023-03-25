@@ -37,16 +37,16 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleDropSchemaMetaDataValidatorTest {
+class SingleDropSchemaMetaDataValidatorTest {
     
     @Test
-    public void assertValidateWithoutCascadeSchema() {
+    void assertValidateWithoutCascadeSchema() {
         assertThrows(DropNotEmptySchemaException.class,
                 () -> new SingleDropSchemaMetaDataValidator().validate(mock(SingleRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("foo_schema", false), mockDatabase()));
     }
     
     @Test
-    public void assertValidateWithNotExistedSchema() {
+    void assertValidateWithNotExistedSchema() {
         ShardingSphereDatabase database = mockDatabase();
         when(database.getSchema("not_existed_schema")).thenReturn(null);
         assertThrows(SchemaNotFoundException.class,
@@ -54,7 +54,7 @@ public final class SingleDropSchemaMetaDataValidatorTest {
     }
     
     @Test
-    public void assertValidate() {
+    void assertValidate() {
         new SingleDropSchemaMetaDataValidator().validate(mock(SingleRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("foo_schema", true), mockDatabase());
     }
     

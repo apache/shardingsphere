@@ -35,10 +35,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class OpenGaussStatementMemoryStrictlyFetchSizeSetterTest {
+class OpenGaussStatementMemoryStrictlyFetchSizeSetterTest {
     
     @Test
-    public void assertSetFetchSize() throws SQLException {
+    void assertSetFetchSize() throws SQLException {
         Statement statement = mock(Statement.class);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

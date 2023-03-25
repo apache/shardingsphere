@@ -39,10 +39,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SelectStatementHandlerTest {
+class SelectStatementHandlerTest {
     
     @Test
-    public void assertGetLimitSegmentForMySQL() {
+    void assertGetLimitSegmentForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 0, null, null));
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
@@ -52,7 +52,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLimitSegmentForPostgreSQL() {
+    void assertGetLimitSegmentForPostgreSQL() {
         PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 0, null, null));
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
@@ -62,7 +62,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLimitSegmentForSQL92() {
+    void assertGetLimitSegmentForSQL92() {
         SQL92SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 0, null, null));
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
@@ -72,7 +72,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLimitSegmentForSQLServer() {
+    void assertGetLimitSegmentForSQLServer() {
         SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 0, null, null));
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
@@ -82,7 +82,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLimitSegmentForOpenGauss() {
+    void assertGetLimitSegmentForOpenGauss() {
         OpenGaussSelectStatement selectStatement = new OpenGaussSelectStatement();
         selectStatement.setLimit(new LimitSegment(1, 2, new NumberLiteralLimitValueSegment(0, 3, 5L), new NumberLiteralLimitValueSegment(0, 3, 2L)));
         Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
@@ -92,12 +92,12 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLimitSegmentForOracle() {
+    void assertGetLimitSegmentForOracle() {
         assertFalse(SelectStatementHandler.getLimitSegment(new OracleSelectStatement()).isPresent());
     }
     
     @Test
-    public void assertGetLockSegmentForMySQL() {
+    void assertGetLockSegmentForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLock(new LockSegment(0, 0));
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
@@ -107,7 +107,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLockSegmentForOracle() {
+    void assertGetLockSegmentForOracle() {
         OracleSelectStatement selectStatement = new OracleSelectStatement();
         selectStatement.setLock(new LockSegment(0, 0));
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
@@ -117,7 +117,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLockSegmentForPostgreSQL() {
+    void assertGetLockSegmentForPostgreSQL() {
         PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
         selectStatement.setLock(new LockSegment(0, 0));
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
@@ -127,7 +127,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLockSegmentForOpenGauss() {
+    void assertGetLockSegmentForOpenGauss() {
         OpenGaussSelectStatement selectStatement = new OpenGaussSelectStatement();
         selectStatement.setLock(new LockSegment(0, 2));
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
@@ -137,13 +137,13 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLockSegmentForOtherDatabases() {
+    void assertGetLockSegmentForOtherDatabases() {
         assertFalse(SelectStatementHandler.getLockSegment(new SQL92SelectStatement()).isPresent());
         assertFalse(SelectStatementHandler.getLockSegment(new SQLServerSelectStatement()).isPresent());
     }
     
     @Test
-    public void assertGetWindowSegmentForMySQL() {
+    void assertGetWindowSegmentForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setWindow(new WindowSegment(0, 0));
         Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(selectStatement);
@@ -152,7 +152,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetWindowSegmentForPostgreSQL() {
+    void assertGetWindowSegmentForPostgreSQL() {
         PostgreSQLSelectStatement selectStatement = new PostgreSQLSelectStatement();
         selectStatement.setWindow(new WindowSegment(0, 0));
         Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(selectStatement);
@@ -161,7 +161,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetWindowSegmentForOpenGauss() {
+    void assertGetWindowSegmentForOpenGauss() {
         OpenGaussSelectStatement selectStatement = new OpenGaussSelectStatement();
         selectStatement.setWindow(new WindowSegment(0, 2));
         Optional<WindowSegment> windowSegment = SelectStatementHandler.getWindowSegment(selectStatement);
@@ -171,14 +171,14 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetWindowSegmentForOtherDatabases() {
+    void assertGetWindowSegmentForOtherDatabases() {
         assertFalse(SelectStatementHandler.getWindowSegment(new OracleSelectStatement()).isPresent());
         assertFalse(SelectStatementHandler.getWindowSegment(new SQL92SelectStatement()).isPresent());
         assertFalse(SelectStatementHandler.getWindowSegment(new SQLServerSelectStatement()).isPresent());
     }
     
     @Test
-    public void assertGetWithSegmentForOracle() {
+    void assertGetWithSegmentForOracle() {
         OracleSelectStatement selectStatement = new OracleSelectStatement();
         selectStatement.setWithSegment(new WithSegment(0, 2, new LinkedList<>()));
         Optional<WithSegment> withSegment = SelectStatementHandler.getWithSegment(selectStatement);
@@ -188,7 +188,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetWithSegmentForSQLServer() {
+    void assertGetWithSegmentForSQLServer() {
         SQLServerSelectStatement selectStatement = new SQLServerSelectStatement();
         selectStatement.setWithSegment(new WithSegment(0, 2, new LinkedList<>()));
         Optional<WithSegment> withSegment = SelectStatementHandler.getWithSegment(selectStatement);
@@ -198,7 +198,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetWithSegmentForOtherDatabases() {
+    void assertGetWithSegmentForOtherDatabases() {
         assertFalse(SelectStatementHandler.getWithSegment(new MySQLSelectStatement()).isPresent());
         assertFalse(SelectStatementHandler.getWithSegment(new OpenGaussSelectStatement()).isPresent());
         assertFalse(SelectStatementHandler.getWithSegment(new PostgreSQLSelectStatement()).isPresent());
@@ -206,7 +206,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetModelSegmentForOracle() {
+    void assertGetModelSegmentForOracle() {
         OracleSelectStatement selectStatement = new OracleSelectStatement();
         selectStatement.setModelSegment(new ModelSegment(0, 2));
         Optional<ModelSegment> modelSegment = SelectStatementHandler.getModelSegment(selectStatement);
@@ -216,7 +216,7 @@ public final class SelectStatementHandlerTest {
     }
     
     @Test
-    public void assertGetModelSegmentForOtherDatabases() {
+    void assertGetModelSegmentForOtherDatabases() {
         assertFalse(SelectStatementHandler.getModelSegment(new MySQLSelectStatement()).isPresent());
         assertFalse(SelectStatementHandler.getModelSegment(new OpenGaussSelectStatement()).isPresent());
         assertFalse(SelectStatementHandler.getModelSegment(new PostgreSQLSelectStatement()).isPresent());

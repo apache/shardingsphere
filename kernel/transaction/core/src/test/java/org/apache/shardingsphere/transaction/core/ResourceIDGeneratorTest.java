@@ -23,10 +23,10 @@ import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ResourceIDGeneratorTest {
+class ResourceIDGeneratorTest {
     
     @Test
-    public void assertNextIdProperly() {
+    void assertNextIdProperly() {
         assertTrue(isStartWithNumber(ResourceIDGenerator.getInstance().nextId()));
     }
     

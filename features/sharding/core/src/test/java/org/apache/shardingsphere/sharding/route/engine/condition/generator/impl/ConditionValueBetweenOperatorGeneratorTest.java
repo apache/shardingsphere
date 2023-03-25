@@ -50,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class ConditionValueBetweenOperatorGeneratorTest {
+class ConditionValueBetweenOperatorGeneratorTest {
     
     private final ConditionValueBetweenOperatorGenerator generator = new ConditionValueBetweenOperatorGenerator();
     
@@ -60,7 +60,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateConditionValue() {
+    void assertGenerateConditionValue() {
         int between = 1;
         int and = 2;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
@@ -78,7 +78,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateConditionValueWithDifferentNumericType() {
+    void assertGenerateConditionValueWithDifferentNumericType() {
         int between = 3;
         long and = 3147483647L;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
@@ -95,7 +95,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
     }
     
     @Test
-    public void assertGenerateErrorConditionValue() {
+    void assertGenerateErrorConditionValue() {
         int between = 1;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
@@ -105,7 +105,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateOneNowConditionValue() {
+    void assertGenerateOneNowConditionValue() {
         Date date = new Date();
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, date);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
@@ -121,7 +121,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateNowConditionValue() {
+    void assertGenerateNowConditionValue() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, 1);
         final Date after = calendar.getTime();
@@ -139,7 +139,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateConditionValueWithParameter() {
+    void assertGenerateConditionValueWithParameter() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
         ParameterMarkerExpressionSegment between = new ParameterMarkerExpressionSegment(0, 0, 0);
         ParameterMarkerExpressionSegment and = new ParameterMarkerExpressionSegment(0, 0, 1);
@@ -155,7 +155,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
     }
     
     @Test
-    public void assertGenerateConditionValueWithoutParameter() {
+    void assertGenerateConditionValueWithoutParameter() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
         ParameterMarkerExpressionSegment between = new ParameterMarkerExpressionSegment(0, 0, 0);
         ParameterMarkerExpressionSegment and = new ParameterMarkerExpressionSegment(0, 0, 1);

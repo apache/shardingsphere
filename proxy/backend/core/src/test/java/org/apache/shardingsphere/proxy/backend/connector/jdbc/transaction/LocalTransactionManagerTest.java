@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class LocalTransactionManagerTest {
+class LocalTransactionManagerTest {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -57,7 +57,7 @@ public final class LocalTransactionManagerTest {
     private LocalTransactionManager localTransactionManager;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         when(backendConnection.getCachedConnections()).thenReturn(setCachedConnections());
@@ -74,20 +74,20 @@ public final class LocalTransactionManagerTest {
     }
     
     @Test
-    public void assertBegin() {
+    void assertBegin() {
         localTransactionManager.begin();
         verify(backendConnection).getConnectionPostProcessors();
     }
     
     @Test
-    public void assertCommit() throws SQLException {
+    void assertCommit() throws SQLException {
         localTransactionManager.commit();
         verify(transactionStatus).isRollbackOnly();
         verify(connection).commit();
     }
     
     @Test
-    public void assertRollback() throws SQLException {
+    void assertRollback() throws SQLException {
         localTransactionManager.rollback();
         verify(transactionStatus).isInTransaction();
         verify(connection).rollback();

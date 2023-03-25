@@ -61,18 +61,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class GovernanceRepositoryAPIImplTest {
+class GovernanceRepositoryAPIImplTest {
     
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
     @BeforeAll
-    public static void beforeClass() {
+    static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
         governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
     }
     
     @Test
-    public void assertPersistJobProgress() {
+    void assertPersistJobProgress() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
         governanceRepositoryAPI.persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
         Optional<String> actual = governanceRepositoryAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
@@ -81,7 +81,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    public void assertPersistJobCheckResult() {
+    void assertPersistJobCheckResult() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
         Map<String, DataConsistencyCheckResult> actual = new HashMap<>();
         actual.put("test", new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(1, 1), new DataConsistencyContentCheckResult(true)));
@@ -92,7 +92,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    public void assertDeleteJob() {
+    void assertDeleteJob() {
         governanceRepositoryAPI.persist(DataPipelineConstants.DATA_PIPELINE_ROOT + "/1", "");
         governanceRepositoryAPI.deleteJob("1");
         Optional<String> actual = governanceRepositoryAPI.getJobItemProgress("1", 0);
@@ -100,7 +100,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    public void assertGetChildrenKeys() {
+    void assertGetChildrenKeys() {
         governanceRepositoryAPI.persist(DataPipelineConstants.DATA_PIPELINE_ROOT + "/1", "");
         List<String> actual = governanceRepositoryAPI.getChildrenKeys(DataPipelineConstants.DATA_PIPELINE_ROOT);
         assertFalse(actual.isEmpty());
@@ -108,7 +108,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    public void assertWatch() throws InterruptedException {
+    void assertWatch() throws InterruptedException {
         AtomicReference<DataChangedEvent> eventReference = new AtomicReference<>();
         CountDownLatch countDownLatch = new CountDownLatch(1);
         String key = DataPipelineConstants.DATA_PIPELINE_ROOT + "/1";
@@ -127,7 +127,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    public void assertGetShardingItems() {
+    void assertGetShardingItems() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
         governanceRepositoryAPI.persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
         List<Integer> shardingItems = governanceRepositoryAPI.getShardingItems(jobItemContext.getJobId());

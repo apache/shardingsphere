@@ -78,10 +78,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingDQLResultMergerTest {
+class ShardingDQLResultMergerTest {
     
     @Test
-    public void assertBuildIteratorStreamMergedResult() throws SQLException {
+    void assertBuildIteratorStreamMergedResult() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -93,7 +93,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildIteratorStreamMergedResultWithLimit() throws SQLException {
+    void assertBuildIteratorStreamMergedResultWithLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -106,7 +106,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildIteratorStreamMergedResultWithMySQLLimit() throws SQLException {
+    void assertBuildIteratorStreamMergedResultWithMySQLLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -120,7 +120,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildIteratorStreamMergedResultWithOracleLimit() throws SQLException {
+    void assertBuildIteratorStreamMergedResultWithOracleLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         OracleSelectStatement selectStatement = (OracleSelectStatement) buildSelectStatement(new OracleSelectStatement());
@@ -150,7 +150,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildIteratorStreamMergedResultWithSQLServerLimit() throws SQLException {
+    void assertBuildIteratorStreamMergedResultWithSQLServerLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -164,7 +164,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildOrderByStreamMergedResult() throws SQLException {
+    void assertBuildOrderByStreamMergedResult() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -177,7 +177,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildOrderByStreamMergedResultWithMySQLLimit() throws SQLException {
+    void assertBuildOrderByStreamMergedResultWithMySQLLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -193,7 +193,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildOrderByStreamMergedResultWithOracleLimit() throws SQLException {
+    void assertBuildOrderByStreamMergedResultWithOracleLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         WhereSegment whereSegment = mock(WhereSegment.class);
@@ -225,7 +225,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildOrderByStreamMergedResultWithSQLServerLimit() throws SQLException {
+    void assertBuildOrderByStreamMergedResultWithSQLServerLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -241,7 +241,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByStreamMergedResult() throws SQLException {
+    void assertBuildGroupByStreamMergedResult() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -255,7 +255,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByStreamMergedResultWithMySQLLimit() throws SQLException {
+    void assertBuildGroupByStreamMergedResultWithMySQLLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -272,7 +272,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByStreamMergedResultWithOracleLimit() throws SQLException {
+    void assertBuildGroupByStreamMergedResultWithOracleLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         WhereSegment whereSegment = mock(WhereSegment.class);
@@ -305,7 +305,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByStreamMergedResultWithSQLServerLimit() throws SQLException {
+    void assertBuildGroupByStreamMergedResultWithSQLServerLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -322,7 +322,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByMemoryMergedResult() throws SQLException {
+    void assertBuildGroupByMemoryMergedResult() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -335,7 +335,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByMemoryMergedResultWithMySQLLimit() throws SQLException {
+    void assertBuildGroupByMemoryMergedResultWithMySQLLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -351,7 +351,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByMemoryMergedResultWithOracleLimit() throws SQLException {
+    void assertBuildGroupByMemoryMergedResultWithOracleLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         WhereSegment whereSegment = mock(WhereSegment.class);
@@ -383,7 +383,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByMemoryMergedResultWithSQLServerLimit() throws SQLException {
+    void assertBuildGroupByMemoryMergedResultWithSQLServerLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -401,7 +401,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByMemoryMergedResultWithAggregationOnly() throws SQLException {
+    void assertBuildGroupByMemoryMergedResultWithAggregationOnly() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
@@ -415,7 +415,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithMySQLLimit() throws SQLException {
+    void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithMySQLLimit() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
@@ -433,7 +433,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithOracleLimit() throws SQLException {
+    void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithOracleLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "Oracle"));
         final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         WhereSegment whereSegment = mock(WhereSegment.class);
@@ -466,7 +466,7 @@ public final class ShardingDQLResultMergerTest {
     }
     
     @Test
-    public void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithSQLServerLimit() throws SQLException {
+    void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithSQLServerLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));

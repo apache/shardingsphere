@@ -31,10 +31,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SQLParserRuleBuilderTest {
+class SQLParserRuleBuilderTest {
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         SQLParserRuleConfiguration ruleConfig = new SQLParserRuleConfiguration(true, new CacheOption(2, 5), new CacheOption(4, 7));
         SQLParserRule actualResult = new SQLParserRuleBuilder().build(ruleConfig, new HashMap<>(), new ConfigurationProperties(new Properties()));
         assertThat(actualResult.getConfiguration(), is(ruleConfig));
@@ -46,12 +46,12 @@ public final class SQLParserRuleBuilderTest {
     }
     
     @Test
-    public void assertGetOrder() {
+    void assertGetOrder() {
         assertThat(new SQLParserRuleBuilder().getOrder(), is(SQLParserOrder.ORDER));
     }
     
     @Test
-    public void assertGetTypeClass() {
+    void assertGetTypeClass() {
         assertThat(new SQLParserRuleBuilder().getTypeClass().toString(), is(SQLParserRuleConfiguration.class.toString()));
     }
 }

@@ -44,24 +44,24 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MergedEncryptShowCreateTableMergedResultTest {
+class MergedEncryptShowCreateTableMergedResultTest {
     
     @Mock
     private QueryResult queryResult;
     
     @Test
-    public void assertNextWhenNextExist() throws SQLException {
+    void assertNextWhenNextExist() throws SQLException {
         assertFalse(createMergedEncryptShowCreateTableMergedResult(queryResult, mock(EncryptRule.class)).next());
     }
     
     @Test
-    public void assertNextWhenNextNotExist() throws SQLException {
+    void assertNextWhenNextNotExist() throws SQLException {
         when(queryResult.next()).thenReturn(true);
         assertTrue(createMergedEncryptShowCreateTableMergedResult(queryResult, mock(EncryptRule.class)).next());
     }
     
     @Test
-    public void assertGetValueWhenConfigPlainColumn() throws SQLException {
+    void assertGetValueWhenConfigPlainColumn() throws SQLException {
         when(queryResult.next()).thenReturn(true).thenReturn(false);
         when(queryResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
@@ -74,7 +74,7 @@ public final class MergedEncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWhenConfigAssistedQueryColumn() throws SQLException {
+    void assertGetValueWhenConfigAssistedQueryColumn() throws SQLException {
         when(queryResult.next()).thenReturn(true).thenReturn(false);
         when(queryResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
@@ -87,7 +87,7 @@ public final class MergedEncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWhenConfigLikeQueryColumn() throws SQLException {
+    void assertGetValueWhenConfigLikeQueryColumn() throws SQLException {
         when(queryResult.next()).thenReturn(true).thenReturn(false);
         when(queryResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
@@ -101,7 +101,7 @@ public final class MergedEncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWhenConfigPlainColumnAndAssistedQueryColumn() throws SQLException {
+    void assertGetValueWhenConfigPlainColumnAndAssistedQueryColumn() throws SQLException {
         when(queryResult.next()).thenReturn(true).thenReturn(false);
         when(queryResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, `user_id` VARCHAR(100) NOT NULL, "
@@ -121,7 +121,7 @@ public final class MergedEncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertWasNull() throws SQLException {
+    void assertWasNull() throws SQLException {
         assertFalse(createMergedEncryptShowCreateTableMergedResult(queryResult, mock(EncryptRule.class)).wasNull());
     }
     

@@ -65,7 +65,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class UnicastDatabaseBackendHandlerTest {
+class UnicastDatabaseBackendHandlerTest {
     
     private static final String EXECUTE_SQL = "SELECT 1 FROM user WHERE id = 1";
     
@@ -83,7 +83,7 @@ public final class UnicastDatabaseBackendHandlerTest {
     private DatabaseConnector databaseConnector;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         when(connectionSession.getDefaultDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         when(connectionSession.getBackendConnection()).thenReturn(mock(BackendConnection.class));
         mockDatabaseConnector(new UpdateResponseHeader(mock(SQLStatement.class)));
@@ -103,7 +103,7 @@ public final class UnicastDatabaseBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteDatabaseBackendHandler() throws SQLException {
+    void assertExecuteDatabaseBackendHandler() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = createDatabases().get("db_0");
@@ -113,7 +113,7 @@ public final class UnicastDatabaseBackendHandlerTest {
     }
     
     @Test
-    public void assertDatabaseUsingStream() throws SQLException {
+    void assertDatabaseUsingStream() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = createDatabases().get("db_0");

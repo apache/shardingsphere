@@ -30,13 +30,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLErrPacketTest {
+class MySQLErrPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNewErrPacketWithServerErrorCode() {
+    void assertNewErrPacketWithServerErrorCode() {
         MySQLErrPacket actual = new MySQLErrPacket(MySQLVendorError.ER_ACCESS_DENIED_ERROR, "root", "localhost", "root");
         assertThat(actual.getErrorCode(), is(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getVendorCode()));
         assertThat(actual.getSqlState(), is(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getSqlState().getValue()));
@@ -44,7 +44,7 @@ public final class MySQLErrPacketTest {
     }
     
     @Test
-    public void assertNewErrPacketWithPayload() {
+    void assertNewErrPacketWithPayload() {
         when(payload.readInt1()).thenReturn(MySQLErrPacket.HEADER);
         when(payload.readInt2()).thenReturn(MySQLVendorError.ER_ACCESS_DENIED_ERROR.getVendorCode());
         when(payload.readStringFix(1)).thenReturn("#");
@@ -57,7 +57,7 @@ public final class MySQLErrPacketTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         new MySQLErrPacket(MySQLVendorError.ER_NO_DB_ERROR).write(payload);
         verify(payload).writeInt1(MySQLErrPacket.HEADER);
         verify(payload).writeInt2(1046);

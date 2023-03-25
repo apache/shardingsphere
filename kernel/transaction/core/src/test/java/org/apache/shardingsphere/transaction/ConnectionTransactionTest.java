@@ -31,26 +31,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ConnectionTransactionTest {
+class ConnectionTransactionTest {
     
     private ConnectionTransaction connectionTransaction;
     
     @Test
-    public void assertDistributedTransactionOperationTypeCommit() {
+    void assertDistributedTransactionOperationTypeCommit() {
         connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule());
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(true);
         assertThat(operationType, is(DistributedTransactionOperationType.COMMIT));
     }
     
     @Test
-    public void assertDistributedTransactionOperationTypeIgnore() {
+    void assertDistributedTransactionOperationTypeIgnore() {
         connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule());
         DistributedTransactionOperationType operationType = connectionTransaction.getDistributedTransactionOperationType(false);
         assertThat(operationType, is(DistributedTransactionOperationType.IGNORE));
     }
     
     @Test
-    public void assertIsLocalTransaction() {
+    void assertIsLocalTransaction() {
         connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getLocalTransactionRule());
         assertTrue(connectionTransaction.isLocalTransaction());
         connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule());
@@ -58,7 +58,7 @@ public final class ConnectionTransactionTest {
     }
     
     @Test
-    public void assertIsHoldTransaction() {
+    void assertIsHoldTransaction() {
         connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getLocalTransactionRule());
         assertTrue(connectionTransaction.isHoldTransaction(false));
         connectionTransaction = new ConnectionTransaction(DefaultDatabase.LOGIC_NAME, getXATransactionRule());

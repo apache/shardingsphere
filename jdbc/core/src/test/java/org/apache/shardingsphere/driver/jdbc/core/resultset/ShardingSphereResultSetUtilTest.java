@@ -36,10 +36,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingSphereResultSetUtilTest {
+class ShardingSphereResultSetUtilTest {
     
     @Test
-    public void assertCreateColumnLabelAndIndexMapWithSelectWithoutExpandProjections() throws SQLException {
+    void assertCreateColumnLabelAndIndexMapWithSelectWithoutExpandProjections() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getProjectionsContext()).thenReturn(new ProjectionsContext(0, 0, false, Collections.emptyList()));
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
@@ -50,7 +50,7 @@ public final class ShardingSphereResultSetUtilTest {
     }
     
     @Test
-    public void assertCreateColumnLabelAndIndexMapWithSelectWithExpandProjections() throws SQLException {
+    void assertCreateColumnLabelAndIndexMapWithSelectWithExpandProjections() throws SQLException {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         List<Projection> projections = new ArrayList<>(2);
         projections.add(new ColumnProjection(null, "col1", null));

@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class DropDatabaseDiscoveryHeartbeatStatementUpdaterTest {
+class DropDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     
     private final DropDatabaseDiscoveryHeartbeatStatementUpdater updater = new DropDatabaseDiscoveryHeartbeatStatementUpdater();
     
@@ -50,18 +50,18 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentHeartbeat() {
+    void assertCheckSQLStatementWithoutCurrentHeartbeat() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeDroppedHeartbeat() {
+    void assertCheckSQLStatementWithoutToBeDroppedHeartbeat() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> updater.checkSQLStatement(database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap())));
     }
     
     @Test
-    public void assertCheckSQLStatementWithInUsed() {
+    void assertCheckSQLStatementWithInUsed() {
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.emptyList(), "heartbeat_name", "");
         assertThrows(RuleInUsedException.class,
                 () -> updater.checkSQLStatement(database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(ruleConfig),
@@ -69,14 +69,14 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfiguration() {
+    void assertUpdateCurrentRuleConfiguration() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig);
         assertFalse(ruleConfig.getDiscoveryHeartbeats().containsKey("heartbeat_name"));
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithIfExists() {
+    void assertUpdateCurrentRuleConfigurationWithIfExists() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropDatabaseDiscoveryHeartbeatStatement dropDatabaseDiscoveryHeartbeatStatement = createSQLStatementWithIfExists();
         updater.checkSQLStatement(database, dropDatabaseDiscoveryHeartbeatStatement, ruleConfig);

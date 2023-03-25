@@ -22,45 +22,45 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class QuoteCharacterTest {
+class QuoteCharacterTest {
     
     @Test
-    public void assertGetQuoteCharacterWithNullValue() {
+    void assertGetQuoteCharacterWithNullValue() {
         assertThat(QuoteCharacter.getQuoteCharacter(null), is(QuoteCharacter.NONE));
     }
     
     @Test
-    public void assertGetQuoteCharacterWithEmptyValue() {
+    void assertGetQuoteCharacterWithEmptyValue() {
         assertThat(QuoteCharacter.getQuoteCharacter(""), is(QuoteCharacter.NONE));
     }
     
     @Test
-    public void assertGetQuoteCharacterWithNone() {
+    void assertGetQuoteCharacterWithNone() {
         assertThat(QuoteCharacter.getQuoteCharacter("tbl"), is(QuoteCharacter.NONE));
     }
     
     @Test
-    public void assertGetQuoteCharacterWithBackQuote() {
+    void assertGetQuoteCharacterWithBackQuote() {
         assertThat(QuoteCharacter.getQuoteCharacter("`tbl`"), is(QuoteCharacter.BACK_QUOTE));
     }
     
     @Test
-    public void assertGetQuoteCharacterWithSingleQuote() {
+    void assertGetQuoteCharacterWithSingleQuote() {
         assertThat(QuoteCharacter.getQuoteCharacter("'tbl'"), is(QuoteCharacter.SINGLE_QUOTE));
     }
     
     @Test
-    public void assertGetQuoteCharacterWithQuote() {
+    void assertGetQuoteCharacterWithQuote() {
         assertThat(QuoteCharacter.getQuoteCharacter("\"tbl\""), is(QuoteCharacter.QUOTE));
     }
     
     @Test
-    public void assertGetQuoteCharacterWithBrackets() {
+    void assertGetQuoteCharacterWithBrackets() {
         assertThat(QuoteCharacter.getQuoteCharacter("[tbl]"), is(QuoteCharacter.BRACKETS));
     }
     
     @Test
-    public void assertWarp() {
+    void assertWarp() {
         assertThat(QuoteCharacter.BACK_QUOTE.wrap("test"), is("`test`"));
     }
 }

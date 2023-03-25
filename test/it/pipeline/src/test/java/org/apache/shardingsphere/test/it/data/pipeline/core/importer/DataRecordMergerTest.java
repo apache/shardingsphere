@@ -37,7 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class DataRecordMergerTest {
+class DataRecordMergerTest {
     
     private final DataRecordMerger dataRecordMerger = new DataRecordMerger();
     
@@ -48,21 +48,21 @@ public final class DataRecordMergerTest {
     private Collection<DataRecord> actual;
     
     @Test
-    public void assertInsertBeforeInsert() {
+    void assertInsertBeforeInsert() {
         beforeDataRecord = mockInsertDataRecord(1, 1, 1);
         afterDataRecord = mockInsertDataRecord(1, 1, 1);
         assertThrows(PipelineUnexpectedDataRecordOrderException.class, () -> dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
     }
     
     @Test
-    public void assertUpdateBeforeInsert() {
+    void assertUpdateBeforeInsert() {
         beforeDataRecord = mockUpdateDataRecord(1, 2, 2);
         afterDataRecord = mockInsertDataRecord(1, 1, 1);
         assertThrows(PipelineUnexpectedDataRecordOrderException.class, () -> dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
     }
     
     @Test
-    public void assertDeleteBeforeInsert() {
+    void assertDeleteBeforeInsert() {
         beforeDataRecord = mockDeleteDataRecord(1, 2, 2);
         afterDataRecord = mockInsertDataRecord(1, 1, 1);
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
@@ -71,7 +71,7 @@ public final class DataRecordMergerTest {
     }
     
     @Test
-    public void assertInsertBeforeUpdate() {
+    void assertInsertBeforeUpdate() {
         beforeDataRecord = mockInsertDataRecord(1, 1, 1);
         afterDataRecord = mockUpdateDataRecord(1, 2, 2);
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
@@ -86,7 +86,7 @@ public final class DataRecordMergerTest {
     }
     
     @Test
-    public void assertInsertBeforeUpdatePrimaryKey() {
+    void assertInsertBeforeUpdatePrimaryKey() {
         beforeDataRecord = mockInsertDataRecord(1, 1, 1);
         afterDataRecord = mockUpdateDataRecord(1, 2, 2, 2);
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
@@ -101,7 +101,7 @@ public final class DataRecordMergerTest {
     }
     
     @Test
-    public void assertUpdateBeforeUpdate() {
+    void assertUpdateBeforeUpdate() {
         beforeDataRecord = mockUpdateDataRecord(1, 1, 1);
         afterDataRecord = mockUpdateDataRecord(1, 2, 2);
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
@@ -116,7 +116,7 @@ public final class DataRecordMergerTest {
     }
     
     @Test
-    public void assertUpdateBeforeUpdatePrimaryKey() {
+    void assertUpdateBeforeUpdatePrimaryKey() {
         beforeDataRecord = mockUpdateDataRecord(1, 1, 1);
         afterDataRecord = mockUpdateDataRecord(1, 2, 2, 2);
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
@@ -131,7 +131,7 @@ public final class DataRecordMergerTest {
     }
     
     @Test
-    public void assertUpdatePrimaryKeyBeforeUpdate() {
+    void assertUpdatePrimaryKeyBeforeUpdate() {
         beforeDataRecord = mockUpdateDataRecord(1, 2, 1, 1);
         afterDataRecord = mockUpdateDataRecord(2, 2, 2);
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
@@ -146,7 +146,7 @@ public final class DataRecordMergerTest {
     }
     
     @Test
-    public void assertUpdatePrimaryKeyBeforeUpdatePrimaryKey() {
+    void assertUpdatePrimaryKeyBeforeUpdatePrimaryKey() {
         beforeDataRecord = mockUpdateDataRecord(1, 2, 1, 1);
         afterDataRecord = mockUpdateDataRecord(2, 3, 2, 2);
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
@@ -161,14 +161,14 @@ public final class DataRecordMergerTest {
     }
     
     @Test
-    public void assertDeleteBeforeUpdate() {
+    void assertDeleteBeforeUpdate() {
         beforeDataRecord = mockDeleteDataRecord(1, 1, 1);
         afterDataRecord = mockUpdateDataRecord(1, 2, 2);
         assertThrows(UnsupportedSQLOperationException.class, () -> dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
     }
     
     @Test
-    public void assertInsertBeforeDelete() {
+    void assertInsertBeforeDelete() {
         beforeDataRecord = mockInsertDataRecord(1, 1, 1);
         afterDataRecord = mockDeleteDataRecord(1, 1, 1);
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
@@ -177,7 +177,7 @@ public final class DataRecordMergerTest {
     }
     
     @Test
-    public void assertUpdateBeforeDelete() {
+    void assertUpdateBeforeDelete() {
         beforeDataRecord = mockUpdateDataRecord(1, 1, 1);
         afterDataRecord = mockDeleteDataRecord(1, 1, 1);
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
@@ -186,7 +186,7 @@ public final class DataRecordMergerTest {
     }
     
     @Test
-    public void assertUpdatePrimaryKeyBeforeDelete() {
+    void assertUpdatePrimaryKeyBeforeDelete() {
         beforeDataRecord = mockUpdateDataRecord(1, 2, 1, 1);
         afterDataRecord = mockDeleteDataRecord(2, 1, 1);
         actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
@@ -201,14 +201,14 @@ public final class DataRecordMergerTest {
     }
     
     @Test
-    public void assertDeleteBeforeDelete() {
+    void assertDeleteBeforeDelete() {
         beforeDataRecord = mockDeleteDataRecord(1, 1, 1);
         afterDataRecord = mockDeleteDataRecord(1, 1, 1);
         assertThrows(PipelineUnexpectedDataRecordOrderException.class, () -> dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord)));
     }
     
     @Test
-    public void assertGroup() {
+    void assertGroup() {
         List<DataRecord> dataRecords = mockDataRecords();
         List<GroupedDataRecord> groupedDataRecords = dataRecordMerger.group(dataRecords);
         assertThat(groupedDataRecords.size(), is(2));

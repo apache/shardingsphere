@@ -64,10 +64,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLMultiStatementsHandlerTest {
+class MySQLMultiStatementsHandlerTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         String sql = "update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3";
         ConnectionSession connectionSession = mockConnectionSession();
         MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);

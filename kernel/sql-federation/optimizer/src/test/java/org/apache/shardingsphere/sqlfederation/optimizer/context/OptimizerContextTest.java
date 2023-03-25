@@ -35,22 +35,22 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OptimizerContextTest {
+class OptimizerContextTest {
     
     @Test
-    public void assertGetSqlParserRule() {
+    void assertGetSqlParserRule() {
         OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), createShardingSphereRuleMetaData());
         assertThat(actual.getSqlParserRule(), instanceOf(SQLParserRule.class));
     }
     
     @Test
-    public void assertGetParserContext() {
+    void assertGetParserContext() {
         OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), createShardingSphereRuleMetaData());
         assertThat(actual.getParserContext(DefaultDatabase.LOGIC_NAME.toLowerCase()), instanceOf(OptimizerParserContext.class));
     }
     
     @Test
-    public void assertGetPlannerContext() {
+    void assertGetPlannerContext() {
         OptimizerContext actual = OptimizerContextFactory.create(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, createShardingSphereDatabase()), createShardingSphereRuleMetaData());
         assertThat(actual.getPlannerContext(DefaultDatabase.LOGIC_NAME.toLowerCase()), instanceOf(OptimizerPlannerContext.class));
     }

@@ -25,10 +25,10 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class FeatureSQLExceptionTest {
+class FeatureSQLExceptionTest {
     
     @Test
-    public void assertToSQLException() {
+    void assertToSQLException() {
         SQLException actual = new FeatureSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, "reason") {
         }.toSQLException();
         assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));

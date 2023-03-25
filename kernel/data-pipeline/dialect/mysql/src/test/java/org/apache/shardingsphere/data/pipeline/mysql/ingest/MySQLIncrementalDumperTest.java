@@ -75,7 +75,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLIncrementalDumperTest {
+class MySQLIncrementalDumperTest {
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
@@ -88,7 +88,7 @@ public final class MySQLIncrementalDumperTest {
     private PipelineTableMetaData pipelineTableMetaData;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         dumperConfig = mockDumperConfiguration();
         initTableData(dumperConfig);
         dumperConfig.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/ds_0", "root", "root"));
@@ -131,24 +131,24 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         dataSourceManager.close();
     }
     
     @Test
-    public void assertIsColumnUnneeded() {
+    void assertIsColumnUnneeded() {
         assertFalse(incrementalDumper.isColumnUnneeded(null, "order_id"));
         assertFalse(incrementalDumper.isColumnUnneeded(Stream.of("order_id", "user_id").map(ColumnName::new).collect(Collectors.toSet()), "order_id"));
         assertTrue(incrementalDumper.isColumnUnneeded(Stream.of("order_id", "user_id").map(ColumnName::new).collect(Collectors.toSet()), "status"));
     }
     
     @Test
-    public void assertWriteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
+    void assertWriteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
         assertWriteRowsEvent0(null, 3);
     }
     
     @Test
-    public void assertWriteRowsEventWithCustomColumns() throws ReflectiveOperationException {
+    void assertWriteRowsEventWithCustomColumns() throws ReflectiveOperationException {
         assertWriteRowsEvent0(mockTargetTableColumnsMap(), 1);
     }
     
@@ -172,12 +172,12 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @Test
-    public void assertUpdateRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
+    void assertUpdateRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
         assertUpdateRowsEvent0(null, 3);
     }
     
     @Test
-    public void assertUpdateRowsEventWithCustomColumns() throws ReflectiveOperationException {
+    void assertUpdateRowsEventWithCustomColumns() throws ReflectiveOperationException {
         assertUpdateRowsEvent0(mockTargetTableColumnsMap(), 1);
     }
     
@@ -198,12 +198,12 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @Test
-    public void assertDeleteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
+    void assertDeleteRowsEventWithoutCustomColumns() throws ReflectiveOperationException {
         assertDeleteRowsEvent0(null, 3);
     }
     
     @Test
-    public void assertDeleteRowsEventWithCustomColumns() throws ReflectiveOperationException {
+    void assertDeleteRowsEventWithCustomColumns() throws ReflectiveOperationException {
         assertDeleteRowsEvent0(mockTargetTableColumnsMap(), 1);
     }
     
@@ -223,7 +223,7 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @Test
-    public void assertPlaceholderEvent() throws ReflectiveOperationException {
+    void assertPlaceholderEvent() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class), incrementalDumper, new PlaceholderEvent());
         List<Record> actual = channel.fetchRecords(1, 0);
         assertThat(actual.size(), is(1));
@@ -231,7 +231,7 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @Test
-    public void assertRowsEventFiltered() throws ReflectiveOperationException {
+    void assertRowsEventFiltered() throws ReflectiveOperationException {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
         rowsEvent.setDatabaseName("unknown_database");
         Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class), incrementalDumper, rowsEvent);

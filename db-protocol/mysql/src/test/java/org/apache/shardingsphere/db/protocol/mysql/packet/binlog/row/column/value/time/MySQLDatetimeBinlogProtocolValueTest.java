@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLDatetimeBinlogProtocolValueTest {
+class MySQLDatetimeBinlogProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -41,14 +41,14 @@ public final class MySQLDatetimeBinlogProtocolValueTest {
     private MySQLBinlogColumnDef columnDef;
     
     @Test
-    public void assertRead() {
+    void assertRead() {
         when(payload.readInt8()).thenReturn(99991231235959L);
         LocalDateTime expected = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
         assertThat(new MySQLDatetimeBinlogProtocolValue().read(columnDef, payload), is(Timestamp.valueOf(expected)));
     }
     
     @Test
-    public void assertReadNullTime() {
+    void assertReadNullTime() {
         when(payload.readInt8()).thenReturn(0L);
         assertThat(new MySQLDatetimeBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
     }

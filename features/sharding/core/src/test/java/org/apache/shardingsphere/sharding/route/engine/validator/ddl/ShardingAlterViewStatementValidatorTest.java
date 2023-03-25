@@ -44,13 +44,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingAlterViewStatementValidatorTest {
+class ShardingAlterViewStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
     
     @Test
-    public void assertPreValidateAlterViewForMySQL() {
+    void assertPreValidateAlterViewForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
@@ -62,7 +62,7 @@ public final class ShardingAlterViewStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateAlterViewWithShardingTableForMySQL() {
+    void assertPreValidateAlterViewWithShardingTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
@@ -75,7 +75,7 @@ public final class ShardingAlterViewStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateAlterRenamedView() {
+    void assertPreValidateAlterRenamedView() {
         OpenGaussAlterViewStatement selectStatement = new OpenGaussAlterViewStatement();
         selectStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
@@ -87,7 +87,7 @@ public final class ShardingAlterViewStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateAlterRenamedViewWithoutSameConfig() {
+    void assertPreValidateAlterRenamedViewWithoutSameConfig() {
         OpenGaussAlterViewStatement selectStatement = new OpenGaussAlterViewStatement();
         selectStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
