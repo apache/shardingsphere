@@ -47,7 +47,7 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class SubqueryExtractUtilTest {
+public final class SubqueryExtractUtilsTest {
     
     @Test
     public void assertGetSubquerySegmentsInWhere() {
@@ -67,7 +67,7 @@ public final class SubqueryExtractUtilTest {
         SubqueryExpressionSegment right = new SubqueryExpressionSegment(new SubquerySegment(51, 100, subquerySelectStatement));
         WhereSegment whereSegment = new WhereSegment(34, 100, new BinaryOperationExpression(40, 100, left, right, "=", "order_id = (SELECT order_id FROM t_order WHERE status = 'OK')"));
         selectStatement.setWhere(whereSegment);
-        Collection<SubquerySegment> result = SubqueryExtractUtil.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(result.size(), is(1));
         assertThat(result.iterator().next(), is(right.getSubquery()));
     }
@@ -83,7 +83,7 @@ public final class SubqueryExtractUtilTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(7, 79));
         selectStatement.getProjections().getProjections().add(subqueryProjectionSegment);
-        Collection<SubquerySegment> result = SubqueryExtractUtil.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(result.size(), is(1));
         assertThat(result.iterator().next(), is(subquerySegment));
     }
@@ -103,7 +103,7 @@ public final class SubqueryExtractUtilTest {
         selectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 16, new IdentifierValue("order_id"))));
         selectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(23, 71, subquery)));
         
-        Collection<SubquerySegment> result = SubqueryExtractUtil.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(result.size(), is(1));
         assertThat(result.iterator().next(), is(((SubqueryTableSegment) selectStatement.getFrom()).getSubquery()));
     }
@@ -144,7 +144,7 @@ public final class SubqueryExtractUtilTest {
         from.setLeft(leftSubquerySegment);
         from.setRight(rightSubquerySegment);
         selectStatement.setFrom(from);
-        Collection<SubquerySegment> result = SubqueryExtractUtil.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(result.size(), is(2));
         Iterator<SubquerySegment> iterator = result.iterator();
         assertThat(iterator.next(), is(leftSubquerySegment.getSubquery()));
@@ -155,7 +155,7 @@ public final class SubqueryExtractUtilTest {
     public void assertGetSubquerySegmentsWithMultiNestedSubquery() {
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SubqueryTableSegment(createSubquerySegmentForFrom()));
-        Collection<SubquerySegment> result = SubqueryExtractUtil.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> result = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(result.size(), is(2));
     }
     
@@ -171,7 +171,7 @@ public final class SubqueryExtractUtilTest {
     public void assertGetSubquerySegmentsWithCombineSegment() {
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setCombine(new CombineSegment(0, 0, new MySQLSelectStatement(), CombineType.UNION, createSelectStatementForCombineSegment()));
-        Collection<SubquerySegment> actual = SubqueryExtractUtil.getSubquerySegments(selectStatement);
+        Collection<SubquerySegment> actual = SubqueryExtractUtils.getSubquerySegments(selectStatement);
         assertThat(actual.size(), is(1));
     }
     

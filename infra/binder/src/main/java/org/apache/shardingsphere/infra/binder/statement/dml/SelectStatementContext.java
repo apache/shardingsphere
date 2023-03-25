@@ -64,10 +64,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sub
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SubqueryExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtils;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -120,7 +120,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final List<Object> params, final String defaultDatabaseName) {
-        Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
+        Collection<SubquerySegment> subquerySegments = SubqueryExtractUtils.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1);
         for (SubquerySegment each : subquerySegments) {
             SelectStatementContext subqueryContext = new SelectStatementContext(metaData, params, each.getSelect(), defaultDatabaseName);
@@ -200,7 +200,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         for (WhereSegment each : whereSegments) {
             expressions.add(each.getExpr());
         }
-        return ExpressionExtractUtil.getParameterMarkerExpressions(expressions);
+        return ExpressionExtractUtils.getParameterMarkerExpressions(expressions);
     }
     
     /**
@@ -227,11 +227,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private void setIndexForAggregationProjection(final Map<String, Integer> columnLabelIndexMap) {
         for (AggregationProjection each : projectionsContext.getAggregationProjections()) {
-            String columnLabel = SQLUtil.getExactlyValue(each.getColumnLabel());
+            String columnLabel = SQLUtils.getExactlyValue(each.getColumnLabel());
             Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s, please add alias for aggregate selections", each);
             each.setIndex(columnLabelIndexMap.get(columnLabel));
             for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
-                String derivedColumnLabel = SQLUtil.getExactlyValue(derived.getColumnLabel());
+                String derivedColumnLabel = SQLUtils.getExactlyValue(derived.getColumnLabel());
                 Preconditions.checkState(columnLabelIndexMap.containsKey(derivedColumnLabel), "Can't find index: %s", derived);
                 derived.setIndex(columnLabelIndexMap.get(derivedColumnLabel));
             }
@@ -263,9 +263,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (projectionsContext.isUnqualifiedShorthandProjection()) {
             return Optional.empty();
         }
-        String rawName = SQLUtil.getExactlyValue(((TextOrderByItemSegment) orderByItem).getText());
+        String rawName = SQLUtils.getExactlyValue(((TextOrderByItemSegment) orderByItem).getText());
         for (Projection each : projectionsContext.getProjections()) {
-            if (SQLUtil.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtil.getExactlyExpression(SQLUtil.getExactlyValue(each.getExpression())))) {
+            if (SQLUtils.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtils.getExactlyExpression(SQLUtils.getExactlyValue(each.getExpression())))) {
                 return each.getAlias();
             }
             if (rawName.equalsIgnoreCase(each.getAlias().orElse(null))) {
@@ -284,9 +284,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private String getOrderItemText(final TextOrderByItemSegment orderByItemSegment) {
         if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
-            return SQLUtil.getExactlyValue(((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue());
+            return SQLUtils.getExactlyValue(((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue());
         }
-        return SQLUtil.getExactlyValue(((ExpressionOrderByItemSegment) orderByItemSegment).getExpression());
+        return SQLUtils.getExactlyValue(((ExpressionOrderByItemSegment) orderByItemSegment).getExpression());
     }
     
     /**
@@ -315,8 +315,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement selectStatement) {
         selectStatement.getWhere().ifPresent(whereSegments::add);
-        whereSegments.addAll(WhereExtractUtil.getSubqueryWhereSegments(selectStatement));
-        whereSegments.addAll(WhereExtractUtil.getJoinWhereSegments(selectStatement));
+        whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(selectStatement));
+        whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(selectStatement));
     }
     
     private Collection<TableSegment> getAllTableSegments() {

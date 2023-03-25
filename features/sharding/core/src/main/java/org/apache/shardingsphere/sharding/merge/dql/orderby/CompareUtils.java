@@ -23,10 +23,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 
 /**
- * Compare util.
+ * Compare utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CompareUtil {
+public final class CompareUtils {
     
     /**
      * Compare two object with order type.

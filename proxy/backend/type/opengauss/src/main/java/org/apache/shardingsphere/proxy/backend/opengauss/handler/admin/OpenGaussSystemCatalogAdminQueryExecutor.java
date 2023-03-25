@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussSystemCatalog;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussDatabase;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -60,7 +60,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
     private MergedResult mergedResult;
     
     public OpenGaussSystemCatalogAdminQueryExecutor(final String sql) {
-        this.sql = SQLUtil.trimSemicolon(sql);
+        this.sql = SQLUtils.trimSemicolon(sql);
     }
     
     @Override

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 /**
  * Aggregation distinct projection segment.
@@ -31,6 +31,6 @@ public final class AggregationDistinctProjectionSegment extends AggregationProje
     
     public AggregationDistinctProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String innerExpression, final String distinctExpression) {
         super(startIndex, stopIndex, type, innerExpression);
-        this.distinctExpression = SQLUtil.getExpressionWithoutOutsideParentheses(distinctExpression);
+        this.distinctExpression = SQLUtils.getExpressionWithoutOutsideParentheses(distinctExpression);
     }
 }

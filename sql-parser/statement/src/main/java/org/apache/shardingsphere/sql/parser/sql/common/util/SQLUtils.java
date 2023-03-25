@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
  * SQL utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLUtil {
+public final class SQLUtils {
     
     private static final String SQL_END = ";";
     

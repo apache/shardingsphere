@@ -26,10 +26,10 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Sharding auto table algorithm util.
+ * Sharding auto table algorithm utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingAutoTableAlgorithmUtil {
+public final class ShardingAutoTableAlgorithmUtils {
     
     /**
      * Find matched target name.

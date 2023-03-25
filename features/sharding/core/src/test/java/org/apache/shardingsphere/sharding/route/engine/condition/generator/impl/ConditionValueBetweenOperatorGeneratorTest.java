@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
 import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
@@ -89,8 +89,8 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         RangeShardingConditionValue<Comparable<?>> rangeShardingConditionValue = (RangeShardingConditionValue<Comparable<?>>) shardingConditionValue.get();
         assertThat(rangeShardingConditionValue.getColumnName(), is(column.getName()));
         assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
-        assertTrue(SafeNumberOperationUtil.safeContains(rangeShardingConditionValue.getValueRange(), between));
-        assertTrue(SafeNumberOperationUtil.safeContains(rangeShardingConditionValue.getValueRange(), and));
+        assertTrue(SafeNumberOperationUtils.safeContains(rangeShardingConditionValue.getValueRange(), between));
+        assertTrue(SafeNumberOperationUtils.safeContains(rangeShardingConditionValue.getValueRange(), and));
         assertTrue(rangeShardingConditionValue.getParameterMarkerIndexes().isEmpty());
     }
     
