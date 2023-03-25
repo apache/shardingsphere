@@ -25,16 +25,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class HeterogeneousInsertStatementCheckerTest {
+class HeterogeneousInsertStatementCheckerTest {
     
     @Test
-    public void assertExecuteInsertStatement() {
+    void assertExecuteInsertStatement() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getInsertStatement());
         HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
-    public void assertInsertWithoutRowKey() {
+    void assertInsertWithoutRowKey() {
         String sql = "INSERT /*+ HBase */ INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -42,7 +42,7 @@ public final class HeterogeneousInsertStatementCheckerTest {
     }
     
     @Test
-    public void assertInsertWithoutColumns() {
+    void assertInsertWithoutColumns() {
         String sql = "INSERT /*+ HBase */ INTO t_order VALUES (?, ?, ?)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -50,7 +50,7 @@ public final class HeterogeneousInsertStatementCheckerTest {
     }
     
     @Test
-    public void assertInsertWithMultipleRowKey() {
+    void assertInsertWithMultipleRowKey() {
         String sql = "INSERT /*+ HBase */ INTO t_order (rowKey, id, status) VALUES (?, ?, ?)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -58,7 +58,7 @@ public final class HeterogeneousInsertStatementCheckerTest {
     }
     
     @Test
-    public void assertInsertWithOnDuplicateKey() {
+    void assertInsertWithOnDuplicateKey() {
         String sql = "INSERT /*+ HBase */ INTO t_order (rowKey, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = ?";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -66,7 +66,7 @@ public final class HeterogeneousInsertStatementCheckerTest {
     }
     
     @Test
-    public void assertInsertWithFunction() {
+    void assertInsertWithFunction() {
         String sql = "INSERT /*+ HBase */ INTO t_order_item (rowKey, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -74,14 +74,14 @@ public final class HeterogeneousInsertStatementCheckerTest {
     }
     
     @Test
-    public void assertInsertWithLiteralAndParameterMarker() {
+    void assertInsertWithLiteralAndParameterMarker() {
         String sql = "INSERT /*+ HBase */ INTO t_order_item(rowKey, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', '2017-08-08')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
-    public void assertInsertWithSubQuery() {
+    void assertInsertWithSubQuery() {
         String sql = "INSERT /*+ HBase */ INTO t_order_item(rowKey, order_id, user_id) select rowKey, order_id, user_id from t_order";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());

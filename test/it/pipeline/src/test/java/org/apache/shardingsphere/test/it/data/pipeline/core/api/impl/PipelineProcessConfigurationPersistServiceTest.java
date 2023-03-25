@@ -36,15 +36,15 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PipelineProcessConfigurationPersistServiceTest {
+class PipelineProcessConfigurationPersistServiceTest {
     
     @BeforeAll
-    public static void beforeClass() {
+    static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
     @Test
-    public void assertLoadAndPersist() {
+    void assertLoadAndPersist() {
         YamlPipelineProcessConfiguration yamlProcessConfig = new YamlPipelineProcessConfiguration();
         YamlPipelineReadConfiguration yamlReadConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
         yamlReadConfig.fillInNullFieldsWithDefaultValue();

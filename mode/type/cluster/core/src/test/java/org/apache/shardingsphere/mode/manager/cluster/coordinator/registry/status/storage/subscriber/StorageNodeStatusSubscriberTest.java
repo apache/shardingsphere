@@ -37,7 +37,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public final class StorageNodeStatusSubscriberTest {
+class StorageNodeStatusSubscriberTest {
     
     @Mock
     private ClusterPersistRepository repository;
@@ -45,7 +45,7 @@ public final class StorageNodeStatusSubscriberTest {
     private final EventBusContext eventBusContext = new EventBusContext();
     
     @Test
-    public void assertUpdateDataSourceDisabledState() {
+    void assertUpdateDataSourceDisabledState() {
         String databaseName = "replica_query_db";
         String groupName = "readwrite_ds";
         String dataSourceName = "replica_ds_0";
@@ -57,7 +57,7 @@ public final class StorageNodeStatusSubscriberTest {
     }
     
     @Test
-    public void assertUpdateDataSourceEnabledState() {
+    void assertUpdateDataSourceEnabledState() {
         String databaseName = "replica_query_db";
         String groupName = "readwrite_ds";
         String dataSourceName = "replica_ds_0";
@@ -69,7 +69,7 @@ public final class StorageNodeStatusSubscriberTest {
     }
     
     @Test
-    public void assertUpdatePrimaryDataSourceState() {
+    void assertUpdatePrimaryDataSourceState() {
         String databaseName = "replica_query_db";
         String groupName = "readwrite_ds";
         String dataSourceName = "replica_ds_0";
@@ -80,7 +80,7 @@ public final class StorageNodeStatusSubscriberTest {
     }
     
     @Test
-    public void assertDeleteStorageNodeDataSourceDataSourceState() {
+    void assertDeleteStorageNodeDataSourceDataSourceState() {
         String databaseName = "replica_query_db";
         String groupName = "readwrite_ds";
         String dataSourceName = "replica_ds_0";

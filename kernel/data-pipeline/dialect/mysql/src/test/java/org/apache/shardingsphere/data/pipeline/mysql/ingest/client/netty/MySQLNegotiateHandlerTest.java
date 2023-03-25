@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLNegotiateHandlerTest {
+class MySQLNegotiateHandlerTest {
     
     private static final String USER_NAME = "username";
     
@@ -69,14 +69,14 @@ public final class MySQLNegotiateHandlerTest {
     private MySQLNegotiateHandler mysqlNegotiateHandler;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(channel.pipeline()).thenReturn(pipeline);
         mysqlNegotiateHandler = new MySQLNegotiateHandler(USER_NAME, PASSWORD, authResultCallback);
     }
     
     @Test
-    public void assertChannelReadHandshakeInitPacket() throws ReflectiveOperationException {
+    void assertChannelReadHandshakeInitPacket() throws ReflectiveOperationException {
         MySQLHandshakePacket handshakePacket = new MySQLHandshakePacket(0, new MySQLAuthenticationPluginData(new byte[8], new byte[12]));
         handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, handshakePacket);
@@ -89,7 +89,7 @@ public final class MySQLNegotiateHandlerTest {
     }
     
     @Test
-    public void assertChannelReadOkPacket() throws ReflectiveOperationException {
+    void assertChannelReadOkPacket() throws ReflectiveOperationException {
         MySQLOKPacket okPacket = new MySQLOKPacket(0);
         ServerInfo serverInfo = new ServerInfo();
         Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler, serverInfo);
@@ -99,7 +99,7 @@ public final class MySQLNegotiateHandlerTest {
     }
     
     @Test
-    public void assertChannelReadErrorPacket() {
+    void assertChannelReadErrorPacket() {
         MySQLErrPacket errorPacket = new MySQLErrPacket(MySQLVendorError.ER_NO_DB_ERROR);
         assertThrows(RuntimeException.class, () -> mysqlNegotiateHandler.channelRead(channelHandlerContext, errorPacket));
     }

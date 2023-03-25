@@ -53,17 +53,17 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingDALResultMergerTest {
+class ShardingDALResultMergerTest {
     
     private final List<QueryResult> queryResults = new LinkedList<>();
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         queryResults.add(mock(QueryResult.class));
     }
     
     @Test
-    public void assertMergeForShowDatabasesStatement() throws SQLException {
+    void assertMergeForShowDatabasesStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowDatabasesStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, null);
@@ -73,7 +73,7 @@ public final class ShardingDALResultMergerTest {
     }
     
     @Test
-    public void assertMergeForShowShowTablesStatement() throws SQLException {
+    void assertMergeForShowShowTablesStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowTablesStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, null);
@@ -83,7 +83,7 @@ public final class ShardingDALResultMergerTest {
     }
     
     @Test
-    public void assertMergeForShowCreateTableStatement() throws SQLException {
+    void assertMergeForShowCreateTableStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowCreateTableStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, null);
@@ -93,7 +93,7 @@ public final class ShardingDALResultMergerTest {
     }
     
     @Test
-    public void assertMergeForShowOtherStatement() throws SQLException {
+    void assertMergeForShowOtherStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowOtherStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, null);
@@ -103,7 +103,7 @@ public final class ShardingDALResultMergerTest {
     }
     
     @Test
-    public void assertMergeForDescribeStatement() throws SQLException {
+    void assertMergeForDescribeStatement() throws SQLException {
         DALStatement dalStatement = new MySQLExplainStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, mock(ShardingRule.class));
@@ -113,7 +113,7 @@ public final class ShardingDALResultMergerTest {
     }
     
     @Test
-    public void assertMergeForShowIndexStatement() throws SQLException {
+    void assertMergeForShowIndexStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowIndexStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, mock(ShardingRule.class));
@@ -123,7 +123,7 @@ public final class ShardingDALResultMergerTest {
     }
     
     @Test
-    public void assertMergeForShowTableStatusStatement() throws SQLException {
+    void assertMergeForShowTableStatusStatement() throws SQLException {
         DALStatement dalStatement = new MySQLShowTableStatusStatement();
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext(dalStatement);
         ShardingDALResultMerger resultMerger = new ShardingDALResultMerger(DefaultDatabase.LOGIC_NAME, mock(ShardingRule.class));

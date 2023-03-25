@@ -35,11 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingRuleConfigurationCheckerTest {
+class ShardingRuleConfigurationCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertCheckSuccess() {
+    void assertCheckSuccess() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
         ShardingAuditStrategyConfiguration shardingAuditStrategyConfig = new ShardingAuditStrategyConfiguration(Collections.singletonList("foo_audit"), false);
         ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
@@ -52,7 +52,7 @@ public final class ShardingRuleConfigurationCheckerTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertCheckTableConfigurationFailed() {
+    void assertCheckTableConfigurationFailed() {
         ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
         ruleConfig.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null, null)));

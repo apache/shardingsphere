@@ -30,17 +30,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DataSourcePoolCreatorTest {
+class DataSourcePoolCreatorTest {
     
     @Test
-    public void assertCreateMap() {
+    void assertCreateMap() {
         Map<String, DataSource> actual = DataSourcePoolCreator.create(Collections.singletonMap("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
         assertThat(actual.size(), is(1));
         assertDataSource((MockedDataSource) actual.get("foo_ds"));
     }
     
     @Test
-    public void assertCreate() {
+    void assertCreate() {
         assertDataSource((MockedDataSource) DataSourcePoolCreator.create(new DataSourceProperties(MockedDataSource.class.getName(), createProperties())));
     }
     

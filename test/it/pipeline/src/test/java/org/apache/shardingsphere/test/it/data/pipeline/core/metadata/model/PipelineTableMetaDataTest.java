@@ -31,18 +31,18 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PipelineTableMetaDataTest {
+class PipelineTableMetaDataTest {
     
     private PipelineTableMetaData pipelineTableMetaData;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         PipelineColumnMetaData column = new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true, true, true);
         pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap("test", column), Collections.emptySet());
     }
     
     @Test
-    public void assertGetColumnMetaDataGivenColumnIndex() {
+    void assertGetColumnMetaDataGivenColumnIndex() {
         PipelineColumnMetaData actual = pipelineTableMetaData.getColumnMetaData(1);
         assertThat(actual.getOrdinalPosition(), is(1));
         assertThat(actual.getName(), is("test"));
@@ -51,7 +51,7 @@ public final class PipelineTableMetaDataTest {
     }
     
     @Test
-    public void assertGetColumnMetaDataGivenColumnName() {
+    void assertGetColumnMetaDataGivenColumnName() {
         PipelineColumnMetaData actual = pipelineTableMetaData.getColumnMetaData("test");
         assertNull(pipelineTableMetaData.getColumnMetaData("non_exist"));
         assertThat(actual.getOrdinalPosition(), is(1));
@@ -61,12 +61,12 @@ public final class PipelineTableMetaDataTest {
     }
     
     @Test
-    public void assertIsPrimaryKey() {
+    void assertIsPrimaryKey() {
         assertTrue(pipelineTableMetaData.getColumnMetaData(1).isUniqueKey());
     }
     
     @Test
-    public void assertIndexOutOfBoundsException() {
+    void assertIndexOutOfBoundsException() {
         assertThrows(IndexOutOfBoundsException.class, () -> pipelineTableMetaData.getColumnMetaData(2));
     }
 }

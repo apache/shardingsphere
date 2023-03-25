@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ServerVersionTest {
+class ServerVersionTest {
     
     @Test
-    public void assertGreaterThan() {
+    void assertGreaterThan() {
         ServerVersion actual = new ServerVersion("5.7.12");
         assertTrue(actual.greaterThanOrEqualTo(4, 0, 0));
         assertTrue(actual.greaterThanOrEqualTo(5, 6, 0));
@@ -33,7 +33,7 @@ public final class ServerVersionTest {
     }
     
     @Test
-    public void assertLowerThan() {
+    void assertLowerThan() {
         ServerVersion actual = new ServerVersion("5.6.6");
         assertFalse(actual.greaterThanOrEqualTo(8, 0, 0));
         assertFalse(actual.greaterThanOrEqualTo(5, 7, 11));
@@ -41,7 +41,7 @@ public final class ServerVersionTest {
     }
     
     @Test
-    public void assertEqualTo() {
+    void assertEqualTo() {
         ServerVersion actual = new ServerVersion("5.6.6");
         assertTrue(actual.greaterThanOrEqualTo(5, 6, 6));
     }

@@ -48,17 +48,17 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class TopAndRowNumberDecoratorMergedResultTest {
+class TopAndRowNumberDecoratorMergedResultTest {
     
     private ShardingSphereSchema schema;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         schema = mock(ShardingSphereSchema.class);
     }
     
     @Test
-    public void assertNextForSkipAll() throws SQLException {
+    void assertNextForSkipAll() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
@@ -72,7 +72,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextWithoutOffsetWithRowCount() throws SQLException {
+    void assertNextWithoutOffsetWithRowCount() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
@@ -89,7 +89,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextWithOffsetWithoutRowCount() throws SQLException {
+    void assertNextWithOffsetWithoutRowCount() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
@@ -106,7 +106,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
+    void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
         final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
@@ -122,7 +122,7 @@ public final class TopAndRowNumberDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
+    void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);

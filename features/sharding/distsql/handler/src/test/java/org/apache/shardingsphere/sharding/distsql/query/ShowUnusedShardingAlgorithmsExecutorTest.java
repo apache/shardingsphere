@@ -43,10 +43,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowUnusedShardingAlgorithmsExecutorTest {
+class ShowUnusedShardingAlgorithmsExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<ShowUnusedShardingAlgorithmsStatement> executor = new ShowUnusedShardingAlgorithmsExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowUnusedShardingAlgorithmsStatement.class));
         assertThat(actual.size(), is(1));
@@ -58,7 +58,7 @@ public final class ShowUnusedShardingAlgorithmsExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowUnusedShardingAlgorithmsStatement> executor = new ShowUnusedShardingAlgorithmsExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));

@@ -41,21 +41,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class TransactionRuleTest {
+class TransactionRuleTest {
     
     private static final String SHARDING_DB_1 = "sharding_db_1";
     
     private static final String SHARDING_DB_2 = "sharding_db_2";
     
     @Test
-    public void assertInitTransactionRuleWithMultiDatabaseType() {
+    void assertInitTransactionRuleWithMultiDatabaseType() {
         TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
         assertNotNull(actual.getResource());
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
-    public void assertAddResource() {
+    void assertAddResource() {
         TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
         actual.addResource(createAddDatabase());
         assertNotNull(actual.getResource());
@@ -76,7 +76,7 @@ public final class TransactionRuleTest {
     }
     
     @Test
-    public void assertCloseStaleResource() {
+    void assertCloseStaleResource() {
         TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
         actual.closeStaleResource(SHARDING_DB_1);
         assertTrue(actual.getDatabases().isEmpty());
@@ -84,7 +84,7 @@ public final class TransactionRuleTest {
     }
     
     @Test
-    public void assertCloseAllStaleResources() {
+    void assertCloseAllStaleResources() {
         TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB_1, createDatabase()));
         actual.closeStaleResource();
         assertTrue(actual.getDatabases().isEmpty());

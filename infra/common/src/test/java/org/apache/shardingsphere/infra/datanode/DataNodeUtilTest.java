@@ -33,10 +33,10 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DataNodeUtilTest {
+class DataNodeUtilTest {
     
     @Test
-    public void assertGetDataNodeGroups() {
+    void assertGetDataNodeGroups() {
         Map<String, List<DataNode>> expected = new LinkedHashMap<>(2, 1);
         expected.put("ds_0", Arrays.asList(new DataNode("ds_0.tbl_0"), new DataNode("ds_0.tbl_1")));
         expected.put("ds_1", Arrays.asList(new DataNode("ds_1.tbl_0"), new DataNode("ds_1.tbl_1")));
@@ -47,7 +47,7 @@ public final class DataNodeUtilTest {
     }
     
     @Test
-    public void assertBuildDataNodeWithSameDataSource() {
+    void assertBuildDataNodeWithSameDataSource() {
         DataNode dataNode = new DataNode("readwrite_ds.t_order");
         Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = Collections.singletonMap("readwrite_ds",
                 Arrays.asList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY), new DataSourceRoleInfo("shadow_ds_0", DataSourceRole.MEMBER)));
@@ -59,7 +59,7 @@ public final class DataNodeUtilTest {
     }
     
     @Test
-    public void assertBuildDataNodeWithoutSameDataSource() {
+    void assertBuildDataNodeWithoutSameDataSource() {
         DataNode dataNode = new DataNode("read_ds.t_order");
         Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = Collections.singletonMap("readwrite_ds",
                 Arrays.asList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY), new DataSourceRoleInfo("shadow_ds_0", DataSourceRole.MEMBER)));

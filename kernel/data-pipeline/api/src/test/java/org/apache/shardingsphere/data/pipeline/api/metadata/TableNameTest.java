@@ -24,10 +24,10 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class TableNameTest {
+class TableNameTest {
     
     @Test
-    public void assertGetLowercase() {
+    void assertGetLowercase() {
         for (String tableName : Arrays.asList("t_order", "T_ORDER")) {
             TableName actual = new TableName(tableName);
             assertThat(actual.getLowercase(), is("t_order"));
@@ -35,7 +35,7 @@ public final class TableNameTest {
     }
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         TableName actual = new TableName("T_ORDER");
         assertThat(actual.toString(), is("T_ORDER"));
     }

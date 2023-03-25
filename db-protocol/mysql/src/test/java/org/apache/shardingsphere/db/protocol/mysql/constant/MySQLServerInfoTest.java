@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLServerInfoTest {
+class MySQLServerInfoTest {
     
     @Test
-    public void assertSetServerVersion() {
+    void assertSetServerVersion() {
         String schemaName = "test";
         CommonConstants.PROXY_VERSION.set("5.0.0");
         MySQLServerInfo.setServerVersion(schemaName, "5.1.47");
@@ -34,7 +34,7 @@ public final class MySQLServerInfoTest {
     }
     
     @Test
-    public void assertSetServerVersionForNull() {
+    void assertSetServerVersionForNull() {
         CommonConstants.PROXY_VERSION.set("5.0.0");
         assertThat(MySQLServerInfo.getDefaultServerVersion(), is("5.7.22-ShardingSphere-Proxy 5.0.0"));
     }

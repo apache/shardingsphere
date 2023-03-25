@@ -94,7 +94,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, SystemSchemaUtil.class})
-public final class DatabaseConnectorTest {
+class DatabaseConnectorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private BackendConnection backendConnection;
@@ -106,7 +106,7 @@ public final class DatabaseConnectorTest {
     private ResultSet resultSet;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -134,7 +134,7 @@ public final class DatabaseConnectorTest {
     }
     
     @Test
-    public void assertExecuteFederationAndClose() throws SQLException {
+    void assertExecuteFederationAndClose() throws SQLException {
         SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         DatabaseConnector engine =
@@ -161,7 +161,7 @@ public final class DatabaseConnectorTest {
     }
     
     @Test
-    public void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException, IllegalAccessException {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, true);
@@ -210,7 +210,7 @@ public final class DatabaseConnectorTest {
     }
     
     @Test
-    public void assertAddStatementCorrectly() {
+    void assertAddStatementCorrectly() {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
@@ -221,7 +221,7 @@ public final class DatabaseConnectorTest {
     }
     
     @Test
-    public void assertAddResultSetCorrectly() {
+    void assertAddResultSetCorrectly() {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
@@ -232,7 +232,7 @@ public final class DatabaseConnectorTest {
     }
     
     @Test
-    public void assertCloseCorrectly() throws SQLException {
+    void assertCloseCorrectly() throws SQLException {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
@@ -249,7 +249,7 @@ public final class DatabaseConnectorTest {
     }
     
     @Test
-    public void assertCloseResultSetsWithExceptionThrown() throws SQLException {
+    void assertCloseResultSetsWithExceptionThrown() throws SQLException {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);

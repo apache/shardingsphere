@@ -39,7 +39,7 @@ public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolV
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int time = payload.getByteBuf().readUnsignedMedium();
         if (0x800000 == time) {
-            return MySQLTimeValueUtil.ZERO_OF_TIME;
+            return MySQLTimeValueUtils.ZERO_OF_TIME;
         }
         MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
         int hour = (time >> 12) % (1 << 10);

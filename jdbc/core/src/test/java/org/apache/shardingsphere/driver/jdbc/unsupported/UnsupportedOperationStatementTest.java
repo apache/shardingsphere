@@ -39,12 +39,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class UnsupportedOperationStatementTest {
+class UnsupportedOperationStatementTest {
     
     private ShardingSphereStatement shardingSphereStatement;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(connection.getDatabaseName()).thenReturn("db");
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(
@@ -56,17 +56,17 @@ public final class UnsupportedOperationStatementTest {
     }
     
     @Test
-    public void assertCloseOnCompletion() {
+    void assertCloseOnCompletion() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.closeOnCompletion());
     }
     
     @Test
-    public void assertIsCloseOnCompletion() {
+    void assertIsCloseOnCompletion() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.isCloseOnCompletion());
     }
     
     @Test
-    public void assertSetCursorName() {
+    void assertSetCursorName() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereStatement.setCursorName("cursorName"));
     }
 }

@@ -28,7 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLAuthSwitchResponsePacketTest {
+class MySQLAuthSwitchResponsePacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -36,7 +36,7 @@ public final class MySQLAuthSwitchResponsePacketTest {
     private final byte[] authPluginResponse = {0x22, 0x33};
     
     @Test
-    public void assertMySQLAuthSwitchResponsePacket() {
+    void assertMySQLAuthSwitchResponsePacket() {
         when(payload.readStringEOFByBytes()).thenReturn(authPluginResponse);
         MySQLAuthSwitchResponsePacket authSwitchResponsePacket = new MySQLAuthSwitchResponsePacket(payload);
         assertThat(authSwitchResponsePacket.getAuthPluginResponse(), is(authPluginResponse));

@@ -61,7 +61,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, SystemSchemaUtil.class})
-public final class DefaultDatabaseMetaDataExecutorTest {
+class DefaultDatabaseMetaDataExecutorTest {
     
     private final Grantee grantee = new Grantee("root", "127.0.0.1");
     
@@ -69,12 +69,12 @@ public final class DefaultDatabaseMetaDataExecutorTest {
     private ConnectionSession connectionSession;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(connectionSession.getGrantee()).thenReturn(grantee);
     }
     
     @Test
-    public void assertExecuteWithAlias() throws SQLException {
+    void assertExecuteWithAlias() throws SQLException {
         Map<String, String> expectedResultSetMap = new HashMap<>(2, 1);
         expectedResultSetMap.put("sn", "foo_ds");
         expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
@@ -89,7 +89,7 @@ public final class DefaultDatabaseMetaDataExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithDefaultValue() throws SQLException {
+    void assertExecuteWithDefaultValue() throws SQLException {
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
         ShardingSphereDatabase database = createDatabase(Collections.singletonMap("support_ndb", "0"));
         ContextManager contextManager = mockContextManager(database);

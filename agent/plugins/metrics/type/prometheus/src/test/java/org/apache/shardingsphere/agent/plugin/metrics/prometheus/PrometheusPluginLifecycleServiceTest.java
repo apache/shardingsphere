@@ -48,17 +48,17 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class PrometheusPluginLifecycleServiceTest {
+class PrometheusPluginLifecycleServiceTest {
     
     private final PrometheusPluginLifecycleService pluginLifecycleService = new PrometheusPluginLifecycleService();
     
     @AfterEach
-    public void close() {
+    void close() {
         pluginLifecycleService.close();
     }
     
     @Test
-    public void assertStart() throws IOException {
+    void assertStart() throws IOException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("JVM_INFORMATION_COLLECTOR_ENABLED", Boolean.TRUE.toString()))), true);

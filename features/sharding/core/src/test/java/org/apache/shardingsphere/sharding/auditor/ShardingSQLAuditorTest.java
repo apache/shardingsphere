@@ -48,7 +48,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingSQLAuditorTest {
+class ShardingSQLAuditorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingRule rule;
@@ -65,7 +65,7 @@ public final class ShardingSQLAuditorTest {
     private final Map<String, ShardingSphereDatabase> databases = Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class));
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(sqlStatementContext.getSqlHintExtractor().findDisableAuditNames()).thenReturn(new HashSet<>(Collections.singletonList("auditor_1")));
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_table"));
         TableRule tableRule = mock(TableRule.class);
@@ -75,14 +75,14 @@ public final class ShardingSQLAuditorTest {
     }
     
     @Test
-    public void assertCheckSuccess() {
+    void assertCheckSuccess() {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         new ShardingSQLAuditor().audit(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"), rule);
         verify(rule.getAuditors().get("auditor_1")).check(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"));
     }
     
     @Test
-    public void assertCheckSuccessByDisableAuditNames() {
+    void assertCheckSuccessByDisableAuditNames() {
         when(auditStrategy.isAllowHintDisable()).thenReturn(true);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         new ShardingSQLAuditor().audit(sqlStatementContext, Collections.emptyList(), grantee, globalRuleMetaData, databases.get("foo_db"), rule);
@@ -90,7 +90,7 @@ public final class ShardingSQLAuditorTest {
     }
     
     @Test
-    public void assertCheckFailed() {
+    void assertCheckFailed() {
         ShardingAuditAlgorithm auditAlgorithm = rule.getAuditors().get("auditor_1");
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         doThrow(new SQLAuditException("Not allow DML operation without sharding conditions"))

@@ -25,12 +25,12 @@ import java.io.Serializable;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLUnsignedTinyintHandlerTest {
+class MySQLUnsignedTinyintHandlerTest {
     
     private final MySQLUnsignedTinyintHandler handler = new MySQLUnsignedTinyintHandler();
     
     @Test
-    public void assertHandle() {
+    void assertHandle() {
         Serializable actual = handler.handle((byte) 1);
         assertThat(actual, is(1));
         actual = handler.handle((byte) -1);

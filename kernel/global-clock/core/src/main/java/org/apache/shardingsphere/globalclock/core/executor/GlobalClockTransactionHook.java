@@ -59,7 +59,7 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
         if (!enabled) {
             return;
         }
-        transactionContext.setGlobalTimestamp(globalClockProvider.getCurrentTimestamp());
+        transactionContext.setBeginMills(globalClockProvider.getCurrentTimestamp());
     }
     
     @Override
@@ -67,7 +67,7 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
         if (!enabled) {
             return;
         }
-        globalClockTransactionExecutor.sendSnapshotTimestamp(connections, transactionContext.getGlobalTimestamp());
+        globalClockTransactionExecutor.sendSnapshotTimestamp(connections, transactionContext.getBeginMills());
     }
     
     @Override
@@ -86,7 +86,7 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
         if (!enabled) {
             return;
         }
-        if (lockContext.tryLock(lockDefinition, 200)) {
+        if (lockContext.tryLock(lockDefinition, 200L)) {
             globalClockTransactionExecutor.sendCommitTimestamp(connections, globalClockProvider.getCurrentTimestamp());
         }
     }

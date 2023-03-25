@@ -35,10 +35,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CountMaskRuleExecutorTest {
+class CountMaskRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<CountMaskRuleStatement> executor = new CountMaskRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountMaskRuleStatement.class));
         assertThat(actual.size(), is(1));
@@ -50,7 +50,7 @@ public final class CountMaskRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<CountMaskRuleStatement> executor = new CountMaskRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));

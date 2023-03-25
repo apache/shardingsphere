@@ -63,12 +63,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(DataSourcePoolCreator.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ConnectionManagerTest {
+class ConnectionManagerTest {
     
     private ConnectionManager connectionManager;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         connectionManager = new ConnectionManager(DefaultDatabase.LOGIC_NAME, mockContextManager());
     }
     
@@ -124,26 +124,26 @@ public final class ConnectionManagerTest {
     }
     
     @Test
-    public void assertGetRandomPhysicalDataSourceNameFromContextManager() {
+    void assertGetRandomPhysicalDataSourceNameFromContextManager() {
         String actual = connectionManager.getRandomPhysicalDataSourceName();
         assertTrue(Arrays.asList("ds", "invalid_ds").contains(actual));
     }
     
     @Test
-    public void assertGetRandomPhysicalDataSourceNameFromCache() throws SQLException {
+    void assertGetRandomPhysicalDataSourceNameFromCache() throws SQLException {
         connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         String actual = connectionManager.getRandomPhysicalDataSourceName();
         assertThat(actual, is("ds"));
     }
     
     @Test
-    public void assertGetConnection() throws SQLException {
+    void assertGetConnection() throws SQLException {
         assertThat(connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY),
                 is(connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY)));
     }
     
     @Test
-    public void assertGetConnectionWhenConfigTrafficRule() throws SQLException {
+    void assertGetConnectionWhenConfigTrafficRule() throws SQLException {
         List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual, is(connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY)));
         assertThat(actual.size(), is(1));
@@ -152,7 +152,7 @@ public final class ConnectionManagerTest {
     }
     
     @Test
-    public void assertGetConnectionWhenConfigTrafficRuleInXaTransaction() throws SQLException {
+    void assertGetConnectionWhenConfigTrafficRuleInXaTransaction() throws SQLException {
         TransactionTypeHolder.set(TransactionType.XA);
         List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
@@ -162,7 +162,7 @@ public final class ConnectionManagerTest {
     }
     
     @Test
-    public void assertGetConnectionsWhenAllInCache() throws SQLException {
+    void assertGetConnectionsWhenAllInCache() throws SQLException {
         Connection expected = connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY).get(0);
         List<Connection> actual = connectionManager.getConnections("ds", 1, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(1));
@@ -170,7 +170,7 @@ public final class ConnectionManagerTest {
     }
     
     @Test
-    public void assertGetConnectionsWhenConfigTrafficRuleAndAllInCache() throws SQLException {
+    void assertGetConnectionsWhenConfigTrafficRuleAndAllInCache() throws SQLException {
         Connection expected = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY).get(0);
         List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(1));
@@ -180,13 +180,13 @@ public final class ConnectionManagerTest {
     }
     
     @Test
-    public void assertGetConnectionsWhenEmptyCache() throws SQLException {
+    void assertGetConnectionsWhenEmptyCache() throws SQLException {
         List<Connection> actual = connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
     }
     
     @Test
-    public void assertGetConnectionsWhenConfigTrafficRuleAndEmptyCache() throws SQLException {
+    void assertGetConnectionsWhenConfigTrafficRuleAndEmptyCache() throws SQLException {
         List<Connection> actual = connectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
@@ -194,21 +194,21 @@ public final class ConnectionManagerTest {
     }
     
     @Test
-    public void assertGetConnectionsWhenPartInCacheWithMemoryStrictlyMode() throws SQLException {
+    void assertGetConnectionsWhenPartInCacheWithMemoryStrictlyMode() throws SQLException {
         connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         List<Connection> actual = connectionManager.getConnections("ds", 3, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(3));
     }
     
     @Test
-    public void assertGetConnectionsWhenPartInCacheWithConnectionStrictlyMode() throws SQLException {
+    void assertGetConnectionsWhenPartInCacheWithConnectionStrictlyMode() throws SQLException {
         connectionManager.getConnections("ds", 1, ConnectionMode.MEMORY_STRICTLY);
         List<Connection> actual = connectionManager.getConnections("ds", 3, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(3));
     }
     
     @Test
-    public void assertGetConnectionsWhenConnectionCreateFailed() {
+    void assertGetConnectionsWhenConnectionCreateFailed() {
         SQLException ex = assertThrows(SQLException.class, () -> connectionManager.getConnections("invalid_ds", 3, ConnectionMode.CONNECTION_STRICTLY));
         assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released. "
                 + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties."));

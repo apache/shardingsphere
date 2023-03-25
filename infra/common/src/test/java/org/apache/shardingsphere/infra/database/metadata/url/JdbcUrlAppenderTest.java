@@ -25,10 +25,10 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class JdbcUrlAppenderTest {
+class JdbcUrlAppenderTest {
     
     @Test
-    public void assertAppendQueryPropertiesWithoutOriginalQueryProperties() {
+    void assertAppendQueryPropertiesWithoutOriginalQueryProperties() {
         String actual = new JdbcUrlAppender().appendQueryProperties("jdbc:mysql://192.168.0.1:3306/foo_ds",
                 PropertiesBuilder.build(new Property("useSSL", Boolean.FALSE.toString()), new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
         assertThat(actual, startsWith("jdbc:mysql://192.168.0.1:3306/foo_ds?"));
@@ -37,7 +37,7 @@ public final class JdbcUrlAppenderTest {
     }
     
     @Test
-    public void assertAppendQueryPropertiesWithOriginalQueryProperties() {
+    void assertAppendQueryPropertiesWithOriginalQueryProperties() {
         String actual = new JdbcUrlAppender().appendQueryProperties(
                 "jdbc:mysql://192.168.0.1:3306/foo_ds?serverTimezone=UTC&useSSL=false&rewriteBatchedStatements=true",
                 PropertiesBuilder.build(new Property("useSSL", Boolean.FALSE.toString()), new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));

@@ -38,10 +38,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngineTest {
+class ShardingComplexRoutingEngineTest extends AbstractRoutingEngineTest {
     
     @Test
-    public void assertRoutingForBindingTables() {
+    void assertRoutingForBindingTables() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(createShardingConditions("t_order"), mock(SQLStatementContext.class),
                 new HintValueContext(), new ConfigurationProperties(new Properties()), Arrays.asList("t_order", "t_order_item"));
         RouteContext routeContext = complexRoutingEngine.route(createBindingShardingRule());
@@ -54,7 +54,7 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     }
     
     @Test
-    public void assertRoutingForShardingTableJoinBroadcastTable() {
+    void assertRoutingForShardingTableJoinBroadcastTable() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(createShardingConditions("t_order"), mock(SQLStatementContext.class), new HintValueContext(),
                 new ConfigurationProperties(new Properties()), Arrays.asList("t_order", "t_config"));
         RouteContext routeContext = complexRoutingEngine.route(createBroadcastShardingRule());
@@ -67,7 +67,7 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     }
     
     @Test
-    public void assertRoutingForNonLogicTable() {
+    void assertRoutingForNonLogicTable() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(
                 createShardingConditions("t_order"), mock(SQLStatementContext.class), new HintValueContext(), new ConfigurationProperties(new Properties()), Collections.emptyList());
         assertThrows(ShardingTableRuleNotFoundException.class, () -> complexRoutingEngine.route(mock(ShardingRule.class)));

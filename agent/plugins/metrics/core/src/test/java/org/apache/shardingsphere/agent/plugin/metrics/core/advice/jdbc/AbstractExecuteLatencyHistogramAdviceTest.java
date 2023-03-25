@@ -31,17 +31,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.mockito.Mockito.mock;
 
-public final class AbstractExecuteLatencyHistogramAdviceTest {
+class AbstractExecuteLatencyHistogramAdviceTest {
     
     private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_latency_millis", MetricCollectorType.HISTOGRAM, null);
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertWithStatement() throws InterruptedException {
+    void assertWithStatement() throws InterruptedException {
         StatementExecuteLatencyHistogramAdvice advice = new StatementExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         Method method = mock(Method.class);
@@ -52,7 +52,7 @@ public final class AbstractExecuteLatencyHistogramAdviceTest {
     }
     
     @Test
-    public void assertWithPreparedStatement() throws InterruptedException {
+    void assertWithPreparedStatement() throws InterruptedException {
         PreparedStatementExecuteLatencyHistogramAdvice advice = new PreparedStatementExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         Method method = mock(Method.class);

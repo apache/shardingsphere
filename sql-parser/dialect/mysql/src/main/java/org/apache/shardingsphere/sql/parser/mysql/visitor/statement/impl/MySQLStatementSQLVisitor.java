@@ -204,7 +204,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
@@ -583,7 +583,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             return segment;
         }
         if (null != ctx.literals()) {
-            return SQLUtil.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
+            return SQLUtils.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
         }
         if (null != ctx.intervalExpression()) {
             return visit(ctx.intervalExpression());
@@ -1122,7 +1122,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         if (null != ctx.numberLiterals()) {
             return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, null);
+                    SQLUtils.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, null);
         } else {
             ASTNode expr = visitExpr(ctx.expr());
             if (expr instanceof ColumnSegment) {

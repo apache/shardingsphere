@@ -28,10 +28,10 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLParameterStatusPacketTest {
+class PostgreSQLParameterStatusPacketTest {
     
     @Test
-    public void assertReadWrite() {
+    void assertReadWrite() {
         String key = "key1";
         String value = "value1";
         int expectedLength = key.length() + 1 + value.length() + 1;

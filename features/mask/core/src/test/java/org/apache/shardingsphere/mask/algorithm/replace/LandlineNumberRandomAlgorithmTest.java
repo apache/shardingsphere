@@ -26,18 +26,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class LandlineNumberRandomAlgorithmTest {
+class LandlineNumberRandomAlgorithmTest {
     
     private LandlineNumberRandomAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new LandlineNumberRandomAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("landline-numbers", "025, 027, 028, 029, 0310, 0311, 0313")));
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         assertThat(maskAlgorithm.mask(""), is(""));
         assertThat(maskAlgorithm.mask("0251234567"), not("0251234567"));
         assertThat(maskAlgorithm.mask("03101234567"), not("03101234567"));

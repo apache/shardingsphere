@@ -28,14 +28,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ResourceDataSourceTest {
+class ResourceDataSourceTest {
     
     private static final String DATABASE_NAME = "sharding_db";
     
     private static final String DATA_SOURCE_NAME = "fooDataSource";
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         String originalName = DATABASE_NAME + "." + DATA_SOURCE_NAME;
         ResourceDataSource actual = new ResourceDataSource(originalName, new MockedDataSource());
         assertThat(actual.getOriginalName(), is(originalName));
@@ -50,7 +50,7 @@ public final class ResourceDataSourceTest {
     }
     
     @Test
-    public void assertDataSourceNameOnlyFailure() {
+    void assertDataSourceNameOnlyFailure() {
         assertThrows(IllegalStateException.class, () -> new ResourceDataSource(DATA_SOURCE_NAME, new MockedDataSource()));
     }
 }

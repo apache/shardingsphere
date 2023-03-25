@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(PostgreSQLPositionInitializer.class)
-public final class PostgreSQLWALDumperTest {
+class PostgreSQLWALDumperTest {
     
     @Mock
     private PostgreSQLLogicalReplication logicalReplication;
@@ -80,7 +80,7 @@ public final class PostgreSQLWALDumperTest {
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         position = new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
         channel = new MultiplexMemoryPipelineChannel(1, 10000, new EmptyAckCallback());
         String jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL";
@@ -112,12 +112,12 @@ public final class PostgreSQLWALDumperTest {
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         dataSourceManager.close();
     }
     
     @Test
-    public void assertStart() throws SQLException, ReflectiveOperationException {
+    void assertStart() throws SQLException, ReflectiveOperationException {
         StandardPipelineDataSourceConfiguration dataSourceConfig = (StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig();
         try {
             Plugins.getMemberAccessor().set(PostgreSQLWALDumper.class.getDeclaredField("logicalReplication"), walDumper, logicalReplication);

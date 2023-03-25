@@ -27,10 +27,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class OpenGaussErrorResponsePacketTest {
+class OpenGaussErrorResponsePacketTest {
     
     @Test
-    public void assertWritePacketFromServerErrorMessage() {
+    void assertWritePacketFromServerErrorMessage() {
         String encodedMessage = "SFATAL\0C3D000\0Mdatabase \"test\" does not exist\0c-1\0Ddetail\0Hhint\0P1\0p2\0qinternal query\0Wwhere\0Ffile\0L3\0Rroutine\0a0.0.0.0:1";
         OpenGaussErrorResponsePacket packet = new OpenGaussErrorResponsePacket(new ServerErrorMessage(encodedMessage));
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
@@ -66,7 +66,7 @@ public final class OpenGaussErrorResponsePacketTest {
     }
     
     @Test
-    public void assertWritePacketFromSeverityAndMessage() {
+    void assertWritePacketFromSeverityAndMessage() {
         OpenGaussErrorResponsePacket packet = new OpenGaussErrorResponsePacket("FATAL", "3D000", "database \"test\" does not exist");
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
         packet.write(payload);

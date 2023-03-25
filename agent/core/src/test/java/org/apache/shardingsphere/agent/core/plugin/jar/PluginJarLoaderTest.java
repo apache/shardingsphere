@@ -31,10 +31,10 @@ import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PluginJarLoaderTest {
+class PluginJarLoaderTest {
     
     @Test
-    public void assertLoad() throws IOException {
+    void assertLoad() throws IOException {
         Collection<JarFile> jarFiles = PluginJarLoader.load(new File(getResourceURL()));
         assertThat(jarFiles.size(), is(1));
         assertThat(jarFiles.iterator().next().getName(), endsWith("test-plugin.jar"));

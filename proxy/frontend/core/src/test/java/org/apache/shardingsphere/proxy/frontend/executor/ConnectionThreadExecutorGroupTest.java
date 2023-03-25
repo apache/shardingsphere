@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class ConnectionThreadExecutorGroupTest {
+class ConnectionThreadExecutorGroupTest {
     
     @Test
-    public void assertRegister() {
+    void assertRegister() {
         int connectionId = 1;
         ConnectionThreadExecutorGroup.getInstance().register(connectionId);
         assertNotNull(ConnectionThreadExecutorGroup.getInstance().get(connectionId));
@@ -33,7 +33,7 @@ public final class ConnectionThreadExecutorGroupTest {
     }
     
     @Test
-    public void assertUnregister() {
+    void assertUnregister() {
         int connectionId = 2;
         ConnectionThreadExecutorGroup.getInstance().register(connectionId);
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionId);

@@ -5,7 +5,7 @@ weight = 5
 
 ### 描述
 
-`ALTER TRANSACTION RULE` 语法用于修改事务规则
+`ALTER TRANSACTION RULE` 语法用于修改事务规则。
 
 ### 语法
 

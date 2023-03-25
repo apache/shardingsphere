@@ -35,10 +35,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-public final class ShardingCacheRuleBuilderTest {
+class ShardingCacheRuleBuilderTest {
     
     @Test
-    public void assertBuildShardingCacheRule() {
+    void assertBuildShardingCacheRule() {
         ShardingRule expectedShardingRule = mock(ShardingRule.class);
         TimeServiceRule expectedTimeServiceRule = mock(TimeServiceRule.class);
         ShardingCacheRuleConfiguration expectedConfig = new ShardingCacheRuleConfiguration(100, new ShardingCacheOptions(true, 1, 1));
@@ -50,17 +50,17 @@ public final class ShardingCacheRuleBuilderTest {
     }
     
     @Test
-    public void assertBuildShardingCacheRuleWithoutShardingRule() {
+    void assertBuildShardingCacheRuleWithoutShardingRule() {
         assertThrows(IllegalStateException.class, () -> new ShardingCacheRuleBuilder().build(null, "", Collections.emptyMap(), Collections.emptyList(), null));
     }
     
     @Test
-    public void assertGetOrder() {
+    void assertGetOrder() {
         assertThat(new ShardingCacheRuleBuilder().getOrder(), is(-9));
     }
     
     @Test
-    public void assertGetTypeClass() {
+    void assertGetTypeClass() {
         assertThat(new ShardingCacheRuleBuilder().getTypeClass(), CoreMatchers.<Class<ShardingCacheRuleConfiguration>>is(ShardingCacheRuleConfiguration.class));
     }
 }

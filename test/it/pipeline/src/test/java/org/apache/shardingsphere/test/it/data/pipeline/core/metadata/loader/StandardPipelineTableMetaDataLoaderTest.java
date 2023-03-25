@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 // TODO use H2 to do real test
-public final class StandardPipelineTableMetaDataLoaderTest {
+class StandardPipelineTableMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
     
@@ -66,7 +66,7 @@ public final class StandardPipelineTableMetaDataLoaderTest {
     private PipelineDataSourceWrapper dataSource;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         dataSource = new PipelineDataSourceWrapper(new MockedDataSource(mockConnection()), new H2DatabaseType());
     }
     
@@ -124,7 +124,7 @@ public final class StandardPipelineTableMetaDataLoaderTest {
     }
     
     @Test
-    public void assertGetTableMetaData() {
+    void assertGetTableMetaData() {
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(null, TEST_TABLE);
         assertColumnMetaData(tableMetaData);

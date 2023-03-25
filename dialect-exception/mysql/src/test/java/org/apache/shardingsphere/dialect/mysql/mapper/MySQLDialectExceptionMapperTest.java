@@ -44,11 +44,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class MySQLDialectExceptionMapperTest {
+class MySQLDialectExceptionMapperTest {
     
     @ParameterizedTest(name = "{1} -> {0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertConvert(final Class<SQLDialectException> sqlDialectExceptionClazz, final VendorError vendorError) {
+    void assertConvert(final Class<SQLDialectException> sqlDialectExceptionClazz, final VendorError vendorError) {
         SQLException actual = new MySQLDialectExceptionMapper().convert(mock(sqlDialectExceptionClazz));
         assertThat(actual.getSQLState(), is(vendorError.getSqlState().getValue()));
         assertThat(actual.getErrorCode(), is(vendorError.getVendorCode()));

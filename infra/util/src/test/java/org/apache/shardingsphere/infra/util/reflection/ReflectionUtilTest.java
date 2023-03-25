@@ -24,28 +24,28 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public final class ReflectionUtilTest {
+class ReflectionUtilTest {
     
     @Test
-    public void assertGetStaticFieldValue() {
+    void assertGetStaticFieldValue() {
         assertThat(ReflectionUtil.getStaticFieldValue(ReflectionFixture.class, "staticValue"), is("static_value"));
     }
     
     @Test
-    public void assertSetStaticFieldValue() {
+    void assertSetStaticFieldValue() {
         ReflectionUtil.setStaticFieldValue(ReflectionFixture.class, "staticValue", "other_value");
         assertThat(ReflectionFixture.getStaticValue(), is("other_value"));
         ReflectionUtil.setStaticFieldValue(ReflectionFixture.class, "staticValue", "static_value");
     }
     
     @Test
-    public void assertGetFieldValue() {
+    void assertGetFieldValue() {
         assertThat(ReflectionUtil.getFieldValue(new ReflectionFixture(), "instanceValue").orElse(""), is("instance_value"));
         assertFalse(ReflectionUtil.getFieldValue(new ReflectionFixture(), "not_existed_field").isPresent());
     }
     
     @Test
-    public void assertInvokeMethod() throws NoSuchMethodException {
+    void assertInvokeMethod() throws NoSuchMethodException {
         assertThat(ReflectionUtil.invokeMethod(ReflectionFixture.class.getDeclaredMethod("getInstanceValue"), new ReflectionFixture()), is("instance_value"));
     }
 }

@@ -56,7 +56,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class AlterShardingTableRuleStatementUpdaterTest {
+class AlterShardingTableRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -68,14 +68,14 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     private final AlterShardingTableRuleStatementUpdater updater = new AlterShardingTableRuleStatementUpdater();
     
     @BeforeEach
-    public void before() {
+    void before() {
         when(database.getName()).thenReturn("schema");
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
     }
     
     @Test
-    public void assertUpdate() {
+    void assertUpdate() {
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order_item"), createCompleteTableRule("t_order")));
         updater.checkSQLStatement(database, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(statement);
@@ -100,7 +100,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateWithDifferentCase() {
+    void assertUpdateWithDifferentCase() {
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("T_ORDER_ITEM"), createCompleteTableRule("T_ORDER")));
         updater.checkSQLStatement(database, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(statement);
@@ -125,7 +125,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateTableType() {
+    void assertUpdateTableType() {
         AlterShardingTableRuleStatement statement = new AlterShardingTableRuleStatement(Arrays.asList(createCompleteAutoTableRule("t_order"), createCompleteTableRule("t_order_item")));
         updater.checkSQLStatement(database, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(statement);

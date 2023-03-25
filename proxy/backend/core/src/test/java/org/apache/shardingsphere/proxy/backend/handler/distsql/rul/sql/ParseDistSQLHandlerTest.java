@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ParseDistSQLHandlerTest {
+class ParseDistSQLHandlerTest {
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
@@ -60,13 +60,13 @@ public final class ParseDistSQLHandlerTest {
     private ConnectionSession connectionSession;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(sqlParserRule)));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     
     @Test
-    public void assertGetRowDataForMySQL() throws SQLException {
+    void assertGetRowDataForMySQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         ParseStatement parseStatement = new ParseStatement(sql);
@@ -80,7 +80,7 @@ public final class ParseDistSQLHandlerTest {
     }
     
     @Test
-    public void assertGetRowDataForPostgreSQL() throws SQLException {
+    void assertGetRowDataForPostgreSQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         ParseStatement parseStatement = new ParseStatement(sql);
@@ -93,7 +93,7 @@ public final class ParseDistSQLHandlerTest {
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         String sql = "wrong sql";
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         ParseStatement parseStatement = new ParseStatement(sql);

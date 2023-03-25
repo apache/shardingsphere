@@ -42,14 +42,14 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowCreateTableMergedResultTest {
+class ShowCreateTableMergedResultTest {
     
     private ShardingRule shardingRule;
     
     private ShardingSphereSchema schema;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         shardingRule = buildShardingRule();
         schema = createSchema();
     }
@@ -70,17 +70,17 @@ public final class ShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertNextForEmptyQueryResult() throws SQLException {
+    void assertNextForEmptyQueryResult() throws SQLException {
         assertFalse(new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
     }
     
     @Test
-    public void assertNextForTableRulePresent() throws SQLException {
+    void assertNextForTableRulePresent() throws SQLException {
         assertTrue(new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult())).next());
     }
     
     @Test
-    public void assertGetValueForTableRulePresent() throws SQLException {
+    void assertGetValueForTableRulePresent() throws SQLException {
         ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult()));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("t_order"));

@@ -25,16 +25,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class HeterogeneousDeleteStatementCheckerTest {
+class HeterogeneousDeleteStatementCheckerTest {
     
     @Test
-    public void assertExecuteDeleteStatement() {
+    void assertExecuteDeleteStatement() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getDeleteStatement());
         HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
-    public void assertOperatorIsNotEqual() {
+    void assertOperatorIsNotEqual() {
         String sql = "delete /*+ hbase */ from t_test_order where rowKey > 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -42,7 +42,7 @@ public final class HeterogeneousDeleteStatementCheckerTest {
     }
     
     @Test
-    public void assertColumnIsNotRowKey() {
+    void assertColumnIsNotRowKey() {
         String sql = "delete /*+ hbase */ from t_test_order where age = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -50,7 +50,7 @@ public final class HeterogeneousDeleteStatementCheckerTest {
     }
     
     @Test
-    public void assertLeftIsNotColumn() {
+    void assertLeftIsNotColumn() {
         String sql = "delete /*+ hbase */ from t_test_order where 1 = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -58,7 +58,7 @@ public final class HeterogeneousDeleteStatementCheckerTest {
     }
     
     @Test
-    public void assertMultiExpression() {
+    void assertMultiExpression() {
         String sql = "DELETE /*+ hbase */ FROM t_order WHERE order_id = ? AND user_id = ? AND status=?";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -66,7 +66,7 @@ public final class HeterogeneousDeleteStatementCheckerTest {
     }
     
     @Test
-    public void assertWithBetweenExpression() {
+    void assertWithBetweenExpression() {
         String sql = "DELETE /*+ hbase */ FROM t_order WHERE rowKey between 1 and 5";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -74,7 +74,7 @@ public final class HeterogeneousDeleteStatementCheckerTest {
     }
     
     @Test
-    public void assertNotWhereSegment() {
+    void assertNotWhereSegment() {
         String sql = "DELETE /*+ hbase */ FROM t_order";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());

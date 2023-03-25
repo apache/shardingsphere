@@ -72,7 +72,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class PostgreSQLBatchedStatementsExecutorTest {
+class PostgreSQLBatchedStatementsExecutorTest {
     
     @Mock
     private BackendConnection backendConnection;
@@ -81,7 +81,7 @@ public final class PostgreSQLBatchedStatementsExecutorTest {
     private JDBCBackendStatement backendStatement;
     
     @Test
-    public void assertExecuteBatch() throws SQLException {
+    void assertExecuteBatch() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://127.0.0.1/db");
         when(backendConnection.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));

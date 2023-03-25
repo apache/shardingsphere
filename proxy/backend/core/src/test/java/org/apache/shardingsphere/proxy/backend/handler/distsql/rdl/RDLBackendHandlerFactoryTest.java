@@ -32,25 +32,25 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class RDLBackendHandlerFactoryTest {
+class RDLBackendHandlerFactoryTest {
     
     @Test
-    public void assertNewInstanceWithRegisterStorageUnitStatement() {
+    void assertNewInstanceWithRegisterStorageUnitStatement() {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(RegisterStorageUnitStatement.class), mock(ConnectionSession.class)), instanceOf(RegisterStorageUnitBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithAlterStorageUnitStatement() {
+    void assertNewInstanceWithAlterStorageUnitStatement() {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(AlterStorageUnitStatement.class), mock(ConnectionSession.class)), instanceOf(AlterStorageUnitBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithUnregisterStorageUnitStatement() {
+    void assertNewInstanceWithUnregisterStorageUnitStatement() {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(UnregisterStorageUnitStatement.class), mock(ConnectionSession.class)), instanceOf(UnregisterStorageUnitBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithRuleDefinitionStatement() {
+    void assertNewInstanceWithRuleDefinitionStatement() {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(RuleDefinitionStatement.class), mock(ConnectionSession.class)), instanceOf(RuleDefinitionBackendHandler.class));
     }
 }

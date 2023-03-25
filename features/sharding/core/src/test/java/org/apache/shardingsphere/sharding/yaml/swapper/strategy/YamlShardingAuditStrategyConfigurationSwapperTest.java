@@ -28,10 +28,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlShardingAuditStrategyConfigurationSwapperTest {
+class YamlShardingAuditStrategyConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYaml() {
+    void assertSwapToYaml() {
         YamlShardingAuditStrategyConfiguration actual = new YamlShardingAuditStrategyConfigurationSwapper()
                 .swapToYamlConfiguration(new ShardingAuditStrategyConfiguration(Arrays.asList("audit_algorithm1", "audit_algorithm2"), false));
         assertThat(actual.getAuditorNames().size(), is(2));
@@ -40,7 +40,7 @@ public final class YamlShardingAuditStrategyConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlShardingAuditStrategyConfiguration yamlShardingAuditStrategyConfig = new YamlShardingAuditStrategyConfiguration();
         yamlShardingAuditStrategyConfig.setAuditorNames(Arrays.asList("audit_algorithm1", "audit_algorithm2"));
         yamlShardingAuditStrategyConfig.setAllowHintDisable(false);

@@ -48,17 +48,17 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class FrontDatabaseProtocolTypeFactoryTest {
+class FrontDatabaseProtocolTypeFactoryTest {
     
     @Test
-    public void assertGetDatabaseTypeWhenThrowShardingSphereConfigurationException() {
+    void assertGetDatabaseTypeWhenThrowShardingSphereConfigurationException() {
         ContextManager contextManager = mockContextManager(Collections.emptyMap(), new Properties());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getType(), is("MySQL"));
     }
     
     @Test
-    public void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextsSchemaName() {
+    void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextsSchemaName() {
         ContextManager contextManager = mockContextManager(mockDatabases(), new Properties());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
@@ -67,7 +67,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
     }
     
     @Test
-    public void assertGetDatabaseTypeOfPostgreSQLDatabaseTypeFromMetaDataContextsProps() {
+    void assertGetDatabaseTypeOfPostgreSQLDatabaseTypeFromMetaDataContextsProps() {
         ContextManager contextManager = mockContextManager(mockDatabases(),
                 PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL")));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

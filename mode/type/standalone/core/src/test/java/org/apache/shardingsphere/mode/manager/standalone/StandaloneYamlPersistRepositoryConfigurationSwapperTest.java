@@ -27,12 +27,12 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class StandaloneYamlPersistRepositoryConfigurationSwapperTest {
+class StandaloneYamlPersistRepositoryConfigurationSwapperTest {
     
     public static final String TEST_TYPE = "TEST_TYPE";
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         StandalonePersistRepositoryConfiguration standalonePersistRepositoryConfig = new StandalonePersistRepositoryConfiguration(TEST_TYPE, new Properties());
         YamlPersistRepositoryConfiguration actual = new StandaloneYamlPersistRepositoryConfigurationSwapper().swapToYamlConfiguration(standalonePersistRepositoryConfig);
         assertThat(actual.getProps(), is(new Properties()));
@@ -40,7 +40,7 @@ public final class StandaloneYamlPersistRepositoryConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlPersistRepositoryConfiguration yamlPersistRepositoryConfig = new YamlPersistRepositoryConfiguration();
         yamlPersistRepositoryConfig.setType(TEST_TYPE);
         StandalonePersistRepositoryConfiguration actual = new StandaloneYamlPersistRepositoryConfigurationSwapper().swapToObject(yamlPersistRepositoryConfig);

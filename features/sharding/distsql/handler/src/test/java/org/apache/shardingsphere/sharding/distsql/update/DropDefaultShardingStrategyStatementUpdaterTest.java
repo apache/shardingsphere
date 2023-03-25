@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class DropDefaultShardingStrategyStatementUpdaterTest {
+class DropDefaultShardingStrategyStatementUpdaterTest {
     
     private final DropDefaultStrategyStatementUpdater updater = new DropDefaultStrategyStatementUpdater();
     
@@ -50,23 +50,23 @@ public final class DropDefaultShardingStrategyStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    void assertCheckSQLStatementWithoutCurrentRule() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(false, "TABLE"), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutExistedAlgorithm() {
+    void assertCheckSQLStatementWithoutExistedAlgorithm() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("table"), new ShardingRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithIfExists() {
+    void assertCheckSQLStatementWithIfExists() {
         updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
         updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(true, "table"), null);
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfiguration() {
+    void assertUpdateCurrentRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement("Database"), currentRuleConfig);
         assertNull(currentRuleConfig.getDefaultDatabaseShardingStrategy());
@@ -74,7 +74,7 @@ public final class DropDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithInUsedAlgorithm() {
+    void assertUpdateCurrentRuleConfigurationWithInUsedAlgorithm() {
         ShardingRuleConfiguration currentRuleConfig = createMultipleCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement("Table"), currentRuleConfig);
         assertNull(currentRuleConfig.getDefaultTableShardingStrategy());
@@ -82,7 +82,7 @@ public final class DropDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateMultipleStrategies() {
+    void assertUpdateMultipleStrategies() {
         ShardingRuleConfiguration currentRuleConfig = createMultipleCurrentRuleConfiguration();
         assertFalse(updater.updateCurrentRuleConfiguration(createSQLStatement("Database"), currentRuleConfig));
         assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement("Table"), currentRuleConfig));

@@ -36,10 +36,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowComputeNodeModeExecutorTest {
+class ShowComputeNodeModeExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(createInstanceContext(), new ShowComputeNodeModeStatement());
         assertThat(actual.size(), is(1));
@@ -51,7 +51,7 @@ public final class ShowComputeNodeModeExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         ShowComputeNodeModeExecutor executor = new ShowComputeNodeModeExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));

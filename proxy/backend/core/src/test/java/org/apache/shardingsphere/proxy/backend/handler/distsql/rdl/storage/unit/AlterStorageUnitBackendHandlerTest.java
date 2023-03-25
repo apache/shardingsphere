@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class AlterStorageUnitBackendHandlerTest {
+class AlterStorageUnitBackendHandlerTest {
     
     @Mock
     private ShardingSphereDatabase database;
@@ -64,7 +64,7 @@ public final class AlterStorageUnitBackendHandlerTest {
     private AlterStorageUnitBackendHandler handler;
     
     @BeforeEach
-    public void setUp() throws ReflectiveOperationException {
+    void setUp() throws ReflectiveOperationException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         handler = new AlterStorageUnitBackendHandler(mock(AlterStorageUnitStatement.class), connectionSession);
@@ -73,7 +73,7 @@ public final class AlterStorageUnitBackendHandlerTest {
     }
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         ContextManager contextManager = mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
@@ -84,12 +84,12 @@ public final class AlterStorageUnitBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteWithDuplicateStorageUnitNames() {
+    void assertExecuteWithDuplicateStorageUnitNames() {
         assertThrows(DuplicateStorageUnitException.class, () -> handler.execute("foo_db", createAlterStorageUnitStatementWithDuplicateStorageUnitNames()));
     }
     
     @Test
-    public void assertExecuteWithNotExistedStorageUnitNames() {
+    void assertExecuteWithNotExistedStorageUnitNames() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("foo_db", database));
         ContextManager contextManager = mockContextManager(metaDataContexts);
@@ -98,7 +98,7 @@ public final class AlterStorageUnitBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteWithAlterDatabase() {
+    void assertExecuteWithAlterDatabase() {
         ContextManager contextManager = mockContextManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);

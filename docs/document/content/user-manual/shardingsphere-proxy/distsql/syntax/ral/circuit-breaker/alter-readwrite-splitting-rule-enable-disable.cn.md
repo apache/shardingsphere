@@ -5,7 +5,7 @@ weight = 2
 
 ## 描述
 
-`ALTER READWRITE_SPLITTING RULE ENABLE/DISABLE` 语法用于启用/禁用指定逻辑库中指定读写分离规则中的指定读数据存储单元
+`ALTER READWRITE_SPLITTING RULE ENABLE/DISABLE` 语法用于启用/禁用指定逻辑库中指定读写分离规则中的指定读数据存储单元。
 
 ### 语法定义
 

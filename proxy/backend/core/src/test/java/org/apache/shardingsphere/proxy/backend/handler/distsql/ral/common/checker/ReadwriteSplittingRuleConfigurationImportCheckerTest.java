@@ -39,19 +39,19 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ReadwriteSplittingRuleConfigurationImportCheckerTest {
+class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     
     private final ReadwriteSplittingRuleConfigurationImportChecker importChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
     
     @Test
-    public void assertCheckDataSources() {
+    void assertCheckDataSources() {
         ShardingSphereDatabase database = mockDatabaseWithDataSource();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = getRuleConfigWithNotExistedDataSources();
         assertThrows(MissingRequiredStorageUnitsException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
     @Test
-    public void assertCheckLoadBalancers() {
+    void assertCheckLoadBalancers() {
         ShardingSphereDatabase database = mockDatabase();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = createInvalidLoadBalancerRuleConfig();
         assertThrows(ServiceProviderNotFoundServerException.class, () -> importChecker.check(database, currentRuleConfig));

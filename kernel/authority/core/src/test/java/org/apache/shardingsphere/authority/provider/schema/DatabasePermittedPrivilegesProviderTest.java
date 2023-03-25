@@ -34,10 +34,10 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DatabasePermittedPrivilegesProviderTest {
+class DatabasePermittedPrivilegesProviderTest {
     
     @Test
-    public void assertBuildAuthorityRegistry() {
+    void assertBuildAuthorityRegistry() {
         Properties props = PropertiesBuilder.build(
                 new Property(DatabasePermittedPrivilegesProvider.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*"));
         AuthorityProvider provider = TypedSPILoader.getService(AuthorityProvider.class, "DATABASE_PERMITTED", props);

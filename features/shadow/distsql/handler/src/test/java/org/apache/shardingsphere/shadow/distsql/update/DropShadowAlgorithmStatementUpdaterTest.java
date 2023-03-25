@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public final class DropShadowAlgorithmStatementUpdaterTest {
+class DropShadowAlgorithmStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -44,18 +44,18 @@ public final class DropShadowAlgorithmStatementUpdaterTest {
     private final DropShadowAlgorithmStatementUpdater updater = new DropShadowAlgorithmStatementUpdater();
     
     @Test
-    public void assertExecuteWithoutAlgorithmNameInMetaData() {
+    void assertExecuteWithoutAlgorithmNameInMetaData() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("ruleSegment"), null));
     }
     
     @Test
-    public void assertExecuteWithIfExists() {
+    void assertExecuteWithIfExists() {
         DropShadowAlgorithmStatement sqlStatement = createSQLStatement(true, "ruleSegment");
         updater.checkSQLStatement(database, sqlStatement, mock(ShadowRuleConfiguration.class));
     }
     
     @Test
-    public void assertUpdate() {
+    void assertUpdate() {
         DropShadowAlgorithmStatement sqlStatement = createSQLStatement("shadow_algorithm");
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.getShadowAlgorithms().put("shadow_algorithm", new AlgorithmConfiguration("type", null));

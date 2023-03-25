@@ -30,20 +30,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLEofPacketTest {
+class MySQLEofPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNewEofPacketWithStatusFlag() {
+    void assertNewEofPacketWithStatusFlag() {
         MySQLEofPacket actual = new MySQLEofPacket(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getStatusFlags(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test
-    public void assertNewEofPacketWithPayload() {
+    void assertNewEofPacketWithPayload() {
         when(payload.readInt1()).thenReturn(MySQLEofPacket.HEADER);
         when(payload.readInt2()).thenReturn(0, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         MySQLEofPacket actual = new MySQLEofPacket(payload);
@@ -52,7 +52,7 @@ public final class MySQLEofPacketTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         new MySQLEofPacket(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write(payload);
         verify(payload).writeInt1(MySQLEofPacket.HEADER);
         verify(payload).writeInt2(0);

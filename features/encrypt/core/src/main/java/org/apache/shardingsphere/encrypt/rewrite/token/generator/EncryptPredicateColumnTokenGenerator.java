@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -113,7 +113,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     
     private boolean isColumnSegmentIncludedInLikeExpression(final Collection<WhereSegment> whereSegments, final ColumnSegment targetColumnSegment) {
         for (WhereSegment each : whereSegments) {
-            Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
+            Collection<AndPredicate> andPredicates = ExpressionExtractUtils.getAndPredicates(each.getExpr());
             for (AndPredicate andPredicate : andPredicates) {
                 boolean likeColumnSegment = isLikeColumnSegment(andPredicate, targetColumnSegment);
                 if (likeColumnSegment) {

@@ -22,9 +22,9 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTab
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.proxy.backend.util.RegularUtil;
+import org.apache.shardingsphere.proxy.backend.util.RegularUtils;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -59,8 +59,8 @@ public final class ShowSingleTableExecutor implements RQLExecutor<ShowSingleTabl
             singleTableNodes = singleTableNodes.filter(each -> sqlStatement.getTableName().get().equals(each.getTableName()));
         }
         if (sqlStatement.getLikePattern().isPresent()) {
-            String pattern = SQLUtil.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
-            singleTableNodes = singleTableNodes.filter(each -> RegularUtil.matchesCaseInsensitive(pattern, each.getTableName())).collect(Collectors.toList()).stream();
+            String pattern = SQLUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
+            singleTableNodes = singleTableNodes.filter(each -> RegularUtils.matchesCaseInsensitive(pattern, each.getTableName())).collect(Collectors.toList()).stream();
         }
         return singleTableNodes.sorted(Comparator.comparing(DataNode::getTableName)).collect(Collectors.toList());
     }

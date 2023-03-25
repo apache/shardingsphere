@@ -37,10 +37,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptParameterRewriterBuilderTest {
+class EncryptParameterRewriterBuilderTest {
     
     @Test
-    public void assertGetParameterRewritersWhenPredicateIsNeedRewrite() {
+    void assertGetParameterRewritersWhenPredicateIsNeedRewrite() {
         EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         when(encryptRule.findEncryptTable("t_order").isPresent()).thenReturn(true);
         SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
@@ -53,7 +53,7 @@ public final class EncryptParameterRewriterBuilderTest {
     }
     
     @Test
-    public void assertGetParameterRewritersWhenPredicateIsNotNeedRewrite() {
+    void assertGetParameterRewritersWhenPredicateIsNotNeedRewrite() {
         EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));

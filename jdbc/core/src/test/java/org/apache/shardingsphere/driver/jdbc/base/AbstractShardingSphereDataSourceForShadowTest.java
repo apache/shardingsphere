@@ -42,7 +42,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("shadow_jdbc_0", "shadow_jdbc_1");
     
     @BeforeAll
-    public static void initShadowDataSource() throws SQLException, IOException {
+    static void initShadowDataSource() throws SQLException, IOException {
         if (null == dataSource) {
             dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
         }
@@ -62,7 +62,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     }
     
     @AfterAll
-    public static void close() throws Exception {
+    static void close() throws Exception {
         if (null == dataSource) {
             return;
         }

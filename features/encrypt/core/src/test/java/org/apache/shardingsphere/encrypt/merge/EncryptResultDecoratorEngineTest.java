@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class EncryptResultDecoratorEngineTest {
+class EncryptResultDecoratorEngineTest {
     
     @Mock
     private EncryptRule rule;
@@ -55,14 +55,14 @@ public final class EncryptResultDecoratorEngineTest {
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertNewInstanceWithSelectStatement() {
+    void assertNewInstanceWithSelectStatement() {
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
         ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
         assertThat(actual, instanceOf(EncryptDQLResultDecorator.class));
     }
     
     @Test
-    public void assertNewInstanceWithDALStatement() {
+    void assertNewInstanceWithDALStatement() {
         SQLStatementContext<ExplainStatement> sqlStatementContext = mock(ExplainStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLExplainStatement.class));
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
@@ -71,7 +71,7 @@ public final class EncryptResultDecoratorEngineTest {
     }
     
     @Test
-    public void assertNewInstanceWithOtherStatement() {
+    void assertNewInstanceWithOtherStatement() {
         EncryptResultDecoratorEngine engine = (EncryptResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
         ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class));
         assertThat(actual, instanceOf(TransparentResultDecorator.class));

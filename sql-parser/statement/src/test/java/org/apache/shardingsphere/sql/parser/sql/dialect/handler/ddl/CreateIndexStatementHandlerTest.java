@@ -30,10 +30,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateIndexStatement;
 import org.junit.jupiter.api.Test;
 
-public final class CreateIndexStatementHandlerTest {
+class CreateIndexStatementHandlerTest {
     
     @Test
-    public void assertIfNotExists() {
+    void assertIfNotExists() {
         assertFalse(CreateIndexStatementHandler.ifNotExists(new MySQLCreateIndexStatement()));
         assertTrue(CreateIndexStatementHandler.ifNotExists(new PostgreSQLCreateIndexStatement(true)));
         assertTrue(CreateIndexStatementHandler.ifNotExists(new OpenGaussCreateIndexStatement(true)));
@@ -42,7 +42,7 @@ public final class CreateIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertGeneratedIndexStartIndexForPostgreSQL() {
+    void assertGeneratedIndexStartIndexForPostgreSQL() {
         PostgreSQLCreateIndexStatement postgreSQLCreateIndexStatement = new PostgreSQLCreateIndexStatement(true);
         postgreSQLCreateIndexStatement.setGeneratedIndexStartIndex(2);
         Optional<Integer> actual = CreateIndexStatementHandler.getGeneratedIndexStartIndex(postgreSQLCreateIndexStatement);
@@ -51,7 +51,7 @@ public final class CreateIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertGeneratedIndexStartIndexForOpenGauss() {
+    void assertGeneratedIndexStartIndexForOpenGauss() {
         OpenGaussCreateIndexStatement openGaussCreateIndexStatement = new OpenGaussCreateIndexStatement(true);
         openGaussCreateIndexStatement.setGeneratedIndexStartIndex(2);
         Optional<Integer> actual = CreateIndexStatementHandler.getGeneratedIndexStartIndex(openGaussCreateIndexStatement);
@@ -60,7 +60,7 @@ public final class CreateIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertGeneratedIndexStartIndexForOtherDatabases() {
+    void assertGeneratedIndexStartIndexForOtherDatabases() {
         assertFalse(CreateIndexStatementHandler.getGeneratedIndexStartIndex(new MySQLCreateIndexStatement()).isPresent());
         assertFalse(CreateIndexStatementHandler.getGeneratedIndexStartIndex(new OracleCreateIndexStatement()).isPresent());
         assertFalse(CreateIndexStatementHandler.getGeneratedIndexStartIndex(new SQLServerCreateIndexStatement()).isPresent());

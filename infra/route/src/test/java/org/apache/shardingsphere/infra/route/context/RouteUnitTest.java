@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class RouteUnitTest {
+class RouteUnitTest {
     
     private static final String LOGIC_DATA_SOURCE = "logic_ds";
     
@@ -44,14 +44,14 @@ public final class RouteUnitTest {
             new RouteMapper(LOGIC_DATA_SOURCE, ACTUAL_DATA_SOURCE), Arrays.asList(new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_0), new RouteMapper(LOGIC_TABLE, ACTUAL_TABLE_1)));
     
     @Test
-    public void assertGetLogicTableNames() {
+    void assertGetLogicTableNames() {
         Set<String> actual = routeUnit.getLogicTableNames();
         assertThat(actual.size(), is(1));
         assertTrue(actual.contains(LOGIC_TABLE));
     }
     
     @Test
-    public void assertGetActualTableNames() {
+    void assertGetActualTableNames() {
         Set<String> actual = routeUnit.getActualTableNames(LOGIC_TABLE);
         assertThat(actual.size(), is(2));
         assertTrue(actual.contains(ACTUAL_TABLE_0));
@@ -59,7 +59,7 @@ public final class RouteUnitTest {
     }
     
     @Test
-    public void assertFindTableMapper() {
+    void assertFindTableMapper() {
         Optional<RouteMapper> actual = routeUnit.findTableMapper(LOGIC_DATA_SOURCE, ACTUAL_TABLE_0);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getLogicName(), is(LOGIC_TABLE));
@@ -67,7 +67,7 @@ public final class RouteUnitTest {
     }
     
     @Test
-    public void assertTableMapperNotFound() {
+    void assertTableMapperNotFound() {
         assertFalse(routeUnit.findTableMapper("invalid_ds", "invalid_tbl").isPresent());
     }
 }

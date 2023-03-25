@@ -22,12 +22,12 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class GeneratedKeyAssignmentTokenTest {
+class GeneratedKeyAssignmentTokenTest {
     
     private GeneratedKeyAssignmentToken generatedKeyAssignmentToken;
     
     @Test
-    public void assertCustomGeneratedKeyAssignmentTokenToString() {
+    void assertCustomGeneratedKeyAssignmentTokenToString() {
         generatedKeyAssignmentToken = new GeneratedKeyAssignmentToken(0, "id") {
             
             @Override
@@ -40,21 +40,21 @@ public final class GeneratedKeyAssignmentTokenTest {
     }
     
     @Test
-    public void assertLiteralGeneratedKeyAssignmentTokenToString() {
+    void assertLiteralGeneratedKeyAssignmentTokenToString() {
         generatedKeyAssignmentToken = new LiteralGeneratedKeyAssignmentToken(0, "id", "0");
         String resultLiteralGeneratedKeyAssignmentTokenToString = generatedKeyAssignmentToken.toString();
         assertThat(resultLiteralGeneratedKeyAssignmentTokenToString, is(", id = '0'"));
     }
     
     @Test
-    public void assertLiteralGeneratedKeyAssignmentTokenByIntToString() {
+    void assertLiteralGeneratedKeyAssignmentTokenByIntToString() {
         generatedKeyAssignmentToken = new LiteralGeneratedKeyAssignmentToken(0, "id", 0);
         String resultLiteralGeneratedKeyAssignmentTokenToString = generatedKeyAssignmentToken.toString();
         assertThat(resultLiteralGeneratedKeyAssignmentTokenToString, is(", id = 0"));
     }
     
     @Test
-    public void assertParameterMarkerGeneratedKeyAssignmentTokenToString() {
+    void assertParameterMarkerGeneratedKeyAssignmentTokenToString() {
         generatedKeyAssignmentToken = new ParameterMarkerGeneratedKeyAssignmentToken(0, "id");
         String resultParameterMarkerGeneratedKeyAssignmentTokenToString = generatedKeyAssignmentToken.toString();
         assertThat(resultParameterMarkerGeneratedKeyAssignmentTokenToString, is(", id = ?"));

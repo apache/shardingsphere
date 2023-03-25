@@ -27,10 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
-public final class SQLStatsTest {
+class SQLStatsTest {
     
     @Test
-    public void assertAddTable() {
+    void assertAddTable() {
         SQLStats sqlStats = new SQLStats();
         assertNull(sqlStats.getTables().get("foo"));
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("foo")));
@@ -41,7 +41,7 @@ public final class SQLStatsTest {
     }
     
     @Test
-    public void assertAddColumn() {
+    void assertAddColumn() {
         SQLStats sqlStats = new SQLStats();
         ColumnSegment columnSegment = new ColumnSegment(0, 5, new IdentifierValue("foo"));
         assertNull(sqlStats.getColumns().get(columnSegment.hashCode()));

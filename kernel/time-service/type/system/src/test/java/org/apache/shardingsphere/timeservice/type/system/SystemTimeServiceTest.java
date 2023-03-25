@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SystemTimeServiceTest {
+class SystemTimeServiceTest {
     
     @Test
-    public void assertGetDatetime() {
+    void assertGetDatetime() {
         long currentTime = System.currentTimeMillis();
         assertTrue(TypedSPILoader.getService(ShardingSphereTimeService.class, null).getDatetime().getTime() >= currentTime);
     }

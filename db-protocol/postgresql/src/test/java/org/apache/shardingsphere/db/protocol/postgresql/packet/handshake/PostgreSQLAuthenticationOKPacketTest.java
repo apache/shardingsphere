@@ -28,10 +28,10 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLAuthenticationOKPacketTest {
+class PostgreSQLAuthenticationOKPacketTest {
     
     @Test
-    public void assertAuthenticationOK() {
+    void assertAuthenticationOK() {
         assertReadWrite();
     }
     

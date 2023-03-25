@@ -59,30 +59,30 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingResultMergerEngineTest {
+class ShardingResultMergerEngineTest {
     
     @Test
-    public void assertNewInstanceWithSelectStatementForMySQL() {
+    void assertNewInstanceWithSelectStatementForMySQL() {
         assertNewInstanceWithSelectStatement(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertNewInstanceWithSelectStatementForOracle() {
+    void assertNewInstanceWithSelectStatementForOracle() {
         assertNewInstanceWithSelectStatement(new OracleSelectStatement());
     }
     
     @Test
-    public void assertNewInstanceWithSelectStatementForPostgreSQL() {
+    void assertNewInstanceWithSelectStatementForPostgreSQL() {
         assertNewInstanceWithSelectStatement(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertNewInstanceWithSelectStatementForSQL92() {
+    void assertNewInstanceWithSelectStatementForSQL92() {
         assertNewInstanceWithSelectStatement(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertNewInstanceWithSelectStatementForSQLServer() {
+    void assertNewInstanceWithSelectStatementForSQLServer() {
         assertNewInstanceWithSelectStatement(new SQLServerSelectStatement());
     }
     
@@ -102,7 +102,7 @@ public final class ShardingResultMergerEngineTest {
     }
     
     @Test
-    public void assertNewInstanceWithDALStatement() {
+    void assertNewInstanceWithDALStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         CommonSQLStatementContext<PostgreSQLShowStatement> sqlStatementContext = new CommonSQLStatementContext<>(new PostgreSQLShowStatement(""));
         assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), null, props,
@@ -110,7 +110,7 @@ public final class ShardingResultMergerEngineTest {
     }
     
     @Test
-    public void assertNewInstanceWithOtherStatement() {
+    void assertNewInstanceWithOtherStatement() {
         InsertStatement insertStatement = new MySQLInsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
@@ -128,7 +128,7 @@ public final class ShardingResultMergerEngineTest {
     }
     
     @Test
-    public void assertNewInstanceWithDDLStatement() {
+    void assertNewInstanceWithDDLStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         CommonSQLStatementContext<OpenGaussFetchStatement> sqlStatementContext = new CommonSQLStatementContext<>(new OpenGaussFetchStatement());
         assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), null, props,

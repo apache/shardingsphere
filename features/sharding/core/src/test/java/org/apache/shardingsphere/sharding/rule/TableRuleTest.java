@@ -46,10 +46,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class TableRuleTest {
+class TableRuleTest {
     
     @Test
-    public void assertCreateMinTableRule() {
+    void assertCreateMinTableRule() {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.logic_table");
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
@@ -59,7 +59,7 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertCreateFullTableRule() {
+    void assertCreateFullTableRule() {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
         tableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
         tableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
@@ -79,7 +79,7 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertCreateAutoTableRuleWithModAlgorithm() {
+    void assertCreateAutoTableRuleWithModAlgorithm() {
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0,ds1");
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
         ModShardingAlgorithm shardingAlgorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "4")));
@@ -93,7 +93,7 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertCreateAutoTableRuleWithModAlgorithmWithoutActualDataSources() {
+    void assertCreateAutoTableRuleWithModAlgorithmWithoutActualDataSources() {
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", null);
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
         ModShardingAlgorithm shardingAlgorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "4")));
@@ -107,13 +107,13 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertGetActualDataSourceNames() {
+    void assertGetActualDataSourceNames() {
         TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.getActualDataSourceNames(), is(new LinkedHashSet<>(Arrays.asList("ds0", "ds1"))));
     }
     
     @Test
-    public void assertGetActualTableNames() {
+    void assertGetActualTableNames() {
         TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.getActualTableNames("ds0"), is(new LinkedHashSet<>(Arrays.asList("table_0", "table_1", "table_2"))));
         assertThat(actual.getActualTableNames("ds1"), is(new LinkedHashSet<>(Arrays.asList("table_0", "table_1", "table_2"))));
@@ -121,38 +121,38 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertFindActualTableIndex() {
+    void assertFindActualTableIndex() {
         TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.findActualTableIndex("ds1", "table_1"), is(4));
     }
     
     @Test
-    public void assertNotFindActualTableIndex() {
+    void assertNotFindActualTableIndex() {
         TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.findActualTableIndex("ds2", "table_2"), is(-1));
     }
     
     @Test
-    public void assertActualTableNameExisted() {
+    void assertActualTableNameExisted() {
         TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertTrue(actual.isExisted("table_2"));
     }
     
     @Test
-    public void assertActualTableNameNotExisted() {
+    void assertActualTableNameNotExisted() {
         TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
         assertFalse(actual.isExisted("table_3"));
     }
     
     @Test
-    public void assertActualDataNodesNotConfigured() {
+    void assertActualDataNodesNotConfigured() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "");
         shardingTableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("shardingColumn", "INLINE"));
         assertThrows(DataNodesMissedWithShardingTableException.class, () -> new TableRule(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null));
     }
     
     @Test
-    public void assertDatNodeGroups() {
+    void assertDatNodeGroups() {
         Collection<String> dataSourceNames = new LinkedList<>();
         String logicTableName = "table_0";
         dataSourceNames.add("ds0");
@@ -165,7 +165,7 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertCreateTableRuleWithDataSourceNames() {
+    void assertCreateTableRuleWithDataSourceNames() {
         Collection<String> dataSourceNames = new LinkedList<>();
         String logicTableName = "table_0";
         dataSourceNames.add("ds0");
@@ -177,7 +177,7 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertGetTableDataNode() {
+    void assertGetTableDataNode() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_0_0,ds_0.t_order_0_1");
         TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
         DataNodeInfo actual = tableRule.getTableDataNode();
@@ -187,7 +187,7 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertGetTableDataNodeWhenLogicTableEndWithNumber() {
+    void assertGetTableDataNodeWhenLogicTableEndWithNumber() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order0", "ds_0.t_order0_0,ds_0.t_order0_1");
         TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
         DataNodeInfo actual = tableRule.getTableDataNode();
@@ -197,7 +197,7 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertGetDataSourceDataNode() {
+    void assertGetDataSourceDataNode() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order,ds_1.t_order");
         TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
         DataNodeInfo actual = tableRule.getDataSourceDataNode();

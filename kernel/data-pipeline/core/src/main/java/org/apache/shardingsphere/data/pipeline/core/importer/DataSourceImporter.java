@@ -37,7 +37,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.Pipelin
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -207,7 +207,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         Set<String> shardingColumns = importerConfig.getShardingColumns(record.getTableName());
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, shardingColumns);
+        List<Column> conditionColumns = RecordUtils.extractConditionColumns(record, shardingColumns);
         List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record);
         String updateSql = pipelineSqlBuilder.buildUpdateSQL(getSchemaName(record.getTableName()), record, conditionColumns);
         try (PreparedStatement preparedStatement = connection.prepareStatement(updateSql)) {
@@ -230,13 +230,13 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private void executeBatchDelete(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         DataRecord dataRecord = dataRecords.get(0);
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName()));
+        List<Column> conditionColumns = RecordUtils.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName()));
         String deleteSQL = pipelineSqlBuilder.buildDeleteSQL(getSchemaName(dataRecord.getTableName()), dataRecord, conditionColumns);
         try (PreparedStatement preparedStatement = connection.prepareStatement(deleteSQL)) {
             batchDeleteStatement = preparedStatement;
             preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
-                conditionColumns = RecordUtil.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
+                conditionColumns = RecordUtils.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
                     preparedStatement.setObject(i + 1, conditionColumns.get(i).getValue());
                 }

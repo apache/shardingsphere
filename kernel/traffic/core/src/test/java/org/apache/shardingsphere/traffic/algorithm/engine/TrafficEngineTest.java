@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class TrafficEngineTest {
+class TrafficEngineTest {
     
     @Mock
     private TrafficRule trafficRule;
@@ -59,7 +59,7 @@ public final class TrafficEngineTest {
     private QueryContext queryContext;
     
     @Test
-    public void assertDispatchWhenNotExistTrafficStrategyRule() {
+    void assertDispatchWhenNotExistTrafficStrategyRule() {
         TrafficEngine trafficEngine = new TrafficEngine(trafficRule, instanceContext);
         when(trafficRule.findMatchedStrategyRule(queryContext, false)).thenReturn(Optional.empty());
         Optional<String> actual = trafficEngine.dispatch(queryContext, false);
@@ -67,7 +67,7 @@ public final class TrafficEngineTest {
     }
     
     @Test
-    public void assertDispatchWhenTrafficStrategyRuleInvalid() {
+    void assertDispatchWhenTrafficStrategyRuleInvalid() {
         TrafficEngine trafficEngine = new TrafficEngine(trafficRule, instanceContext);
         TrafficStrategyRule strategyRule = mock(TrafficStrategyRule.class);
         when(strategyRule.getLabels()).thenReturn(Collections.emptyList());
@@ -77,7 +77,7 @@ public final class TrafficEngineTest {
     }
     
     @Test
-    public void assertDispatchWhenExistTrafficStrategyRuleNotExistComputeNodeInstances() {
+    void assertDispatchWhenExistTrafficStrategyRuleNotExistComputeNodeInstances() {
         TrafficEngine trafficEngine = new TrafficEngine(trafficRule, instanceContext);
         when(trafficRule.findMatchedStrategyRule(queryContext, false)).thenReturn(Optional.of(strategyRule));
         when(strategyRule.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
@@ -86,7 +86,7 @@ public final class TrafficEngineTest {
     }
     
     @Test
-    public void assertDispatchWhenExistTrafficStrategyRuleExistComputeNodeInstances() {
+    void assertDispatchWhenExistTrafficStrategyRuleExistComputeNodeInstances() {
         TrafficEngine trafficEngine = new TrafficEngine(trafficRule, instanceContext);
         when(trafficRule.findMatchedStrategyRule(queryContext, false)).thenReturn(Optional.of(strategyRule));
         when(strategyRule.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));

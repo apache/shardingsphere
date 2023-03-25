@@ -6,7 +6,7 @@ weight = 8
 
 ### 描述
 
-`SHOW MIGRATION LIST` 语法用于查询数据迁移作业列表
+`SHOW MIGRATION LIST` 语法用于查询数据迁移作业列表。
 
 ### 语法
 

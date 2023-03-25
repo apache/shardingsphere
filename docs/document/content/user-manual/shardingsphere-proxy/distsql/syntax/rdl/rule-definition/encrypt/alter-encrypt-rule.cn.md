@@ -5,7 +5,7 @@ weight = 3
 
 ## 说明
 
- `ALTER ENCRYPT RULE` 语法用于修改加密规则
+ `ALTER ENCRYPT RULE` 语法用于修改加密规则。
 
 ### 语法
 
@@ -66,7 +66,7 @@ value ::=
 {{% /tab %}}
 {{< /tabs >}}
 
-### Supplement
+### 补充说明
 
 - `PLAIN` 指定明文数据列，`CIPHER` 指定密文数据列，`ASSISTED_QUERY_COLUMN` 指定辅助查询列，`LIKE_QUERY_COLUMN` 指定模糊查询列；
 - `encryptAlgorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/common-config/builtin-algorithm/encrypt/)；

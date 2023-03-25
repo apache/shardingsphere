@@ -35,13 +35,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public final class SocketSinkImporterCreatorTest {
+class SocketSinkImporterCreatorTest {
     
     @Mock
     private ImporterConfiguration importerConfig;
     
     @Test
-    public void assertCreateCDCImporter() {
+    void assertCreateCDCImporter() {
         SocketSinkImporterConnector importerConnector = new SocketSinkImporterConnector(mock(Channel.class), mock(ShardingSphereDatabase.class), 1, Collections.emptyList(), null);
         assertThat(TypedSPILoader.getService(ImporterCreator.class, "Socket").createImporter(importerConfig, importerConnector, null, null, null), instanceOf(SocketSinkImporter.class));
     }

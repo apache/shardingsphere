@@ -31,10 +31,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ShowProcessListManager.class)
-public final class ProcessStandaloneSubscriberTest {
+class ProcessStandaloneSubscriberTest {
     
     @Test
-    public void assertLoadShowProcessListData() {
+    void assertLoadShowProcessListData() {
         ShowProcessListManager showProcessListManager = mock(ShowProcessListManager.class);
         when(ShowProcessListManager.getInstance()).thenReturn(showProcessListManager);
         new ProcessStandaloneSubscriber(new EventBusContext()).loadShowProcessListData(mock(ShowProcessListRequestEvent.class));

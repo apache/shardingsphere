@@ -5,7 +5,7 @@ weight = 3
 
 ## 描述
 
-`ALTER READWRITE_SPLITTING RULE` 语法用于修改读写分离规则
+`ALTER READWRITE_SPLITTING RULE` 语法用于修改读写分离规则。
 
 ### 语法定义
 

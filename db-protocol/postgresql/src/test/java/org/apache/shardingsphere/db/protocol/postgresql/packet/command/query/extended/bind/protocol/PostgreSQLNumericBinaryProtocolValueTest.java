@@ -33,18 +33,18 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLNumericBinaryProtocolValueTest {
+class PostgreSQLNumericBinaryProtocolValueTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertGetColumnLength(final BigDecimal bigDecimal, final byte[] expected) {
+    void assertGetColumnLength(final BigDecimal bigDecimal, final byte[] expected) {
         PostgreSQLNumericBinaryProtocolValue binaryProtocolValue = new PostgreSQLNumericBinaryProtocolValue();
         assertThat(binaryProtocolValue.getColumnLength(bigDecimal), is(expected.length));
     }
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertRead(final BigDecimal bigDecimal, final byte[] expected) {
+    void assertRead(final BigDecimal bigDecimal, final byte[] expected) {
         PostgreSQLNumericBinaryProtocolValue binaryProtocolValue = new PostgreSQLNumericBinaryProtocolValue();
         int expectedLength = expected.length;
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
@@ -57,7 +57,7 @@ public final class PostgreSQLNumericBinaryProtocolValueTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertWrite(final BigDecimal bigDecimal, final byte[] expected) {
+    void assertWrite(final BigDecimal bigDecimal, final byte[] expected) {
         PostgreSQLNumericBinaryProtocolValue binaryProtocolValue = new PostgreSQLNumericBinaryProtocolValue();
         int columnLength = binaryProtocolValue.getColumnLength(bigDecimal);
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(columnLength);

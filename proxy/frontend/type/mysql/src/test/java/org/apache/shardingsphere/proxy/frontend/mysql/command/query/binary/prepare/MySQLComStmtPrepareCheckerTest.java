@@ -75,10 +75,10 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MySQLComStmtPrepareCheckerTest {
+class MySQLComStmtPrepareCheckerTest {
     
     @Test
-    public void assertIsStatementAllowed() {
+    void assertIsStatementAllowed() {
         Collection<SQLStatement> sqlStatements = Arrays.asList(
                 new MySQLAlterTableStatement(), new MySQLAlterUserStatement(), new MySQLAnalyzeTableStatement(), new MySQLCacheIndexStatement(),
                 new MySQLCallStatement(), new MySQLChangeMasterStatement(), new MySQLChecksumTableStatement(), new MySQLCommitStatement(), new MySQLCreateIndexStatement(),

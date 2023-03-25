@@ -41,14 +41,14 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowDistVariablesExecutorTest {
+class ShowDistVariablesExecutorTest {
     
     private final ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
     
     private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(2));
@@ -58,7 +58,7 @@ public final class ShowDistVariablesExecutorTest {
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system_log_level", "INFO"))));
         when(metaData.getInternalProps()).thenReturn(new InternalConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
         when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));

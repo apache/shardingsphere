@@ -29,27 +29,27 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class InsertCipherNameTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class InsertCipherNameTokenGeneratorTest extends EncryptGeneratorBaseTest {
     
     private final InsertCipherNameTokenGenerator generator = new InsertCipherNameTokenGenerator();
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         generator.setEncryptRule(createEncryptRule());
     }
     
     @Test
-    public void assertIsNotGenerateSQLTokenWithNotInsertStatement() {
+    void assertIsNotGenerateSQLTokenWithNotInsertStatement() {
         assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class)));
     }
     
     @Test
-    public void assertIsGenerateSQLTokenWithInsertStatementContext() {
+    void assertIsGenerateSQLTokenWithInsertStatementContext() {
         assertTrue(generator.isGenerateSQLToken(createInsertStatementContext(Collections.emptyList())));
     }
     
     @Test
-    public void assertGenerateSQLTokensWithInsertStatementContext() {
+    void assertGenerateSQLTokensWithInsertStatementContext() {
         assertThat(generator.generateSQLTokens(createInsertStatementContext(Collections.emptyList())).size(), is(1));
     }
 }

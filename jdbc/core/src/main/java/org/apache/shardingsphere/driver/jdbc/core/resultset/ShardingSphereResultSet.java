@@ -62,15 +62,16 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
-    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final ExecutionContext executionContext) throws SQLException {
-        super(resultSets, statement, executionContext);
+    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final boolean transparentStatement,
+                                   final ExecutionContext executionContext) throws SQLException {
+        super(resultSets, statement, transparentStatement, executionContext);
         this.mergeResultSet = mergeResultSet;
         columnLabelAndIndexMap = ShardingSphereResultSetUtil.createColumnLabelAndIndexMap(executionContext.getSqlStatementContext(), resultSets.get(0).getMetaData());
     }
     
-    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final ExecutionContext executionContext,
-                                   final Map<String, Integer> columnLabelAndIndexMap) {
-        super(resultSets, statement, executionContext);
+    public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final boolean transparentStatement,
+                                   final ExecutionContext executionContext, final Map<String, Integer> columnLabelAndIndexMap) {
+        super(resultSets, statement, transparentStatement, executionContext);
         this.mergeResultSet = mergeResultSet;
         this.columnLabelAndIndexMap = columnLabelAndIndexMap;
     }

@@ -58,8 +58,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -414,7 +414,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
-        Collection<WhereSegment> joinSegments = WhereExtractUtil.getJoinWhereSegments(select.getSqlStatement());
+        Collection<WhereSegment> joinSegments = WhereExtractUtils.getJoinWhereSegments(select.getSqlStatement());
         return isJoinConditionContainsShardingColumns(schema, select, logicTableNames, joinSegments)
                 || isJoinConditionContainsShardingColumns(schema, select, logicTableNames, select.getWhereSegments());
     }
@@ -708,7 +708,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         Collection<String> databaseJoinConditionTables = new HashSet<>(tableNames.size());
         Collection<String> tableJoinConditionTables = new HashSet<>(tableNames.size());
         for (WhereSegment each : whereSegments) {
-            Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
+            Collection<AndPredicate> andPredicates = ExpressionExtractUtils.getAndPredicates(each.getExpr());
             if (andPredicates.size() > 1) {
                 return false;
             }

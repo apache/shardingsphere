@@ -5,7 +5,7 @@ weight = 8
 
 ## 描述
 
-`ALTER TRAFFIC RULE` 语法用于修改双路由规则
+`ALTER TRAFFIC RULE` 语法用于修改双路由规则。
 
 ### 语法定义
 

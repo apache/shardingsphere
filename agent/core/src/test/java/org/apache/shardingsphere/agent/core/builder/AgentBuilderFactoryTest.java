@@ -39,12 +39,12 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class AgentBuilderFactoryTest {
+class AgentBuilderFactoryTest {
     
     private static ResettableClassFileTransformer agent;
     
     @BeforeAll
-    public static void setup() {
+    static void setup() {
         ByteBuddyAgent.install();
         AdvisorConfiguration advisorConfig = createAdvisorConfiguration();
         Map<String, AdvisorConfiguration> advisorConfigs = Collections.singletonMap(advisorConfig.getTargetClassName(), advisorConfig);
@@ -68,26 +68,26 @@ public final class AgentBuilderFactoryTest {
     }
     
     @AfterAll
-    public static void destroy() {
+    static void destroy() {
         agent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
     }
     
     @Test
-    public void assertAdviceConstructor() {
+    void assertAdviceConstructor() {
         List<String> queue = new LinkedList<>();
         new TargetObjectFixture(queue);
         assertThat(queue, is(Arrays.asList("on constructor", "foo constructor", "bar constructor")));
     }
     
     @Test
-    public void assertAdviceInstanceMethod() {
+    void assertAdviceInstanceMethod() {
         List<String> queue = new LinkedList<>();
         new TargetObjectFixture(new LinkedList<>()).call(queue);
         assertThat(queue, is(Arrays.asList("foo before instance method", "bar before instance method", "on instance method", "foo after instance method", "bar after instance method")));
     }
     
     @Test
-    public void assertAdviceInstanceMethodWhenExceptionThrown() {
+    void assertAdviceInstanceMethodWhenExceptionThrown() {
         List<String> queue = new LinkedList<>();
         try {
             new TargetObjectFixture(new LinkedList<>()).callWhenExceptionThrown(queue);
@@ -98,14 +98,14 @@ public final class AgentBuilderFactoryTest {
     }
     
     @Test
-    public void assertAdviceStaticMethod() {
+    void assertAdviceStaticMethod() {
         List<String> queue = new LinkedList<>();
         TargetObjectFixture.staticCall(queue);
         assertThat(queue, is(Arrays.asList("foo before static method", "bar before static method", "on static method", "foo after static method", "bar after static method")));
     }
     
     @Test
-    public void assertAdviceStaticMethodWhenExceptionThrown() {
+    void assertAdviceStaticMethodWhenExceptionThrown() {
         List<String> queue = new LinkedList<>();
         try {
             TargetObjectFixture.staticCallWhenExceptionThrown(queue);

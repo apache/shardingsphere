@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class AbstractDataSourceCheckerTest {
+class AbstractDataSourceCheckerTest {
     
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
@@ -60,7 +60,7 @@ public final class AbstractDataSourceCheckerTest {
     private ResultSet resultSet;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         dataSourceChecker = new AbstractDataSourceChecker() {
             
             @Override
@@ -81,20 +81,20 @@ public final class AbstractDataSourceCheckerTest {
     }
     
     @Test
-    public void assertCheckConnection() throws SQLException {
+    void assertCheckConnection() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         dataSourceChecker.checkConnection(dataSources);
         verify(dataSource).getConnection();
     }
     
     @Test
-    public void assertCheckConnectionFailed() throws SQLException {
+    void assertCheckConnectionFailed() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException("error"));
         assertThrows(PrepareJobWithInvalidConnectionException.class, () -> dataSourceChecker.checkConnection(dataSources));
     }
     
     @Test
-    public void assertCheckTargetTable() throws SQLException {
+    void assertCheckTargetTable() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -102,7 +102,7 @@ public final class AbstractDataSourceCheckerTest {
     }
     
     @Test
-    public void assertCheckTargetTableFailed() throws SQLException {
+    void assertCheckTargetTableFailed() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);

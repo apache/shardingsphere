@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShowTableStatusMergedResultTest {
+class ShowTableStatusMergedResultTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -53,7 +53,7 @@ public final class ShowTableStatusMergedResultTest {
     private ShardingSphereSchema schema;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         shardingRule = buildShardingRule();
         schema = new ShardingSphereSchema(Collections.singletonMap("table",
                 new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyMap());
@@ -66,12 +66,12 @@ public final class ShowTableStatusMergedResultTest {
     }
     
     @Test
-    public void assertNextForEmptyQueryResult() throws SQLException {
+    void assertNextForEmptyQueryResult() throws SQLException {
         assertFalse(new ShowTableStatusMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
     }
     
     @Test
-    public void assertNextForTableRuleIsPresent() throws SQLException {
+    void assertNextForTableRuleIsPresent() throws SQLException {
         MergedResult mergedResult = new ShowTableStatusMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult()));
         assertTrue(mergedResult.next());
         assertFalse(mergedResult.next());

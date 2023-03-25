@@ -49,12 +49,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptProjectionTokenGeneratorTest {
+class EncryptProjectionTokenGeneratorTest {
     
     private EncryptProjectionTokenGenerator generator;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         generator = new EncryptProjectionTokenGenerator();
         generator.setEncryptRule(mockEncryptRule());
         generator.setDatabaseName("db_schema");
@@ -77,7 +77,7 @@ public final class EncryptProjectionTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokensWhenOwnerMatchTableAlias() {
+    void assertGenerateSQLTokensWhenOwnerMatchTableAlias() {
         SimpleTableSegment doctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
         doctorTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
@@ -95,7 +95,7 @@ public final class EncryptProjectionTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokensWhenOwnerMatchTableAliasForSameTable() {
+    void assertGenerateSQLTokensWhenOwnerMatchTableAliasForSameTable() {
         SimpleTableSegment doctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
         doctorTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
@@ -113,7 +113,7 @@ public final class EncryptProjectionTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokensWhenOwnerMatchTableName() {
+    void assertGenerateSQLTokensWhenOwnerMatchTableName() {
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
         column.setOwner(new OwnerSegment(0, 0, new IdentifierValue("doctor")));
         ProjectionsSegment projections = mock(ProjectionsSegment.class);

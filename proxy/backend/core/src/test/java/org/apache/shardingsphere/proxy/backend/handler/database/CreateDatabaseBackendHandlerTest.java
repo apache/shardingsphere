@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class CreateDatabaseBackendHandlerTest {
+class CreateDatabaseBackendHandlerTest {
     
     @Mock
     private CreateDatabaseStatement statement;
@@ -51,12 +51,12 @@ public final class CreateDatabaseBackendHandlerTest {
     private CreateDatabaseBackendHandler handler;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         handler = new CreateDatabaseBackendHandler(statement);
     }
     
     @Test
-    public void assertExecuteCreateNewDatabase() throws SQLException {
+    void assertExecuteCreateNewDatabase() throws SQLException {
         when(statement.getDatabaseName()).thenReturn("bar_db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -64,7 +64,7 @@ public final class CreateDatabaseBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteCreateExistDatabase() {
+    void assertExecuteCreateExistDatabase() {
         when(statement.getDatabaseName()).thenReturn("foo_db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -73,7 +73,7 @@ public final class CreateDatabaseBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteCreateExistDatabaseWithIfNotExists() throws SQLException {
+    void assertExecuteCreateExistDatabaseWithIfNotExists() throws SQLException {
         when(statement.getDatabaseName()).thenReturn("foo_db");
         when(statement.isIfNotExists()).thenReturn(true);
         ContextManager contextManager = mockContextManager();

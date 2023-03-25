@@ -25,10 +25,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public final class DefaultSQLParserRuleConfigurationBuilderTest {
+class DefaultSQLParserRuleConfigurationBuilderTest {
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         SQLParserRuleConfiguration actual = new DefaultSQLParserRuleConfigurationBuilder().build();
         assertFalse(actual.isSqlCommentParseEnabled());
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(128));
@@ -38,12 +38,12 @@ public final class DefaultSQLParserRuleConfigurationBuilderTest {
     }
     
     @Test
-    public void assertGetOrder() {
+    void assertGetOrder() {
         assertThat(new DefaultSQLParserRuleConfigurationBuilder().getOrder(), is(SQLParserOrder.ORDER));
     }
     
     @Test
-    public void assertGetTypeClass() {
+    void assertGetTypeClass() {
         assertThat(new DefaultSQLParserRuleConfigurationBuilder().getTypeClass().toString(), is(SQLParserRuleBuilder.class.toString()));
     }
 }

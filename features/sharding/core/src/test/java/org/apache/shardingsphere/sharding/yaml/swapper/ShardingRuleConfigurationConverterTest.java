@@ -26,10 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ShardingRuleConfigurationConverterTest {
+class ShardingRuleConfigurationConverterTest {
     
     @Test
-    public void assertFindAndConvertShardingRuleConfiguration() {
+    void assertFindAndConvertShardingRuleConfiguration() {
         assertTrue(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(
                 Collections.singletonList(mock(YamlShardingRuleConfiguration.class))).isPresent(), "Sharding rule should be present");
         assertFalse(ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(Collections.emptyList()).isPresent(), "Sharding rule should be not present");

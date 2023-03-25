@@ -46,12 +46,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ShowCreateDatabaseExecutorTest {
+class ShowCreateDatabaseExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         MySQLShowCreateDatabaseStatement statement = new MySQLShowCreateDatabaseStatement();
         statement.setDatabaseName("db_0");
         ShowCreateDatabaseExecutor executor = new ShowCreateDatabaseExecutor(statement);

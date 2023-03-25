@@ -42,17 +42,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class IncrementalTaskTest {
+class IncrementalTaskTest {
     
     private IncrementalTask incrementalTask;
     
     @BeforeAll
-    public static void beforeClass() {
+    static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MigrationTaskConfiguration taskConfig = PipelineContextUtil.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
@@ -62,12 +62,12 @@ public final class IncrementalTaskTest {
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         incrementalTask.stop();
     }
     
     @Test
-    public void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
+    void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
         CompletableFuture.allOf(incrementalTask.start().toArray(new CompletableFuture[0])).get(10, TimeUnit.SECONDS);
         assertThat(incrementalTask.getTaskId(), is("ds_0"));
         assertThat(incrementalTask.getTaskProgress().getPosition(), instanceOf(PlaceholderPosition.class));

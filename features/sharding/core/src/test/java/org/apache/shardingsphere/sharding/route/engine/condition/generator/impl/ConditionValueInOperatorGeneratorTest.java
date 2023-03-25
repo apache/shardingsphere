@@ -42,7 +42,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ConditionValueInOperatorGeneratorTest {
+class ConditionValueInOperatorGeneratorTest {
     
     private final ConditionValueInOperatorGenerator generator = new ConditionValueInOperatorGenerator();
     
@@ -51,7 +51,7 @@ public final class ConditionValueInOperatorGeneratorTest {
     private final TimeServiceRule timeServiceRule = new TimeServiceRule(new TimeServiceRuleConfiguration("System", new Properties()));
     
     @Test
-    public void assertNowExpression() {
+    void assertNowExpression() {
         ListExpression listExpression = new ListExpression(0, 0);
         listExpression.getItems().add(new CommonExpressionSegment(0, 0, "now()"));
         InExpression inExpression = new InExpression(0, 0, null, listExpression, false);
@@ -63,7 +63,7 @@ public final class ConditionValueInOperatorGeneratorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateConditionValueWithParameter() {
+    void assertGenerateConditionValueWithParameter() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
         ListExpression right = new ListExpression(0, 0);
         right.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));
@@ -79,7 +79,7 @@ public final class ConditionValueInOperatorGeneratorTest {
     }
     
     @Test
-    public void assertGenerateConditionValueWithoutParameter() {
+    void assertGenerateConditionValueWithoutParameter() {
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         ListExpression right = new ListExpression(0, 0);
         right.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));

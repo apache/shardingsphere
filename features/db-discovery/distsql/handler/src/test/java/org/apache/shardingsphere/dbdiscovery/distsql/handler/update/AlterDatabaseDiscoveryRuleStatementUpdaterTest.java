@@ -49,7 +49,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
+class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -60,17 +60,17 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     private final AlterDatabaseDiscoveryRuleStatementUpdater updater = new AlterDatabaseDiscoveryRuleStatementUpdater();
     
     @BeforeEach
-    public void before() {
+    void before() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    void assertCheckSQLStatementWithoutCurrentRule() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, new AlterDatabaseDiscoveryRuleStatement(Collections.emptyList()), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() {
+    void assertCheckSQLStatementWithoutToBeAlteredDatabaseDiscoveryRule() {
         Properties props = new Properties();
         DatabaseDiscoveryRuleSegment segment =
                 new DatabaseDiscoveryRuleSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), new AlgorithmSegment("MySQL.MGR", props), props);
@@ -79,7 +79,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutExistedResources() {
+    void assertCheckSQLStatementWithoutExistedResources() {
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Collections.singleton("ds0"));
         Properties props = new Properties();
         DatabaseDiscoveryRuleSegment segment =
@@ -91,7 +91,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckSQLStatementWithDatabaseDiscoveryType() {
+    void assertCheckSQLStatementWithDatabaseDiscoveryType() {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("INVALID_TYPE", new Properties());
         DatabaseDiscoveryRuleSegment segment = new DatabaseDiscoveryRuleSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
@@ -101,7 +101,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("MySQL.MGR", new Properties());
         DatabaseDiscoveryRuleSegment definitionSegment = new DatabaseDiscoveryRuleSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig =
@@ -114,7 +114,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdate() {
+    void assertUpdate() {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("MySQL.MGR", new Properties());
         DatabaseDiscoveryRuleSegment definitionSegment = new DatabaseDiscoveryRuleSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         DatabaseDiscoveryRuleConfiguration toBeCreatedRuleConfig =

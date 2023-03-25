@@ -47,11 +47,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class KernelProcessorTest {
+class KernelProcessorTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGenerateExecutionContext() {
+    void assertGenerateExecutionContext() {
         SQLStatementContext<SQLStatement> sqlStatementContext = mock(CommonSQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "SELECT * FROM tbl", Collections.emptyList());

@@ -40,26 +40,26 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DatabaseDiscoveryRuleConfigurationImportCheckerTest {
+class DatabaseDiscoveryRuleConfigurationImportCheckerTest {
     
     private final DatabaseDiscoveryRuleConfigurationImportChecker importChecker = new DatabaseDiscoveryRuleConfigurationImportChecker();
     
     @Test
-    public void assertCheckDataSources() {
+    void assertCheckDataSources() {
         ShardingSphereDatabase database = mockDatabaseWithDataSource();
         DatabaseDiscoveryRuleConfiguration currentRuleConfig = getRuleConfigWithNotExistedDataSources();
         assertThrows(MissingRequiredStorageUnitsException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
     @Test
-    public void assertCheckDiscoveryTypes() {
+    void assertCheckDiscoveryTypes() {
         ShardingSphereDatabase database = mockDatabase();
         DatabaseDiscoveryRuleConfiguration currentRuleConfig = createRuleConfigWithInvalidDiscoveryType();
         assertThrows(ServiceProviderNotFoundServerException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
     @Test
-    public void assertCheckDiscoveryHeartBeats() {
+    void assertCheckDiscoveryHeartBeats() {
         ShardingSphereDatabase database = mockDatabase();
         DatabaseDiscoveryRuleConfiguration currentRuleConfig = createRuleConfigWithNotExistsHeartBeats();
         assertThrows(MissingRequiredAlgorithmException.class, () -> importChecker.check(database, currentRuleConfig));

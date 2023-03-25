@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactor
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 /**
  * ShardingSphere SQL parser engine.
@@ -52,7 +52,7 @@ public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
             return sqlStatementParserEngine.parse(sql, useCache);
         } catch (final SQLParsingException | ParseCancellationException originalEx) {
             try {
-                String trimSQL = SQLUtil.trimComment(sql);
+                String trimSQL = SQLUtils.trimComment(sql);
                 return distSQLStatementParserEngine.parse(trimSQL);
             } catch (final SQLParsingException ignored) {
                 throw originalEx;

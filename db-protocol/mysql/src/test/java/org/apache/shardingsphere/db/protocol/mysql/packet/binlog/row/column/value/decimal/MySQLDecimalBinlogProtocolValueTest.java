@@ -34,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLDecimalBinlogProtocolValueTest {
+class MySQLDecimalBinlogProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -42,13 +42,13 @@ public final class MySQLDecimalBinlogProtocolValueTest {
     private MySQLBinlogColumnDef columnDef;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL);
         columnDef.setColumnMeta((14 << 8) + 4);
     }
     
     @Test
-    public void assertDecodePositiveNewDecimal() {
+    void assertDecodePositiveNewDecimal() {
         byte[] newDecimalBytes = ByteBufUtil.decodeHexDump("810DFB38D204D2");
         when(payload.readStringFixByBytes(newDecimalBytes.length)).thenReturn(newDecimalBytes);
         BigDecimal actual = (BigDecimal) new MySQLDecimalBinlogProtocolValue().read(columnDef, payload);
@@ -56,7 +56,7 @@ public final class MySQLDecimalBinlogProtocolValueTest {
     }
     
     @Test
-    public void assertDecodeNegativeNewDecimal() {
+    void assertDecodeNegativeNewDecimal() {
         byte[] newDecimalBytes = ByteBufUtil.decodeHexDump("7EF204C72DFB2D");
         when(payload.readStringFixByBytes(newDecimalBytes.length)).thenReturn(newDecimalBytes);
         BigDecimal actual = (BigDecimal) new MySQLDecimalBinlogProtocolValue().read(columnDef, payload);
@@ -64,7 +64,7 @@ public final class MySQLDecimalBinlogProtocolValueTest {
     }
     
     @Test
-    public void assertDecodeNegativeNewDecimalWithLargeNumber() {
+    void assertDecodeNegativeNewDecimalWithLargeNumber() {
         columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_NEWDECIMAL);
         columnDef.setColumnMeta(32 << 8 | 6);
         byte[] newDecimalBytes = ByteBufUtil.decodeHexDump("7DFEFDB5CC2741EFDEBE4154FD52E7");

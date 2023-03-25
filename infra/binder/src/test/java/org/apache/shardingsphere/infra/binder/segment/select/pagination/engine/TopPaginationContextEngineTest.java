@@ -40,17 +40,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class TopPaginationContextEngineTest {
+class TopPaginationContextEngineTest {
     
     private TopPaginationContextEngine topPaginationContextEngine;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         topPaginationContextEngine = new TopPaginationContextEngine();
     }
     
     @Test
-    public void assertCreatePaginationContextWhenRowNumberPredicateNotPresent() {
+    void assertCreatePaginationContextWhenRowNumberPredicateNotPresent() {
         TopProjectionSegment topProjectionSegment = new TopProjectionSegment(0, 10, null, "rowNumberAlias");
         PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(topProjectionSegment, Collections.emptyList(), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
@@ -58,17 +58,17 @@ public final class TopPaginationContextEngineTest {
     }
     
     @Test
-    public void assertCreatePaginationContextWhenRowNumberPredicatePresentAndOperatorIsGreatThan() {
+    void assertCreatePaginationContextWhenRowNumberPredicatePresentAndOperatorIsGreatThan() {
         assertCreatePaginationContextWhenRowNumberPredicatePresentAndWithGivenOperator(">");
     }
     
     @Test
-    public void assertCreatePaginationContextWhenRowNumberPredicatePresentAndOperatorIsGreatThanEqual() {
+    void assertCreatePaginationContextWhenRowNumberPredicatePresentAndOperatorIsGreatThanEqual() {
         assertCreatePaginationContextWhenRowNumberPredicatePresentAndWithGivenOperator(">=");
     }
     
     @Test
-    public void assertCreatePaginationContextWhenPredicateInRightValue() {
+    void assertCreatePaginationContextWhenPredicateInRightValue() {
         String name = "rowNumberAlias";
         ColumnSegment columnSegment = new ColumnSegment(0, 10, new IdentifierValue(name));
         InExpression inExpression = new InExpression(0, 0, columnSegment, new ListExpression(0, 0), false);
@@ -79,7 +79,7 @@ public final class TopPaginationContextEngineTest {
     }
     
     @Test
-    public void assertCreatePaginationContextWhenParameterMarkerRowNumberValueSegment() {
+    void assertCreatePaginationContextWhenParameterMarkerRowNumberValueSegment() {
         String name = "rowNumberAlias";
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(name));
         ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(0, 10, 0);

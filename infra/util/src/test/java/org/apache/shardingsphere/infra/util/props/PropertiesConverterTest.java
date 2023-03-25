@@ -26,15 +26,15 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PropertiesConverterTest {
+class PropertiesConverterTest {
     
     @Test
-    public void assertConvert() {
+    void assertConvert() {
         assertThat(PropertiesConverter.convert(PropertiesBuilder.build(new Property("foo", "foo_value"), new Property("bar", "bar_value"))), is("bar=bar_value,foo=foo_value"));
     }
     
     @Test
-    public void assertConvertEmptyProperties() {
+    void assertConvertEmptyProperties() {
         assertThat(PropertiesConverter.convert(new Properties()), is(""));
     }
 }

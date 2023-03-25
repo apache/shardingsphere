@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
-import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtil;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtils;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -65,7 +65,7 @@ public final class TranslatableSchema extends AbstractSchema {
     }
     
     private static ViewTable getViewTable(final ShardingSphereSchema schema, final ShardingSphereTable table, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
-        RelDataType relDataType = SQLFederationDataTypeUtil.createRelDataType(table, protocolType, javaTypeFactory);
+        RelDataType relDataType = SQLFederationDataTypeUtils.createRelDataType(table, protocolType, javaTypeFactory);
         ShardingSphereView view = schema.getView(table.getName());
         return new ViewTable(javaTypeFactory.getJavaClass(relDataType), RelDataTypeImpl.proto(relDataType), view.getViewDefinition(), Collections.emptyList(), Collections.emptyList());
     }

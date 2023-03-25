@@ -67,33 +67,33 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ProjectionsContextEngineTest {
+class ProjectionsContextEngineTest {
     
     @Mock
     private ShardingSphereSchema schema;
     
     @Test
-    public void assertProjectionsContextCreatedProperlyForMySQL() {
+    void assertProjectionsContextCreatedProperlyForMySQL() {
         assertProjectionsContextCreatedProperly(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertProjectionsContextCreatedProperlyForOracle() {
+    void assertProjectionsContextCreatedProperlyForOracle() {
         assertProjectionsContextCreatedProperly(new OracleSelectStatement());
     }
     
     @Test
-    public void assertProjectionsContextCreatedProperlyForPostgreSQL() {
+    void assertProjectionsContextCreatedProperlyForPostgreSQL() {
         assertProjectionsContextCreatedProperly(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertProjectionsContextCreatedProperlyForSQL92() {
+    void assertProjectionsContextCreatedProperlyForSQL92() {
         assertProjectionsContextCreatedProperly(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertProjectionsContextCreatedProperlyForSQLServer() {
+    void assertProjectionsContextCreatedProperlyForSQLServer() {
         assertProjectionsContextCreatedProperly(new SQLServerSelectStatement());
     }
     
@@ -108,27 +108,27 @@ public final class ProjectionsContextEngineTest {
     }
     
     @Test
-    public void assertProjectionsContextCreatedProperlyWhenProjectionPresentForMySQL() {
+    void assertProjectionsContextCreatedProperlyWhenProjectionPresentForMySQL() {
         assertProjectionsContextCreatedProperlyWhenProjectionPresent(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertProjectionsContextCreatedProperlyWhenProjectionPresentForOracle() {
+    void assertProjectionsContextCreatedProperlyWhenProjectionPresentForOracle() {
         assertProjectionsContextCreatedProperlyWhenProjectionPresent(new OracleSelectStatement());
     }
     
     @Test
-    public void assertProjectionsContextCreatedProperlyWhenProjectionPresentForPostgreSQL() {
+    void assertProjectionsContextCreatedProperlyWhenProjectionPresentForPostgreSQL() {
         assertProjectionsContextCreatedProperlyWhenProjectionPresent(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertProjectionsContextCreatedProperlyWhenProjectionPresentForSQL92() {
+    void assertProjectionsContextCreatedProperlyWhenProjectionPresentForSQL92() {
         assertProjectionsContextCreatedProperlyWhenProjectionPresent(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertProjectionsContextCreatedProperlyWhenProjectionPresentForSQLServer() {
+    void assertProjectionsContextCreatedProperlyWhenProjectionPresentForSQLServer() {
         assertProjectionsContextCreatedProperlyWhenProjectionPresent(new SQLServerSelectStatement());
     }
     
@@ -147,27 +147,27 @@ public final class ProjectionsContextEngineTest {
     }
     
     @Test
-    public void createProjectionsContextWhenOrderByContextOrderItemsPresentForMySQL() {
+    void createProjectionsContextWhenOrderByContextOrderItemsPresentForMySQL() {
         createProjectionsContextWhenOrderByContextOrderItemsPresent(new MySQLSelectStatement());
     }
     
     @Test
-    public void createProjectionsContextWhenOrderByContextOrderItemsPresentForOracle() {
+    void createProjectionsContextWhenOrderByContextOrderItemsPresentForOracle() {
         createProjectionsContextWhenOrderByContextOrderItemsPresent(new OracleSelectStatement());
     }
     
     @Test
-    public void createProjectionsContextWhenOrderByContextOrderItemsPresentForPostgreSQL() {
+    void createProjectionsContextWhenOrderByContextOrderItemsPresentForPostgreSQL() {
         createProjectionsContextWhenOrderByContextOrderItemsPresent(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void createProjectionsContextWhenOrderByContextOrderItemsPresentForSQL92() {
+    void createProjectionsContextWhenOrderByContextOrderItemsPresentForSQL92() {
         createProjectionsContextWhenOrderByContextOrderItemsPresent(new SQL92SelectStatement());
     }
     
     @Test
-    public void createProjectionsContextWhenOrderByContextOrderItemsPresentForSQLServer() {
+    void createProjectionsContextWhenOrderByContextOrderItemsPresentForSQLServer() {
         createProjectionsContextWhenOrderByContextOrderItemsPresent(new SQLServerSelectStatement());
     }
     
@@ -187,27 +187,27 @@ public final class ProjectionsContextEngineTest {
     }
     
     @Test
-    public void assertCreateProjectionsContextWithoutIndexOrderByItemSegmentForMySQL() {
+    void assertCreateProjectionsContextWithoutIndexOrderByItemSegmentForMySQL() {
         assertCreateProjectionsContextWithoutIndexOrderByItemSegment(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWithoutIndexOrderByItemSegmentForOracle() {
+    void assertCreateProjectionsContextWithoutIndexOrderByItemSegmentForOracle() {
         assertCreateProjectionsContextWithoutIndexOrderByItemSegment(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWithoutIndexOrderByItemSegmentForPostgreSQL() {
+    void assertCreateProjectionsContextWithoutIndexOrderByItemSegmentForPostgreSQL() {
         assertCreateProjectionsContextWithoutIndexOrderByItemSegment(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWithoutIndexOrderByItemSegmentForSQL92() {
+    void assertCreateProjectionsContextWithoutIndexOrderByItemSegmentForSQL92() {
         assertCreateProjectionsContextWithoutIndexOrderByItemSegment(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWithoutIndexOrderByItemSegmentForSQLServer() {
+    void assertCreateProjectionsContextWithoutIndexOrderByItemSegmentForSQLServer() {
         assertCreateProjectionsContextWithoutIndexOrderByItemSegment(new SQLServerSelectStatement());
     }
     
@@ -242,27 +242,27 @@ public final class ProjectionsContextEngineTest {
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsentForMySQL() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsentForMySQL() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsent(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsentForOracle() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsentForOracle() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsent(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsentForPostgreSQL() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsentForPostgreSQL() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsent(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsentForSQL92() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsentForSQL92() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsent(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsentForSQLServer() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsentForSQLServer() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsent(new SQLServerSelectStatement());
     }
     
@@ -283,27 +283,27 @@ public final class ProjectionsContextEngineTest {
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentForMySQL() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentForMySQL() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresent(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentForOracle() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentForOracle() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresent(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentForPostgreSQL() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentForPostgreSQL() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresent(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentForSQL92() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentForSQL92() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresent(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentForSQLServer() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentForSQLServer() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresent(new SQLServerSelectStatement());
     }
     
@@ -324,27 +324,27 @@ public final class ProjectionsContextEngineTest {
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresentForMySQL() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresentForMySQL() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresent(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresentForOracle() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresentForOracle() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresent(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresentForPostgreSQL() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresentForPostgreSQL() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresent(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresentForSQL92() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresentForSQL92() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresent(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresentForSQLServer() {
+    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresentForSQLServer() {
         assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresentAndTablePresent(new SQLServerSelectStatement());
     }
     
@@ -373,27 +373,27 @@ public final class ProjectionsContextEngineTest {
     }
     
     @Test
-    public void assertCreateProjectionsContextWithTemporaryTableForMySQL() {
+    void assertCreateProjectionsContextWithTemporaryTableForMySQL() {
         assertCreateProjectionsContextWithTemporaryTable(new MySQLSelectStatement(), new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWithTemporaryTableForOracle() {
+    void assertCreateProjectionsContextWithTemporaryTableForOracle() {
         assertCreateProjectionsContextWithTemporaryTable(new OracleSelectStatement(), new OracleSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWithTemporaryTableForPostgreSQL() {
+    void assertCreateProjectionsContextWithTemporaryTableForPostgreSQL() {
         assertCreateProjectionsContextWithTemporaryTable(new PostgreSQLSelectStatement(), new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWithTemporaryTableForSQL92() {
+    void assertCreateProjectionsContextWithTemporaryTableForSQL92() {
         assertCreateProjectionsContextWithTemporaryTable(new SQL92SelectStatement(), new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWithTemporaryTableForSQLServer() {
+    void assertCreateProjectionsContextWithTemporaryTableForSQLServer() {
         assertCreateProjectionsContextWithTemporaryTable(new SQLServerSelectStatement(), new SQLServerSelectStatement());
     }
     
@@ -418,27 +418,27 @@ public final class ProjectionsContextEngineTest {
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForMySQL() {
+    void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForMySQL() {
         assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new MySQLSelectStatement(), new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForOracle() {
+    void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForOracle() {
         assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new OracleSelectStatement(), new OracleSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForPostgreSQL() {
+    void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForPostgreSQL() {
         assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new PostgreSQLSelectStatement(), new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForSQL92() {
+    void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForSQL92() {
         assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new SQL92SelectStatement(), new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForSQLServer() {
+    void assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCaseForSQLServer() {
         assertCreateProjectionsContextWhenTableNameOrAliasIgnoreCase(new SQLServerSelectStatement(), new SQLServerSelectStatement());
     }
     
@@ -463,7 +463,7 @@ public final class ProjectionsContextEngineTest {
     }
     
     @Test
-    public void assertCreateProjectionsContextWithOrderByExpressionForMySQL() {
+    void assertCreateProjectionsContextWithOrderByExpressionForMySQL() {
         SelectStatement selectStatement = new MySQLSelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));

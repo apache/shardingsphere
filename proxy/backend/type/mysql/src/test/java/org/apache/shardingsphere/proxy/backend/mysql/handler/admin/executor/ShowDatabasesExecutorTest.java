@@ -60,12 +60,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ShowDatabasesExecutorTest {
+class ShowDatabasesExecutorTest {
     
     private static final String DATABASE_PATTERN = "database_%s";
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
@@ -76,7 +76,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithPrefixLike() throws SQLException {
+    void assertExecuteWithPrefixLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database%");
@@ -109,7 +109,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithSuffixLike() throws SQLException {
+    void assertExecuteWithSuffixLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "%_1");
@@ -130,7 +130,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithPreciseLike() throws SQLException {
+    void assertExecuteWithPreciseLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database_9");
@@ -151,7 +151,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithLikeMatchNone() throws SQLException {
+    void assertExecuteWithLikeMatchNone() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "not_exist_database");

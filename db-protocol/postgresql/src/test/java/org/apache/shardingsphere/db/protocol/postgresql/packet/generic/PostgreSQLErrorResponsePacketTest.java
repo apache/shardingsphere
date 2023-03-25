@@ -31,13 +31,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLErrorResponsePacketTest {
+class PostgreSQLErrorResponsePacketTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;
     
     @Test
-    public void assertToServerErrorMessage() {
+    void assertToServerErrorMessage() {
         PostgreSQLErrorResponsePacket responsePacket = createErrorResponsePacket();
         String expectedMessage = "SFATAL\0VFATAL\0C3D000\0Mdatabase \"test\" does not exist\0Ddetail\0Hhint\0P1\0p2\0qinternal query\0"
                 + "Wwhere\0stest\0ttable\0ccolumn\0ddata type\0nconstraint\0Ffile\0L3\0Rroutine";
@@ -45,7 +45,7 @@ public final class PostgreSQLErrorResponsePacketTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         PostgreSQLErrorResponsePacket responsePacket = createErrorResponsePacket();
         responsePacket.write(payload);
         verify(payload).writeInt1(PostgreSQLErrorResponsePacket.FIELD_TYPE_SEVERITY);

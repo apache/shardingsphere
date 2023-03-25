@@ -25,14 +25,14 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DataRecordTest {
+class DataRecordTest {
     
     private DataRecord beforeDataRecord;
     
     private DataRecord afterDataRecord;
     
     @Test
-    public void assertKeyEqual() {
+    void assertKeyEqual() {
         beforeDataRecord = new DataRecord(new PlaceholderPosition(), 2);
         beforeDataRecord.setTableName("t1");
         beforeDataRecord.addColumn(new Column("id", 1, true, true));
@@ -45,7 +45,7 @@ public final class DataRecordTest {
     }
     
     @Test
-    public void assertOldKeyEqual() {
+    void assertOldKeyEqual() {
         beforeDataRecord = new DataRecord(new PlaceholderPosition(), 2);
         beforeDataRecord.setTableName("t1");
         beforeDataRecord.addColumn(new Column("id", 1, true, true));

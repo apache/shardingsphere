@@ -67,30 +67,30 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class InsertStatementContextTest {
+class InsertStatementContextTest {
     
     @Test
-    public void assertMySQLInsertStatementContextWithColumnNames() {
+    void assertMySQLInsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new MySQLInsertStatement());
     }
     
     @Test
-    public void assertOracleInsertStatementContextWithColumnNames() {
+    void assertOracleInsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new OracleInsertStatement());
     }
     
     @Test
-    public void assertPostgreSQLInsertStatementContextWithColumnNames() {
+    void assertPostgreSQLInsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new PostgreSQLInsertStatement());
     }
     
     @Test
-    public void assertSQL92InsertStatementContextWithColumnNames() {
+    void assertSQL92InsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new SQL92InsertStatement());
     }
     
     @Test
-    public void assertSQLServerInsertStatementContextWithColumnNames() {
+    void assertSQLServerInsertStatementContextWithColumnNames() {
         assertInsertStatementContextWithColumnNames(new SQLServerInsertStatement());
     }
     
@@ -121,7 +121,7 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertInsertStatementContextWithoutColumnNames() {
+    void assertInsertStatementContextWithoutColumnNames() {
         InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         setUpInsertValues(insertStatement);
@@ -131,7 +131,7 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertGetGroupedParametersWithoutOnDuplicateParameter() {
+    void assertGetGroupedParametersWithoutOnDuplicateParameter() {
         InsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         setUpInsertValues(insertStatement);
@@ -143,7 +143,7 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertGetGroupedParametersWithOnDuplicateParameters() {
+    void assertGetGroupedParametersWithOnDuplicateParameters() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         setUpInsertValues(insertStatement);
@@ -156,7 +156,7 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertInsertSelect() {
+    void assertInsertSelect() {
         InsertStatement insertStatement = new MySQLInsertStatement();
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -218,27 +218,27 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertUseDefaultColumnsForMySQL() {
+    void assertUseDefaultColumnsForMySQL() {
         assertContainsInsertColumns(new MySQLInsertStatement());
     }
     
     @Test
-    public void assertUseDefaultColumnsForOracle() {
+    void assertUseDefaultColumnsForOracle() {
         assertContainsInsertColumns(new OracleInsertStatement());
     }
     
     @Test
-    public void assertUseDefaultColumnsForPostgreSQL() {
+    void assertUseDefaultColumnsForPostgreSQL() {
         assertContainsInsertColumns(new PostgreSQLInsertStatement());
     }
     
     @Test
-    public void assertUseDefaultColumnsForSQL92() {
+    void assertUseDefaultColumnsForSQL92() {
         assertContainsInsertColumns(new SQL92InsertStatement());
     }
     
     @Test
-    public void assertUseDefaultColumnsForSQLServer() {
+    void assertUseDefaultColumnsForSQLServer() {
         assertContainsInsertColumns(new SQLServerInsertStatement());
     }
     
@@ -249,27 +249,27 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertNotUseDefaultColumnsWithColumnsForMySQL() {
+    void assertNotUseDefaultColumnsWithColumnsForMySQL() {
         assertNotContainsInsertColumns(new MySQLInsertStatement());
     }
     
     @Test
-    public void assertNotUseDefaultColumnsWithColumnsForOracle() {
+    void assertNotUseDefaultColumnsWithColumnsForOracle() {
         assertNotContainsInsertColumns(new OracleInsertStatement());
     }
     
     @Test
-    public void assertNotUseDefaultColumnsWithColumnsForPostgreSQL() {
+    void assertNotUseDefaultColumnsWithColumnsForPostgreSQL() {
         assertNotContainsInsertColumns(new PostgreSQLInsertStatement());
     }
     
     @Test
-    public void assertNotUseDefaultColumnsWithColumnsForSQL92() {
+    void assertNotUseDefaultColumnsWithColumnsForSQL92() {
         assertNotContainsInsertColumns(new SQL92InsertStatement());
     }
     
     @Test
-    public void assertNotUseDefaultColumnsWithColumnsForSQLServer() {
+    void assertNotUseDefaultColumnsWithColumnsForSQLServer() {
         assertNotContainsInsertColumns(new SQLServerInsertStatement());
     }
     
@@ -282,7 +282,7 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertContainsInsertColumnsWithSetAssignmentForMySQL() {
+    void assertContainsInsertColumnsWithSetAssignmentForMySQL() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
@@ -291,27 +291,27 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertGetValueListCountWithValuesForMySQL() {
+    void assertGetValueListCountWithValuesForMySQL() {
         assertGetValueListCountWithValues(new MySQLInsertStatement());
     }
     
     @Test
-    public void assertGetValueListCountWithValuesForOracle() {
+    void assertGetValueListCountWithValuesForOracle() {
         assertGetValueListCountWithValues(new OracleInsertStatement());
     }
     
     @Test
-    public void assertGetValueListCountWithValuesForPostgreSQL() {
+    void assertGetValueListCountWithValuesForPostgreSQL() {
         assertGetValueListCountWithValues(new PostgreSQLInsertStatement());
     }
     
     @Test
-    public void assertGetValueListCountWithValuesForSQL92() {
+    void assertGetValueListCountWithValuesForSQL92() {
         assertGetValueListCountWithValues(new SQL92InsertStatement());
     }
     
     @Test
-    public void assertGetValueListCountWithValuesForSQLServer() {
+    void assertGetValueListCountWithValuesForSQLServer() {
         assertGetValueListCountWithValues(new SQLServerInsertStatement());
     }
     
@@ -324,7 +324,7 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertGetValueListCountWithSetAssignmentForMySQL() {
+    void assertGetValueListCountWithSetAssignmentForMySQL() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         List<ColumnSegment> columns = new LinkedList<>();
         columns.add(new ColumnSegment(0, 0, new IdentifierValue("col")));
@@ -336,27 +336,27 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertGetInsertColumnNamesForInsertColumnsForMySQL() {
+    void assertGetInsertColumnNamesForInsertColumnsForMySQL() {
         assertGetInsertColumnNamesForInsertColumns(new MySQLInsertStatement());
     }
     
     @Test
-    public void assertGetInsertColumnNamesForInsertColumnsForOracle() {
+    void assertGetInsertColumnNamesForInsertColumnsForOracle() {
         assertGetInsertColumnNamesForInsertColumns(new OracleInsertStatement());
     }
     
     @Test
-    public void assertGetInsertColumnNamesForInsertColumnsForPostgreSQL() {
+    void assertGetInsertColumnNamesForInsertColumnsForPostgreSQL() {
         assertGetInsertColumnNamesForInsertColumns(new PostgreSQLInsertStatement());
     }
     
     @Test
-    public void assertGetInsertColumnNamesForInsertColumnsForSQL92() {
+    void assertGetInsertColumnNamesForInsertColumnsForSQL92() {
         assertGetInsertColumnNamesForInsertColumns(new SQL92InsertStatement());
     }
     
     @Test
-    public void assertGetInsertColumnNamesForInsertColumnsForSQLServer() {
+    void assertGetInsertColumnNamesForInsertColumnsForSQLServer() {
         assertGetInsertColumnNamesForInsertColumns(new SQLServerInsertStatement());
     }
     
@@ -371,7 +371,7 @@ public final class InsertStatementContextTest {
     }
     
     @Test
-    public void assertGetInsertColumnNamesForSetAssignmentForMySQL() {
+    void assertGetInsertColumnNamesForSetAssignmentForMySQL() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         List<ColumnSegment> columns = new LinkedList<>();
         columns.add(new ColumnSegment(0, 0, new IdentifierValue("col")));

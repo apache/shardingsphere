@@ -32,19 +32,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class RequestsCountAdviceTest {
+class RequestsCountAdviceTest {
     
     private final MetricConfiguration config = new MetricConfiguration("proxy_requests_total", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
     
     private final RequestsCountAdvice advice = new RequestsCountAdvice();
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertCountRequests() {
+    void assertCountRequests() {
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         advice.afterMethod(targetObject, mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("1"));

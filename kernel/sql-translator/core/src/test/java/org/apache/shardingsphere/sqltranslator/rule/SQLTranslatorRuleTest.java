@@ -29,10 +29,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class SQLTranslatorRuleTest {
+class SQLTranslatorRuleTest {
     
     @Test
-    public void assertTranslateWhenProtocolSameAsStorage() {
+    void assertTranslateWhenProtocolSameAsStorage() {
         String expected = "select 1";
         PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
         String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, null, databaseType, databaseType);
@@ -40,40 +40,40 @@ public final class SQLTranslatorRuleTest {
     }
     
     @Test
-    public void assertTranslateWhenNoStorage() {
+    void assertTranslateWhenNoStorage() {
         String expected = "select 1";
         String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, null, new PostgreSQLDatabaseType(), null);
         assertThat(actual, is(expected));
     }
     
     @Test
-    public void assertTranslateWithProtocolDifferentWithStorage() {
+    void assertTranslateWithProtocolDifferentWithStorage() {
         String input = "select 1";
         String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(input, null, new PostgreSQLDatabaseType(), new MySQLDatabaseType());
         assertThat(actual, is(input.toUpperCase(Locale.ROOT)));
     }
     
     @Test
-    public void assertUseOriginalSQLWhenTranslatingFailed() {
+    void assertUseOriginalSQLWhenTranslatingFailed() {
         String expected = "select 1";
         String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", true)).translate(expected, null, new PostgreSQLDatabaseType(), new MySQLDatabaseType());
         assertThat(actual, is(expected));
     }
     
     @Test
-    public void assertNotUseOriginalSQLWhenTranslatingFailed() {
+    void assertNotUseOriginalSQLWhenTranslatingFailed() {
         assertThrows(UnsupportedTranslatedDatabaseException.class,
                 () -> new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("ALWAYS_FAILED", false)).translate("", null, new PostgreSQLDatabaseType(), new MySQLDatabaseType()));
     }
     
     @Test
-    public void assertGetConfiguration() {
+    void assertGetConfiguration() {
         SQLTranslatorRuleConfiguration expected = new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false);
         assertThat(new SQLTranslatorRule(expected).getConfiguration(), is(expected));
     }
     
     @Test
-    public void assertGetType() {
+    void assertGetType() {
         assertThat(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).getType(), is(SQLTranslatorRule.class.getSimpleName()));
     }
 }

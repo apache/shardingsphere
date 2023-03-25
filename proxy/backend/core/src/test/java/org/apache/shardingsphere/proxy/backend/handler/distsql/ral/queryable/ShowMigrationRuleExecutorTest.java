@@ -25,10 +25,10 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShowMigrationRuleExecutorTest {
+class ShowMigrationRuleExecutorTest {
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         ShowMigrationRuleExecutor executor = new ShowMigrationRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));

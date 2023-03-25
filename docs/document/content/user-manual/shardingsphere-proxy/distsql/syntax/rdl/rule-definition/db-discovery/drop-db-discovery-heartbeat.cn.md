@@ -5,7 +5,7 @@ weight = 5
 
 ## 描述
 
-`DROP DB_DISCOVERY HEARTBEAT` 语法用于为指定逻辑库删除数据库发现心跳
+`DROP DB_DISCOVERY HEARTBEAT` 语法用于为指定逻辑库删除数据库发现心跳。
 
 ### 语法定义
 

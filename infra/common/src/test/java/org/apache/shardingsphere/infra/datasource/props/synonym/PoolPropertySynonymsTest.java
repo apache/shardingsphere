@@ -26,10 +26,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PoolPropertySynonymsTest {
+class PoolPropertySynonymsTest {
     
     @Test
-    public void assertGetStandardPropertiesWithStandardProperties() {
+    void assertGetStandardPropertiesWithStandardProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createStandardProperties(), createPropertySynonyms());
         assertThat(actual.getStandardProperties().size(), is(6));
         assertThat(actual.getStandardProperties().get("connectionTimeoutMilliseconds"), is(30000));
@@ -41,7 +41,7 @@ public final class PoolPropertySynonymsTest {
     }
     
     @Test
-    public void assertGetStandardPropertiesWithLocalProperties() {
+    void assertGetStandardPropertiesWithLocalProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createLocalProperties(), createPropertySynonyms());
         assertThat(actual.getStandardProperties().size(), is(6));
         assertThat(actual.getStandardProperties().get("connectionTimeoutMilliseconds"), is(30000));
@@ -53,7 +53,7 @@ public final class PoolPropertySynonymsTest {
     }
     
     @Test
-    public void assertGetLocalPropertiesWithStandardProperties() {
+    void assertGetLocalPropertiesWithStandardProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createStandardProperties(), createPropertySynonyms());
         assertThat(actual.getLocalProperties().size(), is(6));
         assertThat(actual.getLocalProperties().get("connectionTimeout"), is(30000));
@@ -65,7 +65,7 @@ public final class PoolPropertySynonymsTest {
     }
     
     @Test
-    public void assertGetLocalPropertiesWithLocalProperties() {
+    void assertGetLocalPropertiesWithLocalProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createLocalProperties(), createPropertySynonyms());
         assertThat(actual.getLocalProperties().size(), is(6));
         assertThat(actual.getLocalProperties().get("connectionTimeout"), is(30000));

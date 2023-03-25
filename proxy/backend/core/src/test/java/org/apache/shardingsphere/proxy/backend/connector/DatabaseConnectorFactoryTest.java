@@ -44,10 +44,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class DatabaseConnectorFactoryTest {
+class DatabaseConnectorFactoryTest {
     
     @Test
-    public void assertNewDatabaseConnectorWithoutParameter() {
+    void assertNewDatabaseConnectorWithoutParameter() {
         BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -62,7 +62,7 @@ public final class DatabaseConnectorFactoryTest {
     }
     
     @Test
-    public void assertNewDatabaseConnectorWithParameters() {
+    void assertNewDatabaseConnectorWithParameters() {
         BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);

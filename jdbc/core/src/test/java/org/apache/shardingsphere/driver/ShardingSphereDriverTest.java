@@ -33,15 +33,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ShardingSphereDriverTest {
+class ShardingSphereDriverTest {
     
     @Test
-    public void assertConnectWithInvalidURL() {
+    void assertConnectWithInvalidURL() {
         assertThrows(SQLException.class, () -> DriverManager.getConnection("jdbc:invalid:xxx"));
     }
     
     @Test
-    public void assertDriverWorks() throws SQLException {
+    void assertDriverWorks() throws SQLException {
         try (
                 Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
                 Statement statement = connection.createStatement()) {
@@ -57,7 +57,7 @@ public final class ShardingSphereDriverTest {
     }
     
     @Test
-    public void assertVarbinaryColumnWorks() throws SQLException {
+    void assertVarbinaryColumnWorks() throws SQLException {
         try (
                 Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
                 Statement statement = connection.createStatement()) {

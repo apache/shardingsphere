@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class NanoIdKeyGenerateAlgorithmTest {
+class NanoIdKeyGenerateAlgorithmTest {
     
     @Test
-    public void assertGenerateKey() {
+    void assertGenerateKey() {
         assertThat(TypedSPILoader.getService(KeyGenerateAlgorithm.class, "NANOID").generateKey().toString().length(), is(21));
     }
 }

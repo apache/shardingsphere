@@ -28,10 +28,10 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLPasswordMessagePacketTest {
+class PostgreSQLPasswordMessagePacketTest {
     
     @Test
-    public void assertReadWrite() {
+    void assertReadWrite() {
         String md5Digest = "ce98bac7fc97f20584ea9536e744dabb";
         int expectedLength = 4 + md5Digest.length() + 1;
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);

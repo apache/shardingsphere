@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MppdbDecodingPluginTest {
+class MppdbDecodingPluginTest {
     
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     
@@ -60,7 +60,7 @@ public final class MppdbDecodingPluginTest {
     private final OpenGaussLogSequenceNumber logSequenceNumber = new OpenGaussLogSequenceNumber(pgSequenceNumber);
     
     @Test
-    public void assertDecodeWriteRowEvent() {
+    void assertDecodeWriteRowEvent() {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
@@ -81,7 +81,7 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeUpdateRowEvent() {
+    void assertDecodeUpdateRowEvent() {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("UPDATE");
@@ -96,7 +96,7 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeDeleteRowEvent() {
+    void assertDecodeDeleteRowEvent() {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("DELETE");
@@ -113,7 +113,7 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeWriteRowEventWithMoney() {
+    void assertDecodeWriteRowEventWithMoney() {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
@@ -129,7 +129,7 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeWriteRowEventWithBoolean() {
+    void assertDecodeWriteRowEventWithBoolean() {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
@@ -145,7 +145,7 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeWriteRowEventWithDateAndTime() throws SQLException {
+    void assertDecodeWriteRowEventWithDateAndTime() throws SQLException {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
@@ -171,7 +171,7 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeWriteRowEventWithByteA() {
+    void assertDecodeWriteRowEventWithByteA() {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
@@ -188,7 +188,7 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeWriteRowEventWithRaw() {
+    void assertDecodeWriteRowEventWithRaw() {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
@@ -205,13 +205,13 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeUnknownTableType() {
+    void assertDecodeUnknownTableType() {
         ByteBuffer data = ByteBuffer.wrap("unknown".getBytes());
         assertThat(new MppdbDecodingPlugin(null).decode(data, logSequenceNumber), instanceOf(PlaceholderEvent.class));
     }
     
     @Test
-    public void assertDecodeUnknownRowEventType() {
+    void assertDecodeUnknownRowEventType() {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("UNKNOWN");
@@ -223,7 +223,7 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeTime() throws SQLException {
+    void assertDecodeTime() throws SQLException {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");
@@ -237,7 +237,7 @@ public final class MppdbDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeWithXid() throws JsonProcessingException {
+    void assertDecodeWithXid() throws JsonProcessingException {
         MppTableData tableData = new MppTableData();
         tableData.setTableName("public.test");
         tableData.setOpType("INSERT");

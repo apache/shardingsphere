@@ -81,6 +81,8 @@ import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -152,6 +154,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Getter(AccessLevel.PROTECTED)
     private final StatementManager statementManager;
     
+    @Getter
+    private final boolean transparentStatement;
+    
     private ExecutionContext executionContext;
     
     private Map<String, Integer> columnLabelAndIndexMap;
@@ -207,11 +212,37 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         kernelProcessor = new KernelProcessor();
         statementsCacheable = isStatementsCacheable(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData());
         trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+        transparentStatement = isTransparentStatement(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData());
         statementManager = new StatementManager();
     }
     
     private boolean isStatementsCacheable(final ShardingSphereRuleMetaData databaseRuleMetaData) {
         return databaseRuleMetaData.findRules(StorageConnectorReusableRule.class).size() == databaseRuleMetaData.getRules().size() && !HintManager.isInstantiated();
+    }
+    
+    private boolean isTransparentStatement(final ShardingSphereRuleMetaData ruleMetaData) {
+        Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(ruleMetaData.findRules(DataNodeContainedRule.class));
+        Collection<ColumnContainedRule> columnContainedRules = ruleMetaData.findRules(ColumnContainedRule.class);
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+            return (!dataNodeContainedRule.isPresent() || !dataNodeContainedRule.get().getAllTables().contains(each)) && !containsInColumnContainedRule(each, columnContainedRules);
+        }
+        return true;
+    }
+    
+    private Optional<DataNodeContainedRule> getDataNodeContainedRuleForShardingRule(final Collection<DataNodeContainedRule> dataNodeContainedRules) {
+        for (DataNodeContainedRule each : dataNodeContainedRules) {
+            if (!(each instanceof MutableDataNodeRule)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private boolean containsInColumnContainedRule(final String tableName, final Collection<ColumnContainedRule> columnContainedRules) {
+        for (ColumnContainedRule each : columnContainedRules) {
+            return each.getTables().contains(tableName);
+        }
+        return false;
     }
     
     @Override
@@ -240,7 +271,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             List<ResultSet> resultSets = getResultSets();
             Map<String, Integer> columnLabelAndIndexMap = null != this.columnLabelAndIndexMap ? this.columnLabelAndIndexMap
                     : (this.columnLabelAndIndexMap = ShardingSphereResultSetUtil.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData()));
-            result = new ShardingSphereResultSet(resultSets, mergedResult, this, executionContext, columnLabelAndIndexMap);
+            result = new ShardingSphereResultSet(resultSets, mergedResult, this, transparentStatement, executionContext, columnLabelAndIndexMap);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -521,7 +552,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
             Map<String, Integer> columnLabelAndIndexMap = null != this.columnLabelAndIndexMap ? this.columnLabelAndIndexMap
                     : (this.columnLabelAndIndexMap = ShardingSphereResultSetUtil.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData()));
-            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, executionContext, columnLabelAndIndexMap);
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, transparentStatement, executionContext, columnLabelAndIndexMap);
         }
         return currentResultSet;
     }

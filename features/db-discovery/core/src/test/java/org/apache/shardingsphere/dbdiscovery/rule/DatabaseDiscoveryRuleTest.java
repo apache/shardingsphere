@@ -48,24 +48,24 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DatabaseDiscoveryRuleTest {
+class DatabaseDiscoveryRuleTest {
     
     private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("primary_ds", new MockedDataSource());
     
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
     }
     
     @Test
-    public void assertFindDataSourceRule() {
+    void assertFindDataSourceRule() {
         Optional<DatabaseDiscoveryDataSourceRule> actual = createRule().findDataSourceRule("replica_ds");
         assertTrue(actual.isPresent());
         assertDataSourceRule(actual.get());
     }
     
     @Test
-    public void assertGetSingleDataSourceRule() {
+    void assertGetSingleDataSourceRule() {
         assertDataSourceRule(createRule().getSingleDataSourceRule());
     }
     
@@ -75,7 +75,7 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     @Test
-    public void assertGetDataSourceMapper() {
+    void assertGetDataSourceMapper() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         Map<String, Collection<DataSourceRoleInfo>> actual = databaseDiscoveryRule.getDataSourceMapper();
         assertThat(actual, is(Collections.singletonMap("replica_ds", new LinkedHashSet<>(Arrays.asList(new DataSourceRoleInfo("primary_ds", DataSourceRole.PRIMARY),
@@ -83,7 +83,7 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     @Test
-    public void assertGetExportedMethods() {
+    void assertGetExportedMethods() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         assertThat(databaseDiscoveryRule.getExportData().get(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES), is(Collections.singletonMap("replica_ds", "primary_ds")));
     }

@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.ValueASTNode;
 
 /**
@@ -38,11 +38,11 @@ public final class IdentifierValue implements ValueASTNode<String> {
     private final QuoteCharacter quoteCharacter;
     
     public IdentifierValue(final String text) {
-        this(SQLUtil.getExactlyValue(text), QuoteCharacter.getQuoteCharacter(text));
+        this(SQLUtils.getExactlyValue(text), QuoteCharacter.getQuoteCharacter(text));
     }
     
     public IdentifierValue(final String text, final String reservedCharacters) {
-        this(SQLUtil.getExactlyValue(text, reservedCharacters), QuoteCharacter.getQuoteCharacter(text));
+        this(SQLUtils.getExactlyValue(text, reservedCharacters), QuoteCharacter.getQuoteCharacter(text));
     }
     
     /**

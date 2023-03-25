@@ -30,31 +30,31 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ServerStatusFlagCalculatorTest {
+class ServerStatusFlagCalculatorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertAutoCommitNotInTransaction() {
+    void assertAutoCommitNotInTransaction() {
         when(connectionSession.isAutoCommit()).thenReturn(true);
         assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test
-    public void assertAutoCommitInTransaction() {
+    void assertAutoCommitInTransaction() {
         when(connectionSession.isAutoCommit()).thenReturn(true);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue() | MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
     }
     
     @Test
-    public void assertNotAutoCommitNotInTransaction() {
+    void assertNotAutoCommitNotInTransaction() {
         assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession), is(0));
     }
     
     @Test
-    public void assertNotAutoCommitInTransaction() {
+    void assertNotAutoCommitInTransaction() {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         assertThat(ServerStatusFlagCalculator.calculateFor(connectionSession), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue()));
     }

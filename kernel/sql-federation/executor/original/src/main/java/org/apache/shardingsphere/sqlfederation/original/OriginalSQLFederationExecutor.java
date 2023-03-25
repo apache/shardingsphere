@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sqlfederation.executor.FilterableTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
@@ -100,7 +100,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
         connection = createConnection(prepareEngine, callback, federationContext);
-        PreparedStatement preparedStatement = connection.prepareStatement(SQLUtil.trimSemicolon(federationContext.getQueryContext().getSql()));
+        PreparedStatement preparedStatement = connection.prepareStatement(SQLUtils.trimSemicolon(federationContext.getQueryContext().getSql()));
         setParameters(preparedStatement, federationContext.getQueryContext().getParameters());
         statement = preparedStatement;
         return preparedStatement.executeQuery();

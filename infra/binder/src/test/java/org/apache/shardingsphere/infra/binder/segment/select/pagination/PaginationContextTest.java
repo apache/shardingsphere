@@ -51,10 +51,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class PaginationContextTest {
+class PaginationContextTest {
     
     @Test
-    public void assertSegmentWithNullOffsetSegment() {
+    void assertSegmentWithNullOffsetSegment() {
         PaginationValueSegment rowCountSegment = getRowCountSegment();
         PaginationContext paginationContext = new PaginationContext(null, rowCountSegment, getParameters());
         assertTrue(paginationContext.isHasPagination());
@@ -63,7 +63,7 @@ public final class PaginationContextTest {
     }
     
     @Test
-    public void assertGetSegmentWithRowCountSegment() {
+    void assertGetSegmentWithRowCountSegment() {
         PaginationValueSegment offsetSegment = getOffsetSegment();
         PaginationContext paginationContext = new PaginationContext(offsetSegment, null, getParameters());
         assertTrue(paginationContext.isHasPagination());
@@ -72,34 +72,34 @@ public final class PaginationContextTest {
     }
     
     @Test
-    public void assertGetActualOffset() {
+    void assertGetActualOffset() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getActualOffset(), is(30L));
     }
     
     @Test
-    public void assertGetActualOffsetWithNumberLiteralPaginationValueSegment() {
+    void assertGetActualOffsetWithNumberLiteralPaginationValueSegment() {
         assertThat(new PaginationContext(getOffsetSegmentWithNumberLiteralPaginationValueSegment(),
                 getRowCountSegmentWithNumberLiteralPaginationValueSegment(), getParameters()).getActualOffset(), is(30L));
     }
     
     @Test
-    public void assertGetActualOffsetWithNullOffsetSegment() {
+    void assertGetActualOffsetWithNullOffsetSegment() {
         assertThat(new PaginationContext(null, getRowCountSegment(), getParameters()).getActualOffset(), is(0L));
     }
     
     @Test
-    public void assertGetActualRowCount() {
+    void assertGetActualRowCount() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getActualRowCount().orElse(null), is(20L));
     }
     
     @Test
-    public void assertGetActualRowCountWithNumberLiteralPaginationValueSegment() {
+    void assertGetActualRowCountWithNumberLiteralPaginationValueSegment() {
         assertThat(new PaginationContext(getOffsetSegmentWithNumberLiteralPaginationValueSegment(),
                 getRowCountSegmentWithNumberLiteralPaginationValueSegment(), getParameters()).getActualRowCount().orElse(null), is(20L));
     }
     
     @Test
-    public void assertGetActualRowCountWithNullRowCountSegment() {
+    void assertGetActualRowCountWithNullRowCountSegment() {
         assertNull(new PaginationContext(getOffsetSegment(), null, getParameters()).getActualRowCount().orElse(null));
     }
     
@@ -112,12 +112,12 @@ public final class PaginationContextTest {
     }
     
     @Test
-    public void assertGetOffsetParameterIndex() {
+    void assertGetOffsetParameterIndex() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getOffsetParameterIndex().orElse(null), is(0));
     }
     
     @Test
-    public void assertGetRowCountParameterIndex() {
+    void assertGetRowCountParameterIndex() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRowCountParameterIndex().orElse(null), is(1));
     }
     
@@ -134,32 +134,32 @@ public final class PaginationContextTest {
     }
     
     @Test
-    public void assertGetRevisedOffset() {
+    void assertGetRevisedOffset() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedOffset(), is(0L));
     }
     
     @Test
-    public void getRevisedRowCountForMySQL() {
+    void getRevisedRowCountForMySQL() {
         getRevisedRowCount(new MySQLSelectStatement());
     }
     
     @Test
-    public void getRevisedRowCountForOracle() {
+    void getRevisedRowCountForOracle() {
         getRevisedRowCount(new OracleSelectStatement());
     }
     
     @Test
-    public void getRevisedRowCountForPostgreSQL() {
+    void getRevisedRowCountForPostgreSQL() {
         getRevisedRowCount(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void getRevisedRowCountForSQL92() {
+    void getRevisedRowCountForSQL92() {
         getRevisedRowCount(new SQL92SelectStatement());
     }
     
     @Test
-    public void getRevisedRowCountForSQLServer() {
+    void getRevisedRowCountForSQLServer() {
         getRevisedRowCount(new SQLServerSelectStatement());
     }
     
@@ -172,27 +172,27 @@ public final class PaginationContextTest {
     }
     
     @Test
-    public void getRevisedRowCountWithMaxForMySQL() {
+    void getRevisedRowCountWithMaxForMySQL() {
         getRevisedRowCountWithMax(new MySQLSelectStatement());
     }
     
     @Test
-    public void getRevisedRowCountWithMaxForOracle() {
+    void getRevisedRowCountWithMaxForOracle() {
         getRevisedRowCountWithMax(new OracleSelectStatement());
     }
     
     @Test
-    public void getRevisedRowCountWithMaxForPostgreSQL() {
+    void getRevisedRowCountWithMaxForPostgreSQL() {
         getRevisedRowCountWithMax(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void getRevisedRowCountWithMaxForSQL92() {
+    void getRevisedRowCountWithMaxForSQL92() {
         getRevisedRowCountWithMax(new SQL92SelectStatement());
     }
     
     @Test
-    public void getRevisedRowCountWithMaxForSQLServer() {
+    void getRevisedRowCountWithMaxForSQLServer() {
         getRevisedRowCountWithMax(new SQLServerSelectStatement());
     }
     

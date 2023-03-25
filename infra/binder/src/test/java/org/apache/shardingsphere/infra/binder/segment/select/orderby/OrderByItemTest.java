@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.mock;
 
-public final class OrderByItemTest {
+class OrderByItemTest {
     
     @Test
-    public void assertEqualsWhenObjIsNull() {
+    void assertEqualsWhenObjIsNull() {
         assertNotEquals(null, new OrderByItem(mock(OrderByItemSegment.class)));
     }
 }

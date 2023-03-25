@@ -25,24 +25,24 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class TransactionStatusTest {
+class TransactionStatusTest {
     
     private TransactionStatus transactionStatus;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         transactionStatus = new TransactionStatus(TransactionType.XA);
     }
     
     @Test
-    public void assertSetTransactionType() {
+    void assertSetTransactionType() {
         transactionStatus.setTransactionType(TransactionType.BASE);
         TransactionType actual = transactionStatus.getTransactionType();
         assertThat(actual, is(TransactionType.BASE));
     }
     
     @Test
-    public void assertSetInTransaction() {
+    void assertSetInTransaction() {
         transactionStatus.setInTransaction(true);
         boolean actual = transactionStatus.isInConnectionHeldTransaction();
         assertTrue(actual);

@@ -29,11 +29,11 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLTextTimeUtilsTest {
+class PostgreSQLTextTimeUtilsTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertParse(final String input, final LocalTime expected) {
+    void assertParse(final String input, final LocalTime expected) {
         assertThat(PostgreSQLTextTimeUtils.parse(input), is(expected));
     }
     

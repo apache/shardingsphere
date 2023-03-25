@@ -39,10 +39,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ShowTransactionRuleExecutorTest {
+class ShowTransactionRuleExecutorTest {
     
     @Test
-    public void assertExecuteWithXA() {
+    void assertExecuteWithXA() {
         ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
         ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData("XA", "Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), ruleMetaData, new ConfigurationProperties(new Properties()));
@@ -58,7 +58,7 @@ public final class ShowTransactionRuleExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithLocal() {
+    void assertExecuteWithLocal() {
         ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
         ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData("LOCAL", null, new Properties());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), ruleMetaData, new ConfigurationProperties(new Properties()));
@@ -72,7 +72,7 @@ public final class ShowTransactionRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));

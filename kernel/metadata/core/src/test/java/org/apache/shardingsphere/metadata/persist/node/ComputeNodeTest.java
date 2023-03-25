@@ -23,27 +23,27 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ComputeNodeTest {
+class ComputeNodeTest {
     
     @Test
-    public void assertGetOnlineNodePath() {
+    void assertGetOnlineNodePath() {
         assertThat(ComputeNode.getOnlineNodePath(InstanceType.PROXY), is("/nodes/compute_nodes/online/proxy"));
         assertThat(ComputeNode.getOnlineNodePath(InstanceType.JDBC), is("/nodes/compute_nodes/online/jdbc"));
     }
     
     @Test
-    public void assertGetOnlineInstanceNodePath() {
+    void assertGetOnlineInstanceNodePath() {
         assertThat(ComputeNode.getOnlineInstanceNodePath("foo_instance_1", InstanceType.PROXY), is("/nodes/compute_nodes/online/proxy/foo_instance_1"));
         assertThat(ComputeNode.getOnlineInstanceNodePath("foo_instance_2", InstanceType.JDBC), is("/nodes/compute_nodes/online/jdbc/foo_instance_2"));
     }
     
     @Test
-    public void assertGetProcessTriggerNodePatch() {
+    void assertGetProcessTriggerNodePatch() {
         assertThat(ComputeNode.getProcessTriggerNodePatch(), is("/nodes/compute_nodes/process_trigger"));
     }
     
     @Test
-    public void assertGetProcessTriggerInstanceIdNodePath() {
+    void assertGetProcessTriggerInstanceIdNodePath() {
         assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("foo_instance", "foo_process_id"),
                 is("/nodes/compute_nodes/process_trigger/foo_instance:foo_process_id"));
         assertThat(ComputeNode.getProcessTriggerInstanceIdNodePath("foo_instance", "foo_process_id"),
@@ -51,34 +51,34 @@ public final class ComputeNodeTest {
     }
     
     @Test
-    public void assertGetInstanceLabelsNodePath() {
+    void assertGetInstanceLabelsNodePath() {
         assertThat(ComputeNode.getInstanceLabelsNodePath("foo_instance"), is("/nodes/compute_nodes/labels/foo_instance"));
     }
     
     @Test
-    public void assertGetInstanceWorkerIdNodePath() {
+    void assertGetInstanceWorkerIdNodePath() {
         assertThat(ComputeNode.getInstanceWorkerIdNodePath("foo_instance"), is("/nodes/compute_nodes/worker_id/foo_instance"));
     }
     
     @Test
-    public void assertGetInstanceWorkerIdRootNodePath() {
+    void assertGetInstanceWorkerIdRootNodePath() {
         assertThat(ComputeNode.getInstanceWorkerIdRootNodePath(), is("/nodes/compute_nodes/worker_id"));
     }
     
     @Test
-    public void assertGetInstanceIdByComputeNodePath() {
+    void assertGetInstanceIdByComputeNodePath() {
         assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/status/foo_instance_1"), is("foo_instance_1"));
         assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/worker_id/foo_instance_2"), is("foo_instance_2"));
         assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/labels/foo_instance_3"), is("foo_instance_3"));
     }
     
     @Test
-    public void assertGetInstanceStatusNodePath() {
+    void assertGetInstanceStatusNodePath() {
         assertThat(ComputeNode.getInstanceStatusNodePath("foo_instance"), is("/nodes/compute_nodes/status/foo_instance"));
     }
     
     @Test
-    public void assertGetComputeNodePath() {
+    void assertGetComputeNodePath() {
         assertThat(ComputeNode.getComputeNodePath(), is("/nodes/compute_nodes"));
     }
 }

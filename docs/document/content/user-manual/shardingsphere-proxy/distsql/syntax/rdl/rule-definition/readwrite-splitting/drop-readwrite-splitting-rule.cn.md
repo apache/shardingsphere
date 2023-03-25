@@ -5,7 +5,7 @@ weight = 4
 
 ## 描述
 
-`DROP READWRITE_SPLITTING RULE` 语法用于为指定逻辑库删除读写分离
+`DROP READWRITE_SPLITTING RULE` 语法用于为指定逻辑库删除读写分离。
 
 ### 语法定义
 

@@ -40,10 +40,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-public final class TransactionRuleBuilderTest {
+class TransactionRuleBuilderTest {
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", "provider", new Properties());
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_db", null, new ShardingSphereResourceMetaData("db", createDataSourceMap()),
                 new ShardingSphereRuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));

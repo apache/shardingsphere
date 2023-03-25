@@ -31,10 +31,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class InsertValueTest {
+class InsertValueTest {
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         List<ExpressionSegment> expressionSegments = new ArrayList<>(4);
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 1, 1);
         ParameterMarkerExpressionSegment positionalParameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 1, 0, ParameterMarkerType.DOLLAR);

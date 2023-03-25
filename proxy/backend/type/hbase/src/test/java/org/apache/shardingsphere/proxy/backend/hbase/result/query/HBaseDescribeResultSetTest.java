@@ -35,10 +35,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class HBaseDescribeResultSetTest extends AbstractHBaseQueryResultSetTest {
+class HBaseDescribeResultSetTest extends AbstractHBaseQueryResultSetTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         HBaseQueryResultSet resultSet = new HBaseDescribeResultSet();
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
         when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));
@@ -53,7 +53,7 @@ public final class HBaseDescribeResultSetTest extends AbstractHBaseQueryResultSe
     }
     
     @Test
-    public void assertGetRowDataWithTableIsNotExists() throws IOException {
+    void assertGetRowDataWithTableIsNotExists() throws IOException {
         when(getAdmin().tableExists(any())).thenReturn(false);
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
         when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));
@@ -62,7 +62,7 @@ public final class HBaseDescribeResultSetTest extends AbstractHBaseQueryResultSe
     }
     
     @Test
-    public void assertGetRowDataWithBackendError() throws IOException {
+    void assertGetRowDataWithBackendError() throws IOException {
         when(getAdmin().getTableDescriptor(any())).thenThrow(IOException.class);
         ShowCreateTableStatementContext context = mock(ShowCreateTableStatementContext.class);
         when(context.getTablesContext()).thenReturn(mock(TablesContext.class, RETURNS_DEEP_STUBS));

@@ -43,10 +43,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ProtobufAnyValueConverterTest {
+class ProtobufAnyValueConverterTest {
     
     @Test
-    public void assertConvertToObject() throws InvalidProtocolBufferException {
+    void assertConvertToObject() throws InvalidProtocolBufferException {
         Object actual = ProtobufAnyValueConverter.convertToObject(Any.pack(Int32Value.of(123)));
         assertThat(actual, is(123));
         actual = ProtobufAnyValueConverter.convertToObject(Any.pack(Int64Value.of(Long.MAX_VALUE)));

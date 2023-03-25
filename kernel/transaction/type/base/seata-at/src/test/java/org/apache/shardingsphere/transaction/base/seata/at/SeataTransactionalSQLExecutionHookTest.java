@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class SeataTransactionalSQLExecutionHookTest {
+class SeataTransactionalSQLExecutionHookTest {
     
     private final SeataTransactionalSQLExecutionHook executionHook = new SeataTransactionalSQLExecutionHook();
     
@@ -41,12 +41,12 @@ public final class SeataTransactionalSQLExecutionHookTest {
     private DataSourceMetaData dataSourceMetaData;
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         RootContext.unbind();
     }
     
     @Test
-    public void assertTrunkThreadExecute() {
+    void assertTrunkThreadExecute() {
         RootContext.bind("xid");
         executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, true);
         assertThat(SeataXIDContext.get(), is(RootContext.getXID()));
@@ -55,7 +55,7 @@ public final class SeataTransactionalSQLExecutionHookTest {
     }
     
     @Test
-    public void assertChildThreadExecute() {
+    void assertChildThreadExecute() {
         executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false);
         assertTrue(RootContext.inGlobalTransaction());
         executionHook.finishSuccess();
@@ -63,7 +63,7 @@ public final class SeataTransactionalSQLExecutionHookTest {
     }
     
     @Test
-    public void assertChildThreadExecuteFailed() {
+    void assertChildThreadExecuteFailed() {
         executionHook.start("ds", "SELECT 1", Collections.emptyList(), dataSourceMetaData, false);
         assertTrue(RootContext.inGlobalTransaction());
         executionHook.finishFailure(new RuntimeException(""));

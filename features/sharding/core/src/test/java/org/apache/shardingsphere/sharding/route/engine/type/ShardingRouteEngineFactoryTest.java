@@ -90,7 +90,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ShardingRouteEngineFactoryTest {
+class ShardingRouteEngineFactoryTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -112,7 +112,7 @@ public final class ShardingRouteEngineFactoryTest {
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         tableNames = new ArrayList<>();
@@ -120,7 +120,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForTCL() {
+    void assertNewInstanceForTCL() {
         TCLStatement tclStatement = mock(TCLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(tclStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -129,7 +129,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForDDLWithShardingRule() {
+    void assertNewInstanceForDDLWithShardingRule() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, props, new ConnectionContext());
@@ -137,7 +137,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForDALWithTables() {
+    void assertNewInstanceForDALWithTables() {
         tableNames.add("tbl");
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
         DALStatement dalStatement = mock(DALStatement.class);
@@ -148,7 +148,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForDALWithoutTables() {
+    void assertNewInstanceForDALWithoutTables() {
         DALStatement dalStatement = mock(DALStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -157,7 +157,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForDALShow() {
+    void assertNewInstanceForDALShow() {
         DALStatement dalStatement = mock(MySQLShowDatabasesStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -166,12 +166,12 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForDALSetForMySQL() {
+    void assertNewInstanceForDALSetForMySQL() {
         assertNewInstanceForDALSet(mock(MySQLSetStatement.class));
     }
     
     @Test
-    public void assertNewInstanceForDALSetForPostgreSQL() {
+    void assertNewInstanceForDALSetForPostgreSQL() {
         assertNewInstanceForDALSet(mock(PostgreSQLSetStatement.class));
     }
     
@@ -183,31 +183,31 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForDCLForSingleTableForMySQL() {
+    void assertNewInstanceForDCLForSingleTableForMySQL() {
         assertNewInstanceForDCLForSingleTableWithShardingRule(new MySQLGrantStatement());
         assertNewInstanceForDCLForSingleTableWithoutShardingRule(new MySQLGrantStatement());
     }
     
     @Test
-    public void assertNewInstanceForDCLForSingleTableForOracle() {
+    void assertNewInstanceForDCLForSingleTableForOracle() {
         assertNewInstanceForDCLForSingleTableWithShardingRule(new OracleGrantStatement());
         assertNewInstanceForDCLForSingleTableWithoutShardingRule(new OracleGrantStatement());
     }
     
     @Test
-    public void assertNewInstanceForDCLForSingleTableForPostgreSQL() {
+    void assertNewInstanceForDCLForSingleTableForPostgreSQL() {
         assertNewInstanceForDCLForSingleTableWithShardingRule(new PostgreSQLGrantStatement());
         assertNewInstanceForDCLForSingleTableWithoutShardingRule(new PostgreSQLGrantStatement());
     }
     
     @Test
-    public void assertNewInstanceForDCLForSingleTableForSQLServer() {
+    void assertNewInstanceForDCLForSingleTableForSQLServer() {
         assertNewInstanceForDCLForSingleTableWithShardingRule(new SQLServerGrantStatement());
         assertNewInstanceForDCLForSingleTableWithoutShardingRule(new SQLServerGrantStatement());
     }
     
     @Test
-    public void assertNewInstanceForDCLForSingleTableForSQL92() {
+    void assertNewInstanceForDCLForSingleTableForSQL92() {
         assertNewInstanceForDCLForSingleTableWithShardingRule(new SQL92GrantStatement());
         assertNewInstanceForDCLForSingleTableWithoutShardingRule(new SQL92GrantStatement());
     }
@@ -229,7 +229,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForDCLForNoSingleTable() {
+    void assertNewInstanceForDCLForNoSingleTable() {
         DCLStatement dclStatement = mock(DCLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dclStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -238,7 +238,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForSelectWithoutSingleTable() {
+    void assertNewInstanceForSelectWithoutSingleTable() {
         SQLStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -247,7 +247,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForInsertBroadcastTable() {
+    void assertNewInstanceForInsertBroadcastTable() {
         when(shardingRule.isAllBroadcastTables(tableNames)).thenReturn(true);
         SQLStatement sqlStatement = mock(InsertStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -257,7 +257,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForSelectBroadcastTable() {
+    void assertNewInstanceForSelectBroadcastTable() {
         when(shardingRule.isAllBroadcastTables(tableNames)).thenReturn(true);
         SQLStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -267,7 +267,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForAlwaysFalse() {
+    void assertNewInstanceForAlwaysFalse() {
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -276,7 +276,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForStandard() {
+    void assertNewInstanceForStandard() {
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         tableNames.add("");
@@ -288,7 +288,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForComplex() {
+    void assertNewInstanceForComplex() {
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         tableNames.add("1");
@@ -300,7 +300,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForShowCreateTableWithTableRule() {
+    void assertNewInstanceForShowCreateTableWithTableRule() {
         DALStatement dalStatement = mock(MySQLShowCreateTableStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         tableNames.add("table_1");
@@ -311,7 +311,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForShowColumnsWithTableRule() {
+    void assertNewInstanceForShowColumnsWithTableRule() {
         DALStatement dalStatement = mock(MySQLShowColumnsStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         tableNames.add("table_1");
@@ -322,7 +322,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForSubqueryWithSameConditions() {
+    void assertNewInstanceForSubqueryWithSameConditions() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         tableNames.add("t_order");
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
@@ -337,7 +337,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForCreateResourceGroup() {
+    void assertNewInstanceForCreateResourceGroup() {
         MySQLCreateResourceGroupStatement resourceGroupStatement = mock(MySQLCreateResourceGroupStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -346,7 +346,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForSetResourceGroup() {
+    void assertNewInstanceForSetResourceGroup() {
         MySQLSetResourceGroupStatement resourceGroupStatement = mock(MySQLSetResourceGroupStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext());
@@ -355,7 +355,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForOptimizeTableWithShardingTable() {
+    void assertNewInstanceForOptimizeTableWithShardingTable() {
         MySQLOptimizeTableStatement optimizeTableStatement = mock(MySQLOptimizeTableStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(optimizeTableStatement);
         tableNames.add("table_1");
@@ -366,7 +366,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForOptimizeTableWithSingleTable() {
+    void assertNewInstanceForOptimizeTableWithSingleTable() {
         MySQLOptimizeTableStatement optimizeTableStatement = mock(MySQLOptimizeTableStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(optimizeTableStatement);
         tableNames.add("table_1");
@@ -377,7 +377,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForCursorStatementWithBroadcastTable() {
+    void assertNewInstanceForCursorStatementWithBroadcastTable() {
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
         OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class);
         when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
@@ -392,7 +392,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForCursorStatementWithShardingTable() {
+    void assertNewInstanceForCursorStatementWithShardingTable() {
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
         OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class);
         when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
@@ -408,7 +408,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForCursorStatementWithSingleTable() {
+    void assertNewInstanceForCursorStatementWithSingleTable() {
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
         OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class);
         when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
@@ -420,7 +420,7 @@ public final class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForCloseAllStatement() {
+    void assertNewInstanceForCloseAllStatement() {
         CloseStatementContext closeStatementContext = mock(CloseStatementContext.class, RETURNS_DEEP_STUBS);
         OpenGaussCloseStatement closeStatement = mock(OpenGaussCloseStatement.class);
         when(closeStatement.isCloseAll()).thenReturn(true);

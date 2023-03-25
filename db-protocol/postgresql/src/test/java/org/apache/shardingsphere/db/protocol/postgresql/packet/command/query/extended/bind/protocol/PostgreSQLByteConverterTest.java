@@ -29,11 +29,11 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLByteConverterTest {
+class PostgreSQLByteConverterTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertNumeric(final BigDecimal input, final byte[] expected) {
+    void assertNumeric(final BigDecimal input, final byte[] expected) {
         assertThat(PostgreSQLByteConverter.numeric(input), is(expected));
     }
     

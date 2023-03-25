@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLBinlogFormatDescriptionEventPacketTest {
+class MySQLBinlogFormatDescriptionEventPacketTest {
     
     private static final String MYSQL_SERVER_VERSION = "5.7.14-log" + new String(new byte[40]);
     
@@ -40,7 +40,7 @@ public final class MySQLBinlogFormatDescriptionEventPacketTest {
     private MySQLBinlogEventHeader binlogEventHeader;
     
     @Test
-    public void assertNew() {
+    void assertNew() {
         when(payload.readInt2()).thenReturn(4);
         when(payload.readStringFixByBytes(50)).thenReturn(MYSQL_SERVER_VERSION.getBytes());
         when(payload.readInt4()).thenReturn(1234567890);

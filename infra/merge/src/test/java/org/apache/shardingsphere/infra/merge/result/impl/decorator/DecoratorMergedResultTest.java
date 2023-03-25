@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class DecoratorMergedResultTest {
+class DecoratorMergedResultTest {
     
     @Mock
     private MergedResult mergedResult;
@@ -44,30 +44,30 @@ public final class DecoratorMergedResultTest {
     private TestDecoratorMergedResult decoratorMergedResult;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         decoratorMergedResult = new TestDecoratorMergedResult(mergedResult);
     }
     
     @Test
-    public void assertGetValueWithColumnIndex() throws SQLException {
+    void assertGetValueWithColumnIndex() throws SQLException {
         when(mergedResult.getValue(1, Object.class)).thenReturn("1");
         assertThat(decoratorMergedResult.getValue(1, Object.class).toString(), is("1"));
     }
     
     @Test
-    public void assertGetCalenderValueWithColumnIndex() throws SQLException {
+    void assertGetCalenderValueWithColumnIndex() throws SQLException {
         Calendar calendar = Calendar.getInstance();
         when(mergedResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
         assertThat(decoratorMergedResult.getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
     }
     
     @Test
-    public void assertGetInputStreamWithColumnIndex() throws SQLException {
+    void assertGetInputStreamWithColumnIndex() throws SQLException {
         assertNull(decoratorMergedResult.getInputStream(1, "ascii"));
     }
     
     @Test
-    public void assertWasNull() throws SQLException {
+    void assertWasNull() throws SQLException {
         when(mergedResult.wasNull()).thenReturn(true);
         assertTrue(decoratorMergedResult.wasNull());
     }

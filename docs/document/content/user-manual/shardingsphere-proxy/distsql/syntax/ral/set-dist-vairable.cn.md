@@ -5,7 +5,7 @@ weight = 4
 
 ### 描述
 
-`SET DIST VARIABLE` 语法用于设置系统变量
+`SET DIST VARIABLE` 语法用于设置系统变量。
 
 ### 语法
 

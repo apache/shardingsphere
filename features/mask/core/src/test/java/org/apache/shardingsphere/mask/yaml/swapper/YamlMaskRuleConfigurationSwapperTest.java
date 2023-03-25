@@ -36,10 +36,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class YamlMaskRuleConfigurationSwapperTest {
+class YamlMaskRuleConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlMaskRuleConfiguration actual = getSwapper().swapToYamlConfiguration(createMaskRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getMaskAlgorithms().size(), is(1));
@@ -52,7 +52,7 @@ public final class YamlMaskRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         MaskRuleConfiguration actual = getSwapper().swapToObject(createYamlMaskRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getMaskAlgorithms().size(), is(1));

@@ -34,10 +34,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLAggregatedCommandExecutorTest {
+class PostgreSQLAggregatedCommandExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         int commandCount = 16;
         List<CommandExecutor> executors = new ArrayList<>(commandCount);
         for (int i = 0; i < commandCount; i++) {

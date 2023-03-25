@@ -29,10 +29,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ConsistencyCheckSequenceTest {
+class ConsistencyCheckSequenceTest {
     
     @Test
-    public void assertGetNextSequence() {
+    void assertGetNextSequence() {
         int currentSequence = ConsistencyCheckSequence.MIN_SEQUENCE;
         assertThat(currentSequence = ConsistencyCheckSequence.getNextSequence(currentSequence), is(2));
         assertThat(currentSequence = ConsistencyCheckSequence.getNextSequence(currentSequence), is(3));
@@ -40,7 +40,7 @@ public final class ConsistencyCheckSequenceTest {
     }
     
     @Test
-    public void assertGetPreviousSequence() {
+    void assertGetPreviousSequence() {
         List<Integer> sequences = Arrays.asList(2, 3, 1);
         Optional<Integer> previousSequence = ConsistencyCheckSequence.getPreviousSequence(sequences, 3);
         assertTrue(previousSequence.isPresent());

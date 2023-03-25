@@ -40,10 +40,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingMetaDataReviseEngineTest {
+class ShardingMetaDataReviseEngineTest {
     
     @Test
-    public void assertReviseWithKeyGenerateStrategy() {
+    void assertReviseWithKeyGenerateStrategy() {
         GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);
         when(material.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         Map<String, SchemaMetaData> actual = new MetaDataReviseEngine(Collections.singleton(mockShardingRule())).revise(Collections.singletonMap("sharding_db",

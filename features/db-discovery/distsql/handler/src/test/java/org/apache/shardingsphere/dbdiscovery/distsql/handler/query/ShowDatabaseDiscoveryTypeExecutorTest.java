@@ -43,10 +43,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowDatabaseDiscoveryTypeExecutorTest {
+class ShowDatabaseDiscoveryTypeExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         DatabaseDiscoveryRule rule = mock(DatabaseDiscoveryRule.class);
         when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
@@ -62,7 +62,7 @@ public final class ShowDatabaseDiscoveryTypeExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowDatabaseDiscoveryTypesStatement> executor = new ShowDatabaseDiscoveryTypeExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));

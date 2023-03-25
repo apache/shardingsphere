@@ -32,10 +32,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OpenGaussErrorPacketFactoryTest {
+class OpenGaussErrorPacketFactoryTest {
     
     @Test
-    public void assertNewInstanceWithServerErrorMessage() {
+    void assertNewInstanceWithServerErrorMessage() {
         String encodedMessage = "SFATAL\0C3D000\0Mdatabase \"test\" does not exist\0c-1\0Ddetail\0Hhint\0P1\0p2\0qinternal query\0Wwhere\0Ffile\0L3\0Rroutine\0a0.0.0.0:1";
         PSQLException cause = new PSQLException(new ServerErrorMessage(encodedMessage));
         OpenGaussErrorResponsePacket actual = OpenGaussErrorPacketFactory.newInstance(cause);
@@ -57,7 +57,7 @@ public final class OpenGaussErrorPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithSQLException() {
+    void assertNewInstanceWithSQLException() {
         SQLException cause = new SQLException("database \"test\" does not exist", "3D000", null);
         OpenGaussErrorResponsePacket actual = OpenGaussErrorPacketFactory.newInstance(cause);
         Map<Character, String> actualFields = getFieldsInPacket(actual);
@@ -69,7 +69,7 @@ public final class OpenGaussErrorPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithUnknownException() {
+    void assertNewInstanceWithUnknownException() {
         Exception cause = mock(Exception.class);
         when(cause.getLocalizedMessage()).thenReturn("LocalizedMessage");
         OpenGaussErrorResponsePacket actual = OpenGaussErrorPacketFactory.newInstance(cause);

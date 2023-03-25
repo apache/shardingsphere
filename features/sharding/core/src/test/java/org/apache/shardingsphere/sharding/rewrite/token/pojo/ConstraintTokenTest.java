@@ -32,15 +32,15 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ConstraintTokenTest {
+class ConstraintTokenTest {
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         assertThat(new ConstraintToken(0, 1, new IdentifierValue("uc"), mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class)).toString(getRouteUnit()), is("uc"));
     }
     
     @Test
-    public void assertUpperCaseToString() {
+    void assertUpperCaseToString() {
         SQLStatementContext<?> sqlStatementContext = mockSQLStatementContext();
         assertThat(new ConstraintToken(0, 1, new IdentifierValue("uc"), sqlStatementContext, mock(ShardingRule.class)).toString(getRouteUnit()), is("uc_t_order_0"));
     }

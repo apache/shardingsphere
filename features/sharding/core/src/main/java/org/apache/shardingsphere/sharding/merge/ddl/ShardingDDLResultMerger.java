@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchStreamMergedResult;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -66,7 +66,7 @@ public final class ShardingDDLResultMerger implements ResultMerger {
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (int i = 0; i < queryResult.getMetaData().getColumnCount(); i++) {
-            result.put(SQLUtil.getExactlyValue(queryResult.getMetaData().getColumnLabel(i + 1)), i + 1);
+            result.put(SQLUtils.getExactlyValue(queryResult.getMetaData().getColumnLabel(i + 1)), i + 1);
         }
         return result;
     }

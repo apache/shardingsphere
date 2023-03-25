@@ -24,20 +24,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class ShardingSphereExternalExceptionTest {
+class ShardingSphereExternalExceptionTest {
     
     @Test
-    public void assertGetMessageWithNoArgsConstructor() {
+    void assertGetMessageWithNoArgsConstructor() {
         assertNull(new ShardingSphereExternalExceptionFixture().getMessage());
     }
     
     @Test
-    public void assertGetMessage() {
+    void assertGetMessage() {
         assertThat(new ShardingSphereExternalExceptionFixture("Test").getMessage(), is("Test"));
     }
     
     @Test
-    public void assertGetCauseWithMessage() {
+    void assertGetCauseWithMessage() {
         RuntimeException cause = new RuntimeException("Test");
         assertThat(new ShardingSphereExternalExceptionFixture("Test", cause).getCause(), is(cause));
     }

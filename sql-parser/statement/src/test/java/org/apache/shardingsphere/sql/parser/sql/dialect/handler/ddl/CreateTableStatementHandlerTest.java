@@ -37,10 +37,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class CreateTableStatementHandlerTest {
+class CreateTableStatementHandlerTest {
     
     @Test
-    public void assertIfNotExists() {
+    void assertIfNotExists() {
         assertTrue(CreateTableStatementHandler.ifNotExists(new MySQLCreateTableStatement(true)));
         assertFalse(CreateTableStatementHandler.ifNotExists(new MySQLCreateTableStatement(false)));
         assertTrue(CreateTableStatementHandler.ifNotExists(new PostgreSQLCreateTableStatement(true)));
@@ -53,7 +53,7 @@ public final class CreateTableStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSelectStatement() {
+    void assertGetSelectStatement() {
         SQLServerCreateTableStatement sqlServerCreateTableStatement = new SQLServerCreateTableStatement();
         sqlServerCreateTableStatement.setSelectStatement(new SQLServerSelectStatement());
         Optional<SelectStatement> actual = CreateTableStatementHandler.getSelectStatement(sqlServerCreateTableStatement);
@@ -67,7 +67,7 @@ public final class CreateTableStatementHandlerTest {
     }
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         SQLServerCreateTableStatement sqlServerCreateTableStatement = new SQLServerCreateTableStatement();
         sqlServerCreateTableStatement.getColumns().add(new ColumnSegment(0, 1, new IdentifierValue("identifier")));
         List<ColumnSegment> actual = CreateTableStatementHandler.getColumns(sqlServerCreateTableStatement);

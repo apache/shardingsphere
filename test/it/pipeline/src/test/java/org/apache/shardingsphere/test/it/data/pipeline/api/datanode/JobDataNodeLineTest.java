@@ -29,10 +29,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class JobDataNodeLineTest {
+class JobDataNodeLineTest {
     
     @Test
-    public void assertMarshal() {
+    void assertMarshal() {
         String actual = new JobDataNodeLine(Arrays.asList(
                 new JobDataNodeEntry("t_order", Arrays.asList(new DataNode("ds_0.t_order_0"), new DataNode("ds_0.t_order_1"))),
                 new JobDataNodeEntry("t_order_item", Arrays.asList(new DataNode("ds_0.t_order_item_0"), new DataNode("ds_0.t_order_item_1"))))).marshal();
@@ -41,7 +41,7 @@ public final class JobDataNodeLineTest {
     }
     
     @Test
-    public void assertUnmarshal() {
+    void assertUnmarshal() {
         String expected = "t_order:ds_0.t_order_0,ds_0.t_order_1|t_order_item:ds_0.t_order_item_0,ds_0.t_order_item_1";
         JobDataNodeLine actual = JobDataNodeLine.unmarshal(expected);
         assertThat(actual.getEntries().size(), is(2));

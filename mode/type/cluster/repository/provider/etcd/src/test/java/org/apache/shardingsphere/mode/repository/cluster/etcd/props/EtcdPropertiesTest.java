@@ -26,15 +26,15 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EtcdPropertiesTest {
+class EtcdPropertiesTest {
     
     @Test
-    public void assertGetValue() {
+    void assertGetValue() {
         assertThat(new EtcdProperties(PropertiesBuilder.build(new Property(EtcdPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "50"))).getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(50L));
     }
     
     @Test
-    public void assertGetDefaultValue() {
+    void assertGetDefaultValue() {
         assertThat(new EtcdProperties(new Properties()).getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(30L));
     }
 }

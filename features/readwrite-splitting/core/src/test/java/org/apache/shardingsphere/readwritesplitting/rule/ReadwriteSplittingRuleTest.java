@@ -43,17 +43,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ReadwriteSplittingRuleTest {
+class ReadwriteSplittingRuleTest {
     
     @Test
-    public void assertFindDataSourceRule() {
+    void assertFindDataSourceRule() {
         Optional<ReadwriteSplittingDataSourceRule> actual = createReadwriteSplittingRule().findDataSourceRule("readwrite");
         assertTrue(actual.isPresent());
         assertDataSourceRule(actual.get());
     }
     
     @Test
-    public void assertGetSingleDataSourceRule() {
+    void assertGetSingleDataSourceRule() {
         assertDataSourceRule(createReadwriteSplittingRule().getSingleDataSourceRule());
     }
     
@@ -72,34 +72,34 @@ public final class ReadwriteSplittingRuleTest {
     }
     
     @Test
-    public void assertUpdateRuleStatusWithNotExistDataSource() {
+    void assertUpdateRuleStatusWithNotExistDataSource() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.updateStatus(new StorageNodeDataSourceChangedEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds"),
                 new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED)));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds")));
     }
     
     @Test
-    public void assertUpdateRuleStatus() {
+    void assertUpdateRuleStatus() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.updateStatus(new StorageNodeDataSourceChangedEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds_0"),
                 new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED)));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds_0")));
     }
     
     @Test
-    public void assertUpdateRuleStatusWithEnable() {
+    void assertUpdateRuleStatusWithEnable() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         readwriteSplittingRule.updateStatus(new StorageNodeDataSourceChangedEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds_0"),
                 new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.DISABLED)));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.singleton("read_ds_0")));
         readwriteSplittingRule.updateStatus(new StorageNodeDataSourceChangedEvent(new QualifiedDatabase("readwrite_splitting_db.readwrite.read_ds_0"),
                 new StorageNodeDataSource(StorageNodeRole.MEMBER, DataSourceState.ENABLED)));
-        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getEnabledReplicaDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(readwriteSplittingRule.getSingleDataSourceRule().getDisabledDataSourceNames(), is(Collections.emptySet()));
     }
     
     @Test
-    public void assertGetDataSourceMapper() {
+    void assertGetDataSourceMapper() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
         Map<String, Collection<DataSourceRoleInfo>> actual = readwriteSplittingRule.getDataSourceMapper();
         Map<String, Collection<DataSourceRoleInfo>> expected = Collections.singletonMap("readwrite", Arrays.asList(new DataSourceRoleInfo("write_ds", DataSourceRole.PRIMARY),

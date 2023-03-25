@@ -30,17 +30,17 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SQLHintShadowAlgorithmTest {
+class SQLHintShadowAlgorithmTest {
     
     private SQLHintShadowAlgorithm shadowAlgorithm;
     
     @BeforeEach
-    public void init() {
+    void init() {
         shadowAlgorithm = (SQLHintShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "SQL_HINT", new Properties());
     }
     
     @Test
-    public void assertIsShadow() {
+    void assertIsShadow() {
         assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), new PreciseHintShadowValue<>("t_auto", ShadowOperationType.INSERT, "/*shadow:true*/")));
         assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("/**/")));
         assertFalse(shadowAlgorithm.isShadow(Arrays.asList("t_user", "t_order"), createNoteShadowValue("/*")));

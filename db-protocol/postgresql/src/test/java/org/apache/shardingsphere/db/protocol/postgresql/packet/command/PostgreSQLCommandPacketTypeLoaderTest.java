@@ -29,17 +29,17 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLCommandPacketTypeLoaderTest {
+class PostgreSQLCommandPacketTypeLoaderTest {
     
     @Test
-    public void assertGetCommandPacketType() {
+    void assertGetCommandPacketType() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class, RETURNS_DEEP_STUBS);
         when(payload.getByteBuf().getByte(anyInt())).thenReturn((byte) 'Q');
         assertThat(PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload), is(PostgreSQLCommandPacketType.SIMPLE_QUERY));
     }
     
     @Test
-    public void assertGetCommandPacketTypeError() {
+    void assertGetCommandPacketTypeError() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class, RETURNS_DEEP_STUBS);
         when(payload.getByteBuf().getByte(anyInt())).thenReturn((byte) 'a');
         assertThrows(PostgreSQLProtocolException.class, () -> PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload));

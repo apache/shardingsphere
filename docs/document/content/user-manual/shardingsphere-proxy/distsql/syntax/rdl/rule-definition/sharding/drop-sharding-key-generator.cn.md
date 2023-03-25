@@ -5,7 +5,7 @@ weight = 11
 
 ## 描述
 
-`DROP SHARDING KEY GENERATOR` 语法用于删除指定逻辑库的指定分片主键生成器
+`DROP SHARDING KEY GENERATOR` 语法用于删除指定逻辑库的指定分片主键生成器。
 
 ### 语法定义
 

@@ -42,10 +42,10 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class ExecuteEngineTest {
+class ExecuteEngineTest {
     
     @Test
-    public void assertSubmitAndTaskSucceeded() {
+    void assertSubmitAndTaskSucceeded() {
         LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
         ExecuteCallback callback = mock(ExecuteCallback.class);
         ExecuteEngine executeEngine = ExecuteEngine.newCachedThreadInstance(ExecuteEngineTest.class.getSimpleName());
@@ -57,7 +57,7 @@ public final class ExecuteEngineTest {
     }
     
     @Test
-    public void assertSubmitAndTaskFailed() {
+    void assertSubmitAndTaskFailed() {
         LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
         RuntimeException expectedException = new RuntimeException("Expected");
         doThrow(expectedException).when(lifecycleExecutor).run();
@@ -86,7 +86,7 @@ public final class ExecuteEngineTest {
     }
     
     @Test
-    public void assertTriggerAllSuccess() {
+    void assertTriggerAllSuccess() {
         CompletableFuture<?> future1 = CompletableFuture.runAsync(new FixtureRunnable(true));
         CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(true));
         FixtureExecuteCallback executeCallback = new FixtureExecuteCallback();
@@ -96,7 +96,7 @@ public final class ExecuteEngineTest {
     }
     
     @Test
-    public void assertTriggerPartSuccessFailure() {
+    void assertTriggerPartSuccessFailure() {
         CompletableFuture<?> future1 = CompletableFuture.runAsync(new FixtureRunnable(true));
         CompletableFuture<?> future2 = CompletableFuture.runAsync(new FixtureRunnable(false));
         FixtureExecuteCallback executeCallback = new FixtureExecuteCallback();

@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class AtomikosXARecoverableResourceTest {
+class AtomikosXARecoverableResourceTest {
     
     @Mock
     private SingleXAResource singleXAResource;
@@ -39,12 +39,12 @@ public final class AtomikosXARecoverableResourceTest {
     private XADataSource xaDataSource;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(singleXAResource.getResourceName()).thenReturn("ds1");
     }
     
     @Test
-    public void assertUseXAResource() {
+    void assertUseXAResource() {
         AtomikosXARecoverableResource atomikosXARecoverableResource = new AtomikosXARecoverableResource("ds1", xaDataSource);
         assertTrue(atomikosXARecoverableResource.usesXAResource(singleXAResource));
     }

@@ -25,17 +25,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class UnsupportedKeyPositionTest {
+class UnsupportedKeyPositionTest {
     
     @Test
-    public void assertInit() {
+    void assertInit() {
         UnsupportedKeyPosition position = (UnsupportedKeyPosition) PrimaryKeyPositionFactory.newInstance("u,,");
         assertNull(position.getBeginValue());
         assertNull(position.getEndValue());
     }
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         assertThat(new UnsupportedKeyPosition().toString(), is("u,,"));
     }
 }

@@ -6,7 +6,7 @@ weight = 11
 
 ### 描述
 
-`CHECK MIGRATION BY` 语法用于校验数据迁移作业中的数据一致性
+`CHECK MIGRATION BY` 语法用于校验数据迁移作业中的数据一致性。
 
 ### 语法
 

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.ingest.channel.memory;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.ManualBitSet;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -33,10 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ManualBitSetTest {
+class ManualBitSetTest {
     
     @Test
-    public void assertGet() {
+    void assertGet() {
         ManualBitSet bitSet = new ManualBitSet();
         IntStream.range(0, 1024).forEach(bitSet::set);
         assertFalse(bitSet.get(0, 1023).get(1023));
@@ -46,7 +45,7 @@ public final class ManualBitSetTest {
     }
     
     @Test
-    public void assertGetEndIndexSuccess() {
+    void assertGetEndIndexSuccess() {
         ManualBitSet bitSet = new ManualBitSet();
         IntStream.range(1024, 1100).filter(each -> each % 2 == 1).forEach(bitSet::set);
         assertThat(bitSet.getEndIndex(0L, 5), is(1034L));
@@ -55,7 +54,7 @@ public final class ManualBitSetTest {
     }
     
     @Test
-    public void assertGetEndIndexFailure() {
+    void assertGetEndIndexFailure() {
         ManualBitSet bitSet = new ManualBitSet();
         IntStream.range(0, 10).filter(each -> each % 2 == 1).forEach(bitSet::set);
         assertThrows(IndexOutOfBoundsException.class, () -> bitSet.getEndIndex(0L, 10));
@@ -63,8 +62,7 @@ public final class ManualBitSetTest {
     
     @Test
     @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    public void assertClear() {
+    void assertClear() throws ReflectiveOperationException {
         ManualBitSet bitSet = new ManualBitSet();
         IntStream.range(0, 100).forEach(bitSet::set);
         List<BitSet> bitSets = (List<BitSet>) Plugins.getMemberAccessor().get(ManualBitSet.class.getDeclaredField("bitSets"), bitSet);
