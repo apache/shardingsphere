@@ -31,10 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(AgentTestActionExtension.class)
-public final class FilePluginE2EIT {
+class FilePluginE2EIT {
     
     @Test
-    public void assertWithAgent() {
+    void assertWithAgent() {
         assertTrue(new File(LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())).exists(),
                 String.format("The file `%s` does not exist", LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())));
         Collection<String> actualLogLines = LogLoader.getLogLines(E2ETestEnvironment.getInstance().isAdaptedProxy());

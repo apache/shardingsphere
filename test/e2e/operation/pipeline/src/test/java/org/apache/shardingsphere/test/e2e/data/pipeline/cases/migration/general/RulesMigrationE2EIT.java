@@ -44,7 +44,7 @@ import static org.hamcrest.Matchers.is;
  * 2) only encrypt rule.
  */
 @PipelineE2ESettings(fetchSingle = true, database = @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/primary_key/text_primary_key/mysql.xml"))
-public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
+class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String SOURCE_TABLE_NAME = "t_order";
     
@@ -53,7 +53,7 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    public void assertNoRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertNoRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             assertMigrationSuccess(containerComposer, null);
         }
@@ -62,7 +62,7 @@ public final class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    public void assertOnlyEncryptRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertOnlyEncryptRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             assertMigrationSuccess(containerComposer, () -> {
                 createTargetOrderTableEncryptRule(containerComposer);

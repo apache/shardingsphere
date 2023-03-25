@@ -132,7 +132,7 @@ class DatabaseOperateBackendHandlerFactoryTest {
         assertExecuteCreateDatabaseContextWithException(new PostgreSQLCreateDatabaseStatement());
     }
     
-    public void assertExecuteCreateDatabaseContextWithException(final CreateDatabaseStatement sqlStatement) {
+    private void assertExecuteCreateDatabaseContextWithException(final CreateDatabaseStatement sqlStatement) {
         sqlStatement.setDatabaseName("foo_db");
         setGovernanceMetaDataContexts(true);
         try {

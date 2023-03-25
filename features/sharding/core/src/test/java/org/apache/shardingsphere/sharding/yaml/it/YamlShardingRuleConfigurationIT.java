@@ -35,17 +35,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlShardingRuleConfigurationIT {
+class YamlShardingRuleConfigurationIT {
     
     @Test
-    public void assertUnmarshalWithYamlFile() throws IOException {
+    void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/sharding-rule.yaml");
         assertNotNull(url);
         assertYamlShardingConfiguration(YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class));
     }
     
     @Test
-    public void assertUnmarshalWithYamlBytes() throws IOException {
+    void assertUnmarshalWithYamlBytes() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/sharding-rule.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();

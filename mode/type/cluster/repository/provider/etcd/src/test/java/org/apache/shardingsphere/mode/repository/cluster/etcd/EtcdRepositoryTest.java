@@ -161,7 +161,7 @@ class EtcdRepositoryTest {
     
     @Test
     @SuppressWarnings("unchecked")
-    public void assertPersistEphemeral() {
+    void assertPersistEphemeral() {
         repository.persistEphemeral("key1", "value1");
         verify(lease).grant(anyLong());
         verify(lease).keepAlive(anyLong(), any(StreamObserver.class));

@@ -49,12 +49,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @E2ETestCaseSettings(SQLCommandType.RDL)
-public final class RDLE2EIT {
+class RDLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
+    void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;

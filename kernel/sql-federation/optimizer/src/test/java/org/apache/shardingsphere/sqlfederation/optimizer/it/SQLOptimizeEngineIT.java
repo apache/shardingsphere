@@ -60,7 +60,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SQLOptimizeEngineIT {
+class SQLOptimizeEngineIT {
     
     private static final String SCHEMA_NAME = "federate_jdbc";
     
@@ -69,7 +69,7 @@ public final class SQLOptimizeEngineIT {
     private SQLOptimizeEngine optimizeEngine;
     
     @BeforeEach
-    public void init() {
+    void init() {
         Map<String, ShardingSphereTable> tables = new HashMap<>();
         tables.put("t_order_federate", createOrderFederationTableMetaData());
         tables.put("t_user_info", createUserInfoTableMetaData());
@@ -245,7 +245,7 @@ public final class SQLOptimizeEngineIT {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertOptimize(final TestCase testcase) {
+    void assertOptimize(final TestCase testcase) {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType())).parse(testcase.getSql(), false);
         String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain().replaceAll("[\r\n]", "");
         assertThat(actual, is(testcase.getAssertion().getExpectedResult()));

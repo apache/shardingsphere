@@ -35,11 +35,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public final class YamlShardingE2EIT extends AbstractYamlDataSourceE2EIT {
+class YamlShardingE2EIT extends AbstractYamlDataSourceE2EIT {
     
     @ParameterizedTest(name = "{index}:{0}-{1}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertWithDataSource(final String filePath, final boolean hasDataSource) throws Exception {
+    void assertWithDataSource(final String filePath, final boolean hasDataSource) throws Exception {
         File yamlFile = new File(Objects.requireNonNull(YamlShardingE2EIT.class.getResource(filePath)).toURI());
         DataSource dataSource;
         if (hasDataSource) {
