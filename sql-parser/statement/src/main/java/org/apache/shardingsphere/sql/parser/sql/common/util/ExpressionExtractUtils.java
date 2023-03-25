@@ -38,7 +38,7 @@ import java.util.Optional;
  * Expression extract utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExpressionExtractUtil {
+public final class ExpressionExtractUtils {
     
     /**
      * Get and predicate collection.

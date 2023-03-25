@@ -35,11 +35,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class WhereExtractUtilTest {
+public final class WhereExtractUtilsTest {
     
     @Test
     public void assertGetJoinWhereSegmentsWithEmptySelectStatement() {
-        assertTrue(WhereExtractUtil.getJoinWhereSegments(new MySQLSelectStatement()).isEmpty());
+        assertTrue(WhereExtractUtils.getJoinWhereSegments(new MySQLSelectStatement()).isEmpty());
     }
     
     @Test
@@ -50,7 +50,7 @@ public final class WhereExtractUtilTest {
         tableSegment.setCondition(new BinaryOperationExpression(1, 31, left, right, "=", "oi.order_id = o.order_id"));
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(tableSegment);
-        Collection<WhereSegment> joinWhereSegments = WhereExtractUtil.getJoinWhereSegments(selectStatement);
+        Collection<WhereSegment> joinWhereSegments = WhereExtractUtils.getJoinWhereSegments(selectStatement);
         assertThat(joinWhereSegments.size(), is(1));
         WhereSegment actual = joinWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(tableSegment.getCondition()));
@@ -67,7 +67,7 @@ public final class WhereExtractUtilTest {
         projections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(7, 63, subQuerySelectStatement), "(SELECT status FROM t_order WHERE order_id = oi.order_id)"));
         SelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(projections);
-        Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtil.getSubqueryWhereSegments(selectStatement);
+        Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(subQuerySelectStatement.getWhere().get().getExpr()));
     }

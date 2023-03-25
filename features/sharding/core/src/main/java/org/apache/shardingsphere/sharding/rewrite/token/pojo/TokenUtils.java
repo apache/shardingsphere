@@ -29,10 +29,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Token utility.
+ * Token utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TokenUtil {
+public final class TokenUtils {
     
     /**
      * Get logic table and actual table.

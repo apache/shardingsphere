@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -214,11 +214,11 @@ public final class ShardingConditions {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private boolean isSameShardingValue(final ShardingConditionValue shardingConditionValue1, final ShardingConditionValue shardingConditionValue2) {
         if (shardingConditionValue1 instanceof ListShardingConditionValue && shardingConditionValue2 instanceof ListShardingConditionValue) {
-            return SafeNumberOperationUtil.safeCollectionEquals(
+            return SafeNumberOperationUtils.safeCollectionEquals(
                     ((ListShardingConditionValue) shardingConditionValue1).getValues(), ((ListShardingConditionValue) shardingConditionValue2).getValues());
         }
         if (shardingConditionValue1 instanceof RangeShardingConditionValue && shardingConditionValue2 instanceof RangeShardingConditionValue) {
-            return SafeNumberOperationUtil.safeRangeEquals(
+            return SafeNumberOperationUtils.safeRangeEquals(
                     ((RangeShardingConditionValue) shardingConditionValue1).getValueRange(), ((RangeShardingConditionValue) shardingConditionValue2).getValueRange());
         }
         return false;

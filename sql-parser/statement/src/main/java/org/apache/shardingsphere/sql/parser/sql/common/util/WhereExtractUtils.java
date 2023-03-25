@@ -34,7 +34,7 @@ import java.util.LinkedList;
  * Where extract utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class WhereExtractUtil {
+public final class WhereExtractUtils {
     
     /**
      * Get join where segment from SelectStatement.
@@ -71,7 +71,7 @@ public final class WhereExtractUtil {
      */
     public static Collection<WhereSegment> getSubqueryWhereSegments(final SelectStatement selectStatement) {
         Collection<WhereSegment> result = new LinkedList<>();
-        for (SubquerySegment each : SubqueryExtractUtil.getSubquerySegments(selectStatement)) {
+        for (SubquerySegment each : SubqueryExtractUtils.getSubquerySegments(selectStatement)) {
             each.getSelect().getWhere().ifPresent(result::add);
         }
         return result;

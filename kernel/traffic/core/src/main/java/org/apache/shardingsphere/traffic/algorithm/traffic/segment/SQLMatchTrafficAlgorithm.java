@@ -20,7 +20,7 @@ package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 
@@ -56,7 +56,7 @@ public final class SQLMatchTrafficAlgorithm implements SegmentTrafficAlgorithm {
     
     @Override
     public boolean match(final SegmentTrafficValue segmentTrafficValue) {
-        return sql.contains(SQLUtil.trimSemicolon(CharMatcher.anyOf(EXCLUDED_CHARACTERS).removeFrom(segmentTrafficValue.getSql())));
+        return sql.contains(SQLUtils.trimSemicolon(CharMatcher.anyOf(EXCLUDED_CHARACTERS).removeFrom(segmentTrafficValue.getSql())));
     }
     
     @Override

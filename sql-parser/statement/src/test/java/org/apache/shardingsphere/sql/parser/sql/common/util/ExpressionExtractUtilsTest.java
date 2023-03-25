@@ -38,14 +38,14 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ExpressionExtractUtilTest {
+public final class ExpressionExtractUtilsTest {
     
     @Test
     public void assertExtractAndPredicates() {
         ColumnSegment left = new ColumnSegment(26, 33, new IdentifierValue("order_id"));
         ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(35, 35, 0);
         ExpressionSegment expressionSegment = new BinaryOperationExpression(26, 35, left, right, "=", "order_id=?");
-        Collection<AndPredicate> actual = ExpressionExtractUtil.getAndPredicates(expressionSegment);
+        Collection<AndPredicate> actual = ExpressionExtractUtils.getAndPredicates(expressionSegment);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getPredicates().iterator().next(), is(expressionSegment));
     }
@@ -59,7 +59,7 @@ public final class ExpressionExtractUtilTest {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment2 = new ParameterMarkerExpressionSegment(54, 54, 1);
         ExpressionSegment rightExpressionSegment = new BinaryOperationExpression(28, 39, columnSegment2, parameterMarkerExpressionSegment2, "=", "status=?");
         BinaryOperationExpression expression = new BinaryOperationExpression(28, 54, leftExpressionSegment, rightExpressionSegment, "AND", "order_id=? AND status=?");
-        Collection<AndPredicate> actual = ExpressionExtractUtil.getAndPredicates(expression);
+        Collection<AndPredicate> actual = ExpressionExtractUtils.getAndPredicates(expression);
         assertThat(actual.size(), is(1));
         AndPredicate andPredicate = actual.iterator().next();
         assertThat(andPredicate.getPredicates().size(), is(2));
@@ -77,7 +77,7 @@ public final class ExpressionExtractUtilTest {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment2 = new ParameterMarkerExpressionSegment(47, 47, 1);
         ExpressionSegment expressionSegment2 = new BinaryOperationExpression(40, 47, columnSegment2, parameterMarkerExpressionSegment2, "=", "status=?");
         BinaryOperationExpression expression = new BinaryOperationExpression(28, 47, expressionSegment1, expressionSegment2, "OR", "status=? OR status=?");
-        Collection<AndPredicate> actual = ExpressionExtractUtil.getAndPredicates(expression);
+        Collection<AndPredicate> actual = ExpressionExtractUtils.getAndPredicates(expression);
         assertThat(actual.size(), is(2));
         Iterator<AndPredicate> andPredicateIterator = actual.iterator();
         AndPredicate andPredicate1 = andPredicateIterator.next();
@@ -97,7 +97,7 @@ public final class ExpressionExtractUtilTest {
         ExpressionSegment subRightExpression = new BinaryOperationExpression(0, 0, countColumn, countParameterExpression, "=", "count=?");
         BinaryOperationExpression rightExpression = new BinaryOperationExpression(0, 0, subLeftExpression, subRightExpression, "AND", "status=? AND count=?");
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, leftExpression, rightExpression, "OR", "status=? OR status=? AND count=?");
-        Collection<AndPredicate> actual = ExpressionExtractUtil.getAndPredicates(expression);
+        Collection<AndPredicate> actual = ExpressionExtractUtils.getAndPredicates(expression);
         assertThat(actual.size(), is(2));
         Iterator<AndPredicate> iterator = actual.iterator();
         AndPredicate andPredicate1 = iterator.next();
@@ -117,7 +117,7 @@ public final class ExpressionExtractUtilTest {
         functionSegment.getParameters().add(param1);
         functionSegment.getParameters().add(param2);
         functionSegment.getParameters().add(param3);
-        List<ParameterMarkerExpressionSegment> result = ExpressionExtractUtil.getParameterMarkerExpressions(Collections.singletonList(functionSegment));
+        List<ParameterMarkerExpressionSegment> result = ExpressionExtractUtils.getParameterMarkerExpressions(Collections.singletonList(functionSegment));
         assertThat(result.size(), is(1));
     }
     
@@ -125,7 +125,7 @@ public final class ExpressionExtractUtilTest {
     public void assertGetParameterMarkerExpressionsFromTypeCastExpression() {
         ParameterMarkerExpressionSegment expected = new ParameterMarkerExpressionSegment(0, 0, 1, ParameterMarkerType.DOLLAR);
         List<ExpressionSegment> input = Collections.singletonList(new TypeCastExpression(0, 0, "$2::varchar", expected, "varchar"));
-        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtil.getParameterMarkerExpressions(input);
+        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtils.getParameterMarkerExpressions(input);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
     }
