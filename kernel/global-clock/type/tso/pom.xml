@@ -29,6 +29,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>spi</module>
         <module>core</module>
         <module>provider</module>
     </modules>
