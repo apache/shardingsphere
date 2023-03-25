@@ -38,7 +38,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class OpenTracingSQLParserEngineAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
+class OpenTracingSQLParserEngineAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     private static final OpenTracingSQLParserEngineAdvice ADVICE = new OpenTracingSQLParserEngineAdvice();
     
@@ -47,7 +47,7 @@ public final class OpenTracingSQLParserEngineAdviceTest extends AbstractJDBCExec
     private static Method parserMethod;
     
     @BeforeAll
-    public static void setup() throws ReflectiveOperationException {
+    static void setup() throws ReflectiveOperationException {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(new MockTracer());
         }
@@ -56,12 +56,12 @@ public final class OpenTracingSQLParserEngineAdviceTest extends AbstractJDBCExec
     }
     
     @BeforeEach
-    public void reset() {
+    void reset() {
         tracer.reset();
     }
     
     @Test
-    public void assertMethod() {
+    void assertMethod() {
         ADVICE.beforeMethod(getTargetObject(), parserMethod, new Object[]{"select 1"}, "OpenTracing");
         ADVICE.afterMethod(getTargetObject(), parserMethod, new Object[]{}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
@@ -74,7 +74,7 @@ public final class OpenTracingSQLParserEngineAdviceTest extends AbstractJDBCExec
     }
     
     @Test
-    public void assertExceptionHandle() {
+    void assertExceptionHandle() {
         ADVICE.beforeMethod(getTargetObject(), parserMethod, new Object[]{"select 1"}, "OpenTracing");
         ADVICE.onThrowing(getTargetObject(), parserMethod, new Object[]{}, new IOException(), "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();

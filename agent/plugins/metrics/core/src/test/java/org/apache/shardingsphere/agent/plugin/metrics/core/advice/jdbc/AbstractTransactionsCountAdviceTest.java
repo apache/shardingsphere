@@ -32,25 +32,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class AbstractTransactionsCountAdviceTest {
+class AbstractTransactionsCountAdviceTest {
     
     private final MetricConfiguration config = new MetricConfiguration("jdbc_transactions_total", MetricCollectorType.COUNTER,
             "Total transactions of ShardingSphere-JDBC", Collections.singletonList("type"));
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertWithCommit() {
+    void assertWithCommit() {
         CommitTransactionsCountAdvice advice = new CommitTransactionsCountAdvice();
         advice.afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("commit=1"));
     }
     
     @Test
-    public void assertWithRollback() {
+    void assertWithRollback() {
         RollbackTransactionsCountAdvice advice = new RollbackTransactionsCountAdvice();
         advice.afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("rollback=1"));

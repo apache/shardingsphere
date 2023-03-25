@@ -36,17 +36,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class RouteResultCountAdviceTest {
+class RouteResultCountAdviceTest {
     
     private final MetricConfiguration routedResultConfig = new MetricConfiguration("routed_result_total", MetricCollectorType.COUNTER, null, Arrays.asList("object", "name"));
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(routedResultConfig, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertCountRouteResult() {
+    void assertCountRouteResult() {
         RouteContext routeContext = new RouteContext();
         RouteMapper dataSourceMapper = new RouteMapper("logic_db", "ds_0");
         RouteMapper tableMapper = new RouteMapper("t_order", "t_order_0");

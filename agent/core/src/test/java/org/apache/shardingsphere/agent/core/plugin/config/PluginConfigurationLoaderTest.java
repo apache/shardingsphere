@@ -31,10 +31,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class PluginConfigurationLoaderTest {
+class PluginConfigurationLoaderTest {
     
     @Test
-    public void assertLoad() throws IOException {
+    void assertLoad() throws IOException {
         Map<String, PluginConfiguration> actual = PluginConfigurationLoader.load(new File(getResourceURL()));
         assertThat(actual.size(), is(3));
         assertLoggingPluginConfiguration(actual.get("log_fixture"));

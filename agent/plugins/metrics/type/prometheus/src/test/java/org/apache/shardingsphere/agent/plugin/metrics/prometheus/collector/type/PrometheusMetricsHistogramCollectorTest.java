@@ -28,10 +28,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusMetricsHistogramCollectorTest {
+class PrometheusMetricsHistogramCollectorTest {
     
     @Test
-    public void assertCreate() throws ReflectiveOperationException {
+    void assertCreate() throws ReflectiveOperationException {
         PrometheusMetricsHistogramCollector collector = new PrometheusMetricsHistogramCollector(new MetricConfiguration("foo_histogram",
                 MetricCollectorType.HISTOGRAM, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.observe(1);

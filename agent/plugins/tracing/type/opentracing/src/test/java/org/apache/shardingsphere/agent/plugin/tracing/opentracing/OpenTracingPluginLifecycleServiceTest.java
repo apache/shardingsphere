@@ -26,17 +26,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class OpenTracingPluginLifecycleServiceTest {
+class OpenTracingPluginLifecycleServiceTest {
     
     private final OpenTracingPluginLifecycleService pluginLifecycleService = new OpenTracingPluginLifecycleService();
     
     @AfterEach
-    public void close() {
+    void close() {
         pluginLifecycleService.close();
     }
     
     @Test
-    public void assertStart() {
+    void assertStart() {
         pluginLifecycleService.start(new PluginConfiguration("localhost", 8090, "", PropertiesBuilder.build(new Property("opentracing-tracer-class-name", "io.opentracing.mock.MockTracer"))), true);
         assertTrue(GlobalTracer.isRegistered());
     }

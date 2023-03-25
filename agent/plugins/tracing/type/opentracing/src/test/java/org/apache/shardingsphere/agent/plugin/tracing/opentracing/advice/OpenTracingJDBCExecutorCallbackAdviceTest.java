@@ -40,14 +40,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class OpenTracingJDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
+class OpenTracingJDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     private static MockTracer tracer;
     
     private static Method executeMethod;
     
     @BeforeAll
-    public static void setup() throws ReflectiveOperationException {
+    static void setup() throws ReflectiveOperationException {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(new MockTracer());
         }
@@ -56,12 +56,12 @@ public final class OpenTracingJDBCExecutorCallbackAdviceTest extends AbstractJDB
     }
     
     @BeforeEach
-    public void reset() {
+    void reset() {
         tracer.reset();
     }
     
     @Test
-    public void assertMethod() {
+    void assertMethod() {
         OpenTracingJDBCExecutorCallbackAdvice advice = new OpenTracingJDBCExecutorCallbackAdvice();
         advice.beforeMethod(getTargetObject(), executeMethod, new Object[]{getExecutionUnit(), false, Collections.emptyList()}, "OpenTracing");
         advice.afterMethod(getTargetObject(), executeMethod, new Object[]{getExecutionUnit(), false, Collections.emptyList()}, null, "OpenTracing");
@@ -79,7 +79,7 @@ public final class OpenTracingJDBCExecutorCallbackAdviceTest extends AbstractJDB
     }
     
     @Test
-    public void assertExceptionHandle() {
+    void assertExceptionHandle() {
         Map<String, Object> extraMap = Collections.singletonMap("_root_span_", null);
         OpenTracingJDBCExecutorCallbackAdvice advice = new OpenTracingJDBCExecutorCallbackAdvice();
         advice.beforeMethod(getTargetObject(), executeMethod, new Object[]{getExecutionUnit(), false, extraMap}, "OpenTracing");

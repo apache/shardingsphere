@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith({TracingAgentExtension.class, AutoMockExtension.class})
 @StaticMockSettings(ProxyContext.class)
-public final class OpenTracingRootSpanAdviceTest {
+class OpenTracingRootSpanAdviceTest {
     
     private static final OpenTracingRootSpanAdvice ADVICE = new OpenTracingRootSpanAdvice();
     
@@ -67,7 +67,7 @@ public final class OpenTracingRootSpanAdviceTest {
     private TargetAdviceObject targetObject;
     
     @BeforeAll
-    public static void setup() throws ReflectiveOperationException {
+    static void setup() throws ReflectiveOperationException {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(new MockTracer());
         }
@@ -76,7 +76,7 @@ public final class OpenTracingRootSpanAdviceTest {
     }
     
     @BeforeEach
-    public void reset() {
+    void reset() {
         tracer.reset();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.BASE, new DefaultAttributeMap());
@@ -85,7 +85,7 @@ public final class OpenTracingRootSpanAdviceTest {
     }
     
     @Test
-    public void assertMethod() {
+    void assertMethod() {
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, "OpenTracing");
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, null, "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
@@ -97,7 +97,7 @@ public final class OpenTracingRootSpanAdviceTest {
     }
     
     @Test
-    public void assertExceptionHandle() {
+    void assertExceptionHandle() {
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, "OpenTracing");
         ADVICE.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException(), "OpenTracing");
         List<MockSpan> spans = tracer.finishedSpans();
